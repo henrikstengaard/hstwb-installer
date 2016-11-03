@@ -46,8 +46,8 @@ The installation is done through WinUAE. To enable installing Workbench automati
 * A1200 identified kickstart rom is used.
 * Selected Amiga HDF image it mounted as harddisk file as non-bootable.
 * Install directory mounted as bootable harddisk containing. This contains a startup sequence to automate installation of identified workbench adf and kickstart rom files are copied to this directory with installation scripts and tools.
-* Workbench 3.1 Workbench disk is patch to make it non-bootable. This is done by patching adf file offset 12 to 0, which make boot sector invalid and WinUAE skip booting the floppy. This enables basic commands to be loaded resident for the installation process.
+* Workbench 3.1 Workbench disk is patched to make it non-bootable. This is done by patching adf file offset 12 to 0, which make boot sector invalid and WinUAE skip booting the floppy. This enables basic commands to be loaded resident for the installation process.
 * Patched Workbench 3.1 Workbench disk is mounted as DF0:.
 * WinUAE is launched and startup sequence executes installation scripts and automatically shuts down, when done.
 
-The preinstalled Amiga HDF image is now ready to used in an emulator or by writing it to a CF/SD card.
+The preinstalled Amiga HDF image is now ready to use in an emulator or by writing it to a CF/SD card.
