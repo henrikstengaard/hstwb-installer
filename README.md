@@ -12,6 +12,19 @@ This is where HstWB Installer come to aid and can help to automate such installa
 
 HstWB is short for my name and Workbench (very original, i know). 
 
+## User interface
+
+Currently the plan is to make the following user interfaces for HstWB-Installer:
+
+* Powershell: Windows powershell script launched from console or Windows Explorer via cmd script.
+* Bash: Mac/Linux script launched from terminal.
+
+Powershell script can be extended to use WinForms to present a Windows application, which makes it much more user friendly, but this has low priority. First priority is to make a powershell script, that can perform an automated installation of packages to an Amiga HDF image. 
+
+Something similar could be used for Mac/Linux, but I'm not aware of whats possible there. 
+
+Using Mac/Linux would also require use of FS-UAE emulator.
+
 ## Images
 
 Following Amiga HDF images are included:
