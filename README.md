@@ -10,7 +10,7 @@ Setting up a blank Amiga HDF image with e.g. PFS3, Workbench, Kickstarts roms an
 
 This is where HstWB Installer come to aid and can help to automate such installations and should be possible for almost anyone to do with very little knowledge about Amiga. 
 
-HstWB is short for my name and Workbench (very original, i know). 
+*HstWB is short for my name and Workbench (very original, I know).* 
 
 ## User interface
 
@@ -29,7 +29,7 @@ Using Mac/Linux would also require use of FS-UAE emulator.
 
 Following Amiga HDF images are included:
 
-* 8GB: An 8GB image with 2 partitions: DH0 500MB bootable as System:, DH1 7000MB as Work:. Both partitions are formatted with PFS3 AIO by Toni Wilen. The size of the image is adjusted so it fits an 8GB CF/SD card.
+* 8GB: An 8GB image with 2 partitions: DH0 500MB bootable as System:, DH1 7000MB as Work:. Both partitions are formatted with PFS3 AIO by Toni Wilen.
 
 More images can manually be added to images directory compressed with zip. 
 
@@ -40,16 +40,37 @@ Following packages are included and they can be selected during configuration, w
 * Workbench: Workbench identified by MD5 hash from defined workbench adf directory. Files from adf's are extracted using unadf and copied to DH0:.
 * Kickstart: Kickstart roms identified by MD5 hash from defined kickstart rom directory. Files are copied to DH0:Devs/Kickstarts, required for WHDLoad.
 * HstWB System: Workbench configuration built by me. This is an extension of BetterWB with few files borrowed from ClassicWB.
-* HstWB AGS2 Games v2.6: Arcade Game Selector 2 menu generated for WHDLoad games. This contains screenshots and details like name, publisher, Genre an year for each game. 
-* HstWB AGS2 Demos v2.6: Arcade Game Selector 2 menu generated for WHDLoad demos. This contains screenshots and details like name, group and party and year for each demo. 
-* HstWB iGame Games v2.6: iGame gameslist generated WHDLoad games. This iGame has names without stars, spaces and wierd characters to have a clean game list in iGame.
-* HstWB iGame Demos v2.6: iGame gameslist generated WHDLoad demos. This iGame has names without stars, spaces and wierd characters to have a clean game list in iGame.
+* HstWB AGS2 EAB WHDLoad Games v2.6: Arcade Game Selector 2 menu generated for WHDLoad games. This contains screenshots and details like name, publisher, Genre an year for each game. 
+* HstWB AGS2 EAB WHDLoad Demos v2.6: Arcade Game Selector 2 menu generated for WHDLoad demos. This contains screenshots and details like name, group and party and year for each demo. 
+* HstWB iGame EAB WHDLoad Games v2.6: iGame gameslist and screenshots generated for WHDLoad games. This gameslist has names without stars, spaces and wierd characters to have a clean game list in iGame.
+* HstWB iGame EAB WHDLoad Demos v2.6: iGame gameslist and screenshots generated for WHDLoad demos. This gameslist has names without stars, spaces and wierd characters to have a clean game list in iGame.
 * EAB WHDLoad Games v2.6: WHDLoad games pack from EAB with update 2.6 applied.
 * EAB WHDLoad Demos v2.6: WHDLoad demos pack from EAB with update 2.6 applied.
 
 Versions are used to allow having future and updated versions of packages.
 
-** EAB WHDLoad Games and EAB WHDLoad Demos will be provided by another script, which automatically download packs and updates from EAB ftp server, unzip, combines, packs and copies them to packages directory**
+**EAB WHDLoad Games and EAB WHDLoad Demos will be provided by another script, which automatically download packs and updates from EAB ftp server, unzip, combines, packs and copies them to packages directory**
+
+## Package files and their structure
+
+A package is zip file located in the packages directory. Packages are identified by the following naming convention:
+
+[name].[version].zip
+
+As a bare minimum a package must contain the following files:
+
+- install: AmigaOS script to perform installation is the package.
+- package.ini: Ini file describing the content of the package including name, description, version.
+
+Any other files can be part of a package as resources to install.
+
+Here's an example of package content:
+
+HstWB_System.1.0.0.zip:
+- install: AmigaOS script to extract system.lha.
+- system.lha: Lha archive with system files to install.
+
+Packages are kept simple, so they are easy to build and maintain.
 
 ## Installation
 
