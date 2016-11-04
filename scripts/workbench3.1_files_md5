@@ -1,0 +1,2061 @@
+ECHO "" NOLINE >RAM:workbench3.1_md5.txt
+IF EXISTS "dh0:Prefs/WBPattern.info"
+  SET md5 `md5 "dh0:Prefs/WBPattern.info"`
+  ECHO "$md5;dh0:Prefs/WBPattern.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Env-Archive/Sys/wbconfig.prefs"
+  SET md5 `md5 "dh0:Prefs/Env-Archive/Sys/wbconfig.prefs"`
+  ECHO "$md5;dh0:Prefs/Env-Archive/Sys/wbconfig.prefs" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Presets.info"
+  SET md5 `md5 "dh0:Prefs/Presets.info"`
+  ECHO "$md5;dh0:Prefs/Presets.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Font"
+  SET md5 `md5 "dh0:Prefs/Font"`
+  ECHO "$md5;dh0:Prefs/Font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Font.info"
+  SET md5 `md5 "dh0:Prefs/Font.info"`
+  ECHO "$md5;dh0:Prefs/Font.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/IControl"
+  SET md5 `md5 "dh0:Prefs/IControl"`
+  ECHO "$md5;dh0:Prefs/IControl" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/IControl.info"
+  SET md5 `md5 "dh0:Prefs/IControl.info"`
+  ECHO "$md5;dh0:Prefs/IControl.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Input"
+  SET md5 `md5 "dh0:Prefs/Input"`
+  ECHO "$md5;dh0:Prefs/Input" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Input.info"
+  SET md5 `md5 "dh0:Prefs/Input.info"`
+  ECHO "$md5;dh0:Prefs/Input.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Locale"
+  SET md5 `md5 "dh0:Prefs/Locale"`
+  ECHO "$md5;dh0:Prefs/Locale" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Locale.info"
+  SET md5 `md5 "dh0:Prefs/Locale.info"`
+  ECHO "$md5;dh0:Prefs/Locale.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Overscan"
+  SET md5 `md5 "dh0:Prefs/Overscan"`
+  ECHO "$md5;dh0:Prefs/Overscan" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Overscan.info"
+  SET md5 `md5 "dh0:Prefs/Overscan.info"`
+  ECHO "$md5;dh0:Prefs/Overscan.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Palette"
+  SET md5 `md5 "dh0:Prefs/Palette"`
+  ECHO "$md5;dh0:Prefs/Palette" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Palette.info"
+  SET md5 `md5 "dh0:Prefs/Palette.info"`
+  ECHO "$md5;dh0:Prefs/Palette.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Pointer"
+  SET md5 `md5 "dh0:Prefs/Pointer"`
+  ECHO "$md5;dh0:Prefs/Pointer" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Pointer.info"
+  SET md5 `md5 "dh0:Prefs/Pointer.info"`
+  ECHO "$md5;dh0:Prefs/Pointer.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Printer"
+  SET md5 `md5 "dh0:Prefs/Printer"`
+  ECHO "$md5;dh0:Prefs/Printer" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Printer.info"
+  SET md5 `md5 "dh0:Prefs/Printer.info"`
+  ECHO "$md5;dh0:Prefs/Printer.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterGfx"
+  SET md5 `md5 "dh0:Prefs/PrinterGfx"`
+  ECHO "$md5;dh0:Prefs/PrinterGfx" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterGfx.info"
+  SET md5 `md5 "dh0:Prefs/PrinterGfx.info"`
+  ECHO "$md5;dh0:Prefs/PrinterGfx.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterPS"
+  SET md5 `md5 "dh0:Prefs/PrinterPS"`
+  ECHO "$md5;dh0:Prefs/PrinterPS" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterPS.info"
+  SET md5 `md5 "dh0:Prefs/PrinterPS.info"`
+  ECHO "$md5;dh0:Prefs/PrinterPS.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/ScreenMode"
+  SET md5 `md5 "dh0:Prefs/ScreenMode"`
+  ECHO "$md5;dh0:Prefs/ScreenMode" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/ScreenMode.info"
+  SET md5 `md5 "dh0:Prefs/ScreenMode.info"`
+  ECHO "$md5;dh0:Prefs/ScreenMode.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Serial"
+  SET md5 `md5 "dh0:Prefs/Serial"`
+  ECHO "$md5;dh0:Prefs/Serial" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Serial.info"
+  SET md5 `md5 "dh0:Prefs/Serial.info"`
+  ECHO "$md5;dh0:Prefs/Serial.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Sound"
+  SET md5 `md5 "dh0:Prefs/Sound"`
+  ECHO "$md5;dh0:Prefs/Sound" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Sound.info"
+  SET md5 `md5 "dh0:Prefs/Sound.info"`
+  ECHO "$md5;dh0:Prefs/Sound.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Time"
+  SET md5 `md5 "dh0:Prefs/Time"`
+  ECHO "$md5;dh0:Prefs/Time" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/Time.info"
+  SET md5 `md5 "dh0:Prefs/Time.info"`
+  ECHO "$md5;dh0:Prefs/Time.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs/WBPattern"
+  SET md5 `md5 "dh0:Prefs/WBPattern"`
+  ECHO "$md5;dh0:Prefs/WBPattern" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/CGTimes.font"
+  SET md5 `md5 "dh0:Fonts/CGTimes.font"`
+  ECHO "$md5;dh0:Fonts/CGTimes.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/CGTimes.otag"
+  SET md5 `md5 "dh0:Fonts/CGTimes.otag"`
+  ECHO "$md5;dh0:Fonts/CGTimes.otag" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/CGTriumvirate.font"
+  SET md5 `md5 "dh0:Fonts/CGTriumvirate.font"`
+  ECHO "$md5;dh0:Fonts/CGTriumvirate.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/CGTriumvirate.otag"
+  SET md5 `md5 "dh0:Fonts/CGTriumvirate.otag"`
+  ECHO "$md5;dh0:Fonts/CGTriumvirate.otag" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier.font"
+  SET md5 `md5 "dh0:Fonts/courier.font"`
+  ECHO "$md5;dh0:Fonts/courier.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/diamond.font"
+  SET md5 `md5 "dh0:Fonts/diamond.font"`
+  ECHO "$md5;dh0:Fonts/diamond.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/emerald.font"
+  SET md5 `md5 "dh0:Fonts/emerald.font"`
+  ECHO "$md5;dh0:Fonts/emerald.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/garnet.font"
+  SET md5 `md5 "dh0:Fonts/garnet.font"`
+  ECHO "$md5;dh0:Fonts/garnet.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica.font"
+  SET md5 `md5 "dh0:Fonts/helvetica.font"`
+  ECHO "$md5;dh0:Fonts/helvetica.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/LetterGothic.font"
+  SET md5 `md5 "dh0:Fonts/LetterGothic.font"`
+  ECHO "$md5;dh0:Fonts/LetterGothic.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/LetterGothic.otag"
+  SET md5 `md5 "dh0:Fonts/LetterGothic.otag"`
+  ECHO "$md5;dh0:Fonts/LetterGothic.otag" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/opal.font"
+  SET md5 `md5 "dh0:Fonts/opal.font"`
+  ECHO "$md5;dh0:Fonts/opal.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/ruby.font"
+  SET md5 `md5 "dh0:Fonts/ruby.font"`
+  ECHO "$md5;dh0:Fonts/ruby.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire.font"
+  SET md5 `md5 "dh0:Fonts/sapphire.font"`
+  ECHO "$md5;dh0:Fonts/sapphire.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times.font"
+  SET md5 `md5 "dh0:Fonts/times.font"`
+  ECHO "$md5;dh0:Fonts/times.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/topaz.font"
+  SET md5 `md5 "dh0:Fonts/topaz.font"`
+  ECHO "$md5;dh0:Fonts/topaz.font" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier/11"
+  SET md5 `md5 "dh0:Fonts/courier/11"`
+  ECHO "$md5;dh0:Fonts/courier/11" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier/13"
+  SET md5 `md5 "dh0:Fonts/courier/13"`
+  ECHO "$md5;dh0:Fonts/courier/13" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier/15"
+  SET md5 `md5 "dh0:Fonts/courier/15"`
+  ECHO "$md5;dh0:Fonts/courier/15" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier/18"
+  SET md5 `md5 "dh0:Fonts/courier/18"`
+  ECHO "$md5;dh0:Fonts/courier/18" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/courier/24"
+  SET md5 `md5 "dh0:Fonts/courier/24"`
+  ECHO "$md5;dh0:Fonts/courier/24" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/diamond/12"
+  SET md5 `md5 "dh0:Fonts/diamond/12"`
+  ECHO "$md5;dh0:Fonts/diamond/12" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/diamond/20"
+  SET md5 `md5 "dh0:Fonts/diamond/20"`
+  ECHO "$md5;dh0:Fonts/diamond/20" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/emerald/17"
+  SET md5 `md5 "dh0:Fonts/emerald/17"`
+  ECHO "$md5;dh0:Fonts/emerald/17" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/emerald/20"
+  SET md5 `md5 "dh0:Fonts/emerald/20"`
+  ECHO "$md5;dh0:Fonts/emerald/20" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/garnet/16"
+  SET md5 `md5 "dh0:Fonts/garnet/16"`
+  ECHO "$md5;dh0:Fonts/garnet/16" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/garnet/9"
+  SET md5 `md5 "dh0:Fonts/garnet/9"`
+  ECHO "$md5;dh0:Fonts/garnet/9" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/11"
+  SET md5 `md5 "dh0:Fonts/helvetica/11"`
+  ECHO "$md5;dh0:Fonts/helvetica/11" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/13"
+  SET md5 `md5 "dh0:Fonts/helvetica/13"`
+  ECHO "$md5;dh0:Fonts/helvetica/13" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/15"
+  SET md5 `md5 "dh0:Fonts/helvetica/15"`
+  ECHO "$md5;dh0:Fonts/helvetica/15" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/18"
+  SET md5 `md5 "dh0:Fonts/helvetica/18"`
+  ECHO "$md5;dh0:Fonts/helvetica/18" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/24"
+  SET md5 `md5 "dh0:Fonts/helvetica/24"`
+  ECHO "$md5;dh0:Fonts/helvetica/24" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/9"
+  SET md5 `md5 "dh0:Fonts/helvetica/9"`
+  ECHO "$md5;dh0:Fonts/helvetica/9" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/opal/12"
+  SET md5 `md5 "dh0:Fonts/opal/12"`
+  ECHO "$md5;dh0:Fonts/opal/12" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/opal/9"
+  SET md5 `md5 "dh0:Fonts/opal/9"`
+  ECHO "$md5;dh0:Fonts/opal/9" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/12"
+  SET md5 `md5 "dh0:Fonts/ruby/12"`
+  ECHO "$md5;dh0:Fonts/ruby/12" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/15"
+  SET md5 `md5 "dh0:Fonts/ruby/15"`
+  ECHO "$md5;dh0:Fonts/ruby/15" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/8"
+  SET md5 `md5 "dh0:Fonts/ruby/8"`
+  ECHO "$md5;dh0:Fonts/ruby/8" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire/14"
+  SET md5 `md5 "dh0:Fonts/sapphire/14"`
+  ECHO "$md5;dh0:Fonts/sapphire/14" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire/19"
+  SET md5 `md5 "dh0:Fonts/sapphire/19"`
+  ECHO "$md5;dh0:Fonts/sapphire/19" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times/11"
+  SET md5 `md5 "dh0:Fonts/times/11"`
+  ECHO "$md5;dh0:Fonts/times/11" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times/13"
+  SET md5 `md5 "dh0:Fonts/times/13"`
+  ECHO "$md5;dh0:Fonts/times/13" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times/15"
+  SET md5 `md5 "dh0:Fonts/times/15"`
+  ECHO "$md5;dh0:Fonts/times/15" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times/18"
+  SET md5 `md5 "dh0:Fonts/times/18"`
+  ECHO "$md5;dh0:Fonts/times/18" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/times/24"
+  SET md5 `md5 "dh0:Fonts/times/24"`
+  ECHO "$md5;dh0:Fonts/times/24" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/Disk.info"
+  SET md5 `md5 "dh0:Fonts/Disk.info"`
+  ECHO "$md5;dh0:Fonts/Disk.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/topaz/11"
+  SET md5 `md5 "dh0:Fonts/topaz/11"`
+  ECHO "$md5;dh0:Fonts/topaz/11" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/hq3.fnt"
+  SET md5 `md5 "dh0:Fonts/_bullet/hq3.fnt"`
+  ECHO "$md5;dh0:Fonts/_bullet/hq3.fnt" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/hq3updt.tyq"
+  SET md5 `md5 "dh0:Fonts/_bullet/hq3updt.tyq"`
+  ECHO "$md5;dh0:Fonts/_bullet/hq3updt.tyq" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/if.fnt"
+  SET md5 `md5 "dh0:Fonts/_bullet/if.fnt"`
+  ECHO "$md5;dh0:Fonts/_bullet/if.fnt" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/if.uc"
+  SET md5 `md5 "dh0:Fonts/_bullet/if.uc"`
+  ECHO "$md5;dh0:Fonts/_bullet/if.uc" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/plugin.types"
+  SET md5 `md5 "dh0:Fonts/_bullet/plugin.types"`
+  ECHO "$md5;dh0:Fonts/_bullet/plugin.types" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/LetterGothic.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/LetterGothic.type"`
+  ECHO "$md5;dh0:Fonts/_bullet_outlines/LetterGothic.type" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/CGTimes.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/CGTimes.type"`
+  ECHO "$md5;dh0:Fonts/_bullet_outlines/CGTimes.type" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/CGTriumvirate.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/CGTriumvirate.type"`
+  ECHO "$md5;dh0:Fonts/_bullet_outlines/CGTriumvirate.type" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/dansk/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/english/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/english/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/english/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/español/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/français/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/italiano/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/norsk/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/português/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/c.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/c.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/commodities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/commodities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/devs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/devs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/dos.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/dos.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/installer.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/installer.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/libs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/libs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/monitors.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/monitors.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/prefs.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/prefs.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/system.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/system.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/utilities.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/utilities.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/workbench.catalog"`
+  ECHO "$md5;dh0:Locale/Catalogs/svenska/Sys/workbench.catalog" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/dansk.language"
+  SET md5 `md5 "dh0:Locale/Languages/dansk.language"`
+  ECHO "$md5;dh0:Locale/Languages/dansk.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/deutsch.language"
+  SET md5 `md5 "dh0:Locale/Languages/deutsch.language"`
+  ECHO "$md5;dh0:Locale/Languages/deutsch.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/español.language"
+  SET md5 `md5 "dh0:Locale/Languages/español.language"`
+  ECHO "$md5;dh0:Locale/Languages/español.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/français.language"
+  SET md5 `md5 "dh0:Locale/Languages/français.language"`
+  ECHO "$md5;dh0:Locale/Languages/français.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/italiano.language"
+  SET md5 `md5 "dh0:Locale/Languages/italiano.language"`
+  ECHO "$md5;dh0:Locale/Languages/italiano.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/nederlands.language"
+  SET md5 `md5 "dh0:Locale/Languages/nederlands.language"`
+  ECHO "$md5;dh0:Locale/Languages/nederlands.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/norsk.language"
+  SET md5 `md5 "dh0:Locale/Languages/norsk.language"`
+  ECHO "$md5;dh0:Locale/Languages/norsk.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/português.language"
+  SET md5 `md5 "dh0:Locale/Languages/português.language"`
+  ECHO "$md5;dh0:Locale/Languages/português.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Languages/svenska.language"
+  SET md5 `md5 "dh0:Locale/Languages/svenska.language"`
+  ECHO "$md5;dh0:Locale/Languages/svenska.language" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/australia.country"
+  SET md5 `md5 "dh0:Locale/Countries/australia.country"`
+  ECHO "$md5;dh0:Locale/Countries/australia.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/belgie.country"
+  SET md5 `md5 "dh0:Locale/Countries/belgie.country"`
+  ECHO "$md5;dh0:Locale/Countries/belgie.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/belgique.country"
+  SET md5 `md5 "dh0:Locale/Countries/belgique.country"`
+  ECHO "$md5;dh0:Locale/Countries/belgique.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/canada.country"
+  SET md5 `md5 "dh0:Locale/Countries/canada.country"`
+  ECHO "$md5;dh0:Locale/Countries/canada.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/canada_français.country"
+  SET md5 `md5 "dh0:Locale/Countries/canada_français.country"`
+  ECHO "$md5;dh0:Locale/Countries/canada_français.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/danmark.country"
+  SET md5 `md5 "dh0:Locale/Countries/danmark.country"`
+  ECHO "$md5;dh0:Locale/Countries/danmark.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/deutschland.country"
+  SET md5 `md5 "dh0:Locale/Countries/deutschland.country"`
+  ECHO "$md5;dh0:Locale/Countries/deutschland.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/españa.country"
+  SET md5 `md5 "dh0:Locale/Countries/españa.country"`
+  ECHO "$md5;dh0:Locale/Countries/españa.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/france.country"
+  SET md5 `md5 "dh0:Locale/Countries/france.country"`
+  ECHO "$md5;dh0:Locale/Countries/france.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/great_britain.country"
+  SET md5 `md5 "dh0:Locale/Countries/great_britain.country"`
+  ECHO "$md5;dh0:Locale/Countries/great_britain.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/italia.country"
+  SET md5 `md5 "dh0:Locale/Countries/italia.country"`
+  ECHO "$md5;dh0:Locale/Countries/italia.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/nederland.country"
+  SET md5 `md5 "dh0:Locale/Countries/nederland.country"`
+  ECHO "$md5;dh0:Locale/Countries/nederland.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/norge.country"
+  SET md5 `md5 "dh0:Locale/Countries/norge.country"`
+  ECHO "$md5;dh0:Locale/Countries/norge.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/portugal.country"
+  SET md5 `md5 "dh0:Locale/Countries/portugal.country"`
+  ECHO "$md5;dh0:Locale/Countries/portugal.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/schweiz.country"
+  SET md5 `md5 "dh0:Locale/Countries/schweiz.country"`
+  ECHO "$md5;dh0:Locale/Countries/schweiz.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/suisse.country"
+  SET md5 `md5 "dh0:Locale/Countries/suisse.country"`
+  ECHO "$md5;dh0:Locale/Countries/suisse.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/sverige.country"
+  SET md5 `md5 "dh0:Locale/Countries/sverige.country"`
+  ECHO "$md5;dh0:Locale/Countries/sverige.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/svizzera.country"
+  SET md5 `md5 "dh0:Locale/Countries/svizzera.country"`
+  ECHO "$md5;dh0:Locale/Countries/svizzera.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/united_kingdom.country"
+  SET md5 `md5 "dh0:Locale/Countries/united_kingdom.country"`
+  ECHO "$md5;dh0:Locale/Countries/united_kingdom.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/united_states.country"
+  SET md5 `md5 "dh0:Locale/Countries/united_states.country"`
+  ECHO "$md5;dh0:Locale/Countries/united_states.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Countries/österreich.country"
+  SET md5 `md5 "dh0:Locale/Countries/österreich.country"`
+  ECHO "$md5;dh0:Locale/Countries/österreich.country" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/dansk/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/dansk/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/dansk/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/deutsch/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/deutsch/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/deutsch/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/english/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/english/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/english/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/español/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/español/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/español/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/français/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/français/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/français/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/italiano/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/italiano/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/italiano/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/nederlands/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/nederlands/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/nederlands/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/norsk/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/norsk/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/norsk/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/português/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/português/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/português/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Locale/Help/svenska/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/svenska/Sys/amigaguide.guide"`
+  ECHO "$md5;dh0:Locale/Help/svenska/Sys/amigaguide.guide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/colorwheel.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/colorwheel.gadget"`
+  ECHO "$md5;dh0:Classes/Gadgets/colorwheel.gadget" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/gradientslider.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/gradientslider.gadget"`
+  ECHO "$md5;dh0:Classes/Gadgets/gradientslider.gadget" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/tapedeck.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/tapedeck.gadget"`
+  ECHO "$md5;dh0:Classes/Gadgets/tapedeck.gadget" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/8svx.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/8svx.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/8svx.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/amigaguide.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/amigaguide.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/amigaguide.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/anim.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/anim.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/anim.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/animation.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/animation.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/animation.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/ascii.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/ascii.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/ascii.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/cdxl.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/cdxl.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/cdxl.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/ilbm.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/ilbm.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/ilbm.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/picture.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/picture.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/picture.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/sound.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/sound.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/sound.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/text.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/text.datatype"`
+  ECHO "$md5;dh0:Classes/DataTypes/text.datatype" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Monitors/PAL"
+  SET md5 `md5 "dh0:Devs/Monitors/PAL"`
+  ECHO "$md5;dh0:Devs/Monitors/PAL" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Monitors/PAL.info"
+  SET md5 `md5 "dh0:Devs/Monitors/PAL.info"`
+  ECHO "$md5;dh0:Devs/Monitors/PAL.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/8SVX"
+  SET md5 `md5 "dh0:Devs/DataTypes/8SVX"`
+  ECHO "$md5;dh0:Devs/DataTypes/8SVX" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/8SVX.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/8SVX.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/8SVX.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/AmigaGuide"
+  SET md5 `md5 "dh0:Devs/DataTypes/AmigaGuide"`
+  ECHO "$md5;dh0:Devs/DataTypes/AmigaGuide" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/AmigaGuide.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/AmigaGuide.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/AmigaGuide.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ANIM"
+  SET md5 `md5 "dh0:Devs/DataTypes/ANIM"`
+  ECHO "$md5;dh0:Devs/DataTypes/ANIM" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ANIM.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/ANIM.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/ANIM.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/CDXL"
+  SET md5 `md5 "dh0:Devs/DataTypes/CDXL"`
+  ECHO "$md5;dh0:Devs/DataTypes/CDXL" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/CDXL.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/CDXL.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/CDXL.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/FTXT"
+  SET md5 `md5 "dh0:Devs/DataTypes/FTXT"`
+  ECHO "$md5;dh0:Devs/DataTypes/FTXT" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/FTXT.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/FTXT.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/FTXT.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ILBM"
+  SET md5 `md5 "dh0:Devs/DataTypes/ILBM"`
+  ECHO "$md5;dh0:Devs/DataTypes/ILBM" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ILBM.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/ILBM.info"`
+  ECHO "$md5;dh0:Devs/DataTypes/ILBM.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers/PIPE"
+  SET md5 `md5 "dh0:Devs/DOSDrivers/PIPE"`
+  ECHO "$md5;dh0:Devs/DOSDrivers/PIPE" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers/PIPE.info"
+  SET md5 `md5 "dh0:Devs/DOSDrivers/PIPE.info"`
+  ECHO "$md5;dh0:Devs/DOSDrivers/PIPE.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Printers/Generic"
+  SET md5 `md5 "dh0:Devs/Printers/Generic"`
+  ECHO "$md5;dh0:Devs/Printers/Generic" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Printers/Generic.info"
+  SET md5 `md5 "dh0:Devs/Printers/Generic.info"`
+  ECHO "$md5;dh0:Devs/Printers/Generic.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/cdn"
+  SET md5 `md5 "dh0:Devs/Keymaps/cdn"`
+  ECHO "$md5;dh0:Devs/Keymaps/cdn" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/cdn.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/cdn.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/cdn.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch1"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch1"`
+  ECHO "$md5;dh0:Devs/Keymaps/ch1" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch1.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch1.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/ch1.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch2"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch2"`
+  ECHO "$md5;dh0:Devs/Keymaps/ch2" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch2.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch2.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/ch2.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/d"
+  SET md5 `md5 "dh0:Devs/Keymaps/d"`
+  ECHO "$md5;dh0:Devs/Keymaps/d" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/d.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/d.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/d.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/dk"
+  SET md5 `md5 "dh0:Devs/Keymaps/dk"`
+  ECHO "$md5;dh0:Devs/Keymaps/dk" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/dk.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/dk.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/dk.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/e"
+  SET md5 `md5 "dh0:Devs/Keymaps/e"`
+  ECHO "$md5;dh0:Devs/Keymaps/e" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/e.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/e.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/e.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/f"
+  SET md5 `md5 "dh0:Devs/Keymaps/f"`
+  ECHO "$md5;dh0:Devs/Keymaps/f" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/f.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/f.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/f.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/gb"
+  SET md5 `md5 "dh0:Devs/Keymaps/gb"`
+  ECHO "$md5;dh0:Devs/Keymaps/gb" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/gb.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/gb.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/gb.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/i"
+  SET md5 `md5 "dh0:Devs/Keymaps/i"`
+  ECHO "$md5;dh0:Devs/Keymaps/i" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/i.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/i.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/i.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/n"
+  SET md5 `md5 "dh0:Devs/Keymaps/n"`
+  ECHO "$md5;dh0:Devs/Keymaps/n" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/n.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/n.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/n.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/po"
+  SET md5 `md5 "dh0:Devs/Keymaps/po"`
+  ECHO "$md5;dh0:Devs/Keymaps/po" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/po.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/po.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/po.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/s"
+  SET md5 `md5 "dh0:Devs/Keymaps/s"`
+  ECHO "$md5;dh0:Devs/Keymaps/s" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/s.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/s.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/s.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/usa2"
+  SET md5 `md5 "dh0:Devs/Keymaps/usa2"`
+  ECHO "$md5;dh0:Devs/Keymaps/usa2" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/usa2.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/usa2.info"`
+  ECHO "$md5;dh0:Devs/Keymaps/usa2.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/clipboard.device"
+  SET md5 `md5 "dh0:Devs/clipboard.device"`
+  ECHO "$md5;dh0:Devs/clipboard.device" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes.info"
+  SET md5 `md5 "dh0:Devs/DataTypes.info"`
+  ECHO "$md5;dh0:Devs/DataTypes.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers.info"
+  SET md5 `md5 "dh0:Devs/DOSDrivers.info"`
+  ECHO "$md5;dh0:Devs/DOSDrivers.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps.info"
+  SET md5 `md5 "dh0:Devs/Keymaps.info"`
+  ECHO "$md5;dh0:Devs/Keymaps.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Monitors.info"
+  SET md5 `md5 "dh0:Devs/Monitors.info"`
+  ECHO "$md5;dh0:Devs/Monitors.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/parallel.device"
+  SET md5 `md5 "dh0:Devs/parallel.device"`
+  ECHO "$md5;dh0:Devs/parallel.device" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/postscript_init.ps"
+  SET md5 `md5 "dh0:Devs/postscript_init.ps"`
+  ECHO "$md5;dh0:Devs/postscript_init.ps" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/printer.device"
+  SET md5 `md5 "dh0:Devs/printer.device"`
+  ECHO "$md5;dh0:Devs/printer.device" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/Printers.info"
+  SET md5 `md5 "dh0:Devs/Printers.info"`
+  ECHO "$md5;dh0:Devs/Printers.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/serial.device"
+  SET md5 `md5 "dh0:Devs/serial.device"`
+  ECHO "$md5;dh0:Devs/serial.device" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/system-configuration"
+  SET md5 `md5 "dh0:Devs/system-configuration"`
+  ECHO "$md5;dh0:Devs/system-configuration" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs/mfm.device"
+  SET md5 `md5 "dh0:Devs/mfm.device"`
+  ECHO "$md5;dh0:Devs/mfm.device" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/AUX"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/AUX"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/AUX" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/AUX.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/AUX.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/AUX.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/CD0"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/CD0"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/CD0" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/CD0.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/CD0.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/CD0.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC0"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC0"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/PC0" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC0.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC0.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/PC0.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC1"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC1"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/PC1" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC1.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC1.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/PC1.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/RAD"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/RAD"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/RAD" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/RAD.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/RAD.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers/RAD.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/A2024"
+  SET md5 `md5 "dh0:Storage/Monitors/A2024"`
+  ECHO "$md5;dh0:Storage/Monitors/A2024" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/A2024.info"
+  SET md5 `md5 "dh0:Storage/Monitors/A2024.info"`
+  ECHO "$md5;dh0:Storage/Monitors/A2024.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblNTSC"
+  SET md5 `md5 "dh0:Storage/Monitors/DblNTSC"`
+  ECHO "$md5;dh0:Storage/Monitors/DblNTSC" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblNTSC.info"
+  SET md5 `md5 "dh0:Storage/Monitors/DblNTSC.info"`
+  ECHO "$md5;dh0:Storage/Monitors/DblNTSC.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblPAL"
+  SET md5 `md5 "dh0:Storage/Monitors/DblPAL"`
+  ECHO "$md5;dh0:Storage/Monitors/DblPAL" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblPAL.info"
+  SET md5 `md5 "dh0:Storage/Monitors/DblPAL.info"`
+  ECHO "$md5;dh0:Storage/Monitors/DblPAL.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro36"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro36"`
+  ECHO "$md5;dh0:Storage/Monitors/Euro36" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro36.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro36.info"`
+  ECHO "$md5;dh0:Storage/Monitors/Euro36.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro72"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro72"`
+  ECHO "$md5;dh0:Storage/Monitors/Euro72" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro72.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro72.info"`
+  ECHO "$md5;dh0:Storage/Monitors/Euro72.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Multiscan"
+  SET md5 `md5 "dh0:Storage/Monitors/Multiscan"`
+  ECHO "$md5;dh0:Storage/Monitors/Multiscan" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Multiscan.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Multiscan.info"`
+  ECHO "$md5;dh0:Storage/Monitors/Multiscan.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/NTSC"
+  SET md5 `md5 "dh0:Storage/Monitors/NTSC"`
+  ECHO "$md5;dh0:Storage/Monitors/NTSC" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/NTSC.info"
+  SET md5 `md5 "dh0:Storage/Monitors/NTSC.info"`
+  ECHO "$md5;dh0:Storage/Monitors/NTSC.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Super72"
+  SET md5 `md5 "dh0:Storage/Monitors/Super72"`
+  ECHO "$md5;dh0:Storage/Monitors/Super72" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Super72.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Super72.info"`
+  ECHO "$md5;dh0:Storage/Monitors/Super72.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/VGAOnly"
+  SET md5 `md5 "dh0:Storage/Monitors/VGAOnly"`
+  ECHO "$md5;dh0:Storage/Monitors/VGAOnly" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/VGAOnly.info"
+  SET md5 `md5 "dh0:Storage/Monitors/VGAOnly.info"`
+  ECHO "$md5;dh0:Storage/Monitors/VGAOnly.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DataTypes.info"
+  SET md5 `md5 "dh0:Storage/DataTypes.info"`
+  ECHO "$md5;dh0:Storage/DataTypes.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Disk.info"
+  SET md5 `md5 "dh0:Storage/Disk.info"`
+  ECHO "$md5;dh0:Storage/Disk.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers.info"`
+  ECHO "$md5;dh0:Storage/DOSDrivers.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Keymaps.info"
+  SET md5 `md5 "dh0:Storage/Keymaps.info"`
+  ECHO "$md5;dh0:Storage/Keymaps.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Monitors.info"
+  SET md5 `md5 "dh0:Storage/Monitors.info"`
+  ECHO "$md5;dh0:Storage/Monitors.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage/Printers.info"
+  SET md5 `md5 "dh0:Storage/Printers.info"`
+  ECHO "$md5;dh0:Storage/Printers.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Storage.info"
+  SET md5 `md5 "dh0:Storage.info"`
+  ECHO "$md5;dh0:Storage.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Devs.info"
+  SET md5 `md5 "dh0:Devs.info"`
+  ECHO "$md5;dh0:Devs.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Disk.info"
+  SET md5 `md5 "dh0:Disk.info"`
+  ECHO "$md5;dh0:Disk.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Expansion.info"
+  SET md5 `md5 "dh0:Expansion.info"`
+  ECHO "$md5;dh0:Expansion.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Prefs.info"
+  SET md5 `md5 "dh0:Prefs.info"`
+  ECHO "$md5;dh0:Prefs.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System.info"
+  SET md5 `md5 "dh0:System.info"`
+  ECHO "$md5;dh0:System.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities.info"
+  SET md5 `md5 "dh0:Utilities.info"`
+  ECHO "$md5;dh0:Utilities.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:WBStartup.info"
+  SET md5 `md5 "dh0:WBStartup.info"`
+  ECHO "$md5;dh0:WBStartup.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Rename"
+  SET md5 `md5 "dh0:C/Rename"`
+  ECHO "$md5;dh0:C/Rename" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/RequestChoice"
+  SET md5 `md5 "dh0:C/RequestChoice"`
+  ECHO "$md5;dh0:C/RequestChoice" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/RequestFile"
+  SET md5 `md5 "dh0:C/RequestFile"`
+  ECHO "$md5;dh0:C/RequestFile" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Search"
+  SET md5 `md5 "dh0:C/Search"`
+  ECHO "$md5;dh0:C/Search" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/SetClock"
+  SET md5 `md5 "dh0:C/SetClock"`
+  ECHO "$md5;dh0:C/SetClock" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/SetDate"
+  SET md5 `md5 "dh0:C/SetDate"`
+  ECHO "$md5;dh0:C/SetDate" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/SetFont"
+  SET md5 `md5 "dh0:C/SetFont"`
+  ECHO "$md5;dh0:C/SetFont" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/SetKeyboard"
+  SET md5 `md5 "dh0:C/SetKeyboard"`
+  ECHO "$md5;dh0:C/SetKeyboard" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/SetPatch"
+  SET md5 `md5 "dh0:C/SetPatch"`
+  ECHO "$md5;dh0:C/SetPatch" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Sort"
+  SET md5 `md5 "dh0:C/Sort"`
+  ECHO "$md5;dh0:C/Sort" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Status"
+  SET md5 `md5 "dh0:C/Status"`
+  ECHO "$md5;dh0:C/Status" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Type"
+  SET md5 `md5 "dh0:C/Type"`
+  ECHO "$md5;dh0:C/Type" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Version"
+  SET md5 `md5 "dh0:C/Version"`
+  ECHO "$md5;dh0:C/Version" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Wait"
+  SET md5 `md5 "dh0:C/Wait"`
+  ECHO "$md5;dh0:C/Wait" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Which"
+  SET md5 `md5 "dh0:C/Which"`
+  ECHO "$md5;dh0:C/Which" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/AddBuffers"
+  SET md5 `md5 "dh0:C/AddBuffers"`
+  ECHO "$md5;dh0:C/AddBuffers" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/AddDataTypes"
+  SET md5 `md5 "dh0:C/AddDataTypes"`
+  ECHO "$md5;dh0:C/AddDataTypes" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Assign"
+  SET md5 `md5 "dh0:C/Assign"`
+  ECHO "$md5;dh0:C/Assign" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Avail"
+  SET md5 `md5 "dh0:C/Avail"`
+  ECHO "$md5;dh0:C/Avail" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/BindDrivers"
+  SET md5 `md5 "dh0:C/BindDrivers"`
+  ECHO "$md5;dh0:C/BindDrivers" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Break"
+  SET md5 `md5 "dh0:C/Break"`
+  ECHO "$md5;dh0:C/Break" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/ChangeTaskPri"
+  SET md5 `md5 "dh0:C/ChangeTaskPri"`
+  ECHO "$md5;dh0:C/ChangeTaskPri" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/ConClip"
+  SET md5 `md5 "dh0:C/ConClip"`
+  ECHO "$md5;dh0:C/ConClip" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Copy"
+  SET md5 `md5 "dh0:C/Copy"`
+  ECHO "$md5;dh0:C/Copy" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/CPU"
+  SET md5 `md5 "dh0:C/CPU"`
+  ECHO "$md5;dh0:C/CPU" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Date"
+  SET md5 `md5 "dh0:C/Date"`
+  ECHO "$md5;dh0:C/Date" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Delete"
+  SET md5 `md5 "dh0:C/Delete"`
+  ECHO "$md5;dh0:C/Delete" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Dir"
+  SET md5 `md5 "dh0:C/Dir"`
+  ECHO "$md5;dh0:C/Dir" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/DiskChange"
+  SET md5 `md5 "dh0:C/DiskChange"`
+  ECHO "$md5;dh0:C/DiskChange" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Ed"
+  SET md5 `md5 "dh0:C/Ed"`
+  ECHO "$md5;dh0:C/Ed" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Edit"
+  SET md5 `md5 "dh0:C/Edit"`
+  ECHO "$md5;dh0:C/Edit" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Eval"
+  SET md5 `md5 "dh0:C/Eval"`
+  ECHO "$md5;dh0:C/Eval" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Execute"
+  SET md5 `md5 "dh0:C/Execute"`
+  ECHO "$md5;dh0:C/Execute" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Filenote"
+  SET md5 `md5 "dh0:C/Filenote"`
+  ECHO "$md5;dh0:C/Filenote" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/IconX"
+  SET md5 `md5 "dh0:C/IconX"`
+  ECHO "$md5;dh0:C/IconX" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Info"
+  SET md5 `md5 "dh0:C/Info"`
+  ECHO "$md5;dh0:C/Info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Install"
+  SET md5 `md5 "dh0:C/Install"`
+  ECHO "$md5;dh0:C/Install" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/IPrefs"
+  SET md5 `md5 "dh0:C/IPrefs"`
+  ECHO "$md5;dh0:C/IPrefs" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Join"
+  SET md5 `md5 "dh0:C/Join"`
+  ECHO "$md5;dh0:C/Join" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/List"
+  SET md5 `md5 "dh0:C/List"`
+  ECHO "$md5;dh0:C/List" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/LoadResource"
+  SET md5 `md5 "dh0:C/LoadResource"`
+  ECHO "$md5;dh0:C/LoadResource" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/LoadWB"
+  SET md5 `md5 "dh0:C/LoadWB"`
+  ECHO "$md5;dh0:C/LoadWB" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Lock"
+  SET md5 `md5 "dh0:C/Lock"`
+  ECHO "$md5;dh0:C/Lock" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/MagTape"
+  SET md5 `md5 "dh0:C/MagTape"`
+  ECHO "$md5;dh0:C/MagTape" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/MakeDir"
+  SET md5 `md5 "dh0:C/MakeDir"`
+  ECHO "$md5;dh0:C/MakeDir" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/MakeLink"
+  SET md5 `md5 "dh0:C/MakeLink"`
+  ECHO "$md5;dh0:C/MakeLink" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Mount"
+  SET md5 `md5 "dh0:C/Mount"`
+  ECHO "$md5;dh0:C/Mount" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Protect"
+  SET md5 `md5 "dh0:C/Protect"`
+  ECHO "$md5;dh0:C/Protect" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/Relabel"
+  SET md5 `md5 "dh0:C/Relabel"`
+  ECHO "$md5;dh0:C/Relabel" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:C/RemRAD"
+  SET md5 `md5 "dh0:C/RemRAD"`
+  ECHO "$md5;dh0:C/RemRAD" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/aux-handler"
+  SET md5 `md5 "dh0:L/aux-handler"`
+  ECHO "$md5;dh0:L/aux-handler" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/CrossDOSFileSystem"
+  SET md5 `md5 "dh0:L/CrossDOSFileSystem"`
+  ECHO "$md5;dh0:L/CrossDOSFileSystem" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/port-handler"
+  SET md5 `md5 "dh0:L/port-handler"`
+  ECHO "$md5;dh0:L/port-handler" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/queue-handler"
+  SET md5 `md5 "dh0:L/queue-handler"`
+  ECHO "$md5;dh0:L/queue-handler" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/DANSK.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/DANSK.crossdos"`
+  ECHO "$md5;dh0:L/FileSystem_Trans/DANSK.crossdos" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/INTL.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/INTL.crossdos"`
+  ECHO "$md5;dh0:L/FileSystem_Trans/INTL.crossdos" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/MAC.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/MAC.crossdos"`
+  ECHO "$md5;dh0:L/FileSystem_Trans/MAC.crossdos" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:L/CDFileSystem"
+  SET md5 `md5 "dh0:L/CDFileSystem"`
+  ECHO "$md5;dh0:L/CDFileSystem" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/asl.library"
+  SET md5 `md5 "dh0:Libs/asl.library"`
+  ECHO "$md5;dh0:Libs/asl.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/bullet.library"
+  SET md5 `md5 "dh0:Libs/bullet.library"`
+  ECHO "$md5;dh0:Libs/bullet.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/commodities.library"
+  SET md5 `md5 "dh0:Libs/commodities.library"`
+  ECHO "$md5;dh0:Libs/commodities.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/datatypes.library"
+  SET md5 `md5 "dh0:Libs/datatypes.library"`
+  ECHO "$md5;dh0:Libs/datatypes.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/diskfont.library"
+  SET md5 `md5 "dh0:Libs/diskfont.library"`
+  ECHO "$md5;dh0:Libs/diskfont.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/iffparse.library"
+  SET md5 `md5 "dh0:Libs/iffparse.library"`
+  ECHO "$md5;dh0:Libs/iffparse.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/locale.library"
+  SET md5 `md5 "dh0:Libs/locale.library"`
+  ECHO "$md5;dh0:Libs/locale.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/lowlevel.library"
+  SET md5 `md5 "dh0:Libs/lowlevel.library"`
+  ECHO "$md5;dh0:Libs/lowlevel.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/mathieeedoubbas.library"
+  SET md5 `md5 "dh0:Libs/mathieeedoubbas.library"`
+  ECHO "$md5;dh0:Libs/mathieeedoubbas.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/mathieeedoubtrans.library"
+  SET md5 `md5 "dh0:Libs/mathieeedoubtrans.library"`
+  ECHO "$md5;dh0:Libs/mathieeedoubtrans.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/mathieeesingtrans.library"
+  SET md5 `md5 "dh0:Libs/mathieeesingtrans.library"`
+  ECHO "$md5;dh0:Libs/mathieeesingtrans.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/mathtrans.library"
+  SET md5 `md5 "dh0:Libs/mathtrans.library"`
+  ECHO "$md5;dh0:Libs/mathtrans.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/nonvolatile.library"
+  SET md5 `md5 "dh0:Libs/nonvolatile.library"`
+  ECHO "$md5;dh0:Libs/nonvolatile.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/realtime.library"
+  SET md5 `md5 "dh0:Libs/realtime.library"`
+  ECHO "$md5;dh0:Libs/realtime.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/rexxsupport.library"
+  SET md5 `md5 "dh0:Libs/rexxsupport.library"`
+  ECHO "$md5;dh0:Libs/rexxsupport.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/rexxsyslib.library"
+  SET md5 `md5 "dh0:Libs/rexxsyslib.library"`
+  ECHO "$md5;dh0:Libs/rexxsyslib.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/version.library"
+  SET md5 `md5 "dh0:Libs/version.library"`
+  ECHO "$md5;dh0:Libs/version.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/amigaguide.library"
+  SET md5 `md5 "dh0:Libs/amigaguide.library"`
+  ECHO "$md5;dh0:Libs/amigaguide.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Libs/68040.library"
+  SET md5 `md5 "dh0:Libs/68040.library"`
+  ECHO "$md5;dh0:Libs/68040.library" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/HI"
+  SET md5 `md5 "dh0:Rexxc/HI"`
+  ECHO "$md5;dh0:Rexxc/HI" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/RX"
+  SET md5 `md5 "dh0:Rexxc/RX"`
+  ECHO "$md5;dh0:Rexxc/RX" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/RXC"
+  SET md5 `md5 "dh0:Rexxc/RXC"`
+  ECHO "$md5;dh0:Rexxc/RXC" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/RXLIB"
+  SET md5 `md5 "dh0:Rexxc/RXLIB"`
+  ECHO "$md5;dh0:Rexxc/RXLIB" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/RXSET"
+  SET md5 `md5 "dh0:Rexxc/RXSET"`
+  ECHO "$md5;dh0:Rexxc/RXSET" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/TCC"
+  SET md5 `md5 "dh0:Rexxc/TCC"`
+  ECHO "$md5;dh0:Rexxc/TCC" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/TCO"
+  SET md5 `md5 "dh0:Rexxc/TCO"`
+  ECHO "$md5;dh0:Rexxc/TCO" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/TE"
+  SET md5 `md5 "dh0:Rexxc/TE"`
+  ECHO "$md5;dh0:Rexxc/TE" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/TS"
+  SET md5 `md5 "dh0:Rexxc/TS"`
+  ECHO "$md5;dh0:Rexxc/TS" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Rexxc/WaitForPort"
+  SET md5 `md5 "dh0:Rexxc/WaitForPort"`
+  ECHO "$md5;dh0:Rexxc/WaitForPort" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/DPat"
+  SET md5 `md5 "dh0:S/DPat"`
+  ECHO "$md5;dh0:S/DPat" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/Startup-Sequence"
+  SET md5 `md5 "dh0:S/Startup-Sequence"`
+  ECHO "$md5;dh0:S/Startup-Sequence" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/Ed-startup"
+  SET md5 `md5 "dh0:S/Ed-startup"`
+  ECHO "$md5;dh0:S/Ed-startup" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/Shell-Startup"
+  SET md5 `md5 "dh0:S/Shell-Startup"`
+  ECHO "$md5;dh0:S/Shell-Startup" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/SPat"
+  SET md5 `md5 "dh0:S/SPat"`
+  ECHO "$md5;dh0:S/SPat" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/PCD"
+  SET md5 `md5 "dh0:S/PCD"`
+  ECHO "$md5;dh0:S/PCD" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/BRUtab"
+  SET md5 `md5 "dh0:S/BRUtab"`
+  ECHO "$md5;dh0:S/BRUtab" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:S/HDBackup.config"
+  SET md5 `md5 "dh0:S/HDBackup.config"`
+  ECHO "$md5;dh0:S/HDBackup.config" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/CLI"
+  SET md5 `md5 "dh0:System/CLI"`
+  ECHO "$md5;dh0:System/CLI" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/DiskCopy"
+  SET md5 `md5 "dh0:System/DiskCopy"`
+  ECHO "$md5;dh0:System/DiskCopy" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/FixFonts"
+  SET md5 `md5 "dh0:System/FixFonts"`
+  ECHO "$md5;dh0:System/FixFonts" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/FixFonts.info"
+  SET md5 `md5 "dh0:System/FixFonts.info"`
+  ECHO "$md5;dh0:System/FixFonts.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/Format"
+  SET md5 `md5 "dh0:System/Format"`
+  ECHO "$md5;dh0:System/Format" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/Format.info"
+  SET md5 `md5 "dh0:System/Format.info"`
+  ECHO "$md5;dh0:System/Format.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/NoFastMem"
+  SET md5 `md5 "dh0:System/NoFastMem"`
+  ECHO "$md5;dh0:System/NoFastMem" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/NoFastMem.info"
+  SET md5 `md5 "dh0:System/NoFastMem.info"`
+  ECHO "$md5;dh0:System/NoFastMem.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/RexxMast"
+  SET md5 `md5 "dh0:System/RexxMast"`
+  ECHO "$md5;dh0:System/RexxMast" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/RexxMast.info"
+  SET md5 `md5 "dh0:System/RexxMast.info"`
+  ECHO "$md5;dh0:System/RexxMast.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/Shell.info"
+  SET md5 `md5 "dh0:System/Shell.info"`
+  ECHO "$md5;dh0:System/Shell.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/Intellifont"
+  SET md5 `md5 "dh0:System/Intellifont"`
+  ECHO "$md5;dh0:System/Intellifont" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:System/Intellifont.info"
+  SET md5 `md5 "dh0:System/Intellifont.info"`
+  ECHO "$md5;dh0:System/Intellifont.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities/MultiView.info"
+  SET md5 `md5 "dh0:Utilities/MultiView.info"`
+  ECHO "$md5;dh0:Utilities/MultiView.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities/Clock"
+  SET md5 `md5 "dh0:Utilities/Clock"`
+  ECHO "$md5;dh0:Utilities/Clock" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities/Clock.info"
+  SET md5 `md5 "dh0:Utilities/Clock.info"`
+  ECHO "$md5;dh0:Utilities/Clock.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities/More"
+  SET md5 `md5 "dh0:Utilities/More"`
+  ECHO "$md5;dh0:Utilities/More" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Utilities/MultiView"
+  SET md5 `md5 "dh0:Utilities/MultiView"`
+  ECHO "$md5;dh0:Utilities/MultiView" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools.info"
+  SET md5 `md5 "dh0:Tools.info"`
+  ECHO "$md5;dh0:Tools.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/MEmacs.info"
+  SET md5 `md5 "dh0:Tools/MEmacs.info"`
+  ECHO "$md5;dh0:Tools/MEmacs.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/PrepCard"
+  SET md5 `md5 "dh0:Tools/PrepCard"`
+  ECHO "$md5;dh0:Tools/PrepCard" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/PrepCard.info"
+  SET md5 `md5 "dh0:Tools/PrepCard.info"`
+  ECHO "$md5;dh0:Tools/PrepCard.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/PrintFiles"
+  SET md5 `md5 "dh0:Tools/PrintFiles"`
+  ECHO "$md5;dh0:Tools/PrintFiles" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/PrintFiles.info"
+  SET md5 `md5 "dh0:Tools/PrintFiles.info"`
+  ECHO "$md5;dh0:Tools/PrintFiles.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/ShowConfig"
+  SET md5 `md5 "dh0:Tools/ShowConfig"`
+  ECHO "$md5;dh0:Tools/ShowConfig" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/ShowConfig.info"
+  SET md5 `md5 "dh0:Tools/ShowConfig.info"`
+  ECHO "$md5;dh0:Tools/ShowConfig.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Calculator"
+  SET md5 `md5 "dh0:Tools/Calculator"`
+  ECHO "$md5;dh0:Tools/Calculator" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Calculator.info"
+  SET md5 `md5 "dh0:Tools/Calculator.info"`
+  ECHO "$md5;dh0:Tools/Calculator.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/CMD"
+  SET md5 `md5 "dh0:Tools/CMD"`
+  ECHO "$md5;dh0:Tools/CMD" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/CMD.info"
+  SET md5 `md5 "dh0:Tools/CMD.info"`
+  ECHO "$md5;dh0:Tools/CMD.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities.info"
+  SET md5 `md5 "dh0:Tools/Commodities.info"`
+  ECHO "$md5;dh0:Tools/Commodities.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Blanker"
+  SET md5 `md5 "dh0:Tools/Commodities/Blanker"`
+  ECHO "$md5;dh0:Tools/Commodities/Blanker" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Blanker.info"
+  SET md5 `md5 "dh0:Tools/Commodities/Blanker.info"`
+  ECHO "$md5;dh0:Tools/Commodities/Blanker.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/ClickToFront"
+  SET md5 `md5 "dh0:Tools/Commodities/ClickToFront"`
+  ECHO "$md5;dh0:Tools/Commodities/ClickToFront" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/ClickToFront.info"
+  SET md5 `md5 "dh0:Tools/Commodities/ClickToFront.info"`
+  ECHO "$md5;dh0:Tools/Commodities/ClickToFront.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/CrossDOS"
+  SET md5 `md5 "dh0:Tools/Commodities/CrossDOS"`
+  ECHO "$md5;dh0:Tools/Commodities/CrossDOS" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/CrossDOS.info"
+  SET md5 `md5 "dh0:Tools/Commodities/CrossDOS.info"`
+  ECHO "$md5;dh0:Tools/Commodities/CrossDOS.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Exchange"
+  SET md5 `md5 "dh0:Tools/Commodities/Exchange"`
+  ECHO "$md5;dh0:Tools/Commodities/Exchange" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Exchange.info"
+  SET md5 `md5 "dh0:Tools/Commodities/Exchange.info"`
+  ECHO "$md5;dh0:Tools/Commodities/Exchange.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/FKey"
+  SET md5 `md5 "dh0:Tools/Commodities/FKey"`
+  ECHO "$md5;dh0:Tools/Commodities/FKey" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/FKey.info"
+  SET md5 `md5 "dh0:Tools/Commodities/FKey.info"`
+  ECHO "$md5;dh0:Tools/Commodities/FKey.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/MouseBlanker"
+  SET md5 `md5 "dh0:Tools/Commodities/MouseBlanker"`
+  ECHO "$md5;dh0:Tools/Commodities/MouseBlanker" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/MouseBlanker.info"
+  SET md5 `md5 "dh0:Tools/Commodities/MouseBlanker.info"`
+  ECHO "$md5;dh0:Tools/Commodities/MouseBlanker.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/NoCapsLock"
+  SET md5 `md5 "dh0:Tools/Commodities/NoCapsLock"`
+  ECHO "$md5;dh0:Tools/Commodities/NoCapsLock" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/NoCapsLock.info"
+  SET md5 `md5 "dh0:Tools/Commodities/NoCapsLock.info"`
+  ECHO "$md5;dh0:Tools/Commodities/NoCapsLock.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/AutoPoint"
+  SET md5 `md5 "dh0:Tools/Commodities/AutoPoint"`
+  ECHO "$md5;dh0:Tools/Commodities/AutoPoint" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/AutoPoint.info"
+  SET md5 `md5 "dh0:Tools/Commodities/AutoPoint.info"`
+  ECHO "$md5;dh0:Tools/Commodities/AutoPoint.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/GraphicDump"
+  SET md5 `md5 "dh0:Tools/GraphicDump"`
+  ECHO "$md5;dh0:Tools/GraphicDump" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/GraphicDump.info"
+  SET md5 `md5 "dh0:Tools/GraphicDump.info"`
+  ECHO "$md5;dh0:Tools/GraphicDump.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/IconEdit"
+  SET md5 `md5 "dh0:Tools/IconEdit"`
+  ECHO "$md5;dh0:Tools/IconEdit" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/IconEdit.info"
+  SET md5 `md5 "dh0:Tools/IconEdit.info"`
+  ECHO "$md5;dh0:Tools/IconEdit.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/InitPrinter"
+  SET md5 `md5 "dh0:Tools/InitPrinter"`
+  ECHO "$md5;dh0:Tools/InitPrinter" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/InitPrinter.info"
+  SET md5 `md5 "dh0:Tools/InitPrinter.info"`
+  ECHO "$md5;dh0:Tools/InitPrinter.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/KeyShow"
+  SET md5 `md5 "dh0:Tools/KeyShow"`
+  ECHO "$md5;dh0:Tools/KeyShow" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/KeyShow.info"
+  SET md5 `md5 "dh0:Tools/KeyShow.info"`
+  ECHO "$md5;dh0:Tools/KeyShow.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Lacer"
+  SET md5 `md5 "dh0:Tools/Lacer"`
+  ECHO "$md5;dh0:Tools/Lacer" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/Lacer.info"
+  SET md5 `md5 "dh0:Tools/Lacer.info"`
+  ECHO "$md5;dh0:Tools/Lacer.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/MEmacs"
+  SET md5 `md5 "dh0:Tools/MEmacs"`
+  ECHO "$md5;dh0:Tools/MEmacs" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/BRU"
+  SET md5 `md5 "dh0:Tools/BRU"`
+  ECHO "$md5;dh0:Tools/BRU" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup"
+  SET md5 `md5 "dh0:Tools/HDBackup"`
+  ECHO "$md5;dh0:Tools/HDBackup" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup.help"
+  SET md5 `md5 "dh0:Tools/HDBackup.help"`
+  ECHO "$md5;dh0:Tools/HDBackup.help" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup.info"
+  SET md5 `md5 "dh0:Tools/HDBackup.info"`
+  ECHO "$md5;dh0:Tools/HDBackup.info" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/HDToolBox"
+  SET md5 `md5 "dh0:Tools/HDToolBox"`
+  ECHO "$md5;dh0:Tools/HDToolBox" >>RAM:workbench3.1_md5.txt
+ENDIF
+IF EXISTS "dh0:Tools/HDToolBox.info"
+  SET md5 `md5 "dh0:Tools/HDToolBox.info"`
+  ECHO "$md5;dh0:Tools/HDToolBox.info" >>RAM:workbench3.1_md5.txt
+ENDIF

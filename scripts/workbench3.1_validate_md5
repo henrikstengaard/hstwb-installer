@@ -1,0 +1,4120 @@
+IF EXISTS "dh0:Prefs/WBPattern.info"
+  SET md5 `md5 "dh0:Prefs/WBPattern.info"`
+  IF NOT "$md5" eq "cb 85 22 87 cb 6a f5 8a e0 f5 25 24 ef c0 c0 cf"
+    ECHO "File 'dh0:Prefs/WBPattern.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/WBPattern.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Env-Archive/Sys/wbconfig.prefs"
+  SET md5 `md5 "dh0:Prefs/Env-Archive/Sys/wbconfig.prefs"`
+  IF NOT "$md5" eq "7f 7a 31 d8 06 76 3b 25 bd 32 d2 ec 75 7b 37 1b"
+    ECHO "File 'dh0:Prefs/Env-Archive/Sys/wbconfig.prefs' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Env-Archive/Sys/wbconfig.prefs' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Presets.info"
+  SET md5 `md5 "dh0:Prefs/Presets.info"`
+  IF NOT "$md5" eq "4a 6b d3 b6 b8 77 07 ee 8b 43 29 05 1c 5a d0 c2"
+    ECHO "File 'dh0:Prefs/Presets.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Presets.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Font"
+  SET md5 `md5 "dh0:Prefs/Font"`
+  IF NOT "$md5" eq "f3 03 ce ae e8 a5 8a f3 55 15 c5 07 d2 b9 e3 cb"
+    ECHO "File 'dh0:Prefs/Font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Font.info"
+  SET md5 `md5 "dh0:Prefs/Font.info"`
+  IF NOT "$md5" eq "26 00 71 33 2d 72 1f cc 0c f3 2f 25 ad 5c ca 5a"
+    ECHO "File 'dh0:Prefs/Font.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Font.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/IControl"
+  SET md5 `md5 "dh0:Prefs/IControl"`
+  IF NOT "$md5" eq "f7 01 6f b7 d3 5c 83 c6 3f d2 e0 89 a5 22 31 33"
+    ECHO "File 'dh0:Prefs/IControl' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/IControl' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/IControl.info"
+  SET md5 `md5 "dh0:Prefs/IControl.info"`
+  IF NOT "$md5" eq "11 81 5e 64 01 4c 5e f4 67 da 67 9a b1 3b ee fa"
+    ECHO "File 'dh0:Prefs/IControl.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/IControl.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Input"
+  SET md5 `md5 "dh0:Prefs/Input"`
+  IF NOT "$md5" eq "67 c6 de 73 64 ed d8 97 6d 82 76 3e e5 da ff c0"
+    ECHO "File 'dh0:Prefs/Input' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Input' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Input.info"
+  SET md5 `md5 "dh0:Prefs/Input.info"`
+  IF NOT "$md5" eq "40 fe f2 9b 45 9b 55 9a 3d 2f 85 ea 98 50 2a cf"
+    ECHO "File 'dh0:Prefs/Input.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Input.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Locale"
+  SET md5 `md5 "dh0:Prefs/Locale"`
+  IF NOT "$md5" eq "b3 24 28 4b 78 81 03 16 af d6 54 d8 6c eb 25 00"
+    ECHO "File 'dh0:Prefs/Locale' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Locale' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Locale.info"
+  SET md5 `md5 "dh0:Prefs/Locale.info"`
+  IF NOT "$md5" eq "6b 84 53 29 d6 8d b7 80 a2 14 47 e8 20 86 31 9e"
+    ECHO "File 'dh0:Prefs/Locale.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Locale.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Overscan"
+  SET md5 `md5 "dh0:Prefs/Overscan"`
+  IF NOT "$md5" eq "0c 09 29 36 65 39 dc 72 42 5a f0 92 35 d3 62 8e"
+    ECHO "File 'dh0:Prefs/Overscan' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Overscan' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Overscan.info"
+  SET md5 `md5 "dh0:Prefs/Overscan.info"`
+  IF NOT "$md5" eq "01 f1 c4 a1 06 8c dc cf 1e 72 b2 1b ff d0 cd 24"
+    ECHO "File 'dh0:Prefs/Overscan.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Overscan.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Palette"
+  SET md5 `md5 "dh0:Prefs/Palette"`
+  IF NOT "$md5" eq "4e 0b d6 25 b2 5c fc c6 4c b0 da 63 50 db 54 61"
+    ECHO "File 'dh0:Prefs/Palette' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Palette' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Palette.info"
+  SET md5 `md5 "dh0:Prefs/Palette.info"`
+  IF NOT "$md5" eq "d0 9b 5c 5b ed a6 5e 83 53 c5 1d e2 c5 33 d4 40"
+    ECHO "File 'dh0:Prefs/Palette.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Palette.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Pointer"
+  SET md5 `md5 "dh0:Prefs/Pointer"`
+  IF NOT "$md5" eq "f8 20 e2 6c ce 23 f9 56 11 43 3a 9a d2 ef eb 9a"
+    ECHO "File 'dh0:Prefs/Pointer' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Pointer' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Pointer.info"
+  SET md5 `md5 "dh0:Prefs/Pointer.info"`
+  IF NOT "$md5" eq "59 6c a3 3a b2 79 9c 21 7b 7e 5a 9b 0c f6 8a 19"
+    ECHO "File 'dh0:Prefs/Pointer.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Pointer.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Printer"
+  SET md5 `md5 "dh0:Prefs/Printer"`
+  IF NOT "$md5" eq "05 19 45 57 ca ac d4 71 b5 70 3c 37 3b 82 28 d3"
+    ECHO "File 'dh0:Prefs/Printer' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Printer' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Printer.info"
+  SET md5 `md5 "dh0:Prefs/Printer.info"`
+  IF NOT "$md5" eq "df 8e c6 ed b2 e2 f1 3c 2d 98 7c 75 bf b8 51 2e"
+    ECHO "File 'dh0:Prefs/Printer.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Printer.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterGfx"
+  SET md5 `md5 "dh0:Prefs/PrinterGfx"`
+  IF NOT "$md5" eq "b2 21 c7 93 39 fa 45 a0 ec 42 91 33 4a a0 1f 8c"
+    ECHO "File 'dh0:Prefs/PrinterGfx' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/PrinterGfx' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterGfx.info"
+  SET md5 `md5 "dh0:Prefs/PrinterGfx.info"`
+  IF NOT "$md5" eq "0b 3c ba 7f d1 8d 5c 85 70 77 7e 39 1d 97 61 72"
+    ECHO "File 'dh0:Prefs/PrinterGfx.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/PrinterGfx.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterPS"
+  SET md5 `md5 "dh0:Prefs/PrinterPS"`
+  IF NOT "$md5" eq "4a 5b 3a 37 f9 4f 63 bc 10 d0 49 a8 aa 33 6c 62"
+    ECHO "File 'dh0:Prefs/PrinterPS' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/PrinterPS' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/PrinterPS.info"
+  SET md5 `md5 "dh0:Prefs/PrinterPS.info"`
+  IF NOT "$md5" eq "5d 7f a3 7a 57 ea 14 26 04 3a 2d a5 c4 c7 c9 3a"
+    ECHO "File 'dh0:Prefs/PrinterPS.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/PrinterPS.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/ScreenMode"
+  SET md5 `md5 "dh0:Prefs/ScreenMode"`
+  IF NOT "$md5" eq "a0 85 51 a9 74 e8 d8 bd fa 51 c4 45 c3 4b 1e 49"
+    ECHO "File 'dh0:Prefs/ScreenMode' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/ScreenMode' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/ScreenMode.info"
+  SET md5 `md5 "dh0:Prefs/ScreenMode.info"`
+  IF NOT "$md5" eq "93 b7 cb ff 9a e4 14 64 c9 72 79 42 75 e0 ee 90"
+    ECHO "File 'dh0:Prefs/ScreenMode.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/ScreenMode.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Serial"
+  SET md5 `md5 "dh0:Prefs/Serial"`
+  IF NOT "$md5" eq "94 f1 97 ce 41 6c ab b3 ad bd 49 22 10 81 50 c0"
+    ECHO "File 'dh0:Prefs/Serial' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Serial' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Serial.info"
+  SET md5 `md5 "dh0:Prefs/Serial.info"`
+  IF NOT "$md5" eq "a5 66 81 fb 81 1a 56 f6 f4 b1 ed b6 e1 a8 06 35"
+    ECHO "File 'dh0:Prefs/Serial.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Serial.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Sound"
+  SET md5 `md5 "dh0:Prefs/Sound"`
+  IF NOT "$md5" eq "85 1a 91 c9 b1 ba 76 c8 15 cd 6f 9a e6 f5 70 dc"
+    ECHO "File 'dh0:Prefs/Sound' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Sound' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Sound.info"
+  SET md5 `md5 "dh0:Prefs/Sound.info"`
+  IF NOT "$md5" eq "e2 e1 a1 e6 34 8e 6e f3 a6 2e 26 42 2d ae 41 39"
+    ECHO "File 'dh0:Prefs/Sound.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Sound.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Time"
+  SET md5 `md5 "dh0:Prefs/Time"`
+  IF NOT "$md5" eq "9b 23 af d7 69 11 33 cc c3 fd 5a 5c f2 c0 c3 e4"
+    ECHO "File 'dh0:Prefs/Time' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Time' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/Time.info"
+  SET md5 `md5 "dh0:Prefs/Time.info"`
+  IF NOT "$md5" eq "b8 fb 3d b9 38 2c 5a 84 d6 45 52 8d 44 95 92 74"
+    ECHO "File 'dh0:Prefs/Time.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/Time.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs/WBPattern"
+  SET md5 `md5 "dh0:Prefs/WBPattern"`
+  IF NOT "$md5" eq "8c 4a 69 4c 33 e2 5b 17 62 31 82 1e 55 22 48 cf"
+    ECHO "File 'dh0:Prefs/WBPattern' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs/WBPattern' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/CGTimes.font"
+  SET md5 `md5 "dh0:Fonts/CGTimes.font"`
+  IF NOT "$md5" eq "63 6d b8 f7 a7 b1 fa f0 ee 77 b4 e0 6f de 25 2e"
+    ECHO "File 'dh0:Fonts/CGTimes.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/CGTimes.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/CGTimes.otag"
+  SET md5 `md5 "dh0:Fonts/CGTimes.otag"`
+  IF NOT "$md5" eq "c6 94 a1 06 84 40 cf d3 05 f2 33 bf c1 65 6b 6f"
+    ECHO "File 'dh0:Fonts/CGTimes.otag' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/CGTimes.otag' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/CGTriumvirate.font"
+  SET md5 `md5 "dh0:Fonts/CGTriumvirate.font"`
+  IF NOT "$md5" eq "63 6d b8 f7 a7 b1 fa f0 ee 77 b4 e0 6f de 25 2e"
+    ECHO "File 'dh0:Fonts/CGTriumvirate.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/CGTriumvirate.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/CGTriumvirate.otag"
+  SET md5 `md5 "dh0:Fonts/CGTriumvirate.otag"`
+  IF NOT "$md5" eq "6e 48 ac cb 10 83 d5 0f 74 5d d3 c8 20 96 8c d4"
+    ECHO "File 'dh0:Fonts/CGTriumvirate.otag' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/CGTriumvirate.otag' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier.font"
+  SET md5 `md5 "dh0:Fonts/courier.font"`
+  IF NOT "$md5" eq "7d 6a a6 0f aa 8c e9 ae 76 69 97 25 03 70 13 e0"
+    ECHO "File 'dh0:Fonts/courier.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/diamond.font"
+  SET md5 `md5 "dh0:Fonts/diamond.font"`
+  IF NOT "$md5" eq "8d 3a 80 b0 c9 78 25 b0 35 d6 c1 b8 3d ce 5b 5c"
+    ECHO "File 'dh0:Fonts/diamond.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/diamond.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/emerald.font"
+  SET md5 `md5 "dh0:Fonts/emerald.font"`
+  IF NOT "$md5" eq "fb e6 bf f7 cb c4 21 91 ca 80 83 06 0c 1c 40 ec"
+    ECHO "File 'dh0:Fonts/emerald.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/emerald.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/garnet.font"
+  SET md5 `md5 "dh0:Fonts/garnet.font"`
+  IF NOT "$md5" eq "23 43 1a 1f 58 da 34 da 40 cd 04 68 83 93 f5 60"
+    ECHO "File 'dh0:Fonts/garnet.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/garnet.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica.font"
+  SET md5 `md5 "dh0:Fonts/helvetica.font"`
+  IF NOT "$md5" eq "72 f4 13 8e f3 1e 47 b9 6f 5d 8e b8 5d 49 42 88"
+    ECHO "File 'dh0:Fonts/helvetica.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/LetterGothic.font"
+  SET md5 `md5 "dh0:Fonts/LetterGothic.font"`
+  IF NOT "$md5" eq "63 6d b8 f7 a7 b1 fa f0 ee 77 b4 e0 6f de 25 2e"
+    ECHO "File 'dh0:Fonts/LetterGothic.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/LetterGothic.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/LetterGothic.otag"
+  SET md5 `md5 "dh0:Fonts/LetterGothic.otag"`
+  IF NOT "$md5" eq "07 96 65 a1 f2 38 61 95 51 6d a1 75 79 32 7e 1b"
+    ECHO "File 'dh0:Fonts/LetterGothic.otag' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/LetterGothic.otag' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/opal.font"
+  SET md5 `md5 "dh0:Fonts/opal.font"`
+  IF NOT "$md5" eq "9f dc 67 60 a0 f5 3b a8 33 63 09 d9 6a 6a 6d 69"
+    ECHO "File 'dh0:Fonts/opal.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/opal.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/ruby.font"
+  SET md5 `md5 "dh0:Fonts/ruby.font"`
+  IF NOT "$md5" eq "39 cb 62 bc 67 7a 04 c3 42 8a e7 a3 ec 9e 24 2b"
+    ECHO "File 'dh0:Fonts/ruby.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/ruby.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire.font"
+  SET md5 `md5 "dh0:Fonts/sapphire.font"`
+  IF NOT "$md5" eq "7a f5 36 70 55 60 04 f2 82 07 d5 c0 ee 23 4e 14"
+    ECHO "File 'dh0:Fonts/sapphire.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/sapphire.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times.font"
+  SET md5 `md5 "dh0:Fonts/times.font"`
+  IF NOT "$md5" eq "e8 b1 25 b3 be a7 a5 d8 4e cc 32 78 fe 8a 67 76"
+    ECHO "File 'dh0:Fonts/times.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/topaz.font"
+  SET md5 `md5 "dh0:Fonts/topaz.font"`
+  IF NOT "$md5" eq "70 2d 81 c7 eb 13 62 9c 80 39 45 f4 29 b3 0b 7b"
+    ECHO "File 'dh0:Fonts/topaz.font' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/topaz.font' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier/11"
+  SET md5 `md5 "dh0:Fonts/courier/11"`
+  IF NOT "$md5" eq "49 64 35 aa 89 e9 85 f2 41 1e 80 dd 37 cc c1 1f"
+    ECHO "File 'dh0:Fonts/courier/11' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier/11' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier/13"
+  SET md5 `md5 "dh0:Fonts/courier/13"`
+  IF NOT "$md5" eq "a0 a7 58 c5 69 a6 f1 c6 79 97 e1 fb f2 5b 4c 3d"
+    ECHO "File 'dh0:Fonts/courier/13' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier/13' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier/15"
+  SET md5 `md5 "dh0:Fonts/courier/15"`
+  IF NOT "$md5" eq "48 1b f2 f8 31 b9 ac f5 e6 62 4f 9f 2e bd d2 fb"
+    ECHO "File 'dh0:Fonts/courier/15' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier/15' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier/18"
+  SET md5 `md5 "dh0:Fonts/courier/18"`
+  IF NOT "$md5" eq "2b c9 96 38 cf 0d 00 98 02 42 76 57 cf 97 17 26"
+    ECHO "File 'dh0:Fonts/courier/18' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier/18' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/courier/24"
+  SET md5 `md5 "dh0:Fonts/courier/24"`
+  IF NOT "$md5" eq "00 1f 68 ee 12 02 44 d7 70 86 2f 81 24 3d 5a a6"
+    ECHO "File 'dh0:Fonts/courier/24' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/courier/24' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/diamond/12"
+  SET md5 `md5 "dh0:Fonts/diamond/12"`
+  IF NOT "$md5" eq "a0 a7 c7 a5 22 fb 37 bb d6 5b 16 40 4f 8b ea 72"
+    ECHO "File 'dh0:Fonts/diamond/12' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/diamond/12' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/diamond/20"
+  SET md5 `md5 "dh0:Fonts/diamond/20"`
+  IF NOT "$md5" eq "c9 44 f8 4a d4 02 23 8a 43 c4 d4 e5 c1 68 c5 a0"
+    ECHO "File 'dh0:Fonts/diamond/20' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/diamond/20' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/emerald/17"
+  SET md5 `md5 "dh0:Fonts/emerald/17"`
+  IF NOT "$md5" eq "f7 d5 90 fc cd c7 fb 39 08 c4 8f c0 fd 91 d6 2c"
+    ECHO "File 'dh0:Fonts/emerald/17' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/emerald/17' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/emerald/20"
+  SET md5 `md5 "dh0:Fonts/emerald/20"`
+  IF NOT "$md5" eq "a2 58 3d 52 67 06 0d f8 ca df 4f 27 08 79 1a 7c"
+    ECHO "File 'dh0:Fonts/emerald/20' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/emerald/20' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/garnet/16"
+  SET md5 `md5 "dh0:Fonts/garnet/16"`
+  IF NOT "$md5" eq "18 6e 7b 48 1e 10 5f fe 03 dd c8 b5 b9 37 6b 88"
+    ECHO "File 'dh0:Fonts/garnet/16' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/garnet/16' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/garnet/9"
+  SET md5 `md5 "dh0:Fonts/garnet/9"`
+  IF NOT "$md5" eq "b3 5d d3 34 a0 f7 ea a0 19 29 8d ba c4 d2 46 63"
+    ECHO "File 'dh0:Fonts/garnet/9' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/garnet/9' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/11"
+  SET md5 `md5 "dh0:Fonts/helvetica/11"`
+  IF NOT "$md5" eq "6c f6 84 c7 9b f7 85 46 b3 c5 fb 0a 1f a3 d8 76"
+    ECHO "File 'dh0:Fonts/helvetica/11' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/11' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/13"
+  SET md5 `md5 "dh0:Fonts/helvetica/13"`
+  IF NOT "$md5" eq "40 0b ba 8e 86 84 52 76 4f e5 dc 8e eb 45 51 e2"
+    ECHO "File 'dh0:Fonts/helvetica/13' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/13' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/15"
+  SET md5 `md5 "dh0:Fonts/helvetica/15"`
+  IF NOT "$md5" eq "b0 6a ad e3 20 23 0c d7 69 2d 88 ec 8a 2e ff c3"
+    ECHO "File 'dh0:Fonts/helvetica/15' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/15' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/18"
+  SET md5 `md5 "dh0:Fonts/helvetica/18"`
+  IF NOT "$md5" eq "fd b7 bd c1 18 d9 4c 44 c5 fd 2e e2 fe 8e 5a 45"
+    ECHO "File 'dh0:Fonts/helvetica/18' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/18' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/24"
+  SET md5 `md5 "dh0:Fonts/helvetica/24"`
+  IF NOT "$md5" eq "3e 6f 61 e6 00 10 0e b1 8e 01 67 e2 8d 2a b1 3e"
+    ECHO "File 'dh0:Fonts/helvetica/24' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/24' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/helvetica/9"
+  SET md5 `md5 "dh0:Fonts/helvetica/9"`
+  IF NOT "$md5" eq "70 45 6d e2 a2 2a ee ac 40 73 6f 9a ae 79 f3 e2"
+    ECHO "File 'dh0:Fonts/helvetica/9' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/helvetica/9' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/opal/12"
+  SET md5 `md5 "dh0:Fonts/opal/12"`
+  IF NOT "$md5" eq "a9 78 e7 21 51 f3 3e 88 0a 06 16 2f d1 27 96 13"
+    ECHO "File 'dh0:Fonts/opal/12' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/opal/12' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/opal/9"
+  SET md5 `md5 "dh0:Fonts/opal/9"`
+  IF NOT "$md5" eq "bc d7 84 48 41 bd 2e 4e bb 41 f7 5e 7d 19 c3 7f"
+    ECHO "File 'dh0:Fonts/opal/9' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/opal/9' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/12"
+  SET md5 `md5 "dh0:Fonts/ruby/12"`
+  IF NOT "$md5" eq "5f a9 49 d0 42 ad fb 68 fd 11 85 38 98 f8 ec 82"
+    ECHO "File 'dh0:Fonts/ruby/12' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/ruby/12' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/15"
+  SET md5 `md5 "dh0:Fonts/ruby/15"`
+  IF NOT "$md5" eq "9a 59 33 e9 ec a9 64 bb 03 9c e5 ca f7 45 c4 7d"
+    ECHO "File 'dh0:Fonts/ruby/15' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/ruby/15' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/ruby/8"
+  SET md5 `md5 "dh0:Fonts/ruby/8"`
+  IF NOT "$md5" eq "96 ac d2 b6 d2 d3 eb ea 76 38 10 54 74 2b e6 ff"
+    ECHO "File 'dh0:Fonts/ruby/8' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/ruby/8' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire/14"
+  SET md5 `md5 "dh0:Fonts/sapphire/14"`
+  IF NOT "$md5" eq "75 a9 45 2a 33 2f bc 43 4e a1 d2 c9 c1 d5 08 dd"
+    ECHO "File 'dh0:Fonts/sapphire/14' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/sapphire/14' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/sapphire/19"
+  SET md5 `md5 "dh0:Fonts/sapphire/19"`
+  IF NOT "$md5" eq "36 ba ae 87 a2 ee aa 6a e7 67 2a 00 7e 55 0e 97"
+    ECHO "File 'dh0:Fonts/sapphire/19' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/sapphire/19' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times/11"
+  SET md5 `md5 "dh0:Fonts/times/11"`
+  IF NOT "$md5" eq "06 36 d6 aa 78 d3 b0 94 6d b5 96 8b 9c ea 4b f3"
+    ECHO "File 'dh0:Fonts/times/11' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times/11' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times/13"
+  SET md5 `md5 "dh0:Fonts/times/13"`
+  IF NOT "$md5" eq "7f ab 2e 3f c6 e1 1f 6d 80 eb 39 e0 0b 76 6f af"
+    ECHO "File 'dh0:Fonts/times/13' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times/13' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times/15"
+  SET md5 `md5 "dh0:Fonts/times/15"`
+  IF NOT "$md5" eq "13 de 63 ce e5 58 1e 7c 27 4e 7a 85 cc 13 73 47"
+    ECHO "File 'dh0:Fonts/times/15' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times/15' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times/18"
+  SET md5 `md5 "dh0:Fonts/times/18"`
+  IF NOT "$md5" eq "07 ff f9 91 13 f2 e7 0b 28 03 07 e6 20 13 bd d0"
+    ECHO "File 'dh0:Fonts/times/18' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times/18' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/times/24"
+  SET md5 `md5 "dh0:Fonts/times/24"`
+  IF NOT "$md5" eq "d0 2e 8f d2 a4 9f 83 66 63 b1 91 03 40 13 fe 72"
+    ECHO "File 'dh0:Fonts/times/24' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/times/24' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/Disk.info"
+  SET md5 `md5 "dh0:Fonts/Disk.info"`
+  IF NOT "$md5" eq "3b 3d 11 cd d5 c4 d9 79 4e 8a 52 2d 1b 49 39 87"
+    ECHO "File 'dh0:Fonts/Disk.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/Disk.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/topaz/11"
+  SET md5 `md5 "dh0:Fonts/topaz/11"`
+  IF NOT "$md5" eq "6c cb 78 55 93 66 96 4e 48 74 e3 94 e1 bc c7 6d"
+    ECHO "File 'dh0:Fonts/topaz/11' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/topaz/11' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/hq3.fnt"
+  SET md5 `md5 "dh0:Fonts/_bullet/hq3.fnt"`
+  IF NOT "$md5" eq "d2 6a 79 7a 9f 90 79 8c a5 b2 fe 2d 62 25 28 0c"
+    ECHO "File 'dh0:Fonts/_bullet/hq3.fnt' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet/hq3.fnt' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/hq3updt.tyq"
+  SET md5 `md5 "dh0:Fonts/_bullet/hq3updt.tyq"`
+  IF NOT "$md5" eq "ac f4 a3 68 d6 b3 16 ee b6 01 2b ac 30 b2 4b b4"
+    ECHO "File 'dh0:Fonts/_bullet/hq3updt.tyq' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet/hq3updt.tyq' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/if.fnt"
+  SET md5 `md5 "dh0:Fonts/_bullet/if.fnt"`
+  IF NOT "$md5" eq "03 90 88 67 a3 6d 3b f6 f4 b2 e3 a6 b8 ec 44 6e"
+    ECHO "File 'dh0:Fonts/_bullet/if.fnt' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet/if.fnt' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/if.uc"
+  SET md5 `md5 "dh0:Fonts/_bullet/if.uc"`
+  IF NOT "$md5" eq "80 75 ff ea 6c 3c 9c 1f 62 1d 02 fa 17 3a 8d 9a"
+    ECHO "File 'dh0:Fonts/_bullet/if.uc' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet/if.uc' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet/plugin.types"
+  SET md5 `md5 "dh0:Fonts/_bullet/plugin.types"`
+  IF NOT "$md5" eq "45 80 13 2a 8c 10 79 cc 2f fa d6 96 4b f6 4d 14"
+    ECHO "File 'dh0:Fonts/_bullet/plugin.types' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet/plugin.types' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/LetterGothic.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/LetterGothic.type"`
+  IF NOT "$md5" eq "4d fb 0b 68 74 98 f1 8e 8c ce a2 39 ea f9 ec 96"
+    ECHO "File 'dh0:Fonts/_bullet_outlines/LetterGothic.type' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet_outlines/LetterGothic.type' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/CGTimes.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/CGTimes.type"`
+  IF NOT "$md5" eq "45 0d 17 6c ab 33 ef 7d 44 4e fe 9a 75 14 a2 53"
+    ECHO "File 'dh0:Fonts/_bullet_outlines/CGTimes.type' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet_outlines/CGTimes.type' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Fonts/_bullet_outlines/CGTriumvirate.type"
+  SET md5 `md5 "dh0:Fonts/_bullet_outlines/CGTriumvirate.type"`
+  IF NOT "$md5" eq "eb 23 ab 92 f7 ba b8 6a a6 b4 30 3c 10 0a 19 fa"
+    ECHO "File 'dh0:Fonts/_bullet_outlines/CGTriumvirate.type' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Fonts/_bullet_outlines/CGTriumvirate.type' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "bc 88 57 05 3f 09 9f ad 90 ec a2 3b 35 ef 3e b9"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/c.catalog"`
+  IF NOT "$md5" eq "5b ba b4 95 0b 53 17 56 1b 49 e9 14 47 85 06 8d"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "3a 9b 77 67 29 50 16 f0 a0 a6 4f 1f 89 62 b4 c7"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/devs.catalog"`
+  IF NOT "$md5" eq "33 95 52 c7 74 dc 10 26 b5 25 10 98 28 e8 64 21"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/dos.catalog"`
+  IF NOT "$md5" eq "29 fc 6a 0e 27 10 ff c0 40 9b 4a 28 d3 c9 bf 47"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/installer.catalog"`
+  IF NOT "$md5" eq "f1 3b 5a 1d 50 b3 92 0a 24 46 7d fe 84 04 bf fb"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/libs.catalog"`
+  IF NOT "$md5" eq "cf 8a b5 85 52 7b 5a 19 c1 89 d3 bc 86 7d ea 0c"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "b5 49 44 58 71 b0 d3 5f 64 3c 51 29 0c 15 77 de"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "64 2f 3c c6 73 81 6a 29 85 38 24 56 64 33 2b ab"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "66 cd 53 a8 48 b2 00 61 93 bd e2 95 48 15 b1 ad"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/system.catalog"`
+  IF NOT "$md5" eq "c5 c5 ab b3 83 26 89 de c0 e0 7b 12 01 0b 6d 54"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "a7 41 49 8e b3 56 63 41 39 df 6b df ff 4d a4 b3"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/dansk/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/dansk/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "f3 ee df ad 14 d6 13 a6 c1 64 3d 3f 71 92 0b 5e"
+    ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/dansk/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "87 59 6d a8 77 15 7b 78 2f 46 ce 4b ff 72 f8 21"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/c.catalog"`
+  IF NOT "$md5" eq "b0 48 6f 6e 33 4e 2a 46 94 44 25 15 93 d0 95 5f"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "f8 58 b6 71 c8 e6 a1 55 26 c8 84 d9 ff 80 5e 99"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/devs.catalog"`
+  IF NOT "$md5" eq "c0 a4 96 cd 5c f0 f0 f1 f6 88 35 f2 c3 68 7b dc"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/dos.catalog"`
+  IF NOT "$md5" eq "79 ce 48 fb 73 34 e4 f3 6b b1 7a f5 fb 91 51 33"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/installer.catalog"`
+  IF NOT "$md5" eq "46 36 26 3a 39 9c 59 e0 53 56 74 4f af c0 0c a3"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/libs.catalog"`
+  IF NOT "$md5" eq "cf 1a df bb 62 34 86 2e 60 2e 5b b3 57 f9 44 ea"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "74 fa 73 6a e5 00 ea d7 b1 ba 92 a4 09 54 66 ed"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "c3 8a 8c b4 6f 4a 34 32 d4 10 ff 42 b5 6e 4f e7"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "b6 4b a7 24 ba 18 8c f8 15 98 56 05 71 b6 45 db"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/system.catalog"`
+  IF NOT "$md5" eq "60 9e 79 61 e4 0b 08 a3 2a 20 32 2e d3 f9 7c 0e"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "51 ba 47 9a 36 e8 d6 81 cd 50 ab 55 4a 0d 36 51"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "39 c8 e3 c7 5b ec 58 f5 ce 6f 69 9d 21 1b a2 a8"
+    ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/deutsch/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/english/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/english/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "89 8a a7 32 3c ee 0e 38 ef e7 ee 04 d0 45 b3 79"
+    ECHO "File 'dh0:Locale/Catalogs/english/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/english/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "72 37 30 b7 58 d7 fb 40 30 e8 63 94 83 af f9 90"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "83 be b1 ac c9 bd f3 b5 85 9f 87 71 3c c7 03 eb"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/c.catalog"`
+  IF NOT "$md5" eq "d9 d6 01 b3 a1 7c ec 0b ad b4 6c a6 75 71 2f a3"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "6c ff 51 9f a9 c0 31 21 75 c3 5d 60 f5 43 43 73"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/devs.catalog"`
+  IF NOT "$md5" eq "8a 2c 68 8a c7 44 d7 21 f6 5b 4d 18 4e b3 6f 97"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/dos.catalog"`
+  IF NOT "$md5" eq "44 e2 59 32 45 ea 19 01 a9 82 98 ac 06 9b 29 69"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/installer.catalog"`
+  IF NOT "$md5" eq "e9 fc ab 19 16 22 7f 4c f1 26 1f 72 a6 6d dc ed"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/libs.catalog"`
+  IF NOT "$md5" eq "c9 5c 6f 31 d8 e6 36 18 64 cf c9 f9 30 ee ca 58"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "40 a7 29 09 01 8a ac 5e e9 b5 8d 9b 01 74 b6 86"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "5d a2 ff 40 11 3c 77 1c b0 ba c7 4c 9d 38 cf 51"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "5b 4c 85 b8 16 1c 54 f8 4f 21 10 76 30 e5 17 46"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/system.catalog"`
+  IF NOT "$md5" eq "00 fd ed 5c 99 9b 7f b4 86 66 a2 a8 79 9b 3d df"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/español/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/español/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "b3 5d 87 9a 29 d5 52 b2 80 29 d2 c5 1f 1b 56 31"
+    ECHO "File 'dh0:Locale/Catalogs/español/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/español/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "f3 32 b9 7d 6d b0 9a f5 78 2c 83 8e 74 c5 ea 40"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/c.catalog"`
+  IF NOT "$md5" eq "41 c0 9c 03 1a a0 7d df 64 cc 53 c8 a8 ac d2 95"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "d5 14 f6 c7 97 ca 88 f3 91 27 c9 52 3d 50 2c 67"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/devs.catalog"`
+  IF NOT "$md5" eq "5e a7 55 d9 b8 b4 84 e5 c8 45 db 19 2b 4e 15 49"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/dos.catalog"`
+  IF NOT "$md5" eq "b9 d4 20 4b 14 17 8f 6a bb 71 44 23 3e 76 0f 57"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/installer.catalog"`
+  IF NOT "$md5" eq "42 b4 06 42 78 1c a3 c1 fd b2 ac 49 f2 28 1b ce"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/libs.catalog"`
+  IF NOT "$md5" eq "cb bf b0 d3 ba 0b 96 3e 80 19 b0 5c 3c 0a 24 e9"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "a9 c3 73 01 11 7c d5 f9 19 a8 55 23 48 36 d0 2a"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "a4 7b e0 48 6c ab 8a cf 4d 7e ce 46 b1 fb a4 14"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "b0 c1 92 a7 e4 97 1b 7f ae 0d 49 88 86 08 67 54"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/system.catalog"`
+  IF NOT "$md5" eq "6d d5 2e a8 f7 08 ff 5d 5c bb 5e 73 61 4b 6e 82"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "29 31 33 ff 17 43 2a 02 43 e2 dc b6 37 0f 8b ba"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/français/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/français/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "91 f4 fa fa 7c 4b 79 dd fe 7e 36 0a 83 9b 73 f7"
+    ECHO "File 'dh0:Locale/Catalogs/français/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/français/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "c8 dc 58 e8 8a 80 76 e5 c4 1b ef 73 d6 2a 08 45"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/c.catalog"`
+  IF NOT "$md5" eq "0f 4d ed 4d 85 4e cb 54 4e 1e 27 05 99 5c 64 e4"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "2f d2 00 21 c0 52 b3 0f c3 4e 78 05 09 9c ba 70"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/devs.catalog"`
+  IF NOT "$md5" eq "4e 58 4d 59 6b c1 43 6e 9c 2a 15 8f 24 b6 b8 98"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/dos.catalog"`
+  IF NOT "$md5" eq "d8 9c 24 87 31 a9 2c 06 b4 ef dc f7 b1 65 51 48"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/installer.catalog"`
+  IF NOT "$md5" eq "cf 56 ed a6 cc 91 61 17 2f 30 3b 91 9c fc 85 bb"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/libs.catalog"`
+  IF NOT "$md5" eq "d9 6b ca fa ad 71 3f 8d c0 7f 46 66 66 02 94 53"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "e3 d7 00 22 89 13 ad df 84 d6 dc 7e 06 14 50 3d"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "82 84 cb 4f 75 f5 ee 9d 2c 9b f2 26 6d 09 7a bf"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "7d 5a fa 55 65 8a e3 18 96 f1 a7 8d 70 e1 fb 51"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/system.catalog"`
+  IF NOT "$md5" eq "1b 8f db 0e 65 16 5d d7 7a cc 02 94 aa 43 93 4e"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "fa 31 30 a8 fb da ae 16 27 a1 15 7f 36 80 ce d5"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/italiano/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/italiano/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "18 9d 94 29 b1 c8 47 94 ea 5b 5c dc 9d c6 07 4f"
+    ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/italiano/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "c4 b9 c6 9f 99 6e e2 ab 3b bd ef da 53 1e 9e 45"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/c.catalog"`
+  IF NOT "$md5" eq "eb 54 69 eb 29 5c 36 21 7e c1 d1 4d 22 d9 90 d0"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "bd bb f4 ef ac 22 a6 17 43 42 d2 45 ee 30 3d 81"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/devs.catalog"`
+  IF NOT "$md5" eq "3b cf ae be c7 4b 64 2d 36 08 9b 10 f3 05 ce 4d"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/dos.catalog"`
+  IF NOT "$md5" eq "c3 9b 9c a8 fa d1 f5 ab fc ff 58 4b 2a 20 7f f8"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/installer.catalog"`
+  IF NOT "$md5" eq "37 82 9a 57 70 1b a1 0c 79 4f 9d b4 23 4a ab 51"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/libs.catalog"`
+  IF NOT "$md5" eq "91 1f 1e 7b 9e 36 92 3b c7 ca 37 98 8f 68 a4 69"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "d6 21 75 8b a9 88 60 64 c5 ce 97 92 b9 19 ea 31"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "11 d7 7b a3 c1 57 c3 56 94 c2 cd b2 ca 31 f6 4e"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "50 a7 a3 68 2a be 1b b5 2d e5 c9 11 6b ba 36 5f"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/system.catalog"`
+  IF NOT "$md5" eq "c2 5e a1 41 a3 a7 db 62 65 19 db 95 92 92 45 72"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "bc e4 ee 19 7f 59 9c 5e 9d c5 8a 35 6b 4b af dc"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "74 89 5c 73 88 ff 60 86 5d 00 d6 5b 59 45 3a f4"
+    ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/nederlands/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/installer.catalog"`
+  IF NOT "$md5" eq "41 13 00 e9 5e 15 3e 6f 4f 8c 53 3c 43 c8 16 86"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/libs.catalog"`
+  IF NOT "$md5" eq "91 74 89 22 5e 6e 4c b7 61 40 b1 1a 29 4a 38 ef"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "1c 18 77 07 93 74 41 5f b3 c4 75 48 52 c5 8f 01"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "5c 01 8d b2 76 b5 ac ad d7 84 ef 43 17 84 c0 4e"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "69 0a f4 8a d4 81 79 45 91 b5 20 a8 32 5c 4c d9"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/system.catalog"`
+  IF NOT "$md5" eq "2e 0f a4 3b 2c b0 ce 04 22 a3 3f f2 42 e4 68 8d"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "6e 42 34 fb e2 60 9b 9e 51 14 16 bb 57 45 43 bc"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "76 f1 cc bc 00 44 46 1a 6c fa 42 f0 ce e9 43 cf"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "27 0c 09 19 b4 8c d2 86 42 53 92 4b 97 a2 31 2b"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/c.catalog"`
+  IF NOT "$md5" eq "55 20 89 26 26 a0 f1 a0 ff 81 b3 70 6e bb 78 49"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "56 3a 60 25 fa d2 f2 93 fa 1f 8c 86 af 13 30 1b"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/devs.catalog"`
+  IF NOT "$md5" eq "0a 98 aa 61 3a e0 3b 77 c1 a5 ab d5 3a 41 75 09"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/norsk/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/norsk/Sys/dos.catalog"`
+  IF NOT "$md5" eq "f4 6b 46 ad ce c6 a9 76 1c c1 80 72 7d 26 c2 72"
+    ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/norsk/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "1c 41 27 c7 9c 12 c5 bf 23 2e fd ce 2c cb 93 89"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "9f 31 cc b4 80 53 d5 5d db 38 d6 32 18 aa f6 51"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/c.catalog"`
+  IF NOT "$md5" eq "47 74 87 1e 25 1b 95 a4 f8 8d 02 be cd 87 55 18"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "c0 ab 8d f7 31 4e 4a 45 eb 21 b5 0d 3f de b0 fe"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/devs.catalog"`
+  IF NOT "$md5" eq "c5 0f 0a b2 55 31 70 d4 0b a8 d7 8a 8f 64 a9 d8"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/dos.catalog"`
+  IF NOT "$md5" eq "8e e3 3a b1 76 24 72 f6 f8 39 a0 08 0c 63 df bb"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/installer.catalog"`
+  IF NOT "$md5" eq "c2 f6 52 b5 e8 dd c4 c9 bd 2f 3f 5f b8 38 25 f5"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/libs.catalog"`
+  IF NOT "$md5" eq "c7 3f 18 97 6a 79 8a f1 47 3b 3a c6 ea be 73 58"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "75 18 93 d6 c3 6a 3b dd b9 ba 60 94 3a 62 05 7c"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "d5 39 69 92 c6 b5 59 4c c6 8d 2d 0a 9e 3a 68 5f"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "d5 49 b4 16 bd 25 50 7e 63 75 1b d9 f8 88 a1 d4"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/system.catalog"`
+  IF NOT "$md5" eq "09 55 f1 d6 61 54 89 32 72 cf e5 1b 40 c9 e5 78"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/português/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/português/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "2e ae e3 bc 04 bc 2c 64 a1 ff 4d aa ce cb f2 6a"
+    ECHO "File 'dh0:Locale/Catalogs/português/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/português/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog"`
+  IF NOT "$md5" eq "7c cb ed 14 ad f9 51 b3 3d e0 f3 c6 60 d4 ae 4a"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/amigaguide.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/c.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/c.catalog"`
+  IF NOT "$md5" eq "67 bf 0a b3 16 7c b7 be b2 dc 18 59 10 cb 9e e3"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/c.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/c.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/commodities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/commodities.catalog"`
+  IF NOT "$md5" eq "f3 90 79 d6 92 e3 e1 93 72 d4 48 a9 29 f9 33 9d"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/commodities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/commodities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/devs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/devs.catalog"`
+  IF NOT "$md5" eq "22 89 65 96 90 9b ad 39 92 3b b4 f2 44 92 56 99"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/devs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/devs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/dos.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/dos.catalog"`
+  IF NOT "$md5" eq "18 b1 d6 98 65 8c 4f 09 1b 98 17 33 7c 04 5d 9e"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/dos.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/dos.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/installer.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/installer.catalog"`
+  IF NOT "$md5" eq "7c 15 b0 c6 97 6f 3f 96 24 37 27 f0 26 d9 ab 91"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/installer.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/installer.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/libs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/libs.catalog"`
+  IF NOT "$md5" eq "32 21 62 2b 59 85 14 e8 dc 66 f6 5a f1 f0 ef 5f"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/libs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/libs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/monitors.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/monitors.catalog"`
+  IF NOT "$md5" eq "2f b5 a3 57 8f a3 bf e6 45 86 50 0d ea c9 41 87"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/monitors.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/monitors.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/prefs.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/prefs.catalog"`
+  IF NOT "$md5" eq "dc 24 ce 80 1e 25 e7 97 5d d5 61 a1 ed ef 12 a8"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/prefs.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/prefs.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog"`
+  IF NOT "$md5" eq "80 5a 95 23 67 93 31 c7 ae ba 77 67 46 ea aa c7"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/prepcard.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/system.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/system.catalog"`
+  IF NOT "$md5" eq "a9 07 72 3b e6 8a 3b f4 73 3d bf 87 45 31 40 9a"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/system.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/system.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/utilities.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/utilities.catalog"`
+  IF NOT "$md5" eq "09 f5 71 6f 64 6c f5 e5 01 0d e4 cc cd a5 4b 11"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/utilities.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/utilities.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Catalogs/svenska/Sys/workbench.catalog"
+  SET md5 `md5 "dh0:Locale/Catalogs/svenska/Sys/workbench.catalog"`
+  IF NOT "$md5" eq "0a 5d aa 13 b7 d2 12 c8 48 8b 17 d4 17 eb e9 ca"
+    ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/workbench.catalog' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Catalogs/svenska/Sys/workbench.catalog' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/dansk.language"
+  SET md5 `md5 "dh0:Locale/Languages/dansk.language"`
+  IF NOT "$md5" eq "b4 6a 3c eb c7 ed d0 81 94 3c be 9d 6b 4d 4d 18"
+    ECHO "File 'dh0:Locale/Languages/dansk.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/dansk.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/deutsch.language"
+  SET md5 `md5 "dh0:Locale/Languages/deutsch.language"`
+  IF NOT "$md5" eq "3c 9e 11 36 ce 9b 1c ac 81 0a db e2 81 80 af 30"
+    ECHO "File 'dh0:Locale/Languages/deutsch.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/deutsch.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/español.language"
+  SET md5 `md5 "dh0:Locale/Languages/español.language"`
+  IF NOT "$md5" eq "45 4c 5a 64 95 f6 b1 e3 0d 92 0d 83 18 bf c6 93"
+    ECHO "File 'dh0:Locale/Languages/español.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/español.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/français.language"
+  SET md5 `md5 "dh0:Locale/Languages/français.language"`
+  IF NOT "$md5" eq "c8 bc 36 1c 9e ed 01 c9 59 12 8f 9a e9 42 e1 25"
+    ECHO "File 'dh0:Locale/Languages/français.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/français.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/italiano.language"
+  SET md5 `md5 "dh0:Locale/Languages/italiano.language"`
+  IF NOT "$md5" eq "e9 b8 0a da 11 f2 86 43 26 7c 14 42 a0 c6 59 49"
+    ECHO "File 'dh0:Locale/Languages/italiano.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/italiano.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/nederlands.language"
+  SET md5 `md5 "dh0:Locale/Languages/nederlands.language"`
+  IF NOT "$md5" eq "c4 ae a1 99 2b f7 68 ac 69 01 e0 95 d6 ca bb 81"
+    ECHO "File 'dh0:Locale/Languages/nederlands.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/nederlands.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/norsk.language"
+  SET md5 `md5 "dh0:Locale/Languages/norsk.language"`
+  IF NOT "$md5" eq "ba ae d7 bc b2 9c f7 66 42 b9 50 61 0a 7f 2e d2"
+    ECHO "File 'dh0:Locale/Languages/norsk.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/norsk.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/português.language"
+  SET md5 `md5 "dh0:Locale/Languages/português.language"`
+  IF NOT "$md5" eq "78 c0 c4 42 92 ed a0 da ec 2f 6c 50 dd ca 2e 45"
+    ECHO "File 'dh0:Locale/Languages/português.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/português.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Languages/svenska.language"
+  SET md5 `md5 "dh0:Locale/Languages/svenska.language"`
+  IF NOT "$md5" eq "6d b0 bc ad f0 3b 35 33 53 d6 c8 f6 62 e4 25 44"
+    ECHO "File 'dh0:Locale/Languages/svenska.language' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Languages/svenska.language' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/australia.country"
+  SET md5 `md5 "dh0:Locale/Countries/australia.country"`
+  IF NOT "$md5" eq "32 f3 5b 2e 3b cc 78 eb 11 9d df ce af 7a 3a 63"
+    ECHO "File 'dh0:Locale/Countries/australia.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/australia.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/belgie.country"
+  SET md5 `md5 "dh0:Locale/Countries/belgie.country"`
+  IF NOT "$md5" eq "d3 a5 17 57 81 ab d4 27 4e e3 99 9d 80 de 69 58"
+    ECHO "File 'dh0:Locale/Countries/belgie.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/belgie.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/belgique.country"
+  SET md5 `md5 "dh0:Locale/Countries/belgique.country"`
+  IF NOT "$md5" eq "ea 9e 8d 8b 76 4f 43 9f 51 02 ea 63 2a c6 00 fa"
+    ECHO "File 'dh0:Locale/Countries/belgique.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/belgique.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/canada.country"
+  SET md5 `md5 "dh0:Locale/Countries/canada.country"`
+  IF NOT "$md5" eq "6e d8 93 21 13 c7 65 67 a2 68 5c b0 92 f7 d8 82"
+    ECHO "File 'dh0:Locale/Countries/canada.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/canada.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/canada_français.country"
+  SET md5 `md5 "dh0:Locale/Countries/canada_français.country"`
+  IF NOT "$md5" eq "8b 7a 92 74 fb 08 26 cc cd ec a7 9d ee f9 10 f2"
+    ECHO "File 'dh0:Locale/Countries/canada_français.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/canada_français.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/danmark.country"
+  SET md5 `md5 "dh0:Locale/Countries/danmark.country"`
+  IF NOT "$md5" eq "a4 2b 20 c0 20 a1 d7 27 26 8f 14 85 25 11 39 6d"
+    ECHO "File 'dh0:Locale/Countries/danmark.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/danmark.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/deutschland.country"
+  SET md5 `md5 "dh0:Locale/Countries/deutschland.country"`
+  IF NOT "$md5" eq "99 43 80 1e 6d 3f 91 fb db ff 11 e6 f3 76 c7 35"
+    ECHO "File 'dh0:Locale/Countries/deutschland.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/deutschland.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/españa.country"
+  SET md5 `md5 "dh0:Locale/Countries/españa.country"`
+  IF NOT "$md5" eq "6c 6f 4f 5a cb 02 f9 b6 35 52 48 16 d4 f3 ae b6"
+    ECHO "File 'dh0:Locale/Countries/españa.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/españa.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/france.country"
+  SET md5 `md5 "dh0:Locale/Countries/france.country"`
+  IF NOT "$md5" eq "4d 9a 48 d2 0b 16 09 72 d1 da af 36 21 73 7f 44"
+    ECHO "File 'dh0:Locale/Countries/france.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/france.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/great_britain.country"
+  SET md5 `md5 "dh0:Locale/Countries/great_britain.country"`
+  IF NOT "$md5" eq "e3 2a 25 ac 24 8b 52 e1 5c 11 ee 76 d7 5d 9b e7"
+    ECHO "File 'dh0:Locale/Countries/great_britain.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/great_britain.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/italia.country"
+  SET md5 `md5 "dh0:Locale/Countries/italia.country"`
+  IF NOT "$md5" eq "31 a2 ee 7a cc a6 77 7e 86 cb e6 e3 2d 75 0f ec"
+    ECHO "File 'dh0:Locale/Countries/italia.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/italia.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/nederland.country"
+  SET md5 `md5 "dh0:Locale/Countries/nederland.country"`
+  IF NOT "$md5" eq "e2 23 c6 7f 06 31 d9 1e 61 2c a3 bd 13 78 85 ce"
+    ECHO "File 'dh0:Locale/Countries/nederland.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/nederland.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/norge.country"
+  SET md5 `md5 "dh0:Locale/Countries/norge.country"`
+  IF NOT "$md5" eq "a8 b2 86 26 af b7 31 3e 38 22 0d 5a dd 08 94 bb"
+    ECHO "File 'dh0:Locale/Countries/norge.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/norge.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/portugal.country"
+  SET md5 `md5 "dh0:Locale/Countries/portugal.country"`
+  IF NOT "$md5" eq "c5 9e 3c 0b 33 6b 1c 6b cb 1a ff 7d ee d6 48 2b"
+    ECHO "File 'dh0:Locale/Countries/portugal.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/portugal.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/schweiz.country"
+  SET md5 `md5 "dh0:Locale/Countries/schweiz.country"`
+  IF NOT "$md5" eq "c0 bf 72 48 bd 4a a0 07 eb 2a 79 56 cb 49 c9 01"
+    ECHO "File 'dh0:Locale/Countries/schweiz.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/schweiz.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/suisse.country"
+  SET md5 `md5 "dh0:Locale/Countries/suisse.country"`
+  IF NOT "$md5" eq "0f 39 86 30 2a 35 9a 02 f7 a1 9a 99 75 d1 cd 9f"
+    ECHO "File 'dh0:Locale/Countries/suisse.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/suisse.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/sverige.country"
+  SET md5 `md5 "dh0:Locale/Countries/sverige.country"`
+  IF NOT "$md5" eq "60 d8 a0 48 db 2c ca 04 17 0e 9c ef fb 34 92 7c"
+    ECHO "File 'dh0:Locale/Countries/sverige.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/sverige.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/svizzera.country"
+  SET md5 `md5 "dh0:Locale/Countries/svizzera.country"`
+  IF NOT "$md5" eq "0f 39 86 30 2a 35 9a 02 f7 a1 9a 99 75 d1 cd 9f"
+    ECHO "File 'dh0:Locale/Countries/svizzera.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/svizzera.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/united_kingdom.country"
+  SET md5 `md5 "dh0:Locale/Countries/united_kingdom.country"`
+  IF NOT "$md5" eq "53 fd 63 3a 38 ba 9a 04 82 c5 cc 75 fc 4d a8 68"
+    ECHO "File 'dh0:Locale/Countries/united_kingdom.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/united_kingdom.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/united_states.country"
+  SET md5 `md5 "dh0:Locale/Countries/united_states.country"`
+  IF NOT "$md5" eq "06 56 53 f6 f2 d9 e6 ed 1d db 12 78 37 b9 16 f0"
+    ECHO "File 'dh0:Locale/Countries/united_states.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/united_states.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Countries/österreich.country"
+  SET md5 `md5 "dh0:Locale/Countries/österreich.country"`
+  IF NOT "$md5" eq "46 0a 90 15 fc ff 59 f4 b4 ff 07 28 6f d7 a7 ca"
+    ECHO "File 'dh0:Locale/Countries/österreich.country' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Countries/österreich.country' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/dansk/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/dansk/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "3a e2 75 8c 79 39 fe 6f e9 44 1c f6 d6 f1 b8 a4"
+    ECHO "File 'dh0:Locale/Help/dansk/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/dansk/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/deutsch/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/deutsch/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "f2 24 b3 2b fb f0 20 c8 98 1c df d2 30 93 72 54"
+    ECHO "File 'dh0:Locale/Help/deutsch/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/deutsch/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/english/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/english/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "55 ad a2 58 19 3d d4 bc 02 b4 cd 8a 81 7a da ec"
+    ECHO "File 'dh0:Locale/Help/english/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/english/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/español/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/español/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "f8 77 ef 05 03 16 35 ba ae ad 1c 8a a0 8a 46 10"
+    ECHO "File 'dh0:Locale/Help/español/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/español/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/français/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/français/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "a3 8d cb 6e 55 ff fb 1b 34 ab 11 e4 52 c1 f0 22"
+    ECHO "File 'dh0:Locale/Help/français/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/français/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/italiano/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/italiano/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "65 b3 89 53 40 30 50 03 4c b3 ae ed bb a6 b0 fa"
+    ECHO "File 'dh0:Locale/Help/italiano/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/italiano/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/nederlands/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/nederlands/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "eb 11 4e 77 ef 47 92 88 2c 6c d3 d0 0f c5 88 a9"
+    ECHO "File 'dh0:Locale/Help/nederlands/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/nederlands/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/norsk/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/norsk/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "b1 a7 12 50 19 c2 63 db a1 18 2c d8 68 d3 48 f5"
+    ECHO "File 'dh0:Locale/Help/norsk/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/norsk/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/português/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/português/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "07 27 50 d3 ac 97 8c 2a fd 3d f7 7e 38 08 fd 62"
+    ECHO "File 'dh0:Locale/Help/português/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/português/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Locale/Help/svenska/Sys/amigaguide.guide"
+  SET md5 `md5 "dh0:Locale/Help/svenska/Sys/amigaguide.guide"`
+  IF NOT "$md5" eq "16 86 a1 bf d1 84 06 ec cd 6d 9a e5 af 79 7e 3f"
+    ECHO "File 'dh0:Locale/Help/svenska/Sys/amigaguide.guide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Locale/Help/svenska/Sys/amigaguide.guide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/colorwheel.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/colorwheel.gadget"`
+  IF NOT "$md5" eq "72 d6 4c 9e 6f e1 17 08 15 25 42 85 8a 5d b1 fc"
+    ECHO "File 'dh0:Classes/Gadgets/colorwheel.gadget' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/Gadgets/colorwheel.gadget' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/gradientslider.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/gradientslider.gadget"`
+  IF NOT "$md5" eq "7a 88 d6 fa 98 19 86 f8 37 19 04 71 5f ba 2a 37"
+    ECHO "File 'dh0:Classes/Gadgets/gradientslider.gadget' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/Gadgets/gradientslider.gadget' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/Gadgets/tapedeck.gadget"
+  SET md5 `md5 "dh0:Classes/Gadgets/tapedeck.gadget"`
+  IF NOT "$md5" eq "0f 4f 0e 80 15 77 2c 31 fb 61 c2 f6 2c 73 82 c1"
+    ECHO "File 'dh0:Classes/Gadgets/tapedeck.gadget' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/Gadgets/tapedeck.gadget' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/8svx.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/8svx.datatype"`
+  IF NOT "$md5" eq "81 72 85 aa c2 81 f2 54 75 20 43 5b 85 f5 21 f8"
+    ECHO "File 'dh0:Classes/DataTypes/8svx.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/8svx.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/amigaguide.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/amigaguide.datatype"`
+  IF NOT "$md5" eq "55 c9 bc 5f 28 02 1f ac 61 77 62 a8 5f 31 f4 8f"
+    ECHO "File 'dh0:Classes/DataTypes/amigaguide.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/amigaguide.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/anim.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/anim.datatype"`
+  IF NOT "$md5" eq "b8 9d b9 43 b8 36 2f 25 cc 01 fd d3 8f a6 b2 0a"
+    ECHO "File 'dh0:Classes/DataTypes/anim.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/anim.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/animation.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/animation.datatype"`
+  IF NOT "$md5" eq "ac 40 f5 ac 19 3c bc 8d 9e 14 ed 5a 31 dc 77 c8"
+    ECHO "File 'dh0:Classes/DataTypes/animation.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/animation.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/ascii.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/ascii.datatype"`
+  IF NOT "$md5" eq "e2 a1 9c 7b f8 3b ef e1 14 1f 6c 99 1e 1c c2 e3"
+    ECHO "File 'dh0:Classes/DataTypes/ascii.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/ascii.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/cdxl.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/cdxl.datatype"`
+  IF NOT "$md5" eq "dd c3 dd 87 34 b3 52 6c 0f 83 36 47 00 e8 bc 7e"
+    ECHO "File 'dh0:Classes/DataTypes/cdxl.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/cdxl.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/ilbm.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/ilbm.datatype"`
+  IF NOT "$md5" eq "04 96 1b be 17 9e ee 2c eb 12 95 0a 08 2b 3b 55"
+    ECHO "File 'dh0:Classes/DataTypes/ilbm.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/ilbm.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/picture.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/picture.datatype"`
+  IF NOT "$md5" eq "c2 e8 9f 2a f6 98 59 62 ac 82 89 af 99 7a c5 55"
+    ECHO "File 'dh0:Classes/DataTypes/picture.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/picture.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/sound.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/sound.datatype"`
+  IF NOT "$md5" eq "35 f0 17 67 e1 9b 58 0a 12 e1 d9 fd 67 b2 f2 65"
+    ECHO "File 'dh0:Classes/DataTypes/sound.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/sound.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Classes/DataTypes/text.datatype"
+  SET md5 `md5 "dh0:Classes/DataTypes/text.datatype"`
+  IF NOT "$md5" eq "cd fa 61 8a 9a 81 91 ee c4 2d 4b 65 db 03 4f b7"
+    ECHO "File 'dh0:Classes/DataTypes/text.datatype' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Classes/DataTypes/text.datatype' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Monitors/PAL"
+  SET md5 `md5 "dh0:Devs/Monitors/PAL"`
+  IF NOT "$md5" eq "c4 fb ec 60 02 ff 97 84 02 9e 59 4b 78 43 a1 cd"
+    ECHO "File 'dh0:Devs/Monitors/PAL' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Monitors/PAL' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Monitors/PAL.info"
+  SET md5 `md5 "dh0:Devs/Monitors/PAL.info"`
+  IF NOT "$md5" eq "68 d3 41 8e be 12 23 74 7f 0d 48 2f 5a f0 06 ba"
+    ECHO "File 'dh0:Devs/Monitors/PAL.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Monitors/PAL.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/8SVX"
+  SET md5 `md5 "dh0:Devs/DataTypes/8SVX"`
+  IF NOT "$md5" eq "7c b9 a0 24 34 29 5a a5 b1 7d 26 78 52 84 4f a4"
+    ECHO "File 'dh0:Devs/DataTypes/8SVX' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/8SVX' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/8SVX.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/8SVX.info"`
+  IF NOT "$md5" eq "cc 25 11 ee 3c 25 71 ce a3 c0 0e d1 74 9e 57 e0"
+    ECHO "File 'dh0:Devs/DataTypes/8SVX.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/8SVX.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/AmigaGuide"
+  SET md5 `md5 "dh0:Devs/DataTypes/AmigaGuide"`
+  IF NOT "$md5" eq "5f 28 34 cd 19 c4 1a ef b5 21 11 aa c1 6c bc 56"
+    ECHO "File 'dh0:Devs/DataTypes/AmigaGuide' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/AmigaGuide' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/AmigaGuide.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/AmigaGuide.info"`
+  IF NOT "$md5" eq "cc de ab ae a9 17 43 52 9c 56 89 dc 35 cb fb 82"
+    ECHO "File 'dh0:Devs/DataTypes/AmigaGuide.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/AmigaGuide.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ANIM"
+  SET md5 `md5 "dh0:Devs/DataTypes/ANIM"`
+  IF NOT "$md5" eq "d0 8a ff 8a f1 45 30 b1 a3 7d fd f8 d1 5a 68 ad"
+    ECHO "File 'dh0:Devs/DataTypes/ANIM' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/ANIM' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ANIM.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/ANIM.info"`
+  IF NOT "$md5" eq "ee 5b a3 4c 0d bb 2e ba 87 b8 09 bb 69 b7 af 3e"
+    ECHO "File 'dh0:Devs/DataTypes/ANIM.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/ANIM.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/CDXL"
+  SET md5 `md5 "dh0:Devs/DataTypes/CDXL"`
+  IF NOT "$md5" eq "b3 58 cb dd 21 78 79 ed 53 59 0d 13 df 6f 7e ee"
+    ECHO "File 'dh0:Devs/DataTypes/CDXL' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/CDXL' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/CDXL.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/CDXL.info"`
+  IF NOT "$md5" eq "22 10 e7 9c fb b9 ae 10 83 41 30 04 5c 33 18 5a"
+    ECHO "File 'dh0:Devs/DataTypes/CDXL.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/CDXL.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/FTXT"
+  SET md5 `md5 "dh0:Devs/DataTypes/FTXT"`
+  IF NOT "$md5" eq "94 7b 65 e6 66 e7 f5 fb 51 87 cd 1d 94 69 b6 f3"
+    ECHO "File 'dh0:Devs/DataTypes/FTXT' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/FTXT' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/FTXT.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/FTXT.info"`
+  IF NOT "$md5" eq "aa 02 47 34 27 ba a9 9c 07 93 f8 0a a9 cc d8 40"
+    ECHO "File 'dh0:Devs/DataTypes/FTXT.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/FTXT.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ILBM"
+  SET md5 `md5 "dh0:Devs/DataTypes/ILBM"`
+  IF NOT "$md5" eq "f4 4c 20 0a 70 30 96 a4 90 74 35 87 94 fa 30 91"
+    ECHO "File 'dh0:Devs/DataTypes/ILBM' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/ILBM' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes/ILBM.info"
+  SET md5 `md5 "dh0:Devs/DataTypes/ILBM.info"`
+  IF NOT "$md5" eq "2f 97 c2 05 e7 46 de 25 f2 5f 55 46 f3 13 b0 5a"
+    ECHO "File 'dh0:Devs/DataTypes/ILBM.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes/ILBM.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers/PIPE"
+  SET md5 `md5 "dh0:Devs/DOSDrivers/PIPE"`
+  IF NOT "$md5" eq "30 3a 2b 2a 91 b3 fe eb b1 a3 ff d3 c5 8e dc 39"
+    ECHO "File 'dh0:Devs/DOSDrivers/PIPE' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DOSDrivers/PIPE' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers/PIPE.info"
+  SET md5 `md5 "dh0:Devs/DOSDrivers/PIPE.info"`
+  IF NOT "$md5" eq "71 db 50 4a 02 7c eb c0 1d 53 5f d4 3f 1c 6c 1c"
+    ECHO "File 'dh0:Devs/DOSDrivers/PIPE.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DOSDrivers/PIPE.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Printers/Generic"
+  SET md5 `md5 "dh0:Devs/Printers/Generic"`
+  IF NOT "$md5" eq "c7 33 76 38 7a 99 ec 4a bf 2b 99 ab 06 17 0c 47"
+    ECHO "File 'dh0:Devs/Printers/Generic' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Printers/Generic' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Printers/Generic.info"
+  SET md5 `md5 "dh0:Devs/Printers/Generic.info"`
+  IF NOT "$md5" eq "6c 3e 80 3b 79 9e e3 8f e6 5b c4 00 eb 6e 0c b5"
+    ECHO "File 'dh0:Devs/Printers/Generic.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Printers/Generic.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/cdn"
+  SET md5 `md5 "dh0:Devs/Keymaps/cdn"`
+  IF NOT "$md5" eq "ac 54 06 9c 22 af b3 b5 f6 cf 7c 4e ae 9a 4c 5b"
+    ECHO "File 'dh0:Devs/Keymaps/cdn' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/cdn' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/cdn.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/cdn.info"`
+  IF NOT "$md5" eq "29 8f a2 3c b9 e7 3e ca ea 1c 50 6f 84 8e 07 fa"
+    ECHO "File 'dh0:Devs/Keymaps/cdn.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/cdn.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch1"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch1"`
+  IF NOT "$md5" eq "c5 fb 50 71 4e 5c 71 c4 d8 68 01 fc 0e 80 c1 1a"
+    ECHO "File 'dh0:Devs/Keymaps/ch1' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/ch1' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch1.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch1.info"`
+  IF NOT "$md5" eq "f7 68 8d f2 7c 9c 36 8f 6d bd f7 13 d5 61 13 76"
+    ECHO "File 'dh0:Devs/Keymaps/ch1.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/ch1.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch2"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch2"`
+  IF NOT "$md5" eq "9f 2c fb 15 04 d3 de 59 ea a0 4c cd ca 11 bb d8"
+    ECHO "File 'dh0:Devs/Keymaps/ch2' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/ch2' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/ch2.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/ch2.info"`
+  IF NOT "$md5" eq "91 57 3c bf 6b 50 74 7c 83 f5 25 9f 85 dd 49 16"
+    ECHO "File 'dh0:Devs/Keymaps/ch2.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/ch2.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/d"
+  SET md5 `md5 "dh0:Devs/Keymaps/d"`
+  IF NOT "$md5" eq "51 23 50 5e 0e 91 0f 86 70 f5 0d ca a7 4e 10 b0"
+    ECHO "File 'dh0:Devs/Keymaps/d' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/d' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/d.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/d.info"`
+  IF NOT "$md5" eq "f3 83 42 d4 27 85 9c e2 25 56 0e a9 c2 70 e6 68"
+    ECHO "File 'dh0:Devs/Keymaps/d.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/d.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/dk"
+  SET md5 `md5 "dh0:Devs/Keymaps/dk"`
+  IF NOT "$md5" eq "45 e3 36 fe cc 88 59 65 26 1c c2 59 ce ad 49 dc"
+    ECHO "File 'dh0:Devs/Keymaps/dk' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/dk' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/dk.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/dk.info"`
+  IF NOT "$md5" eq "4c f3 d9 9d fc 48 1d 50 aa f3 ad f2 d4 8b cc ed"
+    ECHO "File 'dh0:Devs/Keymaps/dk.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/dk.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/e"
+  SET md5 `md5 "dh0:Devs/Keymaps/e"`
+  IF NOT "$md5" eq "c2 18 a8 d8 17 39 ed 5c c5 04 d5 a9 dd c7 9d 6a"
+    ECHO "File 'dh0:Devs/Keymaps/e' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/e' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/e.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/e.info"`
+  IF NOT "$md5" eq "91 54 3c 66 96 32 f7 48 88 09 b8 80 d2 50 b0 13"
+    ECHO "File 'dh0:Devs/Keymaps/e.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/e.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/f"
+  SET md5 `md5 "dh0:Devs/Keymaps/f"`
+  IF NOT "$md5" eq "5a a8 92 00 c6 f3 da 02 6a 50 aa 2c 3a e2 a6 4e"
+    ECHO "File 'dh0:Devs/Keymaps/f' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/f' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/f.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/f.info"`
+  IF NOT "$md5" eq "bb e8 55 58 15 3b ec 0b 77 47 4a 66 e7 ba 5c c1"
+    ECHO "File 'dh0:Devs/Keymaps/f.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/f.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/gb"
+  SET md5 `md5 "dh0:Devs/Keymaps/gb"`
+  IF NOT "$md5" eq "0a 32 b4 28 75 e5 8b 65 1b 22 f1 81 4a 24 44 f0"
+    ECHO "File 'dh0:Devs/Keymaps/gb' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/gb' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/gb.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/gb.info"`
+  IF NOT "$md5" eq "8d 3c 1b a1 4c 82 0d d1 01 77 45 83 fe e4 4f 9b"
+    ECHO "File 'dh0:Devs/Keymaps/gb.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/gb.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/i"
+  SET md5 `md5 "dh0:Devs/Keymaps/i"`
+  IF NOT "$md5" eq "17 d0 77 d1 b3 c7 f0 50 b9 8f 97 2f d7 d6 78 34"
+    ECHO "File 'dh0:Devs/Keymaps/i' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/i' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/i.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/i.info"`
+  IF NOT "$md5" eq "36 6c f2 0c 97 f9 c9 71 b4 0b f2 bb 4b a3 74 ac"
+    ECHO "File 'dh0:Devs/Keymaps/i.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/i.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/n"
+  SET md5 `md5 "dh0:Devs/Keymaps/n"`
+  IF NOT "$md5" eq "63 38 d8 16 4f 04 cb ac 2c ec ef 9c 24 22 47 62"
+    ECHO "File 'dh0:Devs/Keymaps/n' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/n' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/n.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/n.info"`
+  IF NOT "$md5" eq "29 8f a2 3c b9 e7 3e ca ea 1c 50 6f 84 8e 07 fa"
+    ECHO "File 'dh0:Devs/Keymaps/n.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/n.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/po"
+  SET md5 `md5 "dh0:Devs/Keymaps/po"`
+  IF NOT "$md5" eq "f1 13 9d 2e 90 d8 ef d8 3b 71 d1 d8 4c 2e 5a 5d"
+    ECHO "File 'dh0:Devs/Keymaps/po' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/po' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/po.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/po.info"`
+  IF NOT "$md5" eq "37 04 1d 30 13 d5 6a d3 0f df 86 a2 66 c7 0a d5"
+    ECHO "File 'dh0:Devs/Keymaps/po.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/po.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/s"
+  SET md5 `md5 "dh0:Devs/Keymaps/s"`
+  IF NOT "$md5" eq "5e 4e af a5 04 47 dd 05 b3 a1 73 02 16 da ea c5"
+    ECHO "File 'dh0:Devs/Keymaps/s' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/s' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/s.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/s.info"`
+  IF NOT "$md5" eq "cd 92 fe 9f 99 9c 49 0d da 1d 7e 5d 55 e0 4b 95"
+    ECHO "File 'dh0:Devs/Keymaps/s.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/s.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/usa2"
+  SET md5 `md5 "dh0:Devs/Keymaps/usa2"`
+  IF NOT "$md5" eq "39 18 ee 76 ac 2a 29 d3 d2 68 30 f2 93 ba e6 81"
+    ECHO "File 'dh0:Devs/Keymaps/usa2' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/usa2' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps/usa2.info"
+  SET md5 `md5 "dh0:Devs/Keymaps/usa2.info"`
+  IF NOT "$md5" eq "33 16 44 49 f6 e9 80 d7 a5 c6 e5 8d 3f b3 2c df"
+    ECHO "File 'dh0:Devs/Keymaps/usa2.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps/usa2.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/clipboard.device"
+  SET md5 `md5 "dh0:Devs/clipboard.device"`
+  IF NOT "$md5" eq "93 90 8d b9 de 68 c7 15 9a b4 f8 b0 2b 94 d2 95"
+    ECHO "File 'dh0:Devs/clipboard.device' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/clipboard.device' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DataTypes.info"
+  SET md5 `md5 "dh0:Devs/DataTypes.info"`
+  IF NOT "$md5" eq "33 59 7b a5 67 3d 46 3b 68 8c 82 8d 72 12 f7 83"
+    ECHO "File 'dh0:Devs/DataTypes.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DataTypes.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/DOSDrivers.info"
+  SET md5 `md5 "dh0:Devs/DOSDrivers.info"`
+  IF NOT "$md5" eq "05 92 de b3 64 d9 50 da 11 86 43 a7 25 1d 5d ba"
+    ECHO "File 'dh0:Devs/DOSDrivers.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/DOSDrivers.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Keymaps.info"
+  SET md5 `md5 "dh0:Devs/Keymaps.info"`
+  IF NOT "$md5" eq "54 d4 ce 1c ca 3d 25 37 30 27 a4 0a 40 41 6f 36"
+    ECHO "File 'dh0:Devs/Keymaps.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Keymaps.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Monitors.info"
+  SET md5 `md5 "dh0:Devs/Monitors.info"`
+  IF NOT "$md5" eq "6a 63 4d 6f 62 8f d3 5e 49 33 e2 60 9e 0e 38 98"
+    ECHO "File 'dh0:Devs/Monitors.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Monitors.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/parallel.device"
+  SET md5 `md5 "dh0:Devs/parallel.device"`
+  IF NOT "$md5" eq "10 ac ea 00 df ff e8 74 d7 4b c7 bc 89 fa a5 81"
+    ECHO "File 'dh0:Devs/parallel.device' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/parallel.device' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/postscript_init.ps"
+  SET md5 `md5 "dh0:Devs/postscript_init.ps"`
+  IF NOT "$md5" eq "63 78 b4 bb 91 dd b3 6f c7 c2 ab 23 00 2c ef 6c"
+    ECHO "File 'dh0:Devs/postscript_init.ps' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/postscript_init.ps' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/printer.device"
+  SET md5 `md5 "dh0:Devs/printer.device"`
+  IF NOT "$md5" eq "3c df 64 d4 fd f7 ce 0b dd 6a 97 bd 4d 3c ad f6"
+    ECHO "File 'dh0:Devs/printer.device' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/printer.device' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/Printers.info"
+  SET md5 `md5 "dh0:Devs/Printers.info"`
+  IF NOT "$md5" eq "d0 ee e5 ed 0b be c0 cf cc 2e 98 fa d7 6b d6 62"
+    ECHO "File 'dh0:Devs/Printers.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/Printers.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/serial.device"
+  SET md5 `md5 "dh0:Devs/serial.device"`
+  IF NOT "$md5" eq "ef f1 49 00 43 eb 27 5e 4f 50 25 8a c9 71 b6 fd"
+    ECHO "File 'dh0:Devs/serial.device' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/serial.device' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/system-configuration"
+  SET md5 `md5 "dh0:Devs/system-configuration"`
+  IF NOT "$md5" eq "31 e6 65 de ab 37 fe 89 60 26 ba 74 d7 53 b2 1d"
+    ECHO "File 'dh0:Devs/system-configuration' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/system-configuration' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs/mfm.device"
+  SET md5 `md5 "dh0:Devs/mfm.device"`
+  IF NOT "$md5" eq "57 a8 d6 f3 97 d1 58 f5 7d ae 2e 1f a1 c6 ee 7e"
+    ECHO "File 'dh0:Devs/mfm.device' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs/mfm.device' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/AUX"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/AUX"`
+  IF NOT "$md5" eq "75 47 12 21 d1 65 d4 15 db e5 77 b0 75 ea 79 41"
+    ECHO "File 'dh0:Storage/DOSDrivers/AUX' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/AUX' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/AUX.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/AUX.info"`
+  IF NOT "$md5" eq "8b 67 6d af 5c 46 cf 10 ca b3 9f d6 fe f7 b2 77"
+    ECHO "File 'dh0:Storage/DOSDrivers/AUX.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/AUX.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/CD0"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/CD0"`
+  IF NOT "$md5" eq "8f 27 bb be ac 07 eb b7 83 8f 92 c5 23 6e 70 7b"
+    ECHO "File 'dh0:Storage/DOSDrivers/CD0' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/CD0' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/CD0.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/CD0.info"`
+  IF NOT "$md5" eq "91 f6 23 41 be fa f3 38 2d e2 51 93 37 05 fd 20"
+    ECHO "File 'dh0:Storage/DOSDrivers/CD0.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/CD0.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC0"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC0"`
+  IF NOT "$md5" eq "c3 82 54 a2 25 7f 51 b6 54 e6 fc 54 b3 b5 56 78"
+    ECHO "File 'dh0:Storage/DOSDrivers/PC0' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/PC0' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC0.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC0.info"`
+  IF NOT "$md5" eq "a9 6e f7 5b 02 6c 9c d3 d0 ba 6e 42 19 b4 30 39"
+    ECHO "File 'dh0:Storage/DOSDrivers/PC0.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/PC0.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC1"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC1"`
+  IF NOT "$md5" eq "cb 87 dd 92 d9 16 11 a8 23 5d 4a a7 41 c5 3e a0"
+    ECHO "File 'dh0:Storage/DOSDrivers/PC1' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/PC1' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/PC1.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/PC1.info"`
+  IF NOT "$md5" eq "e4 e6 9b 26 6f 17 43 09 54 42 2d 23 33 1b e0 d5"
+    ECHO "File 'dh0:Storage/DOSDrivers/PC1.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/PC1.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/RAD"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/RAD"`
+  IF NOT "$md5" eq "3a 3a d5 71 fb 83 3e af d0 3b f4 2f 6c 3e 68 f8"
+    ECHO "File 'dh0:Storage/DOSDrivers/RAD' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/RAD' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers/RAD.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers/RAD.info"`
+  IF NOT "$md5" eq "22 77 dd 24 3f c3 f9 7c 1f 37 09 ae 7d 34 43 d8"
+    ECHO "File 'dh0:Storage/DOSDrivers/RAD.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers/RAD.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/A2024"
+  SET md5 `md5 "dh0:Storage/Monitors/A2024"`
+  IF NOT "$md5" eq "e4 e6 e5 5d 15 d5 58 d5 60 3c eb d5 72 e6 30 fd"
+    ECHO "File 'dh0:Storage/Monitors/A2024' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/A2024' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/A2024.info"
+  SET md5 `md5 "dh0:Storage/Monitors/A2024.info"`
+  IF NOT "$md5" eq "63 45 7f 08 e5 d0 fa e0 65 c7 63 7d fe e9 30 84"
+    ECHO "File 'dh0:Storage/Monitors/A2024.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/A2024.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblNTSC"
+  SET md5 `md5 "dh0:Storage/Monitors/DblNTSC"`
+  IF NOT "$md5" eq "17 80 48 71 8d 2c 14 23 c3 c6 b8 cc ef 51 9c 96"
+    ECHO "File 'dh0:Storage/Monitors/DblNTSC' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/DblNTSC' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblNTSC.info"
+  SET md5 `md5 "dh0:Storage/Monitors/DblNTSC.info"`
+  IF NOT "$md5" eq "21 25 82 42 e9 27 f1 fe bc 88 99 55 4c ae 47 1c"
+    ECHO "File 'dh0:Storage/Monitors/DblNTSC.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/DblNTSC.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblPAL"
+  SET md5 `md5 "dh0:Storage/Monitors/DblPAL"`
+  IF NOT "$md5" eq "d3 d0 90 12 39 6e e6 95 d7 2c 1a f1 5f 05 a4 70"
+    ECHO "File 'dh0:Storage/Monitors/DblPAL' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/DblPAL' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/DblPAL.info"
+  SET md5 `md5 "dh0:Storage/Monitors/DblPAL.info"`
+  IF NOT "$md5" eq "8d ef 19 fa c5 0b fe f2 b0 4f c6 9f 96 1f 8c 70"
+    ECHO "File 'dh0:Storage/Monitors/DblPAL.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/DblPAL.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro36"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro36"`
+  IF NOT "$md5" eq "97 d8 b9 f5 a1 ef 33 2b a9 1c 1b 98 65 a4 49 a3"
+    ECHO "File 'dh0:Storage/Monitors/Euro36' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Euro36' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro36.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro36.info"`
+  IF NOT "$md5" eq "c9 40 f8 51 a0 cd 20 fe aa fc 4e fb 3a 3c 9c a6"
+    ECHO "File 'dh0:Storage/Monitors/Euro36.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Euro36.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro72"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro72"`
+  IF NOT "$md5" eq "42 c0 1a 8a 9b 92 e4 01 f5 31 a0 d1 48 c7 ed f3"
+    ECHO "File 'dh0:Storage/Monitors/Euro72' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Euro72' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Euro72.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Euro72.info"`
+  IF NOT "$md5" eq "76 ec e7 32 c3 44 ec 8b 67 e5 70 63 34 98 6c f8"
+    ECHO "File 'dh0:Storage/Monitors/Euro72.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Euro72.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Multiscan"
+  SET md5 `md5 "dh0:Storage/Monitors/Multiscan"`
+  IF NOT "$md5" eq "1c 09 59 98 ce a7 f6 81 ef 37 6f a8 8b 88 5f e5"
+    ECHO "File 'dh0:Storage/Monitors/Multiscan' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Multiscan' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Multiscan.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Multiscan.info"`
+  IF NOT "$md5" eq "63 45 7f 08 e5 d0 fa e0 65 c7 63 7d fe e9 30 84"
+    ECHO "File 'dh0:Storage/Monitors/Multiscan.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Multiscan.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/NTSC"
+  SET md5 `md5 "dh0:Storage/Monitors/NTSC"`
+  IF NOT "$md5" eq "f2 15 4b b5 3d f7 50 6d 64 08 ff c3 81 46 60 62"
+    ECHO "File 'dh0:Storage/Monitors/NTSC' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/NTSC' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/NTSC.info"
+  SET md5 `md5 "dh0:Storage/Monitors/NTSC.info"`
+  IF NOT "$md5" eq "1a d7 34 89 33 a4 58 3d 5f 3c 20 f8 d1 1c 79 8c"
+    ECHO "File 'dh0:Storage/Monitors/NTSC.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/NTSC.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Super72"
+  SET md5 `md5 "dh0:Storage/Monitors/Super72"`
+  IF NOT "$md5" eq "62 aa c0 61 c6 47 34 54 62 a1 17 ec b3 1d 8b 43"
+    ECHO "File 'dh0:Storage/Monitors/Super72' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Super72' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/Super72.info"
+  SET md5 `md5 "dh0:Storage/Monitors/Super72.info"`
+  IF NOT "$md5" eq "e4 e3 13 ac b5 5a 18 82 8d 48 f7 cb b4 42 b6 cc"
+    ECHO "File 'dh0:Storage/Monitors/Super72.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/Super72.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/VGAOnly"
+  SET md5 `md5 "dh0:Storage/Monitors/VGAOnly"`
+  IF NOT "$md5" eq "8e 48 a9 e0 b7 a4 b0 59 99 43 ff 95 e6 d8 dc 31"
+    ECHO "File 'dh0:Storage/Monitors/VGAOnly' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/VGAOnly' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors/VGAOnly.info"
+  SET md5 `md5 "dh0:Storage/Monitors/VGAOnly.info"`
+  IF NOT "$md5" eq "bb cd 78 40 43 51 bf 39 96 a1 d3 62 b5 21 83 a8"
+    ECHO "File 'dh0:Storage/Monitors/VGAOnly.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors/VGAOnly.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DataTypes.info"
+  SET md5 `md5 "dh0:Storage/DataTypes.info"`
+  IF NOT "$md5" eq "25 0a e3 5f ff f8 bb fa 36 cc e1 6c c1 32 cb e0"
+    ECHO "File 'dh0:Storage/DataTypes.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DataTypes.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Disk.info"
+  SET md5 `md5 "dh0:Storage/Disk.info"`
+  IF NOT "$md5" eq "cb 98 48 d6 7d 67 9b 7c 99 f4 e1 8d 2a 0c 76 e0"
+    ECHO "File 'dh0:Storage/Disk.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Disk.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/DOSDrivers.info"
+  SET md5 `md5 "dh0:Storage/DOSDrivers.info"`
+  IF NOT "$md5" eq "08 ab 11 57 59 0b f9 eb 8e d0 bb cc c2 a5 ff 4c"
+    ECHO "File 'dh0:Storage/DOSDrivers.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/DOSDrivers.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Keymaps.info"
+  SET md5 `md5 "dh0:Storage/Keymaps.info"`
+  IF NOT "$md5" eq "36 c1 dd ea af 38 2a 79 94 0d bf 1e 07 82 06 df"
+    ECHO "File 'dh0:Storage/Keymaps.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Keymaps.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Monitors.info"
+  SET md5 `md5 "dh0:Storage/Monitors.info"`
+  IF NOT "$md5" eq "80 fe 1c bb 06 d4 14 ba 44 b3 b4 15 58 ac 6c 1f"
+    ECHO "File 'dh0:Storage/Monitors.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Monitors.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage/Printers.info"
+  SET md5 `md5 "dh0:Storage/Printers.info"`
+  IF NOT "$md5" eq "4b b3 11 ef 6b 70 df 2d 11 b1 32 08 d3 6a d9 5a"
+    ECHO "File 'dh0:Storage/Printers.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage/Printers.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Storage.info"
+  SET md5 `md5 "dh0:Storage.info"`
+  IF NOT "$md5" eq "8c bb e5 6a 20 29 a3 eb e7 24 ff 38 af 8f 38 6b"
+    ECHO "File 'dh0:Storage.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Storage.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Devs.info"
+  SET md5 `md5 "dh0:Devs.info"`
+  IF NOT "$md5" eq "40 2b 9d 70 6b fc b5 22 d0 9d ee e4 92 3f f0 ad"
+    ECHO "File 'dh0:Devs.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Devs.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Disk.info"
+  SET md5 `md5 "dh0:Disk.info"`
+  IF NOT "$md5" eq "e8 49 2b f6 c0 77 2a b3 59 a5 2a c0 10 67 f1 16"
+    ECHO "File 'dh0:Disk.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Disk.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Expansion.info"
+  SET md5 `md5 "dh0:Expansion.info"`
+  IF NOT "$md5" eq "dd ea 2a 74 c3 4d b8 bf 11 6c e3 04 e7 df 3a f9"
+    ECHO "File 'dh0:Expansion.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Expansion.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Prefs.info"
+  SET md5 `md5 "dh0:Prefs.info"`
+  IF NOT "$md5" eq "3b f2 03 bf c1 d3 10 62 a7 2f e1 b9 9f b6 4c 51"
+    ECHO "File 'dh0:Prefs.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Prefs.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System.info"
+  SET md5 `md5 "dh0:System.info"`
+  IF NOT "$md5" eq "71 ab 3e 41 97 c6 38 76 53 56 3f c8 78 90 77 6b"
+    ECHO "File 'dh0:System.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities.info"
+  SET md5 `md5 "dh0:Utilities.info"`
+  IF NOT "$md5" eq "ed f3 cc a1 02 30 80 5f b9 9e 8a f0 e7 cc 7a c5"
+    ECHO "File 'dh0:Utilities.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:WBStartup.info"
+  SET md5 `md5 "dh0:WBStartup.info"`
+  IF NOT "$md5" eq "9d 94 52 ad bd 87 ad 82 ab 02 70 a4 58 57 09 78"
+    ECHO "File 'dh0:WBStartup.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:WBStartup.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Rename"
+  SET md5 `md5 "dh0:C/Rename"`
+  IF NOT "$md5" eq "05 c9 65 55 4d 92 4e c1 7d 50 96 f4 b5 5c 6b a1"
+    ECHO "File 'dh0:C/Rename' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Rename' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/RequestChoice"
+  SET md5 `md5 "dh0:C/RequestChoice"`
+  IF NOT "$md5" eq "0a 34 c0 b9 56 b8 16 2a 09 46 29 bd 4a 98 29 0b"
+    ECHO "File 'dh0:C/RequestChoice' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/RequestChoice' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/RequestFile"
+  SET md5 `md5 "dh0:C/RequestFile"`
+  IF NOT "$md5" eq "f7 f8 56 94 4f 1b 81 5e ab 8f fd 19 36 90 e3 5b"
+    ECHO "File 'dh0:C/RequestFile' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/RequestFile' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Search"
+  SET md5 `md5 "dh0:C/Search"`
+  IF NOT "$md5" eq "71 af 71 14 5c dc ab 30 c8 5c 46 80 43 1b d2 8e"
+    ECHO "File 'dh0:C/Search' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Search' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/SetClock"
+  SET md5 `md5 "dh0:C/SetClock"`
+  IF NOT "$md5" eq "02 9a 80 4d 7b e9 f9 67 16 19 90 22 ca aa 27 2e"
+    ECHO "File 'dh0:C/SetClock' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/SetClock' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/SetDate"
+  SET md5 `md5 "dh0:C/SetDate"`
+  IF NOT "$md5" eq "54 a0 10 e2 61 ab be e9 28 cd 5c f4 d8 e3 2e f0"
+    ECHO "File 'dh0:C/SetDate' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/SetDate' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/SetFont"
+  SET md5 `md5 "dh0:C/SetFont"`
+  IF NOT "$md5" eq "58 ad 23 52 5c 14 99 5a 4c 49 60 61 8e 9c 4f 56"
+    ECHO "File 'dh0:C/SetFont' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/SetFont' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/SetKeyboard"
+  SET md5 `md5 "dh0:C/SetKeyboard"`
+  IF NOT "$md5" eq "77 28 a9 f9 87 8b 30 55 cd 85 f6 d2 75 32 07 82"
+    ECHO "File 'dh0:C/SetKeyboard' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/SetKeyboard' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/SetPatch"
+  SET md5 `md5 "dh0:C/SetPatch"`
+  IF NOT "$md5" eq "8f 50 d6 a4 12 98 14 bf 23 5f 7a c2 b5 0c b4 17"
+    ECHO "File 'dh0:C/SetPatch' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/SetPatch' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Sort"
+  SET md5 `md5 "dh0:C/Sort"`
+  IF NOT "$md5" eq "5e ed b3 2f 30 84 b1 c0 6b 68 51 ba 5d 79 66 a1"
+    ECHO "File 'dh0:C/Sort' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Sort' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Status"
+  SET md5 `md5 "dh0:C/Status"`
+  IF NOT "$md5" eq "cb 58 e4 56 9a 26 72 94 ce 7b 86 f9 18 92 29 74"
+    ECHO "File 'dh0:C/Status' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Status' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Type"
+  SET md5 `md5 "dh0:C/Type"`
+  IF NOT "$md5" eq "a7 a0 c0 8b 0b 1e 1a f7 d0 31 94 c5 08 26 47 0e"
+    ECHO "File 'dh0:C/Type' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Type' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Version"
+  SET md5 `md5 "dh0:C/Version"`
+  IF NOT "$md5" eq "bb ec f0 2f 80 2c 16 1a 7d 24 ba b9 52 33 a4 d6"
+    ECHO "File 'dh0:C/Version' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Version' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Wait"
+  SET md5 `md5 "dh0:C/Wait"`
+  IF NOT "$md5" eq "e6 ff 58 36 fb 50 88 3e 2c 04 e1 35 8f 83 83 2e"
+    ECHO "File 'dh0:C/Wait' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Wait' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Which"
+  SET md5 `md5 "dh0:C/Which"`
+  IF NOT "$md5" eq "dc 69 70 7b 80 be 7f 7c c5 77 8f 5f ac f5 c2 1a"
+    ECHO "File 'dh0:C/Which' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Which' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/AddBuffers"
+  SET md5 `md5 "dh0:C/AddBuffers"`
+  IF NOT "$md5" eq "1b d1 37 14 5f bb 3c 40 97 71 b6 bd 88 9a db 07"
+    ECHO "File 'dh0:C/AddBuffers' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/AddBuffers' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/AddDataTypes"
+  SET md5 `md5 "dh0:C/AddDataTypes"`
+  IF NOT "$md5" eq "b0 34 a1 ef c0 9e e6 fa 0a c8 b6 de b6 dc 61 46"
+    ECHO "File 'dh0:C/AddDataTypes' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/AddDataTypes' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Assign"
+  SET md5 `md5 "dh0:C/Assign"`
+  IF NOT "$md5" eq "0c a2 4f 1b 23 fb 52 64 2b 89 50 10 ed f7 9b 89"
+    ECHO "File 'dh0:C/Assign' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Assign' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Avail"
+  SET md5 `md5 "dh0:C/Avail"`
+  IF NOT "$md5" eq "98 ab b6 f2 3c a1 09 78 98 cd f9 8a 84 c6 d6 9f"
+    ECHO "File 'dh0:C/Avail' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Avail' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/BindDrivers"
+  SET md5 `md5 "dh0:C/BindDrivers"`
+  IF NOT "$md5" eq "89 1e c3 cb 98 bd 07 44 cb b5 f7 40 7e 67 8c 71"
+    ECHO "File 'dh0:C/BindDrivers' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/BindDrivers' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Break"
+  SET md5 `md5 "dh0:C/Break"`
+  IF NOT "$md5" eq "eb 0d af f1 ae c5 54 f6 a3 3b e9 8c 4d 27 5e 47"
+    ECHO "File 'dh0:C/Break' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Break' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/ChangeTaskPri"
+  SET md5 `md5 "dh0:C/ChangeTaskPri"`
+  IF NOT "$md5" eq "ac 91 cf ff 62 49 cb 5d 53 dc 78 14 8b c2 ba 55"
+    ECHO "File 'dh0:C/ChangeTaskPri' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/ChangeTaskPri' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/ConClip"
+  SET md5 `md5 "dh0:C/ConClip"`
+  IF NOT "$md5" eq "fe f2 33 2c b7 23 22 a5 a8 a0 aa 45 27 ee 0c ed"
+    ECHO "File 'dh0:C/ConClip' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/ConClip' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Copy"
+  SET md5 `md5 "dh0:C/Copy"`
+  IF NOT "$md5" eq "5f f7 9c bc d6 36 0e b3 8e cb ce cf 6b 85 75 77"
+    ECHO "File 'dh0:C/Copy' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Copy' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/CPU"
+  SET md5 `md5 "dh0:C/CPU"`
+  IF NOT "$md5" eq "f2 4c 45 ef 5e d3 44 71 fd 9b 4e 45 df 22 51 eb"
+    ECHO "File 'dh0:C/CPU' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/CPU' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Date"
+  SET md5 `md5 "dh0:C/Date"`
+  IF NOT "$md5" eq "10 d7 56 c6 28 e4 26 f3 43 dc 25 5b f6 18 43 ac"
+    ECHO "File 'dh0:C/Date' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Date' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Delete"
+  SET md5 `md5 "dh0:C/Delete"`
+  IF NOT "$md5" eq "44 78 89 04 79 07 8a cf c4 48 c1 fb 4d 06 85 ea"
+    ECHO "File 'dh0:C/Delete' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Delete' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Dir"
+  SET md5 `md5 "dh0:C/Dir"`
+  IF NOT "$md5" eq "c8 96 a6 10 89 5a 36 be 0d ea 48 9c d6 dd 83 ee"
+    ECHO "File 'dh0:C/Dir' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Dir' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/DiskChange"
+  SET md5 `md5 "dh0:C/DiskChange"`
+  IF NOT "$md5" eq "e9 74 4b 63 bd 77 71 73 9c 6f a6 db 40 e2 0c fd"
+    ECHO "File 'dh0:C/DiskChange' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/DiskChange' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Ed"
+  SET md5 `md5 "dh0:C/Ed"`
+  IF NOT "$md5" eq "1a d3 37 12 90 be 4a 85 56 84 d2 4c 35 35 f1 97"
+    ECHO "File 'dh0:C/Ed' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Ed' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Edit"
+  SET md5 `md5 "dh0:C/Edit"`
+  IF NOT "$md5" eq "68 f1 a1 a7 a2 2c 21 e5 16 69 87 ea bf 77 69 fc"
+    ECHO "File 'dh0:C/Edit' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Edit' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Eval"
+  SET md5 `md5 "dh0:C/Eval"`
+  IF NOT "$md5" eq "33 8e 6f 45 cc 87 b4 18 af a5 7d 3c 79 63 a8 f7"
+    ECHO "File 'dh0:C/Eval' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Eval' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Execute"
+  SET md5 `md5 "dh0:C/Execute"`
+  IF NOT "$md5" eq "4e f5 cf b3 63 d5 c9 71 77 43 b1 94 fe 6a 9b 4d"
+    ECHO "File 'dh0:C/Execute' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Execute' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Filenote"
+  SET md5 `md5 "dh0:C/Filenote"`
+  IF NOT "$md5" eq "24 24 55 ff a2 d4 6e a2 a4 85 07 bc a5 d0 c8 43"
+    ECHO "File 'dh0:C/Filenote' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Filenote' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/IconX"
+  SET md5 `md5 "dh0:C/IconX"`
+  IF NOT "$md5" eq "e8 b7 d4 e6 57 9e 7a 69 a5 82 b9 25 0c e6 21 da"
+    ECHO "File 'dh0:C/IconX' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/IconX' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Info"
+  SET md5 `md5 "dh0:C/Info"`
+  IF NOT "$md5" eq "c7 6b 6f fc 24 de ac 7a d8 50 2a e3 85 47 4d be"
+    ECHO "File 'dh0:C/Info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Install"
+  SET md5 `md5 "dh0:C/Install"`
+  IF NOT "$md5" eq "f2 ef 15 62 0b 66 31 f3 a7 02 27 88 0d 7a 6c 32"
+    ECHO "File 'dh0:C/Install' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Install' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/IPrefs"
+  SET md5 `md5 "dh0:C/IPrefs"`
+  IF NOT "$md5" eq "cc 0f 09 bf 5c 28 54 50 ca cc 89 58 18 36 99 48"
+    ECHO "File 'dh0:C/IPrefs' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/IPrefs' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Join"
+  SET md5 `md5 "dh0:C/Join"`
+  IF NOT "$md5" eq "38 d4 9b 55 66 5c bd 71 d8 9a 07 87 7f 59 5a a0"
+    ECHO "File 'dh0:C/Join' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Join' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/List"
+  SET md5 `md5 "dh0:C/List"`
+  IF NOT "$md5" eq "63 74 68 40 1e a7 4b 59 37 aa a1 93 f7 78 3d e2"
+    ECHO "File 'dh0:C/List' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/List' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/LoadResource"
+  SET md5 `md5 "dh0:C/LoadResource"`
+  IF NOT "$md5" eq "cb 52 a5 f9 8c 8e cd 26 74 5f ac 64 4a 44 9d a9"
+    ECHO "File 'dh0:C/LoadResource' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/LoadResource' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/LoadWB"
+  SET md5 `md5 "dh0:C/LoadWB"`
+  IF NOT "$md5" eq "db b1 e3 dd 1d b1 42 a2 e1 6f 2f 94 36 67 7c b5"
+    ECHO "File 'dh0:C/LoadWB' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/LoadWB' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Lock"
+  SET md5 `md5 "dh0:C/Lock"`
+  IF NOT "$md5" eq "8f 63 e1 88 b6 2f 9a b1 11 85 d9 46 21 81 e7 70"
+    ECHO "File 'dh0:C/Lock' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Lock' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/MagTape"
+  SET md5 `md5 "dh0:C/MagTape"`
+  IF NOT "$md5" eq "b1 05 e5 e3 ea b8 a3 37 09 6f bc e8 28 8a 5c 18"
+    ECHO "File 'dh0:C/MagTape' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/MagTape' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/MakeDir"
+  SET md5 `md5 "dh0:C/MakeDir"`
+  IF NOT "$md5" eq "9d 5b c4 9c 13 fe de 55 d1 4f a2 45 2a c3 0c 8b"
+    ECHO "File 'dh0:C/MakeDir' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/MakeDir' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/MakeLink"
+  SET md5 `md5 "dh0:C/MakeLink"`
+  IF NOT "$md5" eq "17 2e aa 28 f1 ed bd 30 1d cb 00 00 3a 03 a0 ad"
+    ECHO "File 'dh0:C/MakeLink' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/MakeLink' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Mount"
+  SET md5 `md5 "dh0:C/Mount"`
+  IF NOT "$md5" eq "a3 e5 75 28 63 4b 84 c0 06 4c e6 e2 d0 d1 e5 f9"
+    ECHO "File 'dh0:C/Mount' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Mount' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Protect"
+  SET md5 `md5 "dh0:C/Protect"`
+  IF NOT "$md5" eq "92 aa 9d c1 2b c9 58 34 f6 f5 4c 8d 47 f4 6a 02"
+    ECHO "File 'dh0:C/Protect' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Protect' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/Relabel"
+  SET md5 `md5 "dh0:C/Relabel"`
+  IF NOT "$md5" eq "4c 8a 08 c4 7e d5 76 f3 98 7c c5 fe eb 98 e4 4e"
+    ECHO "File 'dh0:C/Relabel' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/Relabel' doesn't exist"
+ENDIF
+IF EXISTS "dh0:C/RemRAD"
+  SET md5 `md5 "dh0:C/RemRAD"`
+  IF NOT "$md5" eq "c7 32 5d af fb 72 8d 3f a8 f5 b7 2b 36 d1 aa 99"
+    ECHO "File 'dh0:C/RemRAD' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:C/RemRAD' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/aux-handler"
+  SET md5 `md5 "dh0:L/aux-handler"`
+  IF NOT "$md5" eq "e9 2d a6 f5 cd 20 a6 eb dd ba 66 9c 17 89 c1 1d"
+    ECHO "File 'dh0:L/aux-handler' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/aux-handler' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/CrossDOSFileSystem"
+  SET md5 `md5 "dh0:L/CrossDOSFileSystem"`
+  IF NOT "$md5" eq "d3 80 0b 63 c3 c0 43 07 10 6d 84 f2 6d 58 4c 5d"
+    ECHO "File 'dh0:L/CrossDOSFileSystem' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/CrossDOSFileSystem' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/port-handler"
+  SET md5 `md5 "dh0:L/port-handler"`
+  IF NOT "$md5" eq "ec b1 ed 07 09 3d d3 d0 52 b2 db 61 33 fc 2a 42"
+    ECHO "File 'dh0:L/port-handler' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/port-handler' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/queue-handler"
+  SET md5 `md5 "dh0:L/queue-handler"`
+  IF NOT "$md5" eq "b0 32 cb 26 3f 40 76 85 20 af cf 21 07 9d 8e 50"
+    ECHO "File 'dh0:L/queue-handler' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/queue-handler' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/DANSK.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/DANSK.crossdos"`
+  IF NOT "$md5" eq "d9 5f 68 2f de 39 87 1d f1 c7 fd 72 94 7f 32 05"
+    ECHO "File 'dh0:L/FileSystem_Trans/DANSK.crossdos' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/FileSystem_Trans/DANSK.crossdos' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/INTL.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/INTL.crossdos"`
+  IF NOT "$md5" eq "83 3f 52 f8 03 41 91 49 71 53 86 dc 97 6d 09 d9"
+    ECHO "File 'dh0:L/FileSystem_Trans/INTL.crossdos' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/FileSystem_Trans/INTL.crossdos' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/FileSystem_Trans/MAC.crossdos"
+  SET md5 `md5 "dh0:L/FileSystem_Trans/MAC.crossdos"`
+  IF NOT "$md5" eq "b8 98 ca 6e c0 f3 ce db 81 fe 8c d9 ae 46 04 e4"
+    ECHO "File 'dh0:L/FileSystem_Trans/MAC.crossdos' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/FileSystem_Trans/MAC.crossdos' doesn't exist"
+ENDIF
+IF EXISTS "dh0:L/CDFileSystem"
+  SET md5 `md5 "dh0:L/CDFileSystem"`
+  IF NOT "$md5" eq "eb 5a 0d 7a a0 45 92 43 57 17 6c 94 84 74 34 b6"
+    ECHO "File 'dh0:L/CDFileSystem' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:L/CDFileSystem' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/asl.library"
+  SET md5 `md5 "dh0:Libs/asl.library"`
+  IF NOT "$md5" eq "8c a7 95 55 a8 d3 a5 2c ba 60 40 b2 66 83 f0 e0"
+    ECHO "File 'dh0:Libs/asl.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/asl.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/bullet.library"
+  SET md5 `md5 "dh0:Libs/bullet.library"`
+  IF NOT "$md5" eq "af be f3 ba 64 27 fb a0 31 d7 e1 ec 02 1c 5f b8"
+    ECHO "File 'dh0:Libs/bullet.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/bullet.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/commodities.library"
+  SET md5 `md5 "dh0:Libs/commodities.library"`
+  IF NOT "$md5" eq "81 f8 80 e3 ae 68 8b ff ca 2c a1 81 ac ff 4e 8b"
+    ECHO "File 'dh0:Libs/commodities.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/commodities.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/datatypes.library"
+  SET md5 `md5 "dh0:Libs/datatypes.library"`
+  IF NOT "$md5" eq "42 99 d5 ef 8d 16 e8 47 39 0f 1d 90 dd 44 6b ca"
+    ECHO "File 'dh0:Libs/datatypes.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/datatypes.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/diskfont.library"
+  SET md5 `md5 "dh0:Libs/diskfont.library"`
+  IF NOT "$md5" eq "3a 51 54 f2 62 1d d8 3a 06 58 ea 34 57 36 a4 c2"
+    ECHO "File 'dh0:Libs/diskfont.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/diskfont.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/iffparse.library"
+  SET md5 `md5 "dh0:Libs/iffparse.library"`
+  IF NOT "$md5" eq "be 6a 99 93 95 f2 ae 91 74 46 94 ad f9 7b ec 9f"
+    ECHO "File 'dh0:Libs/iffparse.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/iffparse.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/locale.library"
+  SET md5 `md5 "dh0:Libs/locale.library"`
+  IF NOT "$md5" eq "eb d9 35 2a ce 42 64 08 f6 4b 4b 81 d5 f9 c6 ee"
+    ECHO "File 'dh0:Libs/locale.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/locale.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/lowlevel.library"
+  SET md5 `md5 "dh0:Libs/lowlevel.library"`
+  IF NOT "$md5" eq "ab b2 c3 5e 16 51 6b 40 cc 87 bb a7 a3 1e a3 3c"
+    ECHO "File 'dh0:Libs/lowlevel.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/lowlevel.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/mathieeedoubbas.library"
+  SET md5 `md5 "dh0:Libs/mathieeedoubbas.library"`
+  IF NOT "$md5" eq "48 96 23 2a 56 59 0c 42 03 30 45 75 f1 03 44 56"
+    ECHO "File 'dh0:Libs/mathieeedoubbas.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/mathieeedoubbas.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/mathieeedoubtrans.library"
+  SET md5 `md5 "dh0:Libs/mathieeedoubtrans.library"`
+  IF NOT "$md5" eq "77 24 4f 58 b9 f8 0d bf 10 43 c6 34 da ef 9e 4b"
+    ECHO "File 'dh0:Libs/mathieeedoubtrans.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/mathieeedoubtrans.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/mathieeesingtrans.library"
+  SET md5 `md5 "dh0:Libs/mathieeesingtrans.library"`
+  IF NOT "$md5" eq "f6 7b cb 95 d9 7b 7f 82 94 25 65 8a 5c b6 61 5d"
+    ECHO "File 'dh0:Libs/mathieeesingtrans.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/mathieeesingtrans.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/mathtrans.library"
+  SET md5 `md5 "dh0:Libs/mathtrans.library"`
+  IF NOT "$md5" eq "27 38 ee ad ce 55 f1 43 4b 1f 76 31 3b 1b 4a 6e"
+    ECHO "File 'dh0:Libs/mathtrans.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/mathtrans.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/nonvolatile.library"
+  SET md5 `md5 "dh0:Libs/nonvolatile.library"`
+  IF NOT "$md5" eq "0b 46 8e 86 75 5a 29 f7 94 79 d3 3f 04 6e 53 5a"
+    ECHO "File 'dh0:Libs/nonvolatile.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/nonvolatile.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/realtime.library"
+  SET md5 `md5 "dh0:Libs/realtime.library"`
+  IF NOT "$md5" eq "71 a4 c7 7f d8 79 7d 8a e4 e8 df d5 17 90 56 81"
+    ECHO "File 'dh0:Libs/realtime.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/realtime.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/rexxsupport.library"
+  SET md5 `md5 "dh0:Libs/rexxsupport.library"`
+  IF NOT "$md5" eq "27 23 74 03 79 0d 46 38 d8 54 4f 09 f0 79 d7 f7"
+    ECHO "File 'dh0:Libs/rexxsupport.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/rexxsupport.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/rexxsyslib.library"
+  SET md5 `md5 "dh0:Libs/rexxsyslib.library"`
+  IF NOT "$md5" eq "84 4a d7 77 79 f5 79 37 02 c4 9b 63 7a ce fe db"
+    ECHO "File 'dh0:Libs/rexxsyslib.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/rexxsyslib.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/version.library"
+  SET md5 `md5 "dh0:Libs/version.library"`
+  IF NOT "$md5" eq "1d 6d 42 75 20 95 04 3c 69 8f 8d 3d 64 86 4a 60"
+    ECHO "File 'dh0:Libs/version.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/version.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/amigaguide.library"
+  SET md5 `md5 "dh0:Libs/amigaguide.library"`
+  IF NOT "$md5" eq "ff 4d 62 e7 90 0d 00 44 69 fa c3 10 c6 09 a3 ce"
+    ECHO "File 'dh0:Libs/amigaguide.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/amigaguide.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Libs/68040.library"
+  SET md5 `md5 "dh0:Libs/68040.library"`
+  IF NOT "$md5" eq "9e 2e c3 10 f7 39 c5 e2 cd 5e d7 66 59 89 d8 ad"
+    ECHO "File 'dh0:Libs/68040.library' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Libs/68040.library' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/HI"
+  SET md5 `md5 "dh0:Rexxc/HI"`
+  IF NOT "$md5" eq "12 3a 9d e1 1a cd b1 c6 2a c4 e6 a3 fa c1 f7 50"
+    ECHO "File 'dh0:Rexxc/HI' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/HI' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/RX"
+  SET md5 `md5 "dh0:Rexxc/RX"`
+  IF NOT "$md5" eq "17 2f 08 2a b0 d9 1f 51 26 a1 48 e5 f2 ee 46 bd"
+    ECHO "File 'dh0:Rexxc/RX' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/RX' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/RXC"
+  SET md5 `md5 "dh0:Rexxc/RXC"`
+  IF NOT "$md5" eq "29 d7 f6 86 a2 65 70 91 82 16 dd c3 d5 2d c8 19"
+    ECHO "File 'dh0:Rexxc/RXC' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/RXC' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/RXLIB"
+  SET md5 `md5 "dh0:Rexxc/RXLIB"`
+  IF NOT "$md5" eq "9b c7 a3 77 61 5f d1 3f 4e e1 74 ee 85 47 8e fe"
+    ECHO "File 'dh0:Rexxc/RXLIB' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/RXLIB' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/RXSET"
+  SET md5 `md5 "dh0:Rexxc/RXSET"`
+  IF NOT "$md5" eq "14 5b df 6a 62 55 e2 66 56 f8 1e e4 f5 b6 05 77"
+    ECHO "File 'dh0:Rexxc/RXSET' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/RXSET' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/TCC"
+  SET md5 `md5 "dh0:Rexxc/TCC"`
+  IF NOT "$md5" eq "2b fe 9a dd b1 8f 90 2e 0b 5b e2 2a 63 6e da 72"
+    ECHO "File 'dh0:Rexxc/TCC' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/TCC' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/TCO"
+  SET md5 `md5 "dh0:Rexxc/TCO"`
+  IF NOT "$md5" eq "ae 3b 7f 2a 35 f1 91 3c 53 d2 3a c7 a3 fa d8 86"
+    ECHO "File 'dh0:Rexxc/TCO' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/TCO' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/TE"
+  SET md5 `md5 "dh0:Rexxc/TE"`
+  IF NOT "$md5" eq "84 ed 4a 6a a6 3b 7f c3 5c d9 5c 54 6b fe 2b 1f"
+    ECHO "File 'dh0:Rexxc/TE' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/TE' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/TS"
+  SET md5 `md5 "dh0:Rexxc/TS"`
+  IF NOT "$md5" eq "26 03 e9 93 72 dc 9c 3b 16 75 8c c3 8b 28 79 e1"
+    ECHO "File 'dh0:Rexxc/TS' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/TS' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Rexxc/WaitForPort"
+  SET md5 `md5 "dh0:Rexxc/WaitForPort"`
+  IF NOT "$md5" eq "13 98 fe 54 26 a1 76 8c b0 ba 38 3a 01 a3 b7 e4"
+    ECHO "File 'dh0:Rexxc/WaitForPort' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Rexxc/WaitForPort' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/DPat"
+  SET md5 `md5 "dh0:S/DPat"`
+  IF NOT "$md5" eq "c1 f3 56 e2 cc ba e3 26 21 5e 54 87 55 30 52 51"
+    ECHO "File 'dh0:S/DPat' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/DPat' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/Startup-Sequence"
+  SET md5 `md5 "dh0:S/Startup-Sequence"`
+  IF NOT "$md5" eq "11 10 66 9b 63 b2 48 2e 60 7f 5d 8b bf 6b 58 69"
+    ECHO "File 'dh0:S/Startup-Sequence' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/Startup-Sequence' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/Ed-startup"
+  SET md5 `md5 "dh0:S/Ed-startup"`
+  IF NOT "$md5" eq "0f 2b 1f e2 b7 51 62 e1 a4 1f 0b 72 01 ef bb f4"
+    ECHO "File 'dh0:S/Ed-startup' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/Ed-startup' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/Shell-Startup"
+  SET md5 `md5 "dh0:S/Shell-Startup"`
+  IF NOT "$md5" eq "c9 de 49 6f 18 8c f8 7d 73 ee aa ce 5c 3e c6 b0"
+    ECHO "File 'dh0:S/Shell-Startup' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/Shell-Startup' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/SPat"
+  SET md5 `md5 "dh0:S/SPat"`
+  IF NOT "$md5" eq "0c 51 34 1e d1 da da da 13 3c 9c 30 bc 09 20 16"
+    ECHO "File 'dh0:S/SPat' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/SPat' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/PCD"
+  SET md5 `md5 "dh0:S/PCD"`
+  IF NOT "$md5" eq "ff 14 d5 b2 97 85 39 7e 51 e1 c8 94 10 67 80 ad"
+    ECHO "File 'dh0:S/PCD' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/PCD' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/BRUtab"
+  SET md5 `md5 "dh0:S/BRUtab"`
+  IF NOT "$md5" eq "42 35 b1 e2 ca 5d 43 da 88 c9 39 b7 d1 80 18 9d"
+    ECHO "File 'dh0:S/BRUtab' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/BRUtab' doesn't exist"
+ENDIF
+IF EXISTS "dh0:S/HDBackup.config"
+  SET md5 `md5 "dh0:S/HDBackup.config"`
+  IF NOT "$md5" eq "c6 42 ff 7c 38 fd 2b ee da b9 7e fd 7f 22 f9 56"
+    ECHO "File 'dh0:S/HDBackup.config' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:S/HDBackup.config' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/CLI"
+  SET md5 `md5 "dh0:System/CLI"`
+  IF NOT "$md5" eq "58 15 e2 21 c4 d2 35 0c 24 4f e7 09 bb 8c 42 17"
+    ECHO "File 'dh0:System/CLI' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/CLI' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/DiskCopy"
+  SET md5 `md5 "dh0:System/DiskCopy"`
+  IF NOT "$md5" eq "e8 a1 7a aa e1 88 90 11 00 5d 53 01 56 fa 73 c7"
+    ECHO "File 'dh0:System/DiskCopy' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/DiskCopy' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/FixFonts"
+  SET md5 `md5 "dh0:System/FixFonts"`
+  IF NOT "$md5" eq "1c ec d2 09 ad 67 5b ef 67 19 dc 41 4a 2e f1 57"
+    ECHO "File 'dh0:System/FixFonts' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/FixFonts' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/FixFonts.info"
+  SET md5 `md5 "dh0:System/FixFonts.info"`
+  IF NOT "$md5" eq "32 36 c7 48 8d 1b 23 95 3c e4 5e b3 14 30 cd a2"
+    ECHO "File 'dh0:System/FixFonts.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/FixFonts.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/Format"
+  SET md5 `md5 "dh0:System/Format"`
+  IF NOT "$md5" eq "10 1c 25 99 57 eb 90 d4 b4 81 52 90 eb a2 3c 57"
+    ECHO "File 'dh0:System/Format' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/Format' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/Format.info"
+  SET md5 `md5 "dh0:System/Format.info"`
+  IF NOT "$md5" eq "be db c6 38 63 3c 5b 4a f5 4d a9 9b b5 41 69 8e"
+    ECHO "File 'dh0:System/Format.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/Format.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/NoFastMem"
+  SET md5 `md5 "dh0:System/NoFastMem"`
+  IF NOT "$md5" eq "2c fb ab 9c cc ec f0 43 74 b8 d1 5b 73 e3 30 fc"
+    ECHO "File 'dh0:System/NoFastMem' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/NoFastMem' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/NoFastMem.info"
+  SET md5 `md5 "dh0:System/NoFastMem.info"`
+  IF NOT "$md5" eq "03 14 da b7 a5 71 49 e4 dd 44 5b d2 a3 a9 b3 e5"
+    ECHO "File 'dh0:System/NoFastMem.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/NoFastMem.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/RexxMast"
+  SET md5 `md5 "dh0:System/RexxMast"`
+  IF NOT "$md5" eq "0e cc 65 1d bf 2f 53 8b 61 67 24 0d 97 17 dc 35"
+    ECHO "File 'dh0:System/RexxMast' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/RexxMast' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/RexxMast.info"
+  SET md5 `md5 "dh0:System/RexxMast.info"`
+  IF NOT "$md5" eq "8d af 5a b2 7c 69 6a 59 cf a2 1b 75 8c 09 b0 3f"
+    ECHO "File 'dh0:System/RexxMast.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/RexxMast.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/Shell.info"
+  SET md5 `md5 "dh0:System/Shell.info"`
+  IF NOT "$md5" eq "29 e3 dc 89 39 79 ff a1 52 36 44 c1 c3 14 60 9b"
+    ECHO "File 'dh0:System/Shell.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/Shell.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/Intellifont"
+  SET md5 `md5 "dh0:System/Intellifont"`
+  IF NOT "$md5" eq "03 0c d6 37 e4 ac 2d ff 0d 73 24 6e 2f 52 75 4f"
+    ECHO "File 'dh0:System/Intellifont' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/Intellifont' doesn't exist"
+ENDIF
+IF EXISTS "dh0:System/Intellifont.info"
+  SET md5 `md5 "dh0:System/Intellifont.info"`
+  IF NOT "$md5" eq "c4 42 41 8c 97 c4 81 02 5e 80 85 10 69 6d e2 b8"
+    ECHO "File 'dh0:System/Intellifont.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:System/Intellifont.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities/MultiView.info"
+  SET md5 `md5 "dh0:Utilities/MultiView.info"`
+  IF NOT "$md5" eq "8b 17 0d 64 6e 3d 46 90 85 8f ca 5c 1c 8b f1 94"
+    ECHO "File 'dh0:Utilities/MultiView.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities/MultiView.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities/Clock"
+  SET md5 `md5 "dh0:Utilities/Clock"`
+  IF NOT "$md5" eq "2f b0 72 16 c3 dc 3c 5d 61 1f 19 6a 04 6b f0 7c"
+    ECHO "File 'dh0:Utilities/Clock' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities/Clock' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities/Clock.info"
+  SET md5 `md5 "dh0:Utilities/Clock.info"`
+  IF NOT "$md5" eq "0a 19 8a 24 45 1a 55 85 7b 3e c6 18 1e 48 8f 5a"
+    ECHO "File 'dh0:Utilities/Clock.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities/Clock.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities/More"
+  SET md5 `md5 "dh0:Utilities/More"`
+  IF NOT "$md5" eq "fd da 4f fe 53 90 05 2e 0f 36 83 f7 f1 b4 3e ef"
+    ECHO "File 'dh0:Utilities/More' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities/More' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Utilities/MultiView"
+  SET md5 `md5 "dh0:Utilities/MultiView"`
+  IF NOT "$md5" eq "52 0d 90 3c 75 b0 83 3b 26 af 2a 7b 57 93 b8 59"
+    ECHO "File 'dh0:Utilities/MultiView' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Utilities/MultiView' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools.info"
+  SET md5 `md5 "dh0:Tools.info"`
+  IF NOT "$md5" eq "63 c3 be e1 49 e7 7e 8f fe 49 99 91 66 60 d6 ed"
+    ECHO "File 'dh0:Tools.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/MEmacs.info"
+  SET md5 `md5 "dh0:Tools/MEmacs.info"`
+  IF NOT "$md5" eq "8b 81 5c 52 d8 ad 7c a1 72 3d 2e f7 36 89 fe f7"
+    ECHO "File 'dh0:Tools/MEmacs.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/MEmacs.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/PrepCard"
+  SET md5 `md5 "dh0:Tools/PrepCard"`
+  IF NOT "$md5" eq "86 ec a7 7e 85 dc ee 39 c4 f1 ce 18 7a 26 e3 f5"
+    ECHO "File 'dh0:Tools/PrepCard' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/PrepCard' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/PrepCard.info"
+  SET md5 `md5 "dh0:Tools/PrepCard.info"`
+  IF NOT "$md5" eq "4f ed aa ca fd f0 1b f2 24 3a 32 46 d0 34 c4 28"
+    ECHO "File 'dh0:Tools/PrepCard.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/PrepCard.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/PrintFiles"
+  SET md5 `md5 "dh0:Tools/PrintFiles"`
+  IF NOT "$md5" eq "a7 8d 33 e6 0a 6b 63 83 ba 17 ef de c3 b0 49 f6"
+    ECHO "File 'dh0:Tools/PrintFiles' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/PrintFiles' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/PrintFiles.info"
+  SET md5 `md5 "dh0:Tools/PrintFiles.info"`
+  IF NOT "$md5" eq "8a 21 b1 0b 33 d6 2c d6 ed 66 02 84 43 b5 b6 c5"
+    ECHO "File 'dh0:Tools/PrintFiles.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/PrintFiles.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/ShowConfig"
+  SET md5 `md5 "dh0:Tools/ShowConfig"`
+  IF NOT "$md5" eq "3d 2a 39 3a 3d 03 eb 89 a5 99 a9 16 be 85 0e ae"
+    ECHO "File 'dh0:Tools/ShowConfig' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/ShowConfig' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/ShowConfig.info"
+  SET md5 `md5 "dh0:Tools/ShowConfig.info"`
+  IF NOT "$md5" eq "e5 32 2a 82 16 fa 7b 6b 08 30 f5 3d a5 1b 2f 63"
+    ECHO "File 'dh0:Tools/ShowConfig.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/ShowConfig.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Calculator"
+  SET md5 `md5 "dh0:Tools/Calculator"`
+  IF NOT "$md5" eq "29 6c 94 04 f9 51 77 81 7b c4 75 e4 0c d2 76 f7"
+    ECHO "File 'dh0:Tools/Calculator' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Calculator' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Calculator.info"
+  SET md5 `md5 "dh0:Tools/Calculator.info"`
+  IF NOT "$md5" eq "33 cc 44 4d 0e ee a3 f2 83 2a f3 32 b4 00 d5 4b"
+    ECHO "File 'dh0:Tools/Calculator.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Calculator.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/CMD"
+  SET md5 `md5 "dh0:Tools/CMD"`
+  IF NOT "$md5" eq "38 6e cd cc 1b 00 04 56 6a c1 18 43 69 1d 07 40"
+    ECHO "File 'dh0:Tools/CMD' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/CMD' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/CMD.info"
+  SET md5 `md5 "dh0:Tools/CMD.info"`
+  IF NOT "$md5" eq "b1 fe 0e 08 aa 1b 5d d7 b6 c7 f7 9d 44 89 78 ec"
+    ECHO "File 'dh0:Tools/CMD.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/CMD.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities.info"
+  SET md5 `md5 "dh0:Tools/Commodities.info"`
+  IF NOT "$md5" eq "64 39 04 e1 7f 61 03 3b 74 b9 31 12 3e db d8 ea"
+    ECHO "File 'dh0:Tools/Commodities.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Blanker"
+  SET md5 `md5 "dh0:Tools/Commodities/Blanker"`
+  IF NOT "$md5" eq "1b 20 b5 1d a0 34 65 8f 3c 30 3c 7a af 96 6c 66"
+    ECHO "File 'dh0:Tools/Commodities/Blanker' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/Blanker' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Blanker.info"
+  SET md5 `md5 "dh0:Tools/Commodities/Blanker.info"`
+  IF NOT "$md5" eq "f8 e2 c5 06 cb f1 2c 63 37 af 1d 63 56 6b a5 ae"
+    ECHO "File 'dh0:Tools/Commodities/Blanker.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/Blanker.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/ClickToFront"
+  SET md5 `md5 "dh0:Tools/Commodities/ClickToFront"`
+  IF NOT "$md5" eq "25 b7 49 9c 4e b3 0e 80 58 31 d7 13 af 50 9e 07"
+    ECHO "File 'dh0:Tools/Commodities/ClickToFront' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/ClickToFront' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/ClickToFront.info"
+  SET md5 `md5 "dh0:Tools/Commodities/ClickToFront.info"`
+  IF NOT "$md5" eq "fe 71 33 a8 64 5f 08 a6 c2 47 05 9f bb a5 d1 6b"
+    ECHO "File 'dh0:Tools/Commodities/ClickToFront.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/ClickToFront.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/CrossDOS"
+  SET md5 `md5 "dh0:Tools/Commodities/CrossDOS"`
+  IF NOT "$md5" eq "ae 67 0e c9 35 5f 00 c2 2d a7 c5 a2 f3 76 ea 3e"
+    ECHO "File 'dh0:Tools/Commodities/CrossDOS' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/CrossDOS' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/CrossDOS.info"
+  SET md5 `md5 "dh0:Tools/Commodities/CrossDOS.info"`
+  IF NOT "$md5" eq "70 a1 78 fb ce da ff 74 b5 8a 35 cf 2e 69 b0 1c"
+    ECHO "File 'dh0:Tools/Commodities/CrossDOS.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/CrossDOS.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Exchange"
+  SET md5 `md5 "dh0:Tools/Commodities/Exchange"`
+  IF NOT "$md5" eq "5f 39 73 39 5a e4 22 fc 1d ac 0a 23 71 b8 fc 85"
+    ECHO "File 'dh0:Tools/Commodities/Exchange' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/Exchange' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/Exchange.info"
+  SET md5 `md5 "dh0:Tools/Commodities/Exchange.info"`
+  IF NOT "$md5" eq "fb 5f 27 6c 01 c7 0b 6b 07 d6 01 ef d6 9e b9 77"
+    ECHO "File 'dh0:Tools/Commodities/Exchange.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/Exchange.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/FKey"
+  SET md5 `md5 "dh0:Tools/Commodities/FKey"`
+  IF NOT "$md5" eq "1c 77 7a 3f 57 3d 15 c7 8d 94 9b 3b 5a 8e 4b 86"
+    ECHO "File 'dh0:Tools/Commodities/FKey' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/FKey' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/FKey.info"
+  SET md5 `md5 "dh0:Tools/Commodities/FKey.info"`
+  IF NOT "$md5" eq "3a 28 49 fe ef 38 fd b0 b5 08 c7 20 8a d5 a5 3e"
+    ECHO "File 'dh0:Tools/Commodities/FKey.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/FKey.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/MouseBlanker"
+  SET md5 `md5 "dh0:Tools/Commodities/MouseBlanker"`
+  IF NOT "$md5" eq "22 39 da 34 af 8a 13 85 d4 10 1a c0 a3 e5 35 3d"
+    ECHO "File 'dh0:Tools/Commodities/MouseBlanker' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/MouseBlanker' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/MouseBlanker.info"
+  SET md5 `md5 "dh0:Tools/Commodities/MouseBlanker.info"`
+  IF NOT "$md5" eq "45 56 e1 5a 8d 59 e1 d4 44 3b 8b ce f6 b0 a7 3f"
+    ECHO "File 'dh0:Tools/Commodities/MouseBlanker.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/MouseBlanker.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/NoCapsLock"
+  SET md5 `md5 "dh0:Tools/Commodities/NoCapsLock"`
+  IF NOT "$md5" eq "7e 32 49 3e ec 4c 31 e0 b0 2f 40 9a c3 43 c3 7c"
+    ECHO "File 'dh0:Tools/Commodities/NoCapsLock' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/NoCapsLock' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/NoCapsLock.info"
+  SET md5 `md5 "dh0:Tools/Commodities/NoCapsLock.info"`
+  IF NOT "$md5" eq "b6 80 06 42 57 f0 83 56 c1 55 3c 71 d9 64 1e ca"
+    ECHO "File 'dh0:Tools/Commodities/NoCapsLock.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/NoCapsLock.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/AutoPoint"
+  SET md5 `md5 "dh0:Tools/Commodities/AutoPoint"`
+  IF NOT "$md5" eq "22 d1 e4 71 96 4a d7 5d 9f fc 1f 86 8a 8f 7d cb"
+    ECHO "File 'dh0:Tools/Commodities/AutoPoint' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/AutoPoint' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Commodities/AutoPoint.info"
+  SET md5 `md5 "dh0:Tools/Commodities/AutoPoint.info"`
+  IF NOT "$md5" eq "e6 f6 76 9d f6 e4 32 ac f7 fd 89 c7 52 de 3a 0f"
+    ECHO "File 'dh0:Tools/Commodities/AutoPoint.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Commodities/AutoPoint.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/GraphicDump"
+  SET md5 `md5 "dh0:Tools/GraphicDump"`
+  IF NOT "$md5" eq "27 3d 70 a3 1b 89 47 59 36 f9 29 76 01 ae 97 8c"
+    ECHO "File 'dh0:Tools/GraphicDump' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/GraphicDump' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/GraphicDump.info"
+  SET md5 `md5 "dh0:Tools/GraphicDump.info"`
+  IF NOT "$md5" eq "e1 b1 85 d5 ba 0a ef 6b 9e 9c fb c4 66 95 79 5d"
+    ECHO "File 'dh0:Tools/GraphicDump.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/GraphicDump.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/IconEdit"
+  SET md5 `md5 "dh0:Tools/IconEdit"`
+  IF NOT "$md5" eq "a6 66 5f aa c2 f4 9d ae 6d 67 6c bb 79 fc 5d 80"
+    ECHO "File 'dh0:Tools/IconEdit' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/IconEdit' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/IconEdit.info"
+  SET md5 `md5 "dh0:Tools/IconEdit.info"`
+  IF NOT "$md5" eq "12 89 d1 73 f7 14 77 7d cc 3b 6f 0b 8a 28 97 32"
+    ECHO "File 'dh0:Tools/IconEdit.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/IconEdit.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/InitPrinter"
+  SET md5 `md5 "dh0:Tools/InitPrinter"`
+  IF NOT "$md5" eq "e2 cc 7a 1a e5 5e f5 97 62 31 ed 71 1e 8d 88 5e"
+    ECHO "File 'dh0:Tools/InitPrinter' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/InitPrinter' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/InitPrinter.info"
+  SET md5 `md5 "dh0:Tools/InitPrinter.info"`
+  IF NOT "$md5" eq "ef 51 f9 89 e2 17 d9 75 3c 17 2b b6 d0 4e ac 23"
+    ECHO "File 'dh0:Tools/InitPrinter.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/InitPrinter.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/KeyShow"
+  SET md5 `md5 "dh0:Tools/KeyShow"`
+  IF NOT "$md5" eq "86 8b 61 0f 9a 5f 49 8c d6 d7 b8 5e 97 7c b4 d2"
+    ECHO "File 'dh0:Tools/KeyShow' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/KeyShow' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/KeyShow.info"
+  SET md5 `md5 "dh0:Tools/KeyShow.info"`
+  IF NOT "$md5" eq "7d 88 43 8d e7 b3 3b 4b 0d b0 e5 0c ca b8 9d 47"
+    ECHO "File 'dh0:Tools/KeyShow.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/KeyShow.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Lacer"
+  SET md5 `md5 "dh0:Tools/Lacer"`
+  IF NOT "$md5" eq "36 25 d5 fe d2 72 f2 0f 42 f1 11 14 fc 0b 2e f8"
+    ECHO "File 'dh0:Tools/Lacer' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Lacer' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/Lacer.info"
+  SET md5 `md5 "dh0:Tools/Lacer.info"`
+  IF NOT "$md5" eq "89 94 d6 fe 38 77 e0 1e de d2 33 38 b6 53 82 15"
+    ECHO "File 'dh0:Tools/Lacer.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/Lacer.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/MEmacs"
+  SET md5 `md5 "dh0:Tools/MEmacs"`
+  IF NOT "$md5" eq "ee 73 0f 98 d1 2d 75 83 2c f6 66 12 68 2b 34 07"
+    ECHO "File 'dh0:Tools/MEmacs' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/MEmacs' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/BRU"
+  SET md5 `md5 "dh0:Tools/BRU"`
+  IF NOT "$md5" eq "f8 a5 ac 23 17 79 2f 29 7a 99 ce 21 dc db 2d 23"
+    ECHO "File 'dh0:Tools/BRU' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/BRU' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup"
+  SET md5 `md5 "dh0:Tools/HDBackup"`
+  IF NOT "$md5" eq "ce 8e 21 15 14 ec b4 25 0a 05 dd 76 2a e4 b3 95"
+    ECHO "File 'dh0:Tools/HDBackup' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/HDBackup' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup.help"
+  SET md5 `md5 "dh0:Tools/HDBackup.help"`
+  IF NOT "$md5" eq "20 a0 73 ad 19 c0 45 5e b4 16 0e f4 0e 4b 25 6e"
+    ECHO "File 'dh0:Tools/HDBackup.help' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/HDBackup.help' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/HDBackup.info"
+  SET md5 `md5 "dh0:Tools/HDBackup.info"`
+  IF NOT "$md5" eq "a0 f8 c4 6f a1 fb 5c 64 48 c7 64 34 b7 81 cc c7"
+    ECHO "File 'dh0:Tools/HDBackup.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/HDBackup.info' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/HDToolBox"
+  SET md5 `md5 "dh0:Tools/HDToolBox"`
+  IF NOT "$md5" eq "b0 00 e6 a5 a0 45 bf ad b8 0d e9 a4 5c af 1a c6"
+    ECHO "File 'dh0:Tools/HDToolBox' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/HDToolBox' doesn't exist"
+ENDIF
+IF EXISTS "dh0:Tools/HDToolBox.info"
+  SET md5 `md5 "dh0:Tools/HDToolBox.info"`
+  IF NOT "$md5" eq "a1 7c 32 be 2e 6b 86 c9 c3 50 44 1f 3e 60 f0 12"
+    ECHO "File 'dh0:Tools/HDToolBox.info' has invalid md5 checksum"
+  ENDIF
+ELSE
+  ECHO "File 'dh0:Tools/HDToolBox.info' doesn't exist"
+ENDIF
