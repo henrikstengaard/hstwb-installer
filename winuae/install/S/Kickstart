@@ -1,12 +1,14 @@
 ; Install Kickstart Script
 ; ------------------------
 ;
-; Date: 2016-11-04
+; Date: 2016-11-06
 ; Author: Henrik Noerfjand Stengaard
 
 
 echo ""
 echo "Kickstart installation."
+echo "Kickstrat rom files will now be copied"
+echo "to your image." 
 echo ""
 
 

@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2016-11-04
+; Date: 2016-11-06
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -14,11 +14,7 @@ echo "*ec"
 
 
 ; Installer message
-echo "HstWB Installer"
-echo ""
-echo "Workbench adf files will now be extracted"
-echo "and installed to your image." 
-echo "This operation will take about 5-10 minutes."
+echo "HstWB Installer running..."
 
 
 ; Set stack, failat and load basic commands resident 
@@ -51,6 +47,12 @@ ENDIF
 ; Install Kickstart
 IF EXISTS S:Install-Kickstart
   execute S:Kickstart
+ENDIF
+
+
+; Delete Installing file, if it exists
+IF EXISTS S:Installing
+  delete >NIL: S:Installing
 ENDIF
 
 

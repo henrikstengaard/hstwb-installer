@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1
