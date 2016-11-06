@@ -72,7 +72,7 @@ HstWB_System.1.0.0.zip:
 
 Packages are kept simple, so they are easy to build and maintain.
 
-## Installation
+## HstWB Installation Process
 
 The installation is done through WinUAE. To enable installing Workbench automatically following scripted process is used:
 
@@ -87,6 +87,77 @@ The installation is done through WinUAE. To enable installing Workbench automati
 * WinUAE is launched and startup sequence executes installation scripts and automatically shuts down, when it's done.
 
 The preinstalled Amiga HDF image is now ready to use in an emulator.
+
+## Requirements
+
+The minimum requirements for running HstWB Installer are:
+
+* Windows 7, 8, 8.1 or 10.
+* Cloanto Amiga Forever installed or dumps of own Workbench adf files and Kickstart rom files located in a directory.
+* WinUAE.
+
+## Installation
+
+Installation is quite easy and can be done one the following ways: 
+
+* Clone git repository.
+* Click 'Download ZIP' and extract files.
+
+## Usage
+
+**Menu using setup script**
+
+First run HstWB Installer Setup script to configure settings. Default settings are used, if settings file "hstwb-installer-settings.ini" doesn't exist. Each time a setting is changed the settings file is updated or auto saved. When choosing Workbench adf or Kickstart rom set, files in configured directories are examined to find valid Workbench adf and Kickstart rom files required for installation process. Select the set that has all files detected. 
+
+Following steps will create a new 8gb image and install Workbench and Kickstart:
+
+1. Double-click 'hstwb-installer-setup.cmd' in Windows Explorer or start 'hstwb-installer-setup.ps1' from powershell to run setup script.
+2. Type 1 and enter to enter select image menu.
+3. Type 2 and enter to enter new image menu.
+4. Type 1 and enter to select 8gb image.
+5. Type "test.hdf" and press enter.
+6. Type 3 and enter to go back to main menu.
+7. Type 2 and enter to enter configure workbench menu.
+8. If Workbench Adf Path is already configured goto step 11.
+9. Type 2 and enter to select change workbench adf path.
+10. Type path to directory with workbench adf files and press enter.
+11. Type 3 and enter to select workbench adf set.
+12. Type 1 to select Cloanto Amiga Forever 2016 workbench adf set or type 2 to select Custom workbench set.
+13. Type 4 and enter to go back to main menu.
+14. Type 3 and enter to enter configure kickstart menu.
+15. If Kickstart Rom Path is already configured goto step 18.
+16. Type 2 and enter to select change kickstart rom path.
+17. Type path to directory with kickstart rom files and press enter.
+18. Type 3 and enter to select kickstart rom set.
+19. Type 1 to select Cloanto Amiga Forever 2016 kickstart rom set or type 2 to select Custom kickstart rom.
+20. Type 4 and enter to go back to main menu.
+21. If WinUAE Path is already configured goto step 21.
+22. Type 5 and enter to enter change winuae menu.
+23. Type 1 and enter to select change winuae path.
+24. Type path to winuae.exe and press enter.
+25. Type 6 and enter run installer, wait for WinUAE to complete installation process.
+26. Press any key to continue.
+27. Type 8 and enter to exit.
+
+**Manual using run script**
+
+The settings file "hstwb-installer-settings.ini" can also be created manually with the following content:
+
+###
+    [Image]
+    HdfImagePath=C:\Users\Public\Documents\Amiga Files\Shared\hdf\test.hdf
+    [Kickstart]
+    InstallKickstart=Yes
+    KickstartRomPath=C:\Users\Public\Documents\Amiga Files\Shared\rom
+    KickstartRomSet=Kickstart Cloanto Amiga Forever 2016
+    [Winuae]
+    WinuaePath=C:\Program Files (x86)\WinUAE\winuae.exe
+    [Workbench]
+    InstallWorkbench=Yes
+    WorkbenchAdfPath=C:\Users\Public\Documents\Amiga Files\Shared\adf
+    WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
+
+Double-click 'hstwb-installer-run.cmd' in Windows Explorer or start 'hstwb-installer-run.ps1' from powershell to run installer script.
 
 ## Screenshots
 
