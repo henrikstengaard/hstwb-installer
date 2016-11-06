@@ -193,6 +193,11 @@ function EnterPath($prompt)
     {
         $path = Read-Host $prompt
 
+        if ($path -ne '')
+        {
+            $path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
+        }
+        
         if (!(test-path -path $path))
         {
             Write-Error "Path '$path' doesn't exist"
@@ -283,7 +288,7 @@ function ExistingImage()
     $path = EnterPath "Enter Existing HDF Image Path"
     if ($path -ne '')
     {
-        $settings.Image.HdfImagePath = $path
+        $settings.Image.HdfImagePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
         Save
     }
 }
@@ -311,6 +316,8 @@ function NewImageMenu()
     do
     {
         $newImagePath = Read-Host "Enter New HDF Image Path"
+        $newImagePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($newImagePath)
+        
         if (test-path -path $newImagePath)
         {
             Write-Host ("New HDF Image Path '" + $newImagePath + "' already exists!") -foregroundcolor "Red"
@@ -402,7 +409,7 @@ function ChangeWorkbenchAdfPath()
     $path = EnterPath "Enter Workbench Adf Path"
     if ($path -ne '')
     {
-        $settings.Workbench.WorkbenchAdfPath = $path
+        $settings.Workbench.WorkbenchAdfPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
         Save
     }
 }
@@ -498,7 +505,7 @@ function ChangeKickstartRomPath()
     $path = EnterPath "Enter Kickstart Rom Path"
     if ($path -ne '')
     {
-        $settings.Kickstart.KickstartRomPath = $path
+        $settings.Kickstart.KickstartRomPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
         Save
     }
 }
@@ -572,7 +579,7 @@ function ChangeWinuaePath()
     $path = EnterPath "Enter WinUAE Path"
     if ($path -ne '')
     {
-        $settings.Winuae.WinuaePath = $path
+        $settings.Winuae.WinuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
         Save
     }
 }
