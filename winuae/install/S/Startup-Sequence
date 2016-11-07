@@ -6,7 +6,7 @@
 
 
 ; Load library for unadf
-LoadModule df0:libs/mathieeedoubbas.library
+LoadModule DF0:Libs/mathieeedoubbas.library
 
 
 ; Clear screen
@@ -27,11 +27,14 @@ resident DF0:C/Delete PURE
 resident DF0:C/Execute PURE
 resident DF0:C/MakeDir PURE
 resident DF0:C/Wait PURE 
+resident INSTALL:C/UnADF PURE
+resident INSTALL:C/UnZip PURE
+SetEnv TZ MST7
 
 
 ; Fail, if user assign doesn't exist
 IF NOT EXISTS S:User-Assign
-  echo "" >Install:Error
+  echo "" >INSTALL:Error
   echo "Error: User assign doesn't exist!"
   SKIP end
 ENDIF
@@ -40,13 +43,19 @@ execute S:User-Assign
 
 ; Install Workbench
 IF EXISTS S:Install-Workbench
-  execute S:Workbench
+  execute S:Install-Workbench
 ENDIF
 
 
 ; Install Kickstart
 IF EXISTS S:Install-Kickstart
-  execute S:Kickstart
+  execute S:Install-Kickstart
+ENDIF
+
+
+; Install Packages
+IF EXISTS S:Install-Packages
+  execute S:Install-Packages
 ENDIF
 
 
