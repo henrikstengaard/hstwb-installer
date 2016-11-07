@@ -630,12 +630,14 @@ function DefaultSettings()
         if (test-path -path $workbenchAdfPath)
         {
             $settings.Workbench.WorkbenchAdfPath = $workbenchAdfPath
+            $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
         }
 
         $kickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
         if (test-path -path $kickstartRomPath)
         {
             $settings.Kickstart.KickstartRomPath = $kickstartRomPath
+            $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
         }
     }
 
