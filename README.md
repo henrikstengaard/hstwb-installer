@@ -57,6 +57,9 @@ A package is zip file located in the packages directory. Packages are identified
 
 [name].[version].zip
 
+Selected packages are extracted when installation is being prepared and processed one by one during installation. Before executing a packages install script, the following assign are defined:
+- PACKAGEDIR: Path to directory containing the package.
+
 As a bare minimum a package must contain the following files:
 
 - install: AmigaOS script to perform installation is the package.
@@ -64,11 +67,9 @@ As a bare minimum a package must contain the following files:
 
 Any other files can be part of a package as resources to install.
 
-Here's an example of package content:
-
-HstWB_System.1.0.0.zip:
-- install: AmigaOS script to extract system.lha.
-- system.lha: Lha archive with system files to install.
+Here is the contents of HstWB.1.0.0.zip package:
+- install: AmigaOS script extracting hstwb.zip.
+- hstwb.zip: Zip archive with HstWB files to install.
 
 Packages are kept simple, so they are easy to build and maintain.
 
@@ -109,7 +110,7 @@ Installation is quite easy and can be done one the following ways:
 
 First run HstWB Installer Setup script to configure settings. Default settings are used, if settings file "hstwb-installer-settings.ini" doesn't exist. Each time a setting is changed the settings file is updated or auto saved. When choosing Workbench adf or Kickstart rom set, files in configured directories are examined to find valid Workbench adf and Kickstart rom files required for installation process. Select the set that has all files detected. 
 
-Following steps will create a new 8gb image and install Workbench and Kickstart:
+For users with Cloanto Amiga Forever installed, following steps will create a new 8gb image and install Workbench, Kickstart roms:
 
 1. Double-click 'hstwb-installer-setup.cmd' in Windows Explorer or start 'hstwb-installer-setup.ps1' from powershell to run setup script.
 2. Type 1 and enter to enter select image menu.
@@ -117,27 +118,9 @@ Following steps will create a new 8gb image and install Workbench and Kickstart:
 4. Type 1 and enter to select 8gb image.
 5. Type "test.hdf" and press enter.
 6. Type 3 and enter to go back to main menu.
-7. Type 2 and enter to enter configure workbench menu.
-8. If Workbench Adf Path is already configured goto step 11.
-9. Type 2 and enter to select change workbench adf path.
-10. Type path to directory with workbench adf files and press enter.
-11. Type 3 and enter to select workbench adf set.
-12. Type 1 to select Cloanto Amiga Forever 2016 workbench adf set or type 2 to select Custom workbench set.
-13. Type 4 and enter to go back to main menu.
-14. Type 3 and enter to enter configure kickstart menu.
-15. If Kickstart Rom Path is already configured goto step 18.
-16. Type 2 and enter to select change kickstart rom path.
-17. Type path to directory with kickstart rom files and press enter.
-18. Type 3 and enter to select kickstart rom set.
-19. Type 1 to select Cloanto Amiga Forever 2016 kickstart rom set or type 2 to select Custom kickstart rom.
-20. Type 4 and enter to go back to main menu.
-21. If WinUAE Path is already configured goto step 21.
-22. Type 5 and enter to enter change winuae menu.
-23. Type 1 and enter to select change winuae path.
-24. Type path to winuae.exe and press enter.
-25. Type 6 and enter run installer, wait for WinUAE to complete installation process.
-26. Press any key to continue.
-27. Type 8 and enter to exit.
+7. Type 6 and enter run installer, wait for WinUAE to complete installation process.
+8. Press enter to continue.
+9. Type 8 and enter to exit.
 
 **Manual using run script**
 
