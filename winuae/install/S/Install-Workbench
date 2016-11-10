@@ -1,86 +1,75 @@
 ; Install Workbench Script
 ; ------------------------
 ;
-; Date: 2016-11-06
+; Date: 2016-11-08
 ; Author: Henrik Noerfjand Stengaard
 
 
 echo ""
 echo "Workbench installation."
-echo "Workbench adf files will now be extracted"
-echo "and copied to your image." 
-echo ""
 
 
 ; Workbench
-; ---------
-
-echo "Extracting and installing 'workbench31workbench.adf'..."
+echo "Installing 'workbench31workbench.adf'..."
 unadf >NIL: workbench31workbench.adf DEST=Install:
 
-copy >NIL: Install:Workbench3.1 INSTALLSYS: ALL CLONE
+copy >NIL: Install:Workbench3.1 INSTALLDIR: ALL CLONE
 
 
 ; Locale
-; ------
-
-echo "Extracting and installing 'workbench31locale.adf'..."
+echo "Installing 'workbench31locale.adf'..."
 unadf >NIL: workbench31locale.adf DEST=Install:
 
-makedir >NIL: INSTALLSYS:Locale
-copy >NIL: Install:Locale INSTALLSYS:Locale ALL CLONE
+makedir >NIL: INSTALLDIR:Locale
+copy >NIL: Install:Locale INSTALLDIR:Locale ALL CLONE
 
 
 ; Extras
-; ------
-
-echo "Extracting and installing 'workbench31extras.adf'..."
+echo "Installing 'workbench31extras.adf'..."
 unadf >NIL: workbench31extras.adf DEST=Install:
 
-copy >NIL: Install:Extras3.1 INSTALLSYS: ALL CLONE
+copy >NIL: Install:Extras3.1 INSTALLDIR: ALL CLONE
 
 
 ; Fonts
-; -----
-
-echo "Extracting and installing 'workbench31fonts.adf'..."
+echo "Installing 'workbench31fonts.adf'..."
 unadf >NIL: workbench31fonts.adf DEST=Install:
 
-makedir >NIL: INSTALLSYS:Fonts
-copy >NIL: Install:Fonts INSTALLSYS:Fonts ALL CLONE
+makedir >NIL: INSTALLDIR:Fonts
+copy >NIL: Install:Fonts INSTALLDIR:Fonts ALL CLONE
 
 
 ; Install
-; -------
-
-echo "Extracting and installing 'workbench31install.adf'..."
+echo "Installing 'workbench31install.adf'..."
 unadf >NIL: workbench31install.adf DEST=Install:
 
-makedir >NIL: INSTALLSYS:Tools
-copy Install:Install3.1/HDTools/BRU INSTALLSYS:Tools CLONE
-copy Install:Install3.1/HDTools/HDBackup INSTALLSYS:Tools CLONE
-copy Install:Install3.1/HDTools/HDBackup.help INSTALLSYS:Tools CLONE
-copy Install:Install3.1/HDTools/HDToolBox INSTALLSYS:Tools CLONE
+makedir >NIL: INSTALLDIR:Tools
+copy Install:Install3.1/HDTools/BRU INSTALLDIR:Tools CLONE
+copy Install:Install3.1/HDTools/HDBackup INSTALLDIR:Tools CLONE
+copy Install:Install3.1/HDTools/HDBackup.help INSTALLDIR:Tools CLONE
+copy Install:Install3.1/HDTools/HDToolBox INSTALLDIR:Tools CLONE
 
-copy Install:Install3.1/HDTools/HDBackup.info INSTALLSYS:Tools CLONE
-copy Install:Install3.1/HDTools/HDToolBox.info INSTALLSYS:Tools CLONE
+copy Install:Install3.1/HDTools/HDBackup.info INSTALLDIR:Tools CLONE
+copy Install:Install3.1/HDTools/HDToolBox.info INSTALLDIR:Tools CLONE
 
-copy Install:Install3.1/HDTools/S/BRUtab INSTALLSYS:S CLONE
-copy Install:Install3.1/HDTools/S/HDBackup.config INSTALLSYS:S CLONE 
-copy Install:Install3.1/L/FastFileSystem INSTALLSYS:L CLONE 
+copy Install:Install3.1/HDTools/S/BRUtab INSTALLDIR:S CLONE
+copy Install:Install3.1/HDTools/S/HDBackup.config INSTALLDIR:S CLONE 
+copy Install:Install3.1/L/FastFileSystem INSTALLDIR:L CLONE 
 
-copy Install:Install3.1/Libs/68040.library INSTALLSYS:Libs CLONE 
-copy Install:Install3.1/Update/Disk.info INSTALLSYS: CLONE 
+copy Install:Install3.1/Libs/68040.library INSTALLDIR:Libs CLONE 
+copy Install:Install3.1/Update/Disk.info INSTALLDIR: CLONE 
 
 
 ; Storage
-; -------
-
-echo "Extracting and installing 'workbench31storage.adf'..."
+echo "Installing 'workbench31storage.adf'..."
 unadf >NIL: workbench31storage.adf DEST=Install:
 
-makedir >NIL: INSTALLSYS:Storage
-copy >NIL: Install:Storage3.1 INSTALLSYS:Storage ALL CLONE
-copy Install:Storage3.1/Monitors/PAL INSTALLSYS:Devs/Monitors CLONE 
-copy Install:Storage3.1/Monitors/PAL.info INSTALLSYS:Devs/Monitors CLONE 
-copy Install:Storage3.1/Printers.info INSTALLSYS:Storage.info CLONE 
+makedir >NIL: INSTALLDIR:Storage
+copy >NIL: Install:Storage3.1 INSTALLDIR:Storage ALL CLONE
+copy Install:Storage3.1/Monitors/PAL INSTALLDIR:Devs/Monitors CLONE 
+copy Install:Storage3.1/Monitors/PAL.info INSTALLDIR:Devs/Monitors CLONE 
+copy Install:Storage3.1/Printers.info INSTALLDIR:Storage.info CLONE 
+
+
+; End
+echo "Done."

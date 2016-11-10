@@ -180,6 +180,9 @@ function PrintSettings()
     Write-Host ("'" + $settings.Kickstart.KickstartRomPath + "'")
     Write-Host "  Kickstart Rom Set  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.KickstartRomSet + "'")
+    Write-Host "Packages"
+    Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Packages.InstallPackages + "'")
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
@@ -257,6 +260,7 @@ function MainMenu()
             "Select Image" { SelectImageMenu }
             "Configure Workbench" { ConfigureWorkbenchMenu }
             "Configure Kickstart" { ConfigureKickstartMenu }
+            "Configure Packages" { ConfigurePackagesMenu }
             "Configure WinUAE" { ConfigureWinuaeMenu }
             "Run Installer" { RunInstaller }
             "Reset" { Reset }
@@ -558,6 +562,46 @@ function SelectKickstartRomSet()
 }
 
 
+# configure packages menu
+function ConfigurePackagesMenu()
+{
+    # get available packages from files in packages directory
+    $availablePackages = @()
+    $availablePackages += Get-ChildItem -Path $packagesPath -Filter *.zip | sort @{expression={$_.Name};Ascending=$true}
+
+    # get install packages defined in settings packages section
+    $installPackages = @()
+    $installPackages += ,$settings.Packages.InstallPackages -split ','
+
+    do
+    {
+        $packageOptions = @()
+        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($installPackages -contains $_) { "Remove $_" } else { "Add $_" } }
+        $packageOptions += "Back"
+
+        $choice = Menu "Configure Packages Menu" $packageOptions
+
+        if ($choice -ne 'Back')
+        {
+            $package = $choice -replace '^(Add|Remove) ', ''
+
+            if ($installPackages -contains $package)
+            {
+                $installPackages = ,($installPackages | Where { $_ -ne $package })
+            }
+            else
+            {
+                $installPackages += ,$package
+            }
+            
+            $settings.Packages.InstallPackages = ($installPackages | sort @{expression={$_};Ascending=$true}) -join ','
+            Save
+        } 
+    }
+    until ($choice -eq 'Back')
+}
+
+
 # configure winuae menu
 function ConfigureWinuaeMenu()
 {
@@ -591,8 +635,8 @@ function RunInstaller
     Write-Host ""
 	& $runFile
     Write-Host ""
-    Write-Host "Press any key to continue"
-    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+    Write-Host "Press enter to continue"
+    Read-Host
 }
 
 
@@ -618,9 +662,11 @@ function DefaultSettings()
     $settings.Workbench = @{}
     $settings.Kickstart = @{}
     $settings.Winuae = @{}
+    $settings.Packages = @{}
 
     $settings.Workbench.InstallWorkbench = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
+    $settings.Packages.InstallPackages = 'BetterWB.4.0.0,HstWB.1.0.0'
     
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
@@ -654,6 +700,7 @@ function DefaultSettings()
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
+$packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-run.ps1")
 $settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-settings.ini")
 
@@ -669,6 +716,14 @@ if (test-path -path $settingsFile)
 else
 {
     Reset
+}
+
+
+# create packages section in settings, if it doesn't exist
+if (!($settings.Packages))
+{
+    $settings.Packages = @{}
+    $settings.Packages.InstallPackages = 'BetterWB.4.0.0,HstWB.1.0.0'
 }
 
 

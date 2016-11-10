@@ -7,6 +7,9 @@
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
 
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+
 # read ini file
 function ReadIniFile($iniFile)
 {
@@ -270,6 +273,9 @@ function PrintSettings()
     Write-Host ("'" + $settings.Kickstart.KickstartRomPath + "'")
     Write-Host "  Kickstart Rom Set  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.KickstartRomSet + "'")
+    Write-Host "Packages"
+    Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Packages.InstallPackages + "'")
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
@@ -279,6 +285,7 @@ function PrintSettings()
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-settings.ini")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
@@ -394,7 +401,6 @@ if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKe
 {
     Write-Error ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
     exit 1 
-
 }
 
 
@@ -426,28 +432,114 @@ $workbenchNoBootAdfFile = [System.IO.Path]::Combine($tempPath, "workbench_noboot
 [System.IO.File]::WriteAllBytes($workbenchNoBootAdfFile, $workbenchAdfBytes)
 
 
-# set temp install dir
+# set temp install and packages dir
 $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+$tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
+
+
+# create temp packages path
+if(!(test-path -path $tempPackagesDir))
+{
+	md $tempPackagesDir | Out-Null
+}
 
 
 # write user assign to install dir
 $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-WriteAmigaTextLines $userAssignFile @("Assign INSTALLSYS: DH0:") 
+WriteAmigaTextLines $userAssignFile @("Assign INSTALLDIR: DH0:") 
 
 
-# write install workbench file to install dir, if InstallWorkbench is set to Yes
+# prepare install workbench
 if ($settings.Workbench.InstallWorkbench -eq 'Yes')
 {
+    # copy workbench adf set files to temp install dir
+    Write-Host "Copying Workbench adf files to temp install dir"
+    $workbenchAdfSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+}
+else
+{
+    # delete install workbench file in install dir
     $installWorkbenchFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Workbench")
-    WriteAmigaTextLines $installWorkbenchFile @("") 
+    Remove-Item $installWorkbenchFile
 }
 
 
-# write install kickstart file to install dir, if InstallKickstart is set to Yes
+# prepare install kickstart
 if ($settings.Kickstart.InstallKickstart -eq 'Yes')
 {
+    # copy kickstart rom set files to temp install dir
+    Write-Host "Copying Kickstart rom files to temp install dir"
+    $kickstartRomSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+
+    # copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
+    if ($kickstartRomHash.Encrypted)
+    {
+        Copy-Item -Path $kickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
+    }
+}
+else
+{
+    # delete install kickstart file in install dir
     $installKickstartFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Kickstart")
-    WriteAmigaTextLines $installKickstartFile @("") 
+    Remove-Item $installKickstartFile
+}
+
+
+# get package files in packages directory
+$packageFiles = @()
+$packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
+
+
+# get install packages defined in settings packages section
+$installPackages = @()
+$installPackages += ,$settings.Packages.InstallPackages -split ','
+
+
+$installPackagesLines = @()
+
+foreach ($package in $installPackages)
+{
+    # get package file for package
+    $packageFile = $packageFiles | Where { $_.Name -eq ($package + ".zip") } | Select-Object -First 1
+
+
+    # write warning and skip, if package file doesn't exist
+    if (!$packageFile)
+    {
+        Write-Warning "Package '$package' doesn't exist in packages directory '$packagesPath'"
+        continue
+    }
+
+    Write-Host "Extracting '$package' package to temp install dir"
+
+
+    # create package directory
+    $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package)
+    if(!(test-path -path $packageDir))
+    {
+        md $packageDir | Out-Null
+    }
+
+
+    # add package installation lines to install packages script
+    $installPackagesLines += "echo """""
+    $installPackagesLines += "echo ""$package package installation."""
+    $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package"
+    $installPackagesLines += "execute PACKAGEDIR:Install"
+    $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package REMOVE"
+    $installPackagesLines += "echo ""Done."""
+
+
+    # extract package file to package directory
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($packageFile.FullName, $packageDir)
+}
+
+
+# write install packages script, if it contains any lines
+if ($installPackagesLines.Count -gt 0)
+{
+    $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
+    WriteAmigaTextLines $installPackagesFile $installPackagesLines 
 }
 
 
@@ -456,31 +548,20 @@ $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
 $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
 
 # replace winuae install config placeholders
-$winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchNoBootAdfFile).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath)
+$winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchNoBootAdfFile).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
 $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
 
 # write winuae install config file to temp install dir
 [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
 
 
-# copy kickstart rom set files to temp install dir
-$kickstartRomSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
-
-
-# copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
-if ($kickstartRomHash.Encrypted)
-{
-    Copy-Item -Path $kickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
-}
-
-
-# copy workbench adf set files to temp install dir
-$workbenchAdfSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
-
-
-# write installing file in install dir
+# write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
 $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
 [System.IO.File]::WriteAllText($installingFile, "")
+
+
+# print preparing installation done message
+Write-Host "Done."
 
 
 # print launching winuae message
