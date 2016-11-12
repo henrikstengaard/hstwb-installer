@@ -421,17 +421,6 @@ $winuaeInstallDir = [System.IO.Path]::Combine($winuaePath, "install")
 Copy-Item -Path $winuaeInstallDir $tempPath -recurse -force
 
 
-# read workbench adf bytes
-$workbenchAdfBytes = [System.IO.File]::ReadAllBytes($workbenchAdfHash.File)
-
-# patch workbench adf boot sector to make it non bootable
-$workbenchAdfBytes[12] = 0
-
-# write workbench noboot adf
-$workbenchNoBootAdfFile = [System.IO.Path]::Combine($tempPath, "workbench_noboot.adf")
-[System.IO.File]::WriteAllBytes($workbenchNoBootAdfFile, $workbenchAdfBytes)
-
-
 # set temp install and packages dir
 $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
 $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
@@ -548,7 +537,7 @@ $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
 $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
 
 # replace winuae install config placeholders
-$winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchNoBootAdfFile).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
+$winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
 $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
 
 # write winuae install config file to temp install dir
