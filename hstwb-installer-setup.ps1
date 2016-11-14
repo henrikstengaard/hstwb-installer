@@ -8,6 +8,7 @@
 
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.Windows.Forms
 
 
 # read ini file
@@ -55,6 +56,63 @@ function WriteIniFile($iniFile, $ini)
     }
 
     [System.IO.File]::WriteAllText($iniFile, $iniLines -join [System.Environment]::NewLine)
+}
+
+
+# show open file dialog using WinForms
+function OpenFileDialog($title, $directory, $filter)
+{
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $openFileDialog.initialDirectory = $directory
+    $openFileDialog.Filter = $filter
+    $openFileDialog.FilterIndex = 0
+    $openFileDialog.Multiselect = $false
+    $openFileDialog.Title = $title
+    $result = $openFileDialog.ShowDialog()
+
+    if($result -ne "OK")
+    {
+        return $null
+    }
+
+    return $openFileDialog.FileName
+}
+
+
+# show save file dialog using WinForms
+function SaveFileDialog($title, $directory, $filter)
+{
+    $openFileDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $openFileDialog.initialDirectory = $directory
+    $openFileDialog.Filter = $filter
+    $openFileDialog.FilterIndex = 0
+    $openFileDialog.Title = $title
+    $result = $openFileDialog.ShowDialog()
+
+    if($result -ne "OK")
+    {
+        return $null
+    }
+
+    return $openFileDialog.FileName
+}
+
+
+# show folder browser dialog using WinForms
+function FolderBrowserDialog($title, $directory)
+{
+    $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $folderBrowserDialog.Description = $title
+    $folderBrowserDialog.SelectedPath = $directory
+    $folderBrowserDialog.ShowNewFolderButton = $false
+    $result = $folderBrowserDialog.ShowDialog()
+
+    if($result -ne "OK")
+    {
+        return $null
+    }    
+
+    return $folderBrowserDialog.SelectedPath    
 }
 
 
@@ -289,10 +347,20 @@ function SelectImageMenu()
 # existing image
 function ExistingImage()
 {
-    $path = EnterPath "Enter Existing HDF Image Path"
-    if ($path -ne '')
+    if ($settings.Image.HdfImagePath)
     {
-        $settings.Image.HdfImagePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
+        $defaultHdfImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.HdfImagePath)
+    }
+    else
+    {
+        $defaultHdfImageDir = ${Env:USERPROFILE}
+    }
+
+    $newPath = OpenFileDialog "Select HDF image file" $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
+    
+    if ($newPath -and $newPath -ne '')
+    {
+        $settings.Image.HdfImagePath = $newPath
         Save
     }
 }
@@ -316,22 +384,31 @@ function NewImageMenu()
 
     $imagePath = [System.IO.Path]::Combine($imagesPath, $choice + ".zip")
 
+    if ($settings.Image.HdfImagePath)
+    {
+        $defaultHdfImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.HdfImagePath)
+    }
+    else
+    {
+        $defaultHdfImageDir = ${Env:USERPROFILE}
+    }
+
     # enter new hdf image path
     do
     {
-        $newImagePath = Read-Host "Enter New HDF Image Path"
-        $newImagePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($newImagePath)
+        $newImagePath = SaveFileDialog ("Save new " + $choice + " HDF image") $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
         
-        if (test-path -path $newImagePath)
+        if ($newImagePath -and (test-path -path $newImagePath))
         {
             Write-Host ("New HDF Image Path '" + $newImagePath + "' already exists!") -foregroundcolor "Red"
+            Start-Sleep -s 2
         }
     }
-    until ($newImagePath -eq '' -or !(test-path -path $newImagePath))
+    until (!$newImagePath -or !(test-path -path $newImagePath))
 
 
     # return, if new image path is empty
-    if ($newImagePath -eq '')
+    if (!$newImagePath)
     {
         return
     }
@@ -410,10 +487,22 @@ function SwitchInstallWorkbench()
 # change workbench adf path
 function ChangeWorkbenchAdfPath()
 {
-    $path = EnterPath "Enter Workbench Adf Path"
-    if ($path -ne '')
+    $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
+    if ($amigaForeverDataPath)
     {
-        $settings.Workbench.WorkbenchAdfPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
+        $defaultWorkbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
+    }
+    else
+    {
+        $defaultWorkbenchAdfPath = ${Env:USERPROFILE}
+    }
+
+    $path = if (!$settings.Workbench.WorkbenchAdfPath) { $defaultWorkbenchAdfPath } else { $settings.Workbench.WorkbenchAdfPath }
+    $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path
+
+    if ($newPath -and $newPath -ne '')
+    {
+        $settings.Workbench.WorkbenchAdfPath = $newPath
         Save
     }
 }
@@ -506,10 +595,22 @@ function SwitchInstallKickstart()
 # change kickstart rom path
 function ChangeKickstartRomPath()
 {
-    $path = EnterPath "Enter Kickstart Rom Path"
-    if ($path -ne '')
+    $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
+    if ($amigaForeverDataPath)
     {
-        $settings.Kickstart.KickstartRomPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
+        $defaultKickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
+    }
+    else
+    {
+        $defaultKickstartRomPath = ${Env:USERPROFILE}
+    }
+
+    $path = if (!$settings.Kickstart.KickstartRomPath) { $defaultKickstartRomPath } else { $settings.Kickstart.KickstartRomPath }
+    $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path
+
+    if ($newPath -and $newPath -ne '')
+    {
+        $settings.Kickstart.KickstartRomPath = $newPath
         Save
     }
 }
@@ -620,10 +721,12 @@ function ConfigureWinuaeMenu()
 # change winuae path
 function ChangeWinuaePath()
 {
-    $path = EnterPath "Enter WinUAE Path"
-    if ($path -ne '')
+    $path = if (!$settings.Winuae.WinuaePath) { ${Env:ProgramFiles(x86)} } else { [System.IO.Path]::GetDirectoryName($settings.Winuae.WinuaePath) }
+    $newPath = OpenFileDialog "Select WinUAE.exe file" $path "Exe Files|*.exe|All Files|*.*"
+
+    if ($newPath -and $newPath -ne '')
     {
-        $settings.Winuae.WinuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($path)
+        $settings.Winuae.WinuaePath = $newPath
         Save
     }
 }
