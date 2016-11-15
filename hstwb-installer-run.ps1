@@ -7,7 +7,98 @@
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
 
+Param(
+	[Parameter(Mandatory=$false)]
+	[switch]$test
+)
+
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+
+# http://stackoverflow.com/questions/8982782/does-anyone-have-a-dependency-graph-and-topological-sorting-code-snippet-for-pow
+function Get-TopologicalSort {
+  param(
+      [Parameter(Mandatory = $true, Position = 0)]
+      [hashtable] $edgeList
+  )
+
+  # Make sure we can use HashSet
+  Add-Type -AssemblyName System.Core
+
+  # Clone it so as to not alter original
+  $currentEdgeList = [hashtable] (Get-ClonedObject $edgeList)
+
+  # algorithm from http://en.wikipedia.org/wiki/Topological_sorting#Algorithms
+  $topologicallySortedElements = New-Object System.Collections.ArrayList
+  $setOfAllNodesWithNoIncomingEdges = New-Object System.Collections.Queue
+
+  $fasterEdgeList = @{}
+
+  # Keep track of all nodes in case they put it in as an edge destination but not source
+  $allNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentEdgeList.Keys)
+
+  foreach($currentNode in $currentEdgeList.Keys) {
+      $currentDestinationNodes = [array] $currentEdgeList[$currentNode]
+      if($currentDestinationNodes.Length -eq 0) {
+          $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
+      }
+
+      foreach($currentDestinationNode in $currentDestinationNodes) {
+          if(!$allNodes.Contains($currentDestinationNode)) {
+              [void] $allNodes.Add($currentDestinationNode)
+          }
+      }
+
+      # Take this time to convert them to a HashSet for faster operation
+      $currentDestinationNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentDestinationNodes )
+      [void] $fasterEdgeList.Add($currentNode, $currentDestinationNodes)        
+  }
+
+  # Now let's reconcile by adding empty dependencies for source nodes they didn't tell us about
+  foreach($currentNode in $allNodes) {
+      if(!$currentEdgeList.ContainsKey($currentNode)) {
+          [void] $currentEdgeList.Add($currentNode, (New-Object -TypeName System.Collections.Generic.HashSet[object]))
+          $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
+      }
+  }
+
+  $currentEdgeList = $fasterEdgeList
+
+  while($setOfAllNodesWithNoIncomingEdges.Count -gt 0) {        
+      $currentNode = $setOfAllNodesWithNoIncomingEdges.Dequeue()
+      [void] $currentEdgeList.Remove($currentNode)
+      [void] $topologicallySortedElements.Add($currentNode)
+
+      foreach($currentEdgeSourceNode in $currentEdgeList.Keys) {
+          $currentNodeDestinations = $currentEdgeList[$currentEdgeSourceNode]
+          if($currentNodeDestinations.Contains($currentNode)) {
+              [void] $currentNodeDestinations.Remove($currentNode)
+
+              if($currentNodeDestinations.Count -eq 0) {
+                  [void] $setOfAllNodesWithNoIncomingEdges.Enqueue($currentEdgeSourceNode)
+              }                
+          }
+      }
+  }
+
+  if($currentEdgeList.Count -gt 0) {
+      throw "Graph has at least one cycle!"
+  }
+
+  return $topologicallySortedElements
+}
+
+
+# Idea from http://stackoverflow.com/questions/7468707/deep-copy-a-dictionary-hashtable-in-powershell 
+function Get-ClonedObject {
+    param($DeepCopyObject)
+    $memStream = new-object IO.MemoryStream
+    $formatter = new-object Runtime.Serialization.Formatters.Binary.BinaryFormatter
+    $formatter.Serialize($memStream,$DeepCopyObject)
+    $memStream.Position=0
+    $formatter.Deserialize($memStream)
+}
 
 
 # read ini file
@@ -411,171 +502,239 @@ if(!(test-path -path $tempPath))
 }
 
 
-# print preparing installation message
-Write-Host ""
-Write-Host "Preparing installation..."
-
-
-# copy winuae install dir
-$winuaeInstallDir = [System.IO.Path]::Combine($winuaePath, "install")
-Copy-Item -Path $winuaeInstallDir $tempPath -recurse -force
-
-
-# set temp install and packages dir
-$tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
-$tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
-
-
-# create temp packages path
-if(!(test-path -path $tempPackagesDir))
+if ($test)
 {
-	md $tempPackagesDir | Out-Null
-}
+    # read winuae test config file
+    $winuaeTestConfigFile = [System.IO.Path]::Combine($winuaePath, "test.uae")
+    $winuaeTestConfig = [System.IO.File]::ReadAllText($winuaeTestConfigFile)
+
+    # replace winuae test config placeholders
+    $winuaeTestConfig = $winuaeTestConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath)
+    $tempWinuaeTestConfigFile = [System.IO.Path]::Combine($tempPath, "test.uae")
+
+    # write winuae test config file to temp dir
+    [System.IO.File]::WriteAllText($tempWinuaeTestConfigFile, $winuaeTestConfig)
 
 
-# write user assign to install dir
-$userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-WriteAmigaTextLines $userAssignFile @("Assign INSTALLDIR: DH0:") 
+    # print launching winuae message
+    Write-Host ""
+    Write-Host "Launching WinUAE to test image..."
 
 
-# prepare install workbench
-if ($settings.Workbench.InstallWorkbench -eq 'Yes')
-{
-    # copy workbench adf set files to temp install dir
-    Write-Host "Copying Workbench adf files to temp install dir"
-    $workbenchAdfSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
-}
-else
-{
-    # delete install workbench file in install dir
-    $installWorkbenchFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Workbench")
-    Remove-Item $installWorkbenchFile
-}
+    # winuae args
+    $winuaeArgs = "-f ""$tempWinuaeTestConfigFile"""
 
-
-# prepare install kickstart
-if ($settings.Kickstart.InstallKickstart -eq 'Yes')
-{
-    # copy kickstart rom set files to temp install dir
-    Write-Host "Copying Kickstart rom files to temp install dir"
-    $kickstartRomSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
-
-    # copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
-    if ($kickstartRomHash.Encrypted)
+    # exit, if winuae fails
+    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Copy-Item -Path $kickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
+        Write-Error ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        Remove-Item -Recurse -Force $tempPath
+        exit 1
     }
 }
-else
+else 
 {
-    # delete install kickstart file in install dir
-    $installKickstartFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Kickstart")
-    Remove-Item $installKickstartFile
-}
+    # print preparing installation message
+    Write-Host ""
+    Write-Host "Preparing installation..."
 
 
-# get package files in packages directory
-$packageFiles = @()
-$packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
+    # copy winuae install dir
+    $winuaeInstallDir = [System.IO.Path]::Combine($winuaePath, "install")
+    Copy-Item -Path $winuaeInstallDir $tempPath -recurse -force
 
 
-# get install packages defined in settings packages section
-$installPackages = @()
-$installPackages += ,$settings.Packages.InstallPackages -split ','
+    # set temp install and packages dir
+    $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+    $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
 
 
-$installPackagesLines = @()
-
-foreach ($package in $installPackages)
-{
-    # get package file for package
-    $packageFile = $packageFiles | Where { $_.Name -eq ($package + ".zip") } | Select-Object -First 1
-
-
-    # write warning and skip, if package file doesn't exist
-    if (!$packageFile)
+    # create temp packages path
+    if(!(test-path -path $tempPackagesDir))
     {
-        Write-Warning "Package '$package' doesn't exist in packages directory '$packagesPath'"
-        continue
-    }
-
-    Write-Host "Extracting '$package' package to temp install dir"
-
-
-    # create package directory
-    $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package)
-    if(!(test-path -path $packageDir))
-    {
-        md $packageDir | Out-Null
+        md $tempPackagesDir | Out-Null
     }
 
 
-    # add package installation lines to install packages script
-    $installPackagesLines += "echo """""
-    $installPackagesLines += "echo ""$package package installation."""
-    $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package"
-    $installPackagesLines += "execute PACKAGEDIR:Install"
-    $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package REMOVE"
-    $installPackagesLines += "echo ""Done."""
+    # write user assign to install dir
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
+    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
 
 
-    # extract package file to package directory
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($packageFile.FullName, $packageDir)
-}
+    # prepare install workbench
+    if ($settings.Workbench.InstallWorkbench -eq 'Yes')
+    {
+        # copy workbench adf set files to temp install dir
+        Write-Host "Copying Workbench adf files to temp install dir"
+        $workbenchAdfSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+    }
+    else
+    {
+        # delete install workbench file in install dir
+        $installWorkbenchFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Workbench")
+        Remove-Item $installWorkbenchFile
+    }
 
 
-# write install packages script, if it contains any lines
-if ($installPackagesLines.Count -gt 0)
-{
-    $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
-    WriteAmigaTextLines $installPackagesFile $installPackagesLines 
-}
+    # prepare install kickstart
+    if ($settings.Kickstart.InstallKickstart -eq 'Yes')
+    {
+        # copy kickstart rom set files to temp install dir
+        Write-Host "Copying Kickstart rom files to temp install dir"
+        $kickstartRomSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+
+        # copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
+        if ($kickstartRomHash.Encrypted)
+        {
+            Copy-Item -Path $kickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
+        }
+    }
+    else
+    {
+        # delete install kickstart file in install dir
+        $installKickstartFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Kickstart")
+        Remove-Item $installKickstartFile
+    }
 
 
-# read winuae install config file
-$winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
-$winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
-
-# replace winuae install config placeholders
-$winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
-$tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
-
-# write winuae install config file to temp install dir
-[System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+    # get package files in packages directory
+    $packageFiles = @()
+    $packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
 
 
-# write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
-$installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
-[System.IO.File]::WriteAllText($installingFile, "")
+    # get install packages defined in settings packages section
+    $installPackages = @()
+    $installPackages += ,$settings.Packages.InstallPackages -split ','
 
 
-# print preparing installation done message
-Write-Host "Done."
+    $packageNames = @{} 
+    $packageDependencies = @{}
+
+    foreach ($package in $installPackages)
+    {
+        # get package file for package
+        $packageFile = $packageFiles | Where { $_.Name -eq ($package + ".zip") } | Select-Object -First 1
 
 
-# print launching winuae message
-Write-Host ""
-Write-Host "Launching WinUAE to perform installation..."
+        # write warning and skip, if package file doesn't exist
+        if (!$packageFile)
+        {
+            Write-Error "Package '$package' doesn't exist in packages directory '$packagesPath'"
+            exit 1
+        }
+
+        Write-Host "Extracting '$package' package to temp install dir"
 
 
-# run winuae
-$winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
-
-# exit, if winuae fails
-if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
-{
-    Write-Error ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
-    Remove-Item -Recurse -Force $tempPath
-    exit 1
-}
+        # create package directory
+        $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package)
+        if(!(test-path -path $packageDir))
+        {
+            md $packageDir | Out-Null
+        }
 
 
-# fail, if installing file exists
-if (Test-Path -path $installingFile)
-{
-    Write-Error ("WinUAE installation failed")
-    Remove-Item -Recurse -Force $tempPath
-    exit 1
+        # extract package file to package directory
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($packageFile.FullName, $packageDir)
+
+
+        # read package ini file
+        $packageIniFile = [System.IO.Path]::Combine($packageDir, "package.ini")
+
+
+        # fail, if package doesn't contain package ini file
+        if (!(test-path -path $packageIniFile))
+        {
+            Write-Error "Package '$package' doesn't contain a package.ini file"
+            exit 1        
+        }
+
+
+        # read package ini file
+        $packageIni = ReadIniFile $packageIniFile
+
+
+        # add package name and ini
+        $packageNames.Set_Item($packageIni.Package.Name, $package)
+
+
+        # add package dependencies
+        $dependencies = @()
+        $dependencies += $packageIni.Package.Dependencies -split ','
+        $packageDependencies.Set_Item($packageIni.Package.Name, $dependencies)
+    }
+
+
+    # write install packages script, if there are any packages to install
+    if ($installPackages.Count -gt 0)
+    {
+        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies | Where { $_ -and $_ -ne '' }
+
+        $installPackagesLines = @()
+
+        foreach($packageName in $packagesSortedByDependencies)
+        {
+            $package = $packageNames.Get_Item($packageName)
+
+            # add package installation lines to install packages script
+            $installPackagesLines += "echo """""
+            $installPackagesLines += "echo ""$package package installation."""
+            $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package"
+            $installPackagesLines += "execute PACKAGEDIR:Install"
+            $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package REMOVE"
+            $installPackagesLines += "echo ""Done."""
+        }
+
+        $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
+        WriteAmigaTextLines $installPackagesFile $installPackagesLines 
+    }
+
+
+    # read winuae install config file
+    $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
+    $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
+
+    # replace winuae install config placeholders
+    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
+    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
+
+    # write winuae install config file to temp install dir
+    [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+
+
+    # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
+    $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
+    [System.IO.File]::WriteAllText($installingFile, "")
+
+
+    # print preparing installation done message
+    Write-Host "Done."
+
+
+    # print launching winuae message
+    Write-Host ""
+    Write-Host "Launching WinUAE to perform installation..."
+
+
+    # winuae args
+    $winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
+
+    # exit, if winuae fails
+    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+    {
+        Write-Error ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        Remove-Item -Recurse -Force $tempPath
+        exit 1
+    }
+
+
+    # fail, if installing file exists
+    if (Test-Path -path $installingFile)
+    {
+        Write-Error ("WinUAE installation failed")
+        Remove-Item -Recurse -Force $tempPath
+        exit 1
+    }
 }
 
 

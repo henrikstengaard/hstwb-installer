@@ -312,7 +312,7 @@ function MainMenu()
 {
     do
     {
-        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Run Installer", "Reset", "Exit") 
+        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Run Installer", "Test Image", "Reset", "Exit") 
         switch ($choice)
         {
             "Select Image" { SelectImageMenu }
@@ -321,6 +321,7 @@ function MainMenu()
             "Configure Packages" { ConfigurePackagesMenu }
             "Configure WinUAE" { ConfigureWinuaeMenu }
             "Run Installer" { RunInstaller }
+            "Test Image" { TestImage }
             "Reset" { Reset }
         }
     }
@@ -672,12 +673,16 @@ function ConfigurePackagesMenu()
 
     # get install packages defined in settings packages section
     $installPackages = @()
-    $installPackages += ,$settings.Packages.InstallPackages -split ','
+    $installPackages += ($settings.Packages.InstallPackages).split(',')
+
+    $newInstallPackages = New-Object System.Collections.ArrayList
+
+    $installPackages | % { $newInstallPackages.Add($_) }
 
     do
     {
         $packageOptions = @()
-        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($installPackages -contains $_) { "Remove $_" } else { "Add $_" } }
+        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($newInstallPackages.Contains($_)) { "Remove $_" } else { "Add $_" } }
         $packageOptions += "Back"
 
         $choice = Menu "Configure Packages Menu" $packageOptions
@@ -686,16 +691,16 @@ function ConfigurePackagesMenu()
         {
             $package = $choice -replace '^(Add|Remove) ', ''
 
-            if ($installPackages -contains $package)
+            if ($newInstallPackages.Contains($package))
             {
-                $installPackages = ,($installPackages | Where { $_ -ne $package })
+                $newInstallPackages.Remove($package)
             }
             else
             {
-                $installPackages += ,$package
+                $newInstallPackages.Add($package)
             }
             
-            $settings.Packages.InstallPackages = ($installPackages | sort @{expression={$_};Ascending=$true}) -join ','
+            $settings.Packages.InstallPackages = [string]::Join(',', $newInstallPackages.ToArray())
             Save
         } 
     }
@@ -743,6 +748,17 @@ function RunInstaller
 }
 
 
+# test image
+function TestImage
+{
+    Write-Host ""
+	& $runFile -test
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
+}
+
+
 # save
 function Save()
 {
@@ -769,7 +785,7 @@ function DefaultSettings()
 
     $settings.Workbench.InstallWorkbench = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
-    $settings.Packages.InstallPackages = 'BetterWB.4.0.0,HstWB.1.0.0'
+    $settings.Packages.InstallPackages = ''
     
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
@@ -826,7 +842,7 @@ else
 if (!($settings.Packages))
 {
     $settings.Packages = @{}
-    $settings.Packages.InstallPackages = 'BetterWB.4.0.0,HstWB.1.0.0'
+    $settings.Packages.InstallPackages = ''
 }
 
 
