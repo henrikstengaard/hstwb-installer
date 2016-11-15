@@ -27,6 +27,7 @@ resident DF0:C/Delete PURE
 resident DF0:C/Execute PURE
 resident DF0:C/MakeDir PURE
 resident DF0:C/Protect PURE
+resident DF0:C/Search PURE 
 resident DF0:C/Wait PURE 
 resident INSTALL:C/UnADF PURE
 resident INSTALL:C/UnZip PURE
@@ -76,6 +77,6 @@ echo ""
 
 ; End
 LAB end
-echo "UAE will quit in 5 seconds..."
-wait 5
-uaequit
+echo "UAE will quit in 10 seconds..."
+wait 10
+uaequit >NIL:
