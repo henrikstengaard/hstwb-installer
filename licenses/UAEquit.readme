@@ -1,0 +1,18 @@
+Short:        Wxit UAE from within the emulated system
+Author:       rbm
+Uploader:     pipatron gmail com (Anders Andersson)
+Type:         misc/emu
+Architecture: m68k-amigaos
+
+Because there is no UAEquit CLI program that works when any 68060 or PPC expansions is selected.
+
+The attached that uses "uae.resource" works.
+
+Usage:
+
+"UAEquit" .................... Shutdown
+"UAEquit RESET" .............. Reset
+"UAEquit HARDRESET" .......... Hard reset
+
+(upladed with permission by the author "rbm")
+
