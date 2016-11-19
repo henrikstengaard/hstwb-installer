@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="ImagesComponentDir">
+            <Directory Id="dirE4692800B6AF9C8E896B1CF7778B1A74" Name="images">
+                <Component Id="cmpE1C785EB8D298E6F9424BB0A90EBCD3D" Guid="7F893D5E-D9B9-41AA-9D42-ADF58D9B4B99">
+                    <File Id="fil4F98B4D837E56607BCB72A06578256C7" KeyPath="yes" Source="$(var.ImagesDir)\8gb.zip" />
+                </Component>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="ImagesComponentGroup">
+            <ComponentRef Id="cmpE1C785EB8D298E6F9424BB0A90EBCD3D" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

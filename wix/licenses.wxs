@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="LicensesComponentDir">
+            <Directory Id="dirA0E32CB54D10470B397521C5C88F988B" Name="licenses">
+                <Component Id="cmpA675C7EC776A3A3172ED2076614ADECA" Guid="686FEC65-16DE-45E6-B96D-71B4D1C12185">
+                    <File Id="fil8B0B14EA8584F6239051E27E9F5A5A03" KeyPath="yes" Source="$(var.LicensesDir)\LoadModule.lha" />
+                </Component>
+                <Component Id="cmpF7CC594C7804051A0BC838FAAC2EFC86" Guid="A4D76621-12EF-4B5B-B4F3-191A53042112">
+                    <File Id="filBD68457E72B0443D5AF0017F5F780C59" KeyPath="yes" Source="$(var.LicensesDir)\UAEquit.lha" />
+                </Component>
+                <Component Id="cmp8C163EA07330E6604AB8D7AA84F01B29" Guid="814FA867-8D81-4371-A440-9960A34483B8">
+                    <File Id="fil84D719D291AC1A5D6A67F726E5243F68" KeyPath="yes" Source="$(var.LicensesDir)\UAEquit.readme" />
+                </Component>
+                <Component Id="cmpDA01E32FAD9E25C17849D9024086415F" Guid="CAB9F36D-F1F2-49EE-952F-104CBA60E22D">
+                    <File Id="fil1757E588DBDC2B3AE0B7C1102FE66A89" KeyPath="yes" Source="$(var.LicensesDir)\UnADF.lha" />
+                </Component>
+                <Component Id="cmp340A6B75C40340DDC6DE8618F935FF85" Guid="1EC33B5F-1107-4323-BCD1-10AE26751D61">
+                    <File Id="filEC31F7B06C6E9F6317AAFFD5C7F56B7F" KeyPath="yes" Source="$(var.LicensesDir)\unz550xA.lha" />
+                </Component>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="LicensesComponentGroup">
+            <ComponentRef Id="cmpA675C7EC776A3A3172ED2076614ADECA" />
+            <ComponentRef Id="cmpF7CC594C7804051A0BC838FAAC2EFC86" />
+            <ComponentRef Id="cmp8C163EA07330E6604AB8D7AA84F01B29" />
+            <ComponentRef Id="cmpDA01E32FAD9E25C17849D9024086415F" />
+            <ComponentRef Id="cmp340A6B75C40340DDC6DE8618F935FF85" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>
