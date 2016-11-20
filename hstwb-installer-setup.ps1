@@ -682,7 +682,10 @@ function ConfigurePackagesMenu()
 
     # get install packages defined in settings packages section
     $installPackages = @()
-    $installPackages += ($settings.Packages.InstallPackages).split(',')
+    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    {
+        $installPackages += $settings.Packages.InstallPackages -split ','
+    }
 
     $newInstallPackages = New-Object System.Collections.ArrayList
 
