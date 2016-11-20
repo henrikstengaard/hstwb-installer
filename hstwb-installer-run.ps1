@@ -8,6 +8,8 @@
 
 
 Param(
+	[Parameter(Mandatory=$true)]
+	[string]$settingsFile,
 	[Parameter(Mandatory=$false)]
 	[switch]$test
 )
@@ -347,6 +349,9 @@ function ValidateSettings()
 # print settings
 function PrintSettings()
 {
+    Write-Host "Settings"
+    Write-Host "  Settings File      : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settingsFile + "'")
     Write-Host "Image"
     Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Image.HdfImagePath + "'")
@@ -378,8 +383,8 @@ $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
-$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-settings.ini")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
+$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
 
 
 # fail, if settings file doesn't exist

@@ -7,6 +7,12 @@
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
 
+Param(
+	[Parameter(Mandatory=$true)]
+	[string]$settingsFile
+)
+
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -221,6 +227,9 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 # print settings
 function PrintSettings()
 {
+    Write-Host "Settings"
+    Write-Host "  Settings File      : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settingsFile + "'")
     Write-Host "Image"
     Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Image.HdfImagePath + "'")
@@ -741,7 +750,7 @@ function ChangeWinuaePath()
 function RunInstaller
 {
     Write-Host ""
-	& $runFile
+	& $runFile -settingsFile $settingsFile
     Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
@@ -752,7 +761,7 @@ function RunInstaller
 function TestImage
 {
     Write-Host ""
-	& $runFile -test
+	& $runFile -settingsFile $settingsFile -test
     Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
@@ -821,7 +830,17 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-run.ps1")
-$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-settings.ini")
+$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
+
+
+$settingsDir = [System.IO.Path]::GetDirectoryName($settingsFile)
+
+
+# create settings dir, if it doesn't exist
+if(!(test-path -path $settingsDir))
+{
+    md $settingsDir | Out-Null
+}
 
 
 $settings = @{}
