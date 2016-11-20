@@ -377,6 +377,20 @@ function PrintSettings()
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
 }
 
+# fail
+function Fail($message, $tempPath)
+{
+    if(test-path -path $tempPath)
+    {
+        Remove-Item -Recurse -Force $tempPath
+    }
+
+    Write-Error $message
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
+    exit 1
+}
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
@@ -390,8 +404,7 @@ $settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFro
 # fail, if settings file doesn't exist
 if (!(test-path -path $settingsFile))
 {
-    Write-Error ("Error: Settings file '$settingsFile' doesn't exist!")
-    exit 1
+    Fail ("Error: Settings file '$settingsFile' doesn't exist!") $tempPath
 }
 
 
@@ -432,8 +445,7 @@ $workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $settings.Work
 # fail, if workbench adf set hashes is empty 
 if ($workbenchAdfSetHashes.Count -eq 0)
 {
-    Write-Error ("Wockbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
-    exit 1 
+    Fail ("Wockbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!") $tempPath
 }
 
 
@@ -443,8 +455,7 @@ $workbenchAdfHash = $workbenchAdfSetHashes | Where { $_.Name -eq 'Workbench 3.1 
 # fail, if workbench adf hash doesn't exist
 if (!$workbenchAdfHash)
 {
-    Write-Error ("Workbench set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
-    exit 1 
+    Fail ("Workbench set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!") $tempPath
 }
 
 
@@ -468,8 +479,7 @@ $kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $settings.Kick
 # fail, if kickstart rom set hashes is empty 
 if ($kickstartRomSetHashes.Count -eq 0)
 {
-    Write-Error ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!")
-    exit 1 
+    Fail ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!") $tempPath
 }
 
 
@@ -480,8 +490,7 @@ $kickstartRomHash = $kickstartRomSetHashes | Where { $_.Name -eq 'Kickstart 3.1 
 # fail, if kickstart rom hash doesn't exist
 if (!$kickstartRomHash)
 {
-    Write-Error ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
-    exit 1 
+    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!") $tempPath
 }
 
 
@@ -495,8 +504,7 @@ $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryN
 # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
 if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
 {
-    Write-Error ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
-    exit 1 
+    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!") $tempPath
 }
 
 
@@ -532,9 +540,7 @@ if ($test)
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Write-Error ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
-        Remove-Item -Recurse -Force $tempPath
-        exit 1
+        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'") $tempPath
     }
 }
 else 
@@ -627,8 +633,7 @@ else
         # write warning and skip, if package file doesn't exist
         if (!$packageFile)
         {
-            Write-Error "Package '$package' doesn't exist in packages directory '$packagesPath'"
-            exit 1
+            Fail ("Package '$package' doesn't exist in packages directory '$packagesPath'") $tempPath
         }
 
         Write-Host "Extracting '$package' package to temp install dir"
@@ -653,8 +658,7 @@ else
         # fail, if package doesn't contain package ini file
         if (!(test-path -path $packageIniFile))
         {
-            Write-Error "Package '$package' doesn't contain a package.ini file"
-            exit 1        
+            Fail ("Package '$package' doesn't contain a package.ini file") $tempPath
         }
 
 
@@ -730,18 +734,14 @@ else
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Write-Error ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
-        Remove-Item -Recurse -Force $tempPath
-        exit 1
+        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'") $tempPath
     }
 
 
     # fail, if installing file exists
     if (Test-Path -path $installingFile)
     {
-        Write-Error ("WinUAE installation failed")
-        Remove-Item -Recurse -Force $tempPath
-        exit 1
+        Fail "WinUAE installation failed" $tempPath
     }
 }
 
@@ -752,3 +752,6 @@ Remove-Item -Recurse -Force $tempPath
 
 # print done message 
 Write-Host "Done."
+Write-Host ""
+Write-Host "Press enter to continue"
+Read-Host

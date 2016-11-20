@@ -755,8 +755,6 @@ function RunInstaller
     Write-Host ""
 	& $runFile -settingsFile $settingsFile
     Write-Host ""
-    Write-Host "Press enter to continue"
-    Read-Host
 }
 
 
@@ -766,8 +764,6 @@ function TestImage
     Write-Host ""
 	& $runFile -settingsFile $settingsFile -test
     Write-Host ""
-    Write-Host "Press enter to continue"
-    Read-Host
 }
 
 
