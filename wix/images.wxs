@@ -3,7 +3,7 @@
     <Fragment>
         <DirectoryRef Id="ImagesComponentDir">
             <Directory Id="dirE4692800B6AF9C8E896B1CF7778B1A74" Name="images">
-                <Component Id="cmpE1C785EB8D298E6F9424BB0A90EBCD3D" Guid="7F893D5E-D9B9-41AA-9D42-ADF58D9B4B99">
+                <Component Id="cmpE1C785EB8D298E6F9424BB0A90EBCD3D" Guid="A3B43FE4-248A-4A9F-A030-DA6812301D5A">
                     <File Id="fil4F98B4D837E56607BCB72A06578256C7" KeyPath="yes" Source="$(var.ImagesDir)\8gb.zip" />
                 </Component>
             </Directory>

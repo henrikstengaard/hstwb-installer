@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Id="*" UpgradeCode="4dbf62af-578f-41c5-b458-d825d3dfed44" Name="HstWB Installer" Version="1.0.0" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
+   <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="1.0.0" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
       <Package InstallerVersion="300" Compressed="yes" Comments="Windows Installer Package"/>
       <Media Id="1" Cabinet="hstwbinstaller.cab" EmbedCab="yes"/>
 
@@ -8,6 +8,9 @@
  
 
 <Directory Id="TARGETDIR" Name="SourceDir">
+<Directory Id="LocalAppDataFolder">
+    <Directory Id="ApplicationDataDirectory" Name="HstWB Installer"/>
+  </Directory>
   <Directory Id="ProgramMenuFolder">
     <Directory Id="ApplicationStartMenuDirectory" Name="HstWB Installer"/>
   </Directory>
@@ -34,30 +37,33 @@
 
 <DirectoryRef Id="ApplicationStartMenuDirectory">
     <Component Id="ApplicationShortcuts" Guid="2d653bc1-71ac-42af-ae4d-69795f4dd428">
+                  <Shortcut 
+                    Id="ApplicationSettingsShortcut"
+                    Name="HstWB Installer Settings"
+                    Target="[ApplicationDataDirectory]hstwb-installer-settings.ini"
+                    WorkingDirectory="ApplicationDataDirectory"
+                    Icon="icon.ico" />
                       <Shortcut 
                     Id="ApplicationRunShortcut" 
                     Name="HstWB Installer Run" 
-                    Target="[INSTALLDIR]hstwb-installer-run.cmd"
+                    Target="[SystemFolder]cmd.exe"
                     WorkingDirectory="INSTALLDIR"
+                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsFile &quot;%LOCALAPPDATA%\HstWB Installer\hstwb-installer-settings.ini&quot;&quot;"
                     Icon="icon.ico" />
                   <Shortcut 
                     Id="ApplicationSetupShortcut" 
                     Name="HstWB Installer Setup" 
-                    Target="[INSTALLDIR]hstwb-installer-setup.cmd"
+                    Target="[SystemFolder]cmd.exe"
                     WorkingDirectory="INSTALLDIR"
-                    Icon="icon.ico" />
-                  <Shortcut 
-                    Id="ApplicationSettingsShortcut"
-                    Name="HstWB Installer Settings"
-                    Target="[INSTALLDIR]hstwb-installer-settings.ini"
-                    WorkingDirectory="INSTALLDIR"
+                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsFile &quot;%LOCALAPPDATA%\HstWB Installer\hstwb-installer-settings.ini&quot;&quot;"
                     Icon="icon.ico" />
         <Shortcut Id="ApplicationUninstallShortcut"
-                  Name="Uninstall My Demo App"
+                  Name="Uninstall HstWB Installer"
                   Directory="ApplicationStartMenuDirectory"
                   Target="[SystemFolder]msiexec.exe"
                   Arguments="/x [ProductCode]"/> 
-        <RemoveFolder Id="ApplicationStartMenuDirectory" On="uninstall"/>
+        <RemoveFolder Id="RemoveApplicationDataDirectory" Directory="ApplicationDataDirectory" On="uninstall"/>
+        <RemoveFolder Id="RemoveApplicationStartMenuDirectory" Directory="ApplicationStartMenuDirectory" On="uninstall"/>
                   <RegistryValue Root="HKCU" Key="Software\Henrik Noerfjand Stengaard\HstWB Installer" 
                             Name="installed" Type="integer" Value="1" KeyPath="yes"/>
     </Component>

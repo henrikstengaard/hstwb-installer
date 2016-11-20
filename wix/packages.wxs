@@ -3,22 +3,22 @@
     <Fragment>
         <DirectoryRef Id="PackagesComponentDir">
             <Directory Id="dir197912A1E996EE9236D57188D2F44894" Name="packages">
-                <Component Id="cmp26A1B584D3EE5495A2033F40B11ED547" Guid="DAA50BA6-0D8F-4204-BA10-2A2EC8C18089">
+                <Component Id="cmp26A1B584D3EE5495A2033F40B11ED547" Guid="5D4E39F3-8EE2-4DB4-A782-3410BFAD87E9">
                     <File Id="fil84A71EA1D8B50600CD1F2CB13A99C206" KeyPath="yes" Source="$(var.PackagesDir)\BetterWB.4.0.0.zip" />
                 </Component>
-                <Component Id="cmp6C07E4E6EB76BECF95ABE866012F6994" Guid="3CD7A9A7-6281-43CA-A6B4-B4BD4F0D1526">
+                <Component Id="cmp6C07E4E6EB76BECF95ABE866012F6994" Guid="18AC02AB-CB51-4059-AED5-E90168112232">
                     <File Id="fil36AB63FB7711D5AE9743D2CC86ED190F" KeyPath="yes" Source="$(var.PackagesDir)\EAB.WHDLoad.Demos.AGA.Menu.2.6.0.zip" />
                 </Component>
-                <Component Id="cmp7809BDF8775983D751D5BAA0A28EBACC" Guid="5FAC1FCD-3558-42C0-99B4-35CEE958360E">
+                <Component Id="cmp7809BDF8775983D751D5BAA0A28EBACC" Guid="2E3DA864-5E55-4911-9D3E-34B840D7232E">
                     <File Id="filC88A74568A304B4B38F6A7C2689FE60F" KeyPath="yes" Source="$(var.PackagesDir)\EAB.WHDLoad.Demos.OCS.Menu.2.6.0.zip" />
                 </Component>
-                <Component Id="cmpF882B30DA974CC58DA23029A3368C694" Guid="01CAD3F3-EABE-421B-BB29-85D6996A05F7">
+                <Component Id="cmpF882B30DA974CC58DA23029A3368C694" Guid="653B9231-8CF8-48EB-90AD-44C1CFF4FE88">
                     <File Id="fil253FB1CE032044AC66294282AFF68FF2" KeyPath="yes" Source="$(var.PackagesDir)\EAB.WHDLoad.Games.AGA.Menu.2.6.0.zip" />
                 </Component>
-                <Component Id="cmp1D719AE9B62AB388998CAECD4AA5DA3B" Guid="664B909B-86BB-4C51-812C-031D45004428">
+                <Component Id="cmp1D719AE9B62AB388998CAECD4AA5DA3B" Guid="8F5DE2B8-13BD-45D1-82DA-C5EE4FAB6585">
                     <File Id="filCAA4AD9AAF73FEBD344B6ECB850B33DE" KeyPath="yes" Source="$(var.PackagesDir)\EAB.WHDLoad.Games.OCS.Menu.2.6.0.zip" />
                 </Component>
-                <Component Id="cmpD1A9DE1A343873EBB94C5F3F7559E677" Guid="366BAFD0-E299-4CB6-848A-C75A6B1BF219">
+                <Component Id="cmpD1A9DE1A343873EBB94C5F3F7559E677" Guid="5FF8075D-7759-4A77-8A2E-282B65179F22">
                     <File Id="fil7F853DD8212356160931EDCD15C564E3" KeyPath="yes" Source="$(var.PackagesDir)\HstWB.1.0.0.zip" />
                 </Component>
             </Directory>
