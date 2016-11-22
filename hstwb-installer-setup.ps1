@@ -253,6 +253,9 @@ function PrintSettings()
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
+    Write-Host "Installer"
+    Write-Host "  Mode               : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Installer.Mode + "'")
 }
 
 
@@ -321,7 +324,7 @@ function MainMenu()
 {
     do
     {
-        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Run Installer", "Test Image", "Reset", "Exit") 
+        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
         switch ($choice)
         {
             "Select Image" { SelectImageMenu }
@@ -329,8 +332,8 @@ function MainMenu()
             "Configure Kickstart" { ConfigureKickstartMenu }
             "Configure Packages" { ConfigurePackagesMenu }
             "Configure WinUAE" { ConfigureWinuaeMenu }
+            "Configure Installer" { ConfigureInstaller }
             "Run Installer" { RunInstaller }
-            "Test Image" { TestImage }
             "Reset" { Reset }
         }
     }
@@ -749,20 +752,43 @@ function ChangeWinuaePath()
 }
 
 
+# configure installer
+function ConfigureInstaller()
+{
+    do
+    {
+        $choice = Menu "Configure Installer" @("Change Installer Mode", "Back") 
+        switch ($choice)
+        {
+            "Change Installer Mode" { ChangeInstallerMode }
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+
+# change installer mode
+function ChangeInstallerMode()
+{
+    do
+    {
+        $choice = Menu "Change Installer Mode" @("Install", "Test", "Back") 
+
+        if ($choice -ne 'Back')
+        {
+            $settings.Installer.Mode = $choice
+            Save
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+
 # run installer
 function RunInstaller
 {
     Write-Host ""
 	& $runFile -settingsFile $settingsFile
-    Write-Host ""
-}
-
-
-# test image
-function TestImage
-{
-    Write-Host ""
-	& $runFile -settingsFile $settingsFile -test
     Write-Host ""
 }
 
@@ -790,10 +816,12 @@ function DefaultSettings()
     $settings.Kickstart = @{}
     $settings.Winuae = @{}
     $settings.Packages = @{}
+    $settings.Installer = @{}
 
     $settings.Workbench.InstallWorkbench = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
     $settings.Packages.InstallPackages = ''
+    $settings.Installer.Mode = 'Install'
     
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
@@ -853,6 +881,14 @@ if (test-path -path $settingsFile)
 else
 {
     Reset
+}
+
+
+# set default installer mode, if not present
+if (!$settings.Installer -or !$settings.Installer.Mode)
+{
+    $settings.Installer = @{}
+    $settings.Installer.Mode = "Install"
 }
 
 
