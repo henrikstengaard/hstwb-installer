@@ -9,9 +9,7 @@
 
 Param(
 	[Parameter(Mandatory=$true)]
-	[string]$settingsFile,
-	[Parameter(Mandatory=$false)]
-	[switch]$test
+	[string]$settingsFile
 )
 
 
@@ -284,64 +282,70 @@ function ValidateSettings()
     # fail, if HdfImagePath parameter doesn't exist in settings file or file doesn't exist
     if (!$settings.Image.HdfImagePath -or !(test-path -path $settings.Image.HdfImagePath))
     {
-        Write-Error ("Error: HdfImagePath parameter doesn't exist in settings file or file doesn't exist!")
-        exit 1
+        Fail ("Error: HdfImagePath parameter doesn't exist in settings file or file doesn't exist!") $tempPath
     }
 
 
     # fail, if InstallWorkbench parameter doesn't exist in settings file or is not valid
     if (!$settings.Workbench.InstallWorkbench -or $settings.Workbench.InstallWorkbench -notmatch '(Yes|No)')
     {
-        Write-Error ("Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!")
-        exit 1
+        Fail ("Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!") $tempPath
     }
 
 
     # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
     if (!$settings.Workbench.WorkbenchAdfPath -or !(test-path -path $settings.Workbench.WorkbenchAdfPath))
     {
-        Write-Error ("Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!")
-        exit 1
+        Fail ("Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!") $tempPath
     }
 
 
     # fail, if WorkbenchAdfSet parameter doesn't exist settings file or it's not defined
     if (!$settings.Workbench.WorkbenchAdfSet -or $settings.Workbench.WorkbenchAdfSet -eq '')
     {
-        Write-Error ("Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!")
-        exit 1
+        Fail ("Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!") $tempPath
     }
 
 
     # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
     if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
     {
-        Write-Error ("Error: InstallKickstart parameter doesn't exist in settings file or is not valid!")
-        exit 1
+        Fail ("Error: InstallKickstart parameter doesn't exist in settings file or is not valid!") $tempPath
     }
 
 
     # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
     if (!$settings.Kickstart.KickstartRomPath -or !(test-path -path $settings.Kickstart.KickstartRomPath))
     {
-        Write-Error ("Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!")
-        exit 1
+        Fail ("Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!") $tempPath
     }
 
 
     # fail, if KickstartRomSet parameter doesn't exist in settings file or it's not defined
     if (!$settings.Kickstart.KickstartRomSet -or $settings.Kickstart.KickstartRomSet -eq '')
     {
-        Write-Error ("Error: KickstartRomSet parameter doesn't exist in settings file or it's not defined!")
-        exit 1
+        Fail ("Error: KickstartRomSet parameter doesn't exist in settings file or it's not defined!") $tempPath
+    }
+
+
+    # fail, if InstallPackages parameter doesn't exist in settings file or file doesn't exist
+    if (!$settings.Packages.InstallPackages -or $settings.Packages.InstallPackages -eq '')
+    {
+        Fail ("Error: InstallPackages parameter doesn't exist in settings file or it's not defined!") $tempPath
     }
 
 
     # fail, if WinuaePath parameter doesn't exist in settings file or file doesn't exist
     if (!$settings.Winuae.WinuaePath -or !(test-path -path $settings.Winuae.WinuaePath))
     {
-        Write-Error ("Error: WinuaePath parameter doesn't exist in settings file or file doesn't exist!")
-        exit 1
+        Fail ("Error: WinuaePath parameter doesn't exist in settings file or file doesn't exist!") $tempPath
+    }
+    
+
+    # fail, if Mode parameter doesn't exist in settings file or is not valid
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|Test)')
+    {
+        Fail ("Error: Mode parameter doesn't exist in settings file or is not valid!") $tempPath
     }
 }
 
@@ -375,6 +379,9 @@ function PrintSettings()
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
+    Write-Host "Installer"
+    Write-Host "  Mode               : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Installer.Mode + "'")
 }
 
 # fail
@@ -410,6 +417,14 @@ if (!(test-path -path $settingsFile))
 
 # read settings file
 $settings = ReadIniFile $settingsFile
+
+
+# set default installer mode, if not present
+if (!$settings.Installer -or !$settings.Installer.Mode)
+{
+    $settings.Installer = @{}
+    $settings.Installer.Mode = "Install"
+}
 
 
 # print title and settings 
@@ -515,7 +530,7 @@ if(!(test-path -path $tempPath))
 }
 
 
-if ($test)
+if ($settings.Installer.Mode -eq 'Test')
 {
     # read winuae test config file
     $winuaeTestConfigFile = [System.IO.Path]::Combine($winuaePath, "test.uae")
@@ -666,6 +681,11 @@ else
         $packageIni = ReadIniFile $packageIniFile
 
 
+        if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
+        {
+            Fail ("Package '$package' doesn't name in package.ini file") $tempPath
+        }
+
         # add package name and ini
         $packageNames.Set_Item($packageIni.Package.Name, $package)
 
@@ -680,12 +700,18 @@ else
     # write install packages script, if there are any packages to install
     if ($installPackages.Count -gt 0)
     {
-        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies | Where { $_ -and $_ -ne '' }
+        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies
 
         $installPackagesLines = @()
 
         foreach($packageName in $packagesSortedByDependencies)
         {
+            # skip package from dependencies, if not part of packages that should be installed
+            if (!$packageNames.ContainsKey($packageName))
+            {
+                continue
+            }
+
             $package = $packageNames.Get_Item($packageName)
 
             # add package installation lines to install packages script
