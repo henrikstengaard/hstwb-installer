@@ -772,7 +772,7 @@ function ChangeInstallerMode()
 {
     do
     {
-        $choice = Menu "Change Installer Mode" @("Install", "Test", "Back") 
+        $choice = Menu "Change Installer Mode" @("Install", "Self-Install", "Test", "Back") 
 
         if ($choice -ne 'Back')
         {
