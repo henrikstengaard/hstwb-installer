@@ -384,153 +384,186 @@ function PrintSettings()
     Write-Host ("'" + $settings.Installer.Mode + "'")
 }
 
-# fail
-function Fail($message, $tempPath)
+
+# find workbench adf set hashes
+function FindWorkbenchAdfSetHashes()
 {
-    if(test-path -path $tempPath)
+    # read workbench adf hashes
+    $workbenchAdfHashes = @()
+    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
+
+
+    # find files with hashes matching workbench adf hashes
+    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+
+
+    # find files with disk names matching workbench adf hashes
+    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+
+
+    # get workbench adf set hashes
+    $workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $settings.Workbench.WorkbenchAdfSet }
+
+
+    # fail, if workbench adf set hashes is empty 
+    if ($workbenchAdfSetHashes.Count -eq 0)
     {
-        Remove-Item -Recurse -Force $tempPath
+        Fail ("Workbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!") $tempPath
+    }
+    
+    return $workbenchAdfSetHashes
+}
+
+
+# find packages to install
+function FindPackagesToInstall()
+{
+    # get package files in packages directory
+    $packageFiles = @()
+    $packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
+
+
+    # get install packages defined in settings packages section
+    $packages = @()
+    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    {
+        $packages += $settings.Packages.InstallPackages -split ','
     }
 
-    Write-Error $message
-    Write-Host ""
-    Write-Host "Press enter to continue"
-    Read-Host
-    exit 1
+
+    $packageNames = @{}
+    $packageDetails = @{}
+    $packageDependencies = @{}
+
+    foreach ($package in $packages)
+    {
+        # get package file for package
+        $packageFile = $packageFiles | Where { $_.Name -eq ($package + ".zip") } | Select-Object -First 1
+
+
+        # write warning and skip, if package file doesn't exist
+        if (!$packageFile)
+        {
+            Fail ("Package '$package' doesn't exist in packages directory '$packagesPath'") $tempPath
+        }
+
+
+        # open package file and get first package ini file
+        $zip = [System.IO.Compression.ZipFile]::Open($packageFile.FullName,"Read")
+        $packageIniZipEntry = $zip.Entries | Where { $_.FullName -match 'package.ini$' }
+
+
+        # return, if package file doesn't contain a package ini file 
+        if (!$packageIniZipEntry)
+        {
+            Fail ("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file") $tempPath
+        }
+
+
+        # create package directory
+        $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package)
+        if(!(test-path -path $packageDir))
+        {
+            md $packageDir | Out-Null
+        }
+
+
+        # extract package ini file
+        $packageIniFile = [System.IO.Path]::Combine($packageDir, "package.ini")
+        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($packageIniZipEntry, $packageIniFile, $true);
+
+
+        # fail, if package doesn't contain package ini file
+        if (!(test-path -path $packageIniFile))
+        {
+            Fail ("Package ini file '$packageIniFile' doesn't exist") $tempPath
+        }
+
+
+        # read package ini file
+        $packageIni = ReadIniFile $packageIniFile
+
+
+        # package name
+        $packageName = $packageIni.Package.Name 
+
+
+        # fail, if package name doesn't exist
+        if (!$packageName -or $packageName -eq '')
+        {
+            Fail ("Package '$package' doesn't contain name in package.ini file") $tempPath
+        }
+
+
+        # delete package ini file
+        Remove-Item -Path $packageIniFile -Force
+
+
+        # add package details
+        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "Package" = $package; "PackageFile" = $packageFile.FullName; "PackageDir" = $packageDir })
+
+
+        # add package dependencies
+        $dependencies = @()
+        $dependencies += $packageIni.Package.Dependencies -split ','
+        $packageDependencies.Set_Item($packageName, $dependencies)
+    }
+
+
+    $installPackages = @()
+
+
+    # write install packages script, if there are any packages to install
+    if ($packages.Count -gt 0)
+    {
+        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies
+
+        foreach($packageName in $packagesSortedByDependencies)
+        {
+            # skip package from dependencies, if not part of packages that should be installed
+            if (!$packageDetails.ContainsKey($packageName))
+            {
+                continue
+            }
+
+            $installPackages += $packageDetails.Get_Item($packageName)
+        }
+    }
+
+
+    return $installPackages
 }
 
-# resolve paths
-$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
-$packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
-$winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
-$tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
-$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
 
-
-# fail, if settings file doesn't exist
-if (!(test-path -path $settingsFile))
+# find kickstart rom set hashes
+function FindKickstartRomSetHashes()
 {
-    Fail ("Error: Settings file '$settingsFile' doesn't exist!") $tempPath
+    # read kickstart rom hashes
+    $kickstartRomHashes = @()
+    $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
+
+
+    # find files with hashes matching kickstart rom hashes
+    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomPath
+
+
+    # get kickstart rom set hashes
+    $kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $settings.Kickstart.KickstartRomSet }
+
+
+    # fail, if kickstart rom set hashes is empty 
+    if ($kickstartRomSetHashes.Count -eq 0)
+    {
+        Fail ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!") $tempPath
+    }
+
+
+    return $kickstartRomSetHashes
 }
 
 
-# read settings file
-$settings = ReadIniFile $settingsFile
-
-
-# set default installer mode, if not present
-if (!$settings.Installer -or !$settings.Installer.Mode)
-{
-    $settings.Installer = @{}
-    $settings.Installer.Mode = "Install"
-}
-
-
-# print title and settings 
-Write-Host "-------------------" -foregroundcolor "Yellow"
-Write-Host "HstWB Installer Run" -foregroundcolor "Yellow"
-Write-Host "-------------------" -foregroundcolor "Yellow"
-Write-Host ""
-PrintSettings
-Write-Host ""
-
-
-# Validate settings
-ValidateSettings
-
-
-# read workbench adf hashes
-$workbenchAdfHashes = @()
-$workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-
-
-# find files with hashes matching workbench adf hashes
-FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
-
-
-# find files with disk names matching workbench adf hashes
-FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
-
-
-# get workbench adf set hashes
-$workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $settings.Workbench.WorkbenchAdfSet }
-
-
-# fail, if workbench adf set hashes is empty 
-if ($workbenchAdfSetHashes.Count -eq 0)
-{
-    Fail ("Wockbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!") $tempPath
-}
-
-
-# find workbench 3.1 workbench disk
-$workbenchAdfHash = $workbenchAdfSetHashes | Where { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-
-# fail, if workbench adf hash doesn't exist
-if (!$workbenchAdfHash)
-{
-    Fail ("Workbench set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!") $tempPath
-}
-
-
-# print workbench adf hash file
-Write-Host ("Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "'")
-
-
-# read kickstart rom hashes
-$kickstartRomHashes = @()
-$kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-
-
-# find files with hashes matching kickstart rom hashes
-FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomPath
-
-
-# get kickstart rom set hashes
-$kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $settings.Kickstart.KickstartRomSet }
-
-
-# fail, if kickstart rom set hashes is empty 
-if ($kickstartRomSetHashes.Count -eq 0)
-{
-    Fail ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!") $tempPath
-}
-
-
-# find kickstart 3.1 a1200 rom
-$kickstartRomHash = $kickstartRomSetHashes | Where { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
-
-
-# fail, if kickstart rom hash doesn't exist
-if (!$kickstartRomHash)
-{
-    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!") $tempPath
-}
-
-
-# print kickstart rom hash file
-Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
-
-
-# kickstart rom key
-$kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
-
-# fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
-if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
-{
-    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!") $tempPath
-}
-
-
-# create temp path
-if(!(test-path -path $tempPath))
-{
-	md $tempPath | Out-Null
-}
-
-
-if ($settings.Installer.Mode -eq 'Test')
+# run test
+function RunTest
 {
     # read winuae test config file
     $winuaeTestConfigFile = [System.IO.Path]::Combine($winuaePath, "test.uae")
@@ -558,11 +591,14 @@ if ($settings.Installer.Mode -eq 'Test')
         Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'") $tempPath
     }
 }
-else 
+
+
+# run install
+function RunInstall()
 {
     # print preparing installation message
     Write-Host ""
-    Write-Host "Preparing installation..."
+    Write-Host "Preparing install..."
 
 
     # copy winuae install dir
@@ -623,106 +659,32 @@ else
     }
 
 
-    # get package files in packages directory
-    $packageFiles = @()
-    $packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
+    # find packages to install
+    $installPackages = FindPackagesToInstall
 
 
-    # get install packages defined in settings packages section
-    $installPackages = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
-    {
-        $installPackages += $settings.Packages.InstallPackages -split ','
-    }
-
-
-    $packageNames = @{} 
-    $packageDependencies = @{}
-
-    foreach ($package in $installPackages)
-    {
-        # get package file for package
-        $packageFile = $packageFiles | Where { $_.Name -eq ($package + ".zip") } | Select-Object -First 1
-
-
-        # write warning and skip, if package file doesn't exist
-        if (!$packageFile)
-        {
-            Fail ("Package '$package' doesn't exist in packages directory '$packagesPath'") $tempPath
-        }
-
-        Write-Host "Extracting '$package' package to temp install dir"
-
-
-        # create package directory
-        $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package)
-        if(!(test-path -path $packageDir))
-        {
-            md $packageDir | Out-Null
-        }
-
-
-        # extract package file to package directory
-        [System.IO.Compression.ZipFile]::ExtractToDirectory($packageFile.FullName, $packageDir)
-
-
-        # read package ini file
-        $packageIniFile = [System.IO.Path]::Combine($packageDir, "package.ini")
-
-
-        # fail, if package doesn't contain package ini file
-        if (!(test-path -path $packageIniFile))
-        {
-            Fail ("Package '$package' doesn't contain a package.ini file") $tempPath
-        }
-
-
-        # read package ini file
-        $packageIni = ReadIniFile $packageIniFile
-
-
-        if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
-        {
-            Fail ("Package '$package' doesn't name in package.ini file") $tempPath
-        }
-
-        # add package name and ini
-        $packageNames.Set_Item($packageIni.Package.Name, $package)
-
-
-        # add package dependencies
-        $dependencies = @()
-        $dependencies += $packageIni.Package.Dependencies -split ','
-        $packageDependencies.Set_Item($packageIni.Package.Name, $dependencies)
-    }
-
-
-    # write install packages script, if there are any packages to install
+    # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
-        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies
-
         $installPackagesLines = @()
 
-        foreach($packageName in $packagesSortedByDependencies)
+        foreach($installPackage in $installPackages)
         {
-            # skip package from dependencies, if not part of packages that should be installed
-            if (!$packageNames.ContainsKey($packageName))
-            {
-                continue
-            }
-
-            $package = $packageNames.Get_Item($packageName)
+            # extract package file to package directory
+            Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
 
             # add package installation lines to install packages script
             $installPackagesLines += "echo """""
-            $installPackagesLines += "echo ""$package package installation."""
-            $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package"
+            $installPackagesLines += ("echo """ + $installPackage.Package + " package installation.""")
+            $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package)
             $installPackagesLines += "execute PACKAGEDIR:Install"
-            $installPackagesLines += "Assign PACKAGEDIR: PACKAGES:$package REMOVE"
+            $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package + " REMOVE")
             $installPackagesLines += "echo ""Done."""
         }
 
+
+        # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
         WriteAmigaTextLines $installPackagesFile $installPackagesLines 
     }
@@ -751,7 +713,7 @@ else
 
     # print launching winuae message
     Write-Host ""
-    Write-Host "Launching WinUAE to perform installation..."
+    Write-Host "Launching WinUAE to install image..."
 
 
     # winuae args
@@ -769,6 +731,131 @@ else
     {
         Fail "WinUAE installation failed" $tempPath
     }
+}
+
+
+# run self install
+function RunSelfInstall()
+{
+    Write-Host "Self-Install is not implemented!" -ForegroundColor Yellow
+}
+
+
+# fail
+function Fail($message, $tempPath)
+{
+    if(test-path -path $tempPath)
+    {
+        Remove-Item -Recurse -Force $tempPath
+    }
+
+    Write-Error $message
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
+    exit 1
+}
+
+# resolve paths
+$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
+$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
+$winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
+$tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
+$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
+
+
+# fail, if settings file doesn't exist
+if (!(test-path -path $settingsFile))
+{
+    Fail ("Error: Settings file '$settingsFile' doesn't exist!") $tempPath
+}
+
+
+# read settings file
+$settings = ReadIniFile $settingsFile
+
+
+# set default installer mode, if not present
+if (!$settings.Installer -or !$settings.Installer.Mode)
+{
+    $settings.Installer = @{}
+    $settings.Installer.Mode = "Install"
+}
+
+
+# print title and settings 
+Write-Host "-------------------" -foregroundcolor "Yellow"
+Write-Host "HstWB Installer Run" -foregroundcolor "Yellow"
+Write-Host "-------------------" -foregroundcolor "Yellow"
+Write-Host ""
+PrintSettings
+Write-Host ""
+
+
+# validate settings
+ValidateSettings
+
+
+# find workbench adf set hashes 
+$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes
+
+# find workbench 3.1 workbench disk
+$workbenchAdfHash = $workbenchAdfSetHashes | Where { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+
+# fail, if workbench adf hash doesn't exist
+if (!$workbenchAdfHash)
+{
+    Fail ("Workbench set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!") $tempPath
+}
+
+
+# print workbench adf hash file
+Write-Host ("Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "'")
+
+
+# find kickstart rom set hashes
+$kickstartRomSetHashes = FindKickstartRomSetHashes
+
+
+# find kickstart 3.1 a1200 rom
+$kickstartRomHash = $kickstartRomSetHashes | Where { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+
+
+# fail, if kickstart rom hash doesn't exist
+if (!$kickstartRomHash)
+{
+    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!") $tempPath
+}
+
+
+# print kickstart rom hash file
+Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
+
+
+# kickstart rom key
+$kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
+
+# fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
+if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
+{
+    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!") $tempPath
+}
+
+
+# create temp path
+if(!(test-path -path $tempPath))
+{
+	md $tempPath | Out-Null
+}
+
+
+# installer mode
+switch ($settings.Installer.Mode)
+{
+    "Test" { RunTest }
+    "Install" { RunInstall }
+    "Self-Install" { RunSelfInstall }
 }
 
 
