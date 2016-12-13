@@ -770,17 +770,10 @@ function ConfigureInstaller()
 # change installer mode
 function ChangeInstallerMode()
 {
-    do
-    {
-        $choice = Menu "Change Installer Mode" @("Install", "Self-Install", "Test", "Back") 
+    $choice = Menu "Change Installer Mode" @("Install", "Self-Install", "Test") 
 
-        if ($choice -ne 'Back')
-        {
-            $settings.Installer.Mode = $choice
-            Save
-        }
-    }
-    until ($choice -eq 'Back')
+    $settings.Installer.Mode = $choice
+    Save
 }
 
 
