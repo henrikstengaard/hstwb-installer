@@ -1,0 +1,75 @@
+; Startup Sequence for HstWB Installer
+; ------------------------------------
+;
+; Date: 2016-11-08
+; Author: Henrik Noerfjand Stengaard
+
+
+; Load library for unadf
+LoadModule DF0:Libs/mathieeedoubbas.library
+
+
+; Clear screen
+echo "*ec" 
+
+
+; Installer message
+echo "HstWB Installer building self install..."
+
+
+; Set stack, failat and load basic commands resident 
+stack 16384
+failat 21
+DF0:C/AddBuffers >NIL: DF0: 200
+resident DF0:C/Assign PURE
+resident DF0:C/Copy PURE
+resident DF0:C/Delete PURE
+resident DF0:C/Execute PURE
+resident DF0:C/MakeDir PURE
+resident DF0:C/Protect PURE
+resident DF0:C/Search PURE 
+resident DF0:C/Wait PURE 
+MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
+Assign ENV: RAM:Env
+SetEnv TZ MST7
+
+
+; Fail, if user assign doesn't exist
+IF NOT EXISTS S:User-Assign
+  echo "" >INSTALL:Error
+  echo "Error: User assign doesn't exist!"
+  SKIP end
+ENDIF
+execute S:User-Assign
+
+
+echo ""
+echo "Copying system..."
+copy >NIL: "INSTALL:System/" TO "SYSTEMDIR:" ALL
+echo "Done."
+
+
+; Copy Packages
+echo ""
+echo "Copying packages..."
+copy >NIL: "PACKAGES:" TO "SYSTEMDIR:HstWBInstaller/Packages/" ALL
+echo "Done."
+
+
+; Delete Installing file, if it exists
+IF EXISTS S:Installing
+  delete >NIL: S:Installing
+ENDIF
+
+
+; Done
+echo ""
+echo "Installation is now complete."
+echo ""
+
+
+; End
+LAB end
+echo "UAE will quit in 10 seconds..."
+wait 10
+uaequit >NIL:

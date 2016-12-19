@@ -1,0 +1,129 @@
+.KEY file/a,installdir/a
+.BRA { 
+.KET } 
+
+; Copy Kickstart Rom
+; ------------------
+; Date: 2016-12-18
+; Author: Henrik Noerfjand Stengaard
+;
+; Script to identify Kickstart rom files and copy to install dir
+; Rom files are identified using MD5
+
+
+; Get MD5 for 
+set md5 `md5sum2 < "{file}"`
+
+
+; Copy Cloanto Amiga Forever Kickstart 1.2 (33.180) (A500) rom, if file MD5 matches
+IF $md5 eq "c56ca2a3c644d53e780a7e4dbdc6b699"
+  IF NOT EXISTS "{installdir}kick33180.A500"
+    echo "Installing Kickstart 1.2 (33.180) (A500) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick33180.A500"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Cloanto Amiga Forever Kickstart 1.3 (34.5) (A500) rom, if file MD5 matches
+IF $md5 eq "89160c06ef4f17094382fc09841557a6"
+  IF NOT EXISTS "{installdir}kick34005.A500"
+    echo "Installing Kickstart 1.3 (34.5) (A500) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick34005.A500"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Cloanto Amiga Forever Kickstart 3.1 (40.063) (A600) rom, if file MD5 matches
+IF $md5 eq "c3e114cd3b513dc0377a4f5d149e2dd9"
+  IF NOT EXISTS "{installdir}kick40063.A600"
+  echo "Installing Kickstart 3.1 (40.063) (A600) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40063.A600"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Cloanto Amiga Forever Kickstart 3.1 (40.068) (A1200) rom, if file MD5 matches
+IF $md5 eq "dc3f5e4698936da34186d596c53681ab"
+  IF NOT EXISTS "{installdir}kick40068.A1200"
+    echo "Installing Kickstart 3.1 (40.068) (A1200) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40068.A1200"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Cloanto Amiga Forever Kickstart 3.1 (40.068) (A4000) rom, if file MD5 matches
+IF $md5 eq "8b54c2c5786e9d856ce820476505367d"
+  IF NOT EXISTS "{installdir}kick40068.A4000"
+    echo "Installing Kickstart 3.1 (40.068) (A4000) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40068.A4000"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Cloanto Amiga Forever Kickstart rom key, if it exists
+echo "{file}" >T:kickstart-rom
+search T:kickstart-rom "rom.key" >NIL:
+IF NOT WARN 
+  echo "Installing Kickstart rom key..."
+  copy >NIL: "{file}" TO "{installdir}rom.key"
+  SKIP end
+ENDIF
+
+
+; Copy Kickstart 1.2 (33.180) (A500) rom, if file MD5 matches
+IF $md5 eq "85ad74194e87c08904327de1a9443b7a"
+  IF NOT EXISTS "{installdir}kick33180.A500"
+    echo "Installing Kickstart 1.2 (33.180) (A500) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick33180.A500"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Kickstart 1.3 (34.5) (A500) rom, if file MD5 matches
+IF $md5 eq "82a21c1890cae844b3df741f2762d48d"
+  IF NOT EXISTS "{installdir}kick34005.A500"
+    echo "Installing Kickstart 1.3 (34.5) (A500) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick34005.A500"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Kickstart 3.1 (40.063) (A600) rom, if file MD5 matches
+IF $md5 eq "e40a5dfb3d017ba8779faba30cbd1c8e"
+  IF NOT EXISTS "{installdir}kick40063.A600"
+  echo "Installing Kickstart 3.1 (40.063) (A600) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40063.A600"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Kickstart 3.1 (40.068) (A1200) rom, if file MD5 matches
+IF $md5 eq "646773759326fbac3b2311fd8c8793ee"
+  IF NOT EXISTS "{installdir}kick40068.A1200"
+    echo "Installing Kickstart 3.1 (40.068) (A1200) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40068.A1200"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; Copy Kickstart 3.1 (40.068) (A4000) rom, if file MD5 matches
+IF $md5 eq "9bdedde6a4f33555b4a270c8ca53297d"
+  IF NOT EXISTS "{installdir}kick40068.A4000"
+    echo "Installing Kickstart 3.1 (40.068) (A4000) rom..."
+    copy >NIL: "{file}" TO "{installdir}kick40068.A4000"
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; End
+LAB end

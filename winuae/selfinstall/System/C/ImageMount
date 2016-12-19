@@ -1,0 +1,355 @@
+.Key ImageFile
+.Bra {
+.Ket }
+;$VER: ImageMount 1.2
+;   by Roger Håseth 2013 - 2015
+;   generic version
+
+FailAt 12
+
+If Not Exists Env:Workbench
+Version >NIL:
+EndIf
+Set WBVer $Workbench
+Set MountKom C:Mount
+If $WBVer NOT GE 38 VAL
+if Exists C:Mount21
+Set MountKom C:Mount21
+Set WBVer 38
+endif
+EndIf
+Set DICDFS 0
+Set Therion 0
+Set WBStart 1
+
+
+Set FDFnummer 0
+Set FDFfile ""
+Set FDFdir "Ram:"
+
+Set FCDnummer 0
+Set FCDfile ""
+Set FCDdir "Ram:"
+
+Set FDHnummer 0
+Set FDHfile ""
+Set FDHdir "Ram:"
+
+Set FDCDFS 0
+
+If Exists Env:RogIMvars
+Execute >NIL: Env:RogIMvars
+EndIf
+
+
+;----
+
+IF "{ImageFile}" GT ""
+iF eXISTS "{ImageFile}"
+
+Set WBStart 0
+Set IMTing4 "{ImageFile}"
+Echo >ENV:RogIMtang2 "$IMTing4" LEN 4
+
+if "$RogIMtang2" EQ ".ADF"
+Set IMValg 1
+Set IMTing1 FDF
+Set IMTing2 $FDFnummer
+Skip DevNummer
+endif
+
+if "$RogIMtang2" EQ ".ISO"
+Set IMValg 2
+Set IMTing1 FCD
+Set IMTing2 $FCDnummer
+Skip DevNummer
+endif
+
+if "$RogIMtang2" EQ ".HDF"
+Set IMValg 3
+Set IMTing1 FDH
+Set IMTing2 $FDHnummer
+Skip DevNummer
+endif
+
+Echo "Unknown file: *"$IMTing4*""
+Skip FinalEnd
+
+eLSE
+Echo "File *"{ImageFile}*" does not exist!"
+Skip FinalEnd
+eNDiF
+ENDIF
+
+;-----
+
+
+if not exists Ram:System/C/RequestChoice
+Resident C:RequestChoice PURE
+endif
+if not exists Ram:System/C/RequestFile
+Resident C:RequestFile PURE
+endif
+
+
+
+LAB HovedGreier
+;**************
+
+FailAt 12
+Set IMValg 0
+
+RequestChoice >Env:RogIMChoice "ImageMount 1.2" "Please select the type*Nof image file to mount." ADF ISO HDF Cancel
+If $RC GT 0 VAL
+Skip TheEnd
+EndIf
+
+Set IMValg $RogIMChoice
+UnSetEnv Env:RogIMChoice
+
+If $IMValg EQ 0
+Skip TheEnd
+EndIf
+
+
+
+LAB VelgFil
+;**********
+
+FailAt 21
+
+If $IMValg EQ 1
+RequestFile >ENV:RogIMtang Drawer "$FDFdir" File "$FDFfile" Title "Select ADF image file!" Pattern #?.ADF noicons
+ If $RC GE 5 VAL
+ Skip HovedGreier BACK
+ EndIf
+Set IMTing1 FDF
+Set IMTing2 $FDFnummer
+EndIf
+
+If $IMValg EQ 2
+RequestFile >ENV:RogIMtang Drawer "$FCDdir" File "$FCDfile" Title "Select ISO image file!" Pattern #?.ISO noicons
+ If $RC GE 5 VAL
+ Skip HovedGreier BACK
+ EndIf
+Set IMTing1 FCD
+Set IMTing2 $FCDnummer
+EndIf
+
+If $IMValg EQ 3
+RequestFile >ENV:RogIMtang Drawer "$FDHdir" File "$FDHfile" Title "Select HDF image file!" Pattern #?.HDF noicons
+ If $RC GE 5 VAL
+ Skip HovedGreier BACK
+ EndIf
+Set IMTing1 FDH
+Set IMTing2 $FDHnummer
+EndIf
+
+
+FailAt 12
+Set IMTing4 $RogIMtang
+
+
+If Not Exists "$IMTing4"
+Requestchoice >NIL: "File does not exist!" "Could not find file:*N$IMTing4" OK
+Skip VelgFil BACK
+EndIf
+
+Set Therion 1
+Echo "$IMTing4" LEN 1 To ENV:RogIMtang
+if $RogIMtang EQ ":"
+Set Therion 0
+endif
+if $RogIMtang EQ "/"
+Set Therion 0
+endif
+
+If $Therion EQ 0
+Requestchoice >NIL: "Select a file!" "You must select a file!" "Oookay"
+Skip VelgFil BACK
+EndIf
+
+
+
+LAB DevNummer
+;************
+
+Set IMTing3 $IMTing1$IMTing2:
+
+Assign Exists $IMTing3 >NIL:
+If Not Warn
+FailAt 10
+Set IMTing2 "`Eval $IMTing2 + 1`"
+SKIP DevNummer BACK
+EndIf
+
+
+
+LAB MountDevice
+;**************
+
+FailAt 12
+
+If $IMValg EQ 1
+List >Env:RogIMtang "$IMTing4" LFORMAT %L
+Set IMTing6 11
+if $RogIMtang EQ 1802240 VAL
+Set IMTing6 22
+endif
+EndIf
+
+If $IMValg EQ 2
+If $FDCDFS EQ 0
+ iF eXISTS L:CacheCDFS
+ Set FDCDFS 1
+ eLSE
+  iF eXISTS L:AmiCDFS
+  Set FDCDFS 2
+  eLSE
+  Requestchoice >NIL: "CD-ROM file system not found!" "Sorry, but you will need either AmiCDFS or*NCacheCDFS in L: for mounting CD ISO images!" "Oh well"
+   if $WBStart EQ 1
+   SKIP HovedGreier BACK
+   else
+   SKIP TheEnd
+   endif
+  eNDiF
+ eNDiF
+EndIf
+EndIf
+
+If $IMValg EQ 3
+List >Env:RogIMtang "$IMTing4" LFORMAT %L
+Set IMTing5 $RogIMtang
+Set IMTing6 "`Eval $IMTing5 / 16384 - 1`"
+;;; 32 * 512 = 16384
+EndIf
+
+
+;------
+
+If $IMValg EQ 1
+set pupp DD
+if $IMTing6 EQ 22
+set pupp HD
+endif
+Echo >T:RogIMmfile "/** Mount file for mounting Amiga $pupp ADF disk image. **/*N"
+Echo >>T:RogIMmfile "$IMTing3*NUNIT            = *"$IMTing4*"*NDEVICE          = filedisk.device*NFlags           = 0"
+Echo >>T:RogIMmfile "Surfaces        = 2*NBlocksPerTrack  = $IMTing6*NReserved        = 2*NMask            = 0x7ffffffc*NMaxTransfer     = 0x00200000"
+Echo >>T:RogIMmfile "Interleave      = 0*NLowCyl          = 0*NHighCyl         = 79*NBuffers         = 5*NBufMemType      = 1"
+Echo >>T:RogIMmfile "StackSize       = 4096*NPriority        = 5*NGlobVec         = -1"
+Echo >>T:RogIMmfile "Activate        = 1*NBaud            = 0"
+  if $WBVer GT 40.42 VAL
+ Echo >>T:RogIMmfile "*NBootBlocks      = 2*N#"
+  else
+ Echo >>T:RogIMmfile "#"
+  endif
+unset pupp
+EndIf
+
+If $IMValg EQ 2
+Echo >T:RogIMmfile "/** Mount file for mounting ISO disc image. **/*N"
+   IF $FDCDFS EQ 1
+Echo >>T:RogIMmfile "$IMTing3*NFileSystem     = L:CacheCDFS*NDevice         = filedisk.device*NUnit           = *"$IMTing4*"*NFlags          = 0*NBlocksPerTrack = 351000"
+Echo >>T:RogIMmfile "BlockSize      = 2048*NMask           = 0x7ffffffe*NMaxTransfer    = 0x1000000*NReserved       = 0*NInterleave     = 0*NLowCyl         = 0"
+Echo >>T:RogIMmfile "HighCyl        = 0*NSurfaces       = 1*NBuffers        = 50*NBufMemType     = 1*NBootPri        = 2*NGlobVec        = -1*NMount          = 1"
+Echo >>T:RogIMmfile "Priority       = 10*NDosType        = 0x43443031*NStackSize      = 3000"
+Echo >>T:RogIMmfile "*NControl        = *"MD=0 LC=1 DC=8 L LV AL LFC=1 NC*"*N#"
+   ELSE
+Echo >>T:RogIMmfile "$IMTing3*NUnit           = *"$IMTing4*"*NDevice         = filedisk.device*NFileSystem     = L:AmiCDFS*NFlags          = 0"
+Echo >>T:RogIMmfile "BlocksPerTrack = 32*NBlockSize      = 2048*NReserved       = 0*NLowCyl         = 0*NHighCyl        = 11000*NSurfaces       = 1"
+Echo >>T:RogIMmfile "Buffers        = 64*NBufMemType     = 1*NMask           = 0x7fffffff*NGlobVec        = -1*NPriority       = 10"
+Echo >>T:RogIMmfile "DosType        = 0x43444653*NStackSize      = 600*NMount          = 1"
+Echo >>T:RogIMmfile "*NControl        = *"LC BL=8 FB=32*"*N#"
+   ENDIF
+EndIf
+
+If $IMValg EQ 3
+Echo >T:RogIMmfile "/** Mount file for mounting HDF disk image. **/*N"
+Echo >>T:RogIMmfile "$IMTing3*NUnit           = *"$IMTing4*"*NDevice         = filedisk.device*NFlags          = 0*NSurfaces       = 1*NBlocksPerTrack = 32"
+Echo >>T:RogIMmfile "Reserved       = 2*NMask           = 0x7ffffffc*NMaxTransfer    = 0x00200000*NInterleave     = 0*NLowCyl         = 0"
+Echo >>T:RogIMmfile "HighCyl        = $IMTing6 /** Set this to: (<hdf size> / (32 ** 512)) - 1 **/*NBuffers        = 5*NBufMemType     = 1*NStackSize      = 4096"
+Echo >>T:RogIMmfile "Priority       = 5*NGlobVec        = -1"
+Echo >>T:RogIMmfile "Activate        = 1*NBaud            = 0"
+  if $WBVer GT 40.42 VAL
+ Echo >>T:RogIMmfile "*NBootBlocks      = 2*N#"
+  else
+ Echo >>T:RogIMmfile "#"
+  endif
+EndIf
+
+
+$MountKom $IMTing3 FROM T:RogIMmfile
+
+
+If NOT Exists Ram:ImageMount-log
+Echo >Ram:ImageMount-log "Device 	Image File*N---------------------------------------"
+EndIf
+Echo >>Ram:ImageMount-log "$IMTing3 	$IMTing4"
+
+
+Failat 21
+List >Env:RogIMtang "$IMTing4" LFORMAT %P
+List >Env:RogIMtang2 "$IMTing4" LFORMAT %N
+if $WBStart EQ 1
+CD "$RogIMtang"
+endif
+Failat 12
+
+If $IMValg EQ 1
+Set FDFfile "$RogIMtang2"
+Set FDFdir "$RogIMtang"
+Set FDFnummer $IMTing2
+EndIf
+
+If $IMValg EQ 2
+Set FCDfile "$RogIMtang2"
+Set FCDdir "$RogIMtang"
+Set FCDnummer $IMTing2
+EndIf
+
+If $IMValg EQ 3
+Set FDHfile "$RogIMtang2"
+Set FDHdir "$RogIMtang"
+Set FDHnummer $IMTing2
+EndIf
+
+UnsetEnv Env:RogIMtang
+UnsetEnv Env:RogIMtang2
+
+
+
+If $WBStart EQ 1
+SKIP HovedGreier BACK
+EndIf
+
+
+
+
+LAB TheEnd
+;*********
+
+Echo >Env:RogIMvars "Set FDFnummer $FDFnummer"
+Echo >>Env:RogIMvars "Set FDFfile *"$FDFfile*""
+Echo >>Env:RogIMvars "Set FDFdir *"$FDFdir*""
+Echo >>Env:RogIMvars "Set FCDnummer $FCDnummer"
+Echo >>Env:RogIMvars "Set FCDfile *"$FCDfile*""
+Echo >>Env:RogIMvars "Set FCDdir *"$FCDdir*""
+Echo >>Env:RogIMvars "Set FDHnummer $FDHnummer"
+Echo >>Env:RogIMvars "Set FDHfile *"$FDHfile*""
+Echo >>Env:RogIMvars "Set FDHdir *"$FDHdir*""
+
+UnSet IMValg
+UnSet FDCDFS
+If Exists T:RogIMmfile
+Delete >NIL: T:RogIMmfile
+EndIf
+
+
+LAB FinalEnd
+;***********
+
+UnSet WBVer
+UnSet MountKom
+UnSet Therion
+UnSet WBStart
+
