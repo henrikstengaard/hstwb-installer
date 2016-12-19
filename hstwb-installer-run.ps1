@@ -328,13 +328,6 @@ function ValidateSettings()
     }
 
 
-    # fail, if InstallPackages parameter doesn't exist in settings file or file doesn't exist
-    if (!$settings.Packages.InstallPackages -or $settings.Packages.InstallPackages -eq '')
-    {
-        Fail ("Error: InstallPackages parameter doesn't exist in settings file or it's not defined!") $tempPath
-    }
-
-
     # fail, if WinuaePath parameter doesn't exist in settings file or file doesn't exist
     if (!$settings.Winuae.WinuaePath -or !(test-path -path $settings.Winuae.WinuaePath))
     {
@@ -596,9 +589,14 @@ function RunTest
 # run install
 function RunInstall()
 {
-    # print preparing installation message
+    # print preparing install message
     Write-Host ""
     Write-Host "Preparing install..."
+
+
+    # copy winuae shared dir
+    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
+    Copy-Item -Path $winuaeSharedDir $tempPath -recurse -force
 
 
     # copy winuae install dir
@@ -737,7 +735,122 @@ function RunInstall()
 # run self install
 function RunSelfInstall()
 {
-    Write-Host "Self-Install is not implemented!" -ForegroundColor Yellow
+    # print preparing self install message
+    Write-Host ""
+    Write-Host "Preparing self install..."
+
+
+    # create temp install path
+    $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+    if(!(test-path -path $tempInstallDir))
+    {
+        md $tempInstallDir | Out-Null
+    }
+
+
+    # create temp packages path
+    $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
+    if(!(test-path -path $tempPackagesDir))
+    {
+        md $tempPackagesDir | Out-Null
+    }
+
+
+    # copy winuae self install build dir
+    $winuaeSelfInstallBuildDir = [System.IO.Path]::Combine($winuaePath, "selfinstall")
+    Copy-Item -Path "$winuaeSelfInstallBuildDir\*" $tempInstallDir -recurse -force
+
+
+    # copy winuae shared dir
+    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
+    Copy-Item -Path "$winuaeSharedDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$winuaeSharedDir\*" "$tempInstallDir\System" -recurse -force
+
+
+    # write user assign
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
+    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\User-Assign")
+    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
+
+
+    # find packages to install
+    $installPackages = FindPackagesToInstall
+
+
+    # extract packages and write install packages script, if there's packages to install
+    if ($installPackages.Count -gt 0)
+    {
+        $installPackagesLines = @()
+        $installPackagesLines += "echo """""
+        $installPackagesLines += "echo ""Package Installation"""
+        $installPackagesLines += "echo ""--------------------"""
+        $installPackagesLines += "echo """""
+
+        foreach($installPackage in $installPackages)
+        {
+            # extract package file to package directory
+            Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
+
+            # add package installation lines to install packages script
+            $installPackagesLines += ("echo ""Installing " + $installPackage.Package + " package...""")
+            $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """")
+            $installPackagesLines += "execute PACKAGEDIR:Install"
+            $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """ REMOVE")
+        }
+
+        $installPackagesLines += "echo ""Done."""
+
+        # write install packages script
+        $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "System\HstWBInstaller\Install-Packages")
+        WriteAmigaTextLines $installPackagesFile $installPackagesLines 
+    }
+
+
+    # read winuae install config file
+    $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
+    $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
+
+
+    # replace winuae install config placeholders
+    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
+    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
+
+
+    # write winuae install config file to temp install dir
+    [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+
+
+    # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
+    $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
+    [System.IO.File]::WriteAllText($installingFile, "")
+
+
+    # print preparing installation done message
+    Write-Host "Done."
+
+
+    # print launching winuae message
+    Write-Host ""
+    Write-Host "Launching WinUAE to install image..."
+
+
+    # winuae args
+    $winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
+
+    # exit, if winuae fails
+    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+    {
+        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'") $tempPath
+    }
+
+
+    # fail, if installing file exists
+    if (Test-Path -path $installingFile)
+    {
+        Fail "WinUAE installation failed" $tempPath
+    }
 }
 
 
@@ -755,6 +868,7 @@ function Fail($message, $tempPath)
     Read-Host
     exit 1
 }
+
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
