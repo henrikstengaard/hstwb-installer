@@ -594,11 +594,6 @@ function RunInstall()
     Write-Host "Preparing install..."
 
 
-    # copy winuae shared dir
-    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
-    Copy-Item -Path $winuaeSharedDir $tempPath -recurse -force
-
-
     # copy winuae install dir
     $winuaeInstallDir = [System.IO.Path]::Combine($winuaePath, "install")
     Copy-Item -Path $winuaeInstallDir $tempPath -recurse -force
@@ -607,6 +602,11 @@ function RunInstall()
     # set temp install and packages dir
     $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
     $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
+
+
+    # copy winuae shared dir
+    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
+    Copy-Item -Path "$winuaeSharedDir\*" $tempInstallDir -recurse -force
 
 
     # create temp packages path
@@ -674,7 +674,7 @@ function RunInstall()
 
             # add package installation lines to install packages script
             $installPackagesLines += "echo """""
-            $installPackagesLines += ("echo """ + $installPackage.Package + " package installation.""")
+            $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
             $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package)
             $installPackagesLines += "execute PACKAGEDIR:Install"
             $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package + " REMOVE")
