@@ -785,7 +785,6 @@ function RunSelfInstall()
         $installPackagesLines += "echo """""
         $installPackagesLines += "echo ""Package Installation"""
         $installPackagesLines += "echo ""--------------------"""
-        $installPackagesLines += "echo """""
 
         foreach($installPackage in $installPackages)
         {
@@ -794,13 +793,14 @@ function RunSelfInstall()
             [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
 
             # add package installation lines to install packages script
-            $installPackagesLines += ("echo ""Installing " + $installPackage.Package + " package...""")
+            $installPackagesLines += "echo """""
+            $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
             $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """")
             $installPackagesLines += "execute PACKAGEDIR:Install"
             $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """ REMOVE")
+            $installPackagesLines += "echo ""Done."""
         }
 
-        $installPackagesLines += "echo ""Done."""
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "System\HstWBInstaller\Install-Packages")
