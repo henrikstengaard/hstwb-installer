@@ -833,6 +833,36 @@ function DefaultSettings()
 }
 
 
+# remove non existing packages
+function RemoveNonExistingPackages()
+{
+    # get install packages defined in settings packages section
+    $packages = @()
+    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    {
+        $packages += $settings.Packages.InstallPackages -split ','
+    }
+
+
+    # get packages that exist in packages path
+    $existingPackages = New-Object System.Collections.ArrayList
+    foreach ($package in $packages)
+    {
+        $packageFile = [System.IO.Path]::Combine($packagesPath, ($package + ".zip"))
+
+        if (Test-Path -path $packageFile)
+        {
+            $existingPackages.Add($package)
+        }
+    }
+
+
+    # update install packages with packages that exist
+    $settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
+    Save
+}
+
+
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
@@ -880,6 +910,10 @@ if (!($settings.Packages))
     $settings.Packages = @{}
     $settings.Packages.InstallPackages = ''
 }
+
+
+# remove non existing packages
+RemoveNonExistingPackages
 
 
 # show main menu
