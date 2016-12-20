@@ -4,7 +4,7 @@
 
 ; Copy Workbench Adf
 ; ------------------
-; Date: 2016-12-11
+; Date: 2016-12-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; Script to identify Workbench adf files and copy to install dir
@@ -75,10 +75,7 @@ IF $md5 eq "c1c673eba985e9ab0888c5762cfa3d8f"
 ENDIF
 
 
-; Copy and mount adf
-;copy "{file}" "SYSTEMDIR:HstWBInstaller/Workbench/temp.adf"
-;execute SYSTEMDIR:C/ImageMount "SYSTEMDIR:HstWBInstaller/Workbench/temp.adf"
-; Copy adf to FMS device
+; Copy adf to virtual disk FF0:
 diskwiz >NIL: "{file}" ff0:
 
 
@@ -134,81 +131,6 @@ ENDIF
 
 ; Copy Workbench 3.1 Extras adf, if unadf list root matches
 IF "`which ff0:`" EQ "Extras3.1:"
-  IF NOT EXISTS "{installdir}workbench31extras.adf"
-    echo "Found Workbench 3.1 Extras adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31extras.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-
-SKIP end
-
-
-
-; List adf content
-unadf "{file}" LIST >T:unadflist
-
-
-; Copy Workbench 3.1 Workbench adf, if unadf list root matches
-search T:unadflist "Root: Workbench3.1: (" >NIL:
-IF NOT WARN
-  IF NOT EXISTS "{installdir}workbench31workbench.adf"
-    echo "Found Workbench 3.1 Workbench adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31workbench.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-; Copy Workbench 3.1 Storage adf, if unadf list root matches
-search T:unadflist "Root: Storage3.1: (" >NIL:
-IF NOT WARN
-  IF NOT EXISTS "{installdir}workbench31storage.adf"
-    echo "Found Workbench 3.1 Storage adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31storage.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-; Copy Workbench 3.1 Locale adf, if unadf list root matches
-search T:unadflist "Root: Locale: (" >NIL:
-IF NOT WARN
-  IF NOT EXISTS "{installdir}workbench31locale.adf"
-    echo "Found Workbench 3.1 Locale adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31locale.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-; Copy Workbench 3.1 Install adf, if unadf list root matches
-search T:unadflist "Root: Install3.1: (" >NIL:
-IF NOT WARN
-  IF NOT EXISTS "{installdir}workbench31install.adf"
-    echo "Found Workbench 3.1 Install adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31install.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-; Copy Workbench 3.1 Fonts adf, if unadf list root matches
-search T:unadflist "Root: Fonts: (" >NIL:
-IF NOT WARN
-  IF NOT EXISTS "{installdir}workbench31fonts.adf" 
-    echo "Found Workbench 3.1 Fonts adf"
-    copy >NIL: "{file}" TO "{installdir}workbench31fonts.adf"
-    SKIP end
-  ENDIF
-ENDIF
-
-
-; Copy Workbench 3.1 Extras adf, if unadf list root matches
-search T:unadflist "Root: Extras3.1: (" >NIL:
-IF NOT WARN
   IF NOT EXISTS "{installdir}workbench31extras.adf"
     echo "Found Workbench 3.1 Extras adf"
     copy >NIL: "{file}" TO "{installdir}workbench31extras.adf"
