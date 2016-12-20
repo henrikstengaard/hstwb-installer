@@ -127,11 +127,12 @@ SKIP end
 ; Fail
 LAB fail
 echo ""
-echo "Not all Workbench adf files exists. Installation will fallback"
-echo "to install Workbench from disks."
+echo "Not all Workbench adf files exists. Installation will"
+echo "fallback to install Workbench from disks."
 echo ""
-echo "It's also possible to change directory with Workbench adf files"
-echo "and reset to retry installing Workbench from adf files again."
+echo "It's also possible to change directory for WORKBENCHDIR"
+echo "and reset to retry installing Workbench from adf files"
+echo "again."
 echo ""
 ask "Press ENTER to continue"
 execute "SYSTEMDIR:HstWBInstaller/Install-Workbench-Disk"
