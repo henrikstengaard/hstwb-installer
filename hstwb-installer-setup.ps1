@@ -407,21 +407,10 @@ function NewImageMenu()
     }
 
     # enter new hdf image path
-    do
-    {
-        $newImagePath = SaveFileDialog ("Save new " + $choice + " HDF image") $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
-        
-        if ($newImagePath -and (test-path -path $newImagePath))
-        {
-            Write-Host ("New HDF Image Path '" + $newImagePath + "' already exists!") -foregroundcolor "Red"
-            Start-Sleep -s 2
-        }
-    }
-    until (!$newImagePath -or !(test-path -path $newImagePath))
+    $newImagePath = SaveFileDialog ("Save new " + $choice + " HDF image") $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
 
-
-    # return, if new image path is empty
-    if (!$newImagePath)
+    # return, if new image path is null
+    if ($newImagePath -eq $null)
     {
         return
     }
