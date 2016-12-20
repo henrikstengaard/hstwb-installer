@@ -25,15 +25,6 @@ echo "Please buy Cloanto Amiga Forever from"
 echo "https://www.amigaforever.com or use own dumps of"
 echo "Workbench adf and Kickstart rom files."
 echo ""
-echo "For installation through WinUAE, following directories can"
-echo "be added to automate installation of Workbench 3.1 and"
-echo "Kickstart roms:"
-echo "1. Device name WORKBENCHDIR with Workbench 3.1 adf files."
-echo "2. Device name KICKSTARTDIR with Kickstart rom files."
-echo ""
-echo "If directories are added, please reset to restart"
-echo "installation."
-echo ""
 ask "Press ENTER to continue"
 
 
@@ -121,42 +112,44 @@ ENDIF
 
 
 ; Mount and assign FMS 
-Mount FF0:
 assign FMS: SYSTEMDIR:HstWBInstaller/Temp
+Mount FF0:
 
 
 ; Clear screen
 echo "*ec" 
 
 
-; Overview message
-echo "Install Overview"
-echo "----------------"
+echo "Automate Installation"
+echo "---------------------"
 echo ""
-
+echo "For installation through WinUAE, following directories can"
+echo "be added to automate installation of Workbench 3.1 and"
+echo "Kickstart roms:"
+echo "- Device name WORKBENCHDIR with Workbench 3.1 adf files."
+echo "- Device name KICKSTARTDIR with Kickstart rom files."
+echo ""
+echo "Automation status:"
 
 ; Check if WORKBENCHDIR: exists and print message
 Assign >NIL: EXISTS WORKBENCHDIR:
 IF NOT WARN
-  echo "WORKBENCHDIR: is present and will be used to install" 
-  echo "Workbench from ADF files."
+  echo "- WORKBENCHDIR: Present! Install Workbench from adf."
 ELSE
-  echo "WORKBENCHDIR: is not present and Workbench will be"
-  echo "installed from disks."
+  echo "- WORKBENCHDIR: Not present! Install Workbench from disks."
 ENDIF
-
-echo ""
 
 ; Check if KICKSTARTDIR: exists and print message
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
-  echo "KICKSTARTDIR: is present and will be used to install" 
-  echo "Kickstart rom files."
+  echo "- KICKSTARTDIR: Present! Install Kickstart rom files."
 ELSE
-  echo "KICKSTARTDIR: is not present and Kickstart rom files"
-  echo "will not be installed."
+  echo "- KICKSTARTDIR: Not present! Skip Kickstart rom installation."
 ENDIF
 
+echo ""
+echo "If these directories are not present, they can be added in"
+echo "WinUAE and reset to restart installation will detect them."
 echo ""
 ask "Press ENTER to continue"
 
@@ -183,6 +176,11 @@ IF EXISTS "SYSTEMDIR:HstWBInstaller/Install-Packages"
 ENDIF
 
 
+; Unmount and remove FMS assign 
+assign FF0: dismount
+assign FMS: SYSTEMDIR:HstWBInstaller/Temp REMOVE
+
+
 ; Delete HstWB Installer directory
 echo ""
 echo "Deleting HstWB Installer files..."
@@ -200,14 +198,21 @@ IF NOT WARN
 ENDIF
 
 
+; Clear screen
+echo "*ec" 
+
+
 ; Installation complete
 echo ""
 echo "Installation Complete"
 echo "---------------------"
 echo ""
 echo "HstWB Installer has completed installation process and"
-echo "removed files used during installation. The system will"
-echo "now reboot."
+echo "removed files used during installation."
+echo ""
+echo "Please wait 10 seconds before restarting to allow file"
+echo "system to write changes to disk. Continue will reboot"
+echo "the system in 10 seconds."
 echo ""
 ask "Press ENTER to continue"
 echo ""
