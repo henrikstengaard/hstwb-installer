@@ -25,8 +25,8 @@ echo "Please buy Cloanto Amiga Forever from"
 echo "https://www.amigaforever.com or use own dumps of"
 echo "Workbench adf and Kickstart rom files."
 echo ""
-echo "For installation through WinUAE following directories can"
-echo "be added to automate installation of Workbench 3.1 and 
+echo "For installation through WinUAE, following directories can"
+echo "be added to automate installation of Workbench 3.1 and"
 echo "Kickstart roms:"
 echo "1. Device name WORKBENCHDIR with Workbench 3.1 adf files."
 echo "2. Device name KICKSTARTDIR with Kickstart rom files."
@@ -112,6 +112,12 @@ resident SYSTEMDIR:C/Reboot PURE
 resident SYSTEMDIR:C/UnZip PURE 
 resident SYSTEMDIR:C/UnADF PURE 
 resident SYSTEMDIR:C/UAEquit PURE 
+
+
+; Create temp directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Temp/"
+  makedir >NIL: "SYSTEMDIR:HstWBInstaller/Temp"
+ENDIF
 
 
 ; Mount and assign FMS 

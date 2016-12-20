@@ -8,6 +8,11 @@
 ; Clear screen
 echo "*ec" 
 
+; Create workbench directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/"
+  makedir >NIL: "SYSTEMDIR:HstWBInstaller/Workbench"
+ENDIF
+
 SKIP findworkbenchadf
 
 ; Load library for UnADF

@@ -49,6 +49,12 @@ copy >NIL: "INSTALL:System/" TO "SYSTEMDIR:" ALL
 echo "Done."
 
 
+; Create packages directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Packages/"
+  makedir >NIL: "SYSTEMDIR:HstWBInstaller/Packages"
+ENDIF
+
+
 ; Copy Packages
 echo ""
 echo "Copying packages..."
