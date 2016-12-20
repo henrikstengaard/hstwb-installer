@@ -1,7 +1,7 @@
 ; Install Workbench Script
 ; ------------------------
 ;
-; Date: 2016-11-14
+; Date: 2016-12-20
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -11,64 +11,58 @@ echo "Workbench installation."
 
 ; Workbench
 echo "Installing 'workbench31workbench.adf'..."
-unadf >NIL: workbench31workbench.adf DEST=Install:
-
-copy >NIL: Install:Workbench3.1 SYSTEMDIR: ALL CLONE
+diskwiz >NIL: "INSTALL:workbench31workbench.adf" ff0:
+copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 
 
 ; Locale
 echo "Installing 'workbench31locale.adf'..."
-unadf >NIL: workbench31locale.adf DEST=Install:
-
+diskwiz >NIL: "INSTALL:workbench31locale.adf" ff0:
 makedir >NIL: SYSTEMDIR:Locale
-copy >NIL: Install:Locale SYSTEMDIR:Locale ALL CLONE
+copy >NIL: ff0: SYSTEMDIR:Locale ALL CLONE
 
 
 ; Extras
 echo "Installing 'workbench31extras.adf'..."
-unadf >NIL: workbench31extras.adf DEST=Install:
-
-copy >NIL: Install:Extras3.1 SYSTEMDIR: ALL CLONE
+diskwiz >NIL: "INSTALL:workbench31extras.adf" ff0:
+copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 
 
 ; Fonts
 echo "Installing 'workbench31fonts.adf'..."
-unadf >NIL: workbench31fonts.adf DEST=Install:
-
+diskwiz >NIL: "INSTALL:workbench31fonts.adf" ff0:
 makedir >NIL: SYSTEMDIR:Fonts
-copy >NIL: Install:Fonts SYSTEMDIR:Fonts ALL CLONE
+copy >NIL: ff0: SYSTEMDIR:Fonts ALL CLONE
 
 
 ; Install
 echo "Installing 'workbench31install.adf'..."
-unadf >NIL: workbench31install.adf DEST=Install:
-
+diskwiz >NIL: "INSTALL:workbench31install.adf" ff0:
 makedir >NIL: SYSTEMDIR:Tools
-copy Install:Install3.1/HDTools/BRU SYSTEMDIR:Tools CLONE
-copy Install:Install3.1/HDTools/HDBackup SYSTEMDIR:Tools CLONE
-copy Install:Install3.1/HDTools/HDBackup.help SYSTEMDIR:Tools CLONE
-copy Install:Install3.1/HDTools/HDToolBox SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/BRU SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/HDBackup SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/HDBackup.help SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/HDToolBox SYSTEMDIR:Tools CLONE
 
-copy Install:Install3.1/HDTools/HDBackup.info SYSTEMDIR:Tools CLONE
-copy Install:Install3.1/HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/HDBackup.info SYSTEMDIR:Tools CLONE
+copy ff0:HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
 
-copy Install:Install3.1/HDTools/S/BRUtab SYSTEMDIR:S CLONE
-copy Install:Install3.1/HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
-copy Install:Install3.1/L/FastFileSystem SYSTEMDIR:L CLONE 
+copy ff0:HDTools/S/BRUtab SYSTEMDIR:S CLONE
+copy ff0:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
+copy ff0:L/FastFileSystem SYSTEMDIR:L CLONE 
 
-copy Install:Install3.1/Libs/68040.library SYSTEMDIR:Libs CLONE 
-copy Install:Install3.1/Update/Disk.info SYSTEMDIR: CLONE 
+copy ff0:Libs/68040.library SYSTEMDIR:Libs CLONE 
+copy ff0:Update/Disk.info SYSTEMDIR: CLONE 
 
 
 ; Storage
 echo "Installing 'workbench31storage.adf'..."
-unadf >NIL: workbench31storage.adf DEST=Install:
-
+diskwiz >NIL: "INSTALL:workbench31storage.adf" ff0:
 makedir >NIL: SYSTEMDIR:Storage
-copy >NIL: Install:Storage3.1 SYSTEMDIR:Storage ALL CLONE
-copy Install:Storage3.1/Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
-copy Install:Storage3.1/Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
-copy Install:Storage3.1/Printers.info SYSTEMDIR:Storage.info CLONE 
+copy >NIL: ff0: SYSTEMDIR:Storage ALL CLONE
+copy ff0:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
+copy ff0:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
+copy ff0:Printers.info SYSTEMDIR:Storage.info CLONE 
 
 
 ; End
