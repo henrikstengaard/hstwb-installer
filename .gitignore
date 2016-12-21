@@ -1,6 +1,6 @@
 hstwb-installer-settings.ini
 *.msi
-*.zip
+hstwb-installer*.zip
 *.wixpdb
 *.wixobj
 *.wxs
