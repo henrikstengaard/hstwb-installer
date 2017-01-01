@@ -294,7 +294,7 @@ function EnterChoice($prompt, $options)
     do
     {
         Write-Host ("{0}: " -f $prompt) -NoNewline -foregroundcolor "Cyan"
-        $choice = Read-Host
+        $choice = [int32](Read-Host)
     }
     until ($choice -ne '' -and $choice -ge 1 -and $choice -le $options.Count)
 
@@ -686,14 +686,14 @@ function ConfigurePackagesMenu()
     do
     {
         $packageOptions = @()
-        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($newInstallPackages.Contains($_)) { "Remove $_" } else { "Add $_" } }
+        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($newInstallPackages.Contains($_)) { "- $_" } else { "+ $_" } }
         $packageOptions += "Back"
 
         $choice = Menu "Configure Packages Menu" $packageOptions
 
         if ($choice -ne 'Back')
         {
-            $package = $choice -replace '^(Add|Remove) ', ''
+            $package = $choice -replace '^(\+|\-) ', ''
 
             if ($newInstallPackages.Contains($package))
             {
