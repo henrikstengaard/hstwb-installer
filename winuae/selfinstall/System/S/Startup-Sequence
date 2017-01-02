@@ -101,7 +101,6 @@ execute S:User-Assign
 ; Load system commands resident 
 resident SYSTEMDIR:C/Reboot PURE 
 resident SYSTEMDIR:C/UnZip PURE 
-resident SYSTEMDIR:C/UnADF PURE 
 resident SYSTEMDIR:C/UAEquit PURE 
 
 

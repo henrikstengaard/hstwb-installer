@@ -129,7 +129,7 @@ IF "`which ff0:`" EQ "Fonts:"
 ENDIF
 
 
-; Copy Workbench 3.1 Extras adf, if unadf list root matches
+; Copy Workbench 3.1 Extras adf, if label matches
 IF "`which ff0:`" EQ "Extras3.1:"
   IF NOT EXISTS "{installdir}workbench31extras.adf"
     echo "Found Workbench 3.1 Extras adf"
