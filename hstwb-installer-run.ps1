@@ -925,7 +925,7 @@ if (!$workbenchAdfHash)
 
 
 # print workbench adf hash file
-Write-Host ("Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "'")
+Write-Host ("Using Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "'")
 
 
 # find kickstart rom set hashes
