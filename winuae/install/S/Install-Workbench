@@ -13,6 +13,7 @@ echo "Workbench installation."
 echo "Installing 'workbench31workbench.adf'..."
 diskwiz >NIL: "INSTALL:workbench31workbench.adf" ff0:
 copy >NIL: ff0: SYSTEMDIR: ALL CLONE
+copy >NIL: SYSTEMDIR:c/Dir SYSTEMDIR:c/wbDir
 
 
 ; Locale
