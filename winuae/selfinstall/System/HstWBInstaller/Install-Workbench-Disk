@@ -1,7 +1,7 @@
 ; Install Workbench Script
 ; ------------------------
 ;
-; Date: 2016-11-14
+; Date: 2017-01-07
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -14,30 +14,34 @@ echo "--------------------------------"
 ; Install Workbench 3.1 Workbench
 echo ""
 echo "Installing Workbench 3.1 Workbench files..."
-copy >NIL: DF0: SYSTEMDIR: ALL CLONE
+copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
 
 
 ; Print insert Locale disk
 LAB insertlocaledisk
 echo ""
-echo "Please insert Workbench 3.1 Locale disk in DF0:"
+echo "Please insert Workbench 3.1 Locale disk in $floppydevice:"
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0
-DiskInDrive DF0:
+; Check if disk is present in floppy device
+DiskInDrive $floppydevice:
 if warn
   echo ""
-  echo "No disk is inserted in DF0:!"
+  echo "No disk is inserted in $floppydevice:!"
   SKIP insertlocaledisk back
 endif
 
 
 ; Check if disk is Locale disk
-IF NOT EXISTS DF0:Countries/great_britain.country
+IF NOT EXISTS $floppydevice:Countries/great_britain.country
+  echo ""
+  echo "Locale disk is not valid!"
   SKIP insertlocaledisk back
 ENDIF 
-IF NOT "`which DF0:`" EQ "Locale:"
+IF NOT "`which $floppydevice:`" EQ "Locale:"
+  echo ""
+  echo "Locale disk is not valid!"
   SKIP insertlocaledisk back
 ENDIF 
 
@@ -46,30 +50,34 @@ ENDIF
 echo ""
 echo "Installing Workbench 3.1 Locale files..."
 makedir >NIL: SYSTEMDIR:Locale
-copy >NIL: DF0: SYSTEMDIR:Locale ALL CLONE
+copy >NIL: $floppydevice: SYSTEMDIR:Locale ALL CLONE
 
 
 ; Print insert Extras disk
 LAB insertextrasdisk
 echo ""
-echo "Please insert Workbench 3.1 Extras disk in DF0:"
+echo "Please insert Workbench 3.1 Extras disk in $floppydevice:"
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0
-DiskInDrive DF0:
+; Check if disk is present in floppy device
+DiskInDrive $floppydevice:
 if warn
   echo ""
-  echo "No disk is inserted in DF0:!"
+  echo "No disk is inserted in $floppydevice:!"
   SKIP insertextrasdisk back
 endif
 
 
 ; Check if disk is Extras disk
-IF NOT EXISTS DF0:System/Intellifont
+IF NOT EXISTS $floppydevice:System/Intellifont
+  echo ""
+  echo "Extras disk is not valid!"
   SKIP insertextrasdisk back
 ENDIF 
-IF NOT "`which DF0:`" EQ "Extras3.1:"
+IF NOT "`which $floppydevice:`" EQ "Extras3.1:"
+  echo ""
+  echo "Extras disk is not valid!"
   SKIP insertextrasdisk back
 ENDIF 
 
@@ -77,30 +85,34 @@ ENDIF
 ; Install Workbench 3.1 Extras
 echo ""
 echo "Installing Workbench 3.1 Extras files..."
-copy >NIL: DF0: SYSTEMDIR: ALL CLONE
+copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
 
 
 ; Print insert Fonts disk
 LAB insertfontsdisk
 echo ""
-echo "Please insert Workbench 3.1 Fonts disk in DF0:"
+echo "Please insert Workbench 3.1 Fonts disk in $floppydevice:"
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0
-DiskInDrive DF0:
+; Check if disk is present in floppy device
+DiskInDrive $floppydevice:
 if warn
   echo ""
-  echo "No disk is inserted in DF0:!"
+  echo "No disk is inserted in $floppydevice:!"
   SKIP insertfontsdisk back
 endif
 
 
 ; Check if disk is Fonts disk
-IF NOT EXISTS DF0:topaz/11
+IF NOT EXISTS $floppydevice:topaz/11
+  echo ""
+  echo "Fonts disk is not valid!"
   SKIP insertfontsdisk back
 ENDIF
-IF NOT "`which DF0:`" EQ "Fonts:"
+IF NOT "`which $floppydevice:`" EQ "Fonts:"
+  echo ""
+  echo "Fonts disk is not valid!"
   SKIP insertfontsdisk back
 ENDIF 
 
@@ -109,30 +121,34 @@ ENDIF
 echo ""
 echo "Installing Workbench 3.1 Fonts files..."
 makedir >NIL: SYSTEMDIR:Fonts
-copy >NIL: DF0: SYSTEMDIR:Fonts ALL CLONE
+copy >NIL: $floppydevice: SYSTEMDIR:Fonts ALL CLONE
 
 
 ; Print insert Install disk
 LAB insertinstalldisk
 echo ""
-echo "Please insert Workbench 3.1 Install disk in DF0:"
+echo "Please insert Workbench 3.1 Install disk in $floppydevice:"
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0
-DiskInDrive DF0:
+; Check if disk is present in floppy device
+DiskInDrive $floppydevice:
 if warn
   echo ""
-  echo "No disk is inserted in DF0:!"
+  echo "No disk is inserted in $floppydevice:!"
   SKIP insertinstalldisk back
 endif
 
 
 ; Check if disk is Install disk
-IF NOT EXISTS DF0:HDTools/BRU
+IF NOT EXISTS $floppydevice:HDTools/BRU
+  echo ""
+  echo "Install disk is not valid!"
   SKIP insertinstalldisk back
 ENDIF
-IF NOT "`which DF0:`" EQ "Install3.1:"
+IF NOT "`which $floppydevice:`" EQ "Install3.1:"
+  echo ""
+  echo "Install disk is not valid!"
   SKIP insertinstalldisk back
 ENDIF
 
@@ -141,40 +157,44 @@ ENDIF
 echo ""
 echo "Installing Workbench 3.1 Install files..."
 makedir >NIL: SYSTEMDIR:Tools
-copy DF0:HDTools/BRU SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/HDBackup SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/HDBackup.help SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/HDToolBox SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/HDBackup.info SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
-copy DF0:HDTools/S/BRUtab SYSTEMDIR:S CLONE
-copy DF0:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
-copy DF0:L/FastFileSystem SYSTEMDIR:L CLONE 
-copy DF0:Libs/68040.library SYSTEMDIR:Libs CLONE 
-copy DF0:Update/Disk.info SYSTEMDIR: CLONE 
+copy $floppydevice:HDTools/BRU SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/HDBackup SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/HDBackup.help SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/HDToolBox SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/HDBackup.info SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
+copy $floppydevice:HDTools/S/BRUtab SYSTEMDIR:S CLONE
+copy $floppydevice:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
+copy $floppydevice:L/FastFileSystem SYSTEMDIR:L CLONE 
+copy $floppydevice:Libs/68040.library SYSTEMDIR:Libs CLONE 
+copy $floppydevice:Update/Disk.info SYSTEMDIR: CLONE 
 
 
 ; Print insert Storage disk
 LAB insertstoragedisk
 echo ""
-echo "Please insert Workbench 3.1 Storage disk in DF0:"
+echo "Please insert Workbench 3.1 Storage disk in $floppydevice:"
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0
-DiskInDrive DF0:
+; Check if disk is present in floppy device
+DiskInDrive $floppydevice:
 if warn
   echo ""
-  echo "No disk is inserted in DF0:!"
+  echo "No disk is inserted in $floppydevice:!"
   SKIP insertstoragedisk back
 endif
 
 
 ; Check if disk is Storage disk
-IF NOT EXISTS DF0:DosDrivers/RAD
+IF NOT EXISTS $floppydevice:DosDrivers/RAD
+  echo ""
+  echo "Storage disk is not valid!"
   SKIP insertstoragedisk back
 ENDIF
-IF NOT "`which DF0:`" EQ "Storage3.1:"
+IF NOT "`which $floppydevice:`" EQ "Storage3.1:"
+  echo ""
+  echo "Storage disk is not valid!"
   SKIP insertstoragedisk back
 ENDIF
 
@@ -183,10 +203,10 @@ ENDIF
 echo ""
 echo "Installing Workbench 3.1 Storage files..."
 makedir >NIL: SYSTEMDIR:Storage
-copy >NIL: DF0: SYSTEMDIR:Storage ALL CLONE
-copy DF0:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
-copy DF0:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
-copy DF0:Printers.info SYSTEMDIR:Storage.info CLONE 
+copy >NIL: $floppydevice: SYSTEMDIR:Storage ALL CLONE
+copy $floppydevice:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
+copy $floppydevice:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
+copy $floppydevice:Printers.info SYSTEMDIR:Storage.info CLONE 
 
 
 ; End

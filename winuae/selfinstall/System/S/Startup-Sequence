@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-01-02
+; Date: 2017-01-07
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -43,34 +43,67 @@ echo ""
 echo "Workbench system files are required for the"
 echo "installation process and these will be loaded from"
 echo "Workbench 3.1 disk."
+echo ""
+echo "Floppy device to use will now be autodetected by"
+echo "checking if a disk is inserted in any floppy device."
 
 
 ; Print insert Workbench disk
 LAB insertworkbenchdisk
 echo ""
-echo "Please insert Workbench 3.1 Workbench disk in DF0:"
+echo "Please insert Workbench 3.1 Workbench disk in any"
+echo "floppy device."
 ask "Press ENTER to continue"
 
 
-; Check if disk is present in DF0, if not go back to insert workbench disk
+; Check if disk is present in any floppy device, if not go back to insert workbench disk
+echo ""
 DiskInDrive DF0:
-if warn
-  echo ""
-  echo "No disk is inserted in DF0:!"
+IF NOT WARN
+  echo "Using floppy device DF0:"
+  set floppydevice "DF0"
+  SKIP checkworkbenchdisk
+ENDIF
+DiskInDrive DF1:
+IF NOT WARN
+  echo "Using floppy device DF1:"
+  set floppydevice "DF1"
+  SKIP checkworkbenchdisk
+ENDIF
+DiskInDrive DF2:
+IF NOT WARN
+  echo "Using floppy device DF2:"
+  set floppydevice "DF2"
+  SKIP checkworkbenchdisk
+ENDIF
+DiskInDrive DF3:
+IF NOT WARN
+  echo "Using floppy device DF3:"
+  set floppydevice "DF3"
+  SKIP checkworkbenchdisk
+ELSE
+  echo "No disk is inserted in any floppy device!"
   SKIP insertworkbenchdisk back
-endif
+ENDIF
 
 
 ; Check Workbench 3.1 Workbench disk is present in DF0, if not go back to insert workbench disk
-IF NOT EXISTS DF0:C/Which
+LAB checkworkbenchdisk
+IF NOT EXISTS $floppydevice:C/Which
+  echo ""
+  echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF
-IF NOT EXISTS DF0:C/Assign
+IF NOT EXISTS $floppydevice:C/Assign
+  echo ""
+  echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ELSE
-  DF0:C/Assign >NIL: T: RAM:
+  $floppydevice:C/Assign >NIL: T: RAM:
 ENDIF
-IF NOT "`DF0:c/which DF0:`" EQ "Workbench3.1:"
+IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
+  echo ""
+  echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF 
 
@@ -78,17 +111,17 @@ ENDIF
 ; Set stack, failat and load basic commands resident 
 stack 16384
 failat 21
-DF0:C/AddBuffers >NIL: DF0: 200
-resident DF0:C/Assign PURE
-resident DF0:C/Copy PURE
-resident DF0:C/Delete PURE
-resident DF0:C/Execute PURE
-resident DF0:C/MakeDir PURE
-resident DF0:C/Protect PURE
-resident DF0:C/Search PURE 
-resident DF0:C/Wait PURE 
-resident DF0:C/Which PURE 
-resident DF0:C/Mount PURE 
+$floppydevice:C/AddBuffers >NIL: DF0: 200
+resident $floppydevice:C/Assign PURE
+resident $floppydevice:C/Copy PURE
+resident $floppydevice:C/Delete PURE
+resident $floppydevice:C/Execute PURE
+resident $floppydevice:C/MakeDir PURE
+resident $floppydevice:C/Protect PURE
+resident $floppydevice:C/Search PURE 
+resident $floppydevice:C/Wait PURE 
+resident $floppydevice:C/Which PURE 
+resident $floppydevice:C/Mount PURE 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
 SetEnv TZ MST7
@@ -190,12 +223,12 @@ echo "Deleting HstWB Installer files..."
 delete >NIL: "SYSTEMDIR:HstWBInstaller" ALL
 
 
-; Check if disk is present in DF0, if present go back to eject disk
+; Check if disk is present in floppy device, if present go back to eject disk
 LAB ejectdisk
-DiskInDrive DF0:
+DiskInDrive $floppydevice:
 IF NOT WARN
   echo ""
-  echo "Please eject disk from DF0:"
+  echo "Please eject disk from $floppydevice:"
   ask "Press ENTER to continue"
   SKIP ejectdisk back
 ENDIF
