@@ -1,8 +1,12 @@
 ; Install Kickstart Rom Script
 ; ----------------------------
 ;
-; Date: 2016-12-18
+; Date: 2017-01-09
 ; Author: Henrik Noerfjand Stengaard
+
+
+; Clear screen
+echo "*ec"
 
 
 ; Create desv and kickstarts directory, if doesn't exists
@@ -15,7 +19,6 @@ ENDIF
 
 
 ; Kickstart installation
-echo ""
 echo "Install Kickstart rom files"
 echo "---------------------------"
 echo ""
@@ -29,3 +32,7 @@ execute T:kickstart-rom-files3
 
 ; End
 echo "Done."
+echo ""
+echo "Kickstart rom installation is complete."
+echo ""
+ask "Press ENTER to continue"

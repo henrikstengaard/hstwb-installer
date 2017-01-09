@@ -209,10 +209,6 @@ echo ""
 ask "Press ENTER to continue"
 
 
-; Clear screen
-echo "*ec" 
-
-
 ; Run Install-Kickstart-Rom, if KICKSTARTDIR: exists
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
@@ -226,8 +222,20 @@ IF EXISTS "SYSTEMDIR:HstWBInstaller/Install-Packages"
 ENDIF
 
 
+; Clear screen
+echo "*ec" 
+
+
+echo "Installation cleanup"
+echo "--------------------"
+echo ""
+echo "Package and temp files used for installation process"
+echo "will now be deleted."
+
+
 ; Unmount and remove FMS assign 
 assign FF0: dismount
+wait 1
 assign FMS: SYSTEMDIR:HstWBInstaller/Temp REMOVE
 
 
