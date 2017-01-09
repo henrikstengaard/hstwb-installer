@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-01-07
+; Date: 2017-01-09
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -53,6 +53,7 @@ LAB insertworkbenchdisk
 echo ""
 echo "Please insert Workbench 3.1 Workbench disk in any"
 echo "floppy device."
+echo ""
 ask "Press ENTER to continue"
 
 
@@ -60,25 +61,21 @@ ask "Press ENTER to continue"
 echo ""
 DiskInDrive DF0:
 IF NOT WARN
-  echo "Using floppy device DF0:"
   set floppydevice "DF0"
   SKIP checkworkbenchdisk
 ENDIF
 DiskInDrive DF1:
 IF NOT WARN
-  echo "Using floppy device DF1:"
   set floppydevice "DF1"
   SKIP checkworkbenchdisk
 ENDIF
 DiskInDrive DF2:
 IF NOT WARN
-  echo "Using floppy device DF2:"
   set floppydevice "DF2"
   SKIP checkworkbenchdisk
 ENDIF
 DiskInDrive DF3:
 IF NOT WARN
-  echo "Using floppy device DF3:"
   set floppydevice "DF3"
   SKIP checkworkbenchdisk
 ELSE
@@ -89,23 +86,26 @@ ENDIF
 
 ; Check Workbench 3.1 Workbench disk is present in DF0, if not go back to insert workbench disk
 LAB checkworkbenchdisk
+echo ""
 IF NOT EXISTS $floppydevice:C/Which
-  echo ""
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
-  echo ""
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ELSE
   $floppydevice:C/Assign >NIL: T: RAM:
 ENDIF
 IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
-  echo ""
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF 
+
+
+; Detected floppy device message
+echo "Detected Workbench disk in floppy device $floppydevice:"
+wait 3
 
 
 ; Set stack, failat and load basic commands resident 
@@ -190,6 +190,10 @@ echo ""
 ask "Press ENTER to continue"
 
 
+; Clear screen
+echo "*ec" 
+
+
 ; Run Install-Workbench-Adf, if WORKBENCHDIR: exists
 Assign >NIL: EXISTS WORKBENCHDIR:
 IF NOT WARN
@@ -229,6 +233,7 @@ DiskInDrive $floppydevice:
 IF NOT WARN
   echo ""
   echo "Please eject disk from $floppydevice:"
+  echo ""
   ask "Press ENTER to continue"
   SKIP ejectdisk back
 ENDIF

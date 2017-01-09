@@ -1,12 +1,13 @@
 ; Install Workbench Adf Script
 ; ----------------------------
 ;
-; Date: 2016-12-20
+; Date: 2017-01-09
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; Clear screen
 echo "*ec" 
+
 
 ; Create workbench directory, if it doesn't exist
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/"
@@ -16,7 +17,6 @@ ENDIF
 
 ; Find Workbench adf files
 LAB findworkbenchadf
-echo ""
 echo "Find Workbench adf files"
 echo "------------------------"
 echo ""
@@ -27,30 +27,30 @@ sed "s/\(.\)$/\1*" *"SYSTEMDIR:HstWBInstaller\/Workbench\/*"/" T:workbench-adf-f
 execute T:workbench-adf-files3
 
 
-; Fail, if workbench adf files doesn't exist
+; Fallback to Workbench disk installation, if workbench adf files doesn't exist
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31workbench.adf"
   ECHO "Workbench 3.1 Workbench adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31locale.adf"
   ECHO "Workbench 3.1 Locale adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31extras.adf"
   ECHO "Workbench 3.1 Extras adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31fonts.adf"
   ECHO "Workbench 3.1 Fonts adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31install.adf"
   ECHO "Workbench 3.1 Install adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31storage.adf"
   ECHO "Workbench 3.1 Storage adf doesn't exist!"
-  SKIP fail
+  SKIP workbenchdiskfallback
 ENDIF
 
 echo "Done."
@@ -124,8 +124,8 @@ echo "Done."
 SKIP end
 
 
-; Fail
-LAB fail
+; Workbench disk fallback
+LAB workbenchdiskfallback
 echo ""
 echo "Not all Workbench adf files exists. Installation will"
 echo "fallback to install Workbench from disks."
