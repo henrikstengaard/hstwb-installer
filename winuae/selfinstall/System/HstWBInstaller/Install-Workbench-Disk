@@ -233,5 +233,3 @@ copy $floppydevice:Printers.info SYSTEMDIR:Storage.info CLONE
 
 
 ; End
-echo ""
-echo "Workbench installation is complete."

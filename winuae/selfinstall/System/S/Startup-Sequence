@@ -55,10 +55,10 @@ echo "Please insert Workbench 3.1 Workbench disk in any"
 echo "floppy device."
 echo ""
 ask "Press ENTER to continue"
+echo ""
 
 
 ; Check if disk is present in any floppy device, if not go back to insert workbench disk
-echo ""
 DiskInDrive DF0:
 IF NOT WARN
   set floppydevice "DF0"
@@ -86,7 +86,6 @@ ENDIF
 
 ; Check Workbench 3.1 Workbench disk is present in DF0, if not go back to insert workbench disk
 LAB checkworkbenchdisk
-echo ""
 IF NOT EXISTS $floppydevice:C/Which
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
@@ -105,7 +104,8 @@ ENDIF
 
 ; Detected floppy device message
 echo "Detected Workbench disk in floppy device $floppydevice:"
-wait 3
+echo ""
+ask "Press ENTER to continue"
 
 
 ; Set stack, failat and load basic commands resident 
@@ -201,6 +201,16 @@ IF NOT WARN
 ELSE
   execute "SYSTEMDIR:HstWBInstaller/Install-Workbench-Disk"
 ENDIF
+
+
+echo ""
+echo "Workbench installation is complete."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Clear screen
+echo "*ec" 
 
 
 ; Run Install-Kickstart-Rom, if KICKSTARTDIR: exists
