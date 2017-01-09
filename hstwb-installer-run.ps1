@@ -782,7 +782,7 @@ function RunSelfInstall()
     if ($installPackages.Count -gt 0)
     {
         $installPackagesLines = @()
-        $installPackagesLines += "echo """""
+        $installPackagesLines += "echo ""*ec"""
         $installPackagesLines += "echo ""Package Installation"""
         $installPackagesLines += "echo ""--------------------"""
 
@@ -801,6 +801,10 @@ function RunSelfInstall()
             $installPackagesLines += "echo ""Done."""
         }
 
+        $installPackagesLines += "echo """""
+        $installPackagesLines += "echo ""Package installation is complete."""
+        $installPackagesLines += "echo """""
+        $installPackagesLines += "ask ""Press ENTER to continue"""
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "System\HstWBInstaller\Install-Packages")
