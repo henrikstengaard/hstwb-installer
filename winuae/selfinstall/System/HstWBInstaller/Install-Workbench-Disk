@@ -18,6 +18,7 @@ echo ""
 ; Install Workbench 3.1 Workbench
 echo "Installing Workbench 3.1 Workbench files from $floppydevice:..."
 copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
+echo "Done."
 
 
 ; Workbench 3.1 Locale disk
@@ -58,6 +59,7 @@ ENDIF
 echo "Installing Workbench 3.1 Locale files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Locale
 copy >NIL: $floppydevice: SYSTEMDIR:Locale ALL CLONE
+echo "Done."
 
 
 ; Workbench 3.1 Extras disk
@@ -97,6 +99,7 @@ ENDIF
 ; Install Workbench 3.1 Extras
 echo "Installing Workbench 3.1 Extras files from $floppydevice:..."
 copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
+echo "Done."
 
 
 ; Workbench 3.1 Fonts disk
@@ -137,6 +140,7 @@ ENDIF
 echo "Installing Workbench 3.1 Fonts files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Fonts
 copy >NIL: $floppydevice: SYSTEMDIR:Fonts ALL CLONE
+echo "Done."
 
 
 ; Workbench 3.1 Install disk
@@ -187,6 +191,7 @@ copy $floppydevice:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE
 copy $floppydevice:L/FastFileSystem SYSTEMDIR:L CLONE 
 copy $floppydevice:Libs/68040.library SYSTEMDIR:Libs CLONE 
 copy $floppydevice:Update/Disk.info SYSTEMDIR: CLONE 
+echo "Done."
 
 
 ; Workbench 3.1 Storage disk
@@ -230,6 +235,7 @@ copy >NIL: $floppydevice: SYSTEMDIR:Storage ALL CLONE
 copy $floppydevice:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
 copy $floppydevice:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
 copy $floppydevice:Printers.info SYSTEMDIR:Storage.info CLONE 
+echo "Done."
 
 
 ; End
