@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-01-09
+; Date: 2017-01-13
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -125,6 +125,13 @@ resident $floppydevice:C/Mount PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
 SetEnv TZ MST7
+
+
+; Run Patch Installation, if PATCHDIR: exists
+Assign >NIL: EXISTS PATCHDIR:
+IF NOT WARN
+  execute "SYSTEMDIR:HstWBInstaller/Patch-Installation"
+ENDIF
 
 
 ; Fail, if user assign doesn't exist
