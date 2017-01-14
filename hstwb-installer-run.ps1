@@ -184,7 +184,7 @@ function CalculateMd5($path)
 # get file hashes
 function GetFileHashes($path)
 {
-    $adfFiles = Get-ChildItem -Path $path
+    $adfFiles = Get-ChildItem -Path $path | where { ! $_.PSIsContainer }
 
     $fileHashes = @()
 
