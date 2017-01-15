@@ -13,6 +13,20 @@ echo "*ec"
 echo "Patch Installation"
 echo "------------------"
 echo ""
+echo "This will patch installation, if device name PATCHDIR is"
+echo "added in WinUAE. Currently it check if Workbench.library"
+echo "and copies it to SYS:Libs to support installation on"
+echo "A4000T systems."
+echo ""
+
+
+Assign >NIL: EXISTS PATCHDIR:
+IF NOT WARN
+  echo "PATCHDIR: Present! Patching installation."
+ELSE
+  echo "PATCHDIR: Not present! Skip patch installation."
+  SKIP end
+ENDIF
 
 
 ; Copy workbench library, if doesn't exists in patch directory
@@ -27,7 +41,7 @@ ELSE
 ENDIF
 
 
-; End
+; Patch installation complete
 echo ""
 echo "Done."
 echo ""
@@ -39,5 +53,9 @@ echo "system to write changes to disk. Continue will reboot"
 echo "the system in 10 seconds."
 echo ""
 echo "Otherwise continue installation."
+
+
+; End
+LAB end
 echo ""
 ask "Press ENTER to continue"

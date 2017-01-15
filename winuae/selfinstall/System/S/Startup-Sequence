@@ -127,19 +127,16 @@ Assign >NIL: ENV: RAM:Env
 SetEnv TZ MST7
 
 
-; Run Patch Installation, if PATCHDIR: exists
-Assign >NIL: EXISTS PATCHDIR:
-IF NOT WARN
-  execute "HSTWBINSTALLER:Patch-Installation"
-ENDIF
-
-
 ; Fail, if user assign doesn't exist
 IF NOT EXISTS S:User-Assign
   echo "Error: User assign doesn't exist!"
   SKIP fail
 ENDIF
 execute S:User-Assign
+
+
+; Run Patch Installation, if PATCHDIR: exists
+execute "HSTWBINSTALLER:Patch-Installation"
 
 
 ; Load system commands resident 
