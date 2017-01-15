@@ -768,10 +768,17 @@ function RunSelfInstall()
 
 
     # write user assign
+    $userAssignLines = @()
+    $userAssignLines += "Assign SYSTEMDIR: DH0:"
+    $userAssignLines += "IF NOT EXISTS ""DH1:HstWBInstaller"""
+    $userAssignLines += "  makedir >NIL: ""DH1:HstWBInstaller"""
+    $userAssignLines += "ENDIF"
+    $userAssignLines += "Assign HSTWBINSTALLER: DH1:HstWBInstaller"
+    $userAssignLines += "Assign WORKDIR: DH1:"
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
+    WriteAmigaTextLines $userAssignFile $userAssignLines
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\User-Assign")
-    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
+    WriteAmigaTextLines $userAssignFile $userAssignLines
 
 
     # find packages to install
@@ -795,9 +802,9 @@ function RunSelfInstall()
             # add package installation lines to install packages script
             $installPackagesLines += "echo """""
             $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
-            $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """")
+            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLER:Packages/" + $installPackage.Package + """")
             $installPackagesLines += "execute PACKAGEDIR:Install"
-            $installPackagesLines += ("Assign PACKAGEDIR: ""SYSTEMDIR:HstWBInstaller/Packages/" + $installPackage.Package + """ REMOVE")
+            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLER:Packages/" + $installPackage.Package + """ REMOVE")
             $installPackagesLines += "echo ""Done."""
         }
 
@@ -807,7 +814,7 @@ function RunSelfInstall()
         $installPackagesLines += "ask ""Press ENTER to continue"""
 
         # write install packages script
-        $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "System\HstWBInstaller\Install-Packages")
+        $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
         WriteAmigaTextLines $installPackagesFile $installPackagesLines 
     }
 

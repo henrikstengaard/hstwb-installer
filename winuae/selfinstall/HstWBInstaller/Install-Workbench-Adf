@@ -10,8 +10,8 @@ echo "*ec"
 
 
 ; Create workbench directory, if it doesn't exist
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/"
-  makedir >NIL: "SYSTEMDIR:HstWBInstaller/Workbench"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/"
+  makedir >NIL: "HSTWBINSTALLER:Workbench"
 ENDIF
 
 
@@ -22,33 +22,33 @@ echo "------------------------"
 echo ""
 echo "Finding Workbench adf files in WORKBENCHDIR:..."
 fsearch WORKBENCHDIR:#?.adf >T:workbench-adf-files1
-sed "s/^\(.\)/execute *"SYSTEMDIR:HstWBInstaller\/Copy-Workbench-Adf*" *"\1/" T:workbench-adf-files1 >T:workbench-adf-files2
-sed "s/\(.\)$/\1*" *"SYSTEMDIR:HstWBInstaller\/Workbench\/*"/" T:workbench-adf-files2 >T:workbench-adf-files3
+sed "s/^\(.\)/execute *"HSTWBINSTALLER:Copy-Workbench-Adf*" *"\1/" T:workbench-adf-files1 >T:workbench-adf-files2
+sed "s/\(.\)$/\1*" *"HSTWBINSTALLER:Workbench\/*"/" T:workbench-adf-files2 >T:workbench-adf-files3
 execute T:workbench-adf-files3
 
 
 ; Fallback to Workbench disk installation, if workbench adf files doesn't exist
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31workbench.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31workbench.adf"
   ECHO "Workbench 3.1 Workbench adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31locale.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31locale.adf"
   ECHO "Workbench 3.1 Locale adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31extras.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31extras.adf"
   ECHO "Workbench 3.1 Extras adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31fonts.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31fonts.adf"
   ECHO "Workbench 3.1 Fonts adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31install.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31install.adf"
   ECHO "Workbench 3.1 Install adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
-IF NOT EXISTS "SYSTEMDIR:HstWBInstaller/Workbench/workbench31storage.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Workbench/workbench31storage.adf"
   ECHO "Workbench 3.1 Storage adf doesn't exist!"
   SKIP workbenchdiskfallback
 ENDIF
@@ -65,33 +65,33 @@ echo ""
 
 ; Install Workbench 3.1 Workbench adf
 echo "Installing Workbench 3.1 Workbench files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31workbench.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31workbench.adf" ff0:
 copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 
 
 ; Install Workbench 3.1 Locale adf
 echo "Installing Workbench 3.1 Locale files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31locale.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31locale.adf" ff0:
 makedir >NIL: SYSTEMDIR:Locale
 copy >NIL: ff0: SYSTEMDIR:Locale ALL CLONE
 
 
 ; Install Workbench 3.1 Extras adf
 echo "Installing Workbench 3.1 Extras files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31extras.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31extras.adf" ff0:
 copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 
 
 ; Install Workbench 3.1 Fonts adf
 echo "Installing Workbench 3.1 Fonts files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31fonts.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31fonts.adf" ff0:
 makedir >NIL: SYSTEMDIR:Fonts
 copy >NIL: ff0: SYSTEMDIR:Fonts ALL CLONE
 
 
 ; Install Workbench 3.1 Install adf
 echo "Installing Workbench 3.1 Install files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31install.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31install.adf" ff0:
 makedir >NIL: SYSTEMDIR:Tools
 copy ff0:HDTools/BRU SYSTEMDIR:Tools CLONE
 copy ff0:HDTools/HDBackup SYSTEMDIR:Tools CLONE
@@ -112,7 +112,7 @@ copy ff0:Update/Disk.info SYSTEMDIR: CLONE
 
 ; Install Workbench 3.1 Storage adf
 echo "Installing Workbench 3.1 Storage files..."
-diskwiz >NIL: "SYSTEMDIR:HstWBInstaller/Workbench/workbench31storage.adf" ff0:
+diskwiz >NIL: "HSTWBINSTALLER:Workbench/workbench31storage.adf" ff0:
 makedir >NIL: SYSTEMDIR:Storage
 copy >NIL: ff0: SYSTEMDIR:Storage ALL CLONE
 copy ff0:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
@@ -135,7 +135,7 @@ echo "and reset to retry installing Workbench from adf files"
 echo "again."
 echo ""
 ask "Press ENTER to continue"
-execute "SYSTEMDIR:HstWBInstaller/Install-Workbench-Disk"
+execute "HSTWBINSTALLER:Install-Workbench-Disk"
 
 
 ; End
