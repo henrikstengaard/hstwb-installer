@@ -284,9 +284,11 @@ function EnterPath($prompt)
 # enter choice
 function EnterChoice($prompt, $options)
 {
+    $optionPadding = $options.Count.ToString().Length
+
     for ($i = 0; $i -lt $options.Count; $i++)
     {
-        Write-Host ("{0}: " -f ($i + 1)) -NoNewline -foregroundcolor "Gray"
+        Write-Host (("{0," + $optionPadding + "}: ") -f ($i + 1)) -NoNewline -foregroundcolor "Gray"
         Write-Host $options[$i]
     }
     Write-Host ""
