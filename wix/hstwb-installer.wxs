@@ -43,19 +43,25 @@
                     Target="[ApplicationDataDirectory]hstwb-installer-settings.ini"
                     WorkingDirectory="ApplicationDataDirectory"
                     Icon="icon.ico" />
+                  <Shortcut 
+                    Id="ApplicationSettingsShortcut"
+                    Name="HstWB Installer Assigns"
+                    Target="[ApplicationDataDirectory]hstwb-installer-assigns.ini"
+                    WorkingDirectory="ApplicationDataDirectory"
+                    Icon="icon.ico" />
                       <Shortcut 
                     Id="ApplicationRunShortcut" 
                     Name="HstWB Installer Run" 
                     Target="[SystemFolder]cmd.exe"
                     WorkingDirectory="INSTALLDIR"
-                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsFile &quot;%LOCALAPPDATA%\HstWB Installer\hstwb-installer-settings.ini&quot;&quot;"
+                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;"
                     Icon="icon.ico" />
                   <Shortcut 
                     Id="ApplicationSetupShortcut" 
                     Name="HstWB Installer Setup" 
                     Target="[SystemFolder]cmd.exe"
                     WorkingDirectory="INSTALLDIR"
-                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsFile &quot;%LOCALAPPDATA%\HstWB Installer\hstwb-installer-settings.ini&quot;&quot;"
+                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;"
                     Icon="icon.ico" />
         <Shortcut Id="ApplicationUninstallShortcut"
                   Name="Uninstall HstWB Installer"

@@ -2,14 +2,14 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2016-11-06
+# Date:   2017-01-16
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
 
 Param(
 	[Parameter(Mandatory=$true)]
-	[string]$settingsFile
+	[string]$settingsDir
 )
 
 
@@ -349,6 +349,8 @@ function PrintSettings()
     Write-Host "Settings"
     Write-Host "  Settings File      : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settingsFile + "'")
+    Write-Host "  Assigns File       : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $assignsFile + "'")
     Write-Host "Image"
     Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Image.HdfImagePath + "'")
@@ -887,7 +889,10 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
-$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
+$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
+
+$settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
+$assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
 
 # fail, if settings file doesn't exist
@@ -897,8 +902,16 @@ if (!(test-path -path $settingsFile))
 }
 
 
-# read settings file
+# fail, if assigns file doesn't exist
+if (!(test-path -path $assignsFile))
+{
+    Fail ("Error: Assigns file '$assignsFile' doesn't exist!") $tempPath
+}
+
+
+# read settings and assigns files
 $settings = ReadIniFile $settingsFile
+$assigns = ReadIniFile $assignsFile
 
 
 # set default installer mode, if not present

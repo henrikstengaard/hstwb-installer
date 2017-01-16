@@ -2,14 +2,14 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2016-11-06
+# Date:   2017-01-16
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
 
 Param(
 	[Parameter(Mandatory=$true)]
-	[string]$settingsFile
+	[string]$settingsDir
 )
 
 
@@ -230,6 +230,8 @@ function PrintSettings()
     Write-Host "Settings"
     Write-Host "  Settings File      : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settingsFile + "'")
+    Write-Host "  Assigns File       : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $assignsFile + "'")
     Write-Host "Image"
     Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Image.HdfImagePath + "'")
@@ -772,7 +774,7 @@ function ChangeInstallerMode()
 function RunInstaller
 {
     Write-Host ""
-	& $runFile -settingsFile $settingsFile
+	& $runFile -settingsDir $settingsDir
     Write-Host ""
 }
 
@@ -781,6 +783,7 @@ function RunInstaller
 function Save()
 {
     WriteIniFile $settingsFile $settings
+    WriteIniFile $assignsFile $assigns
 }
 
 
@@ -788,6 +791,7 @@ function Save()
 function Reset()
 {
     DefaultSettings
+    DefaultAssigns
     Save
 }
 
@@ -835,6 +839,15 @@ function DefaultSettings()
 }
 
 
+# default assigns
+function DefaultAssigns()
+{
+    $assigns.HstWBInstaller = @{}
+    $assigns.HstWBInstaller.SystemDir = "DH0:"
+    $assigns.HstWBInstaller.HstWBInstallerDir = "DH1:HstWBInstaller"
+}
+
+
 # remove non existing packages
 function RemoveNonExistingPackages()
 {
@@ -854,14 +867,13 @@ function RemoveNonExistingPackages()
 
         if (Test-Path -path $packageFile)
         {
-            $existingPackages.Add($package)
+            [void]$existingPackages.Add($package)
         }
     }
 
 
     # update install packages with packages that exist
     $settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
-    Save
 }
 
 
@@ -871,20 +883,20 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-run.ps1")
-$settingsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsFile)
+$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
+$settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
+$assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
-$settingsDir = [System.IO.Path]::GetDirectoryName($settingsFile)
+$settings = @{}
+$assigns = @{}
 
 
 # create settings dir, if it doesn't exist
 if(!(test-path -path $settingsDir))
 {
-    md $settingsDir | Out-Null
+    mkdir $settingsDir | Out-Null
 }
-
-
-$settings = @{}
 
 
 # create default settings, if settings file doesn't exist
@@ -894,7 +906,18 @@ if (test-path -path $settingsFile)
 }
 else
 {
-    Reset
+    DefaultSettings
+}
+
+
+# create default assigns, if assigns file doesn't exist
+if (test-path -path $assignsFile)
+{
+    $assigns = ReadIniFile $assignsFile
+}
+else
+{
+    DefaultAssigns
 }
 
 
@@ -914,8 +937,13 @@ if (!($settings.Packages))
 }
 
 
+
 # remove non existing packages
 RemoveNonExistingPackages
+
+
+# save settings and assigns
+Save
 
 
 # show main menu
