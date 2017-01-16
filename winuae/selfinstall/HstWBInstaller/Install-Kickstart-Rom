@@ -25,7 +25,7 @@ echo ""
 echo "Find Kickstart rom files in KICKSTARTDIR:..."
 fsearch KICKSTARTDIR:#?.rom >T:kickstart-rom-files1
 fsearch KICKSTARTDIR:#?.key >>T:kickstart-rom-files1
-sed "s/^\(.\)/execute *"HSTWBINSTALLER:Copy-Kickstart-Rom*" *"\1/" T:kickstart-rom-files1 >T:kickstart-rom-files2
+sed "s/^\(.\)/execute *"HSTWBINSTALLERDIR:Copy-Kickstart-Rom*" *"\1/" T:kickstart-rom-files1 >T:kickstart-rom-files2
 sed "s/\(.\)$/\1*" *"SYSTEMDIR:Devs\/Kickstarts\/*"/" T:kickstart-rom-files2 >T:kickstart-rom-files3
 execute T:kickstart-rom-files3
 

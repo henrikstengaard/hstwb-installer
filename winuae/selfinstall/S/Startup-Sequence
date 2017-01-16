@@ -52,20 +52,20 @@ echo "Done."
 ; Copy HstWB Installer
 echo ""
 echo "Copying HstWB Installer..."
-copy >NIL: "INSTALL:HstWBInstaller/" TO "HSTWBINSTALLER:" ALL
+copy >NIL: "INSTALL:HstWBInstaller/" TO "HSTWBINSTALLERDIR:" ALL
 echo "Done."
 
 
 ; Create packages directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Packages/"
-  makedir >NIL: "HSTWBINSTALLER:Packages"
+IF NOT EXISTS "HSTWBINSTALLERDIR:Packages/"
+  makedir >NIL: "HSTWBINSTALLERDIR:Packages"
 ENDIF
 
 
 ; Copy Packages
 echo ""
 echo "Copying packages..."
-copy >NIL: "PACKAGES:" TO "HSTWBINSTALLER:Packages/" ALL
+copy >NIL: "PACKAGES:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 echo "Done."
 
 

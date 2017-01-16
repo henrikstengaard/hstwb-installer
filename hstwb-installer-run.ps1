@@ -773,7 +773,7 @@ function RunSelfInstall()
     $userAssignLines += "IF NOT EXISTS ""DH1:HstWBInstaller"""
     $userAssignLines += "  makedir >NIL: ""DH1:HstWBInstaller"""
     $userAssignLines += "ENDIF"
-    $userAssignLines += "Assign HSTWBINSTALLER: DH1:HstWBInstaller"
+    $userAssignLines += "Assign HSTWBINSTALLERDIR: DH1:HstWBInstaller"
     $userAssignLines += "Assign WORKDIR: DH1:"
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
     WriteAmigaTextLines $userAssignFile $userAssignLines
@@ -802,9 +802,9 @@ function RunSelfInstall()
             # add package installation lines to install packages script
             $installPackagesLines += "echo """""
             $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
-            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLER:Packages/" + $installPackage.Package + """")
+            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLERDIR:Packages/" + $installPackage.Package + """")
             $installPackagesLines += "execute PACKAGEDIR:Install"
-            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLER:Packages/" + $installPackage.Package + """ REMOVE")
+            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLERDIR:Packages/" + $installPackage.Package + """ REMOVE")
             $installPackagesLines += "echo ""Done."""
         }
 

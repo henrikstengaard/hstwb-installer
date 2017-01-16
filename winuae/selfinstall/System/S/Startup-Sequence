@@ -136,7 +136,7 @@ execute S:User-Assign
 
 
 ; Run Patch Installation, if PATCHDIR: exists
-execute "HSTWBINSTALLER:Patch-Installation"
+execute "HSTWBINSTALLERDIR:Patch-Installation"
 
 
 ; Load system commands resident 
@@ -146,13 +146,13 @@ resident SYSTEMDIR:C/UAEquit PURE
 
 
 ; Create temp directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Temp/"
-  makedir >NIL: "HSTWBINSTALLER:Temp"
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/"
+  makedir >NIL: "HSTWBINSTALLERDIR:Temp"
 ENDIF
 
 
 ; Mount and assign FMS 
-assign FMS: HSTWBINSTALLER:Temp
+assign FMS: HSTWBINSTALLERDIR:Temp
 Mount FF0:
 
 
@@ -201,9 +201,9 @@ echo "*ec"
 ; Run Install-Workbench-Adf, if WORKBENCHDIR: exists
 Assign >NIL: EXISTS WORKBENCHDIR:
 IF NOT WARN
-  execute "HSTWBINSTALLER:Install-Workbench-Adf"
+  execute "HSTWBINSTALLERDIR:Install-Workbench-Adf"
 ELSE
-  execute "HSTWBINSTALLER:Install-Workbench-Disk"
+  execute "HSTWBINSTALLERDIR:Install-Workbench-Disk"
 ENDIF
 
 
@@ -216,13 +216,13 @@ ask "Press ENTER to continue"
 ; Run Install-Kickstart-Rom, if KICKSTARTDIR: exists
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
-  execute "HSTWBINSTALLER:Install-Kickstart-Rom"
+  execute "HSTWBINSTALLERDIR:Install-Kickstart-Rom"
 ENDIF
 
 
 ; Run Install-Packages, if it exists
-IF EXISTS "HSTWBINSTALLER:Install-Packages"
-  execute "HSTWBINSTALLER:Install-Packages"
+IF EXISTS "HSTWBINSTALLERDIR:Install-Packages"
+  execute "HSTWBINSTALLERDIR:Install-Packages"
 ENDIF
 
 
@@ -240,13 +240,13 @@ echo "will now be deleted."
 ; Unmount and remove FMS assign 
 assign FF0: dismount
 wait 1
-assign FMS: HSTWBINSTALLER:Temp REMOVE
+assign FMS: HSTWBINSTALLERDIR:Temp REMOVE
 
 
 ; Delete HstWB Installer directories
 echo ""
 echo "Deleting HstWB Installer files..."
-delete >NIL: "HSTWBINSTALLER:" ALL
+delete >NIL: "HSTWBINSTALLERDIR:" ALL
 
 
 ; Check if disk is present in floppy device, if present go back to eject disk
