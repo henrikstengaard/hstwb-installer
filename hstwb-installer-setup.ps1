@@ -17,12 +17,51 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
 
 
-# read ini file
+# read zip entry text file
+function ReadZipEntryTextFile($zipFile, $entryName)
+{
+    # open zip archive
+    $zipArchive = [System.IO.Compression.ZipFile]::Open($zipFile,"Read")
+    $zipArchiveEntry = $zipArchive.Entries | Where-Object { $_.FullName -match $entryName } | Select-Object -First 1
+
+    # return null, if zip archive entry doesn't exist
+    if (!$zipArchiveEntry)
+    {
+        $zipArchive.Dispose()
+        return $null
+    }
+
+    # open zip archive entry stream
+    $entryStream = $zipArchiveEntry.Open()
+    $streamReader = New-Object System.IO.StreamReader($entryStream)
+
+    # read text from stream
+    $text = $streamReader.ReadToEnd()
+
+    # close streams
+    $streamReader.Close()
+    $streamReader.Dispose()
+
+    # close zip archive
+    $zipArchive.Dispose()
+    
+    return $text
+}
+
+
+# read ini file 
 function ReadIniFile($iniFile)
+{
+    return ReadIniText (Get-Content -Path $iniFile)
+}
+
+
+# read ini text
+function ReadIniText($iniText)
 {
     $ini = @{}
 
-    switch -regex -file $iniFile
+    switch -regex ($iniText -split "`r`n" | Where-Object { $_ })
     {
         "^\[(.+)\]$" {
             $section = $matches[1]
@@ -250,8 +289,35 @@ function PrintSettings()
     Write-Host "  Kickstart Rom Set  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.KickstartRomSet + "'")
     Write-Host "Packages"
-    Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Packages.InstallPackages + "'")
+
+    $packageFileNames = @()
+    $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+
+    if ($packageFileNames.Count -gt 0)
+    {
+        for ($i = 0; $i -lt $packageFileNames.Count;$i++)
+        {
+            if ($i -eq 0)
+            {
+                Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+            }
+            else
+            {
+                Write-Host "                       " -NoNewline
+            }
+
+            $packageFileName = $packageFileNames[$i]
+            $package = $packages.Get_Item($packageFileName)
+
+            Write-Host ("'" + $package.Package.Name + " v" + $package.Package.Version + "'")
+        }
+    }
+    else
+    {
+        Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+        Write-Host "None" -foregroundcolor "Yellow"
+    }
+
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
@@ -672,45 +738,72 @@ function SelectKickstartRomSet()
 # configure packages menu
 function ConfigurePackagesMenu()
 {
-    # get available packages from files in packages directory
-    $availablePackages = @()
-    $availablePackages += Get-ChildItem -Path $packagesPath -Filter *.zip | sort @{expression={$_.Name};Ascending=$true}
-
-    # get install packages defined in settings packages section
-    $installPackages = @()
+    # build old install packages index
+    $oldInstallPackages = @{}
     if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
     {
-        $installPackages += $settings.Packages.InstallPackages -split ','
+        $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ } | ForEach-Object { $oldInstallPackages.Set_Item($_, $true) }
     }
 
-    $newInstallPackages = New-Object System.Collections.ArrayList
+    # build available and install packages indexes
+    $availablePackages = @{}
+    $installPackages = @{}
 
-    $installPackages | % { $newInstallPackages.Add($_) }
+    foreach ($packageFileName in $packages.keys)
+    {
+        $package = $packages.Get_Item($packageFileName)
+        $packageName = $package.Package.Name + ' v' + $package.Package.Version
+
+        $availablePackages.Set_Item($packageName, $packageFileName)
+
+        if ($oldInstallPackages.ContainsKey($packageFileName))
+        {
+            $installPackages.Set_Item($packageName, $packageFileName)
+        }
+    }
 
     do
     {
+        # build package options
         $packageOptions = @()
-        $packageOptions += $availablePackages | % { $_ -replace '\.zip$','' } | % { if ($newInstallPackages.Contains($_)) { "- $_" } else { "+ $_" } }
+        $packageOptions += $availablePackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $_) } else { ("+ " + $_) } }
         $packageOptions += "Back"
 
         $choice = Menu "Configure Packages Menu" $packageOptions
 
         if ($choice -ne 'Back')
         {
-            $package = $choice -replace '^(\+|\-) ', ''
+            $packageName = $choice -replace '^(\+|\-) ', ''
 
-            if ($newInstallPackages.Contains($package))
+            # get package
+            $package = $packages.Get_Item($availablePackages.Get_Item($packageName))
+
+            # remove package and assigns, if package exists in install packages. otherwise, add package to install packages and package default assigns
+            if ($installPackages.ContainsKey($packageName))
             {
-                $newInstallPackages.Remove($package)
+                $installPackages.Remove($packageName)
+
+                if ($assigns.ContainsKey($package.Package.Name))
+                {
+                    $assigns.Remove($package.Package.Name)
+                }
             }
             else
             {
-                $newInstallPackages.Add($package)
+                $installPackages.Set_Item($packageName, $availablePackages.Get_Item($packageName))
+                
+                if ($package.DefaultAssigns)
+                {
+                    $assigns.Set_Item($package.Package.Name, $package.DefaultAssigns)
+                }
             }
             
-            $settings.Packages.InstallPackages = [string]::Join(',', $newInstallPackages.ToArray())
+            # build and set new install packages
+            $newInstallPackages = @()
+            $newInstallPackages += $installPackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { $installPackages.Get_Item($_) }
+            $settings.Packages.InstallPackages = $newInstallPackages -join ','
             Save
-        } 
+        }
     }
     until ($choice -eq 'Back')
 }
@@ -842,40 +935,123 @@ function DefaultSettings()
 # default assigns
 function DefaultAssigns()
 {
-    $assigns.HstWBInstaller = @{}
-    $assigns.HstWBInstaller.SystemDir = "DH0:"
-    $assigns.HstWBInstaller.HstWBInstallerDir = "DH1:HstWBInstaller"
+    $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
 }
 
 
-# remove non existing packages
-function RemoveNonExistingPackages()
+# read packages
+function ReadPackages()
+{
+    # get package files
+    $packageFiles = Get-ChildItem -Path $packagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
+
+    # read package ini from package files
+    foreach ($packageFile in $packageFiles)
+    {
+        # read package ini text file from package file
+        $packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package\.ini$'
+
+        # skip, if package ini text doesn't exist
+        if (!$packageIniText)
+        {
+            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't contain package.ini file!")
+            exit 1
+        }
+
+        # read package ini text
+        $packageIni = ReadIniText $packageIniText
+
+        # get package filename
+        $packageFileName = $packageFile.Name.ToLower() -replace '\.zip$'
+
+        # add package ini to packages
+        $packages.Set_Item($packageFileName, $packageIni)
+    }
+}
+
+
+# update packages
+function UpdatePackages()
 {
     # get install packages defined in settings packages section
-    $packages = @()
+    $packageFileNames = @()
     if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
     {
-        $packages += $settings.Packages.InstallPackages -split ','
+        $packageFileNames += $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
     }
-
 
     # get packages that exist in packages path
     $existingPackages = New-Object System.Collections.ArrayList
-    foreach ($package in $packages)
-    {
-        $packageFile = [System.IO.Path]::Combine($packagesPath, ($package + ".zip"))
 
-        if (Test-Path -path $packageFile)
-        {
-            [void]$existingPackages.Add($package)
-        }
-    }
-
+    # remove packages, if they don't exist
+    $packageFileNames | ForEach-Object { if ($packages.ContainsKey($_)) { [void]$existingPackages.Add($_) } }
 
     # update install packages with packages that exist
     $settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
 }
 
+
+# update assigns
+function UpdateAssigns()
+{  
+    # get install packages defined in settings packages section
+    $packageFileNames = @()
+    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    {
+        $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+    }
+
+    $packageNames = @()
+
+    # 
+    foreach ($packageFileName in $packageFileNames)
+    {
+        $packageFileName = $packageFileName.ToLower()
+
+
+        if (!$packages.ContainsKey($packageFileName))
+        {
+            continue
+        }
+
+        $package = $packages.Get_Item($packageFileName)
+
+        $packageNames += $package.Package.Name
+
+        if (!$package.DefaultAssigns)
+        {
+            continue
+        }
+
+        # add new package assigns, if package exists. otherwise add all package assigns
+        if ($assigns.ContainsKey($package.Package.Name))
+        {
+            $packageAssigns = $assigns.Get_Item($package.Package.Name)
+
+            foreach ($key in ($package.DefaultAssigns.keys | Sort-Object))
+            {
+                if (!$packageAssigns.ContainsKey($key))
+                {
+                    $packageAssigns.Set_Item($key, $package.DefaultAssigns.Get_Item($key))
+                }
+            }
+        }
+        else
+        {
+            $assigns.Set_Item($package.Package.Name, $package.DefaultAssigns) 
+        }
+    }
+
+    # remove assigns for packages, that aren't going to be installed
+    $assingSectionNames = $assigns.keys | Where-Object { $_ -notmatch 'hstwb installer' }
+    foreach ($assingSectionName in $assingSectionNames)
+    {
+        if (!$packageNames.Contains($assingSectionName))
+        {
+            $assigns.Remove($assingSectionName)
+        }
+    }
+}
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
@@ -888,6 +1064,9 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
 $assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
+$defaultHstwbInstallerAssigns = @{ "SystemDir" = "DH0:"; "HstWBInstallerDir" = "DH1:HstWBInstaller" }
+
+$packages = @{}
 $settings = @{}
 $assigns = @{}
 
@@ -937,9 +1116,22 @@ if (!($settings.Packages))
 }
 
 
+if (!($assigns.ContainsKey("HstWB Installer")))
+{
+    $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
+}
 
-# remove non existing packages
-RemoveNonExistingPackages
+
+# read packages
+ReadPackages
+
+
+# update packages
+UpdatePackages
+
+
+# update assigns
+UpdateAssigns
 
 
 # save settings and assigns
