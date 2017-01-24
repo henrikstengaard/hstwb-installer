@@ -13,8 +13,9 @@ Param(
 )
 
 
+Import-Module (Resolve-Path('modules\HstwbInstaller-Config.psm1'))
 Import-Module (Resolve-Path('modules\HstwbInstaller-Dialog.psm1'))
-Import-Module (Resolve-Path('modules\HstwbInstaller-IO.psm1'))
+Import-Module (Resolve-Path('modules\HstwbInstaller-Function.psm1'))
 
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -595,170 +596,6 @@ function Reset()
 }
 
 
-# default settings
-function DefaultSettings()
-{
-    $settings.Image = @{}
-    $settings.Workbench = @{}
-    $settings.Kickstart = @{}
-    $settings.Winuae = @{}
-    $settings.Packages = @{}
-    $settings.Installer = @{}
-
-    $settings.Workbench.InstallWorkbench = 'Yes'
-    $settings.Kickstart.InstallKickstart = 'Yes'
-    $settings.Packages.InstallPackages = ''
-    $settings.Installer.Mode = 'Install'
-    
-    # use cloanto amiga forever data directory, if present
-    $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
-    if ($amigaForeverDataPath)
-    {
-        $workbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
-        if (test-path -path $workbenchAdfPath)
-        {
-            $settings.Workbench.WorkbenchAdfPath = $workbenchAdfPath
-            $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
-        }
-
-        $kickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
-        if (test-path -path $kickstartRomPath)
-        {
-            $settings.Kickstart.KickstartRomPath = $kickstartRomPath
-            $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
-        }
-    }
-
-    # use winuae in program files x86, if present
-    $winuaePath = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
-    if (test-path -path $winuaePath)
-    {
-        $settings.Winuae.WinuaePath = $winuaePath
-    }
-}
-
-
-# default assigns
-function DefaultAssigns()
-{
-    $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
-}
-
-
-# read packages
-function ReadPackages()
-{
-    # get package files
-    $packageFiles = Get-ChildItem -Path $packagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
-
-    # read package ini from package files
-    foreach ($packageFile in $packageFiles)
-    {
-        # read package ini text file from package file
-        $packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package\.ini$'
-
-        # skip, if package ini text doesn't exist
-        if (!$packageIniText)
-        {
-            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't contain package.ini file!")
-            exit 1
-        }
-
-        # read package ini text
-        $packageIni = ReadIniText $packageIniText
-
-        # get package filename
-        $packageFileName = $packageFile.Name.ToLower() -replace '\.zip$'
-
-        # add package ini to packages
-        $packages.Set_Item($packageFileName, $packageIni)
-    }
-}
-
-
-# update packages
-function UpdatePackages()
-{
-    # get install packages defined in settings packages section
-    $packageFileNames = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
-    {
-        $packageFileNames += $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
-    }
-
-    # get packages that exist in packages path
-    $existingPackages = New-Object System.Collections.ArrayList
-
-    # remove packages, if they don't exist
-    $packageFileNames | ForEach-Object { if ($packages.ContainsKey($_)) { [void]$existingPackages.Add($_) } }
-
-    # update install packages with packages that exist
-    $settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
-}
-
-
-# update assigns
-function UpdateAssigns()
-{  
-    # get install packages defined in settings packages section
-    $packageFileNames = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
-    {
-        $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
-    }
-
-    $packageNames = @()
-
-    # 
-    foreach ($packageFileName in $packageFileNames)
-    {
-        $packageFileName = $packageFileName.ToLower()
-
-
-        if (!$packages.ContainsKey($packageFileName))
-        {
-            continue
-        }
-
-        $package = $packages.Get_Item($packageFileName)
-
-        $packageNames += $package.Package.Name
-
-        if (!$package.DefaultAssigns)
-        {
-            continue
-        }
-
-        # add new package assigns, if package exists. otherwise add all package assigns
-        if ($assigns.ContainsKey($package.Package.Name))
-        {
-            $packageAssigns = $assigns.Get_Item($package.Package.Name)
-
-            foreach ($key in ($package.DefaultAssigns.keys | Sort-Object))
-            {
-                if (!$packageAssigns.ContainsKey($key))
-                {
-                    $packageAssigns.Set_Item($key, $package.DefaultAssigns.Get_Item($key))
-                }
-            }
-        }
-        else
-        {
-            $assigns.Set_Item($package.Package.Name, $package.DefaultAssigns) 
-        }
-    }
-
-    # remove assigns for packages, that aren't going to be installed
-    $assingSectionNames = $assigns.keys | Where-Object { $_ -notmatch 'hstwb installer' }
-    foreach ($assingSectionName in $assingSectionNames)
-    {
-        if (!$packageNames.Contains($assingSectionName))
-        {
-            $assigns.Remove($assingSectionName)
-        }
-    }
-}
-
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
@@ -770,7 +607,6 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
 $assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
-$defaultHstwbInstallerAssigns = @{ "SystemDir" = "DH0:"; "HstWBInstallerDir" = "DH1:HstWBInstaller" }
 
 $packages = @{}
 $settings = @{}

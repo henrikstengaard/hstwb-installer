@@ -32,61 +32,6 @@ function ReadZipEntryTextFile($zipFile, $entryName)
     return $text
 }
 
-# read ini file 
-function ReadIniFile($iniFile)
-{
-    return ReadIniText (Get-Content -Path $iniFile)
-}
-
-
-# read ini text
-function ReadIniText($iniText)
-{
-    $ini = @{}
-
-    switch -regex ($iniText -split "`r`n" | Where-Object { $_ })
-    {
-        "^\[(.+)\]$" {
-            $section = $matches[1]
-            $ini[$section] = @{}
-        }
-        "(.+)=(.+)" {
-            $name,$value = $matches[1..2]
-            $ini[$section][$name] = $value
-        }
-    }
-
-    return $ini
-}
-
-
-# write ini file
-function WriteIniFile($iniFile, $ini)
-{
-    $iniLines = @()
-
-    foreach ($key in ($ini.keys | Sort-Object))
-    {
-        if (!($($ini[$key].GetType().Name) -eq "Hashtable"))
-        {
-            $iniLines += "$key=$($ini[$key])"
-        }
-        else
-        {
-            # Section
-            $iniLines += "[$key]"
-            
-            foreach ($sectionKey in ($ini[$key].keys | Sort-Object))
-            {
-                $iniLines += "$sectionKey=$($ini[$key][$sectionKey])"
-            }
-        }
-    }
-
-    [System.IO.File]::WriteAllText($iniFile, $iniLines -join [System.Environment]::NewLine)
-}
-
-
 # calculate md5 hash
 function CalculateMd5($path)
 {
@@ -191,9 +136,6 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 
 # export
 export-modulemember -function ReadZipEntryTextFile
-export-modulemember -function ReadIniFile
-export-modulemember -function ReadIniText
-export-modulemember -function WriteIniFile
 export-modulemember -function CalculateMd5
 export-modulemember -function GetFileHashes
 export-modulemember -function FindMatchingFileHashes
