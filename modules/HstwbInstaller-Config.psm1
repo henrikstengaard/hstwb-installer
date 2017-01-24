@@ -219,6 +219,85 @@ function UpdateAssigns()
 }
 
 
+# validate settings
+function ValidateSettings()
+{
+    # fail, if HdfImagePath parameter doesn't exist in settings file or file doesn't exist
+    if (!$settings.Image.HdfImagePath -or !(test-path -path $settings.Image.HdfImagePath))
+    {
+        Write-Host "Error: HdfImagePath parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if InstallWorkbench parameter doesn't exist in settings file or is not valid
+    if (!$settings.Workbench.InstallWorkbench -or $settings.Workbench.InstallWorkbench -notmatch '(Yes|No)')
+    {
+        Write-Host "Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
+    if (!$settings.Workbench.WorkbenchAdfPath -or !(test-path -path $settings.Workbench.WorkbenchAdfPath))
+    {
+        Write-Host "Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if WorkbenchAdfSet parameter doesn't exist settings file or it's not defined
+    if (!$settings.Workbench.WorkbenchAdfSet -or $settings.Workbench.WorkbenchAdfSet -eq '')
+    {
+        Write-Host "Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
+    if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
+    {
+        Write-Host "Error: InstallKickstart parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
+    if (!$settings.Kickstart.KickstartRomPath -or !(test-path -path $settings.Kickstart.KickstartRomPath))
+    {
+        Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if KickstartRomSet parameter doesn't exist in settings file or it's not defined
+    if (!$settings.Kickstart.KickstartRomSet -or $settings.Kickstart.KickstartRomSet -eq '')
+    {
+        Write-Host "Error: KickstartRomSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    # fail, if WinuaePath parameter doesn't exist in settings file or file doesn't exist
+    if (!$settings.Winuae.WinuaePath -or !(test-path -path $settings.Winuae.WinuaePath))
+    {
+        Write-Host "Error: WinuaePath parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
+        return $false
+    }
+    
+
+    # fail, if Mode parameter doesn't exist in settings file or is not valid
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|Test)')
+    {
+        Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        return $false
+    }
+
+
+    return $true
+}
+
+
 # export
 export-modulemember -function ReadIniFile
 export-modulemember -function ReadIniText
@@ -228,3 +307,4 @@ export-modulemember -function DefaultAssigns
 export-modulemember -function ReadPackages
 export-modulemember -function UpdatePackages
 export-modulemember -function UpdateAssigns
+export-modulemember -function ValidateSettings

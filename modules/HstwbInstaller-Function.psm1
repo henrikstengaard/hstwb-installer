@@ -43,14 +43,15 @@ function CalculateMd5($path)
 # get file hashes
 function GetFileHashes($path)
 {
-    $adfFiles = Get-ChildItem -Path $path
+    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
 
     $fileHashes = @()
 
-    foreach ($adfFile in $adfFiles)
+    foreach ($file in $files)
     {
-        $md5Hash = (CalculateMd5 $adfFile.FullName)
-        $fileHashes += @{ "File" = $adfFile.FullName; "Md5Hash" = $md5Hash }
+        $md5Hash = (CalculateMd5 $file.FullName)
+
+        $fileHashes += @{ "File" = $file.FullName; "Md5Hash" = $md5Hash }
     }
 
     return $fileHashes
@@ -134,6 +135,63 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 }
 
 
+# find workbench adf set hashes
+function FindWorkbenchAdfSetHashes()
+{
+    # read workbench adf hashes
+    $workbenchAdfHashes = @()
+    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
+
+
+    # find files with hashes matching workbench adf hashes
+    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+
+
+    # find files with disk names matching workbench adf hashes
+    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+
+
+    # get workbench adf set hashes
+    $workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $settings.Workbench.WorkbenchAdfSet }
+
+
+    # fail, if workbench adf set hashes is empty 
+    if ($workbenchAdfSetHashes.Count -eq 0)
+    {
+        Fail ("Workbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
+    }
+    
+    return $workbenchAdfSetHashes
+}
+
+
+# find kickstart rom set hashes
+function FindKickstartRomSetHashes()
+{
+    # read kickstart rom hashes
+    $kickstartRomHashes = @()
+    $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
+
+
+    # find files with hashes matching kickstart rom hashes
+    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomPath
+
+
+    # get kickstart rom set hashes
+    $kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $settings.Kickstart.KickstartRomSet }
+
+
+    # fail, if kickstart rom set hashes is empty 
+    if ($kickstartRomSetHashes.Count -eq 0)
+    {
+        Fail ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!")
+    }
+
+
+    return $kickstartRomSetHashes
+}
+
+
 # export
 export-modulemember -function ReadZipEntryTextFile
 export-modulemember -function CalculateMd5
@@ -142,3 +200,5 @@ export-modulemember -function FindMatchingFileHashes
 export-modulemember -function ReadString
 export-modulemember -function ReadAdfDiskName
 export-modulemember -function FindMatchingWorkbenchAdfs
+export-modulemember -function FindWorkbenchAdfSetHashes
+export-modulemember -function FindKickstartRomSetHashes
