@@ -1,3 +1,12 @@
+# HstWB Installer Config Module
+# -----------------------------
+#
+# Author: Henrik Noerfjand Stengaard
+# Date:   2017-01-24
+#
+# A powershell module for HstWB Installer with config functions.
+
+
 # read ini file
 function ReadIniFile($iniFile)
 {

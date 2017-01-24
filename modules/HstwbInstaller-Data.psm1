@@ -1,3 +1,12 @@
+# HstWB Installer Data Module
+# ---------------------------
+#
+# Author: Henrik Noerfjand Stengaard
+# Date:   2017-01-24
+#
+# A powershell module for HstWB Installer with data functions.
+
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 

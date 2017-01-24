@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-16
+# Date:   2017-01-24
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -15,7 +15,7 @@ Param(
 
 Import-Module (Resolve-Path('modules\HstwbInstaller-Config.psm1'))
 Import-Module (Resolve-Path('modules\HstwbInstaller-Dialog.psm1'))
-Import-Module (Resolve-Path('modules\HstwbInstaller-Function.psm1'))
+Import-Module (Resolve-Path('modules\HstwbInstaller-Data.psm1'))
 
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
