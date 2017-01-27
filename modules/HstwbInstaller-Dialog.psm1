@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-24
+# Date:   2017-01-27
 #
 # A powershell module for HstWB Installer with dialog functions.
 

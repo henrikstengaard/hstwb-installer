@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-24
+# Date:   2017-01-27
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -169,7 +169,7 @@ function FindPackagesToInstall()
     $packageFileNames = @()
     if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
     {
-        $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+        $packageFileNames += $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
     }
 
 
@@ -247,7 +247,7 @@ function FindPackagesToInstall()
 
         # add package dependencies
         $dependencies = @()
-        $dependencies += $packageIni.Package.Dependencies -split ','
+        $dependencies += $packageIni.Package.Dependencies -split ',' | Where-Object { $_ }
         $packageDependencies.Set_Item($packageName, $dependencies)
     }
 
@@ -274,6 +274,118 @@ function FindPackagesToInstall()
 
 
     return $installPackages
+}
+
+
+# build user assign script lines
+function BuildUserAssignScriptLines()
+{
+    $hstwbInstallerAssigns = $assigns.Get_Item('HstWB Installer')
+    return $hstwbInstallerAssigns.keys | ForEach-Object { ("makepath """ + $hstwbInstallerAssigns.Get_Item($_) + """`nAssign " + $_ + ": """ + $hstwbInstallerAssigns.Get_Item($_) + """") }
+}
+
+
+# build install packages script lines
+function BuildInstallPackagesScriptLines($packageNames)
+{
+    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+
+    $installPackagesLines = @()
+
+    foreach ($packageName in $packageNames)
+    {
+        # add package assigns
+        $package = $packages.Get_Item($packageName.ToLower())
+
+
+        # build package assigns
+        $packageAssigns = @{}            
+        if ($assigns.ContainsKey($package.Package.Name))
+        {
+            $tempPackageAssigns = $assigns.Get_Item($package.Package.Name)
+            $tempPackageAssigns.keys | ForEach-Object { $packageAssigns.Set_Item($_.ToUpper(), $tempPackageAssigns.Get_Item($_)) }
+        }
+
+
+        # add package installation lines to install packages script
+        $installPackagesLines += ("; Install package "+ $package.Package.Name + " v" + $package.Package.Version)
+        $installPackagesLines += "echo """""
+        $installPackagesLines += ("echo ""Package '" + $package.Package.Name + " v" + $package.Package.Version + "'""")
+
+        $removePackageAssignLines = @()
+
+        # get package assign names
+        $packageAssignNames = @()
+        if ($package.Package.Assigns)
+        {
+            $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
+        }
+
+
+        # build global assign names from hstwb installer and package assigns
+        $globalAssignNames = @{}
+        $hstwbInstallerAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+        $packageAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+
+
+        # add package assigns, if assigns exist for package and any are defined
+        if ($packageAssignNames.Count -gt 0)
+        {
+            foreach ($packageAssignName in $packageAssignNames)
+            {
+                # fail, if package assign name doesn't exist in either hstwb installer or package assigns
+                if (!$globalAssignNames.ContainsKey($packageAssignName))
+                {
+                    Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either hstwb installer or package assigns!")
+                }
+
+                # skip, if package assign name is not part of package assigns
+                if (!$packageAssigns.ContainsKey($packageAssignName))
+                {
+                    continue
+                }
+
+                # get assign path and drive
+                $assignPath = $packageAssigns.Get_Item($packageAssignName)
+                $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
+
+                # add package assign lines
+                $installPackagesLines += "; Add package assign for '$packageAssignName' to '$assignPath'"
+                $installPackagesLines += "Assign >NIL: EXISTS ""$assignDrive"""
+                $installPackagesLines += "IF WARN"
+                $installPackagesLines += "  echo ""Error: '$assignDrive' doesn't exist and is required by package!"""
+                $installPackagesLines += "  ask ask ""Press ENTER to continue"""
+                $installPackagesLines += "ELSE"
+                $installPackagesLines += ("  makepath """ + $assignPath + """")
+                $installPackagesLines += ("  Assign " + $packageAssignName + ": """ + $assignPath + """")
+                $installPackagesLines += "ENDIF"
+
+                # remove package assign lines
+                $removePackageAssignLines += ("Assign " + $packageAssignName + ": """ + $assignPath + """ REMOVE")
+            }
+        }
+
+
+        # add assign package dir and execute package install
+        $installPackagesLines += "; Assign package dir and execute install script"
+        $installPackagesLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """")
+        $installPackagesLines += "execute ""PACKAGEDIR:Install"""
+        $installPackagesLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """ REMOVE")
+
+
+        # add remove package assign lines, if there are any
+        if ($removePackageAssignLines.Count -gt 0)
+        {
+            $installPackagesLines += "; Remove package assigns"
+            $installPackagesLines += $removePackageAssignLines
+        }
+
+
+        $installPackagesLines += "echo ""Done."""
+        $installPackagesLines += ""
+    }
+
+    return $installPackagesLines
 }
 
 
@@ -338,11 +450,6 @@ function RunInstall()
     }
 
 
-    # write user assign to install dir
-    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-    WriteAmigaTextLines $userAssignFile @("Assign SYSTEMDIR: DH0:", "Assign WORKDIR: DH1:") 
-
-
     # prepare install workbench
     if ($settings.Workbench.InstallWorkbench -eq 'Yes')
     {
@@ -383,6 +490,14 @@ function RunInstall()
     $installPackages = FindPackagesToInstall
 
 
+    # build user assigns script lines
+    $userAssignScriptLines = BuildUserAssignScriptLines
+
+    # write user assign to install dir
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
+    WriteAmigaTextLines $userAssignFile $userAssignScriptLines 
+
+
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
@@ -393,20 +508,18 @@ function RunInstall()
             # extract package file to package directory
             Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
             [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
-
-            # add package installation lines to install packages script
-            $installPackagesLines += "echo """""
-            $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
-            $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package)
-            $installPackagesLines += "execute PACKAGEDIR:Install"
-            $installPackagesLines += ("Assign PACKAGEDIR: PACKAGES:" + $installPackage.Package + " REMOVE")
-            $installPackagesLines += "echo ""Done."""
         }
 
+        # build install package script lines
+        $installPackagesScriptLines = @()
+        $installPackagesScriptLines += "echo """""
+        $installPackagesScriptLines += "echo ""Package Installation"""
+        $installPackagesScriptLines += "echo ""--------------------"""
+        $installPackagesScriptLines += BuildInstallPackagesScriptLines ($installPackages | ForEach-Object { $_.Package })
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
-        WriteAmigaTextLines $installPackagesFile $installPackagesLines 
+        WriteAmigaTextLines $installPackagesFile $installPackagesScriptLines 
     }
 
 
@@ -489,18 +602,18 @@ function RunSelfInstall()
     Copy-Item -Path "$winuaeSharedDir\*" "$tempInstallDir\System" -recurse -force
 
 
-    # write user assign
-    $userAssignLines = @()
-    $userAssignLines += "Assign SYSTEMDIR: DH0:"
-    $userAssignLines += "IF NOT EXISTS ""DH1:HstWBInstaller"""
-    $userAssignLines += "  makedir >NIL: ""DH1:HstWBInstaller"""
-    $userAssignLines += "ENDIF"
-    $userAssignLines += "Assign HSTWBINSTALLERDIR: DH1:HstWBInstaller"
-    $userAssignLines += "Assign WORKDIR: DH1:"
+    # build user assigns script lines
+    $userAssignScriptLines = @()
+    $userAssignScriptLines += BuildUserAssignScriptLines
+
+    # write user assign script for building self install
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-    WriteAmigaTextLines $userAssignFile $userAssignLines
+    WriteAmigaTextLines $userAssignFile $userAssignScriptLines
+
+    # write user assign script for self install
+    $userAssignScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\User-Assign")
-    WriteAmigaTextLines $userAssignFile $userAssignLines
+    WriteAmigaTextLines $userAssignFile $userAssignScriptLines
 
 
     # find packages to install
@@ -510,35 +623,33 @@ function RunSelfInstall()
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
-        $installPackagesLines = @()
-        $installPackagesLines += "echo ""*ec"""
-        $installPackagesLines += "echo ""Package Installation"""
-        $installPackagesLines += "echo ""--------------------"""
-
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
             Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
             [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
-
-            # add package installation lines to install packages script
-            $installPackagesLines += "echo """""
-            $installPackagesLines += ("echo ""Package '" + $installPackage.Package + "'""")
-            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLERDIR:Packages/" + $installPackage.Package + """")
-            $installPackagesLines += "execute PACKAGEDIR:Install"
-            $installPackagesLines += ("Assign PACKAGEDIR: ""HSTWBINSTALLERDIR:Packages/" + $installPackage.Package + """ REMOVE")
-            $installPackagesLines += "echo ""Done."""
         }
-
-        $installPackagesLines += "echo """""
-        $installPackagesLines += "echo ""Package installation is complete."""
-        $installPackagesLines += "echo """""
-        $installPackagesLines += "ask ""Press ENTER to continue"""
-
-        # write install packages script
-        $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
-        WriteAmigaTextLines $installPackagesFile $installPackagesLines 
     }
+
+
+    # install packages title message
+    $installPackagesScriptLines = @()
+    $installPackagesScriptLines += "echo ""*ec"""
+    $installPackagesScriptLines += "echo ""Package Installation"""
+    $installPackagesScriptLines += "echo ""--------------------"""
+
+    # build install package script lines
+    $installPackagesScriptLines += BuildInstallPackagesScriptLines ($installPackages | ForEach-Object { $_.Package })
+
+    # install packages complete message
+    $installPackagesScriptLines += "echo """""
+    $installPackagesScriptLines += "echo ""Package installation is complete."""
+    $installPackagesScriptLines += "echo """""
+    $installPackagesScriptLines += "ask ""Press ENTER to continue"""
+
+    # write install packages script
+    $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
+    WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
     # read winuae install config file
@@ -629,7 +740,8 @@ if (!(test-path -path $assignsFile))
 }
 
 
-# read settings and assigns files
+# read packages, settings and assigns files
+$packages = ReadPackages $packagesPath
 $settings = ReadIniFile $settingsFile
 $assigns = ReadIniFile $assignsFile
 
@@ -652,14 +764,14 @@ Write-Host ""
 
 
 # validate settings
-if (!(ValidateSettings))
+if (!(ValidateSettings $settings))
 {
     Fail "Validate settings failed"
 }
 
 
 # find workbench adf set hashes 
-$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes
+$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $settings $workbenchAdfHashesFile
 
 # find workbench 3.1 workbench disk
 $workbenchAdfHash = $workbenchAdfSetHashes | Where { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
@@ -676,7 +788,7 @@ Write-Host ("Using Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "
 
 
 # find kickstart rom set hashes
-$kickstartRomSetHashes = FindKickstartRomSetHashes
+$kickstartRomSetHashes = FindKickstartRomSetHashes $settings $kickstartRomHashesFile
 
 
 # find kickstart 3.1 a1200 rom

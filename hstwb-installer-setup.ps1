@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-24
+# Date:   2017-01-27
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -590,8 +590,8 @@ function Save()
 # reset
 function Reset()
 {
-    DefaultSettings
-    DefaultAssigns
+    DefaultSettings $settings
+    DefaultAssigns $assigns
     Save
 }
 
@@ -608,7 +608,7 @@ $settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-setting
 $assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
 
-$packages = @{}
+$packages = ReadPackages $packagesPath
 $settings = @{}
 $assigns = @{}
 
@@ -627,7 +627,7 @@ if (test-path -path $settingsFile)
 }
 else
 {
-    DefaultSettings
+    DefaultSettings $settings
 }
 
 
@@ -638,7 +638,7 @@ if (test-path -path $assignsFile)
 }
 else
 {
-    DefaultAssigns
+    DefaultAssigns $assigns
 }
 
 
@@ -658,22 +658,12 @@ if (!($settings.Packages))
 }
 
 
-if (!($assigns.ContainsKey("HstWB Installer")))
-{
-    $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
-}
-
-
-# read packages
-ReadPackages
-
-
 # update packages
-UpdatePackages
+UpdatePackages $packages $settings
 
 
 # update assigns
-UpdateAssigns
+UpdateAssigns $packages $settings $assigns
 
 
 # save settings and assigns

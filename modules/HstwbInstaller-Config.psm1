@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-24
+# Date:   2017-01-27
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -63,7 +63,7 @@ function WriteIniFile($iniFile, $ini)
 
 
 # default settings
-function DefaultSettings()
+function DefaultSettings($settings)
 {
     $settings.Image = @{}
     $settings.Workbench = @{}
@@ -106,7 +106,7 @@ function DefaultSettings()
 
 
 # default assigns
-function DefaultAssigns()
+function DefaultAssigns($assigns)
 {
     $defaultHstwbInstallerAssigns = @{ "SystemDir" = "DH0:"; "HstWBInstallerDir" = "DH1:HstWBInstaller" }
     $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
@@ -114,8 +114,10 @@ function DefaultAssigns()
 
 
 # read packages
-function ReadPackages()
+function ReadPackages($packagesPath)
 {
+    $packages = @{}
+
     # get package files
     $packageFiles = Get-ChildItem -Path $packagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
 
@@ -141,11 +143,13 @@ function ReadPackages()
         # add package ini to packages
         $packages.Set_Item($packageFileName, $packageIni)
     }
+
+    return $packages
 }
 
 
 # update packages
-function UpdatePackages()
+function UpdatePackages($packages, $settings)
 {
     # get install packages defined in settings packages section
     $packageFileNames = @()
@@ -166,7 +170,7 @@ function UpdatePackages()
 
 
 # update assigns
-function UpdateAssigns()
+function UpdateAssigns($packages, $settings, $assigns)
 {  
     # get install packages defined in settings packages section
     $packageFileNames = @()
@@ -229,7 +233,36 @@ function UpdateAssigns()
 
 
 # validate settings
-function ValidateSettings()
+function ValidateAssigns($settings, $assigns)
+{
+    # return false, if assigns doesn't contain hstwb intaller section
+    if (!$assigns.ContainsKey("HstWB Installer"))
+    {
+        Write-Host "Error: Assigns doesn't contain 'HstWB Installer' section!" -ForegroundColor "Red"
+        return $false
+    }
+
+    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+
+    $hstwbInstallerAssignNames = @()
+    $hstwbInstallerAssignNames += $hstwbInstallerAssigns.keys | ForEach-Object { $_.ToUpper() } 
+
+    foreach ($assignName in @("SYSTEMDIR", "HSTWBINSTALLERDIR"))
+    {
+        # return false, if hstwb installer section doesn't contain assign name
+        if (!($hstwbInstallerAssignNames -contains $assignName))
+        {
+            Write-Host "Error: Assign section 'HstWB Installer' doesn't contain '$assignName'!" -ForegroundColor "Red"
+            return $false
+        }
+    }
+
+    return $true
+}
+
+
+# validate settings
+function ValidateSettings($settings)
 {
     # fail, if HdfImagePath parameter doesn't exist in settings file or file doesn't exist
     if (!$settings.Image.HdfImagePath -or !(test-path -path $settings.Image.HdfImagePath))
@@ -296,7 +329,7 @@ function ValidateSettings()
     
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|Test)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|Test|Self-Install)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
@@ -316,4 +349,5 @@ export-modulemember -function DefaultAssigns
 export-modulemember -function ReadPackages
 export-modulemember -function UpdatePackages
 export-modulemember -function UpdateAssigns
+export-modulemember -function ValidateAssigns
 export-modulemember -function ValidateSettings
