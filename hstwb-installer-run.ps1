@@ -770,6 +770,13 @@ if (!(ValidateSettings $settings))
 }
 
 
+# validate assigns
+if (!(ValidateAssigns $assigns))
+{
+    Fail "Validate assigns failed"
+}
+
+
 # find workbench adf set hashes 
 $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $settings $workbenchAdfHashesFile
 

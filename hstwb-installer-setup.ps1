@@ -670,5 +670,21 @@ UpdateAssigns $packages $settings $assigns
 Save
 
 
+# validate settings
+if (!(ValidateSettings $settings))
+{
+    Write-Error "Validate settings failed"
+    exit 1
+}
+
+
+# validate assigns
+if (!(ValidateAssigns $assigns))
+{
+    Write-Error "Validate assigns failed"
+    exit 1
+}
+
+
 # show main menu
 MainMenu

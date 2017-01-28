@@ -232,8 +232,8 @@ function UpdateAssigns($packages, $settings, $assigns)
 }
 
 
-# validate settings
-function ValidateAssigns($settings, $assigns)
+# validate assigns
+function ValidateAssigns($assigns)
 {
     # return false, if assigns doesn't contain hstwb intaller section
     if (!$assigns.ContainsKey("HstWB Installer"))
@@ -242,18 +242,44 @@ function ValidateAssigns($settings, $assigns)
         return $false
     }
 
+
     $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
 
+    # get assign names from hstwb installer section
     $hstwbInstallerAssignNames = @()
     $hstwbInstallerAssignNames += $hstwbInstallerAssigns.keys | ForEach-Object { $_.ToUpper() } 
 
+
+    # check hstwb installer assign names contain 'SYSTEMDIR', 'HSTWBINSTALLERDIR' assign name
     foreach ($assignName in @("SYSTEMDIR", "HSTWBINSTALLERDIR"))
     {
         # return false, if hstwb installer section doesn't contain assign name
         if (!($hstwbInstallerAssignNames -contains $assignName))
         {
-            Write-Host "Error: Assign section 'HstWB Installer' doesn't contain '$assignName'!" -ForegroundColor "Red"
+            Write-Host "Error: Assign section 'HstWB Installer' doesn't contain assign name '$assignName'!" -ForegroundColor "Red"
             return $false
+        }
+    }
+
+
+    # validate assign sections other than hstwb installer
+    foreach ($assignSectionName in ($assigns.keys | Where-Object { $_ -notmatch 'HstWB Installer' }))
+    {
+        $assignSection = $assigns.Get_Item($assignSectionName)
+
+        # get assign names from assign section
+        $assignSectionAssignNames = @()
+        $assignSectionAssignNames += $assignSection.keys | ForEach-Object { $_.ToUpper() } 
+        
+        # check assign section assign names doesn't contain a reserved assign name
+        foreach ($assignName in @("SYSTEMDIR", "HSTWBINSTALLERDIR", "PACKAGES", "PACKAGESDIR", "INSTALL"))
+        {
+            # return false, if assign section contain reserved assign name
+            if ($assignSectionAssignNames -contains $assignName)
+            {
+                Write-Host "Error: Assign section '$assignSectionName' can not contain reserved assign name '$assignName'!" -ForegroundColor "Red"
+                return $false
+            }
         }
     }
 
