@@ -137,6 +137,28 @@ function ReadPackages($packagesPath)
         # read package ini text
         $packageIni = ReadIniText $packageIniText
 
+        # fail, if package ini doesn't contain package section
+        if (!$packageIni.Package)
+        {
+            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have package section in package.ini!")
+            exit 1
+            
+        }
+
+        # fail, if package ini doesn't have a valid name
+        if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
+        {
+            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have a valid name in package.ini!")
+            exit 1
+        }
+
+        # fail, if package ini doesn't have a valid version
+        if (!$packageIni.Package.Version -or $packageIni.Package.Version -notmatch '^\d+\.\d+\.\d+$' )
+        {
+            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have a valid version in package section!")
+            exit 1
+        }
+
         # get package filename
         $packageFileName = $packageFile.Name.ToLower() -replace '\.zip$'
 
