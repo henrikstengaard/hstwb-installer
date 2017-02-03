@@ -16,8 +16,8 @@ function PrintSettings()
     Write-Host "  Assigns File       : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $assignsFile + "'")
     Write-Host "Image"
-    Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Image.HdfImagePath + "'")
+    Write-Host "  Image Dir          : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Image.ImageDir + "'")
     Write-Host "Workbench"
     Write-Host "  Install Workbench  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Workbench.InstallWorkbench + "'")

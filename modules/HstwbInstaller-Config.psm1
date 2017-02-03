@@ -290,10 +290,10 @@ function ValidateAssigns($assigns)
 # validate settings
 function ValidateSettings($settings)
 {
-    # fail, if HdfImagePath parameter doesn't exist in settings file or file doesn't exist
-    if (!$settings.Image.HdfImagePath -or !(test-path -path $settings.Image.HdfImagePath))
+    # fail, if ImageDir directory doesn't exist
+    if ($settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
-        Write-Host "Error: HdfImagePath parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
+        Write-Host "Error: ImageDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
     }
 

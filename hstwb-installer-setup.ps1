@@ -123,10 +123,10 @@ function SelectImageMenu()
 {
     do
     {
-        $choice = Menu "Select Image Menu" @("Existing Image", "New Image", "Back") 
+        $choice = Menu "Select Image Menu" @("Existing Image Directory", "New Image", "Back") 
         switch ($choice)
         {
-            "Existing Image" { ExistingImage }
+            "Existing Image Directory" { ExistingImageDirectory }
             "New Image" { NewImageMenu }
         }
     }
@@ -134,23 +134,23 @@ function SelectImageMenu()
 }
 
 
-# existing image
-function ExistingImage()
+# existing image directory
+function ExistingImageDirectory()
 {
-    if ($settings.Image.HdfImagePath)
+    if ($settings.Image.ImageDir)
     {
-        $defaultHdfImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.HdfImagePath)
+        $defaultImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.ImageDir)
     }
     else
     {
-        $defaultHdfImageDir = ${Env:USERPROFILE}
+        $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    $newPath = OpenFileDialog "Select HDF image file" $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
-    
+    $newPath = FolderBrowserDialog "Select existing image directory" $path
+
     if ($newPath -and $newPath -ne '')
     {
-        $settings.Image.HdfImagePath = $newPath
+        $settings.Image.ImageDir = $newPath
         Save
     }
 }

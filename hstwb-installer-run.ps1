@@ -523,15 +523,67 @@ function RunInstall()
     }
 
 
+
+
+    # read image.uae from image dir (settings)
+    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($settings.Image.ImageDir, "harddrives.uae")
+
+    # fail, if image dir doesn't contain harddrives.uae file
+    if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
+    {
+        Fail ("Error: Image dir '" + $settings.Image.ImageDir + "' doesn't contain 'harddrives.uae' config file!")
+    }
+
+    $imageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
+
+    # replace imagedir placeholder with imagedir
+    $imageHarddrivesConfigText = $imageHarddrivesConfigText.Replace('[$ImageDir]', $settings.Image.ImageDir)
+    $imageHarddrivesConfigText = $imageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $settings.Image.ImageDir.Replace('\', '\\'))
+    $imageHarddrivesConfigText = $imageHarddrivesConfigText.Trim()
+
+
+    # get uaehf index of last uaehf config from image harddrives config
+    $uaehfIndex = 0
+    $imageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+
+
+    # install harddrives config file
+    $installHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "install-harddrives.uae")
+
+
+    # fail, if install harddrives config file doesn't exist
+    if (!(Test-Path -Path $installHarddrivesConfigFile))
+    {
+        Fail ("Error: Install harddrives config file '" + $installHarddrivesConfigFile + "' doesn't exist!")
+    }
+
+
+    # read install harddrives config file
+    $installHarddrivesConfigText = [System.IO.File]::ReadAllText($installHarddrivesConfigFile)
+
+
+    # replace winuae install harddrives placeholders
+    $installHarddrivesConfigText = $installHarddrivesConfigText.Replace('[$InstallDir]', $tempInstallDir)
+    $installHarddrivesConfigText = $installHarddrivesConfigText.Replace('[$InstallUaehfIndex]', [int]$uaehfIndex + 1)
+    $installHarddrivesConfigText = $installHarddrivesConfigText.Replace('[$PackagesDir]', $tempPackagesDir)
+    $installHarddrivesConfigText = $installHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
+    $installHarddrivesConfigText = $installHarddrivesConfigText.Trim()
+
+    # append install harddrives config to image harddrives config
+    $imageHarddrivesConfigText += "`r`n" + $installHarddrivesConfigText
+
     # read winuae install config file
     $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
     $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
 
+
     # replace winuae install config placeholders
-    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
-    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
+    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$HARDDRIVES]', $imageHarddrivesConfigText)
+
 
     # write winuae install config file to temp install dir
+    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
     [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
 
 

@@ -155,12 +155,7 @@ toccata=false
 es1370_pci=false
 fm801_pci=false
 kbd_lang=us
-hardfile2=rw,DH0:[$IMAGEFILE],0,0,0,512,-128,,uae
-uaehf0=hdf,rw,DH0:"[$IMAGEFILE]",0,0,0,512,-128,,uae
-filesystem2=rw,INSTALL:Install:[$INSTALLDIR],6
-uaehf1=dir,rw,INSTALL:Install:[$INSTALLDIR],6
-filesystem2=rw,PACKAGES:Packages:[$PACKAGESDIR],-128
-uaehf2=dir,rw,PACKAGES:Packages:[$PACKAGESDIR],-128
+[$HARDDRIVES]
 input.config=0
 input.joymouse_speed_analog=20
 input.joymouse_speed_digital=10
