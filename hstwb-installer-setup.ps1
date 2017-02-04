@@ -62,12 +62,12 @@ function SaveFileDialog($title, $directory, $filter)
 
 
 # show folder browser dialog using WinForms
-function FolderBrowserDialog($title, $directory)
+function FolderBrowserDialog($title, $directory, $showNewFolderButton)
 {
     $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
     $folderBrowserDialog.Description = $title
     $folderBrowserDialog.SelectedPath = $directory
-    $folderBrowserDialog.ShowNewFolderButton = $false
+    $folderBrowserDialog.ShowNewFolderButton = $showNewFolderButton
     $result = $folderBrowserDialog.ShowDialog()
 
     if($result -ne "OK")
@@ -123,11 +123,11 @@ function SelectImageMenu()
 {
     do
     {
-        $choice = Menu "Select Image Menu" @("Existing Image Directory", "New Image", "Back") 
+        $choice = Menu "Select Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
         switch ($choice)
         {
             "Existing Image Directory" { ExistingImageDirectory }
-            "New Image" { NewImageMenu }
+            "Create Image Directory From Image Template" { CreateImageDirectoryFromImageTemplateMenu }
         }
     }
     until ($choice -eq 'Back')
@@ -137,16 +137,16 @@ function SelectImageMenu()
 # existing image directory
 function ExistingImageDirectory()
 {
-    if ($settings.Image.ImageDir)
+    if ($settings.Image.ImageDir -and (Test-Path -path $settings.Image.ImageDir))
     {
-        $defaultImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.ImageDir)
+        $defaultImageDir = $settings.Image.ImageDir
     }
     else
     {
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    $newPath = FolderBrowserDialog "Select existing image directory" $path
+    $newPath = FolderBrowserDialog "Select existing image directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
@@ -156,38 +156,37 @@ function ExistingImageDirectory()
 }
 
 
-# new image menu
-function NewImageMenu()
+# create image directory menu
+function CreateImageDirectoryFromImageTemplateMenu()
 {
-    $newImageOptions = @()
-    $newImageOptions += Get-ChildItem -Path $imagesPath -Filter *.zip | % { $_.Name -replace '\.zip$','' }
-    $newImageOptions += "Back"
+    $imageTemplateOptions = @()
+    $imageTemplateOptions += Get-ChildItem -Path $imagesPath -Filter *.zip | ForEach-Object { $_.Name -replace '\.zip$','' }
+    $imageTemplateOptions += "Back"
 
 
-    # select image
-    $choice = Menu "Select New Image Menu" $newImageOptions
+    # create image directory from image template
+    $choice = Menu "Create Image Directory From Image Template Menu" $imageTemplateOptions
 
     if ($choice -eq 'Back')
     {
         return
     }
 
-    $imagePath = [System.IO.Path]::Combine($imagesPath, $choice + ".zip")
+    $imageFile = [System.IO.Path]::Combine($imagesPath, $choice + ".zip")
 
-    if ($settings.Image.HdfImagePath)
+    if ($settings.Image.ImageDir)
     {
-        $defaultHdfImageDir = [System.IO.Path]::GetDirectoryName($settings.Image.HdfImagePath)
+        $defaultImageDir = $settings.Image.ImageDir
     }
     else
     {
-        $defaultHdfImageDir = ${Env:USERPROFILE}
+        $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    # enter new hdf image path
-    $newImagePath = SaveFileDialog ("Save new " + $choice + " HDF image") $defaultHdfImageDir "HDF Files|*.hdf|All Files|*.*"
+    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory" $defaultImageDir $true
 
-    # return, if new image path is null
-    if ($newImagePath -eq $null)
+    # return, if new image directory path is null
+    if ($newImageDirectoryPath -eq $null)
     {
         return
     }
@@ -196,38 +195,122 @@ function NewImageMenu()
     # return, if no write permission
     try 
     {
-        [System.IO.File]::OpenWrite($newImagePath).close()
+        $tempFile = [System.IO.Path]::Combine($newImageDirectoryPath, "__test__")
+        [System.IO.File]::OpenWrite($tempFile).Close()
+        Remove-Item -Path $tempFile -Force
     }
     catch
     {
-        Write-Error ("Failed to write '" + $newImagePath + "'. No write permission!")
+        Write-Error ("Failed writing to new image directory '" + $newImageDirectoryPath + "'. No write permission!")
         Start-Sleep -s 2
         return
     }
 
 
-    # open image file and get first hdf file
-    $zip = [System.IO.Compression.ZipFile]::Open($imagePath,"Read")
-    $hdfZipEntry = $zip.Entries | Where { $_.FullName -match '\.hdf$' }
 
+    # read harddrives uae text file from image file
+    $harddrivesUaeText = ReadZipEntryTextFile $imageFile 'harddrives\.uae$'
 
-    # return, if image file doesn't contain a HDF file 
-    if (!$hdfZipEntry)
+    # return, if harddrives uae text doesn't exist
+    if (!$harddrivesUaeText)
     {
-        Write-Error ("Image '" + $imagePath + "' doesn't contain a HDF file!")
+        Write-Error ("Image file '$imageFile' doesn't contain harddrives.uae file!")
         Start-Sleep -s 2
         return
     }
 
 
-    # extract image to new hdf image path
-    Write-Host ("Extracting image '" + $imagePath + "' to new HDF image path '" + $newImagePath + "'...")
-    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $newImagePath, $true);
+    # get harddrives from harddrives uae text
+    $harddrives = @()
+    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
+
+
+    # TODO: Error checking of harddrives parsed!
+
+
+
+    $harddrivesUaeFile = [System.IO.Path]::Combine($newImageDirectoryPath, "harddrives.uae")
+
+
+    # confirm overwrite, if harddrives.uae already exists in new image directory path
+    if (Test-Path -Path $harddrivesUaeFile)
+    {
+        Write-Host ""
+        Write-Host "Image directory already contains harddrives.uae and image files. Do you want to overwrite files? [Y/N]" -ForegroundColor Yellow
+        if (Read-Host -notmatch 'y')
+        {
+            return
+        }
+    }
+
+
+    # write harddrives.uae to new image directory path
+    [System.IO.File]::WriteAllText($harddrivesUaeFile, $harddrivesUaeText)
+
+
+    Write-Host ""
+
+
+    # prepare harddrives
+    foreach($harddrive in $harddrives)
+    {
+        # get harddrive path
+        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
+        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
+        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
+        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
+
+
+        # extract hdf or create dir harddrive
+        switch ($harddrive.Type)
+        {
+            "hdf"
+            {
+                # get hdf filename
+                $hdfFileName = [System.IO.Path]::GetFileName($harddrivePath)
+
+                # open image file and get hdf zip entry matching hdf filename
+                $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
+                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
+
+                # return, if image file doesn't contain hdf filename
+                if (!$hdfZipEntry)
+                {
+                    $zip.Dispose()
+                    Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
+                    Start-Sleep -s 2
+                    return
+                }
+
+                # extract hdf zip entry to harddrive path
+                Write-Host "Extracting hdf file '$hdfFileName' to '$harddrivePath'..." 
+                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true);
+                Write-Host "Done."
+                $zip.Dispose()
+            }
+            "dir"
+            {
+                Write-Host "Creating hdf directory '$harddrivePath'..." 
+
+                # create harddrive path, if it doesn't exist
+                if(!(test-path -path $harddrivePath))
+                {
+                    mkdir $harddrivePath | Out-Null
+                }
+
+                Write-Host "Done."
+            }
+        }
+    }
 
 
     # save settings
-    $settings.Image.HdfImagePath = $newImagePath
+    $settings.Image.ImageDir = $newImageDirectoryPath
     Save
+
+
+    # 
+    Start-Sleep -s 5
 }
 
 
@@ -277,7 +360,7 @@ function ChangeWorkbenchAdfPath()
     }
 
     $path = if (!$settings.Workbench.WorkbenchAdfPath) { $defaultWorkbenchAdfPath } else { $settings.Workbench.WorkbenchAdfPath }
-    $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path
+    $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
@@ -385,7 +468,7 @@ function ChangeKickstartRomPath()
     }
 
     $path = if (!$settings.Kickstart.KickstartRomPath) { $defaultKickstartRomPath } else { $settings.Kickstart.KickstartRomPath }
-    $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path
+    $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
