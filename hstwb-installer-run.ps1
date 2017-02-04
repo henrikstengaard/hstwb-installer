@@ -728,18 +728,24 @@ function RunSelfInstall()
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
-    # read winuae install config file
-    $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
-    $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
+    # build winuae install harddrives config
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
 
 
-    # replace winuae install config placeholders
-    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
-    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
+    # read winuae hstwb installer config file
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
 
-    # write winuae install config file to temp install dir
-    [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+    # replace winuae hstwb installer config placeholders
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+
+
+    # write winuae hstwb installer config file to temp install dir
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
     # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
@@ -757,7 +763,7 @@ function RunSelfInstall()
 
 
     # winuae args
-    $winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
+    $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
