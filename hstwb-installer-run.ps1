@@ -643,12 +643,12 @@ function RunInstall()
 }
 
 
-# run self install
-function RunSelfInstall()
+# run build self install
+function RunBuildSelfInstall()
 {
     # print preparing self install message
     Write-Host ""
-    Write-Host "Preparing self install..."
+    Write-Host "Preparing build self install..."
 
 
     # create temp install path
@@ -759,7 +759,7 @@ function RunSelfInstall()
 
     # print launching winuae message
     Write-Host ""
-    Write-Host "Launching WinUAE to install image..."
+    Write-Host "Launching WinUAE to build self install image..."
 
 
     # winuae args
@@ -917,7 +917,7 @@ switch ($settings.Installer.Mode)
 {
     "Test" { RunTest }
     "Install" { RunInstall }
-    "Self-Install" { RunSelfInstall }
+    "BuildSelfInstall" { RunBuildSelfInstall }
 }
 
 

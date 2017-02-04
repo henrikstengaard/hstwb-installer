@@ -67,7 +67,12 @@ function PrintSettings()
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
     Write-Host "Installer"
     Write-Host "  Mode               : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Installer.Mode + "'")
+    switch ($settings.Installer.Mode)
+    {
+        "Test" { Write-Host "'Test'" }
+        "Install" { Write-Host "'Install'" }
+        "BuildSelfInstall" { Write-Host "'Build Self Install'" }
+    }
 }
 
 

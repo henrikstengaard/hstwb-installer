@@ -563,9 +563,15 @@ function ConfigureInstaller()
 # change installer mode
 function ChangeInstallerMode()
 {
-    $choice = Menu "Change Installer Mode" @("Install", "Self-Install", "Test") 
+    $choice = Menu "Change Installer Mode" @("Install", "Build Self Install", "Test") 
 
-    $settings.Installer.Mode = $choice
+    switch ($choice)
+    {
+        "Test" { $settings.Installer.Mode = "Test" }
+        "Install" { $settings.Installer.Mode = "Install" }
+        "Build Self Install" { $settings.Installer.Mode = "BuildSelfInstall" }
+    }
+
     Save
 }
 
