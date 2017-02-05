@@ -160,7 +160,7 @@ function ExistingImageDirectory()
 function CreateImageDirectoryFromImageTemplateMenu()
 {
     $imageTemplateOptions = @()
-    $imageTemplateOptions += Get-ChildItem -Path $imagesPath -Filter *.zip | ForEach-Object { $_.Name -replace '\.zip$','' }
+    $imageTemplateOptions += $images.keys | Sort-Object
     $imageTemplateOptions += "Back"
 
 
@@ -172,8 +172,10 @@ function CreateImageDirectoryFromImageTemplateMenu()
         return
     }
 
-    $imageFile = [System.IO.Path]::Combine($imagesPath, $choice + ".zip")
+    # get image file
+    $imageFile = [System.IO.Path]::Combine($imagesPath, $images.Get_Item($choice))
 
+    # default image dir
     if ($settings.Image.ImageDir)
     {
         $defaultImageDir = $settings.Image.ImageDir
@@ -183,7 +185,9 @@ function CreateImageDirectoryFromImageTemplateMenu()
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory" $defaultImageDir $true
+
+    # select new image directory
+    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
 
     # return, if new image directory path is null
     if ($newImageDirectoryPath -eq $null)
@@ -202,10 +206,11 @@ function CreateImageDirectoryFromImageTemplateMenu()
     catch
     {
         Write-Error ("Failed writing to new image directory '" + $newImageDirectoryPath + "'. No write permission!")
-        Start-Sleep -s 2
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
         return
     }
-
 
 
     # read harddrives uae text file from image file
@@ -215,7 +220,9 @@ function CreateImageDirectoryFromImageTemplateMenu()
     if (!$harddrivesUaeText)
     {
         Write-Error ("Image file '$imageFile' doesn't contain harddrives.uae file!")
-        Start-Sleep -s 2
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
         return
     }
 
@@ -224,13 +231,29 @@ function CreateImageDirectoryFromImageTemplateMenu()
     $harddrives = @()
     $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
 
+    # return, if harddrives uae file doesn't contain uaehf lines
+    if ($harddrives.Count -eq 0)
+    {
+        Write-Error ("Image file '$imageFile' harddrives.uae doesn't contain uaehf lines!")
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
 
-    # TODO: Error checking of harddrives parsed!
+    # return, if harddrives uae file contains invalid uaehf lines
+    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
+    {
+        Write-Error ("Image file '$imageFile' harddrives.uae has invalid 'uaehf' lines!")
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
 
 
-
+    # harddrives uae file
     $harddrivesUaeFile = [System.IO.Path]::Combine($newImageDirectoryPath, "harddrives.uae")
-
 
     # confirm overwrite, if harddrives.uae already exists in new image directory path
     if (Test-Path -Path $harddrivesUaeFile)
@@ -309,8 +332,10 @@ function CreateImageDirectoryFromImageTemplateMenu()
     Save
 
 
-    # 
-    Start-Sleep -s 5
+    # wait 5 seconds
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
 
 
@@ -697,6 +722,7 @@ $settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-setting
 $assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
 
 
+$images = ReadImages $imagesPath
 $packages = ReadPackages $packagesPath
 $settings = @{}
 $assigns = @{}
@@ -745,6 +771,14 @@ if (!($settings.Packages))
     $settings.Packages = @{}
     $settings.Packages.InstallPackages = ''
 }
+
+
+# set default image dir, if image dir doesn't exist
+if ($settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
+{
+    $settings.Image.ImageDir = ''
+}
+
 
 
 # update packages

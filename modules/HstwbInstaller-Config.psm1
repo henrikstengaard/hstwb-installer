@@ -113,6 +113,38 @@ function DefaultAssigns($assigns)
 }
 
 
+# read images
+function ReadImages($imagesPath)
+{
+    $images = @{}
+    
+    # get image files
+    $imageFiles = Get-ChildItem -Path $imagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
+
+    # read image ini from image files
+    foreach ($imageFile in $imageFiles)
+    {
+        # read image ini text file from image file
+        $imageIniText = ReadZipEntryTextFile $imageFile.FullName 'image\.ini$'
+
+        # skip, if image ini text doesn't exist
+        if (!$imageIniText)
+        {
+            Write-Error ("Image file '" + $imageFile.FullName + "' doesn't contain image.ini file!")
+            exit 1
+        }
+
+        # read image ini text
+        $imageIni = ReadIniText $imageIniText
+
+        # add image name and image file to images
+        $images.Set_Item($imageIni.Image.Name, $imageFile.FullName)
+    }
+
+    return $images
+}
+
+
 # read packages
 function ReadPackages($packagesPath)
 {
@@ -372,6 +404,7 @@ export-modulemember -function ReadIniText
 export-modulemember -function WriteIniFile
 export-modulemember -function DefaultSettings
 export-modulemember -function DefaultAssigns
+export-modulemember -function ReadImages
 export-modulemember -function ReadPackages
 export-modulemember -function UpdatePackages
 export-modulemember -function UpdateAssigns
