@@ -25,13 +25,57 @@ Something similar could be used for Mac/Linux, but I'm not aware of whats possib
 
 Using Mac/Linux would also require use of FS-UAE emulator.
 
-## Images
+## Image templates
 
-Following Amiga HDF images are included:
+HstWB Installer has following image templates included:
 
-* 8GB: An 8GB image with 2 partitions: DH0 500MB bootable as System:, DH1 7000MB as Work:. Both partitions are formatted with PFS3 AIO by Toni Wilen.
+1. 4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
+2. 4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)
+3. 8GB: HDF RDB, DH0 (100MB/PFS3), DH1 (7200MB/PFS3)
+4. 8GB: HDF RDB, DH0 (300MB/PFS3), DH1 (7000MB/PFS3)
+5. 16GB: HDF RDB, DH0 (300MB/PFS3), DH1 (13100MB/PFS3)
+6. RaspBerry Pie: DH0 (100MB/FFS/HDF), DH1 (DIR)
+7. RaspBerry Pie: DH0 (300MB/FFS/HDF), DH1 (DIR)
 
-More images can manually be added to images directory compressed with zip. 
+4GB, 8GB and 16GB images are RDB HDF's using PFS3 AIO filesystem by Toni Wilen and are formatted with pfsformat filename size of 107 characters. Partitions are created with HDToolbox and configured with MaxTransfer value 0x1fe00. HDF files for these images are created so they are ~100MB smaller than various CF/SD cards, so they can be written to CF/SD card using eg. Win32DiskImager for use in real Amiga's.
+
+RaspBerry Pie images doesn't use RDB as UAE4Arm doesn't support it and uses a directory mounted as DH1, so it can contain more than 1-2GB of games and demos. The limit is then bound to the size of SD card. Using Samba/Windows share "\\retropie\roms\amiga\hstwb\dh1" gives direct access to DH1 partition making it easy to manage content.
+
+---
+
+An image template for HstWB Installer is a zip file containing set of HDF and configuration files, which are used to build a new image.
+
+Each image template zip file contains the following files:
+
+1. image.ini (Required): Ini file with image name.
+2. harddrives.uae (Required): WinUAE configuration of harddrives for image with [$ImageDir] and [$ImageDirEscaped] placeholders replaced with directory containing image files, when HstWB Installer is launched.
+3. disk.hdf (Optional): One or more HDF files ready for use and configured in harddrives.uae.
+
+Image.ini example:
+###
+    [Image]
+    Name=4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
+
+Harddrives.uae example:
+###
+    hardfile2=rw,DH0:[$ImageDir]\4gb.hdf,0,0,0,512,0,,uae
+    uaehf0=hdf,rw,DH0:"[$ImageDirEscaped]\\4gb.hdf",0,0,0,512,0,,uae
+
+A new image can be created using the setup script by selecting create a new image directory from image template. 
+It will read harddrives.uae file from the image zip file, extract HDF's and create directories defined in "uaehf" lines.
+
+When HstWB Installer is launched, it reads harddrives.uae file from the image directory and merges it into it's WinUAE configuration. 
+Placeholders [$ImageDir] and [$ImageDirEscaped] are replaced with the ImageDir configured in HstWB Installer settings.
+As an example, the placeholders will be replaced by the following, if ImageDir is configured to "C:\Temp\HstWB-4GB":
+###
+    [$ImageDir] -> C:\Temp\HstWB-4GB
+    [$ImageDirEscaped] -> C:\\Temp\\HstWB-4GB
+
+The escaped is needed for quoted paths like:
+###
+    uaehf0=hdf,rw,DH0:"[$ImageDirEscaped]\\4gb.hdf",0,0,0,512,0,,uae
+
+Own image templates can be created by following the examples above or use files from one of the existing image templates to get started. Configuration of harddrives.uae can directly be copied from a saved WinUAE configuration, just replace directory paths with placeholders as mentioned above. 
 
 ## Packages
 
