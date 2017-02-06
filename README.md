@@ -71,11 +71,11 @@ As an example, the placeholders will be replaced by the following, if ImageDir i
     [$ImageDir] -> C:\Temp\HstWB-4GB
     [$ImageDirEscaped] -> C:\\Temp\\HstWB-4GB
 
-The escaped is needed for quoted paths like:
+The escaped placeholder is needed for quoted paths like:
 ###
     uaehf0=hdf,rw,DH0:"[$ImageDirEscaped]\\4gb.hdf",0,0,0,512,0,,uae
 
-Own image templates can be created by following the examples above or use files from one of the existing image templates to get started. Configuration of harddrives.uae can directly be copied from a saved WinUAE configuration, just replace directory paths with placeholders as mentioned above. 
+Own image templates can be created by following the examples above or use files from one of the existing image templates to get started. Configuration of harddrives.uae can directly be copied from a saved WinUAE configuration, just replace directory paths with [$ImageDir] and [$ImageDirEscaped] placeholders. 
 
 ## Packages
 
