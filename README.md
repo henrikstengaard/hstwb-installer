@@ -33,8 +33,18 @@ to dump roms from real Amiga's.
 The minimum requirements for running and using HstWB Installer are:
 
 * Windows 7, 8, 8.1 or 10.
-* Workbench adf and kickstart roms from either Cloanto Amiga Forever or own dumps.
+* Cloanto Amiga Forever installed or dumps of own Workbench adf files and Kickstart rom files located in a directory.
 * WinUAE installed.
+
+## Installation
+
+Installation is quite easy and can be done one the following ways: 
+
+* Download msi installer from releases https://github.com/henrikstengaard/hstwb-installer/releases.
+* Clone git repository.
+* Click 'Download ZIP' and extract files.
+
+Note: Cloning git repository or 'Download ZIP' doesn't include packages and must be downloaded separately and copied to packages directory.
 
 ## User interface
 
@@ -152,21 +162,6 @@ The installation is done through WinUAE. To enable installing Workbench automati
 
 The preinstalled Amiga HDF image is now ready to use in an emulator.
 
-## Requirements
-
-The minimum requirements for running HstWB Installer are:
-
-* Windows 7, 8, 8.1 or 10.
-* Cloanto Amiga Forever installed or dumps of own Workbench adf files and Kickstart rom files located in a directory.
-* WinUAE.
-
-## Installation
-
-Installation is quite easy and can be done one the following ways: 
-
-* Clone git repository.
-* Click 'Download ZIP' and extract files.
-
 ## Usage
 
 **Menu using setup script**
@@ -204,6 +199,21 @@ The settings file "hstwb-installer-settings.ini" can also be created manually wi
     WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
 
 Double-click 'hstwb-installer-run.cmd' in Windows Explorer or start 'hstwb-installer-run.ps1' from powershell to run installer script.
+
+## Settings
+
+settings stored in appdata.
+
+example or settings.ini.
+example assigns.ini.
+
+## Setup script
+
+describe menu
+
+## Run script
+
+describe how to use
 
 ## Screenshots
 
