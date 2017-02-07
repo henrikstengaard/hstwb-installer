@@ -2,32 +2,51 @@
 
 ## Description
 
-HstWB Installer is a set of scripts to make it easy to build an Amiga HDF image with preinstalled Workbench, WHDLoad games and/or demos incl. Arcade Game Selector 2 or iGame menu to launch games and/or demos. 
+HstWB Installer is a set of powershell scripts, image templates, configuration files, 
+AmigaDOS scripts and binaries used to easily build Amiga HDF or directory images with 
+automated installation of Workbench, Kickstarts roms and packages with additional content.
 
-Since Amiga Workbench and Kickstart roms are licensed property these files can't be included as they need to be acquired legally by buying Cloanto Amiga Forever or using grabkick from aminet to dump roms from real Amiga's.
+Setting up a blank Amiga HDF image with e.g. PFS3, Workbench, Kickstarts roms, WHDLoad games and demos 
+installed properly can be a cumbersome task unless you spend a lot of time figuring out how this is done step by step.
 
-Setting up a blank Amiga HDF image with e.g. PFS3, Workbench, Kickstarts roms and WHDLoad games/demos installed properly can be a cumbersome task unless you spend a lot of time figuring out how this is done step by step.
+This is where HstWB Installer come to aid and can help to automate such installations and should 
+be possible for almost anyone to do with very little knowledge about Amiga.
 
-This is where HstWB Installer come to aid and can help to automate such installations and should be possible for almost anyone to do with very little knowledge about Amiga. 
+The packages included are BetterWB, HstWB, EAB WHDLoad games and demos menus for both AGA and OCS.
+Menu packages has screenshots and details for EAB games and demos WHDLoad packs configured for
+Arcade Game Selector 2 and iGame.
+One or more of these packages can be added to an installation depending on the image a user wants to build.
+
+In general HstWB Installer is build as a minimalistic as possible using BetterWB and HstWB to
+support A500 as a minimum. HstWB is mainly targeted A500, A600, A1200.
+The minimalistic approach allows users to customize it further with their own preferences like 
+installing eg. MagicWB or Scalos.
+ 
+Since Amiga Workbench and Kickstart roms are licensed property these files can't be included 
+as they need to be acquired legally by buying Cloanto Amiga Forever or using grabkick from aminet 
+to dump roms from real Amiga's.
 
 *HstWB is short for my name and Workbench (very original, I know).* 
 
+## Requirements
+
+The minimum requirements for running and using HstWB Installer are:
+
+* Windows 7, 8, 8.1 or 10.
+* Workbench adf and kickstart roms from either Cloanto Amiga Forever or own dumps.
+* WinUAE installed.
+
 ## User interface
 
-Currently the plan is to make the following user interfaces for HstWB-Installer:
+The user interface for HstWB Installer is a console presented via powershell script.
+It can be started from:
 
-* Powershell: Windows powershell script launched from console or Windows Explorer via cmd script.
-* Bash: Mac/Linux script launched from terminal.
-
-Powershell script can be extended to use WinForms to present a Windows application, which makes it much more user friendly, but this has low priority. First priority is to make a powershell script, that can perform an automated installation of packages to an Amiga HDF image. 
-
-Something similar could be used for Mac/Linux, but I'm not aware of whats possible there. 
-
-Using Mac/Linux would also require use of FS-UAE emulator.
+1. Start menu.
+2. Console either using powershell or run cmd files.
 
 ## Image templates
 
-HstWB Installer has following image templates included:
+HstWB Installer has following image templates included to build new images:
 
 1. 4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
 2. 4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)
