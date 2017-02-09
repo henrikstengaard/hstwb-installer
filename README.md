@@ -9,13 +9,13 @@ automated installation of Workbench, Kickstarts roms and packages with additiona
 Setting up a blank Amiga HDF image with e.g. PFS3, Workbench, Kickstarts roms, WHDLoad games and demos 
 installed properly can be a cumbersome task unless you spend a lot of time figuring out how this is done step by step.
 
-This is where HstWB Installer come to aid and can help to automate such installations and should 
+This is where HstWB Installer come to aid and can help to automate such installations using WinUAE and should 
 be possible for almost anyone to do with very little knowledge about Amiga.
 
 The packages included are BetterWB, HstWB, EAB WHDLoad games and demos menus for both AGA and OCS.
 Menu packages has screenshots and details for EAB games and demos WHDLoad packs configured for
 Arcade Game Selector 2 and iGame.
-One or more of these packages can be added to an installation depending on the image a user wants to build.
+These packages can be added to an image configuration and will be installed during HstWB Installer installation process.
 
 In general HstWB Installer is build as a minimalistic as possible using BetterWB and HstWB to
 support A500 as a minimum. HstWB is mainly targeted A500, A600, A1200.
@@ -51,12 +51,17 @@ Note: Cloning git repository or 'Download ZIP' doesn't include packages and must
 The user interface for HstWB Installer is a console presented via powershell script.
 It can be started from:
 
-1. Start menu.
-2. Console either using powershell or run cmd files.
+- Start menu.
+- Console either using powershell or run cmd files.
+
+## Settings
+
+settgins
+assigns
 
 ## Image templates
 
-HstWB Installer has following image templates included to build new images:
+Following image templates included to build new images:
 
 1. 4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
 2. 4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)
@@ -73,6 +78,7 @@ RaspBerry Pie images doesn't use RDB as UAE4Arm doesn't support it and uses a di
 ---
 
 An image template for HstWB Installer is a zip file containing set of HDF and configuration files, which are used to build a new image.
+Image templates are located in "images" directory.
 
 Each image template zip file contains the following files:
 
@@ -108,59 +114,153 @@ Own image templates can be created by following the examples above or use files 
 
 ## Packages
 
-Following packages are included and they can be selected during configuration, which will be installed automatically:
+Following packages are included with HstWB Installer msi installation:
+
+* BetterWB: An enhancement built for Workbench 3.1 built by Gulliver for low end Amigas restricted to 68000 processors.
+* HstWB: An extension of BetterWB with some icons from ClassicWB and buildin support for ACA, Furia and Blizzard accelerator cards with boot selectors and easy configuration.
+* EAB WHDLoad Demos AGA Menu: AGS2 and iGame menus generated with screenshot and details for all AGA/OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* EAB WHDLoad Demos OCS Menu: AGS2 and iGame menus generated with screenshot and details for all OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* EAB WHDLoad Games AGA Menu: AGS2 and iGame menus generated with screenshot and details for all AGA/OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* EAB WHDLoad Games OCS Menu: AGS2 and iGame menus generated with screenshot and details for all OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+
+---
+
+An package for HstWB Installer is a zip file containing configuration files, AmigaDOS scripts and resources, which are used to install a package.
+Packages are located in "packages" directory.
+
+Each package zip file contains the following files:
+
+- package.ini (Required): Ini file with package details and default assigns.
+- install (Required): AmigaDOS script to perform installation of the package.
+- other files (Optional): Resource files, which are installed or used during installation.
+
+Before a package installation begins, a set of assigns are added:
+
+- PACKAGEDIR: Path to directory containing the package.
+- Assigns for package configured in assigns.ini.
+
+Package.ini example:
+###
+    [Package]
+    Name=EAB WHDLoad Games AGA Menu
+    Version=2.6.2
+    Dependencies=HstWB
+    Assigns=WHDLOADDIR
+    [DefaultAssigns]
+    WHDLOADDIR=DH1:
+
+Name and version are required parameters.
+
+Dependencies parameter has a comma separated value defining dependencies to other packages. 
+If a package doesn't have any dependencies, the dependencies parameter value can be empty or removed.
+
+Assigns parameter has a comma separated value defining required assigns for installing the package. 
+These assigns are set before the package is installed and removed when the package is installed.
+
+The default assigns section defines default assign values for the requires assigns. 
+These are added to assigns.ini when adding a package and they can be changed later by editing assigns.ini file for customizing installation.
+
+## Installer modes
+
+HstWB Installer supports following installer modes:
+
+- Install: Installs Workbench, Kickstart roms and packages in configured image.
+- Build Self Install: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and packages.
+- Test: Test configured image.
+
+## Preparing installer run
+
+Before HstWB Installer runs it prepares the files it needs in a temp directory.
+For any installer mode HstWB Installer uses WinUAE configuration file "hstwb-installer.uae" in "winuae" directory.
+It contains following placeholders used to configure Kickstart rom, DF0: floppy and harddrives:
+
+- [$KICKSTARTROMFILE]: Replaced with path to A1200 Kickstart 3.1 rom file identified in configured kickstart path.
+- [$WORKBENCHADFFILE]: Replaced with path to Workbench 3.1 Workbench disk file identified in configured workbench path. This is only used for "Install" and "Build Self Install" installer modes.
+- [$HARDDRIVES]: Replaced with harddrives.uae from image directory. For "Install" and "Build Self Install" installer modes directories INSTALL: and PACKAGES: are added containing install scripts, tools and package files to install.  
+
+[$KICKSTARTROMFILE] placeholder example before and after being replaced:
+###
+    kickstart_rom_file=[$KICKSTARTROMFILE]
+    ...
+    kickstart_rom_file=c:\Users\Public\Documents\Amiga Files\Shared\rom\amiga-os-310-a1200.rom
+
+[$WORKBENCHADFFILE] placeholder example before and after being replaced:
+###
+    floppy0=[$WORKBENCHADFFILE]
+    ...
+    floppy0=c:\Users\Public\Documents\Amiga Files\Shared\adf\amiga-os-310-workbench.adf
+
+[$HARDDRIVES] placeholder example before and after being replaced:
+###
+    [$HARDDRIVES]
+    ...
+    hardfile2=rw,DH0:C:\Temp\4GB\4gb.hdf,0,0,0,512,-128,,uae
+    uaehf0=hdf,rw,DH0:"C:\\Temp\\4GB\\4gb.hdf",0,0,0,512,-128,,uae
+    filesystem2=rw,INSTALL:Install:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
+    uaehf1=dir,rw,INSTALL:Install:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
+    filesystem2=rw,PACKAGES:Packages:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
+    uaehf2=dir,rw,PACKAGES:Packages:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
+
+The temp directory will contain WinUAE configuration, startup sequence scripts, tools and extracted packages to install depending on the configuration. 
+When HstWB Installer is done the temp directory is deleted.
+
+For "Install" and "Build Self Install" installer modes following additional files are prepared in the temp directory:
+- Identifies and copies Kickstart roms files from Kickstart path to temp install directory.  
+- Identifies and copies Workbench 3.1 adf files from Workbench path to temp install directory.  
+- Extracts packages to temp packages directory.
+
+## Install mode
+
+Running HstWB Installer in install mode does the following in WinUAE:
+
+- Boots from temp install directory added as INSTALL: harddrive.
+- Loads commands resident from DF0: required for installation process.
+- Installs Workbench 3.1 to SYSTEMDIR: from adf files in INSTALL:, if configured to install Workbench.
+- Installs Kickstart roms to SYSTEMDIR:Devs/Kickstarts from rom files in INSTALL:, if configured to install Kickstart.
+- Installs packages from temp packages directory added as PACKAGES: harddrive. For each package, required assigns is set before installing a package and removed when package is installed.
+
+When HstWB Installer is done, the image is ready to run in an emulator or on a real Amiga.
+
+### Build self install mode
+
+Running HstWB Installer in build self install mode does the following:
+
+- Boots from temp install directory added as INSTALL: harddrive.
+- Loads commands resident from DF0: required for installation process.
+- Copy self install scripts and tools to SYSTEMDIR:.
+- Copy system files to HSTWBINSTALLER: from temp install directory added as INSTALL: harddrive.
+- Copy package files to HSTWBINSTALLER:Packages from temp packages directory added as PACKAGES: harddrive.
+
+When HstWB Installer is done, the image is ready for self install in an emulator or on a real Amiga.
+
+As self install process requires Workbench 3.1 disk, it will detect which floppy drive DF0:, DF1:, DF2: or DF3: contains Workbench 3.1 Workbench disk.
+The detect floppy drive will later be used for installing Workbench from floppies, if needed.
+
+Running a self install image in an emulator can automate installation of Workbench 3.1 and Kickstart roms.
+This is done during self install process, which detects if following harddrives are present:
+
+- WORKBENCHDIR: Directory added in emulator with Workbench 3.1 adf files.
+- KICKSTARTDIR: Directory added in emulator with Kickstart rom files.
+
+Workbench 3.1 adf files will be identify and used to install Workbench, if WORKBENCHDIR: is present.
+If WORKBENCHDIR: is not present or if Workbench 3.1 adf installation fails, the self install process will fallback to install Workbench from floppys.
+
+Kickstart roms will be identified and installed to SYSTEMDIR:Devs/Kickstarts, if KICKSTARTDIR: is present.
+
+Then packages are installed, if any are installed in the self install image.
+
+When the self install process is done, the image is ready to run in an emulator or on a real Amiga.
+
+### Test mode
+
+Running HstWB Installer in test mode does the following:
+
+- Boots image for testing configured image directory.
+
+## Configuration
 
 * Workbench: Workbench identified by MD5 hash from defined workbench adf directory. Files from adf's are extracted using unadf and copied to DH0:.
 * Kickstart: Kickstart roms identified by MD5 hash from defined kickstart rom directory. Files are copied to DH0:Devs/Kickstarts, required for WHDLoad.
-* HstWB System: Workbench configuration built by me. This is an extension of BetterWB with few files borrowed from ClassicWB.
-* HstWB AGS2 EAB WHDLoad Games v2.6: Arcade Game Selector 2 menu generated for WHDLoad games. This contains screenshots and details like name, publisher, Genre an year for each game. 
-* HstWB AGS2 EAB WHDLoad Demos v2.6: Arcade Game Selector 2 menu generated for WHDLoad demos. This contains screenshots and details like name, group and party and year for each demo. 
-* HstWB iGame EAB WHDLoad Games v2.6: iGame gameslist and screenshots generated for WHDLoad games. This gameslist has names without stars, spaces and wierd characters to have a clean game list in iGame.
-* HstWB iGame EAB WHDLoad Demos v2.6: iGame gameslist and screenshots generated for WHDLoad demos. This gameslist has names without stars, spaces and wierd characters to have a clean game list in iGame.
-* EAB WHDLoad Games v2.6: WHDLoad games pack from EAB with update 2.6 applied.
-* EAB WHDLoad Demos v2.6: WHDLoad demos pack from EAB with update 2.6 applied.
-
-Versions are used to allow having future and updated versions of packages.
-
-**EAB WHDLoad Games and EAB WHDLoad Demos will be provided by another script, which automatically download packs and updates from EAB ftp server, unzip, combines, packs and copies them to packages directory**
-
-## Package files and their structure
-
-A package is zip file located in the packages directory. Packages are identified by the following naming convention:
-
-[name].[version].zip
-
-Selected packages are extracted when installation is being prepared and processed one by one during installation. Before executing a packages install script, the following assign are defined:
-- PACKAGEDIR: Path to directory containing the package.
-
-As a bare minimum a package must contain the following files:
-
-- install: AmigaOS script to perform installation is the package.
-- package.ini: Ini file describing the content of the package including name, description, version.
-
-Any other files can be part of a package as resources to install.
-
-Here is the contents of HstWB.1.0.0.zip package:
-- install: AmigaOS script extracting hstwb.zip.
-- hstwb.zip: Zip archive with HstWB files to install.
-
-Packages are kept simple, so they are easy to build and maintain.
-
-## HstWB Installation Process
-
-The installation is done through WinUAE. To enable installing Workbench automatically following scripted process is used:
-
-* Use predefined A1200 WinUAE configuration.
-* Identified A1200 kickstart rom is used.
-* Selected Amiga HDF image is mounted as harddisk file non-bootable.
-* Install directory mounted as bootable harddisk. This contains a startup sequence to automate installation of identified workbench adf and kickstart rom files, which are copied to this directory with installation scripts and tools.
-* Identified Workbench 3.1 Workbench disk is used.
-* Workbench 3.1 Workbench disk is patched to make it non-bootable. This is done by patching adf file offset 12 to 0, which make boot sector invalid and WinUAE skip booting the floppy. 
-* Patched Workbench 3.1 Workbench disk is mounted as DF0:.
-* The mounted non-bootable Workbench disk allows basic commands to be loaded resident for the installation process initiated by startup sequence in mounted install directory.
-* WinUAE is launched and startup sequence executes installation scripts and automatically shuts down, when it's done.
-
-The preinstalled Amiga HDF image is now ready to use in an emulator.
 
 ## Usage
 
