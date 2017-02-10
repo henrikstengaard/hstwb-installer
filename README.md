@@ -54,10 +54,96 @@ It can be started from:
 - Start menu.
 - Console either using powershell or run cmd files.
 
-## Settings
+## Settings and data files
 
-settgins
-assigns
+HstWB Installer uses the following settings files by default stored in users appdata directory "c:\Users\[username]\AppData\Local\HstWB Installer\":
+
+- Settings.ini: Configuration of image.
+- Assigns.ini: Configuration of assigns used for install and build self install modes.
+
+Settings.ini example:
+###
+    [Image]
+    ImageDir=C:\Temp\4GB
+    [Installer]
+    Mode=Install
+    [Kickstart]
+    InstallKickstart=Yes
+    KickstartRomPath=C:\Users\Public\Documents\Amiga Files\Shared\rom
+    KickstartRomSet=Kickstart Cloanto Amiga Forever 2016
+    [Packages]
+    InstallPackages=eab.whdload.games.aga.menu.2.6.2
+    [Winuae]
+    WinuaePath=C:\Program Files (x86)\WinUAE\winuae.exe
+    [Workbench]
+    InstallWorkbench=Yes
+    WorkbenchAdfPath=C:\Users\Public\Documents\Amiga Files\Shared\adf
+    WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
+
+Assigns.ini example:
+###
+    [HstWB Installer]
+    HstWBInstallerDir=DH1:HstWBInstaller
+    SystemDir=DH0:
+    [EAB WHDLoad Games AGA Menu]
+    WHDLOADDIR=DH1:
+
+To identify Workbench adf and Kickstart rom files, HstWB Installer uses following csv data files:
+
+- Workbench-adf-hashes.csv: Csv file with MD5 hashes to identify Workbench 3.1 adf files.
+- Kickstart-rom-hashes.csv: Csv file with MD5 hashes to identify Kickstart rom files.
+
+Workbench-adf-hashes.csv example:
+###
+    Name;Set;Md5Hash;DiskName;Filename
+    Workbench 3.1 Extras Disk;Workbench 3.1 Cloanto Amiga Forever 2016;c1c673eba985e9ab0888c5762cfa3d8f;;workbench31extras.adf
+    Workbench 3.1 Fonts Disk;Workbench 3.1 Cloanto Amiga Forever 2016;6fae8b94bde75497021a044bdbf51abc;;workbench31fonts.adf
+    Workbench 3.1 Install Disk;Workbench 3.1 Cloanto Amiga Forever 2016;d6aa4537586bf3f2687f30f8d3099c99;;workbench31install.adf
+    Workbench 3.1 Locale Disk;Workbench 3.1 Cloanto Amiga Forever 2016;b53c9ff336e168643b10c4a9cfff4276;;workbench31locale.adf
+    Workbench 3.1 Storage Disk;Workbench 3.1 Cloanto Amiga Forever 2016;4fa1401aeb814d3ed138f93c54a5caef;;workbench31storage.adf
+    Workbench 3.1 Workbench Disk;Workbench 3.1 Cloanto Amiga Forever 2016;590c42a69675d6970df350e200fe25dc;;workbench31workbench.adf
+    Workbench 3.1 Extras Disk;Workbench 3.1 Custom;;Extras3.1;workbench31extras.adf
+    Workbench 3.1 Fonts Disk;Workbench 3.1 Custom;;Fonts;workbench31fonts.adf
+    Workbench 3.1 Install Disk;Workbench 3.1 Custom;;Install3.1;workbench31install.adf
+    Workbench 3.1 Locale Disk;Workbench 3.1 Custom;;Locale;workbench31locale.adf
+    Workbench 3.1 Storage Disk;Workbench 3.1 Custom;;Storage3.1;workbench31storage.adf
+    Workbench 3.1 Workbench Disk;Workbench 3.1 Custom;;Workbench3.1;workbench31workbench.adf
+
+Name column defines display name.
+
+Set column defines a collection of Workbench files the file is related to. This is used in settings.ini, where WorkbenchAdfSet parameter defines the set of Workbench adf files HstWB Installer will identify and use from directory in WorkbenchAdfPath parameter.
+
+Md5Hash column defines MD5 hash of the Workbench adf file to match. It's recommended to use MD5 hashes as they will give exact matches.
+
+DiskName column defines adf disk name to match. If MD5 hash is not defined, then disk name is used identify the adf file. 
+Using disk name support various version of Workbench 3.1 disks from Commodore and Escom.
+The disk name method can also identify wrong adf files is they have same name, but that will not be an issue if directory defined in WorkbenchAdfPath parameter only contains Workbenck 3.1 adf files.
+
+Filename column defines the filename the Workbench adf file will be renamed to. HstWB Installer will check if these filename exists and use them when running in install mode.
+
+Kickstart-rom-hashes.csv example:
+###
+    Name;Set;Md5Hash;Encrypted;Filename
+    Kickstart 1.2 (33.180) (A500) Rom;Kickstart Cloanto Amiga Forever 2016;c56ca2a3c644d53e780a7e4dbdc6b699;Yes;kick33180.A500
+    Kickstart 1.3 (34.5) (A500) Rom;Kickstart Cloanto Amiga Forever 2016;89160c06ef4f17094382fc09841557a6;Yes;kick34005.A500
+    Kickstart 3.1 (40.063) (A600) Rom;Kickstart Cloanto Amiga Forever 2016;c3e114cd3b513dc0377a4f5d149e2dd9;Yes;kick40063.A600
+    Kickstart 3.1 (40.068) (A1200) Rom;Kickstart Cloanto Amiga Forever 2016;dc3f5e4698936da34186d596c53681ab;Yes;kick40068.A1200
+    Kickstart 3.1 (40.068) (A4000) Rom;Kickstart Cloanto Amiga Forever 2016;8b54c2c5786e9d856ce820476505367d;Yes;kick40068.A4000
+    Kickstart 1.2 (33.180) (A500) Rom;Kickstart Custom;85ad74194e87c08904327de1a9443b7a;No;kick33180.A500
+    Kickstart 1.3 (34.5) (A500) Rom;Kickstart Custom;82a21c1890cae844b3df741f2762d48d;No;kick34005.A500
+    Kickstart 3.1 (40.063) (A600) Rom;Kickstart Custom;e40a5dfb3d017ba8779faba30cbd1c8e;No;kick40063.A600
+    Kickstart 3.1 (40.068) (A1200) Rom;Kickstart Custom;646773759326fbac3b2311fd8c8793ee;No;kick40068.A1200
+    Kickstart 3.1 (40.068) (A4000) Rom;Kickstart Custom;9bdedde6a4f33555b4a270c8ca53297d;No;kick40068.A4000
+
+Name column defines display name.
+
+Set column defines a collection of Kickstart rom files the file is related to. This is used in settings.ini, where KickstartRomSet parameter defines the set of Kickstart rom files HstWB Installer will identify and use from directory in KickstartRomPath parameter.
+
+Md5Hash column defines MD5 hash of the Kickstart rom file to match.
+
+Encrypted column defined if Kickstart rom file is encrypted or not. If encrypted Kickstart rom files are installed, then HstWB Installer will also copy required rom.key file.
+
+Filename column defines the filename the Kickstart rom file will be renamed to. HstWB Installer will check if these filename exists and use them when running in install mode.
 
 ## Image templates
 
@@ -68,8 +154,8 @@ Following image templates included to build new images:
 3. 8GB: HDF RDB, DH0 (100MB/PFS3), DH1 (7200MB/PFS3)
 4. 8GB: HDF RDB, DH0 (300MB/PFS3), DH1 (7000MB/PFS3)
 5. 16GB: HDF RDB, DH0 (300MB/PFS3), DH1 (13100MB/PFS3)
-6. RaspBerry Pie: DH0 (100MB/FFS/HDF), DH1 (DIR)
-7. RaspBerry Pie: DH0 (300MB/FFS/HDF), DH1 (DIR)
+6. UAE4ARM: DH0 (100MB/FFS/HDF), DH1 (DIR)
+7. UAE4ARM: DH0 (300MB/FFS/HDF), DH1 (DIR)
 
 4GB, 8GB and 16GB images are RDB HDF's using PFS3 AIO filesystem by Toni Wilen and are formatted with pfsformat filename size of 107 characters. Partitions are created with HDToolbox and configured with MaxTransfer value 0x1fe00. HDF files for these images are created so they are ~100MB smaller than various CF/SD cards, so they can be written to CF/SD card using eg. Win32DiskImager for use in real Amiga's.
 
@@ -168,7 +254,7 @@ HstWB Installer supports following installer modes:
 - Build Self Install: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and packages.
 - Test: Test configured image.
 
-## Preparing installer run
+### Preparing installer run
 
 Before HstWB Installer runs it prepares the files it needs in a temp directory.
 For any installer mode HstWB Installer uses WinUAE configuration file "hstwb-installer.uae" in "winuae" directory.
@@ -209,7 +295,7 @@ For "Install" and "Build Self Install" installer modes following additional file
 - Identifies and copies Workbench 3.1 adf files from Workbench path to temp install directory.  
 - Extracts packages to temp packages directory.
 
-## Install mode
+### Install mode
 
 Running HstWB Installer in install mode does the following in WinUAE:
 
@@ -299,13 +385,6 @@ The settings file "hstwb-installer-settings.ini" can also be created manually wi
     WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
 
 Double-click 'hstwb-installer-run.cmd' in Windows Explorer or start 'hstwb-installer-run.ps1' from powershell to run installer script.
-
-## Settings
-
-settings stored in appdata.
-
-example or settings.ini.
-example assigns.ini.
 
 ## Setup script
 
