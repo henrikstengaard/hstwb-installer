@@ -159,7 +159,8 @@ Following image templates included to build new images:
 
 4GB, 8GB and 16GB images are RDB HDF's using PFS3 AIO filesystem by Toni Wilen and are formatted with pfsformat filename size of 107 characters. Partitions are created with HDToolbox and configured with MaxTransfer value 0x1fe00. HDF files for these images are created so they are ~100MB smaller than various CF/SD cards, so they can be written to CF/SD card using eg. Win32DiskImager for use in real Amiga's.
 
-RaspBerry Pie images doesn't use RDB as UAE4Arm doesn't support it and uses a directory mounted as DH1, so it can contain more than 1-2GB of games and demos. The limit is then bound to the size of SD card. Using Samba/Windows share "\\retropie\roms\amiga\hstwb\dh1" gives direct access to DH1 partition making it easy to manage content.
+UAE4ARM images doesn't use RDB as UAE4Arm doesn't support it and uses a directory mounted as DH1, so it can contain more than 1-2GB of games and demos. 
+The limit is then bound to the size of SD card. Using Samba/Windows share eg. "\\retropie\roms\amiga\hstwb\dh1" gives direct access to DH1 partition making it easy to manage content.
 
 ---
 
