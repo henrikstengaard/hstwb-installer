@@ -373,10 +373,21 @@ Running HstWB Installer in test mode does the following:
 
 - Boots image for testing configured image directory.
 
-## Configuration
+## Use case 1: Create image using install mode
 
-* Workbench: Workbench identified by MD5 hash from defined workbench adf directory. Files from adf's are extracted using unadf and copied to DH0:.
-* Kickstart: Kickstart roms identified by MD5 hash from defined kickstart rom directory. Files are copied to DH0:Devs/Kickstarts, required for WHDLoad.
+![setup_main.png](screenshots/setup_main.png?raw=true)
+![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
+![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
+![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
+![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
+![setup_run_installer.png](screenshots/setup_run_installer.png?raw=true)
+![run_launching_winuae.png](screenshots/run_launching_winuae.png?raw=true)
+![winuae_install_start.png](screenshots/winuae_install_start.png?raw=true)
+![winuae_install_done.png](screenshots/winuae_install_done.png?raw=true)
+
+## Use case 2: Create image using build self install mode
+
+step by step description with screenshots
 
 ## Usage
 
