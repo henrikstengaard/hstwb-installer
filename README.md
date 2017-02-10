@@ -44,22 +44,29 @@ Installation is quite easy and can be done one the following ways:
 * Clone git repository.
 * Click 'Download ZIP' and extract files.
 
-Note: Cloning git repository or 'Download ZIP' doesn't include packages and must be downloaded separately and copied to packages directory.
+Note: Cloning git repository or 'Download ZIP' doesn't include packages and they must be downloaded separately and copied to packages directory.
 
-## User interface
+## Scripts and user interface
 
-The user interface for HstWB Installer is a console presented via powershell script.
-It can be started from:
+HstWB Installer consists of two main scripts:
 
-- Start menu.
-- Console either using powershell or run cmd files.
+- HstWB Installer Setup: Setup script to configure settings, assigns and create new images.
+- HstWB Installer Run: Run script to execute configuration.
+
+They are written in powershell scripts and user interface is a console and can be started from:
+
+- Start menu: If installed with msi installer.
+- Console: Running cmd or powershell files.
 
 ## Settings and data files
 
-HstWB Installer uses the following settings files by default stored in users appdata directory "c:\Users\[username]\AppData\Local\HstWB Installer\":
+HstWB Installer uses the following settings files by default stored in users AppData directory "c:\Users\[username]\AppData\Local\HstWB Installer\":
 
 - Settings.ini: Configuration of image.
-- Assigns.ini: Configuration of assigns used for install and build self install modes.
+- Assigns.ini: Configuration of assigns used during installation for install and build self install modes.
+
+It's recommended to use the "HstWB Installer Setup" to configure an image installation as it handles configuration of both settings, assigns and create new images.
+For expert users the settings files can be edited manually using Notepad or a similar editor.
 
 Settings.ini example:
 ###
@@ -80,6 +87,19 @@ Settings.ini example:
     WorkbenchAdfPath=C:\Users\Public\Documents\Amiga Files\Shared\adf
     WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
 
+The parameters in settings.ini file configures with following:
+
+- ImageDir: Path to image directory containing harddrives.uae, hdf files and directories for directory harddrives.
+- Mode: [Install|BuildSelfInstall|Test] Configures mode, when running HstWB Installer. 
+- InstallKickstart: [YES|NO] Configures if Kickstart roms should be installed.
+- KickstartRomPath: Path to directory with Kickstart rom files. Autoconfigured, if Cloanto Amiga Forever is installed.
+- KickstartRomSet: Set of Kickstart rom files to identify and use from KickstartRomPath.
+- InstallPackages: Comma separated value defining filename of packages to install without .zip extension.
+- WinuaePath: Path to WinUAE executable. Autoconfigured, if WinUAE is installed.
+- InstallWorkbench: [YES|NO] Configures if Workbench should be installed.
+- WorkbenchAdfPath: Path to directory with Workbench adf files. Autoconfigured, if Cloanto Amiga Forever is installed.
+- WorkbenchAdfSet: Set of Workbench adf files to identify and use from WorkbenchAdfPath.
+
 Assigns.ini example:
 ###
     [HstWB Installer]
@@ -87,6 +107,15 @@ Assigns.ini example:
     SystemDir=DH0:
     [EAB WHDLoad Games AGA Menu]
     WHDLOADDIR=DH1:
+
+The "HstWB Installer" section is required and defines the following:
+
+- SystemDir: Path to Workbench and system files.
+- HstWBInstallerDir: Path to HstWB Installer script, tools and packages for build self install mode.
+
+Additionally there's a section for each added package defining paths for it's required assigns.
+
+---
 
 To identify Workbench adf and Kickstart rom files, HstWB Installer uses following csv data files:
 
