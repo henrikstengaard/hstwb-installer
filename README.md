@@ -373,70 +373,57 @@ Running HstWB Installer in test mode does the following:
 
 - Boots image for testing configured image directory.
 
-## Use case 1: Create image using install mode
+## Example 1: Create an image using install mode
 
+This example describes step by step how to create an image using install mode.
+
+Start HstWB Installer Setup.
+Type 1 and enter for select image menu.
 ![setup_main.png](screenshots/setup_main.png?raw=true)
+
+Create a new image.
+Type 2 and enter for create image directory from image template menu.
 ![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
+
+Pick an image template that matches your needs. 
+For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
 ![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
+
+Select a directory to create new image.
+For this example create and select 'C:\Temp\4GB' directory.
 ![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
+
+Configure packages that will be installed on the image.
+For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
 ![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
+
+Run installer to start HstWB Installer Run.
+Type 7 end enter.
 ![setup_run_installer.png](screenshots/setup_run_installer.png?raw=true)
+
+HstWB Installer Run prepares installation and launches WinUAE to start installation process.
 ![run_launching_winuae.png](screenshots/run_launching_winuae.png?raw=true)
+
+Installation process installing Workbench from adf files, Kickstart roms and packages. 
 ![winuae_install_start.png](screenshots/winuae_install_start.png?raw=true)
+
+Installation process done. 
 ![winuae_install_done.png](screenshots/winuae_install_done.png?raw=true)
 
-## Use case 2: Create image using build self install mode
+Image is now ready for use either in emulator or on real Amiga.
 
-step by step description with screenshots
+## Example 2: Create an image using build self install mode
 
-## Usage
+This example describes step by step how to create an image using build self install mode.
 
-**Menu using setup script**
+## Example 3: Running self install using test mode 
 
-First run HstWB Installer Setup script to configure settings. Default settings are used, if settings file "hstwb-installer-settings.ini" doesn't exist. Each time a setting is changed the settings file is updated or auto saved. When choosing Workbench adf or Kickstart rom set, files in configured directories are examined to find valid Workbench adf and Kickstart rom files required for installation process. Select the set that has all files detected. 
+This example describes step by step how to run self install mode using test mode.
 
-For users with Cloanto Amiga Forever installed, following steps will create a new 8gb image and install Workbench, Kickstart roms:
+## Example 4: Writing an image to CF/SD card using Win32DiskImager
 
-1. Double-click 'hstwb-installer-setup.cmd' in Windows Explorer or start 'hstwb-installer-setup.ps1' from powershell to run setup script.
-2. Type 1 and enter to enter select image menu.
-3. Type 2 and enter to enter new image menu.
-4. Type 1 and enter to select 8gb image.
-5. Type "test.hdf" and press enter.
-6. Type 3 and enter to go back to main menu.
-7. Type 6 and enter run installer, wait for WinUAE to complete installation process.
-8. Press enter to continue.
-9. Type 8 and enter to exit.
+This example describes step by step how to write an image to a CF/SD card using Win32DiskImager. Note that only RDB images can be written 
 
-**Manual using run script**
+## Example 5: Installing an image on a RaspBerry Pie with RetroPie
 
-The settings file "hstwb-installer-settings.ini" can also be created manually with the following content:
-
-###
-    [Image]
-    HdfImagePath=C:\Users\Public\Documents\Amiga Files\Shared\hdf\test.hdf
-    [Kickstart]
-    InstallKickstart=Yes
-    KickstartRomPath=C:\Users\Public\Documents\Amiga Files\Shared\rom
-    KickstartRomSet=Kickstart Cloanto Amiga Forever 2016
-    [Winuae]
-    WinuaePath=C:\Program Files (x86)\WinUAE\winuae.exe
-    [Workbench]
-    InstallWorkbench=Yes
-    WorkbenchAdfPath=C:\Users\Public\Documents\Amiga Files\Shared\adf
-    WorkbenchAdfSet=Workbench 3.1 Cloanto Amiga Forever 2016
-
-Double-click 'hstwb-installer-run.cmd' in Windows Explorer or start 'hstwb-installer-run.ps1' from powershell to run installer script.
-
-## Setup script
-
-describe menu
-
-## Run script
-
-describe how to use
-
-## Screenshots
-
-![HstWB Installer running automated installation of Workbench](https://raw.githubusercontent.com/henrikstengaard/hstwb-installer/master/screenshots/hst-wb_installer_running1.png)
-![HstWB Installer running automated installation of Kickstart roms](https://raw.githubusercontent.com/henrikstengaard/hstwb-installer/master/screenshots/hst-wb_installer_running2.png)
-![Preinstalled image booted in WinUAE showing Workbench](https://raw.githubusercontent.com/henrikstengaard/hstwb-installer/master/screenshots/preinstalled_workbench.png)
+This example describes step by step how to install an image on a RaspBerry Pie with RetroPie.
