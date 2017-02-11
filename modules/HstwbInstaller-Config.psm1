@@ -113,6 +113,38 @@ function DefaultAssigns($assigns)
 }
 
 
+# read images
+function ReadImages($imagesPath)
+{
+    $images = @{}
+    
+    # get image files
+    $imageFiles = Get-ChildItem -Path $imagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
+
+    # read image ini from image files
+    foreach ($imageFile in $imageFiles)
+    {
+        # read image ini text file from image file
+        $imageIniText = ReadZipEntryTextFile $imageFile.FullName 'image\.ini$'
+
+        # skip, if image ini text doesn't exist
+        if (!$imageIniText)
+        {
+            Write-Error ("Image file '" + $imageFile.FullName + "' doesn't contain image.ini file!")
+            exit 1
+        }
+
+        # read image ini text
+        $imageIni = ReadIniText $imageIniText
+
+        # add image name and image file to images
+        $images.Set_Item($imageIni.Image.Name, $imageFile.FullName)
+    }
+
+    return $images
+}
+
+
 # read packages
 function ReadPackages($packagesPath)
 {
@@ -312,10 +344,10 @@ function ValidateAssigns($assigns)
 # validate settings
 function ValidateSettings($settings)
 {
-    # fail, if HdfImagePath parameter doesn't exist in settings file or file doesn't exist
-    if (!$settings.Image.HdfImagePath -or !(test-path -path $settings.Image.HdfImagePath))
+    # fail, if ImageDir directory doesn't exist
+    if ($settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
-        Write-Host "Error: HdfImagePath parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
+        Write-Host "Error: ImageDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
     }
 
@@ -377,7 +409,7 @@ function ValidateSettings($settings)
     
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|Test|Self-Install)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
@@ -394,6 +426,7 @@ export-modulemember -function ReadIniText
 export-modulemember -function WriteIniFile
 export-modulemember -function DefaultSettings
 export-modulemember -function DefaultAssigns
+export-modulemember -function ReadImages
 export-modulemember -function ReadPackages
 export-modulemember -function UpdatePackages
 export-modulemember -function UpdateAssigns

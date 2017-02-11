@@ -389,19 +389,87 @@ function BuildInstallPackagesScriptLines($packageNames)
 }
 
 
+# build winuae image harddrives config text
+function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
+{
+    # winuae image harddrives config file
+    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($settings.Image.ImageDir, "harddrives.uae")
+
+    # fail, if winuae image harddrives config file doesn't exist
+    if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
+    {
+        Fail ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+    }
+
+    # read winuae image harddrives config text
+    $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
+
+    # replace imagedir placeholders
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $settings.Image.ImageDir.Replace('\', '\\'))
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
+
+    if ($disableBootableHarddrives)
+    {
+        $winuaeImageHarddrivesConfigText = ($winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ -replace ',-?\d+$', ',-128' -replace ',-?\d+,,uae$', ',-128,,uae' }) -join "`r`n"
+    }
+
+    return $winuaeImageHarddrivesConfigText
+}
+
+
+# build winuae install harddrives config text
+function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir)
+{
+    # build winuae image harddrives config
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $true
+
+    # get uaehf index of last uaehf config from winuae image harddrives config
+    $uaehfIndex = 0
+    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+
+    # winuae install harddrives config file
+    $winuaeInstallHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives.uae")
+
+    # fail, if winuae install harddrives config file doesn't exist
+    if (!(Test-Path -Path $winuaeInstallHarddrivesConfigFile))
+    {
+        Fail ("Error: Install harddrives config file '" + $winuaeInstallHarddrivesConfigFile + "' doesn't exist!")
+    }
+
+    # read winuae install harddrives config file
+    $winuaeInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeInstallHarddrivesConfigFile)
+
+    # replace winuae install harddrives placeholders
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$InstallDir]', $installDir)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$InstallUaehfIndex]', [int]$uaehfIndex + 1)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
+
+    # return winuae image and install harddrives config
+    return $winuaeImageHarddrivesConfigText + "`r`n" + $winuaeInstallHarddrivesConfigText
+}
+
+
 # run test
 function RunTest
 {
+    # build winuae image harddrives config text
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+
     # read winuae test config file
-    $winuaeTestConfigFile = [System.IO.Path]::Combine($winuaePath, "test.uae")
-    $winuaeTestConfig = [System.IO.File]::ReadAllText($winuaeTestConfigFile)
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # replace winuae test config placeholders
-    $winuaeTestConfig = $winuaeTestConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath)
-    $tempWinuaeTestConfigFile = [System.IO.Path]::Combine($tempPath, "test.uae")
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeImageHarddrivesConfigText)
 
     # write winuae test config file to temp dir
-    [System.IO.File]::WriteAllText($tempWinuaeTestConfigFile, $winuaeTestConfig)
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
     # print launching winuae message
@@ -410,7 +478,7 @@ function RunTest
 
 
     # winuae args
-    $winuaeArgs = "-f ""$tempWinuaeTestConfigFile"""
+    $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
@@ -523,16 +591,24 @@ function RunInstall()
     }
 
 
-    # read winuae install config file
-    $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
-    $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
+    # build winuae install harddrives config
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
 
-    # replace winuae install config placeholders
-    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
-    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
 
-    # write winuae install config file to temp install dir
-    [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+    # read winuae hstwb installer config file
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
+
+
+    # replace winuae hstwb installer config placeholders
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+
+
+    # write winuae hstwb installer config file to temp install dir
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
     # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
@@ -550,7 +626,7 @@ function RunInstall()
 
 
     # winuae args
-    $winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
+    $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
@@ -567,12 +643,12 @@ function RunInstall()
 }
 
 
-# run self install
-function RunSelfInstall()
+# run build self install
+function RunBuildSelfInstall()
 {
     # print preparing self install message
     Write-Host ""
-    Write-Host "Preparing self install..."
+    Write-Host "Preparing build self install..."
 
 
     # create temp install path
@@ -652,18 +728,24 @@ function RunSelfInstall()
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
-    # read winuae install config file
-    $winuaeInstallConfigFile = [System.IO.Path]::Combine($winuaePath, "install.uae")
-    $winuaeInstallConfig = [System.IO.File]::ReadAllText($winuaeInstallConfigFile)
+    # build winuae install harddrives config
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
 
 
-    # replace winuae install config placeholders
-    $winuaeInstallConfig = $winuaeInstallConfig.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File).Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File).Replace('[$IMAGEFILE]', $settings.Image.HdfImagePath).Replace('[$INSTALLDIR]', $tempInstallDir).Replace('[$PACKAGESDIR]', $tempPackagesDir)
-    $tempWinuaeInstallConfigFile = [System.IO.Path]::Combine($tempPath, "install.uae")
+    # read winuae hstwb installer config file
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
 
-    # write winuae install config file to temp install dir
-    [System.IO.File]::WriteAllText($tempWinuaeInstallConfigFile, $winuaeInstallConfig)
+    # replace winuae hstwb installer config placeholders
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+
+
+    # write winuae hstwb installer config file to temp install dir
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
     # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
@@ -677,11 +759,11 @@ function RunSelfInstall()
 
     # print launching winuae message
     Write-Host ""
-    Write-Host "Launching WinUAE to install image..."
+    Write-Host "Launching WinUAE to build self install image..."
 
 
     # winuae args
-    $winuaeArgs = "-f ""$tempWinuaeInstallConfigFile"""
+    $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
@@ -835,7 +917,7 @@ switch ($settings.Installer.Mode)
 {
     "Test" { RunTest }
     "Install" { RunInstall }
-    "Self-Install" { RunSelfInstall }
+    "BuildSelfInstall" { RunBuildSelfInstall }
 }
 
 

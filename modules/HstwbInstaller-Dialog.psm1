@@ -16,8 +16,8 @@ function PrintSettings()
     Write-Host "  Assigns File       : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $assignsFile + "'")
     Write-Host "Image"
-    Write-Host "  HDF Image Path     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Image.HdfImagePath + "'")
+    Write-Host "  Image Dir          : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.Image.ImageDir + "'")
     Write-Host "Workbench"
     Write-Host "  Install Workbench  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Workbench.InstallWorkbench + "'")
@@ -67,7 +67,12 @@ function PrintSettings()
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
     Write-Host "Installer"
     Write-Host "  Mode               : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Installer.Mode + "'")
+    switch ($settings.Installer.Mode)
+    {
+        "Test" { Write-Host "'Test'" }
+        "Install" { Write-Host "'Install'" }
+        "BuildSelfInstall" { Write-Host "'Build Self Install'" }
+    }
 }
 
 
