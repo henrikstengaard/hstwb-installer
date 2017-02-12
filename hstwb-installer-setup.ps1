@@ -260,7 +260,8 @@ function CreateImageDirectoryFromImageTemplateMenu()
     {
         Write-Host ""
         Write-Host "Image directory already contains harddrives.uae and image files. Do you want to overwrite files? [Y/N]" -ForegroundColor Yellow
-        if (Read-Host -notmatch 'y')
+        $confirm = Read-Host
+        if ($confirm -notmatch 'y')
         {
             return
         }
