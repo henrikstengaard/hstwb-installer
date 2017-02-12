@@ -416,6 +416,47 @@ Image is now ready for use either in emulator or on real Amiga.
 
 This example describes step by step how to create an image using build self install mode.
 
+Start HstWB Installer Setup.
+Type 1 and enter for select image menu.
+![setup_main.png](screenshots/setup_main.png?raw=true)
+
+Create a new image.
+Type 2 and enter for create image directory from image template menu.
+![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
+
+Pick an image template that matches your needs. 
+For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
+![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
+
+Select a directory to create new image.
+For this example create and select 'C:\Temp\4GB' directory.
+![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
+
+Configure packages that will be installed on the image.
+For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
+
+Switch install mode to build self install.
+Type 6 and enter for configure installer menu.
+Type 1 and enter for change installer mode.
+Type 2 and enter for build self install mode 
+![setup_build_self_install_mode.png](screenshots/setup_build_self_install_mode.png?raw=true)
+
+Run installer to start HstWB Installer Run.
+Type 7 end enter.
+![setup_build_self_install_run.png](screenshots/setup_build_self_install_run.png?raw=true)
+
+HstWB Installer Run prepares installation and launches WinUAE to start installation process.
+![run_build_self_install_launching.png](screenshots/run_build_self_install_launching.png?raw=true)
+
+Installation process installing system files for self install and packages. 
+![run_build_self_install_start.png](screenshots/run_build_self_install_start.png?raw=true)
+
+Installation process done. 
+![run_build_self_install_done.png](screenshots/run_build_self_install_done.png?raw=true)
+
+Image is now ready for self install either in emulator or on real Amiga.
+
 ## Example 3: Running self install using test mode 
 
 This example describes step by step how to run self install mode using test mode.
