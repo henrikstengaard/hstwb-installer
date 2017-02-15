@@ -473,13 +473,15 @@ Only RDB images will work, when written to a CF/SD card. If unsure about RDB, us
 4. Click "..." next to path and select HDF file.
 5. If "RDB mode" button is grayed out and it says "RDSK...@+......." in the textbox grayed out in the middle, then the HDF is in RDB mode.
 
-**Start Win32DiskImager.**
+If HDF is in RDB mode, then proceed.
+
+**1. Start Win32DiskImager.**
 
 Click folder icon to select HDF file.
 
 ![win32diskimager_start.png](screenshots/win32diskimager_start.png?raw=true)
 
-**Select HDF file to write.**
+**2. Select HDF file to write.**
 
 Change file type to "*.*" from the dropdown menu above "Open" button.
 
@@ -487,7 +489,7 @@ Select HDF file to write eg. "C:\Temp\4GB\4gb.hdf".
 
 ![win32diskimager_select.png](screenshots/win32diskimager_select.png?raw=true)
 
-**Select device and write**
+**3. Select device and write**
 
 Select device to write HDF file to from device dropdown menu matching the CF/SD card to write to.
 
@@ -495,7 +497,7 @@ Click "Write" button to start writing image to device.
 
 ![win32diskimager_ready.png](screenshots/win32diskimager_ready.png?raw=true)
 
-**Confirm overwriting selected device**
+**4. Confirm overwriting selected device**
 
 Double check you have selected the correct device to write to as it will overwrite and destroy it's current content.
 
@@ -503,13 +505,13 @@ Click "Yes" to confirm writing to device, if correct device is selected.
 
 ![win32diskimager_confirm.png](screenshots/win32diskimager_confirm.png?raw=true)
 
-**Wait for waiting to finish**
+**5. Wait for waiting to finish**
 
 HDF file is being written to device, which can take 10-30 minutes depending on USB and CF/SD card performance.
 
 ![win32diskimager_writing.png](screenshots/win32diskimager_writing.png?raw=true)
 
-**Write completed**
+**6. Write completed**
 
 Writing HDF file to device completed succesfully and Win32DiskImager can be closed.
 
