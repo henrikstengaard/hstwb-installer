@@ -483,7 +483,7 @@ Click folder icon to select HDF file.
 
 **2. Select HDF file to write.**
 
-Change file type to "*.*" from the dropdown menu above "Open" button.
+Change file type to "\*.\*" from the dropdown menu above "Open" button.
 
 Select HDF file to write eg. "C:\Temp\4GB\4gb.hdf".
 
