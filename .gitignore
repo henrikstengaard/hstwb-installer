@@ -6,3 +6,4 @@ hstwb-installer*.zip
 *.wxs
 !hstwb-installer.wxs
 packages/
+output/

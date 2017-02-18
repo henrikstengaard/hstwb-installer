@@ -24,10 +24,14 @@
     <Directory Id="ImagesComponentDir"/>
     <Directory Id="KickstartComponentDir"/>
     <Directory Id="LicensesComponentDir"/>
+    <Directory Id="ModulesComponentDir"/>
     <Directory Id="PackagesComponentDir"/>
+    <Directory Id="ScreenshotsComponentDir"/>
     <Directory Id="WinuaeComponentDir"/>
     <Directory Id="WorkbenchComponentDir"/>
     <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
+        <File Id="githubpandoc.css" Source="github-pandoc.css"/>
+        <File Id="README.html" Source="README.html"/>
         <File Id="hstwbinstallerrun.cmd" Source="..\hstwb-installer-run.cmd"/>
         <File Id="hstwbinstallerrun.ps1" Source="..\hstwb-installer-run.ps1"/>
         <File Id="hstwbinstallersetup.cmd" Source="..\hstwb-installer-setup.cmd"/>
@@ -38,13 +42,20 @@
 <DirectoryRef Id="ApplicationStartMenuDirectory">
     <Component Id="ApplicationShortcuts" Guid="2d653bc1-71ac-42af-ae4d-69795f4dd428">
                   <Shortcut 
+                    Id="ApplicationReadmeShortcut" 
+                    Name="HstWB Installer Readme" 
+                    Target="[SystemFolder]cmd.exe"
+                    WorkingDirectory="INSTALLDIR"
+                    Arguments="/c &quot;start readme.html&quot;"
+                    Icon="icon.ico" />
+                  <Shortcut 
                     Id="ApplicationSettingsShortcut"
                     Name="HstWB Installer Settings"
                     Target="[ApplicationDataDirectory]hstwb-installer-settings.ini"
                     WorkingDirectory="ApplicationDataDirectory"
                     Icon="icon.ico" />
                   <Shortcut 
-                    Id="ApplicationSettingsShortcut"
+                    Id="ApplicationAssignsShortcut"
                     Name="HstWB Installer Assigns"
                     Target="[ApplicationDataDirectory]hstwb-installer-assigns.ini"
                     WorkingDirectory="ApplicationDataDirectory"
@@ -80,6 +91,8 @@
          <ComponentRef Id="ApplicationShortcuts"/>
          <ComponentGroupRef Id="KickstartComponentGroup"/>
          <ComponentGroupRef Id="LicensesComponentGroup"/>
+         <ComponentGroupRef Id="ModulesComponentGroup"/>
+         <ComponentGroupRef Id="ScreenshotsComponentGroup"/>
          <ComponentGroupRef Id="WinuaeComponentGroup"/>
          <ComponentGroupRef Id="WorkbenchComponentGroup"/>
 
