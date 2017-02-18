@@ -124,6 +124,8 @@ resident $floppydevice:C/Which PURE
 resident $floppydevice:C/Mount PURE 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
+copy ENVARC:~(#?.info) ENV: ALL QUIET
+Assign >NIL: T: RAM:
 SetEnv TZ MST7
 
 
