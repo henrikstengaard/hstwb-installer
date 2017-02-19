@@ -282,6 +282,7 @@ HstWB Installer supports following installer modes:
 
 - Install: Installs Workbench, Kickstart roms and packages in configured image.
 - Build Self Install: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and packages.
+- Build Self Install With Package Selection: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and select packages to install.
 - Test: Test configured image.
 
 ### Preparing installer run
@@ -366,6 +367,13 @@ Kickstart roms will be identified and installed to SYSTEMDIR:Devs/Kickstarts, if
 Then packages are installed, if any are installed in the self install image.
 
 When the self install process is done, the image is ready to run in an emulator or on a real Amiga.
+
+### Build self install with package selection mode
+
+Running HstWB Installer in build self install with package selection mode does the same as build self install mode.
+The only difference is that instead of installing packages configured for the image, it will present a dialog to select packages to install.
+This is useful for building an image with content targeted for multiple Amigas, eg. including both OCS and AGA packages for AGS2. 
+When self install is running, AGA packages can be selected for A1200/A4000 and OCS packages can be selected for A500/A600.
 
 ### Test mode
 
