@@ -737,10 +737,10 @@ function RunBuildSelfInstall()
     # build install package script lines
     $installPackageScripts += BuildInstallPackagesScriptLines ($installPackages | ForEach-Object { $_.Package })
 
-    if ($settings.Installer.Mode -eq "BuildSelfInstallPackageSelection")
+    if ($settings.Installer.Mode -eq "BuildSelfInstallPackageSelection" -and $installPackages.Count -gt 0)
     {
         # get install package name padding
-        $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | sort @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+        $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
         # install packages label
         $installPackagesScriptLines += "LAB installpackagesmenu"
@@ -758,6 +758,7 @@ function RunBuildSelfInstall()
         }
 
         # add install package option and show install packages menu
+        $installPackagesScriptLines += "echo """ + (new-object System.String('-', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "set installpackagesmenu ````"
         $installPackagesScriptLines += "set installpackagesmenu ``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"
@@ -780,7 +781,7 @@ function RunBuildSelfInstall()
 
         # install packages option and skip back to install packages menu 
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 1) + """")
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
         $installPackagesScriptLines += "  SKIP installpackages"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
