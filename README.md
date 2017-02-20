@@ -385,37 +385,37 @@ Running HstWB Installer in test mode does the following:
 
 This example describes step by step how to create an image using install mode.
 
-**1. Start HstWB Installer Setup.**
+**1. Start HstWB Installer Setup**
 
 Type 1 and enter for select image menu.
 
 ![setup_main.png](screenshots/setup_main.png?raw=true)
 
-**2. Create a new image.**
+**2. Create a new image**
 
 Type 2 and enter for create image directory from image template menu.
 
 ![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
 
-**3. Pick an image template that matches your needs.**
+**3. Pick an image template that matches your needs**
 
 For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
 
 ![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
 
-**4. Select a directory to create new image.**
+**4. Select a directory to create new image**
 
 For this example create and select 'C:\Temp\4GB' directory.
 
 ![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
 
-**5. Configure packages that will be installed on the image.**
+**5. Configure packages that will be installed on the image**
 
 For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
 
 ![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
 
-**6. Run installer to start HstWB Installer Run.**
+**6. Run installer to start HstWB Installer Run**
 
 Type 7 end enter.
 
@@ -435,7 +435,7 @@ Installation process installing Workbench from adf files, Kickstart roms and pac
 
 **9. Installation process done**
 
-Installation process done. 
+Installation process is done and will automatically close WinUAE after 10 seconds.
 
 ![winuae_install_done.png](screenshots/winuae_install_done.png?raw=true)
 
@@ -449,39 +449,62 @@ Start HstWB Installer Setup.
 Type 1 and enter for select image menu.
 ![setup_main.png](screenshots/setup_main.png?raw=true)
 
-Create a new image.
+**1. Create a new image**
+
 Type 2 and enter for create image directory from image template menu.
+
 ![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
 
-Pick an image template that matches your needs. 
+**2. Pick an image template that matches your needs**
+
 For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
+
 ![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
 
-Select a directory to create new image.
+**3. Select a directory to create new image**
+
 For this example create and select 'C:\Temp\4GB' directory.
+
 ![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
 
-Configure packages that will be installed on the image.
+**4. Configure packages that will be installed on the image**
+
 For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+
 ![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
 
-Switch install mode to build self install.
+**5. Switch install mode to build self install**
+
 Type 6 and enter for configure installer menu.
+
 Type 1 and enter for change installer mode.
+
 Type 2 and enter for build self install mode 
+
 ![setup_build_self_install_mode.png](screenshots/setup_build_self_install_mode.png?raw=true)
 
-Run installer to start HstWB Installer Run.
+**6. Run installer to start HstWB Installer Run**
+
 Type 7 end enter.
+
 ![setup_build_self_install_run.png](screenshots/setup_build_self_install_run.png?raw=true)
 
+**7. HstWB Installer preparing and launching WinUAE**
+
 HstWB Installer Run prepares installation and launches WinUAE to start installation process.
+
 ![run_build_self_install_launching.png](screenshots/run_build_self_install_launching.png?raw=true)
 
+**8. Installation process running**
+
 Installation process installing system files for self install and packages. 
+
 ![run_build_self_install_start.png](screenshots/run_build_self_install_start.png?raw=true)
 
-Installation process done.
+**9. Installation process done**
+
+Installation process is done and will automatically close WinUAE after 10 seconds.
+
 ![run_build_self_install_done.png](screenshots/run_build_self_install_done.png?raw=true)
 
 Image is now ready for self install either in emulator or on real Amiga.

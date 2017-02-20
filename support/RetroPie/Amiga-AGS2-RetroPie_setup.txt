@@ -1,0 +1,45 @@
+Amiga AGS2 RetroPie Setup
+=========================
+
+Copy Amiga hdf and Kickstart files to RetroPie:
+1. Copy "kick31.rom" file to "\\retropie\bios\".
+2. Copy "+Start UAE4Arm AGS2.sh" file to "\\retropie\roms\amiga\".
+3. Copy "Amiga-WB31-AGS2-v3-RetroPie.hdf" file to "\\retropie\roms\amiga\".
+4. Copy "Amiga-AGS2-AGA-v3-Games1-RetroPie.hdf" file to "\\retropie\roms\amiga\".
+5. Copy "Amiga-AGS2-AGA-v3-Games2-RetroPie.hdf" file to "\\retropie\roms\amiga\".
+
+Configure UAE4Arm on RetroPie:
+1. Start UAE4Arm.
+2. Switch to CPU and FPU.
+3. Select 68020 CPU, 68882 FPU and Fastest CPU Speed.
+4. Uncheck 24-bit addressing and JIT.
+5. Switch to Chipset.
+6. Select AGA Chipset, Normal Blitter.
+7. Check Fast copper and Sprites and Sprites vs. Playfield Collision Level.
+8. Switch to ROM.
+9. Select Main ROM file by clicking browse (...).
+10. Change directory to "/home/pi/RetroPie/BIOS" and select "kick31.rom" file.
+11. Switch to RAM.
+12. Change Chip to 2MB and Fast to 8MB.
+13. Uncheck DF1: and change Floppy Drive Emulation Speed to 800%.
+14. Switch to Hard drives.
+15. Click add hardfile, ensure Device Name is DH0, Read/Write and Bootable are checked and click browse (...).
+16. Change directory to "/home/pi/RetroPie/roms/amiga" and select "Amiga-WB31-AGS2-v3-RetroPie.hdf" file.
+17. Click Ok.
+18. Click add hardfile, ensure Device Name is DH1, Read/Write is checked and Bootable is unchecked and click browse (...).
+19. Change directory to "/home/pi/RetroPie/roms/amiga" and select "Amiga-AGS2-AGA-v3-Games1-RetroPie.hdf" file.
+20. Change Surfaces to 4 and click Ok.
+21. Click add hardfile, ensure Device Name is DH1, Read/Write is checked and Bootable is unchecked and click browse (...).
+22. Change directory to "/home/pi/RetroPie/roms/amiga" and select "Amiga-AGS2-AGA-v3-Games2-RetroPie.hdf" file.
+23. Change Surfaces to 4 and click Ok.
+24. There should now be 3 hard drives: DH0 200MB, DH1 2.0GB and DH2 2.0GB.
+25. Switch to Miscellaneous.
+26. Uncheck Show GUI on startup.
+27. Switch to Configurations.
+28. Enter AGS2 as name and click Save.
+29. Click Start to verify configuration works.
+30. Press F12 and click Quit to return to EmulationStation.
+
+Note:
+With configuration saved as AGS2 EmulationStation can start Amiga directly without GUI shown, when selecting
+"+Start UAE4Arm AGS2.sh" option after a restart of EmulationStation.
