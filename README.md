@@ -507,11 +507,48 @@ Installation process is done and will automatically close WinUAE after 10 second
 
 ![run_build_self_install_done.png](screenshots/run_build_self_install_done.png?raw=true)
 
-Image is now ready for self install either in emulator or on real Amiga.
+Image is now ready for self install in an emulator or on real Amiga.
 
-## Example 3: Running self install using test mode 
+## Example 3: Running self install in an emulator or on real Amiga
 
-This example describes step by step how to run self install mode using test mode.
+This example describes step by step how to run self install in an emulator or on real Amiga.
+
+Self install can be run in one of following ways:
+
+1. HstWB Installer Setup: Switch to test mode and run installer.
+2. WinUAE: Start WinUAE using an A1200 configuration with HDF files and/or directories added.
+3. UAE4ARM: Start UAE4ARM using an A1200 configuration with HDF files and/or directories added.
+4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' example 
+
+### Configuring emulator for automated installation
+
+Installation of Workbench and Kickstart roms can be automated, when running self install in an emulator.
+
+To automate installation of Workbench, add a harddrive as directory in the emulator containing Workbench adf files.
+The harddrive directory must have device name "WORKBENCHDIR" without quotes.
+If Cloanto Amiga Forever is installed, then the directory "c:\Users\Public\Documents\Amiga Files\Shared\adf\" can be used.
+
+The example below describes how to do this using WinUAE.
+
+**1. Start WinUAE**
+
+Start WinUAE and use an A1200 configuration
+
+Configure WinUAE harddrives in WinUAE with Workbench adf and Kickstart rom files
+
+![self_install_winuae_harddrives_start.png](screenshots/self_install_winuae_harddrives_start.png?raw=true)
+
+![self_install_winuae_workbenchdir.png](screenshots/self_install_winuae_workbenchdir.png?raw=true)
+
+![self_install_winuae_kickstartdir.png](screenshots/self_install_winuae_kickstartdir.png?raw=true)
+
+![self_install_winuae_harddrives_done.png](screenshots/self_install_winuae_harddrives_done.png?raw=true)
+
+### Running self install
+
+![build_self_install_start.png](screenshots/build_self_install_start.png?raw=true)
+
+![build_self_install_workbench_disk.png](screenshots/build_self_install_workbench_disk.png?raw=true)
 
 ## Example 4: Writing an image to CF/SD card using Win32DiskImager
 
