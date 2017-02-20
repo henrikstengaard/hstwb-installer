@@ -525,6 +525,8 @@ Only RDB images will work, when written to a CF/SD card. If unsure about RDB, us
 4. Click "..." next to path and select HDF file.
 5. If "RDB mode" button is grayed out and it says "RDSK...@+......." in the textbox grayed out in the middle, then the HDF is in RDB mode.
 
+![winuae_hdf_rdb_mode.png](screenshots/winuae_hdf_rdb_mode.png?raw=true)
+
 If HDF is in RDB mode, then proceed.
 
 **1. Start Win32DiskImager.**
