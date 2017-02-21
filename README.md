@@ -518,31 +518,72 @@ Self install can be run in one of following ways:
 1. HstWB Installer Setup: Switch to test mode and run installer.
 2. WinUAE: Start WinUAE using an A1200 configuration with HDF files and/or directories added.
 3. UAE4ARM: Start UAE4ARM using an A1200 configuration with HDF files and/or directories added.
-4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' example 
+4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' example and skip automated installation, which is only for emulators.
 
-### Configuring emulator for automated installation
+### Configuring emulator for automated installation of Workbench and Kickstart roms
 
 Installation of Workbench and Kickstart roms can be automated, when running self install in an emulator.
 
 To automate installation of Workbench, add a harddrive as directory in the emulator containing Workbench adf files.
 The harddrive directory must have device name "WORKBENCHDIR" without quotes.
-If Cloanto Amiga Forever is installed, then the directory "c:\Users\Public\Documents\Amiga Files\Shared\adf\" can be used.
+Users with Cloanto Amiga Forever installed can use the directory "c:\Users\Public\Documents\Amiga Files\Shared\adf", which contains Workbench 3.1 adf files self install will identify and use.
 
-The example below describes how to do this using WinUAE.
+To automate installation of Kickstart roms for WHDLoad, add a harddrive as directory in the emulator containing Kickstart rom files.
+The harddrive directory must have device name "KICKSTARTDIR" without quotes.
+Users with Cloanto Amiga Forever installed can use the directory "c:\Users\Public\Documents\Amiga Files\Shared\rom", which contains Kickstart rom files self install will identify and use.
+
+The example below describes how to do configure WinUAE for automated installation, but can be done with other emulators like FS-UAE or UAE4ARM adding harddrive directories with correct device names "WORKBENCHDIR" and "KICKSTARTDIR".
 
 **1. Start WinUAE**
 
-Start WinUAE and use an A1200 configuration
+Configure harddrive directories in WinUAE one of following ways:
 
-Configure WinUAE harddrives in WinUAE with Workbench adf and Kickstart rom files
+1. Using HstWB Installer test mode press F12 after WinUAE is launched to configure harddrive directories.
+2. Manually start WinUAE use own configuration with image HDF files and/or harddrive directories added.
+
+**2. Configure harddrive directories**
+
+Click "CD & Hard drives".
 
 ![self_install_winuae_harddrives_start.png](screenshots/self_install_winuae_harddrives_start.png?raw=true)
 
+**3. Add WORKBENCHDIR harddrive directory**
+
+Click "Add Directory or Archive".
+
+Enter "WORKBENCHDIR" in device name and volume label textboxes.
+
+Uncheck "Read/Write" and "Bootable" checkboxes.
+
+Click "Select Directory" and select directory "c:\Users\Public\Documents\Amiga Files\Shared\adf".
+
+Click "OK" to add the directory as a harddrive.
+
 ![self_install_winuae_workbenchdir.png](screenshots/self_install_winuae_workbenchdir.png?raw=true)
+
+**4. Add KICKSTARTDIR harddrive directory**
+
+Click "Add Directory or Archive".
+
+Enter "KICKSTARTDIR" in device name and volume label textboxes.
+
+Uncheck "Read/Write" and "Bootable" checkboxes.
+
+Click "Select Directory" and select directory "c:\Users\Public\Documents\Amiga Files\Shared\rom".
+
+Click "OK" to add the directory as a harddrive.
 
 ![self_install_winuae_kickstartdir.png](screenshots/self_install_winuae_kickstartdir.png?raw=true)
 
+**5. Verify configured harddrives**
+
+Verify WinUAE has image HDF files and/or directories added together with "WORKBENCHDIR" and "KICKSTARTDIR" directory harddrives.
+
 ![self_install_winuae_harddrives_done.png](screenshots/self_install_winuae_harddrives_done.png?raw=true)
+
+**6. Reset WinUAE**
+
+Click "Reset" to reset emulator, which will make self install detect added harddrive directories for automated installation.
 
 ### Running self install
 
