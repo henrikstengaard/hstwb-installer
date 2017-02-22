@@ -79,6 +79,20 @@ function FolderBrowserDialog($title, $directory, $showNewFolderButton)
 }
 
 
+# confirm dialog
+function ConfirmDialog($title, $message)
+{
+    $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::OKCancel)
+
+    if($result -eq "OK")
+    {
+        return $true
+    }
+
+    return $false
+}
+
+
 # menu
 function Menu($title, $options)
 {
@@ -258,10 +272,8 @@ function CreateImageDirectoryFromImageTemplateMenu()
     # confirm overwrite, if harddrives.uae already exists in new image directory path
     if (Test-Path -Path $harddrivesUaeFile)
     {
-        Write-Host ""
-        Write-Host "Image directory already contains harddrives.uae and image files. Do you want to overwrite files? [Y/N]" -ForegroundColor Yellow
-        $confirm = Read-Host
-        if ($confirm -notmatch 'y')
+        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains harddrives.uae and image files.`r`n`r`nDo you want to overwrite files?")
+        if (!$confirm)
         {
             return
         }
