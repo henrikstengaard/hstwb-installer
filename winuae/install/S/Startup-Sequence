@@ -25,12 +25,14 @@ resident DF0:C/Assign PURE
 resident DF0:C/Copy PURE
 resident DF0:C/Delete PURE
 resident DF0:C/Execute PURE
+resident DF0:C/Rename PURE
 resident DF0:C/MakeDir PURE
 resident DF0:C/Protect PURE
 resident DF0:C/Search PURE 
 resident DF0:C/Wait PURE 
 resident DF0:C/Which PURE 
-resident DF0:C/Mount PURE 
+resident DF0:C/Mount PURE
+Alias cls "echo *Ec"
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
