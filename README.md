@@ -653,6 +653,138 @@ Remember to properly remove the device from Windows to avoid corrupting the devi
 
 CF/SD card can now be used either in emulator or on real Amiga.
 
-## Example 5: Installing an image on a RaspBerry Pie with RetroPie
+## Example 5: Installing an image on a RaspBerry Pie with Retro Pie
 
-This example describes step by step how to install an image on a RaspBerry Pie with RetroPie.
+This example describes step by step how to install an image on a RaspBerry Pie with Retro Pie.
+
+When connecting Retro Pie use default credentials for Shell and Samba/Windows share access:
+###
+	Username: pi
+	Password: raspberry
+
+**1. Install Kickstart rom**
+
+1. Find own A1200 kickstart rom and rename it to "kick31.rom".
+2. Select "kick31.rom" and press CTRL+C to copy it.
+3. Enter "\\RETROPIE\bios" in Windows Explorer path field.
+4. Type default Retro Pie credentials, if required.
+5. Press CTRL+V to paste files.
+6. Close Windows Explorer window.
+
+**2. Copy image HDF files and directories**
+
+"\\retropie\roms\amiga"
+"\\retropie\roms\amiga\hstwb"
+
+## Example 6: Modify Retro Pie EmulationStation to show .uae files as roms
+
+This example describes step by step how to modify Retro Pie EmulationStation to show .uae files as roms.
+
+The purpose of making this change is to launch different uae configurations directly from EmulationStation.
+Each uae configuration can be configured to run either a set of .adf or .hdf files.
+
+HstWB Installer Support contains uae configuration files, that are configured to use kick31.rom kickstart rom, UAE4ARM hdf and directory harddrives. 
+These are also configured to not show gui and will immediately boot.
+
+When connecting Retro Pie use default credentials for Shell and Samba/Windows share access:
+###
+	Username: pi
+	Password: raspberry
+
+### Copy roms and configs files to Retro Pie using Windows Explorer:
+
+Copy roms files with following steps:
+
+1. Start HstWB Installer Support from start menu.
+2. Enter "Retro Pie" and "roms" folder.
+3. Press CTRL+A to select all files and press CTRL+C to copy them.
+4. Enter "\\RETROPIE\roms\amiga" in Windows Explorer path field.
+5. Type default Retro Pie credentials, if required.
+6. Press CTRL+V to paste files.
+7. Close Windows Explorer window.
+
+Copy configs files with following steps:
+
+1. Start HstWB Installer Support from start menu.
+2. Enter "Retro Pie" and "configs" folder.
+3. Press CTRL+A to select all files and press CTRL+C to copy them.
+4. Enter "\\RETROPIE\configs\amiga" in Windows Explorer path field.
+5. Type default Retro Pie credentials, if required.
+6. Press CTRL+V to paste files.
+7. Close Windows Explorer window.
+
+### Method 1: Add UAE extensions using Retro Pie File-Manager
+
+**1. Start File-Manager**
+
+Enter Retro Pie menu in EmulationStation.
+
+Start File-Manager.
+
+*screenshot*
+
+**2. Hide panels**
+
+Press CTRL+O to hide panels for shell use.
+
+*screenshot*
+
+**3. Run add uae extensions bash script**
+
+Type following command to run add uae extensions bash script:
+###
+    sudo bash /home/pi/RetroPie/roms/amiga/add_uae_extensions.sh
+
+Bash script Successfully added uae extensions, if it returns following output:
+###
+    UAE extensions successfully added to EmulationStation configuration.
+
+*screenshot*
+
+**4. Delete add uae extensions bash script**
+
+Type following command to delete add uae extensions bash script:
+###
+    sudo rm -f /home/pi/RetroPie/roms/amiga/add_uae_extensions.sh
+
+Press F10 and enter to exit File-Manager.
+
+*screenshot*
+
+### Method 2: Add UAE extensions using Putty
+
+**1. Start Putty**
+
+Start Putty.
+
+Enter "retropie" in host name and click "Open".
+
+![retropie_uae_extensions_putty1.png](screenshots/retropie_uae_extensions_putty1.png?raw=true)
+
+**2. Login**
+
+Type default Retro Pie credentials to login.
+
+![retropie_uae_extensions_putty2.png](screenshots/retropie_uae_extensions_putty2.png?raw=true)
+
+**3. Run add uae extensions bash script**
+
+Type following command to run add uae extensions bash script:
+###
+    sudo bash /home/pi/RetroPie/roms/amiga/add_uae_extensions.sh
+
+Bash script Successfully added uae extensions, if it returns following output:
+###
+    UAE extensions successfully added to EmulationStation configuration.
+
+![retropie_uae_extensions_putty3.png](screenshots/retropie_uae_extensions_putty3.png?raw=true)
+
+**4. Delete add uae extensions bash script**
+
+Type following command to delete add uae extensions bash script:
+###
+    sudo rm -f /home/pi/RetroPie/roms/amiga/add_uae_extensions.sh
+
+Press CTRL+D to quit Putty.
+
+![retropie_uae_extensions_putty4.png](screenshots/retropie_uae_extensions_putty4.png?raw=true)
