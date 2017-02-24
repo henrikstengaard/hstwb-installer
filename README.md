@@ -593,7 +593,7 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ## Example 4: Writing an image to CF/SD card using Win32DiskImager
 
-This example describes step by step how to write an image to a CF/SD card using Win32DiskImager. 
+This example describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
 
 Only RDB images will work, when written to a CF/SD card. If unsure about RDB, use WinUAE to check if HDF is in RDB mode with following steps:
 
@@ -664,17 +664,42 @@ When connecting Retro Pie use default credentials for Shell and Samba/Windows sh
 
 **1. Install Kickstart rom**
 
-1. Find own A1200 kickstart rom and rename it to "kick31.rom".
+UAE4ARM needs a Kickstart rom in order to run. 
+Since Amiga Kickstart roms are still under license and sold commercially, they can either be bought from Amiga Forever or dumped from own real Amiga using a tool like GrabKick [GrabKick](http://aminet.net/package/util/misc/GrabKick).
+
+Image HDF files and directories created by HstWB Installer are mainly target Kickstart 3.1 rom.
+
+Install A1200 Kickstart 3.1 rom on Retro Pie with following steps:
+
+1. Find own A1200 Kickstart 3.1 rom and rename it to "kick31.rom".
 2. Select "kick31.rom" and press CTRL+C to copy it.
 3. Enter "\\RETROPIE\bios" in Windows Explorer path field.
 4. Type default Retro Pie credentials, if required.
 5. Press CTRL+V to paste files.
 6. Close Windows Explorer window.
 
-**2. Copy image HDF files and directories**
+**2. Copy UAE4ARM image HDF files and directories**
 
-"\\retropie\roms\amiga"
-"\\retropie\roms\amiga\hstwb"
+Copy UAE4ARM image HDF files and directories to Retro Pie with following steps:
+
+1. Start Windows Explorer.
+2. Open image directory by enter eg. "C:\Temp\4GB" in Windows Explorer path field.
+3. Press CTRL+A to select all files and press CTRL+C to copy them.
+4. Enter "\\RETROPIE\roms\amiga" in Windows Explorer path field.
+5. Click-right and select "New folder"
+6. Enter "hstwb" for new folder name.
+7. Press CTRL+V to paste files.
+8. Close Windows Explorer window.
+
+**3. Copy UAE4ARM uae configuration files**
+
+1. Start HstWB Installer Support from start menu.
+2. Enter "Retro Pie" and "roms" folder.
+3. Select all "HstWB 68020*.uae" files and press CTRL+C to copy them.
+4. Enter "\\RETROPIE\configs\amiga" in Windows Explorer path field.
+5. Type default Retro Pie credentials, if required.
+6. Press CTRL+V to paste files.
+7. Close Windows Explorer window.
 
 ## Example 6: Modify Retro Pie EmulationStation to show .uae files as roms
 
