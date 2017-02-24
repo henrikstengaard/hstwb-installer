@@ -115,6 +115,8 @@ mkdir -Path $outputDir | Out-Null
 # Build readme files
 # ------------------
 
+Write-Host "Building readme html from github markdown..."
+
 # build readme html from readme markdown using pandoc
 $readmeFile = Resolve-Path '..\README.md'
 $pandocArgs = "-f markdown_github -c ""github-pandoc.css"" -t html5 ""$readmeFile"" -o ""$outputDir\README.html"""
@@ -123,9 +125,14 @@ StartProcess $pandocFile $pandocArgs $outputDir
 # copy css and screenshots for readme html
 Copy-Item -Path 'github-pandoc.css' -Destination $outputDir
 
+Write-Host "Done."
+
 
 # Copy packages component directory
 # ---------------------------------
+
+Write-Host "Copying packages component directory..."
+
 $packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
 $packageFiles = Get-ChildItem $packagesPath\* -Include BetterWB*.zip, HstWB*.zip, EAB.WHDLoad.Demos.AGA.Menu*.zip, EAB.WHDLoad.Demos.OCS.Menu*.zip, EAB.WHDLoad.Games.AGA.Menu*.zip, EAB.WHDLoad.Games.OCS.Menu*.zip
 
@@ -133,16 +140,23 @@ $outputPackagesPath = Join-Path $outputDir -ChildPath 'Packages'
 mkdir -Path $outputPackagesPath | Out-Null
 $packageFiles | ForEach-Object { Copy-Item -Path $_.FullName -Destination $outputPackagesPath }
 
+Write-Host "Done."
+
 
 # Copy other component directories
 # --------------------------------
 
-$components = @("Images", "Kickstart", "Licenses", "Modules", "Screenshots", "Winuae", "Workbench" )
+Write-Host "Copying component directories..."
+
+$components = @("Images", "Kickstart", "Licenses", "Modules", "Screenshots", "Support", "Winuae", "Workbench" )
 $components | ForEach-Object { Copy-Item -Path (Join-Path -Path $rootDir -ChildPath $_) -Recurse -Destination $outputDir }
 
+Write-Host "Done."
 
 # Harvest component directories to build wxs using wix toolset heat
 # -----------------------------------------------------------------
+
+Write-Host "Building wxs components from directories..."
 
 $components += "Packages"
 
@@ -154,22 +168,35 @@ $components | ForEach-Object { $wixToolsetHeatArgsComponents += ("dir ""{0}"" -o
 # run heat with args for each component
 $wixToolsetHeatArgsComponents | ForEach-Object { StartProcess $wixToolsetHeatFile $_ $outputDir }
 
+Write-Host "Done."
+
 
 # Copy hstwb installer wix files
 # ------------------------------
 
+Write-Host "Copying HstWB Installer wix files..."
+
 Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
 
+Write-Host "Done."
 
 # Compile wxs using wix toolset candle
 # ------------------------------------
 
-$wixToolsetCandleArgs = '-dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dScreenshotsDir="Screenshots" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"'
+Write-Host "Compiling wxs files..."
+
+$wixToolsetCandleArgs = '-dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dSupportDir="Support" -dScreenshotsDir="Screenshots" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"'
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
+
+Write-Host "Done."
 
 
 # Link wixobj using wix toolset light
 # -----------------------------------
 
+Write-Host "Linking wixobj files..."
+
 $wixToolsetLightArgs = "-o ""hstwb-installer.1.0.0.msi"" -ext WixUIExtension ""*.wixobj"""
 StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
+
+Write-Host "Done."

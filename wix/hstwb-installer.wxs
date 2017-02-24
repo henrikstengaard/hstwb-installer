@@ -27,6 +27,7 @@
     <Directory Id="ModulesComponentDir"/>
     <Directory Id="PackagesComponentDir"/>
     <Directory Id="ScreenshotsComponentDir"/>
+    <Directory Id="SupportComponentDir"/>
     <Directory Id="WinuaeComponentDir"/>
     <Directory Id="WorkbenchComponentDir"/>
     <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
@@ -74,6 +75,13 @@
                     WorkingDirectory="INSTALLDIR"
                     Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;"
                     Icon="icon.ico" />
+                  <Shortcut 
+                    Id="ApplicationSupportShortcut" 
+                    Name="HstWB Installer Support" 
+                    Target="[SystemFolder]cmd.exe"
+                    Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Support&quot;&quot;"
+                    WorkingDirectory="INSTALLDIR"
+                    Icon="icon.ico" />
         <Shortcut Id="ApplicationUninstallShortcut"
                   Name="Uninstall HstWB Installer"
                   Directory="ApplicationStartMenuDirectory"
@@ -93,6 +101,7 @@
          <ComponentGroupRef Id="LicensesComponentGroup"/>
          <ComponentGroupRef Id="ModulesComponentGroup"/>
          <ComponentGroupRef Id="ScreenshotsComponentGroup"/>
+         <ComponentGroupRef Id="SupportComponentGroup"/>
          <ComponentGroupRef Id="WinuaeComponentGroup"/>
          <ComponentGroupRef Id="WorkbenchComponentGroup"/>
 
