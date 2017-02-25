@@ -591,6 +591,24 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ![build_self_install_workbench_disk.png](screenshots/build_self_install_workbench_disk.png?raw=true)
 
+![build_self_install_patch.png](screenshots/build_self_install_patch.png?raw=true)
+
+![build_self_install_automate.png](screenshots/build_self_install_automate.png?raw=true)
+
+![build_self_install_workbench_install.png](screenshots/build_self_install_workbench_install.png?raw=true)
+
+![build_self_install_kickstart_install.png](screenshots/build_self_install_kickstart_install.png?raw=true)
+
+![build_self_install_package_selection.png](screenshots/build_self_install_package_selection.png?raw=true)
+
+![build_self_install_package_install1.png](screenshots/build_self_install_package_install1.png?raw=true)
+
+![build_self_install_package_install2.png](screenshots/build_self_install_package_install2.png?raw=true)
+
+![build_self_install_cleanup.png](screenshots/build_self_install_cleanup.png?raw=true)
+
+![build_self_install_done.png](screenshots/build_self_install_done.png?raw=true)
+
 ## Example 4: Writing an image to CF/SD card using Win32DiskImager
 
 This example describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
