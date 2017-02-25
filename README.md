@@ -655,7 +655,7 @@ Click "Yes" to confirm writing to device, if correct device is selected.
 
 ![win32diskimager_confirm.png](screenshots/win32diskimager_confirm.png?raw=true)
 
-**5. Wait for waiting to finish**
+**5. Wait for write to finish**
 
 HDF file is being written to device, which can take 10-30 minutes depending on USB and CF/SD card performance.
 
