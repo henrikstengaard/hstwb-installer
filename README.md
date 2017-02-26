@@ -764,13 +764,13 @@ Enter Retro Pie menu in EmulationStation.
 
 Start File-Manager.
 
-*screenshot*
+![retropie_uae_extensions_filemanager1.jpg](screenshots/retropie_uae_extensions_filemanager1.jpg?raw=true)
 
 **2. Hide panels**
 
 Press CTRL+O to hide panels for shell use.
 
-*screenshot*
+![retropie_uae_extensions_filemanager2.jpg](screenshots/retropie_uae_extensions_filemanager2.jpg?raw=true)
 
 **3. Run add uae extensions bash script**
 
@@ -782,7 +782,7 @@ Bash script Successfully added uae extensions, if it returns following output:
 ###
     UAE extensions successfully added to EmulationStation configuration.
 
-*screenshot*
+![retropie_uae_extensions_filemanager3.jpg](screenshots/retropie_uae_extensions_filemanager3.jpg?raw=true)
 
 **4. Delete add uae extensions bash script**
 
@@ -792,7 +792,7 @@ Type following command to delete add uae extensions bash script:
 
 Press F10 and enter to exit File-Manager.
 
-*screenshot*
+![retropie_uae_extensions_filemanager4.jpg](screenshots/retropie_uae_extensions_filemanager4.jpg?raw=true)
 
 ### Method 2: Add UAE extensions using Putty
 
