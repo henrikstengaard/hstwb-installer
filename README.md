@@ -591,6 +591,24 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ![build_self_install_workbench_disk.png](screenshots/build_self_install_workbench_disk.png?raw=true)
 
+![build_self_install_patch.png](screenshots/build_self_install_patch.png?raw=true)
+
+![build_self_install_automate.png](screenshots/build_self_install_automate.png?raw=true)
+
+![build_self_install_workbench_install.png](screenshots/build_self_install_workbench_install.png?raw=true)
+
+![build_self_install_kickstart_install.png](screenshots/build_self_install_kickstart_install.png?raw=true)
+
+![build_self_install_package_selection.png](screenshots/build_self_install_package_selection.png?raw=true)
+
+![build_self_install_package_install1.png](screenshots/build_self_install_package_install1.png?raw=true)
+
+![build_self_install_package_install2.png](screenshots/build_self_install_package_install2.png?raw=true)
+
+![build_self_install_cleanup.png](screenshots/build_self_install_cleanup.png?raw=true)
+
+![build_self_install_done.png](screenshots/build_self_install_done.png?raw=true)
+
 ## Example 4: Writing an image to CF/SD card using Win32DiskImager
 
 This example describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
@@ -637,7 +655,7 @@ Click "Yes" to confirm writing to device, if correct device is selected.
 
 ![win32diskimager_confirm.png](screenshots/win32diskimager_confirm.png?raw=true)
 
-**5. Wait for waiting to finish**
+**5. Wait for write to finish**
 
 HDF file is being written to device, which can take 10-30 minutes depending on USB and CF/SD card performance.
 
@@ -746,13 +764,13 @@ Enter Retro Pie menu in EmulationStation.
 
 Start File-Manager.
 
-*screenshot*
+![retropie_uae_extensions_filemanager1.jpg](screenshots/retropie_uae_extensions_filemanager1.jpg?raw=true)
 
 **2. Hide panels**
 
 Press CTRL+O to hide panels for shell use.
 
-*screenshot*
+![retropie_uae_extensions_filemanager2.jpg](screenshots/retropie_uae_extensions_filemanager2.jpg?raw=true)
 
 **3. Run add uae extensions bash script**
 
@@ -764,7 +782,7 @@ Bash script Successfully added uae extensions, if it returns following output:
 ###
     UAE extensions successfully added to EmulationStation configuration.
 
-*screenshot*
+![retropie_uae_extensions_filemanager3.jpg](screenshots/retropie_uae_extensions_filemanager3.jpg?raw=true)
 
 **4. Delete add uae extensions bash script**
 
@@ -774,7 +792,7 @@ Type following command to delete add uae extensions bash script:
 
 Press F10 and enter to exit File-Manager.
 
-*screenshot*
+![retropie_uae_extensions_filemanager4.jpg](screenshots/retropie_uae_extensions_filemanager4.jpg?raw=true)
 
 ### Method 2: Add UAE extensions using Putty
 
