@@ -72,7 +72,7 @@ function PrintSettings()
         "Test" { Write-Host "'Test'" }
         "Install" { Write-Host "'Install'" }
         "BuildSelfInstall" { Write-Host "'Build Self Install'" }
-        "BuildSelfInstallPackageSelection" { Write-Host "'Build Self Install With Package Selection'" }
+        "BuildPackageInstallation" { Write-Host "'Build Package Installation'" }
     }
 }
 

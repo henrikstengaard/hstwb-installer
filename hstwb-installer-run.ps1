@@ -19,6 +19,7 @@ Import-Module (Resolve-Path('modules\HstwbInstaller-Data.psm1'))
 
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.Windows.Forms
 
 
 # http://stackoverflow.com/questions/8982782/does-anyone-have-a-dependency-graph-and-topological-sorting-code-snippet-for-pow
@@ -106,6 +107,24 @@ function Get-ClonedObject {
 }
 
 
+# show folder browser dialog using WinForms
+function FolderBrowserDialog($title, $directory, $showNewFolderButton)
+{
+    $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $folderBrowserDialog.Description = $title
+    $folderBrowserDialog.SelectedPath = $directory
+    $folderBrowserDialog.ShowNewFolderButton = $showNewFolderButton
+    $result = $folderBrowserDialog.ShowDialog()
+
+    if($result -ne "OK")
+    {
+        return $null
+    }    
+
+    return $folderBrowserDialog.SelectedPath    
+}
+
+
 # write text file encoded for Amiga
 function WriteAmigaTextLines($path, $lines)
 {
@@ -190,40 +209,18 @@ function FindPackagesToInstall()
         }
 
 
-        # open package file and get first package ini file
-        $zip = [System.IO.Compression.ZipFile]::Open($packageFile.FullName,"Read")
-        $packageIniZipEntry = $zip.Entries | Where { $_.FullName -match 'package.ini$' }
+        # read package ini text file from package file
+        $packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package.ini$'
 
-
-        # return, if package file doesn't contain a package ini file 
-        if (!$packageIniZipEntry)
+        # return, if harddrives uae text doesn't exist
+        if (!$packageIniText)
         {
             Fail ("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file")
         }
 
 
-        # create package directory
-        $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $packageFileName)
-        if(!(test-path -path $packageDir))
-        {
-            md $packageDir | Out-Null
-        }
-
-
-        # extract package ini file
-        $packageIniFile = [System.IO.Path]::Combine($packageDir, "package.ini")
-        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($packageIniZipEntry, $packageIniFile, $true)
-
-
-        # fail, if package doesn't contain package ini file
-        if (!(test-path -path $packageIniFile))
-        {
-            Fail ("Package ini file '$packageIniFile' doesn't exist")
-        }
-
-
         # read package ini file
-        $packageIni = ReadIniFile $packageIniFile
+        $packageIni = ReadIniText $packageIniText
 
 
         # fail, if package name doesn't exist
@@ -237,16 +234,12 @@ function FindPackagesToInstall()
         $packageName = $packageIni.Package.Name
 
 
-        # delete package ini file
-        Remove-Item -Path $packageIniFile -Force
-
-
         # package full name
         $packageFullName = "{0} v{1}" -f $packageIni.Package.Name, $packageIni.Package.Version
 
 
         # add package details
-        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "FullName" = $packageFullName; "Package" = $packageFileName; "PackageFile" = $packageFile.FullName; "PackageDir" = $packageDir })
+        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "FullName" = $packageFullName; "Package" = $packageFileName; "PackageFile" = $packageFile.FullName })
 
 
         # add package dependencies
@@ -282,15 +275,59 @@ function FindPackagesToInstall()
 
 
 # build user assign script lines
-function BuildUserAssignScriptLines()
+function BuildUserAssignScriptLines($createDirectories)
 {
     $hstwbInstallerAssigns = $assigns.Get_Item('HstWB Installer')
-    return $hstwbInstallerAssigns.keys | ForEach-Object { ("makepath """ + $hstwbInstallerAssigns.Get_Item($_) + """`nAssign " + $_ + ": """ + $hstwbInstallerAssigns.Get_Item($_) + """") }
+
+    $userAssignScriptLines = @()
+
+    foreach ($assignName in $hstwbInstallerAssigns.keys)
+    {
+        # skip, if assign name is 'HstWBInstallerDir' and installer mode is build package installation
+        if ($assignName -match 'HstWBInstallerDir' -and $settings.Installer.Mode -eq "BuildPackageInstallation")
+        {
+            continue
+        }
+
+        # get assign path and drive
+        $assignPath = $hstwbInstallerAssigns.Get_Item($assignName)
+        $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
+
+        # add package assign lines
+        $userAssignScriptLines += "; Add assign for '$assignName' to '$assignPath'"
+        $userAssignScriptLines += "Assign >NIL: EXISTS ""$assignDrive"""
+        $userAssignScriptLines += "IF WARN"
+        $userAssignScriptLines += "  echo ""Error: Drive '$assignDrive' doesn't exist for assign '$assignPath'!"""
+        $userAssignScriptLines += "  ask ""Press ENTER to exit"""
+        $userAssignScriptLines += "  QUIT 5"
+        $userAssignScriptLines += "ELSE"
+
+        # create directory for assignpath or check if path exist
+        if ($createDirectories)
+        {
+            $userAssignScriptLines += ("  makepath """ + $assignPath + """")
+            $userAssignScriptLines += ("  Assign " + $assignName + ": """ + $assignPath + """")
+        }
+        else
+        {
+            $userAssignScriptLines += ("  IF EXISTS """ + $assignPath + """")
+            $userAssignScriptLines += ("    Assign " + $assignName + ": """ + $assignPath + """")
+            $userAssignScriptLines += "  ELSE"
+            $userAssignScriptLines += "    echo ""Error: Path '$assignPath' doesn't exist for assign!"""
+            $userAssignScriptLines += "    ask ""Press ENTER to exit"""
+            $userAssignScriptLines += "    QUIT 5"
+            $userAssignScriptLines += "  ENDIF"
+        }
+
+        $userAssignScriptLines += "ENDIF"
+    }
+
+    return $userAssignScriptLines
 }
 
 
-# build install packages script lines
-function BuildInstallPackagesScriptLines($packageNames)
+# build install package script lines
+function BuildInstallPackageScriptLines($packageNames)
 {
     $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
 
@@ -391,6 +428,93 @@ function BuildInstallPackagesScriptLines($packageNames)
     }
 
     return $installPackageScripts
+}
+
+
+# build install packages script lines
+function BuildInstallPackagesScriptLines($installPackages)
+{
+    # install packages title message
+    $installPackagesScriptLines = @()
+    $installPackagesScriptLines += "echo ""*ec"""
+    $installPackagesScriptLines += "echo ""Package Installation"""
+    $installPackagesScriptLines += "echo ""--------------------"""
+
+    # build install package script lines
+    $installPackageScripts += BuildInstallPackageScriptLines ($installPackages | ForEach-Object { $_.Package })
+
+    if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
+    {
+        # get install package name padding
+        $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+
+        # install packages label
+        $installPackagesScriptLines += "LAB installpackagesmenu"
+        $installPackagesScriptLines += "echo """" NOLINE >T:installpackagesmenu"
+
+        # add package options to menu
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackagesScriptLines += (("echo ""{0,-" + $installPackageNamesPadding + "} : "" NOLINE >>T:installpackagesmenu") -f $installPackageScript.Name)
+            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += "  echo ""NO "" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "ELSE"
+            $installPackagesScriptLines += "  echo ""YES"" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "ENDIF"
+        }
+
+        # add install package option and show install packages menu
+        $installPackagesScriptLines += "echo """ + (new-object System.String('-', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "set installpackagesmenu ````"
+        $installPackagesScriptLines += "set installpackagesmenu ``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"
+        $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
+
+        # switch package options
+        for($i = 0; $i -lt $installPackageScripts.Count; $i++)
+        {
+            $installPackageScript = $installPackageScripts[$i]
+
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
+            $installPackagesScriptLines += ("  IF EXISTS T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += ("    delete >NIL: T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += "  ELSE"
+            $installPackagesScriptLines += ("    echo """" NOLINE >T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += "  ENDIF"
+            $installPackagesScriptLines += "ENDIF"
+        }
+
+        # install packages option and skip back to install packages menu 
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
+        $installPackagesScriptLines += "  SKIP installpackages"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
+
+        # install packages label
+        $installPackagesScriptLines += "LAB installpackages"
+
+        # add install package script for each package
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += ("IF NOT EXISTS T:" + $installPackageScript.Id)
+            $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
+            $installPackagesScriptLines += "ENDIF"
+        }
+    }
+    else 
+    {
+        # add install package script for each package
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += $_ }
+        }
+    }
+
+    return $installPackagesScriptLines
 }
 
 
@@ -564,7 +688,7 @@ function RunInstall()
 
 
     # build user assigns script lines
-    $userAssignScriptLines = BuildUserAssignScriptLines
+    $userAssignScriptLines = BuildUserAssignScriptLines $true
 
     # write user assign to install dir
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
@@ -580,24 +704,18 @@ function RunInstall()
         {
             # extract package file to package directory
             Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
+            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.Package)
+
+            if(!(test-path -path $packageDir))
+            {
+                mkdir $packageDir | Out-Null
+            }
+
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $packageDir)
         }
 
         # build install package script lines
-        $installPackagesScriptLines = @()
-        $installPackagesScriptLines += "echo """""
-        $installPackagesScriptLines += "echo ""Package Installation"""
-        $installPackagesScriptLines += "echo ""--------------------"""
-        $installPackageScripts += BuildInstallPackagesScriptLines ($installPackages | ForEach-Object { $_.Package })
-
-        # add install package script for each package
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackagesScriptLines += $installPackageScript.Lines
-        }
-
-        $installPackagesScriptLines += "echo ""Done."""
-        $installPackagesScriptLines += ""
+        $installPackagesScriptLines = BuildInstallPackagesScriptLines $installPackages
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
@@ -662,14 +780,8 @@ function RunBuildSelfInstall()
 {
     # print preparing self install message
     Write-Host ""
-    if ($settings.Installer.Mode -eq "BuildSelfInstallPackageSelection")
-    {
-        Write-Host "Preparing build self install with package selection..."
-    }
-    else
-    {
-        Write-Host "Preparing build self install..."    
-    }
+    Write-Host "Preparing build self install..."    
+
 
     # create temp install path
     $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
@@ -700,7 +812,7 @@ function RunBuildSelfInstall()
 
     # build user assigns script lines
     $userAssignScriptLines = @()
-    $userAssignScriptLines += BuildUserAssignScriptLines
+    $userAssignScriptLines += BuildUserAssignScriptLines $true
 
     # write user assign script for building self install
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
@@ -723,96 +835,26 @@ function RunBuildSelfInstall()
         {
             # extract package file to package directory
             Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $installPackage.PackageDir)
+            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.Package)
+
+            if(!(test-path -path $packageDir))
+            {
+                mkdir $packageDir | Out-Null
+            }
+
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $packageDir)
         }
     }
 
-
-    # install packages title message
-    $installPackagesScriptLines = @()
-    $installPackagesScriptLines += "echo ""*ec"""
-    $installPackagesScriptLines += "echo ""Package Installation"""
-    $installPackagesScriptLines += "echo ""--------------------"""
 
     # build install package script lines
-    $installPackageScripts += BuildInstallPackagesScriptLines ($installPackages | ForEach-Object { $_.Package })
-
-    if ($settings.Installer.Mode -eq "BuildSelfInstallPackageSelection" -and $installPackages.Count -gt 0)
-    {
-        # get install package name padding
-        $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
-
-        # install packages label
-        $installPackagesScriptLines += "LAB installpackagesmenu"
-        $installPackagesScriptLines += "echo """" NOLINE >T:installpackagesmenu"
-
-        # add package options to menu
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackagesScriptLines += (("echo ""{0,-" + $installPackageNamesPadding + "} : "" NOLINE >>T:installpackagesmenu") -f $installPackageScript.Name)
-            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += "  echo ""NO "" >>T:installpackagesmenu"
-            $installPackagesScriptLines += "ELSE"
-            $installPackagesScriptLines += "  echo ""YES"" >>T:installpackagesmenu"
-            $installPackagesScriptLines += "ENDIF"
-        }
-
-        # add install package option and show install packages menu
-        $installPackagesScriptLines += "echo """ + (new-object System.String('-', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "set installpackagesmenu ````"
-        $installPackagesScriptLines += "set installpackagesmenu ``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"
-        $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
-
-        # switch package options
-        for($i = 0; $i -lt $installPackageScripts.Count; $i++)
-        {
-            $installPackageScript = $installPackageScripts[$i]
-
-            $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += ("    delete >NIL: T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += "  ELSE"
-            $installPackagesScriptLines += ("    echo """" NOLINE >T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += "  ENDIF"
-            $installPackagesScriptLines += "ENDIF"
-        }
-
-        # install packages option and skip back to install packages menu 
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
-        $installPackagesScriptLines += "  SKIP installpackages"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
-
-        # install packages label
-        $installPackagesScriptLines += "LAB installpackages"
-
-        # add install package script for each package
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("IF NOT EXISTS T:" + $installPackageScript.Id)
-            $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
-            $installPackagesScriptLines += "ENDIF"
-        }
-    }
-    else 
-    {
-        # add install package script for each package
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += $_ }
-        }
-    }
-
-    # install packages complete message
+    $installPackagesScriptLines = @()
+    $installPackagesScriptLines += BuildInstallPackagesScriptLines $installPackages
     $installPackagesScriptLines += "echo """""
     $installPackagesScriptLines += "echo ""Package installation is complete."""
     $installPackagesScriptLines += "echo """""
     $installPackagesScriptLines += "ask ""Press ENTER to continue"""
+
 
     # write install packages script
     $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
@@ -850,14 +892,7 @@ function RunBuildSelfInstall()
 
     # print launching winuae message
     Write-Host ""
-    if ($settings.Installer.Mode -eq "BuildSelfInstallPackageSelection")
-    {
-        Write-Host "Launching WinUAE to build self install image with package selection..."
-    }
-    else
-    {
-        Write-Host "Launching WinUAE to build self install image..."
-    }
+    Write-Host "Launching WinUAE to build self install image..."
 
 
     # winuae args
@@ -875,6 +910,69 @@ function RunBuildSelfInstall()
     {
         Fail "WinUAE installation failed"
     }
+}
+
+# run build package installation
+function RunBuildPackageInstallation()
+{
+    $outputPackageInstallationPath = FolderBrowserDialog "Select new directory for package installation" ${Env:USERPROFILE} $true
+
+    # return, if package installation directory is null
+    if ($outputPackageInstallationPath -eq $null)
+    {
+        Write-Host ""
+        Write-Host "Cancelled, no package installation directory selected!" -ForegroundColor Yellow
+        return
+    }
+
+
+    # print building package installation message
+    Write-Host ""
+    Write-Host "Building package installation..."    
+
+
+    # find packages to install
+    $installPackages = FindPackagesToInstall
+
+
+    # extract packages and write install packages script, if there's packages to install
+    if ($installPackages.Count -gt 0)
+    {
+        foreach($installPackage in $installPackages)
+        {
+            # extract package file to package directory
+            Write-Host ("Extracting '" + $installPackage.Package + "' package to package installation path")
+            $packageDir = [System.IO.Path]::Combine($outputPackageInstallationPath, $installPackage.Package)
+
+            if(!(test-path -path $packageDir))
+            {
+                mkdir $packageDir | Out-Null
+            }
+
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $packageDir)
+        }
+    }
+
+
+    # build install package script lines
+    $packageInstallationScriptLines = @()
+    $packageInstallationScriptLines += BuildUserAssignScriptLines $false
+    $packageInstallationScriptLines += "Assign PACKAGES: ""``CD``"""
+    $packageInstallationScriptLines += "SetEnv TZ MST7"
+    $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
+    $packageInstallationScriptLines += "echo """""
+    $packageInstallationScriptLines += "echo ""Package installation is complete."""
+    $packageInstallationScriptLines += "echo """""
+    $packageInstallationScriptLines += "ask ""Press ENTER to continue"""
+
+
+    # write install packages script
+    $installPackagesScriptFile = [System.IO.Path]::Combine($outputPackageInstallationPath, "Package Installation")
+    WriteAmigaTextLines $installPackagesScriptFile $packageInstallationScriptLines 
+
+
+    # copy package installation files
+    Copy-Item -Path "$packageInstallationPath\*" $outputPackageInstallationPath -recurse -force
 }
 
 
@@ -899,6 +997,7 @@ $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
+$packageInstallationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packageinstallation")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
@@ -1017,6 +1116,7 @@ switch ($settings.Installer.Mode)
     "Install" { RunInstall }
     "BuildSelfInstall" { RunBuildSelfInstall }
     "BuildSelfInstallPackageSelection" { RunBuildSelfInstall }
+    "BuildPackageInstallation" { RunBuildPackageInstallation }
 }
 
 
