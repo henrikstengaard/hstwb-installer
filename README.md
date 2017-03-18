@@ -178,6 +178,7 @@ Filename column defines the filename the Kickstart rom file will be renamed to. 
 
 Following image templates included to build new images:
 
+1. 2GB: HDF RDB, DH0 (100MB/PFS3), DH1 (1650MB/PFS3)
 1. 4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
 2. 4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)
 3. 8GB: HDF RDB, DH0 (100MB/PFS3), DH1 (7200MB/PFS3)
@@ -281,8 +282,8 @@ These are added to assigns.ini when adding a package and they can be changed lat
 HstWB Installer supports following installer modes:
 
 - Install: Installs Workbench, Kickstart roms and packages in configured image.
-- Build Self Install: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and packages.
-- Build Self Install With Package Selection: Installs scripts, tools and packages in configured image to self install Workbench, Kickstart roms and select packages to install.
+- Build Self Install: Builds install scripts, tools and packages in configured image to self install Workbench, Kickstart roms and packages.
+- Build Package Installation: Builds install scripts to install packages only.
 - Test: Test configured image.
 
 ### Preparing installer run
@@ -328,6 +329,8 @@ For "Install" and "Build Self Install" installer modes following additional file
 
 ### Install mode
 
+Install mode can install Workbench, Kickstart roms and configured packages to an image.
+
 Running HstWB Installer in install mode does the following in WinUAE:
 
 - Boots from temp install directory added as INSTALL: harddrive.
@@ -339,6 +342,9 @@ Running HstWB Installer in install mode does the following in WinUAE:
 When HstWB Installer is done, the image is ready to run in an emulator or on a real Amiga.
 
 ### Build self install mode
+
+Build self install mode builds an image that can install Workbench from floppies or adf, Kickstart roms and configured packages.
+A self install image is independent from HstWB Installer and can be run in an emulator or real Amiga with Kickstart 3.1.
 
 Running HstWB Installer in build self install mode does the following:
 
@@ -364,18 +370,32 @@ If WORKBENCHDIR: is not present or if Workbench 3.1 adf installation fails, the 
 
 Kickstart roms will be identified and installed to SYSTEMDIR:Devs/Kickstarts, if KICKSTARTDIR: is present.
 
-Then packages are installed, if any are installed in the self install image.
+For package installation a dialog is presented to select packages to install.
+This is useful for building an image with content targeted for multiple Amigas, eg. including both OCS and AGA packages for AGS2. 
+AGA packages can be selected for A1200/A4000 and OCS packages can be selected for A500/A600.
 
 When the self install process is done, the image is ready to run in an emulator or on a real Amiga.
 
-### Build self install with package selection mode
+### Build package installation mode
 
-Running HstWB Installer in build self install with package selection mode does the same as build self install mode.
-The only difference is that instead of installing packages configured for the image, it will present a dialog to select packages to install.
-This is useful for building an image with content targeted for multiple Amigas, eg. including both OCS and AGA packages for AGS2. 
-When self install is running, AGA packages can be selected for A1200/A4000 and OCS packages can be selected for A500/A600.
+Build package installation mode builds install script to install configured packages.
+A package installation is independent from HstWB Installer and can be run on any Amiga with Kickstart 3.1, so packages can be installed on existing harddrives.
+
+Running HstWB Installer in build package installation mode does the following:
+
+- Present folder dialog to select directory where to build package installation.
+- Build package installation script.
+- Copy package files to selected directory.
+
+When build package installation is done, the directory can be added in WinUAE for installation or copied to a real Amiga using CF card, network or USB depending on hardware installed in the Amiga.
+
+Running a package installation presents a dialog to select packages to install.
+This is useful as the package installation can be targeted for multiple Amigas, eg. including both OCS and AGA packages for AGS2. 
+AGA packages can be selected for A1200/A4000 and OCS packages can be selected for A500/A600.
 
 ### Test mode
+
+Test mode can be used to test configured image. It can also be used to run self install to prepare an image for use in an emulator or copying the image to a real Amiga. 
 
 Running HstWB Installer in test mode does the following:
 
