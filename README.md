@@ -233,12 +233,15 @@ Own image templates can be created by following the examples above or use files 
 
 Following packages are included with HstWB Installer msi installation:
 
-* BetterWB: An enhancement built for Workbench 3.1 built by Gulliver for low end Amigas restricted to 68000 processors.
-* HstWB: An extension of BetterWB with some icons from ClassicWB and buildin support for ACA, Furia and Blizzard accelerator cards with boot selectors and easy configuration.
-* EAB WHDLoad Demos AGA Menu: AGS2 and iGame menus generated with screenshot and details for all AGA/OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
-* EAB WHDLoad Demos OCS Menu: AGS2 and iGame menus generated with screenshot and details for all OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
-* EAB WHDLoad Games AGA Menu: AGS2 and iGame menus generated with screenshot and details for all AGA/OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
-* EAB WHDLoad Games OCS Menu: AGS2 and iGame menus generated with screenshot and details for all OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* [BetterWB Package](https://github.com/henrikstengaard/betterwb-package): An enhancement built for Workbench 3.1 built by Gulliver for low end Amigas restricted to 68000 processors.
+* [HstWB Package](https://github.com/henrikstengaard/hstwb-package): An extension of BetterWB with some icons from ClassicWB and buildin support for ACA, Furia and Blizzard accelerator cards with boot selectors and easy configuration.
+* [ClassicWB LITE Package](https://github.com/henrikstengaard/classicwb-lite-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 using 4/8/16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
+* [ClassicWB FULL Package](https://github.com/henrikstengaard/classicwb-full-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
+* [ClassicWB ADV Package](https://github.com/henrikstengaard/classicwb-adv-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using Multisync / Interlaced 640x512 display.
+* [EAB WHDLoad Demos AGA Menu Package](https://github.com/henrikstengaard/eab-whdload-demos-aga-menu-package): AGS2 and iGame menus generated with screenshot and details for all AGA/OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* [EAB WHDLoad Demos OCS Menu Package](https://github.com/henrikstengaard/eab-whdload-demos-ocs-menu-package): AGS2 and iGame menus generated with screenshot and details for all OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* [EAB WHDLoad Games AGA Menu Package](https://github.com/henrikstengaard/eab-whdload-games-aga-menu-package): AGS2 and iGame menus generated with screenshot and details for all AGA/OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
+* [EAB WHDLoad Games OCS Menu Package](https://github.com/henrikstengaard/eab-whdload-games-ocs-menu-package): AGS2 and iGame menus generated with screenshot and details for all OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
 
 ---
 
