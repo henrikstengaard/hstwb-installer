@@ -145,16 +145,17 @@ execute "HSTWBINSTALLERDIR:Patch-Installation"
 resident SYSTEMDIR:C/Reboot PURE 
 resident SYSTEMDIR:C/UnZip PURE 
 resident SYSTEMDIR:C/UAEquit PURE 
+resident SYSTEMDIR:C/MakePath PURE 
 
 
 ; Create temp directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/"
-  makedir >NIL: "HSTWBINSTALLERDIR:Temp"
+IF NOT EXISTS "SYSTEMDIR:Temp/FMS"
+  makepath >NIL: "SYSTEMDIR:Temp/FMS"
 ENDIF
 
 
 ; Mount and assign FMS 
-assign FMS: HSTWBINSTALLERDIR:Temp
+assign FMS: SYSTEMDIR:Temp/FMS
 Mount FF0:
 
 
@@ -241,8 +242,7 @@ echo "will now be deleted."
 
 ; Unmount and remove FMS assign 
 assign FF0: dismount
-wait 1
-assign FMS: HSTWBINSTALLERDIR:Temp REMOVE
+assign FMS: SYSTEMDIR:Temp/FMS REMOVE
 
 
 ; Delete HstWB Installer directories
