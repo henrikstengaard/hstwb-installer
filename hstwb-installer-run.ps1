@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-27
+# Date:   2017-03-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -859,6 +859,38 @@ function RunBuildSelfInstall()
     # write install packages script
     $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
+
+
+    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+
+    if (!$hstwbInstallerAssigns)
+    {
+        Fail ("Failed to run install. HstWB Installer assigns doesn't exist!")
+    }
+
+
+    $hstwbInstallAssignName = $hstwbInstallerAssigns.keys | Where-Object { $_ -match 'HstWBInstallerDir' } | Select-Object -First 1
+
+    if (!$hstwbInstallerAssigns)
+    {
+        Fail ("Failed to run install. HstWB Installer assigns doesn't containassign for 'HstWBInstallerDir' exist!")
+    }
+
+    $hstwbInstallDir = $hstwbInstallerAssigns.Get_Item($hstwbInstallAssignName)
+
+    $removeHstwbInstallerScriptLines = @()
+    $removeHstwbInstallerScriptLines += "Assign PACKAGES: ""HstWBInstallerDir:Packages"" REMOVE"
+    $removeHstwbInstallerScriptLines += "Assign >NIL: EXISTS ""HSTWBINSTALLERDIR:"""
+    $removeHstwbInstallerScriptLines += "IF NOT WARN"
+    $removeHstwbInstallerScriptLines += "  Assign >NIL: HSTWBINSTALLERDIR: ""$hstwbInstallDir"" REMOVE"
+    $removeHstwbInstallerScriptLines += "  IF EXISTS ""$hstwbInstallDir"""
+    $removeHstwbInstallerScriptLines += "    delete >NIL: ""$hstwbInstallDir"" ALL"
+    $removeHstwbInstallerScriptLines += "  ENDIF"
+    $removeHstwbInstallerScriptLines += "ENDIF"
+    
+    # write remove hstwb installer script
+    $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\Remove-HstWBInstaller")
+    WriteAmigaTextLines $removeHstwbInstallerScriptFile $removeHstwbInstallerScriptLines 
 
 
     # build winuae install harddrives config
