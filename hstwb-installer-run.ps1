@@ -441,6 +441,7 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += "echo ""--------------------"""
 
     # build install package script lines
+    $installPackageScripts = @()
     $installPackageScripts += BuildInstallPackageScriptLines ($installPackages | ForEach-Object { $_.Package })
 
     if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
