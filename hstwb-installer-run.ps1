@@ -424,7 +424,7 @@ function BuildInstallPackageScriptLines($packageNames)
             $installPackageLines += $removePackageAssignLines
         }
 
-        $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines }
+        $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines; "PackageName" = $packageName }
     }
 
     return $installPackageScripts
@@ -466,6 +466,8 @@ function BuildInstallPackagesScriptLines($installPackages)
 
         # add install package option and show install packages menu
         $installPackagesScriptLines += "echo """ + (new-object System.String('-', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "set installpackagesmenu ````"
         $installPackagesScriptLines += "set installpackagesmenu ``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"
@@ -489,12 +491,75 @@ function BuildInstallPackagesScriptLines($installPackages)
         # install packages option and skip back to install packages menu 
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
+        $installPackagesScriptLines += "  SKIP viewreadmemenu"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 3) + """")
+        $installPackagesScriptLines += "  SKIP editassignsmenu"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
         $installPackagesScriptLines += "  SKIP installpackages"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
 
-        # install packages label
+
+
+        # view readme
+        # -----------
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "LAB viewreadmemenu"
+        $installPackagesScriptLines += "echo """" NOLINE >T:viewreadmemenu"
+
+        # add package options to view readme menu
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackagesScriptLines += (("echo ""{0,-" + $installPackageNamesPadding + "}"" >>T:viewreadmemenu") -f $installPackageScript.Name)
+        }
+
+        # add back option to view readme menu
+        $installPackagesScriptLines += "echo """ + (new-object System.String('-', $installPackageNamesPadding)) + """ >>T:viewreadmemenu"
+        $installPackagesScriptLines += "echo ""Back"" >>T:viewreadmemenu"
+
+        $installPackagesScriptLines += "set viewreadmemenu ````"
+        $installPackagesScriptLines += "set viewreadmemenu ``ReqList CLONERT I=T:viewreadmemenu H=""View Readme"" PAGE=18``"
+        $installPackagesScriptLines += "delete >NIL: T:viewreadmemenu"
+
+        # switch package options
+        for($i = 0; $i -lt $installPackageScripts.Count; $i++)
+        {
+            $installPackageScript = $installPackageScripts[$i]
+
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($i + 1) + """")
+            $installPackagesScriptLines += ("  IF EXISTS PACKAGES:{0}/README.guide" -f $installPackageScript.PackageName)
+            $installPackagesScriptLines += ("    cd PACKAGES:" + $installPackageScript.PackageName)
+            $installPackagesScriptLines += "    multiview README.guide"
+            $installPackagesScriptLines += "    cd PACKAGES:"
+            $installPackagesScriptLines += "  ELSE"
+            $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Name)
+            $installPackagesScriptLines += "  ENDIF"
+            $installPackagesScriptLines += "ENDIF"
+        }
+
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($installPackageScripts.Count + 2) + """")
+        $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "SKIP BACK viewreadmemenu"
+
+
+        # edit assigns
+        # ------------
+        $installPackagesScriptLines += "LAB editassignsmenu"
+        $installPackagesScriptLines += "REQUESTCHOICE ""Not implemented"" ""Edit assigns is not implemented yet!"" ""OK"" >NIL:"
+        $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
+
+
+        # install packages
+        # ----------------
         $installPackagesScriptLines += "LAB installpackages"
 
         # add install package script for each package
