@@ -760,12 +760,14 @@ else
 }
 
 
-# create default assigns, if assigns file doesn't exist
+# read assigns, if assigns file exist
 if (test-path -path $assignsFile)
 {
     $assigns = ReadIniFile $assignsFile
 }
-else
+
+# create defailt assigns, if assigns is empty or doesn't contain global assigns
+if ($assigns.Keys.Count -eq 0 -or !$assigns.ContainsKey('Global'))
 {
     DefaultAssigns $assigns
 }

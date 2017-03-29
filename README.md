@@ -102,13 +102,13 @@ The parameters in settings.ini file configures with following:
 
 Assigns.ini example:
 ###
-    [HstWB Installer]
+    [Global]
     HstWBInstallerDir=DH1:HstWBInstaller
     SystemDir=DH0:
     [EAB WHDLoad Games AGA Menu]
     WHDLOADDIR=DH1:
 
-The "HstWB Installer" section is required and defines the following:
+The "Global" section is required and defines the following:
 
 - SystemDir: Path to Workbench and system files.
 - HstWBInstallerDir: Path to HstWB Installer script, tools and packages for build self install mode.

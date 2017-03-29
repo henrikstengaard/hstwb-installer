@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-03-23
+# Date:   2017-03-28
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -277,11 +277,11 @@ function FindPackagesToInstall()
 # build user assign script lines
 function BuildUserAssignScriptLines($createDirectories)
 {
-    $hstwbInstallerAssigns = $assigns.Get_Item('HstWB Installer')
+    $globalAssigns = $assigns.Get_Item('Global')
 
     $userAssignScriptLines = @()
 
-    foreach ($assignName in $hstwbInstallerAssigns.keys)
+    foreach ($assignName in $globalAssigns.keys)
     {
         # skip, if assign name is 'HstWBInstallerDir' and installer mode is build package installation
         if ($assignName -match 'HstWBInstallerDir' -and $settings.Installer.Mode -eq "BuildPackageInstallation")
@@ -290,7 +290,7 @@ function BuildUserAssignScriptLines($createDirectories)
         }
 
         # get assign path and drive
-        $assignPath = $hstwbInstallerAssigns.Get_Item($assignName)
+        $assignPath = $globalAssigns.Get_Item($assignName)
         $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
 
         # add package assign lines
@@ -329,7 +329,7 @@ function BuildUserAssignScriptLines($createDirectories)
 # build install package script lines
 function BuildInstallPackageScriptLines($packageNames)
 {
-    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+    $globalAssigns = $assigns.Get_Item('Global')
 
     $installPackageScripts = @()
 
@@ -366,9 +366,9 @@ function BuildInstallPackageScriptLines($packageNames)
         }
 
 
-        # build global assign names from hstwb installer and package assigns
+        # build global assign names from global and package assigns
         $globalAssignNames = @{}
-        $hstwbInstallerAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+        $globalAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
         $packageAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
 
 
@@ -377,10 +377,10 @@ function BuildInstallPackageScriptLines($packageNames)
         {
             foreach ($packageAssignName in $packageAssignNames)
             {
-                # fail, if package assign name doesn't exist in either hstwb installer or package assigns
+                # fail, if package assign name doesn't exist in either global or package assigns
                 if (!$globalAssignNames.ContainsKey($packageAssignName))
                 {
-                    Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either hstwb installer or package assigns!")
+                    Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
                 }
 
                 # skip, if package assign name is not part of package assigns
@@ -927,22 +927,22 @@ function RunBuildSelfInstall()
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
-    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+    $globalAssigns = $assigns.Get_Item('Global')
 
-    if (!$hstwbInstallerAssigns)
+    if (!$globalAssigns)
     {
-        Fail ("Failed to run install. HstWB Installer assigns doesn't exist!")
+        Fail ("Failed to run install. Global assigns doesn't exist!")
     }
 
 
-    $hstwbInstallAssignName = $hstwbInstallerAssigns.keys | Where-Object { $_ -match 'HstWBInstallerDir' } | Select-Object -First 1
+    $hstwbInstallDirAssignName = $globalAssigns.keys | Where-Object { $_ -match 'HstWBInstallerDir' } | Select-Object -First 1
 
-    if (!$hstwbInstallerAssigns)
+    if (!$hstwbInstallDirAssignName)
     {
-        Fail ("Failed to run install. HstWB Installer assigns doesn't containassign for 'HstWBInstallerDir' exist!")
+        Fail ("Failed to run install. Global assigns doesn't containassign for 'HstWBInstallerDir' exist!")
     }
 
-    $hstwbInstallDir = $hstwbInstallerAssigns.Get_Item($hstwbInstallAssignName)
+    $hstwbInstallDir = $globalAssigns.Get_Item($hstwbInstallDirAssignName)
 
     $removeHstwbInstallerScriptLines = @()
     $removeHstwbInstallerScriptLines += "Assign PACKAGES: ""HstWBInstallerDir:Packages"" REMOVE"

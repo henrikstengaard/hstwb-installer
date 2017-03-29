@@ -108,8 +108,8 @@ function DefaultSettings($settings)
 # default assigns
 function DefaultAssigns($assigns)
 {
-    $defaultHstwbInstallerAssigns = @{ "SystemDir" = "DH0:"; "HstWBInstallerDir" = "DH1:HstWBInstaller" }
-    $assigns.Set_Item("HstWB Installer", $defaultHstwbInstallerAssigns)
+    $defaultHstwbInstallerAssigns = @{ 'SystemDir' = 'DH0:'; 'HstWBInstallerDir' = 'DH1:HstWBInstaller' }
+    $assigns.Set_Item('Global', $defaultHstwbInstallerAssigns)
 }
 
 
@@ -275,12 +275,12 @@ function UpdateAssigns($packages, $settings, $assigns)
     }
 
     # remove assigns for packages, that aren't going to be installed
-    $assingSectionNames = $assigns.keys | Where-Object { $_ -notmatch 'hstwb installer' }
-    foreach ($assingSectionName in $assingSectionNames)
+    $assignSectionNames = $assigns.keys | Where-Object { $_ -notmatch 'Global' }
+    foreach ($assignSectionName in $assignSectionNames)
     {
-        if (!$packageNames.Contains($assingSectionName))
+        if (!$packageNames.Contains($assignSectionName))
         {
-            $assigns.Remove($assingSectionName)
+            $assigns.Remove($assignSectionName)
         }
     }
 }
@@ -289,35 +289,35 @@ function UpdateAssigns($packages, $settings, $assigns)
 # validate assigns
 function ValidateAssigns($assigns)
 {
-    # return false, if assigns doesn't contain hstwb intaller section
-    if (!$assigns.ContainsKey("HstWB Installer"))
+    # return false, if assigns doesn't contain global section
+    if (!$assigns.ContainsKey('Global'))
     {
-        Write-Host "Error: Assigns doesn't contain 'HstWB Installer' section!" -ForegroundColor "Red"
+        Write-Host "Error: Assigns doesn't contain 'Global' section!" -ForegroundColor "Red"
         return $false
     }
 
 
-    $hstwbInstallerAssigns = $assigns.Get_Item("HstWB Installer")
+    $globalAssigns = $assigns.Get_Item('Global')
 
-    # get assign names from hstwb installer section
-    $hstwbInstallerAssignNames = @()
-    $hstwbInstallerAssignNames += $hstwbInstallerAssigns.keys | ForEach-Object { $_.ToUpper() } 
+    # get assign names from global section
+    $globalAssignNames = @()
+    $globalAssignNames += $globalAssigns.keys | ForEach-Object { $_.ToUpper() } 
 
 
-    # check hstwb installer assign names contain 'SYSTEMDIR', 'HSTWBINSTALLERDIR' assign name
+    # check global assign names contain 'SYSTEMDIR', 'HSTWBINSTALLERDIR' assign name
     foreach ($assignName in @("SYSTEMDIR", "HSTWBINSTALLERDIR"))
     {
-        # return false, if hstwb installer section doesn't contain assign name
-        if (!($hstwbInstallerAssignNames -contains $assignName))
+        # return false, if global section doesn't contain assign name
+        if (!($globalAssignNames -contains $assignName))
         {
-            Write-Host "Error: Assign section 'HstWB Installer' doesn't contain assign name '$assignName'!" -ForegroundColor "Red"
+            Write-Host "Error: Assign section 'Global' doesn't contain assign name '$assignName'!" -ForegroundColor "Red"
             return $false
         }
     }
 
 
-    # validate assign sections other than hstwb installer
-    foreach ($assignSectionName in ($assigns.keys | Where-Object { $_ -notmatch 'HstWB Installer' }))
+    # validate assign sections other than global
+    foreach ($assignSectionName in ($assigns.keys | Where-Object { $_ -notmatch 'Global' }))
     {
         $assignSection = $assigns.Get_Item($assignSectionName)
 
