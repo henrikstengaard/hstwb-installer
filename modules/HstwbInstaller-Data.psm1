@@ -41,13 +41,20 @@ function ReadZipEntryTextFile($zipFile, $entryName)
     return $text
 }
 
-# calculate md5 hash
-function CalculateMd5($path)
+# calculate md5 hash from file
+function CalculateMd5FromFile($file)
 {
 	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-	return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($path))).ToLower().Replace('-', '')
+	return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
 }
 
+# calculate md5 hash from text
+function CalculateMd5FromText($text)
+{
+    $encoding = [system.Text.Encoding]::UTF8
+	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+	return [System.BitConverter]::ToString($md5.ComputeHash($encoding.GetBytes($text))).ToLower().Replace('-', '')
+}
 
 # get file hashes
 function GetFileHashes($path)
@@ -58,7 +65,7 @@ function GetFileHashes($path)
 
     foreach ($file in $files)
     {
-        $md5Hash = (CalculateMd5 $file.FullName)
+        $md5Hash = CalculateMd5FromFile $file.FullName
 
         $fileHashes += @{ "File" = $file.FullName; "Md5Hash" = $md5Hash }
     }
@@ -203,7 +210,8 @@ function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
 
 # export
 export-modulemember -function ReadZipEntryTextFile
-export-modulemember -function CalculateMd5
+export-modulemember -function CalculateMd5FromText
+export-modulemember -function CalculateMd5FromFile
 export-modulemember -function GetFileHashes
 export-modulemember -function FindMatchingFileHashes
 export-modulemember -function ReadString
