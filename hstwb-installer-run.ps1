@@ -125,6 +125,20 @@ function FolderBrowserDialog($title, $directory, $showNewFolderButton)
 }
 
 
+# confirm dialog
+function ConfirmDialog($title, $message)
+{
+    $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::OKCancel)
+
+    if($result -eq "OK")
+    {
+        return $true
+    }
+
+    return $false
+}
+
+
 # write text file encoded for Amiga
 function WriteAmigaTextLines($path, $lines)
 {
@@ -554,7 +568,36 @@ function BuildInstallPackagesScriptLines($installPackages)
         # edit assigns
         # ------------
         $installPackagesScriptLines += "LAB editassignsmenu"
-        $installPackagesScriptLines += "REQUESTCHOICE ""Not implemented"" ""Edit assigns is not implemented yet!"" ""OK"" >NIL:"
+        $installPackagesScriptLines += "echo """" NOLINE >T:editassignsmenu"
+
+        $assignSectionNames = @('Global')
+        $assignSectionNames += $assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
+
+
+
+        foreach($assignSectionName in $assignSectionNames)
+        {
+            $installPackagesScriptLines += ("echo ""[{0}]"" >>T:editassignsmenu" -f $assignSectionName)
+
+            $assignSection = $assigns[$assignSectionName]
+
+            foreach ($assignName in ($assignSection.keys | Sort-Object))
+            {
+                # need to support dynamic from file here!
+                $installPackagesScriptLines += ("echo ""{0}:={1}"" >>T:editassignsmenu" -f $assignName, $assignSection[$assignName])
+            }
+        }
+
+
+        # add back option to view readme menu
+        $installPackagesScriptLines += "echo ""--------------------"" >>T:editassignsmenu"
+        $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
+
+        $installPackagesScriptLines += "set editassignsmenu ````"
+        $installPackagesScriptLines += "set editassignsmenu ``ReqList CLONERT I=T:editassignsmenu H=""Edit assigns"" PAGE=18``"
+        $installPackagesScriptLines += "delete >NIL: T:editassignsmenu"
+
+
         $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
 
 
@@ -1023,6 +1066,25 @@ function RunBuildPackageInstallation()
         return
     }
 
+    # show confirm overwrite dialog, if package installation directory is not empty
+    if ((Get-ChildItem -Path $outputPackageInstallationPath -Recurse).Count -gt 0)
+    {
+        if (!(ConfirmDialog "Overwrite files" ("Package installation directory '" + $outputPackageInstallationPath + "' is not empty.`r`n`r`nDo you want to overwrite files?")))
+        {
+            Write-Host ""
+            Write-Host "Cancelled, package installation directory is not empty!" -ForegroundColor Yellow
+            return
+        }
+    }
+
+    # delete package installation directory, if it exists
+    if (Test-Path $outputPackageInstallationPath)
+    {
+        Remove-Item -Path $outputPackageInstallationPath -Recurse -Force
+    }
+
+    # create package installation directory
+    mkdir $outputPackageInstallationPath | Out-Null
 
     # print building package installation message
     Write-Host ""
