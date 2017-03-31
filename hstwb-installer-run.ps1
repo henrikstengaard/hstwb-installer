@@ -354,12 +354,12 @@ function BuildInstallPackageScriptLines($packageNames)
 
 
         # build package assigns
-        $packageAssigns = @{}            
-        if ($assigns.ContainsKey($package.Package.Name))
-        {
-            $tempPackageAssigns = $assigns.Get_Item($package.Package.Name)
-            $tempPackageAssigns.keys | ForEach-Object { $packageAssigns.Set_Item($_.ToUpper(), $tempPackageAssigns.Get_Item($_)) }
-        }
+        # $packageAssigns = @{}            
+        # if ($assigns.ContainsKey($package.Package.Name))
+        # {
+        #     $tempPackageAssigns = $assigns.Get_Item($package.Package.Name)
+        #     $tempPackageAssigns.keys | ForEach-Object { $packageAssigns.Set_Item($_.ToUpper(), $tempPackageAssigns.Get_Item($_)) }
+        # }
 
 
         $name = ($package.Package.Name + " v" + $package.Package.Version)
@@ -373,50 +373,68 @@ function BuildInstallPackageScriptLines($packageNames)
         $removePackageAssignLines = @()
 
         # get package assign names
-        $packageAssignNames = @()
-        if ($package.Package.Assigns)
-        {
-            $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
-        }
+        #$packageAssignNames = @()
+        #if ($package.Package.Assigns)
+        #{
+        #    $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
+        #}
 
+        $packageAssigns = $assigns.Get_Item($package.Package.Name)
 
         # build global assign names from global and package assigns
-        $globalAssignNames = @{}
-        $globalAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
-        $packageAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+        #$globalAssignNames = @{}
+        #$globalAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+        #$packageAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
+
 
 
         # add package assigns, if assigns exist for package and any are defined
-        if ($packageAssignNames.Count -gt 0)
+        if ($packageAssigns.keys.Count -gt 0)
         {
-            foreach ($packageAssignName in $packageAssignNames)
+            
+            foreach ($assignName in $packageAssigns.keys)
             {
                 # fail, if package assign name doesn't exist in either global or package assigns
-                if (!$globalAssignNames.ContainsKey($packageAssignName))
-                {
-                    Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
-                }
+                # if (!$globalAssignNames.ContainsKey($packageAssignName))
+                # {
+                #     Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
+                # }
 
-                # skip, if package assign name is not part of package assigns
-                if (!$packageAssigns.ContainsKey($packageAssignName))
-                {
-                    continue
-                }
+                # # skip, if package assign name is not part of package assigns
+                # if (!$packageAssigns.ContainsKey($packageAssignName))
+                # {
+                #     continue
+                # }
 
                 # get assign path and drive
-                $assignPath = $packageAssigns.Get_Item($packageAssignName)
-                $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
+                $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
+                $assignPath = $packageAssigns.Get_Item($assignName)
+                # $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
+
+                $installPackageLines += ""
+                $installPackageLines += ("; Add assign and variable for package assign '{0}'" -f ($assignName.ToUpper()))
+                $installPackageLines += ("IF EXISTS ""T:{0}""" -f $assignId)
+                $installPackageLines += ("  Set assignpath ""``type ""T:{0}""``""" -f $assignId)
+                $installPackageLines += "ELSE"
+                $installPackageLines += ("  Set assignpath ""{0}""" -f $assignPath)
+                $installPackageLines += "ENDIF"
+                $installPackageLines += "Assign >NIL: EXISTS ""`$assignpath"""
+                $installPackageLines += "IF WARN"
+                $installPackageLines += "  MakePath ""`$assignpath"""
+                $installPackageLines += "ENDIF"
+                $installPackageLines += ("Set {0} ""`$assignpath""" -f ($assignName.ToUpper()))
+                $installPackageLines += ("Assign {0}: ""`$assignpath""" -f ($assignName.ToUpper()))
 
                 # add package assign lines
-                $installPackageLines += "; Add package assign for '$packageAssignName' to '$assignPath'"
-                $installPackageLines += "Assign >NIL: EXISTS ""$assignDrive"""
-                $installPackageLines += "IF WARN"
-                $installPackageLines += "  echo ""Error: '$assignDrive' doesn't exist and is required by package!"""
-                $installPackageLines += "  ask ask ""Press ENTER to continue"""
-                $installPackageLines += "ELSE"
-                $installPackageLines += ("  makepath """ + $assignPath + """")
-                $installPackageLines += ("  Assign " + $packageAssignName + ": """ + $assignPath + """")
-                $installPackageLines += "ENDIF"
+                # $installPackageLines += "; Add package assign for '$packageAssignName' to '$assignPath'"
+                # $installPackageLines += "Assign >NIL: EXISTS ""$assignDrive"""
+                # $installPackageLines += "IF WARN"
+                # $installPackageLines += "  echo ""Error: '$assignDrive' doesn't exist and is required by package!"""
+                # $installPackageLines += "  ask ask ""Press ENTER to continue"""
+                # $installPackageLines += "ELSE"
+                # $installPackageLines += ("  makepath """ + $assignPath + """")
+                # $installPackageLines += ("  Assign " + $packageAssignName + ": """ + $assignPath + """")
+                # $installPackageLines += "ENDIF"
 
                 # remove package assign lines
                 $removePackageAssignLines += ("Assign " + $packageAssignName + ": """ + $assignPath + """ REMOVE")
@@ -451,9 +469,8 @@ function BuildInstallPackagesScriptLines($installPackages)
     # install packages title message
     $installPackagesScriptLines = @()
 
-
+    $installPackagesScriptLines += "SKIP resetsettings"
     $installPackagesScriptLines += ""
-    $installPackagesScriptLines += "SKIP installpackagesmenu"
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "; Select assign path function"
     $installPackagesScriptLines += "; ---------------------------"
@@ -464,9 +481,15 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += "  set assignpath ""SYS:"""
     $installPackagesScriptLines += "ENDIF"
     $installPackagesScriptLines += ""
+    $installPackagesScriptLines += "; Set assign path to SYS:, if path doesn't exist"
+    $installPackagesScriptLines += "Assign >NIL: EXISTS ""`$assignpath"""
+    $installPackagesScriptLines += "IF WARN"
+    $installPackagesScriptLines += "  set assignpath ""SYS:"""
+    $installPackagesScriptLines += "ENDIF"
+    $installPackagesScriptLines += ""
     $installPackagesScriptLines += "; Show select path for assign dialog"
-    $installPackagesScriptLines += "set newassignpath """
-    $installPackagesScriptLines += "set newassignpath ``REQUESTFILE DRAWER ""`$assignpath"" TITLE ""Select path for assign '`$assignname'"" NOICONS DRAWERSONLY``"""
+    $installPackagesScriptLines += "set newassignpath """""
+    $installPackagesScriptLines += "set newassignpath ``REQUESTFILE DRAWER ""`$assignpath"" TITLE ""Select '`$assignname' assign"" NOICONS DRAWERSONLY``"
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "; Return, if select path for assign dialog is cancelled"
     $installPackagesScriptLines += "IF ""`$newassignpath"" eq """""
@@ -478,9 +501,6 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "SKIP `$returnlab"
     $installPackagesScriptLines += ""
-    $installPackagesScriptLines += "echo ""*ec"""
-    $installPackagesScriptLines += "echo ""Package Installation"""
-    $installPackagesScriptLines += "echo ""--------------------"""
 
     # build install package script lines
     $installPackageScripts = @()
@@ -490,6 +510,36 @@ function BuildInstallPackagesScriptLines($installPackages)
     {
         # get install package name padding
         $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+
+        # reset settings
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "; Reset settings"
+        $installPackagesScriptLines += "; --------------"
+        $installPackagesScriptLines += "LAB resetsettings"
+        $installPackagesScriptLines += ""
+
+        # reset package settings
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Id)
+            $installPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Id)
+            $installPackagesScriptLines += "ENDIF"
+        }
+
+        # reset assigns settings
+        foreach ($assignSectionName in $assigns.keys)
+        {
+            $sectionAssigns = $assigns[$assignSectionName]
+
+            foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+            {
+                $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+
+                $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $assignId)
+                $installPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $assignId)
+                $installPackagesScriptLines += "ENDIF"
+            }
+        }
 
         # install packages label
         $installPackagesScriptLines += ""
@@ -503,15 +553,15 @@ function BuildInstallPackagesScriptLines($installPackages)
         foreach ($installPackageScript in $installPackageScripts)
         {
             $installPackagesScriptLines += (("echo ""{0,-" + $installPackageNamesPadding + "} : "" NOLINE >>T:installpackagesmenu") -f $installPackageScript.Name)
-            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += "  echo ""NO "" >>T:installpackagesmenu"
-            $installPackagesScriptLines += "ELSE"
+            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Id)
             $installPackagesScriptLines += "  echo ""YES"" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "ELSE"
+            $installPackagesScriptLines += "  echo ""NO "" >>T:installpackagesmenu"
             $installPackagesScriptLines += "ENDIF"
         }
 
         # add install package option and show install packages menu
-        $installPackagesScriptLines += "echo """ + (new-object System.String('-', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo """ + (new-object System.String('=', ($installPackageNamesPadding + 6))) + """ >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
@@ -533,10 +583,10 @@ function BuildInstallPackagesScriptLines($installPackages)
 
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += ("    delete >NIL: T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Id)
+            $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Id)
             $installPackagesScriptLines += "  ELSE"
-            $installPackagesScriptLines += ("    echo """" NOLINE >T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Id)
             $installPackagesScriptLines += "  ENDIF"
             $installPackagesScriptLines += "ENDIF"
         }
@@ -552,7 +602,10 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
-        $installPackagesScriptLines += "  SKIP installpackages"
+        $installPackagesScriptLines += "  setenv proceedpackageinstallation ``RequestChoice ""Procees"" ""Procees with package installation?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  IF ""`$proceedpackageinstallation"" EQ ""1"""
+        $installPackagesScriptLines += "    SKIP installpackages"
+        $installPackagesScriptLines += "  ENDIF"
         $installPackagesScriptLines += "ENDIF"
 
         if ($settings.Installer.Mode -eq "BuildPackageInstallation")
@@ -583,7 +636,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         }
 
         # add back option to view readme menu
-        $installPackagesScriptLines += "echo """ + (new-object System.String('-', $installPackageNamesPadding)) + """ >>T:viewreadmemenu"
+        $installPackagesScriptLines += "echo """ + (new-object System.String('=', $installPackageNamesPadding)) + """ >>T:viewreadmemenu"
         $installPackagesScriptLines += "echo ""Back"" >>T:viewreadmemenu"
 
         $installPackagesScriptLines += "set viewreadmemenu ````"
@@ -597,10 +650,10 @@ function BuildInstallPackagesScriptLines($installPackages)
 
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS PACKAGES:{0}/README.guide" -f $installPackageScript.PackageName)
-            $installPackagesScriptLines += ("    cd PACKAGES:" + $installPackageScript.PackageName)
+            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGES:{0}/README.guide""" -f $installPackageScript.PackageName)
+            $installPackagesScriptLines += ("    cd ""PACKAGES:{0}""" -f $installPackageScript.PackageName)
             $installPackagesScriptLines += "    multiview README.guide"
-            $installPackagesScriptLines += "    cd PACKAGES:"
+            $installPackagesScriptLines += "    cd ""PACKAGES:"""
             $installPackagesScriptLines += "  ELSE"
             $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Name)
             $installPackagesScriptLines += "  ENDIF"
@@ -633,16 +686,25 @@ function BuildInstallPackagesScriptLines($installPackages)
 
         foreach($assignSectionName in $assignSectionNames)
         {
-            $editAssignsMenuOption++
-
             # add menu option to show assign section name
-            $installPackagesScriptLines += ("echo ""--- {0} ---"" >>T:editassignsmenu" -f $assignSectionName)
+            $installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f $assignSectionName)
+            $installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
+
+            # increase menu option
+            $editAssignsMenuOption += 2
 
             # get section assigns
             $sectionAssigns = $assigns[$assignSectionName]
 
             foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
             {
+                # skip hstwb installer assign name for global assigns
+                if ($assignSectionName -like 'Global' -and $assignName -like 'HstWBInstallerDir')
+                {
+                    continue
+                }
+
+                # increase menu option
                 $editAssignsMenuOption++
 
                 $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
@@ -650,17 +712,26 @@ function BuildInstallPackagesScriptLines($installPackages)
 
                 # add menu option showing and editing assign witnin section
                 $installPackagesScriptLines += ""
-                $installPackagesScriptLines += ("IF EXISTS ""T:{0}"" >>T:editassignsmenu" -f $assignId)
+                $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $assignId)
                 $installPackagesScriptLines += ("  echo ""{0}: = '``type ""T:{1}""``'"" >>T:editassignsmenu" -f $assignName, $assignId)
                 $installPackagesScriptLines += "ELSE"
-                $installPackagesScriptLines += ("  echo ""{0}: = '{1}'"" >>T:editassignsmenu" -f $assignName, $assignPath)
+                $installPackagesScriptLines += ("  Assign >NIL: EXISTS ""{0}""" -f $assignPath)
+                $installPackagesScriptLines += "  IF WARN"
+                $installPackagesScriptLines += ("    echo ""{0}: = ?"" >>T:editassignsmenu" -f $assignName)
+                $installPackagesScriptLines += "  ELSE"
+                $installPackagesScriptLines += ("    echo ""{0}: = '{1}'"" >>T:editassignsmenu" -f $assignName, $assignPath)
+                $installPackagesScriptLines += "  ENDIF"
                 $installPackagesScriptLines += "ENDIF"
 
                 $editAssignsMenuOptionScriptLines += ""
                 $editAssignsMenuOptionScriptLines += ("IF ""`$editassignsmenu"" eq """ + $editAssignsMenuOption + """")
                 $editAssignsMenuOptionScriptLines += ("  set assignid ""{0}""" -f $assignId)
                 $editAssignsMenuOptionScriptLines += ("  set assignname ""{0}""" -f $assignName)
-                $editAssignsMenuOptionScriptLines += ("  set assignpath ""{0}""" -f $assignPath)
+                $editAssignsMenuOptionScriptLines += ("  IF EXISTS ""T:{0}""" -f $assignId)
+                $editAssignsMenuOptionScriptLines += ("    set assignpath ""``type ""T:{0}""``""" -f $assignId)
+                $editAssignsMenuOptionScriptLines += "  ELSE"
+                $editAssignsMenuOptionScriptLines += ("    set assignpath ""{0}""" -f $assignPath)
+                $editAssignsMenuOptionScriptLines += "  ENDIF"
                 $editAssignsMenuOptionScriptLines += "  set returnlab ""editassignsmenu"""
                 $editAssignsMenuOptionScriptLines += "  SKIP BACK functionselectassignpath"
                 $editAssignsMenuOptionScriptLines += "ENDIF"
@@ -668,7 +739,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         }
 
         # add back option to view readme menu
-        $installPackagesScriptLines += "echo ""----------------------------------------"" >>T:editassignsmenu"
+        $installPackagesScriptLines += "echo ""========================================"" >>T:editassignsmenu"
         $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
 
         $installPackagesScriptLines += "set editassignsmenu ````"
@@ -693,12 +764,19 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "; Install packages"
         $installPackagesScriptLines += "; ----------------"
         $installPackagesScriptLines += "LAB installpackages"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "echo ""*ec"""
+        $installPackagesScriptLines += "echo ""Package Installation"""
+        $installPackagesScriptLines += "echo ""--------------------"""
+
+        #$packageInstallationScriptLines += BuildUserAssignScriptLines $false
+
 
         # add install package script for each package
         foreach ($installPackageScript in $installPackageScripts)
         {
             $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("IF NOT EXISTS T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1177,7 +1255,7 @@ function RunBuildPackageInstallation()
 
     # print building package installation message
     Write-Host ""
-    Write-Host "Building package installation..."    
+    Write-Host "Building package installation to '$outputPackageInstallationPath'..."    
 
 
     # find packages to install
@@ -1190,7 +1268,7 @@ function RunBuildPackageInstallation()
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
-            Write-Host ("Extracting '" + $installPackage.Package + "' package to package installation path")
+            Write-Host ("Extracting '" + $installPackage.Package + "' package to package installation")
             $packageDir = [System.IO.Path]::Combine($outputPackageInstallationPath, $installPackage.Package)
 
             if(!(test-path -path $packageDir))
@@ -1212,10 +1290,12 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += ";"
     $packageInstallationScriptLines += "; An package installation script generated by HstWB Installer to install configured and/or selected packages."
     $packageInstallationScriptLines += ""
-    $packageInstallationScriptLines += BuildUserAssignScriptLines $false
+    $packageInstallationScriptLines += "; Set environment variables for package installation"
     $packageInstallationScriptLines += "Assign PACKAGES: ""``CD``"""
     $packageInstallationScriptLines += "SetEnv TZ MST7"
+    $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
+    $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "echo """""
     $packageInstallationScriptLines += "echo ""Package installation is complete."""
     $packageInstallationScriptLines += "echo """""
