@@ -340,28 +340,65 @@ function BuildUserAssignScriptLines($createDirectories)
 }
 
 
+# build assign path script lines
+function BuildAssignPathScriptLines($assignId, $assignPath)
+{
+    $assignPathScriptLines = @()
+    $assignPathScriptLines += ("IF EXISTS ""T:{0}""" -f $assignId)
+    $assignPathScriptLines += ("  Set assignpath ""``type ""T:{0}""``""" -f $assignId)
+    $assignPathScriptLines += "ELSE"
+    $assignPathScriptLines += ("  Set assignpath ""{0}""" -f $assignPath)
+    $assignPathScriptLines += "ENDIF"
+
+    return $assignPathScriptLines
+}
+
+
+# build add assign script lines
+function BuildAddAssignScriptLines($assignId, $assignName, $assignPath)
+{
+    $addAssignScriptLines = @()
+    $addAssignScriptLines += ("; Add assign and set variable for assign '{0}'" -f $assignName)
+    $addAssignScriptLines += BuildAssignPathScriptLines $assignId $assignPath
+    $addAssignScriptLines += "Assign >NIL: EXISTS ""`$assignpath"""
+    $addAssignScriptLines += "IF WARN"
+    $addAssignScriptLines += "  MakePath ""`$assignpath"""
+    $addAssignScriptLines += "ENDIF"
+    $addAssignScriptLines += ("SetEnv {0} ""`$assignpath""" -f $assignName)
+    $addAssignScriptLines += ("Assign {0}: ""`$assignpath""" -f $assignName)
+
+    return $addAssignScriptLines
+}
+
+
+# build remove assign script lines
+function BuildRemoveAssignScriptLines($assignId, $assignName, $assignPath)
+{
+    $removeAssignScriptLines = @()
+    $removeAssignScriptLines += ("; Remove assign and unset variable for assign '{0}'" -f $assignName)
+    $removeAssignScriptLines += BuildAssignPathScriptLines $assignId $assignPath
+    $removeAssignScriptLines += ("Assign {0}: ""`$assignpath"" REMOVE" -f $assignName)
+    $removeAssignScriptLines += ("IF EXISTS ""ENV:{0}""" -f $assignName)
+    $removeAssignScriptLines += ("  delete >NIL: ""ENV:{0}""" -f $assignName)
+    $removeAssignScriptLines += "ENDIF"
+
+    return $removeAssignScriptLines
+}
+
+
 # build install package script lines
 function BuildInstallPackageScriptLines($packageNames)
 {
     $globalAssigns = $assigns.Get_Item('Global')
 
     $installPackageScripts = @()
-
+ 
     foreach ($packageName in $packageNames)
     {
-        # add package assigns
+        # get package
         $package = $packages.Get_Item($packageName.ToLower())
 
-
-        # build package assigns
-        # $packageAssigns = @{}            
-        # if ($assigns.ContainsKey($package.Package.Name))
-        # {
-        #     $tempPackageAssigns = $assigns.Get_Item($package.Package.Name)
-        #     $tempPackageAssigns.keys | ForEach-Object { $packageAssigns.Set_Item($_.ToUpper(), $tempPackageAssigns.Get_Item($_)) }
-        # }
-
-
+        # package name
         $name = ($package.Package.Name + " v" + $package.Package.Version)
 
         # add package installation lines to install packages script
@@ -373,86 +410,51 @@ function BuildInstallPackageScriptLines($packageNames)
         $removePackageAssignLines = @()
 
         # get package assign names
-        #$packageAssignNames = @()
-        #if ($package.Package.Assigns)
-        #{
-        #    $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
-        #}
+        $packageAssignNames = @()
+        if ($package.Package.Assigns)
+        {
+           $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
+        }
 
+        # package assigns
         $packageAssigns = $assigns.Get_Item($package.Package.Name)
 
-        # build global assign names from global and package assigns
-        #$globalAssignNames = @{}
-        #$globalAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
-        #$packageAssigns.keys | ForEach-Object { $globalAssignNames.Set_Item($_.ToUpper(), $true) }
-
-
-
-        # add package assigns, if assigns exist for package and any are defined
-        if ($packageAssigns.keys.Count -gt 0)
+        # build and and remove package assigns
+        foreach ($assignName in $packageAssignNames)
         {
-            
-            foreach ($assignName in $packageAssigns.keys)
+            # fail, if package assign name doesn't exist in either global or package assigns
+            if (!$globalAssigns.ContainsKey($assignName) -and !$packageAssigns.ContainsKey($assignName))
             {
-                # fail, if package assign name doesn't exist in either global or package assigns
-                # if (!$globalAssignNames.ContainsKey($packageAssignName))
-                # {
-                #     Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
-                # }
-
-                # # skip, if package assign name is not part of package assigns
-                # if (!$packageAssigns.ContainsKey($packageAssignName))
-                # {
-                #     continue
-                # }
-
-                # get assign path and drive
-                $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
-                $assignPath = $packageAssigns.Get_Item($assignName)
-                # $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
-
-                $installPackageLines += ""
-                $installPackageLines += ("; Add assign and variable for package assign '{0}'" -f ($assignName.ToUpper()))
-                $installPackageLines += ("IF EXISTS ""T:{0}""" -f $assignId)
-                $installPackageLines += ("  Set assignpath ""``type ""T:{0}""``""" -f $assignId)
-                $installPackageLines += "ELSE"
-                $installPackageLines += ("  Set assignpath ""{0}""" -f $assignPath)
-                $installPackageLines += "ENDIF"
-                $installPackageLines += "Assign >NIL: EXISTS ""`$assignpath"""
-                $installPackageLines += "IF WARN"
-                $installPackageLines += "  MakePath ""`$assignpath"""
-                $installPackageLines += "ENDIF"
-                $installPackageLines += ("Set {0} ""`$assignpath""" -f ($assignName.ToUpper()))
-                $installPackageLines += ("Assign {0}: ""`$assignpath""" -f ($assignName.ToUpper()))
-
-                # add package assign lines
-                # $installPackageLines += "; Add package assign for '$packageAssignName' to '$assignPath'"
-                # $installPackageLines += "Assign >NIL: EXISTS ""$assignDrive"""
-                # $installPackageLines += "IF WARN"
-                # $installPackageLines += "  echo ""Error: '$assignDrive' doesn't exist and is required by package!"""
-                # $installPackageLines += "  ask ask ""Press ENTER to continue"""
-                # $installPackageLines += "ELSE"
-                # $installPackageLines += ("  makepath """ + $assignPath + """")
-                # $installPackageLines += ("  Assign " + $packageAssignName + ": """ + $assignPath + """")
-                # $installPackageLines += "ENDIF"
-
-                # remove package assign lines
-                $removePackageAssignLines += ("Assign " + $packageAssignName + ": """ + $assignPath + """ REMOVE")
+                Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
             }
+
+            # get assign path and drive
+            $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
+            $assignPath = $packageAssigns.Get_Item($assignName)
+
+            # append and and remove package assign
+            $installPackageLines += ""
+            $installPackageLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
+            $removePackageAssignLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
         }
 
 
-        # add assign package dir and execute package install
-        $installPackageLines += "; Assign package dir and execute install script"
+        # add package dir assign, execute package install script and remove package dir assign
+        $installPackageLines += ""
+        $installPackageLines += "; Add package dir assign"
         $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """")
+        $installPackageLines += ""
+        $installPackageLines += "; Execute package install script"
         $installPackageLines += "execute ""PACKAGEDIR:Install"""
+        $installPackageLines += ""
+        $installPackageLines += "; Remove package dir assign"
         $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """ REMOVE")
 
 
         # add remove package assign lines, if there are any
         if ($removePackageAssignLines.Count -gt 0)
         {
-            $installPackageLines += "; Remove package assigns"
+            $installPackageLines += ""
             $installPackageLines += $removePackageAssignLines
         }
 
@@ -466,9 +468,7 @@ function BuildInstallPackageScriptLines($packageNames)
 # build install packages script lines
 function BuildInstallPackagesScriptLines($installPackages)
 {
-    # install packages title message
     $installPackagesScriptLines = @()
-
     $installPackagesScriptLines += "SKIP resetsettings"
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += ""
@@ -501,6 +501,24 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "SKIP `$returnlab"
     $installPackagesScriptLines += ""
+
+
+    # globl assigns
+    $globalAssigns = $assigns.Get_Item('Global')
+
+
+    # build global package assigns
+    $addGlobalAssignScriptLines = @()
+    $removeGlobalAssignScriptLines = @()
+    foreach ($assignName in ($globalAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
+    {
+        $assignId = CalculateMd5FromText (("{0}.{1}" -f 'Global', $assignName).ToLower())
+        $assignPath = $globalAssigns.Get_Item($assignName)
+
+        $addGlobalAssignScriptLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
+        $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
+    }
+
 
     # build install package script lines
     $installPackageScripts = @()
@@ -687,11 +705,12 @@ function BuildInstallPackagesScriptLines($installPackages)
         foreach($assignSectionName in $assignSectionNames)
         {
             # add menu option to show assign section name
-            $installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f $assignSectionName)
-            $installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
+            #$installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
+            $installPackagesScriptLines += ("echo ""| {0} |"" >>T:editassignsmenu" -f $assignSectionName)
+            #$installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
 
             # increase menu option
-            $editAssignsMenuOption += 2
+            $editAssignsMenuOption += 1
 
             # get section assigns
             $sectionAssigns = $assigns[$assignSectionName]
@@ -769,24 +788,86 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "echo ""Package Installation"""
         $installPackagesScriptLines += "echo ""--------------------"""
 
-        #$packageInstallationScriptLines += BuildUserAssignScriptLines $false
+        # get assign section names
+        $assignSectionNames = @('Global')
+        $assignSectionNames += $assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
 
+        # build validate assigns
+        foreach($assignSectionName in $assignSectionNames)
+        {
+            # get section assigns
+            $sectionAssigns = $assigns[$assignSectionName]
+
+            foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+            {
+                # skip hstwb installer assign name for global assigns
+                if ($assignSectionName -like 'Global' -and $assignName -like 'HstWBInstallerDir')
+                {
+                    continue
+                }
+
+                $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+                $assignPath = $sectionAssigns[$assignName]
+
+                $installPackagesScriptLines += ""
+                $installPackagesScriptLines += ("; Validate assign '{0}'" -f $assignName)
+                $installPackagesScriptLines += BuildAssignPathScriptLines $assignId $assignPath
+                $installPackagesScriptLines += "IF ""`$assignpath"" eq """""
+                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""No path is defined*Nfor assign '{0}'*Nin section'{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
+                $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
+                $installPackagesScriptLines += "ENDIF"
+                $installPackagesScriptLines += "Assign >NIL: EXISTS ""`$assignpath"""
+                $installPackagesScriptLines += "IF WARN"
+                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""Path '`$assignpath' doesn't exist*Nfor assign '{0}'*Nin section'{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
+                $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
+                $installPackagesScriptLines += "ENDIF"
+            }
+        }
+
+        # append add global assign script lines
+        if ($addGlobalAssignScriptLines.Count -gt 0)
+        {
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += $addGlobalAssignScriptLines
+        }
 
         # add install package script for each package
         foreach ($installPackageScript in $installPackageScripts)
         {
             $installPackagesScriptLines += ""
+            $installPackagesScriptLines += ("; Install package '{0}', if it's selected" -f $installPackageScript.Name)
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
+
+        # append remove global assign script lines
+        if ($removeGlobalAssignScriptLines.Count -gt 0)
+        {
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += $removeGlobalAssignScriptLines
+        }
     }
     else 
     {
+        # append add global assign script lines
+        if ($addGlobalAssignScriptLines.Count -gt 0)
+        {
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += $addGlobalAssignScriptLines
+        }
+
         # add install package script for each package
         foreach ($installPackageScript in $installPackageScripts)
         {
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += $_ }
+        }
+
+        # append remove global assign script lines
+        if ($removeGlobalAssignScriptLines.Count -gt 0)
+        {
+            $installPackagesScriptLines += ""
+            $installPackagesScriptLines += $removeGlobalAssignScriptLines
         }
     }
 
