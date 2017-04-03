@@ -527,6 +527,12 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += "; Write new assign for assign id"
     $installPackagesScriptLines += "echo ""`$newassignpath"" >""T:`$assignid"""
     $installPackagesScriptLines += ""
+    $installPackagesScriptLines += "; Strip tailing slash from assign path"
+    $installPackagesScriptLines += "sed ""s/\/$// ""T:`$assignid"" >""T:_assignpath"""
+    $installPackagesScriptLines += "copy >NIL: ""T:_assignpath"" ""T:`$assignid"""
+    $installPackagesScriptLines += "delete >NIL: ""T:_assignpath"""
+    $installPackagesScriptLines += ""
+
     $installPackagesScriptLines += "SKIP `$returnlab"
     $installPackagesScriptLines += ""
 
