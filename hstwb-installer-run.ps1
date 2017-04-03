@@ -413,29 +413,46 @@ function BuildInstallPackageScriptLines($packageNames)
         $packageAssignNames = @()
         if ($package.Package.Assigns)
         {
-           $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ } | ForEach-Object { $_.ToUpper() }
+           $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ }
         }
 
         # package assigns
-        $packageAssigns = $assigns.Get_Item($package.Package.Name)
+        if ($assigns.ContainsKey($package.Package.Name))
+        {
+            $packageAssigns = $assigns.Get_Item($package.Package.Name)
+        }
+        else
+        {
+            $packageAssigns = @{}
+        }
 
         # build and and remove package assigns
         foreach ($assignName in $packageAssignNames)
         {
+            # get matching global and package assign name (case insensitive)
+            $matchingGlobalAssignName = $globalAssigns.Keys | Where-Object { $_ -like $assignName } | Select-Object -First 1
+            $matchingPackageAssignName = $packageAssigns.Keys | Where-Object { $_ -like $assignName } | Select-Object -First 1
+
             # fail, if package assign name doesn't exist in either global or package assigns
-            if (!$globalAssigns.ContainsKey($assignName) -and !$packageAssigns.ContainsKey($assignName))
+            if (!$matchingGlobalAssignName -and !$matchingPackageAssignName)
             {
-                Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$packageAssignName' in either global or package assigns!")
+                Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$assignName' in either global or package assigns!")
+            }
+
+            # skip, if package assign name is global
+            if ($matchingGlobalAssignName)
+            {
+                continue
             }
 
             # get assign path and drive
             $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
-            $assignPath = $packageAssigns.Get_Item($assignName)
+            $assignPath = $packageAssigns.Get_Item($matchingPackageAssignName)
 
             # append and and remove package assign
             $installPackageLines += ""
-            $installPackageLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
-            $removePackageAssignLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
+            $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignPath
+            $removePackageAssignLines += BuildRemoveAssignScriptLines $assignId $assignName $assignPath
         }
 
 
@@ -469,7 +486,18 @@ function BuildInstallPackageScriptLines($packageNames)
 function BuildInstallPackagesScriptLines($installPackages)
 {
     $installPackagesScriptLines = @()
-    $installPackagesScriptLines += "SKIP resetsettings"
+    $installPackagesScriptLines += ""
+
+    # append skip reset settings or install packages depending on installer mode
+    if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
+    {
+        $installPackagesScriptLines += "SKIP resetsettings"
+    }
+    else
+    {
+        $installPackagesScriptLines += "SKIP installpackages"
+    }
+
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "; Select assign path function"
@@ -850,6 +878,18 @@ function BuildInstallPackagesScriptLines($installPackages)
     }
     else 
     {
+        # install packages
+        # ----------------
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "; Install packages"
+        $installPackagesScriptLines += "; ----------------"
+        $installPackagesScriptLines += "LAB installpackages"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "echo ""*ec"""
+        $installPackagesScriptLines += "echo ""Package Installation"""
+        $installPackagesScriptLines += "echo ""--------------------"""
+
+
         # append add global assign script lines
         if ($addGlobalAssignScriptLines.Count -gt 0)
         {
@@ -1072,7 +1112,14 @@ function RunInstall()
         }
 
         # build install package script lines
-        $installPackagesScriptLines = BuildInstallPackagesScriptLines $installPackages
+        $installPackagesScriptLines = @()
+        $installPackagesScriptLines += "; Install Packages Script"
+        $installPackagesScriptLines += "; -----------------------"
+        $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
+        $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
+        $installPackagesScriptLines += ";"
+        $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
+        $installPackagesScriptLines += BuildInstallPackagesScriptLines $installPackages
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
@@ -1206,6 +1253,12 @@ function RunBuildSelfInstall()
 
     # build install package script lines
     $installPackagesScriptLines = @()
+    $installPackagesScriptLines += "; Install Packages Script"
+    $installPackagesScriptLines += "; -----------------------"
+    $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
+    $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
+    $installPackagesScriptLines += ";"
+    $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
     $installPackagesScriptLines += BuildInstallPackagesScriptLines $installPackages
     $installPackagesScriptLines += "echo """""
     $installPackagesScriptLines += "echo ""Package installation is complete."""
@@ -1369,7 +1422,7 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += "; Author: Henrik Noerfjand Stengaard"
     $packageInstallationScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
     $packageInstallationScriptLines += ";"
-    $packageInstallationScriptLines += "; An package installation script generated by HstWB Installer to install configured and/or selected packages."
+    $packageInstallationScriptLines += "; An package installation script generated by HstWB Installer to install selected packages."
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Set environment variables for package installation"
     $packageInstallationScriptLines += "Assign PACKAGES: ""``CD``"""
