@@ -242,17 +242,13 @@ echo "Package and temp files used for installation process"
 echo "will now be deleted."
 
 
-; Unmount and remove FMS assign 
-assign FF0: dismount
-assign FMS: SYSTEMDIR:Temp/FMS REMOVE
-
-
 ; Delete HstWB Installer directories
 echo ""
 echo "Deleting HstWB Installer files..."
 
 IF EXISTS S:Remove-HstWBInstaller
   execute S:Remove-HstWBInstaller
+  delete >NIL: S:Remove-HstWBInstaller
 ENDIF
 
 
