@@ -116,12 +116,14 @@ resident $floppydevice:C/Assign PURE
 resident $floppydevice:C/Copy PURE
 resident $floppydevice:C/Delete PURE
 resident $floppydevice:C/Execute PURE
+resident $floppydevice:C/Rename PURE
 resident $floppydevice:C/MakeDir PURE
 resident $floppydevice:C/Protect PURE
 resident $floppydevice:C/Search PURE 
 resident $floppydevice:C/Wait PURE 
 resident $floppydevice:C/Which PURE 
-resident $floppydevice:C/Mount PURE 
+resident $floppydevice:C/Mount PURE
+resident $floppydevice:C/Type PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
 copy ENVARC:~(#?.info) ENV: ALL QUIET

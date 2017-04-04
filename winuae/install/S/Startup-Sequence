@@ -32,6 +32,7 @@ resident DF0:C/Search PURE
 resident DF0:C/Wait PURE 
 resident DF0:C/Which PURE 
 resident DF0:C/Mount PURE
+resident DF0:C/Type PURE
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
