@@ -5,5 +5,5 @@ hstwb-installer*.zip
 *.wixobj
 *.wxs
 !hstwb-installer.wxs
-packages/
+/packages/
 output/
