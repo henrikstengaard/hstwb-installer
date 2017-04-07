@@ -319,8 +319,8 @@ function BuildUserAssignScriptLines($createDirectories)
         # create directory for assignpath or check if path exist
         if ($createDirectories)
         {
-            $userAssignScriptLines += ("makepath """ + $assignPath + """")
-            $userAssignScriptLines += ("Assign " + $assignName + ": """ + $assignPath + """")
+            $userAssignScriptLines += ("  makepath """ + $assignPath + """")
+            $userAssignScriptLines += ("  Assign " + $assignName + ": """ + $assignPath + """")
         }
         else
         {
