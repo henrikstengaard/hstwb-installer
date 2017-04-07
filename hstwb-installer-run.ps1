@@ -283,8 +283,7 @@ function FindPackagesToInstall()
         }
     }
 
-
-    return $installPackages
+    return $installPackages | Sort-Object -Property 'Name'
 }
 
 
@@ -528,7 +527,7 @@ function BuildInstallPackagesScriptLines($installPackages)
     $installPackagesScriptLines += "echo ""`$newassignpath"" >""T:`$assignid"""
     $installPackagesScriptLines += ""
     $installPackagesScriptLines += "; Strip tailing slash from assign path"
-    $installPackagesScriptLines += "sed ""s/\/$// ""T:`$assignid"" >""T:_assignpath"""
+    $installPackagesScriptLines += "sed ""s/\/$//"" ""T:`$assignid"" >""T:_assignpath"""
     $installPackagesScriptLines += "copy >NIL: ""T:_assignpath"" ""T:`$assignid"""
     $installPackagesScriptLines += "delete >NIL: ""T:_assignpath"""
     $installPackagesScriptLines += ""
@@ -846,12 +845,11 @@ function BuildInstallPackagesScriptLines($installPackages)
                 $installPackagesScriptLines += ("; Validate assign '{0}'" -f $assignName)
                 $installPackagesScriptLines += BuildAssignPathScriptLines $assignId $assignPath
                 $installPackagesScriptLines += "IF ""`$assignpath"" eq """""
-                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""No path is defined*Nfor assign '{0}'*Nin section'{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
+                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""No path is defined*Nfor assign '{0}'*Nin section '{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
                 $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
                 $installPackagesScriptLines += "ENDIF"
-                $installPackagesScriptLines += "Assign >NIL: EXISTS ""`$assignpath"""
-                $installPackagesScriptLines += "IF WARN"
-                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""Path '`$assignpath' doesn't exist*Nfor assign '{0}'*Nin section'{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
+                $installPackagesScriptLines += "IF NOT EXISTS ""`$assignpath"""
+                $installPackagesScriptLines += ("  REQUESTCHOICE ""Error"" ""Path '`$assignpath' doesn't exist*Nfor assign '{0}'*Nin section '{1}'!"" ""OK"" >NIL:" -f $assignName, $assignSectionName)
                 $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
                 $installPackagesScriptLines += "ENDIF"
             }
@@ -1443,6 +1441,11 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += "SetEnv Packages ""``CD``"""
     $packageInstallationScriptLines += "Assign PACKAGES: ""`$Packages"""
     $packageInstallationScriptLines += "SetEnv TZ MST7"
+    $packageInstallationScriptLines += ""
+    $packageInstallationScriptLines += "; Copy reqtools prefs to env, if it doesn't exist"
+    $packageInstallationScriptLines += "IF NOT EXISTS ""ENV:ReqTools.prefs"""
+    $packageInstallationScriptLines += "  copy >NIL: ""ReqTools.prefs"" ""ENV:"""
+    $packageInstallationScriptLines += "ENDIF"
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
     $packageInstallationScriptLines += ""
