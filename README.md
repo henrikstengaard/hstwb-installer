@@ -636,7 +636,15 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ![build_self_install_done.png](screenshots/build_self_install_done.png?raw=true)
 
-### Tutorial 4: Writing an image to CF/SD card using Win32DiskImager
+### Tutorial 4: Create a package installation using build package installation mode
+
+TODO.
+
+### Tutorial 5: Running package installation in an emulator or on real Amiga
+
+TODO.
+
+### Tutorial 6: Writing a HDF image to CF/SD card using Win32DiskImager
 
 This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
 
@@ -698,7 +706,7 @@ Remember to properly remove the device from Windows to avoid corrupting the devi
 
 CF/SD card can now be used either in emulator or on real Amiga.
 
-### Tutorial 5: Installing an image on a RaspBerry Pie with Retro Pie
+### Tutorial 7: Installing an image on a RaspBerry Pie with Retro Pie
 
 This tutorial describes step by step how to install an image on a RaspBerry Pie with Retro Pie.
 
@@ -746,7 +754,7 @@ Copy UAE4ARM image HDF files and directories to Retro Pie with following steps:
 6. Press CTRL+V to paste files.
 7. Close Windows Explorer window.
 
-### Tutorial 6: Modify Retro Pie EmulationStation to show .uae files as roms
+### Tutorial 8: Modify Retro Pie EmulationStation to show .uae files as roms
 
 This tutorial describes step by step how to modify Retro Pie EmulationStation to show .uae files as roms.
 
