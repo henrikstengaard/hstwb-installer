@@ -404,9 +404,13 @@ Running HstWB Installer in test mode does the following:
 
 - Boots image for testing configured image directory.
 
-## Example 1: Create an image using install mode
+## Tutorials
 
-This example describes step by step how to create an image using install mode.
+Tutorials showing how HstWB Installer is used and can be installed.
+
+### Tutorial 1: Create an image using install mode
+
+This tutorial describes step by step how to create an image using install mode.
 
 **1. Start HstWB Installer Setup**
 
@@ -464,9 +468,9 @@ Installation process is done and will automatically close WinUAE after 10 second
 
 Image is now ready for use either in emulator or on real Amiga.
 
-## Example 2: Create an image using build self install mode
+### Tutorial 2: Create an image using build self install mode
 
-This example describes step by step how to create an image using build self install mode.
+This tutorial describes step by step how to create an image using build self install mode.
 
 Start HstWB Installer Setup.
 Type 1 and enter for select image menu.
@@ -532,9 +536,9 @@ Installation process is done and will automatically close WinUAE after 10 second
 
 Image is now ready for self install in an emulator or on real Amiga.
 
-## Example 3: Running self install in an emulator or on real Amiga
+### Tutorial 3: Running self install in an emulator or on real Amiga
 
-This example describes step by step how to run self install in an emulator or on real Amiga.
+This tutorial describes step by step how to run self install in an emulator or on real Amiga.
 
 Self install can be run in one of following ways:
 
@@ -543,7 +547,7 @@ Self install can be run in one of following ways:
 3. UAE4ARM: Start UAE4ARM using an A1200 configuration with HDF files and/or directories added.
 4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' example and skip automated installation, which is only for emulators.
 
-### Configuring emulator for automated installation of Workbench and Kickstart roms
+#### Configuring emulator for automated installation of Workbench and Kickstart roms
 
 Installation of Workbench and Kickstart roms can be automated, when running self install in an emulator.
 
@@ -608,7 +612,7 @@ Verify WinUAE has image HDF files and/or directories added together with "WORKBE
 
 Click "Reset" to reset emulator, which will make self install detect added harddrive directories for automated installation.
 
-### Running self install
+#### Running self install
 
 ![build_self_install_start.png](screenshots/build_self_install_start.png?raw=true)
 
@@ -632,9 +636,9 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ![build_self_install_done.png](screenshots/build_self_install_done.png?raw=true)
 
-## Example 4: Writing an image to CF/SD card using Win32DiskImager
+### Tutorial 4: Writing an image to CF/SD card using Win32DiskImager
 
-This example describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
+This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
 
 Only RDB images will work, when written to a CF/SD card. If unsure about RDB, use WinUAE to check if HDF is in RDB mode with following steps:
 
@@ -694,9 +698,9 @@ Remember to properly remove the device from Windows to avoid corrupting the devi
 
 CF/SD card can now be used either in emulator or on real Amiga.
 
-## Example 5: Installing an image on a RaspBerry Pie with Retro Pie
+### Tutorial 5: Installing an image on a RaspBerry Pie with Retro Pie
 
-This example describes step by step how to install an image on a RaspBerry Pie with Retro Pie.
+This tutorial describes step by step how to install an image on a RaspBerry Pie with Retro Pie.
 
 When connecting Retro Pie use default credentials for Shell and Samba/Windows share access:
 ###
@@ -742,9 +746,9 @@ Copy UAE4ARM image HDF files and directories to Retro Pie with following steps:
 6. Press CTRL+V to paste files.
 7. Close Windows Explorer window.
 
-## Example 6: Modify Retro Pie EmulationStation to show .uae files as roms
+### Tutorial 6: Modify Retro Pie EmulationStation to show .uae files as roms
 
-This example describes step by step how to modify Retro Pie EmulationStation to show .uae files as roms.
+This tutorial describes step by step how to modify Retro Pie EmulationStation to show .uae files as roms.
 
 The purpose of making this change is to launch different uae configurations directly from EmulationStation.
 Each uae configuration can be configured to run either a set of .adf or .hdf files.
@@ -757,7 +761,7 @@ When connecting Retro Pie use default credentials for Shell and Samba/Windows sh
 	Username: pi
 	Password: raspberry
 
-### Copy roms and configs files to Retro Pie using Windows Explorer:
+#### Copy roms and configs files to Retro Pie using Windows Explorer:
 
 Copy roms files with following steps:
 
@@ -779,7 +783,7 @@ Copy configs files with following steps:
 6. Press CTRL+V to paste files.
 7. Close Windows Explorer window.
 
-### Method 1: Add UAE extensions using Retro Pie File-Manager
+#### Method 1: Add UAE extensions using Retro Pie File-Manager
 
 **1. Start File-Manager**
 
@@ -817,7 +821,7 @@ Press F10 and enter to exit File-Manager.
 
 ![retropie_uae_extensions_filemanager4.jpg](screenshots/retropie_uae_extensions_filemanager4.jpg?raw=true)
 
-### Method 2: Add UAE extensions using Putty
+#### Method 2: Add UAE extensions using Putty
 
 **1. Start Putty**
 
