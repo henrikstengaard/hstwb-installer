@@ -656,6 +656,8 @@ Start HstWB Installer Setup.
 
 ![build_package_installation_7.png](screenshots/build_package_installation_7.png?raw=true)
 
+![build_package_installation_8.png](screenshots/build_package_installation_8.png?raw=true)
+
 ### Tutorial 5: Running package installation in an emulator or on real Amiga
 
 TODO.
