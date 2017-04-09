@@ -638,7 +638,23 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 ### Tutorial 4: Create a package installation using build package installation mode
 
-TODO.
+This tutorial describes step by step how to a package installation using build package installation mode.
+
+Start HstWB Installer Setup.
+
+![build_package_installation_1.png](screenshots/build_package_installation_1.png?raw=true)
+
+![build_package_installation_2.png](screenshots/build_package_installation_2.png?raw=true)
+
+![build_package_installation_3.png](screenshots/build_package_installation_3.png?raw=true)
+
+![build_package_installation_4.png](screenshots/build_package_installation_4.png?raw=true)
+
+![build_package_installation_5.png](screenshots/build_package_installation_5.png?raw=true)
+
+![build_package_installation_6.png](screenshots/build_package_installation_6.png?raw=true)
+
+![build_package_installation_7.png](screenshots/build_package_installation_7.png?raw=true)
 
 ### Tutorial 5: Running package installation in an emulator or on real Amiga
 
