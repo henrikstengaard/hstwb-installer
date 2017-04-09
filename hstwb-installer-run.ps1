@@ -283,7 +283,7 @@ function FindPackagesToInstall()
         }
     }
 
-    return $installPackages | Sort-Object -Property 'Name'
+    return $installPackages
 }
 
 
@@ -1406,7 +1406,7 @@ function RunBuildPackageInstallation()
 
 
     # find packages to install
-    $installPackages = FindPackagesToInstall
+    $installPackages = FindPackagesToInstall | Sort-Object -Property 'Name'
 
 
     # extract packages and write install packages script, if there's packages to install
