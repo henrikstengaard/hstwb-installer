@@ -650,7 +650,7 @@ Start HstWB Installer Setup from start menu or powershell.
 
 Type 4 and enter for configure packages menu.
 
-For this example type 7 and enter, 8 and enter, 9 and enter, 10 and enter to install packages: EAB WHDLoad Demos AGA Menu, EAB WHDLoad Demos OCS Menu, EAB WHDLoad Games AGA Menu, EAB WHDLoad Games OCS Menu. **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory.**
+For this example type 7 and enter, 8 and enter, 9 and enter, 10 and enter to install packages: EAB WHDLoad Demos AGA Menu, EAB WHDLoad Demos OCS Menu, EAB WHDLoad Games AGA Menu, EAB WHDLoad Games OCS Menu. **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
 
 Type 12 and enter for back to main menu.
 
