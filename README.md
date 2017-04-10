@@ -540,7 +540,7 @@ Image is now ready for self install in an emulator or on real Amiga.
 
 This tutorial describes step by step how to run self install in an emulator or on real Amiga.
 
-Self install can be run in one of following ways:
+Self install can be run in following ways:
 
 1. HstWB Installer Setup: Switch to test mode and run installer.
 2. WinUAE: Start WinUAE using an A1200 configuration with HDF files and/or directories added.
@@ -563,10 +563,10 @@ The example below describes how to do configure WinUAE for automated installatio
 
 **1. Start WinUAE**
 
-Configure harddrive directories in WinUAE one of following ways:
+Configure harddrive directories for WinUAE in following ways:
 
 1. Using HstWB Installer test mode press F12 after WinUAE is launched to configure harddrive directories.
-2. Manually start WinUAE use own configuration with image HDF files and/or harddrive directories added.
+2. Manually start WinUAE and use own configuration with image HDF files and/or harddrive directories added.
 
 **2. Configure harddrive directories**
 
@@ -688,7 +688,79 @@ Package installation is now ready for use either in emulator or on real Amiga.
 
 ### Tutorial 5: Running package installation in an emulator or on real Amiga
 
-TODO.
+This tutorial describes step by step how to run package installation in an emulator or on real Amiga.
+
+Package installation can be run in following ways:
+
+1. HstWB Installer Setup: Switch to test mode and run installer.
+2. WinUAE: Start WinUAE using an A1200 or similar configuration with HDF files and/or directories added.
+3. UAE4ARM: Start UAE4ARM using an A1200 or similar configuration with HDF files and/or directories added.
+4. Real Amiga: Copy package installation to FAT-32 formatted CF-card and insert into Amiga using PCMCIA adapter.
+
+#### Configuring emulator for package installation
+
+**1. Start WinUAE**
+
+Configure harddrive directories for WinUAE in following ways:
+
+1. Using HstWB Installer test mode press F12 after WinUAE is launched to configure harddrive directories.
+2. Manually start WinUAE and use own configuration with image HDF files and/or harddrive directories added.
+
+**2. Configure harddrive directories**
+
+Click "CD & Hard drives".
+
+![run_package_installation_1.png](screenshots/run_package_installation_1.png?raw=true)
+
+**3. Add PC harddrive directory**
+
+Click "Add Directory or Archive".
+
+Enter "PC" in device name and volume label textboxes.
+
+Uncheck "Read/Write" and "Bootable" checkboxes.
+
+Click "Select Directory" and select directory "c:\Temp\Package Installation".
+
+Click "OK" to add the directory as a harddrive.
+
+![run_package_installation_2.png](screenshots/run_package_installation_2.png?raw=true)
+
+**4. Verify configured harddrives**
+
+Verify WinUAE has image HDF files and/or directories added together with "PC" directory harddrive.
+
+![run_package_installation_3.png](screenshots/run_package_installation_3.png?raw=true)
+
+**5. Reset WinUAE**
+
+Click "Reset" to reset emulator, which will PC drive available in Workbench.
+
+#### Running package installation
+
+![run_package_installation_4.png](screenshots/run_package_installation_4.png?raw=true)
+
+![run_package_installation_5.png](screenshots/run_package_installation_5.png?raw=true)
+
+![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
+
+![run_package_installation_7.png](screenshots/run_package_installation_7.png?raw=true)
+
+![run_package_installation_8.png](screenshots/run_package_installation_8.png?raw=true)
+
+![run_package_installation_9.png](screenshots/run_package_installation_9.png?raw=true)
+
+![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
+
+![run_package_installation_11.png](screenshots/run_package_installation_11.png?raw=true)
+
+![run_package_installation_12.png](screenshots/run_package_installation_12.png?raw=true)
+
+![run_package_installation_13.png](screenshots/run_package_installation_13.png?raw=true)
+
+![run_package_installation_14.png](screenshots/run_package_installation_14.png?raw=true)
+
+![run_package_installation_15.png](screenshots/run_package_installation_15.png?raw=true)
 
 ### Tutorial 6: Writing a HDF image to CF/SD card using Win32DiskImager
 
