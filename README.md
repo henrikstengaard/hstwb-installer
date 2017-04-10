@@ -640,23 +640,53 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 This tutorial describes step by step how to a package installation using build package installation mode.
 
+**1. Start HstWB Installer Setup**
+
 Start HstWB Installer Setup.
 
 ![build_package_installation_1.png](screenshots/build_package_installation_1.png?raw=true)
 
+**2. Configure packages that will be installed in package installation**
+
+Type 4 and enter for configure packages menu.
+
+For this example type 7 and enter, 8 and enter, 9 and enter, 10 and enter to install packages: EAB WHDLoad Demos AGA Menu, EAB WHDLoad Demos OCS Menu, EAB WHDLoad Games AGA Menu, EAB WHDLoad Games OCS Menu.
+
+Type 12 and enter for back to main menu.
+
+*Note: Options depend on the number of packages installed in HstWB Installer "packages" directory.*
+
 ![build_package_installation_2.png](screenshots/build_package_installation_2.png?raw=true)
 
-![build_package_installation_3.png](screenshots/build_package_installation_3.png?raw=true)
+**3. Switch install mode to build package installation**
 
-![build_package_installation_4.png](screenshots/build_package_installation_4.png?raw=true)
+Type 6 and enter for configure installer menu.
 
-![build_package_installation_5.png](screenshots/build_package_installation_5.png?raw=true)
+Type 1 and enter for change installer mode.
 
-![build_package_installation_6.png](screenshots/build_package_installation_6.png?raw=true)
+Type 3 and enter for build package installation mode. 
 
-![build_package_installation_7.png](screenshots/build_package_installation_7.png?raw=true)
+Type 2 and enter for back to main menu.
 
-![build_package_installation_8.png](screenshots/build_package_installation_8.png?raw=true)
+![build_package_installation_3.png](screenshots/build_package_installation_5.png?raw=true)
+
+**4. Run installer**
+
+Type 7 end enter to start HstWB Installer Run.
+
+![build_package_installation_4.png](screenshots/build_package_installation_6.png?raw=true)
+
+**5. Select a directory for package installation**
+
+For this example create and select 'C:\Temp\Package Installation' directory.
+
+![build_package_installation_5.png](screenshots/build_package_installation_6.png?raw=true)
+
+**6. Installer done**
+
+Package installation is now ready for use either in emulator or on real Amiga.
+
+![build_package_installation_6.png](screenshots/build_package_installation_8.png?raw=true)
 
 ### Tutorial 5: Running package installation in an emulator or on real Amiga
 
