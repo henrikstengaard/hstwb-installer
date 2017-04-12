@@ -124,6 +124,7 @@ resident $floppydevice:C/Wait PURE
 resident $floppydevice:C/Which PURE 
 resident $floppydevice:C/Mount PURE
 resident $floppydevice:C/Type PURE
+resident $floppydevice:C/RequestChoice PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
 copy ENVARC:~(#?.info) ENV: ALL QUIET
