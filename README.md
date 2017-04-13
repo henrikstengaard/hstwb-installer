@@ -693,11 +693,12 @@ This tutorial describes step by step how to run package installation in an emula
 Package installation can be run in following ways:
 
 1. HstWB Installer Setup: Switch to test mode and run installer.
-2. WinUAE: Start WinUAE using an A1200 or similar configuration with HDF files and/or directories added.
-3. UAE4ARM: Start UAE4ARM using an A1200 or similar configuration with HDF files and/or directories added.
-4. Real Amiga: Copy package installation to FAT-32 formatted CF-card and insert into Amiga using PCMCIA adapter.
+2. Manually using an emulator: Start WinUAE, FS-UAE, UAE4ARM or other Amiga emulator with HDF files and/or directories added.
+3. Real Amiga: Copy package installation to FAT-32 formatted CF-card and insert into Amiga using PCMCIA adapter.
 
 #### Configuring emulator for package installation
+
+Package installation can be run using an emulator by adding directory containing package installation.
 
 **1. Start WinUAE**
 
@@ -734,15 +735,35 @@ Verify WinUAE has image HDF files and/or directories added together with "PC" di
 
 **5. Reset WinUAE**
 
-Click "Reset" to reset emulator, which will PC drive available in Workbench.
+Click "Reset" to reset emulator and PC harddrive is available in Workbench.
 
-#### Running package installation
+**6. Open PC harddrive**
+
+Open PC harddrive with double-click and package installation can be started. 
 
 ![run_package_installation_4.png](screenshots/run_package_installation_4.png?raw=true)
 
+#### Running package installation
+
+**1. Start package installation**.
+
+Start package installation with double-click.
+
 ![run_package_installation_5.png](screenshots/run_package_installation_5.png?raw=true)
 
+**2. View Readme**
+
+Click "View Readme" to view readme for a package included in the package installation.
+
+This is optional and can be skipped.
+
 ![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
+
+**3. Viewing EAB WHDLoad Games AGA Menu Package readme**
+
+For example EAB WHDLoad Games AGA Menu Package readme is clicked showing description and screenshots of package contents.
+
+This is optional and can be skipped.
 
 ![run_package_installation_7.png](screenshots/run_package_installation_7.png?raw=true)
 
@@ -750,15 +771,31 @@ Click "Reset" to reset emulator, which will PC drive available in Workbench.
 
 ![run_package_installation_9.png](screenshots/run_package_installation_9.png?raw=true)
 
+**4. Select packages to install**
+
+Selecting packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+
+For example EAB WHDLoad Games AGA Menu v2.6.2 is click and will be installed.
+
 ![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
+
+**5. Edit assigns**
 
 ![run_package_installation_11.png](screenshots/run_package_installation_11.png?raw=true)
 
+**6. Select path for assign**
+
 ![run_package_installation_12.png](screenshots/run_package_installation_12.png?raw=true)
+
+**7. Confirm package installation**
 
 ![run_package_installation_13.png](screenshots/run_package_installation_13.png?raw=true)
 
+**8. Package installation running**
+
 ![run_package_installation_14.png](screenshots/run_package_installation_14.png?raw=true)
+
+**9. Package installation done**
 
 ![run_package_installation_15.png](screenshots/run_package_installation_15.png?raw=true)
 
