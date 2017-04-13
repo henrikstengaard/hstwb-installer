@@ -652,8 +652,8 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
-        $installPackagesScriptLines += "  setenv proceedpackageinstallation ``RequestChoice ""Procees"" ""Procees with package installation?"" ""Yes|No""``"
-        $installPackagesScriptLines += "  IF ""`$proceedpackageinstallation"" EQ ""1"""
+        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Install selected packages?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
         $installPackagesScriptLines += "    SKIP installpackages"
         $installPackagesScriptLines += "  ENDIF"
         $installPackagesScriptLines += "ENDIF"
