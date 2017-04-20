@@ -718,6 +718,12 @@ function Save()
 # reset
 function Reset()
 {
+    $confirm = ConfirmDialog "Reset" "Do you really want to reset settings?"
+    if (!$confirm)
+    {
+        return
+    }
+
     DefaultSettings $settings
     DefaultAssigns $assigns
     Save
