@@ -238,6 +238,8 @@ Following packages are included with HstWB Installer msi installation:
 * [ClassicWB LITE Package](https://github.com/henrikstengaard/classicwb-lite-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 using 4/8/16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
 * [ClassicWB FULL Package](https://github.com/henrikstengaard/classicwb-full-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
 * [ClassicWB ADV Package](https://github.com/henrikstengaard/classicwb-adv-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using Multisync / Interlaced 640x512 display.
+* [ClassicWB ADVSP Package](https://github.com/henrikstengaard/classicwb-advsp-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with accelerator, memory expansion using Multisync / Interlaced 640x512 display..
+* [ClassicWB P96 Package](https://github.com/henrikstengaard/classicwb-p96-package): A feature rich Workbench enhancement by Bloodwych targeted UAE emulator using 16-32bit colour screenmodes and NewIcons.
 * [EAB WHDLoad Demos AGA Menu Package](https://github.com/henrikstengaard/eab-whdload-demos-aga-menu-package): AGS2 and iGame menus generated with screenshot and details for all AGA/OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
 * [EAB WHDLoad Demos OCS Menu Package](https://github.com/henrikstengaard/eab-whdload-demos-ocs-menu-package): AGS2 and iGame menus generated with screenshot and details for all OCS demos currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
 * [EAB WHDLoad Games AGA Menu Package](https://github.com/henrikstengaard/eab-whdload-games-aga-menu-package): AGS2 and iGame menus generated with screenshot and details for all AGA/OCS games currently available in English Board Amiga WHDLoad packs with update 2.6 applied.
@@ -416,55 +418,77 @@ This tutorial describes step by step how to create an image using install mode.
 
 Type 1 and enter for select image menu.
 
-![setup_main.png](screenshots/setup_main.png?raw=true)
+![build_install_1.png](screenshots/build_install_1.png?raw=true)
 
 **2. Create a new image**
 
 Type 2 and enter for create image directory from image template menu.
 
-![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
+![build_install_2.png](screenshots/build_install_2.png?raw=true)
 
 **3. Pick an image template that matches your needs**
 
-For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
+For this example type 4 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template. 
+**Note: Option numbers depend on the images installed in HstWB Installer "images" directory, so they may vary.**
 
-![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
+![build_install_3.png](screenshots/build_install_3.png?raw=true)
 
 **4. Select a directory to create new image**
 
 For this example create and select 'C:\Temp\4GB' directory.
 
-![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
+![build_install_4.png](screenshots/build_install_4.png?raw=true)
+
+Press enter to continue when extraction of image HDF files is done.
+
+![build_install_5.png](screenshots/build_install_5.png?raw=true)
+
+Type 3 and enter for back to main menu.
+
+![build_install_6.png](screenshots/build_install_6.png?raw=true)
 
 **5. Configure packages that will be installed on the image**
 
-For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+Type 1 and enter for configure packages menu.
 
-![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
+For this example type 1 and enter, 11 and enter, 9 and enter, 7 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+**Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
+
+![build_install_7.png](screenshots/build_install_7.png?raw=true)
+
+Type 12 and enter for back to main menu.
+
+![build_install_8.png](screenshots/build_install_8.png?raw=true)
 
 **6. Run installer to start HstWB Installer Run**
 
 Type 7 end enter.
 
-![setup_run_installer.png](screenshots/setup_run_installer.png?raw=true)
+![build_install_9.png](screenshots/build_install_9.png?raw=true)
 
 **7. HstWB Installer preparing and launching WinUAE**
 
 HstWB Installer Run prepares files for installation and launches WinUAE to start installation process.
 
-![run_launching_winuae.png](screenshots/run_launching_winuae.png?raw=true)
+![build_install_10.png](screenshots/build_install_10.png?raw=true)
 
 **8. Installation process running**
 
 Installation process installing Workbench from adf files, Kickstart roms and packages. 
 
-![winuae_install_start.png](screenshots/winuae_install_start.png?raw=true)
+![build_install_11.png](screenshots/build_install_11.png?raw=true)
+
+![build_install_12.png](screenshots/build_install_12.png?raw=true)
+
+![build_install_13.png](screenshots/build_install_13.png?raw=true)
+
+![build_install_14.png](screenshots/build_install_14.png?raw=true)
 
 **9. Installation process done**
 
 Installation process is done and will automatically close WinUAE after 10 seconds.
 
-![winuae_install_done.png](screenshots/winuae_install_done.png?raw=true)
+![build_install_15.png](screenshots/build_install_15.png?raw=true)
 
 Image is now ready for use either in emulator or on real Amiga.
 
@@ -473,32 +497,50 @@ Image is now ready for use either in emulator or on real Amiga.
 This tutorial describes step by step how to create an image using build self install mode.
 
 Start HstWB Installer Setup.
+
 Type 1 and enter for select image menu.
-![setup_main.png](screenshots/setup_main.png?raw=true)
+
+![build_install_1.png](screenshots/build_install_1.png?raw=true)
 
 **1. Create a new image**
 
 Type 2 and enter for create image directory from image template menu.
 
-![setup_select_image.png](screenshots/setup_select_image.png?raw=true)
+![build_install_2.png](screenshots/build_install_2.png?raw=true)
 
 **2. Pick an image template that matches your needs**
 
-For this example type 3 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
+For this example type 4 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template. 
+**Note: Option numbers depend on the images installed in HstWB Installer "images" directory, so they may vary.**
 
-![setup_create_image_template.png](screenshots/setup_create_image_template.png?raw=true)
+![build_install_3.png](screenshots/build_install_3.png?raw=true)
 
 **3. Select a directory to create new image**
 
 For this example create and select 'C:\Temp\4GB' directory.
 
-![setup_create_select_directory.png](screenshots/setup_create_select_directory.png?raw=true)
+![build_install_4.png](screenshots/build_install_4.png?raw=true)
+
+Press enter to continue when extraction of image HDF files is done.
+
+![build_install_5.png](screenshots/build_install_5.png?raw=true)
+
+Type 3 and enter for back to main menu.
+
+![build_install_6.png](screenshots/build_install_6.png?raw=true)
 
 **4. Configure packages that will be installed on the image**
 
-For this example type 1 and enter, 6 and enter, 4 and enter, 2 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+Type 1 and enter for configure packages menu.
 
-![setup_configure_packages.png](screenshots/setup_configure_packages.png?raw=true)
+For this example type 1 and enter, 11 and enter, 9 and enter, 7 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+**Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
+
+![build_install_7.png](screenshots/build_install_7.png?raw=true)
+
+Type 12 and enter for back to main menu.
+
+![build_install_8.png](screenshots/build_install_8.png?raw=true)
 
 **5. Switch install mode to build self install**
 
@@ -775,7 +817,7 @@ This is optional and can be skipped.
 
 Selecting packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
 
-For example EAB WHDLoad Games AGA Menu v2.6.2 is click and will be installed.
+For example EAB WHDLoad Games AGA Menu v2.6.2 is clicked and will be installed.
 
 ![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
 
