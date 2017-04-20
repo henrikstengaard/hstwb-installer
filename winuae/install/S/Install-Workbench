@@ -1,8 +1,12 @@
 ; Install Workbench Script
 ; ------------------------
 ;
-; Date: 2017-01-27
+; Date: 2017-04-20
 ; Author: Henrik Noerfjand Stengaard
+
+
+; Clear screen
+echo "*ec" 
 
 
 echo ""
@@ -69,3 +73,7 @@ copy ff0:Printers.info SYSTEMDIR:Storage.info CLONE
 
 ; End
 echo "Done."
+echo ""
+echo "Workbench installation is complete."
+echo ""
+ask "Press ENTER to continue"

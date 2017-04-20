@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2016-01-02
+; Date: 2017-04-20
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -55,6 +55,10 @@ assign FMS: T:
 Mount FF0:
 
 
+; Wait
+Wait 2
+
+
 ; Install Workbench
 IF EXISTS S:Install-Workbench
   execute S:Install-Workbench
@@ -77,6 +81,10 @@ ENDIF
 IF EXISTS S:Installing
   delete >NIL: S:Installing
 ENDIF
+
+
+; Clear screen
+echo "*ec" 
 
 
 ; Done
