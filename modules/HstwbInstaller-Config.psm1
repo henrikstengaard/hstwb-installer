@@ -344,8 +344,8 @@ function ValidateAssigns($assigns)
 # validate settings
 function ValidateSettings($settings)
 {
-    # fail, if ImageDir directory doesn't exist
-    if ($settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
+    # fail, if ImageDir directory doesn't exist for installer modes other than 'BuildPackageInstallation'
+    if ($settings.Installer.Mode -notmatch 'BuildPackageInstallation' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
         Write-Host "Error: ImageDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
@@ -409,7 +409,7 @@ function ValidateSettings($settings)
     
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildSelfInstallPackageSelection|Test)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
