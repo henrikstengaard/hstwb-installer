@@ -548,33 +548,39 @@ Type 6 and enter for configure installer menu.
 
 Type 1 and enter for change installer mode.
 
+![build_self_install_1.png](screenshots/build_self_install_1.png?raw=true)
+
 Type 2 and enter for build self install mode 
 
-![setup_build_self_install_mode.png](screenshots/setup_build_self_install_mode.png?raw=true)
+![build_self_install_2.png](screenshots/build_self_install_2.png?raw=true)
+
+![build_self_install_3.png](screenshots/build_self_install_3.png?raw=true)
+
+![build_self_install_4.png](screenshots/build_self_install_4.png?raw=true)
 
 **6. Run installer to start HstWB Installer Run**
 
 Type 7 end enter.
 
-![setup_build_self_install_run.png](screenshots/setup_build_self_install_run.png?raw=true)
+![build_self_install_5.png](screenshots/build_self_install_5.png?raw=true)
 
 **7. HstWB Installer preparing and launching WinUAE**
 
 HstWB Installer Run prepares installation and launches WinUAE to start installation process.
 
-![run_build_self_install_launching.png](screenshots/run_build_self_install_launching.png?raw=true)
+![build_self_install_6.png](screenshots/build_self_install_6.png?raw=true)
 
 **8. Installation process running**
 
 Installation process installing system files for self install and packages. 
 
-![run_build_self_install_start.png](screenshots/run_build_self_install_start.png?raw=true)
+![build_self_install_7.png](screenshots/build_self_install_7.png?raw=true)
 
 **9. Installation process done**
 
 Installation process is done and will automatically close WinUAE after 10 seconds.
 
-![run_build_self_install_done.png](screenshots/run_build_self_install_done.png?raw=true)
+![build_self_install_8.png](screenshots/build_self_install_8.png?raw=true)
 
 Image is now ready for self install in an emulator or on real Amiga.
 
