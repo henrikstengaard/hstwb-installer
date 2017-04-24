@@ -537,7 +537,7 @@ For this example create and select 'C:\Temp\4GB' directory.
 
 ![build_install_4.png](screenshots/build_install_4.png?raw=true)
 
-Press enter to continue when extraction of image HDF files is done.
+Press enter to continue when extraction of image files is done.
 
 ![build_install_5.png](screenshots/build_install_5.png?raw=true)
 
@@ -570,7 +570,7 @@ Type 1 and enter for change installer mode.
 
 ![build_self_install_1.png](screenshots/build_self_install_1.png?raw=true)
 
-Type 2 and enter for build self install mode 
+Type 2 and enter for build self install mode.
 
 ![build_self_install_2.png](screenshots/build_self_install_2.png?raw=true)
 
