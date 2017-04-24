@@ -441,7 +441,7 @@ For this example create and select 'C:\Temp\4GB' directory.
 
 ![build_install_4.png](screenshots/build_install_4.png?raw=true)
 
-Press enter to continue when extraction of image HDF files is done.
+Press enter to continue when extraction of image files is done.
 
 ![build_install_5.png](screenshots/build_install_5.png?raw=true)
 
@@ -500,36 +500,38 @@ Installation process is done and will automatically close WinUAE.
 
 **9. Installation process done**
 
-Installation process is done and will automatically close WinUAE after 10 seconds.
+Image is now ready for use either in emulator or on real Amiga.
+
+Press enter to continue and it will return to main menu.
 
 ![build_install_17.png](screenshots/build_install_17.png?raw=true)
-
-Image is now ready for use either in emulator or on real Amiga.
 
 ### Tutorial 2: Create an image using build self install mode
 
 This tutorial describes step by step how to create an image using build self install mode.
 
-Start HstWB Installer Setup.
+**1. Start HstWB Installer Setup**
+
+Start HstWB Installer Setup from start menu or powershell.
 
 Type 1 and enter for select image menu.
 
 ![build_install_1.png](screenshots/build_install_1.png?raw=true)
 
-**1. Create a new image**
+**2. Create a new image**
 
 Type 2 and enter for create image directory from image template menu.
 
 ![build_install_2.png](screenshots/build_install_2.png?raw=true)
 
-**2. Pick an image template that matches your needs**
+**3. Pick an image template that matches your needs**
 
 For this example type 4 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template. 
 **Note: Option numbers depend on the images installed in HstWB Installer "images" directory, so they may vary.**
 
 ![build_install_3.png](screenshots/build_install_3.png?raw=true)
 
-**3. Select a directory to create new image**
+**4. Select a directory to create new image**
 
 For this example create and select 'C:\Temp\4GB' directory.
 
@@ -543,22 +545,26 @@ Type 3 and enter for back to main menu.
 
 ![build_install_6.png](screenshots/build_install_6.png?raw=true)
 
-**4. Configure packages that will be installed on the image**
+**5. Configure packages that will be installed on the image**
 
 Type 1 and enter for configure packages menu.
+
+![build_install_7.png](screenshots/build_install_7.png?raw=true)
 
 For this example type 1 and enter, 11 and enter, 9 and enter, 7 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
 **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
 
-![build_install_7.png](screenshots/build_install_7.png?raw=true)
+![build_install_8.png](screenshots/build_install_8.png?raw=true)
 
 Type 12 and enter for back to main menu.
 
-![build_install_8.png](screenshots/build_install_8.png?raw=true)
+![build_install_9.png](screenshots/build_install_9.png?raw=true)
 
-**5. Switch install mode to build self install**
+**6. Switch install mode to build self install**
 
 Type 6 and enter for configure installer menu.
+
+![build_self_install_10.png](screenshots/build_self_install_10.png?raw=true)
 
 Type 1 and enter for change installer mode.
 
@@ -568,35 +574,39 @@ Type 2 and enter for build self install mode
 
 ![build_self_install_2.png](screenshots/build_self_install_2.png?raw=true)
 
+Type 2 and enter for back to main menu.
+
 ![build_self_install_3.png](screenshots/build_self_install_3.png?raw=true)
 
-![build_self_install_4.png](screenshots/build_self_install_4.png?raw=true)
-
-**6. Run installer to start HstWB Installer Run**
+**7. Run installer to start HstWB Installer Run**
 
 Type 7 end enter.
 
-![build_self_install_5.png](screenshots/build_self_install_5.png?raw=true)
+![build_self_install_4.png](screenshots/build_self_install_4.png?raw=true)
 
-**7. HstWB Installer preparing and launching WinUAE**
+**8. HstWB Installer preparing and launching WinUAE**
 
 HstWB Installer Run prepares installation and launches WinUAE to start installation process.
 
-![build_self_install_6.png](screenshots/build_self_install_6.png?raw=true)
+![build_self_install_5.png](screenshots/build_self_install_5.png?raw=true)
 
-**8. Installation process running**
+**9. Installation process running**
 
 Installation process installing system files for self install and packages. 
 
-![build_self_install_7.png](screenshots/build_self_install_7.png?raw=true)
-
-**9. Installation process done**
+![build_self_install_6.png](screenshots/build_self_install_6.png?raw=true)
 
 Installation process is done and will automatically close WinUAE after 10 seconds.
 
-![build_self_install_8.png](screenshots/build_self_install_8.png?raw=true)
+![build_self_install_7.png](screenshots/build_self_install_7.png?raw=true)
+
+**10. Installation process done**
 
 Image is now ready for self install in an emulator or on real Amiga.
+
+Press enter to continue and it will return to main menu.
+
+![build_self_install_8.png](screenshots/build_self_install_8.png?raw=true)
 
 ### Tutorial 3: Running self install in an emulator or on real Amiga
 
