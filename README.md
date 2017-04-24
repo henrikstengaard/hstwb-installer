@@ -686,27 +686,49 @@ Click "Reset" to reset emulator, which will make self install detect added hardd
 
 #### Running self install
 
-![build_self_install_start.png](screenshots/build_self_install_start.png?raw=true)
+**1. Start self install**.
 
-![build_self_install_workbench_disk.png](screenshots/build_self_install_workbench_disk.png?raw=true)
+Start self install image either an emulator or on real Amiga.
 
-![build_self_install_patch.png](screenshots/build_self_install_patch.png?raw=true)
+![run_self_install_1.png](screenshots/run_self_install_1.png?raw=true)
 
-![build_self_install_automate.png](screenshots/build_self_install_automate.png?raw=true)
+![run_self_install_2.png](screenshots/run_self_install_2.png?raw=true)
 
-![build_self_install_workbench_install.png](screenshots/build_self_install_workbench_install.png?raw=true)
+![run_self_install_3.png](screenshots/run_self_install_3.png?raw=true)
 
-![build_self_install_kickstart_install.png](screenshots/build_self_install_kickstart_install.png?raw=true)
+![run_self_install_4.png](screenshots/run_self_install_4.png?raw=true)
 
-![build_self_install_package_selection.png](screenshots/build_self_install_package_selection.png?raw=true)
+![run_self_install_5.png](screenshots/run_self_install_5.png?raw=true)
 
-![build_self_install_package_install1.png](screenshots/build_self_install_package_install1.png?raw=true)
+![run_self_install_6.png](screenshots/run_self_install_6.png?raw=true)
 
-![build_self_install_package_install2.png](screenshots/build_self_install_package_install2.png?raw=true)
+![run_self_install_7.png](screenshots/run_self_install_7.png?raw=true)
 
-![build_self_install_cleanup.png](screenshots/build_self_install_cleanup.png?raw=true)
+![run_self_install_8.png](screenshots/run_self_install_8.png?raw=true)
 
-![build_self_install_done.png](screenshots/build_self_install_done.png?raw=true)
+![run_self_install_9.png](screenshots/run_self_install_9.png?raw=true)
+
+![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
+
+![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+![run_self_install_12.png](screenshots/run_self_install_12.png?raw=true)
+
+![run_self_install_13.png](screenshots/run_self_install_13.png?raw=true)
+
+![run_self_install_14.png](screenshots/run_self_install_14.png?raw=true)
+
+![run_self_install_15.png](screenshots/run_self_install_15.png?raw=true)
+
+![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+![run_self_install_16.png](screenshots/run_self_install_16.png?raw=true)
+
+![run_self_install_17.png](screenshots/run_self_install_17.png?raw=true)
+
+![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+![run_self_install_18.png](screenshots/run_self_install_18.png?raw=true)
 
 ### Tutorial 4: Create a package installation using build package installation mode
 
