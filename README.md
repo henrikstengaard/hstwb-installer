@@ -478,15 +478,23 @@ HstWB Installer Run prepares files for installation and launches WinUAE to start
 
 **8. Installation process running**
 
-Installation process installing Workbench from adf files, Kickstart roms and packages. 
+Installation process is starting.
 
 ![build_install_12.png](screenshots/build_install_12.png?raw=true)
 
+Workbench installation is complete and installation process can be continued by pressing "Enter".
+
 ![build_install_13.png](screenshots/build_install_13.png?raw=true)
+
+Kickstart installation is complete and installation process can be continued by pressing "Enter".
 
 ![build_install_14.png](screenshots/build_install_14.png?raw=true)
 
+Package installation is complete and installation process can be continued by pressing "Enter".
+
 ![build_install_15.png](screenshots/build_install_15.png?raw=true)
+
+Installation process is done and will automatically close WinUAE.
 
 ![build_install_16.png](screenshots/build_install_16.png?raw=true)
 
