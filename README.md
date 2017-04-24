@@ -564,7 +564,7 @@ Type 12 and enter for back to main menu.
 
 Type 6 and enter for configure installer menu.
 
-![build_self_install_10.png](screenshots/build_self_install_10.png?raw=true)
+![build_install_10.png](screenshots/build_install_10.png?raw=true)
 
 Type 1 and enter for change installer mode.
 
@@ -617,7 +617,7 @@ Self install can be run in following ways:
 1. HstWB Installer Setup: Switch to test mode and run installer.
 2. WinUAE: Start WinUAE using an A1200 configuration with HDF files and/or directories added.
 3. UAE4ARM: Start UAE4ARM using an A1200 configuration with HDF files and/or directories added.
-4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' example and skip automated installation, which is only for emulators.
+4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' tutorial and skip automated installation, which is only for emulators.
 
 #### Configuring emulator for automated installation of Workbench and Kickstart roms
 
