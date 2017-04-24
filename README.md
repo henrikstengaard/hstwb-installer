@@ -416,6 +416,8 @@ This tutorial describes step by step how to create an image using install mode.
 
 **1. Start HstWB Installer Setup**
 
+Start HstWB Installer Setup from start menu or powershell.
+
 Type 1 and enter for select image menu.
 
 ![build_install_1.png](screenshots/build_install_1.png?raw=true)
@@ -451,32 +453,32 @@ Type 3 and enter for back to main menu.
 
 Type 1 and enter for configure packages menu.
 
+![build_install_7.png](screenshots/build_install_7.png?raw=true)
+
 For this example type 1 and enter, 11 and enter, 9 and enter, 7 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
 **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
 
-![build_install_7.png](screenshots/build_install_7.png?raw=true)
+![build_install_8.png](screenshots/build_install_8.png?raw=true)
 
 Type 12 and enter for back to main menu.
 
-![build_install_8.png](screenshots/build_install_8.png?raw=true)
+![build_install_9.png](screenshots/build_install_9.png?raw=true)
 
 **6. Run installer to start HstWB Installer Run**
 
 Type 7 end enter.
 
-![build_install_9.png](screenshots/build_install_9.png?raw=true)
+![build_install_10.png](screenshots/build_install_10.png?raw=true)
 
 **7. HstWB Installer preparing and launching WinUAE**
 
 HstWB Installer Run prepares files for installation and launches WinUAE to start installation process.
 
-![build_install_10.png](screenshots/build_install_10.png?raw=true)
+![build_install_11.png](screenshots/build_install_11.png?raw=true)
 
 **8. Installation process running**
 
 Installation process installing Workbench from adf files, Kickstart roms and packages. 
-
-![build_install_11.png](screenshots/build_install_11.png?raw=true)
 
 ![build_install_12.png](screenshots/build_install_12.png?raw=true)
 
@@ -484,11 +486,15 @@ Installation process installing Workbench from adf files, Kickstart roms and pac
 
 ![build_install_14.png](screenshots/build_install_14.png?raw=true)
 
+![build_install_15.png](screenshots/build_install_15.png?raw=true)
+
+![build_install_16.png](screenshots/build_install_16.png?raw=true)
+
 **9. Installation process done**
 
 Installation process is done and will automatically close WinUAE after 10 seconds.
 
-![build_install_15.png](screenshots/build_install_15.png?raw=true)
+![build_install_17.png](screenshots/build_install_17.png?raw=true)
 
 Image is now ready for use either in emulator or on real Amiga.
 
