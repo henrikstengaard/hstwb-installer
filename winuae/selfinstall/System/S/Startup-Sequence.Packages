@@ -17,9 +17,9 @@ C:MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 C:Copy ENVARC:~(#?.info) ENV: ALL QUIET
 
-
 Resident >NIL: C:Assign PURE
 Resident >NIL: C:Execute PURE
+resident >NIL: C:UnZip PURE
 
 Assign >NIL: T: RAM:T
 Assign >NIL: CLIPS: RAM:Clipboards
@@ -49,6 +49,9 @@ IF NOT EXISTS S:User-Assign
   echo "Error: User assign doesn't exist!"
   SKIP fail
 ENDIF
+
+
+; Run User-Assign
 execute S:User-Assign
 
 
@@ -67,20 +70,24 @@ IF EXISTS "HSTWBINSTALLERDIR:Install-Packages"
 ENDIF
 
 
+; Run User-Assign
+execute S:User-Assign
+
+
 ; Clear screen
 echo "*ec" 
-
-; Delete temp directory, if it exist
-IF EXISTS "SYSTEMDIR:Temp/FMS"
-  delete >NIL: "SYSTEMDIR:Temp/FMS" ALL
-ENDIF
-
 
 echo "Installation cleanup"
 echo "--------------------"
 echo ""
 echo "Package and temp files used for installation process"
 echo "will now be deleted."
+
+
+; Delete temp directory, if it exist
+IF EXISTS "SYSTEMDIR:Temp/FMS"
+  delete >NIL: "SYSTEMDIR:Temp/FMS" ALL
+ENDIF
 
 
 ; Delete HstWB Installer directories
