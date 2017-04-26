@@ -1050,13 +1050,13 @@ Copy configs files with following steps:
 6. Press CTRL+V to paste files.
 7. Close Windows Explorer window.
 
-#### Method 1: Add UAE extensions using Retro Pie File-Manager
+#### Method 1: Add UAE extensions using Retro Pie File Manager
 
-**1. Start File-Manager**
+**1. Start File Manager**
 
 Enter Retro Pie menu in EmulationStation.
 
-Start File-Manager.
+Start File Manager.
 
 ![retropie_uae_extensions_filemanager1.jpg](screenshots/retropie_uae_extensions_filemanager1.jpg?raw=true)
 
@@ -1084,7 +1084,7 @@ Type following command to delete add uae extensions bash script:
 ###
     sudo rm -f /home/pi/RetroPie/roms/amiga/add_uae_extensions.sh
 
-Press F10 and enter to exit File-Manager.
+Press F10 and enter to exit File Manager.
 
 ![retropie_uae_extensions_filemanager4.jpg](screenshots/retropie_uae_extensions_filemanager4.jpg?raw=true)
 
