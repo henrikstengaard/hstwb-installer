@@ -786,8 +786,6 @@ This is optional and can be skipped.
 
 ![run_self_install_22.png](screenshots/run_self_install_22.png?raw=true)
 
-![run_self_install_23.png](screenshots/run_self_install_23.png?raw=true)
-
 ### Tutorial 4: Create a package installation using build package installation mode
 
 This tutorial describes step by step how to a package installation using build package installation mode.
