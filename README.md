@@ -1,7 +1,5 @@
 # HstWB Installer
 
-## Description
-
 HstWB Installer is a set of powershell scripts, image templates, configuration files, 
 AmigaDOS scripts and binaries used to easily build Amiga HDF or directory images with 
 automated installation of Workbench, Kickstarts roms and packages with additional content.
@@ -692,25 +690,59 @@ Start self install image either an emulator or on real Amiga.
 
 ![run_self_install_1.png](screenshots/run_self_install_1.png?raw=true)
 
+**2. Insert Workbench 3.1 disk**
+
 ![run_self_install_2.png](screenshots/run_self_install_2.png?raw=true)
 
 ![run_self_install_3.png](screenshots/run_self_install_3.png?raw=true)
 
+**3. Patch installation**
+
 ![run_self_install_4.png](screenshots/run_self_install_4.png?raw=true)
+
+**4. Automate installation**
 
 ![run_self_install_5.png](screenshots/run_self_install_5.png?raw=true)
 
+**5. Workbench installation**
+
 ![run_self_install_6.png](screenshots/run_self_install_6.png?raw=true)
+
+**6. Kickstart installation**
 
 ![run_self_install_7.png](screenshots/run_self_install_7.png?raw=true)
 
+**7. Eject disk**
+
 ![run_self_install_8.png](screenshots/run_self_install_8.png?raw=true)
+
+**8. Workbench installation complete and reboot**
 
 ![run_self_install_9.png](screenshots/run_self_install_9.png?raw=true)
 
+**9. Select packages to install**
+
+Selecting packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+
 ![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
 
+For this example all packages are clicked and will be installed.
+
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+**10. View readme**
+
+Click "View Readme" to view readme for a package included in the package installation.
+
+This is optional and can be skipped.
+
+![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+**11. Viewing EAB WHDLoad Games AGA Menu Package readme**
+
+For example EAB WHDLoad Games AGA Menu Package readme is clicked showing description and screenshots of package contents.
+
+This is optional and can be skipped.
 
 ![run_self_install_12.png](screenshots/run_self_install_12.png?raw=true)
 
@@ -720,21 +752,37 @@ Start self install image either an emulator or on real Amiga.
 
 ![run_self_install_15.png](screenshots/run_self_install_15.png?raw=true)
 
+**12. Edit assigns**
+
+This is optional and can be skipped.
+
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
 ![run_self_install_16.png](screenshots/run_self_install_16.png?raw=true)
 
 ![run_self_install_17.png](screenshots/run_self_install_17.png?raw=true)
 
+**13. Install packages**
+
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
+
+**14. Confirm package installation**
 
 ![run_self_install_18.png](screenshots/run_self_install_18.png?raw=true)
 
+**15. Package installation running**
+
 ![run_self_install_19.png](screenshots/run_self_install_19.png?raw=true)
+
+**16. Package installation done**
 
 ![run_self_install_20.png](screenshots/run_self_install_20.png?raw=true)
 
+**17. Installation cleanup**
+
 ![run_self_install_21.png](screenshots/run_self_install_21.png?raw=true)
+
+**18. Package installation complete and reboot**
 
 ![run_self_install_22.png](screenshots/run_self_install_22.png?raw=true)
 
