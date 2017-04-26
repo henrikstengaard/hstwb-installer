@@ -730,6 +730,16 @@ Start self install image either an emulator or on real Amiga.
 
 ![run_self_install_18.png](screenshots/run_self_install_18.png?raw=true)
 
+![run_self_install_19.png](screenshots/run_self_install_19.png?raw=true)
+
+![run_self_install_20.png](screenshots/run_self_install_20.png?raw=true)
+
+![run_self_install_21.png](screenshots/run_self_install_21.png?raw=true)
+
+![run_self_install_22.png](screenshots/run_self_install_22.png?raw=true)
+
+![run_self_install_23.png](screenshots/run_self_install_23.png?raw=true)
+
 ### Tutorial 4: Create a package installation using build package installation mode
 
 This tutorial describes step by step how to a package installation using build package installation mode.
