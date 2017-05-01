@@ -692,31 +692,49 @@ Start self install image either an emulator or on real Amiga.
 
 **2. Insert Workbench 3.1 disk**
 
+Insert required Workbench 3.1 disk in any floppy device.
+
 ![run_self_install_2.png](screenshots/run_self_install_2.png?raw=true)
 
 ![run_self_install_3.png](screenshots/run_self_install_3.png?raw=true)
 
 **3. Patch installation**
 
+Patch installation will check if device name PATCHDIR: is present and use it to patch the installation.
+
+If device name PATCHDIR: is present, it will copy Workbench.library from PATCHDIR: to SYS:Libs to add support for A4000T systems.
+
+For this example device name PATCHDIR: is not present and patch installation is skipped.
+
 ![run_self_install_4.png](screenshots/run_self_install_4.png?raw=true)
 
 **4. Automate installation**
+
+Automate installation shows automation status.
 
 ![run_self_install_5.png](screenshots/run_self_install_5.png?raw=true)
 
 **5. Workbench installation**
 
+For this example device name WORKBENCHDIR: is present and is used to detect and install Workbench from adf files.
+
 ![run_self_install_6.png](screenshots/run_self_install_6.png?raw=true)
 
 **6. Kickstart installation**
+
+For this example device name KICKSTARTDIR: is present and is used to detect and install Kickstart roms files.
 
 ![run_self_install_7.png](screenshots/run_self_install_7.png?raw=true)
 
 **7. Eject disk**
 
+Eject Workbench 3.1 disk to continue.
+
 ![run_self_install_8.png](screenshots/run_self_install_8.png?raw=true)
 
 **8. Workbench installation complete and reboot**
+
+Workbench and Kickstart installation is complete. Reboot to continue with package installation.
 
 ![run_self_install_9.png](screenshots/run_self_install_9.png?raw=true)
 
