@@ -712,6 +712,8 @@ For this example device name PATCHDIR: is not present and patch installation is 
 
 Automate installation shows automation status.
 
+For this example both device name WORKBENCHDIR: and KICKSTARTDIR: are present and will be used to detect and install Workbench and Kickstart roms.
+
 ![run_self_install_5.png](screenshots/run_self_install_5.png?raw=true)
 
 **5. Workbench installation**
