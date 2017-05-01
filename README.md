@@ -742,7 +742,7 @@ Workbench and Kickstart installation is complete. Reboot to continue with packag
 
 **9. Select packages to install**
 
-Selecting packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+Select packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
 
 ![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
 
