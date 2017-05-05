@@ -4,7 +4,7 @@
 # A powershell script to make a msi installer for HstWB Installer.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-02-14
+# Date:   2017-05-05
 
 # Requirements:
 # - Pandoc
@@ -12,6 +12,16 @@
 
 # Pandoc is used to build html version of github markdown readme and can be downloaded here http://pandoc.org/installing.html.
 # WiX Toolset is used to build a msi installer and can be downloaded here http://wixtoolset.org/releases/.
+
+
+Param(
+	[Parameter(Mandatory=$true)]
+	[string]$version
+)
+
+
+Import-Module (Resolve-Path('..\modules\HstwbInstaller-Config.psm1')) -Force
+Import-Module (Resolve-Path('..\modules\HstwbInstaller-Data.psm1')) -Force
 
 
 # start process
@@ -117,16 +127,32 @@ mkdir -Path $outputDir | Out-Null
 
 Write-Host "Building readme html from github markdown..."
 
-# build readme html from readme markdown using pandoc
-$readmeFile = Resolve-Path '..\README.md'
-$pandocArgs = "-f markdown_github -c ""github-pandoc.css"" -t html5 ""$readmeFile"" -o ""$outputDir\README.html"""
-StartProcess $pandocFile $pandocArgs $outputDir
+$readmeDir = Join-Path $outputDir -ChildPath 'Readme'
+mkdir -Path $readmeDir | Out-Null
 
-# copy css and screenshots for readme html
-Copy-Item -Path 'github-pandoc.css' -Destination $outputDir
+$hstwbInstallerReadmeDir = Join-Path $readmeDir -ChildPath 'HstWB Installer'
+mkdir -Path $hstwbInstallerReadmeDir | Out-Null
+
+# build readme html from readme markdown using pandoc
+$readmeMarkdownFile = Resolve-Path '..\README.md'
+$readmeHtmlFile = Join-Path $hstwbInstallerReadmeDir -ChildPath 'README.html'
+$pandocArgs = "-f markdown_github -c ""github-pandoc.css"" -t html5 ""$readmeMarkdownFile"" -o ""$readmeHtmlFile"""
+StartProcess $pandocFile $pandocArgs $hstwbInstallerReadmeDir
+
+# read github pandoc css and html
+$githubPandocFile = Resolve-Path 'github-pandoc.css'
+$githubPandocCss = [System.IO.File]::ReadAllText($githubPandocFile)
+$readmeHtml = [System.IO.File]::ReadAllText($readmeHtmlFile)
+
+# embed github pandoc css and remove stylesheet link
+$readmeHtml = $readmeHtml -replace '<style[^<>]+>(.*?)</style>', "<style type=""text/css"">`$1`r`n$githubPandocCss</style>" -replace '<link\s+rel="stylesheet"\s+href="github-pandoc.css">', ''
+[System.IO.File]::WriteAllText($readmeHtmlFile, $readmeHtml)
+
+# copy screenshots for readme
+$screenshotsDir = Join-Path -Path $rootDir -ChildPath 'Screenshots'
+Copy-Item $screenshotsDir -Destination $hstwbInstallerReadmeDir -Recurse
 
 Write-Host "Done."
-
 
 # Copy packages component directory
 # ---------------------------------
@@ -134,7 +160,8 @@ Write-Host "Done."
 Write-Host "Copying packages component directory..."
 
 $packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
-$packageFiles = Get-ChildItem $packagesPath\* -Include BetterWB*.zip, HstWB*.zip, EAB.WHDLoad.Demos.AGA.Menu*.zip, EAB.WHDLoad.Demos.OCS.Menu*.zip, EAB.WHDLoad.Games.AGA.Menu*.zip, EAB.WHDLoad.Games.OCS.Menu*.zip
+$packageFiles = @()
+$packageFiles += Get-ChildItem $packagesPath\* -Include BetterWB*.zip, HstWB*.zip, ClassicWB*.zip, EAB.WHDLoad.Demos.AGA.Menu*.zip, EAB.WHDLoad.Demos.OCS.Menu*.zip, EAB.WHDLoad.Games.AGA.Menu*.zip, EAB.WHDLoad.Games.OCS.Menu*.zip
 
 $outputPackagesPath = Join-Path $outputDir -ChildPath 'Packages'
 mkdir -Path $outputPackagesPath | Out-Null
@@ -143,13 +170,67 @@ $packageFiles | ForEach-Object { Copy-Item -Path $_.FullName -Destination $outpu
 Write-Host "Done."
 
 
+# Copy packages readme and screenshots
+
+$packagesReadmeDir = Join-Path $readmeDir -ChildPath 'Packages'
+mkdir -Path $packagesReadmeDir | Out-Null
+
+foreach($packageFile in $packageFiles)
+{
+	# skip, if package doesn't a readme.html file
+	if (!(ZipFileContains $packageFile.FullName 'readme.html'))
+	{
+		continue
+	}
+
+	# read package ini text file from package file
+	$packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package.ini$'
+
+	# return, if harddrives uae text doesn't exist
+	if (!$packageIniText)
+	{
+		Fail ("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file")
+	}
+
+	# read package ini file
+	$packageIni = ReadIniText $packageIniText
+
+	# fail, if package name doesn't exist
+	if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
+	{
+		Fail ("Package '$packageFileName' doesn't contain name in package.ini file")
+	}
+
+	# package name
+	$packageName = $packageIni.Package.Name
+
+	# create package readme directory
+	$packageReadmeDir = Join-Path $packagesReadmeDir -ChildPath $packageName
+	mkdir -Path $packageReadmeDir | Out-Null
+
+	# extract readme and screenshot files from package
+	ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.png)' $packageReadmeDir
+}
+
+
 # Copy other component directories
 # --------------------------------
 
 Write-Host "Copying component directories..."
 
-$components = @("Images", "Kickstart", "Licenses", "Modules", "Screenshots", "Support", "Winuae", "Workbench" )
-$components | ForEach-Object { Copy-Item -Path (Join-Path -Path $rootDir -ChildPath $_) -Recurse -Destination $outputDir }
+$components = @("Images", "Kickstart", "Licenses", "Modules", "Readme", "Support", "Winuae", "Workbench" )
+
+foreach($component in $components)
+{
+	$componentDir = Join-Path -Path $rootDir -ChildPath $component
+
+	if (!(Test-Path $componentDir))
+	{
+		continue
+	}
+
+	Copy-Item -Path $componentDir -Recurse -Destination $outputDir
+}
 
 Write-Host "Done."
 
@@ -180,12 +261,13 @@ Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
 
 Write-Host "Done."
 
+
 # Compile wxs using wix toolset candle
 # ------------------------------------
 
 Write-Host "Compiling wxs files..."
 
-$wixToolsetCandleArgs = '-dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dSupportDir="Support" -dScreenshotsDir="Screenshots" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"'
+$wixToolsetCandleArgs = ('-dVersion="' + $version + '" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
 
 Write-Host "Done."
@@ -196,7 +278,7 @@ Write-Host "Done."
 
 Write-Host "Linking wixobj files..."
 
-$wixToolsetLightArgs = "-o ""hstwb-installer.1.0.0.msi"" -ext WixUIExtension ""*.wixobj"""
+$wixToolsetLightArgs = "-o ""hstwb-installer.$version.msi"" -ext WixUIExtension ""*.wixobj"""
 StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
 
 Write-Host "Done."

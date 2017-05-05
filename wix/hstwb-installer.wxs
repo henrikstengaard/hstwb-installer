@@ -1,11 +1,20 @@
 <?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="1.0.0" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
+   <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="$(var.Version)" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
       <Package InstallerVersion="300" Compressed="yes" Comments="Windows Installer Package"/>
       <Media Id="1" Cabinet="hstwbinstaller.cab" EmbedCab="yes"/>
-
       <Icon Id="icon.ico" SourceFile="icon.ico"/>
  
+ <Upgrade Id="b38231ed-9ea6-41fd-8cc3-2893dea5dfce">
+  <UpgradeVersion Minimum="1.0.0"
+                  IncludeMinimum="yes"
+                  OnlyDetect="no"
+                  Maximum="$(var.Version)"
+                  IncludeMaximum="no"
+                  Property="PREVIOUSFOUND" />
+</Upgrade>
+    <MajorUpgrade AllowSameVersionUpgrades="yes" 
+                  DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
 
 <Directory Id="TARGETDIR" Name="SourceDir">
 <Directory Id="LocalAppDataFolder">
@@ -26,13 +35,11 @@
     <Directory Id="LicensesComponentDir"/>
     <Directory Id="ModulesComponentDir"/>
     <Directory Id="PackagesComponentDir"/>
-    <Directory Id="ScreenshotsComponentDir"/>
+    <Directory Id="ReadmeComponentDir"/>
     <Directory Id="SupportComponentDir"/>
     <Directory Id="WinuaeComponentDir"/>
     <Directory Id="WorkbenchComponentDir"/>
     <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
-        <File Id="githubpandoc.css" Source="github-pandoc.css"/>
-        <File Id="README.html" Source="README.html"/>
         <File Id="hstwbinstallerrun.cmd" Source="..\hstwb-installer-run.cmd"/>
         <File Id="hstwbinstallerrun.ps1" Source="..\hstwb-installer-run.ps1"/>
         <File Id="hstwbinstallersetup.cmd" Source="..\hstwb-installer-setup.cmd"/>
@@ -46,8 +53,8 @@
                     Id="ApplicationReadmeShortcut" 
                     Name="HstWB Installer Readme" 
                     Target="[SystemFolder]cmd.exe"
+                    Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Readme&quot;&quot;"
                     WorkingDirectory="INSTALLDIR"
-                    Arguments="/c &quot;start readme.html&quot;"
                     Icon="icon.ico" />
                   <Shortcut 
                     Id="ApplicationSettingsShortcut"
@@ -100,7 +107,7 @@
          <ComponentGroupRef Id="KickstartComponentGroup"/>
          <ComponentGroupRef Id="LicensesComponentGroup"/>
          <ComponentGroupRef Id="ModulesComponentGroup"/>
-         <ComponentGroupRef Id="ScreenshotsComponentGroup"/>
+         <ComponentGroupRef Id="ReadmeComponentGroup"/>
          <ComponentGroupRef Id="SupportComponentGroup"/>
          <ComponentGroupRef Id="WinuaeComponentGroup"/>
          <ComponentGroupRef Id="WorkbenchComponentGroup"/>

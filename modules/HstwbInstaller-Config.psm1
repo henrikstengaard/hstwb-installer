@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-27
+# Date:   2017-05-05
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -418,17 +418,3 @@ function ValidateSettings($settings)
 
     return $true
 }
-
-
-# export
-export-modulemember -function ReadIniFile
-export-modulemember -function ReadIniText
-export-modulemember -function WriteIniFile
-export-modulemember -function DefaultSettings
-export-modulemember -function DefaultAssigns
-export-modulemember -function ReadImages
-export-modulemember -function ReadPackages
-export-modulemember -function UpdatePackages
-export-modulemember -function UpdateAssigns
-export-modulemember -function ValidateAssigns
-export-modulemember -function ValidateSettings
