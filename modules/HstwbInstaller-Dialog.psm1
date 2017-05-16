@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-27
+# Date:   2017-05-05
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -120,9 +120,3 @@ function EnterChoice($prompt, $options)
 
     return $options[$choice - 1]
 }
-
-
-# export
-export-modulemember -function PrintSettings
-export-modulemember -function EnterPath
-export-modulemember -function EnterChoice

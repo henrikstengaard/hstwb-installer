@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-27
+# Date:   2017-05-05
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -41,12 +41,75 @@ function ReadZipEntryTextFile($zipFile, $entryName)
     return $text
 }
 
+
+# zip file contains
+function ZipFileContains($zipFile, $pattern)
+{
+    # open zip archive
+    $zipArchive = [System.IO.Compression.ZipFile]::Open($zipFile,"Read")
+    
+    # get zip archive entries matching pattern
+    $matchingZipArchiveEntries = @()
+    $matchingZipArchiveEntries += $zipArchive.Entries | Where-Object { $_.FullName -match $pattern }
+
+    # close zip archive
+    $zipArchive.Dispose()
+
+    return $matchingZipArchiveEntries.Count -gt 0
+}
+
+
+# extract files from zip file
+function ExtractFilesFromZipFile($zipFile, $pattern, $outputDir)
+{
+    # open zip archive
+    $zipArchive = [System.IO.Compression.ZipFile]::Open($zipFile,"Read")
+    
+    # get zip archive entries matching pattern
+    $matchingZipArchiveEntries = @()
+    $matchingZipArchiveEntries += $zipArchive.Entries | Where-Object { $_.FullName -match $pattern }
+
+    # extract matching zip archive entries
+    foreach($zipArchiveEntry in $matchingZipArchiveEntries)
+    {
+        # get output file
+        $outputFile = Join-Path $outputDir -ChildPath $zipArchiveEntry.FullName
+
+        # get output file parent dir
+        $outputFileParentDir = Split-Path $outputFile -Parent
+
+        # create entry directory, if it doesn't exist
+        if (!(Test-Path $outputFileParentDir))
+        {
+            mkdir $outputFileParentDir | Out-Null
+        }
+
+        # open zip archive entry stream
+        $zipArchiveEntryStream = $zipArchiveEntry.Open()
+
+        # open file stream and write from entry stream
+        $outputFileStream = New-Object System.IO.FileStream($outputFile, 'Create')
+        $zipArchiveEntryStream.CopyTo($outputFileStream)
+
+        # close streams
+        $outputFileStream.Close()
+        $outputFileStream.Dispose()
+        $zipArchiveEntryStream.Close()
+        $zipArchiveEntryStream.Dispose()
+    }
+
+    # close zip archive
+    $zipArchive.Dispose()
+}
+
+
 # calculate md5 hash from file
 function CalculateMd5FromFile($file)
 {
 	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
 	return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
 }
+
 
 # calculate md5 hash from text
 function CalculateMd5FromText($text)
@@ -55,6 +118,7 @@ function CalculateMd5FromText($text)
 	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
 	return [System.BitConverter]::ToString($md5.ComputeHash($encoding.GetBytes($text))).ToLower().Replace('-', '')
 }
+
 
 # get file hashes
 function GetFileHashes($path)
@@ -206,16 +270,3 @@ function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
 
     return $kickstartRomSetHashes
 }
-
-
-# export
-export-modulemember -function ReadZipEntryTextFile
-export-modulemember -function CalculateMd5FromText
-export-modulemember -function CalculateMd5FromFile
-export-modulemember -function GetFileHashes
-export-modulemember -function FindMatchingFileHashes
-export-modulemember -function ReadString
-export-modulemember -function ReadAdfDiskName
-export-modulemember -function FindMatchingWorkbenchAdfs
-export-modulemember -function FindWorkbenchAdfSetHashes
-export-modulemember -function FindKickstartRomSetHashes
