@@ -1,4 +1,88 @@
+.KEY inifile/a,sectionname/a,parametername/a,parametervalue/a
+.BRA {
+.KET }
 
+; Ini File Set Script
+; ---------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-05-16
+;
+; This script sets or adds a parameter to a section withinin an ini file.
 
-wc -l ''
+; Add, if ini file doesn't exist
+IF NOT EXISTS "{inifile}"
+  SKIP add
+ENDIF
 
+; Add, if section doesn't exist
+search "{inifile}" "[{sectionname}]" >NIL:
+IF WARN  
+  SKIP add
+ENDIF
+
+; section exist, but does parameter and at what line?
+
+; Initialize variables
+set inifilelinescount `wc -l <"{inifile}"`
+set inifilelinenumber 1
+set inifilesection 0
+set inifileparameter 0
+
+; Iterate through ini file lines
+LAB start
+IF NOT $inifilelinenumber gt $inifilelinescount VAL
+  ; Get line number from ini file
+  echo "$inifilelinenumber" >T:inifilelinenumber
+  set inifilelineregexp `sed "s/\(.\)*$/\1q;d/" T:inifilelinenumber`
+  set inifileline `sed "$inifilelineregexp" "{inifile}"`
+  sed "$inifilelineregexp" "{inifile}" >T:inifileline
+
+  IF $inifilesection eq 1 VAL
+    ; End, if line contains next section
+    search T:inifileline "[" >NIL:
+    IF NOT WARN  
+      ;type T:inifileline
+      ;echo "add parameter value to section!"
+      echo "{parametername}={parametervalue}" >>T:newinifile
+    ENDIF
+
+    ; End, if line contains parameter
+    search T:inifileline "{parametername}=" >NIL:
+    IF NOT WARN
+      ; Replace equal with newline and print 2nd line with parameter value
+      ;rep T:inifileline "=" "*N"
+      ;sed "2q;d" T:inifileline
+      ;type T:inifileline
+      ;echo "replace parameter value!"
+      set inifileparameter 1
+      echo "{parametername}={parametervalue}" >>T:newinifile
+    ENDIF
+  ENDIF
+
+  ; Copy line to new ini file, if not line contains parameter
+  IF NOT $inifileparameter eq 1 VAL
+    type T:inifileline >>T:newinifile
+  ELSE
+    set inifileparameter 0
+  ENDIF
+
+  ; Set ini file section true, if line contains section name
+  search T:inifileline "[{sectionname}]" >NIL:
+  IF NOT WARN
+    set inifilesection 1
+    set inifilesectionname `type T:inifileline`
+  ENDIF
+
+  set inifilelinenumber `eval $inifilelinenumber + 1`
+  SKIP BACK start
+ENDIF
+
+SKIP end
+
+; Add section and parameter
+LAB add
+echo "[{sectionname}]" >>{inifile}
+echo "{parametername}={parametervalue}" >>{inifile}
+
+; End
+LAB end
