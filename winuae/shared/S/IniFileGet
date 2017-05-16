@@ -1,0 +1,37 @@
+.KEY inifile/a,section/a,parameter/a
+.BRA {
+.KET }
+
+; Ini File Get Script
+; ---------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-05-16
+;
+; This script gets a parameter from a section in an ini file.
+
+
+IF NOT EXISTS "{inifile}"
+  echo "Error: Ini file '{inifile}' doesn't exist!"
+  SKIP end
+ENDIF
+
+set inifilelines `wc -l <{inifile}`
+echo "lines = $inifilelines"
+
+set line 1
+lab start
+if not $line gt $inifilelines val
+
+  echo "Line = $line"
+  echo "$line" >T:linecount
+  set getinifileline `sed "s/\(.\)*$/\1q;d/" T:linecount`
+  set inifileline `sed "$getinifileline" {inifile}`
+  echo $inifileline
+
+  set line `eval $line + 1`
+  skip back start
+endif
+
+
+; End
+LAB end
