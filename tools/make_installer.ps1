@@ -4,7 +4,7 @@
 # A powershell script to make a msi installer for HstWB Installer.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-05
+# Date:   2017-05-16
 
 # Requirements:
 # - Pandoc
@@ -14,12 +14,7 @@
 # WiX Toolset is used to build a msi installer and can be downloaded here http://wixtoolset.org/releases/.
 
 
-Param(
-	[Parameter(Mandatory=$true)]
-	[string]$version
-)
-
-
+Import-Module (Resolve-Path('..\modules\HstwbInstaller-Version.psm1')) -Force
 Import-Module (Resolve-Path('..\modules\HstwbInstaller-Config.psm1')) -Force
 Import-Module (Resolve-Path('..\modules\HstwbInstaller-Data.psm1')) -Force
 
@@ -88,6 +83,7 @@ function StartProcess($fileName, $arguments, $workingDirectory)
 
 
 # paths
+$hstwbInstallerVersion = HstwbInstallerVersion
 $pandocFile = Join-Path $env:LOCALAPPDATA -ChildPath 'Pandoc\pandoc.exe'
 $wixToolsetDir = Join-Path ${Env:ProgramFiles(x86)} -ChildPath '\WiX Toolset v3.10\bin'
 $wixToolsetHeatFile = Join-Path $wixToolsetDir -ChildPath 'heat.exe'
@@ -259,6 +255,11 @@ Write-Host "Copying HstWB Installer wix files..."
 
 Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
 
+# Update year in license rtf file
+$licenseRtfFile = Join-Path $outputDir -ChildPath 'license.rtf'
+$licenseRtfText = [System.IO.File]::ReadAllText($licenseRtfFile) -replace 'Copyright \(c\) \d+', ("Copyright (c) {0}" -f [System.DateTime]::Now.Year)
+[System.IO.File]::WriteAllText($licenseRtfFile, $licenseRtfText)
+
 Write-Host "Done."
 
 
@@ -267,7 +268,7 @@ Write-Host "Done."
 
 Write-Host "Compiling wxs files..."
 
-$wixToolsetCandleArgs = ('-dVersion="' + $version + '" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
+$wixToolsetCandleArgs = ('-dVersion="' + $hstwbInstallerVersion + '" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
 
 Write-Host "Done."
@@ -278,7 +279,7 @@ Write-Host "Done."
 
 Write-Host "Linking wixobj files..."
 
-$wixToolsetLightArgs = "-o ""hstwb-installer.$version.msi"" -ext WixUIExtension ""*.wixobj"""
+$wixToolsetLightArgs = "-o ""hstwb-installer.$hstwbInstallerVersion.msi"" -ext WixUIExtension ""*.wixobj"""
 StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
 
 Write-Host "Done."
