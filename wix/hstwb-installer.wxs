@@ -1,131 +1,78 @@
 <?xml version="1.0"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="$(var.Version)" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
-      <Package InstallerVersion="300" Compressed="yes" Comments="Windows Installer Package"/>
-      <Media Id="1" Cabinet="hstwbinstaller.cab" EmbedCab="yes"/>
-      <Icon Id="icon.ico" SourceFile="icon.ico"/>
- 
- <Upgrade Id="b38231ed-9ea6-41fd-8cc3-2893dea5dfce">
-  <UpgradeVersion Minimum="1.0.0"
-                  IncludeMinimum="yes"
-                  OnlyDetect="no"
-                  Maximum="$(var.Version)"
-                  IncludeMaximum="no"
-                  Property="PREVIOUSFOUND" />
-</Upgrade>
-    <MajorUpgrade AllowSameVersionUpgrades="yes" 
-                  DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
-
-<Directory Id="TARGETDIR" Name="SourceDir">
-<Directory Id="LocalAppDataFolder">
-    <Directory Id="ApplicationDataDirectory" Name="HstWB Installer"/>
-  </Directory>
-  <Directory Id="ProgramMenuFolder">
-    <Directory Id="ApplicationStartMenuDirectory" Name="HstWB Installer"/>
-  </Directory>
-    <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="HstWB Installer">
-        </Directory>
+<Wix 
+  xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="$(var.Version)" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
+    <Package InstallerVersion="300" Compressed="yes" Comments="Windows Installer Package"/>
+    <Media Id="1" Cabinet="hstwbinstaller.cab" EmbedCab="yes"/>
+    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <Upgrade Id="b38231ed-9ea6-41fd-8cc3-2893dea5dfce">
+      <UpgradeVersion Minimum="1.0.0" IncludeMinimum="yes" OnlyDetect="no" Maximum="$(var.Version)" IncludeMaximum="no" Property="PREVIOUSFOUND" />
+    </Upgrade>
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="LocalAppDataFolder">
+        <Directory Id="ApplicationDataDirectory" Name="HstWB Installer"/></Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationStartMenuDirectory" Name="HstWB Installer"/></Directory>
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="HstWB Installer"></Directory>
+      </Directory>
     </Directory>
-</Directory>
-
-<DirectoryRef Id="INSTALLDIR">
-    <Directory Id="ImagesComponentDir"/>
-    <Directory Id="KickstartComponentDir"/>
-    <Directory Id="LicensesComponentDir"/>
-    <Directory Id="ModulesComponentDir"/>
-    <Directory Id="PackagesComponentDir"/>
-    <Directory Id="ReadmeComponentDir"/>
-    <Directory Id="SupportComponentDir"/>
-    <Directory Id="WinuaeComponentDir"/>
-    <Directory Id="WorkbenchComponentDir"/>
-    <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
+    <DirectoryRef Id="INSTALLDIR">
+      <Directory Id="ImagesComponentDir"/>
+      <Directory Id="KickstartComponentDir"/>
+      <Directory Id="LicensesComponentDir"/>
+      <Directory Id="ModulesComponentDir"/>
+      <Directory Id="PackagesComponentDir"/>
+      <Directory Id="ReadmeComponentDir"/>
+      <Directory Id="SupportComponentDir"/>
+      <Directory Id="WinuaeComponentDir"/>
+      <Directory Id="WorkbenchComponentDir"/>
+      <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
         <File Id="hstwbinstallerrun.cmd" Source="..\hstwb-installer-run.cmd"/>
         <File Id="hstwbinstallerrun.ps1" Source="..\hstwb-installer-run.ps1"/>
         <File Id="hstwbinstallersetup.cmd" Source="..\hstwb-installer-setup.cmd"/>
         <File Id="hstwbinstallersetup.ps1" Source="..\hstwb-installer-setup.ps1"/>
-    </Component>
-</DirectoryRef>
-
-<DirectoryRef Id="ApplicationStartMenuDirectory">
-    <Component Id="ApplicationShortcuts" Guid="2d653bc1-71ac-42af-ae4d-69795f4dd428">
-                  <Shortcut 
-                    Id="ApplicationReadmeShortcut" 
-                    Name="HstWB Installer Readme" 
-                    Target="[SystemFolder]cmd.exe"
-                    Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Readme&quot;&quot;"
-                    WorkingDirectory="INSTALLDIR"
-                    Icon="icon.ico" />
-                  <Shortcut 
-                    Id="ApplicationSettingsShortcut"
-                    Name="HstWB Installer Settings"
-                    Target="[ApplicationDataDirectory]hstwb-installer-settings.ini"
-                    WorkingDirectory="ApplicationDataDirectory"
-                    Icon="icon.ico" />
-                  <Shortcut 
-                    Id="ApplicationAssignsShortcut"
-                    Name="HstWB Installer Assigns"
-                    Target="[ApplicationDataDirectory]hstwb-installer-assigns.ini"
-                    WorkingDirectory="ApplicationDataDirectory"
-                    Icon="icon.ico" />
-                      <Shortcut 
-                    Id="ApplicationRunShortcut" 
-                    Name="HstWB Installer Run" 
-                    Target="[SystemFolder]cmd.exe"
-                    WorkingDirectory="INSTALLDIR"
-                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;"
-                    Icon="icon.ico" />
-                  <Shortcut 
-                    Id="ApplicationSetupShortcut" 
-                    Name="HstWB Installer Setup" 
-                    Target="[SystemFolder]cmd.exe"
-                    WorkingDirectory="INSTALLDIR"
-                    Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;"
-                    Icon="icon.ico" />
-                  <Shortcut 
-                    Id="ApplicationSupportShortcut" 
-                    Name="HstWB Installer Support" 
-                    Target="[SystemFolder]cmd.exe"
-                    Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Support&quot;&quot;"
-                    WorkingDirectory="INSTALLDIR"
-                    Icon="icon.ico" />
-        <Shortcut Id="ApplicationUninstallShortcut"
-                  Name="Uninstall HstWB Installer"
-                  Directory="ApplicationStartMenuDirectory"
-                  Target="[SystemFolder]msiexec.exe"
-                  Arguments="/x [ProductCode]"/> 
+      </Component>
+    </DirectoryRef>
+    <DirectoryRef Id="ApplicationStartMenuDirectory">
+      <Component Id="ApplicationShortcuts" Guid="2d653bc1-71ac-42af-ae4d-69795f4dd428">
+        <Shortcut Id="ApplicationReadmeShortcut" Name="HstWB Installer Readme" Target="[SystemFolder]cmd.exe" Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Readme&quot;&quot;" WorkingDirectory="INSTALLDIR" Icon="icon.ico" />
+        <Shortcut Id="ApplicationSettingsShortcut" Name="HstWB Installer Settings" Target="[ApplicationDataDirectory]hstwb-installer-settings.ini" WorkingDirectory="ApplicationDataDirectory" Icon="icon.ico" />
+        <Shortcut Id="ApplicationAssignsShortcut" Name="HstWB Installer Assigns" Target="[ApplicationDataDirectory]hstwb-installer-assigns.ini" WorkingDirectory="ApplicationDataDirectory" Icon="icon.ico" />
+        <Shortcut Id="ApplicationRunShortcut" Name="HstWB Installer Run" Target="[SystemFolder]cmd.exe" WorkingDirectory="INSTALLDIR" Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;" Icon="icon.ico" />
+        <Shortcut Id="ApplicationSetupShortcut" Name="HstWB Installer Setup" Target="[SystemFolder]cmd.exe" WorkingDirectory="INSTALLDIR" Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;" Icon="icon.ico" />
+        <Shortcut Id="ApplicationSupportShortcut" Name="HstWB Installer Support" Target="[SystemFolder]cmd.exe" Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Support&quot;&quot;" WorkingDirectory="INSTALLDIR" Icon="icon.ico" />
+        <Shortcut Id="ApplicationUninstallShortcut" Name="Uninstall HstWB Installer" Directory="ApplicationStartMenuDirectory" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]"/>
         <RemoveFolder Id="RemoveApplicationDataDirectory" Directory="ApplicationDataDirectory" On="uninstall"/>
         <RemoveFolder Id="RemoveApplicationStartMenuDirectory" Directory="ApplicationStartMenuDirectory" On="uninstall"/>
-                  <RegistryValue Root="HKCU" Key="Software\Henrik Noerfjand Stengaard\HstWB Installer" 
-                            Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-    </Component>
-</DirectoryRef>
- 
-      <Feature Id="MainApplication" Title="Main Application" Level="1" Display="expand" ConfigurableDirectory='INSTALLDIR' TypicalDefault="install">
-         <ComponentRef Id="ApplicationFiles"/>
-         <ComponentRef Id="ApplicationShortcuts"/>
-         <ComponentGroupRef Id="KickstartComponentGroup"/>
-         <ComponentGroupRef Id="LicensesComponentGroup"/>
-         <ComponentGroupRef Id="ModulesComponentGroup"/>
-         <ComponentGroupRef Id="ReadmeComponentGroup"/>
-         <ComponentGroupRef Id="SupportComponentGroup"/>
-         <ComponentGroupRef Id="WinuaeComponentGroup"/>
-         <ComponentGroupRef Id="WorkbenchComponentGroup"/>
-
-           <Feature Id="Images" Title="Images" Level="1">
-             <ComponentGroupRef Id="ImagesComponentGroup"/>
-            </Feature>
-           <Feature Id="Packages" Title="Packages" Level="1">
-             <ComponentGroupRef Id="PackagesComponentGroup"/>
-            </Feature>
+        <RegistryValue Root="HKCU" Key="Software\Henrik Noerfjand Stengaard\HstWB Installer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+    <Feature Id="MainApplication" Title="Main Application" Level="1" Display="expand" ConfigurableDirectory='INSTALLDIR' TypicalDefault="install">
+      <ComponentRef Id="ApplicationFiles"/>
+      <ComponentRef Id="ApplicationShortcuts"/>
+      <ComponentGroupRef Id="KickstartComponentGroup"/>
+      <ComponentGroupRef Id="LicensesComponentGroup"/>
+      <ComponentGroupRef Id="ModulesComponentGroup"/>
+      <ComponentGroupRef Id="ReadmeComponentGroup"/>
+      <ComponentGroupRef Id="SupportComponentGroup"/>
+      <ComponentGroupRef Id="WinuaeComponentGroup"/>
+      <ComponentGroupRef Id="WorkbenchComponentGroup"/>
+      <Feature Id="Images" Title="Images" Level="1">
+        <ComponentGroupRef Id="ImagesComponentGroup"/>
       </Feature>
-
-<WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
-<!--WixVariable Id="WixUIBannerBmp" Value="bmp" /--> <!-- 493 X 58 -->
-<!--WixVariable Id="WixUIDialogBmp" Value="bmp" /--> <!-- 493 X 312 -->
-<Property Id="ARPPRODUCTICON" Value="icon.ico" />
-<Property Id="WixAppFolder" Value="WixPerUserFolder" />
-<UIRef Id="WixUI_Mondo" />
-
-   </Product>
+      <Feature Id="Packages" Title="Packages" Level="1">
+        <ComponentGroupRef Id="PackagesComponentGroup"/>
+      </Feature>
+    </Feature>
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+    <!--WixVariable Id="WixUIBannerBmp" Value="bmp" /-->
+    <!-- 493 X 58 -->
+    <!--WixVariable Id="WixUIDialogBmp" Value="bmp" /-->
+    <!-- 493 X 312 -->
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="WixAppFolder" Value="WixPerUserFolder" />
+    <UIRef Id="WixUI_Mondo" />
+  </Product>
 </Wix>
