@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-01-27
+# Date:   2017-05-16
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -13,6 +13,7 @@ Param(
 )
 
 
+Import-Module (Resolve-Path('modules\HstwbInstaller-Version.psm1'))
 Import-Module (Resolve-Path('modules\HstwbInstaller-Config.psm1'))
 Import-Module (Resolve-Path('modules\HstwbInstaller-Dialog.psm1'))
 Import-Module (Resolve-Path('modules\HstwbInstaller-Data.psm1'))
@@ -97,9 +98,10 @@ function ConfirmDialog($title, $message)
 function Menu($title, $options)
 {
     Clear-Host
-    Write-Host "---------------------" -foregroundcolor "Yellow"
-    Write-Host "HstWB Installer Setup" -foregroundcolor "Yellow"
-    Write-Host "---------------------" -foregroundcolor "Yellow"
+    $versionPadding = new-object System.String('-', ($hstwbInstallerVersion.Length + 2))
+    Write-Host ("---------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ("HstWB Installer Setup v{0}" -f $hstwbInstallerVersion) -foregroundcolor "Yellow"
+    Write-Host ("---------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
     Write-Host ""
     PrintSettings
     Write-Host ""
@@ -731,6 +733,7 @@ function Reset()
 
 
 # resolve paths
+$hstwbInstallerVersion = HstwbInstallerVersion
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")

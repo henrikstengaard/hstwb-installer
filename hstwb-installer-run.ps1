@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-03-28
+# Date:   2017-05-16
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1498,6 +1498,7 @@ function Fail($message)
 
 
 # resolve paths
+$hstwbInstallerVersion = HstwbInstallerVersion
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
@@ -1539,9 +1540,10 @@ if (!$settings.Installer -or !$settings.Installer.Mode)
 
 
 # print title and settings 
-Write-Host "-------------------" -foregroundcolor "Yellow"
-Write-Host "HstWB Installer Run" -foregroundcolor "Yellow"
-Write-Host "-------------------" -foregroundcolor "Yellow"
+$versionPadding = new-object System.String('-', ($hstwbInstallerVersion.Length + 2))
+Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+Write-Host ("HstWB Installer Run v{0}" -f $hstwbInstallerVersion) -foregroundcolor "Yellow"
+Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
 Write-Host ""
 PrintSettings
 Write-Host ""
