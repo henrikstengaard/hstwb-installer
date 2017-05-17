@@ -5,7 +5,7 @@
 ; Ini File Get Script
 ; ---------------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-05-16
+; Date: 2017-05-17
 ;
 ; This script gets a parameter from a section withinin an ini file.
 
@@ -23,30 +23,29 @@ set inifilesection 0
 LAB start
 IF NOT $inifilelinenumber gt $inifilelinescount VAL
   ; Get line number from ini file
-  echo "$inifilelinenumber" >T:inifilelinenumber
-  set inifilelineregexp `sed "s/\(.\)*$/\1q;d/" T:inifilelinenumber`
-  set inifileline `sed "$inifilelineregexp" "{inifile}"`
-  sed "$inifilelineregexp" "{inifile}" >T:inifileline
+  echo "$inifilelinenumber" >T:_inifilelinenumber
+  set inifilelineregexp `sed "s/\(.\)*$/\1q;d/" T:_inifilelinenumber`
+  sed "$inifilelineregexp" "{inifile}" >T:_inifileline
 
   IF $inifilesection eq 1 val
     ; End, if line contains next section
-    search T:inifileline "[" >NIL:
+    search T:_inifileline "[" >NIL:
     IF NOT WARN  
       SKIP end
     ENDIF
 
     ; End, if line contains parameter
-    search T:inifileline "{parametername}=" >NIL:
+    search T:_inifileline "{parametername}=" >NIL:
     IF NOT WARN
       ; Replace equal with newline and print 2nd line with parameter value
-      rep T:inifileline "=" "*N"
-      sed "2q;d" T:inifileline
+      rep T:_inifileline "=" "*N"
+      sed "2q;d" T:_inifileline
       SKIP end
     ENDIF
   ENDIF
 
   ; Set ini file section true, if line contains section name
-  search T:inifileline "[{sectionname}]" >NIL:
+  search T:_inifileline "[{sectionname}]" >NIL:
   IF NOT WARN  
     set inifilesection 1
   ENDIF
@@ -55,5 +54,17 @@ IF NOT $inifilelinenumber gt $inifilelinescount VAL
   SKIP BACK start
 ENDIF
 
+
 ; End
 LAB end
+
+; Delete temp files, if they exist
+IF EXISTS T:_inifilelinenumber
+  delete >NIL: T:_inifilelinenumber
+ENDIF
+IF EXISTS T:_inifileline
+  delete >NIL: T:_inifileline
+ENDIF
+IF EXISTS T:_newinifile
+  delete >NIL: T:_newinifile
+ENDIF
