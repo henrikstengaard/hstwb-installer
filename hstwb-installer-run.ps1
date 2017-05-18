@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-16
+# Date:   2017-05-18
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1025,9 +1025,9 @@ function RunInstall()
     Write-Host "Preparing install..."
 
 
-    # copy winuae install dir
-    $winuaeInstallDir = [System.IO.Path]::Combine($winuaePath, "install")
-    Copy-Item -Path $winuaeInstallDir $tempPath -recurse -force
+    # copy amiga install dir
+    $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install")
+    Copy-Item -Path $amigaInstallDir $tempPath -recurse -force
 
 
     # set temp install and packages dir
@@ -1035,21 +1035,21 @@ function RunInstall()
     $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
 
 
-    # copy winuae shared dir
-    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
-    Copy-Item -Path "$winuaeSharedDir\*" $tempInstallDir -recurse -force
+    # copy amiga shared dir
+    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
 
 
     # create temp packages path
     if(!(test-path -path $tempPackagesDir))
     {
-        md $tempPackagesDir | Out-Null
+        mkdir $tempPackagesDir | Out-Null
     }
 
 
-    # copy winuae packages dir
-    $winuaePackagesDir = [System.IO.Path]::Combine($winuaePath, "packages")
-    Copy-Item -Path "$winuaePackagesDir\*" $tempPackagesDir -recurse -force
+    # copy amiga packages dir
+    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
     # prepare install workbench
@@ -1057,7 +1057,7 @@ function RunInstall()
     {
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $workbenchAdfSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
     }
     else
     {
@@ -1072,7 +1072,7 @@ function RunInstall()
     {
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $kickstartRomSetHashes | Where { $_.File } | % { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
 
         # copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
         if ($kickstartRomHash.Encrypted)
@@ -1207,7 +1207,7 @@ function RunBuildSelfInstall()
     $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
     if(!(test-path -path $tempInstallDir))
     {
-        md $tempInstallDir | Out-Null
+        mkdir $tempInstallDir | Out-Null
     }
 
 
@@ -1215,24 +1215,24 @@ function RunBuildSelfInstall()
     $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
     if(!(test-path -path $tempPackagesDir))
     {
-        md $tempPackagesDir | Out-Null
+        mkdir $tempPackagesDir | Out-Null
     }
 
 
-    # copy winuae self install build dir
-    $winuaeSelfInstallBuildDir = [System.IO.Path]::Combine($winuaePath, "selfinstall")
-    Copy-Item -Path "$winuaeSelfInstallBuildDir\*" $tempInstallDir -recurse -force
+    # copy amiga self install build dir
+    $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
+    Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
 
 
-    # copy winuae shared dir
-    $winuaeSharedDir = [System.IO.Path]::Combine($winuaePath, "shared")
-    Copy-Item -Path "$winuaeSharedDir\*" $tempInstallDir -recurse -force
-    Copy-Item -Path "$winuaeSharedDir\*" "$tempInstallDir\System" -recurse -force
+    # copy amiga shared dir
+    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\System" -recurse -force
 
 
-    # copy winuae packages dir
-    $winuaePackagesDir = [System.IO.Path]::Combine($winuaePath, "packages")
-    Copy-Item -Path "$winuaePackagesDir\*" $tempPackagesDir -recurse -force
+    # copy amiga packages dir
+    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
     # build user assigns script lines
@@ -1471,13 +1471,14 @@ function RunBuildPackageInstallation()
     WriteAmigaTextLines $installPackagesScriptFile $packageInstallationScriptLines 
 
 
-    # copy package installation files
-    Copy-Item -Path "$packageInstallationPath\*" $outputPackageInstallationPath -recurse -force
+    # copy amiga package installation files
+    $amigaPackageInstallationDir = [System.IO.Path]::Combine($amigaPath, "packageinstallation")
+    Copy-Item -Path "$amigaPackageInstallationDir\*" $outputPackageInstallationPath -recurse -force
 
 
-    # copy winuae packages dir
-    $winuaePackagesDir = [System.IO.Path]::Combine($winuaePath, "packages")
-    Copy-Item -Path "$winuaePackagesDir\*" $outputPackageInstallationPath -recurse -force
+    # copy amiga packages dir
+    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    Copy-Item -Path "$amigaPackagesDir\*" $outputPackageInstallationPath -recurse -force
 }
 
 
@@ -1503,7 +1504,7 @@ $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
-$packageInstallationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packageinstallation")
+$amigaPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("amiga")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
@@ -1567,7 +1568,7 @@ if (!(ValidateAssigns $assigns))
 $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $settings $workbenchAdfHashesFile
 
 # find workbench 3.1 workbench disk
-$workbenchAdfHash = $workbenchAdfSetHashes | Where { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+$workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
 
 # fail, if workbench adf hash doesn't exist
 if (!$workbenchAdfHash)
@@ -1585,7 +1586,7 @@ $kickstartRomSetHashes = FindKickstartRomSetHashes $settings $kickstartRomHashes
 
 
 # find kickstart 3.1 a1200 rom
-$kickstartRomHash = $kickstartRomSetHashes | Where { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+$kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
 
 
 # fail, if kickstart rom hash doesn't exist
@@ -1612,7 +1613,7 @@ if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKe
 # create temp path
 if(!(test-path -path $tempPath))
 {
-	md $tempPath | Out-Null
+	mkdir $tempPath | Out-Null
 }
 
 
