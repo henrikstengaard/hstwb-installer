@@ -19,6 +19,7 @@
       </Directory>
     </Directory>
     <DirectoryRef Id="INSTALLDIR">
+      <Directory Id="AmigaComponentDir"/>
       <Directory Id="ImagesComponentDir"/>
       <Directory Id="KickstartComponentDir"/>
       <Directory Id="LicensesComponentDir"/>
@@ -52,6 +53,7 @@
     <Feature Id="MainApplication" Title="Main Application" Level="1" Display="expand" ConfigurableDirectory='INSTALLDIR' TypicalDefault="install">
       <ComponentRef Id="ApplicationFiles"/>
       <ComponentRef Id="ApplicationShortcuts"/>
+      <ComponentGroupRef Id="AmigaComponentGroup"/>
       <ComponentGroupRef Id="KickstartComponentGroup"/>
       <ComponentGroupRef Id="LicensesComponentGroup"/>
       <ComponentGroupRef Id="ModulesComponentGroup"/>

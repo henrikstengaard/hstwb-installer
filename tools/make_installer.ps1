@@ -214,7 +214,7 @@ foreach($packageFile in $packageFiles)
 
 Write-Host "Copying component directories..."
 
-$components = @("Images", "Kickstart", "Licenses", "Modules", "Readme", "Support", "Winuae", "Workbench" )
+$components = @("Amiga", "Images", "Kickstart", "Licenses", "Modules", "Readme", "Support", "Winuae", "Workbench" )
 
 foreach($component in $components)
 {
@@ -268,7 +268,7 @@ Write-Host "Done."
 
 Write-Host "Compiling wxs files..."
 
-$wixToolsetCandleArgs = ('-dVersion="' + $hstwbInstallerVersion + '" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
+$wixToolsetCandleArgs = ('-dVersion="' + $hstwbInstallerVersion + '" -dAmigaDir="Amiga" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
 
 Write-Host "Done."
