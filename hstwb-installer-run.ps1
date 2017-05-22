@@ -253,7 +253,7 @@ function FindPackagesToInstall()
 
 
         # add package details
-        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "FullName" = $packageFullName; "Package" = $packageFileName; "PackageFile" = $packageFile.FullName })
+        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "FullName" = $packageFullName; "PackageFileName" = $packageFileName; "PackageFile" = $packageFile.FullName; "Package" = $packageIni.Package })
 
 
         # add package dependencies
@@ -452,8 +452,11 @@ function BuildInstallPackageScriptLines($packageNames)
             $installPackageLines += ""
             $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignPath
 
-            # append ini file set for package assign
-            $installPackageLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+            # append ini file set for package assignm, if installer mode is build self install or build package installation
+            if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
+            {
+                $installPackageLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+            }
 
             # append remove package assign
             $removePackageAssignLines += BuildRemoveAssignScriptLines $assignId $assignName $assignPath
@@ -615,7 +618,12 @@ function BuildInstallPackagesScriptLines($installPackages)
         $assignPath = $globalAssigns.Get_Item($assignName)
 
         $addGlobalAssignScriptLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
-        $addGlobalAssignScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+
+        # append ini file set for global assign, if installer mode is build self install or build package installation
+        if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
+        {
+            $addGlobalAssignScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+        }
         
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
     }
@@ -623,7 +631,7 @@ function BuildInstallPackagesScriptLines($installPackages)
 
     # build install package script lines
     $installPackageScripts = @()
-    $installPackageScripts += BuildInstallPackageScriptLines ($installPackages | ForEach-Object { $_.Package })
+    $installPackageScripts += BuildInstallPackageScriptLines ($installPackages | ForEach-Object { $_.PackageFileName })
 
     if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
@@ -1202,6 +1210,8 @@ function RunInstall()
     WriteAmigaTextLines $userAssignFile $userAssignScriptLines 
 
 
+    $hstwbInstallerPackagesIni = @{}
+
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
@@ -1210,8 +1220,8 @@ function RunInstall()
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
-            Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
-            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.Package)
+            Write-Host ("Extracting '" + $installPackage.PackageFileName + "' package to temp install dir")
+            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.PackageFileName)
 
             if(!(test-path -path $packageDir))
             {
@@ -1219,6 +1229,8 @@ function RunInstall()
             }
 
             [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $packageDir)
+
+            $hstwbInstallerPackagesIni.Set_Item($installPackage.Package.Name, @{ 'Version' = $installPackage.Package.Version })
         }
 
         # build install package script lines
@@ -1268,6 +1280,39 @@ function RunInstall()
     # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
     $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
     [System.IO.File]::WriteAllText($installingFile, "")
+
+    # write hstwb installer packages ini file
+    $hstwbInstallerPackagesIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Packages.ini'
+    WriteIniFile $hstwbInstallerPackagesIniFile $hstwbInstallerPackagesIni
+
+
+    # build hstwb installer assigns ini
+    $hstwbInstallerAssignsIni = @{}
+
+    foreach ($assignSectionName in $assigns.keys)
+    {
+        $sectionAssigns = $assigns[$assignSectionName]
+
+        foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
+        {
+            if ($hstwbInstallerAssignsIni.ContainsKey($assignSectionName))
+            {
+                $hstwbInstallerAssignsSection = $hstwbInstallerAssignsIni.Get_Item($assignSectionName)
+            }
+            else
+            {
+                $hstwbInstallerAssignsSection = @{}
+            }
+
+            $hstwbInstallerAssignsSection.Set_Item($assignName, $sectionAssigns.Get_Item($assignName))
+            $hstwbInstallerAssignsIni.Set_Item($assignSectionName, $hstwbInstallerAssignsSection)
+        }
+    }
+
+
+    # write hstwb installer assigns ini file
+    $hstwbInstallerAssignsIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Assigns.ini'
+    WriteIniFile $hstwbInstallerAssignsIniFile $hstwbInstallerAssignsIni
 
 
     # print preparing installation done message
@@ -1361,8 +1406,8 @@ function RunBuildSelfInstall()
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
-            Write-Host ("Extracting '" + $installPackage.Package + "' package to temp install dir")
-            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.Package)
+            Write-Host ("Extracting '" + $installPackage.PackageFileName + "' package to temp install dir")
+            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $installPackage.PackageFileName)
 
             if(!(test-path -path $packageDir))
             {
@@ -1525,8 +1570,8 @@ function RunBuildPackageInstallation()
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
-            Write-Host ("Extracting '" + $installPackage.Package + "' package to package installation")
-            $packageDir = [System.IO.Path]::Combine($outputPackageInstallationPath, $installPackage.Package)
+            Write-Host ("Extracting '" + $installPackage.PackageFileName + "' package to package installation")
+            $packageDir = [System.IO.Path]::Combine($outputPackageInstallationPath, $installPackage.PackageFileName)
 
             if(!(test-path -path $packageDir))
             {

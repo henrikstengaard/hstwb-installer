@@ -59,6 +59,20 @@ Mount FF0:
 Wait 2
 
 
+; Install HstWB Installer Packages
+IF EXISTS INSTALL:HstWB-Installer.Packages.ini
+  makepath >NIL: SYSTEMDIR:Prefs/Env-Archive
+  copy >NIL: INSTALL:HstWB-Installer.Packages.ini SYSTEMDIR:Prefs/Env-Archive/HstWB-Installer.Packages.ini
+ENDIF
+
+
+; Install HstWB Installer Assigns
+IF EXISTS INSTALL:HstWB-Installer.Assigns.ini
+  makepath >NIL: SYSTEMDIR:Prefs/Env-Archive
+  copy >NIL: INSTALL:HstWB-Installer.Assigns.ini SYSTEMDIR:Prefs/Env-Archive/HstWB-Installer.Assigns.ini
+ENDIF
+
+
 ; Install Workbench
 IF EXISTS S:Install-Workbench
   execute S:Install-Workbench
