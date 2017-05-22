@@ -448,10 +448,6 @@ function BuildInstallPackageScriptLines($packageNames)
             $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
             $assignPath = $packageAssigns.Get_Item($matchingPackageAssignName)
 
-            # ini file get and set T:id, if exists
-            #$addGlobalAssignScriptLines += 'execute PACKAGES:IniFileGet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
-
-
             # append add package assign
             $installPackageLines += ""
             $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignPath
@@ -485,12 +481,70 @@ function BuildInstallPackageScriptLines($packageNames)
 
 
         $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines; "PackageName" = $packageName; "Package" = $package.Package }
-
-        # Write-Host $installPackageScripts[$installPackageScripts.Count - 1].Package.Name
-        # Write-Host $installPackageScripts[$installPackageScripts.Count - 1].Package.Version
     }
 
     return $installPackageScripts
+}
+
+
+# build reset assigns script lines
+function BuildResetAssignsScriptLines()
+{
+    $resetAssignsScriptLines = @()
+
+    # reset assigns settings and get existing assign value, if present in prefs assigns ini file
+    foreach ($assignSectionName in $assigns.keys)
+    {
+        $sectionAssigns = $assigns[$assignSectionName]
+
+        foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+        {
+            $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+
+            $resetAssignsScriptLines += ''
+            $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
+            $resetAssignsScriptLines += '; Get assign path from ini'
+            $resetAssignsScriptLines += 'set assignpath ""'
+            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGES:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += ''
+            $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
+            $resetAssignsScriptLines += 'IF NOT "$assignpath" eq ""'
+            $resetAssignsScriptLines += ('  echo "$assignpath" >"T:{0}"' -f $assignId)
+            $resetAssignsScriptLines += 'ELSE'
+            $resetAssignsScriptLines += ('  IF EXISTS "T:{0}"' -f $assignId)
+            $resetAssignsScriptLines += ('    delete >NIL: "T:{0}"' -f $assignId)
+            $resetAssignsScriptLines += '  ENDIF'
+            $resetAssignsScriptLines += 'ENDIF'
+        }
+    }
+    
+    return $resetAssignsScriptLines
+}
+
+
+# build default assigns script lines
+function BuildDefaultAssignsScriptLines()
+{
+    $defaultAssignsScriptLines = @()
+
+    # default assigns settings
+    foreach ($assignSectionName in $assigns.keys)
+    {
+        $sectionAssigns = $assigns[$assignSectionName]
+
+        foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+        {
+            $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+
+            $defaultAssignsScriptLines += ''
+            $defaultAssignsScriptLines += ("; Default assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
+            $defaultAssignsScriptLines += ('IF EXISTS "T:{0}"' -f $assignId)
+            $defaultAssignsScriptLines += ('  delete >NIL: "T:{0}"' -f $assignId)
+            $defaultAssignsScriptLines += 'ENDIF'
+        }
+    }
+
+    return $defaultAssignsScriptLines
 }
 
 
@@ -503,7 +557,7 @@ function BuildInstallPackagesScriptLines($installPackages)
     # append skip reset settings or install packages depending on installer mode
     if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
-        $installPackagesScriptLines += "SKIP resetsettings"
+        $installPackagesScriptLines += "SKIP reset"
     }
     else
     {
@@ -576,37 +630,49 @@ function BuildInstallPackagesScriptLines($installPackages)
         # get install package name padding
         $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
-        # reset settings
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "; Reset settings"
-        $installPackagesScriptLines += "; --------------"
-        $installPackagesScriptLines += "LAB resetsettings"
-        $installPackagesScriptLines += ""
+        # reset
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Reset'
+        $installPackagesScriptLines += '; -----'
+        $installPackagesScriptLines += 'LAB reset'
 
-        # reset package settings
+        # reset packages
         foreach ($installPackageScript in $installPackageScripts)
         {
+            $installPackagesScriptLines += ''
+            $installPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.Name)
             $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Id)
             $installPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Id)
             $installPackagesScriptLines += "ENDIF"
         }
 
-        # reset assigns settings
-        foreach ($assignSectionName in $assigns.keys)
-        {
-            $sectionAssigns = $assigns[$assignSectionName]
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += BuildResetAssignsScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP installpackagesmenu'
+        $installPackagesScriptLines += ''
 
-            foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
-            {
-                $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+        # reset assigns
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Reset assigns'
+        $installPackagesScriptLines += '; -------------'
+        $installPackagesScriptLines += 'LAB resetassigns'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += BuildResetAssignsScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP editassignsmenu'
 
-                $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $assignId)
-                $installPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $assignId)
-                $installPackagesScriptLines += "ENDIF"
-            }
-        }
+        # default assigns
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Default assigns'
+        $installPackagesScriptLines += '; ---------------'
+        $installPackagesScriptLines += 'LAB defaultassigns'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += BuildDefaultAssignsScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP editassignsmenu'
 
-        # install packages label
+        # install packages menu label
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += "; Install packages menu"
         $installPackagesScriptLines += "; ---------------------"
@@ -752,9 +818,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         foreach($assignSectionName in $assignSectionNames)
         {
             # add menu option to show assign section name
-            #$installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
             $installPackagesScriptLines += ("echo ""| {0} |"" >>T:editassignsmenu" -f $assignSectionName)
-            #$installPackagesScriptLines += ("echo ""{0}"" >>T:editassignsmenu" -f (new-object System.String('-', $assignSectionName.Length)))
 
             # increase menu option
             $editAssignsMenuOption += 1
@@ -806,6 +870,8 @@ function BuildInstallPackagesScriptLines($installPackages)
 
         # add back option to view readme menu
         $installPackagesScriptLines += "echo ""========================================"" >>T:editassignsmenu"
+        $installPackagesScriptLines += "echo ""Reset assigns"" >>T:editassignsmenu"
+        $installPackagesScriptLines += "echo ""Default assigns"" >>T:editassignsmenu"
         $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
 
         $installPackagesScriptLines += "set editassignsmenu ````"
@@ -818,6 +884,20 @@ function BuildInstallPackagesScriptLines($installPackages)
         # add back option to edit assigns menu
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 2) + """")
+        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to reset assigns?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
+        $installPackagesScriptLines += "    SKIP BACK resetassigns"
+        $installPackagesScriptLines += "  ENDIF"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 3) + """")
+        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to use default assigns?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
+        $installPackagesScriptLines += "    SKIP BACK defaultassigns"
+        $installPackagesScriptLines += "  ENDIF"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 4) + """")
         $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
@@ -1467,9 +1547,10 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += ";"
     $packageInstallationScriptLines += "; An package installation script generated by HstWB Installer to install selected packages."
     $packageInstallationScriptLines += ""
-    $packageInstallationScriptLines += "; Add assign and set environment variables for package installation"
+    $packageInstallationScriptLines += "; Add assigns and set environment variables for package installation"
     $packageInstallationScriptLines += "SetEnv Packages ""``CD``"""
     $packageInstallationScriptLines += "Assign PACKAGES: ""`$Packages"""
+    $packageInstallationScriptLines += 'Assign SYSTEMDIR: SYS:'
     $packageInstallationScriptLines += "SetEnv TZ MST7"
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Copy reqtools prefs to env, if it doesn't exist"
@@ -1479,8 +1560,12 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
     $packageInstallationScriptLines += ""
-    $packageInstallationScriptLines += "; Remove assign for package installation"
+    $packageInstallationScriptLines += "; Remove assigns for package installation"
     $packageInstallationScriptLines += "Assign PACKAGES: ""`$Packages"" REMOVE"
+    $packageInstallationScriptLines += "Assign >NIL: EXISTS ""SYSTEMDIR:"""
+    $packageInstallationScriptLines += "IF NOT WARN"
+    $packageInstallationScriptLines += "  Assign SYSTEMDIR: SYS: REMOVE"
+    $packageInstallationScriptLines += "ENDIF"
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "echo """""
     $packageInstallationScriptLines += "echo ""Package installation is complete."""
@@ -1602,7 +1687,7 @@ if (!$workbenchAdfHash)
 
 
 # print workbench adf hash file
-Write-Host ("Using Workbench 3.1 Workbench Disk: '" + $workbenchAdfHash.File + "'")
+Write-Host ("Using Workbench 3.1 Workbench Disk adf: '" + $workbenchAdfHash.File + "'")
 
 
 # find kickstart rom set hashes
