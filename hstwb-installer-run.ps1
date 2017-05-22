@@ -497,7 +497,7 @@ function BuildResetAssignsScriptLines()
     {
         $sectionAssigns = $assigns[$assignSectionName]
 
-        foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+        foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
         {
             $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
 
@@ -532,7 +532,7 @@ function BuildDefaultAssignsScriptLines()
     {
         $sectionAssigns = $assigns[$assignSectionName]
 
-        foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+        foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
         {
             $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
 

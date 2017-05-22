@@ -3,6 +3,7 @@
 HstWB Installer is a set of powershell scripts, image templates, configuration files, 
 AmigaDOS scripts and binaries used to easily build Amiga HDF or directory images with 
 automated installation of Workbench, Kickstarts roms and packages with additional content.
+It's currently being developed and maintained by Henrik Nørfjand Stengaard.
 
 Setting up a blank Amiga HDF image with e.g. PFS3, Workbench, Kickstarts roms, WHDLoad games and demos 
 installed properly can be a cumbersome task unless you spend a lot of time figuring out how this is done step by step.
