@@ -268,7 +268,7 @@ Write-Host "Done."
 
 Write-Host "Compiling wxs files..."
 
-$wixToolsetCandleArgs = ('-dVersion="' + $hstwbInstallerVersion + '" -dAmigaDir="Amiga" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
+$wixToolsetCandleArgs = ('-dVersion="' + ($hstwbInstallerVersion -replace '-[^\-]+$', '') + '" -dAmigaDir="Amiga" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
 
 Write-Host "Done."
@@ -279,7 +279,7 @@ Write-Host "Done."
 
 Write-Host "Linking wixobj files..."
 
-$wixToolsetLightArgs = "-o ""hstwb-installer.$hstwbInstallerVersion.msi"" -ext WixUIExtension ""*.wixobj"""
+$wixToolsetLightArgs = "-o ""hstwb-installer.{0}.msi"" -ext WixUIExtension ""*.wixobj""" -f ($hstwbInstallerVersion.ToLower())
 StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
 
 Write-Host "Done."
