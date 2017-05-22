@@ -448,9 +448,18 @@ function BuildInstallPackageScriptLines($packageNames)
             $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
             $assignPath = $packageAssigns.Get_Item($matchingPackageAssignName)
 
-            # append and and remove package assign
+            # ini file get and set T:id, if exists
+            #$addGlobalAssignScriptLines += 'execute PACKAGES:IniFileGet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+
+
+            # append add package assign
             $installPackageLines += ""
             $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignPath
+
+            # append ini file set for package assign
+            $installPackageLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+
+            # append remove package assign
             $removePackageAssignLines += BuildRemoveAssignScriptLines $assignId $assignName $assignPath
         }
 
@@ -474,7 +483,11 @@ function BuildInstallPackageScriptLines($packageNames)
             $installPackageLines += $removePackageAssignLines
         }
 
-        $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines; "PackageName" = $packageName }
+
+        $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines; "PackageName" = $packageName; "Package" = $package.Package }
+
+        # Write-Host $installPackageScripts[$installPackageScripts.Count - 1].Package.Name
+        # Write-Host $installPackageScripts[$installPackageScripts.Count - 1].Package.Version
     }
 
     return $installPackageScripts
@@ -548,6 +561,8 @@ function BuildInstallPackagesScriptLines($installPackages)
         $assignPath = $globalAssigns.Get_Item($assignName)
 
         $addGlobalAssignScriptLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
+        $addGlobalAssignScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+        
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
     }
 
@@ -819,6 +834,12 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "echo ""*ec"""
         $installPackagesScriptLines += "echo ""Package Installation"""
         $installPackagesScriptLines += "echo ""--------------------"""
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Create env-archive directory, if it doesn''t exist and ini file set for package assign'
+        $installPackagesScriptLines += 'IF NOT EXISTS "{0}"' -f $envArcDir
+        $installPackagesScriptLines += '  makepath "{0}"' -f $envArcDir
+        $installPackagesScriptLines += 'ENDIF'
+
 
         # get assign section names
         $assignSectionNames = @('Global')
@@ -868,6 +889,7 @@ function BuildInstallPackagesScriptLines($installPackages)
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("; Install package '{0}', if it's selected" -f $installPackageScript.Name)
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
+            $installPackagesScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $envArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1510,6 +1532,8 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 
 $settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
 $assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
+
+$envArcDir = 'SYSTEMDIR:Prefs/Env-Archive'
 
 
 # fail, if settings file doesn't exist
