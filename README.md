@@ -622,6 +622,8 @@ Self install can be run in following ways:
 3. UAE4ARM: Start UAE4ARM using an A1200 configuration with HDF files and/or directories added.
 4. Real Amiga: Use 'Writing an image to CF/SD card using Win32DiskImager' tutorial and skip automated installation, which is only for emulators.
 
+**Note: Running self install HDF images in emulator or on real Amiga requires Kickstart 3.1. Kickstart 3.0 will also work, but results in some errors removing assigns, which prevents self install to remove DH1:HstWBInstaller drawer.**
+
 #### Configuring emulator for automated installation of Workbench and Kickstart roms
 
 Installation of Workbench and Kickstart roms can be automated, when running self install in an emulator.
