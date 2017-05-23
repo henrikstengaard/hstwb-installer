@@ -35,7 +35,10 @@ SetEnv TZ MST7
 
 ; Data types required for multiview and update screenmode
 C:AddDataTypes REFRESH QUIET
-C:IPrefs
+
+; TODO: Causes intuition attempted to reset workbench screen errors, when installing ClassicWB packages
+; TODO: Find way of getting max colors for workbench for screenshots in readme
+;C:IPrefs
 
 ; Paths
 Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
