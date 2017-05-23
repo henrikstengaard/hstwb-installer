@@ -34,6 +34,7 @@
         <File Id="hstwbinstallerrun.ps1" Source="..\hstwb-installer-run.ps1"/>
         <File Id="hstwbinstallersetup.cmd" Source="..\hstwb-installer-setup.cmd"/>
         <File Id="hstwbinstallersetup.ps1" Source="..\hstwb-installer-setup.ps1"/>
+        <File Id="license.txt" Source="..\LICENSE.txt"/>
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="ApplicationStartMenuDirectory">

@@ -27,6 +27,10 @@ to dump roms from real Amiga's.
 
 *HstWB is short for my name and Workbench (very original, I know).* 
 
+## License
+
+HstWB Installer is licensed under MIT license, see LICENSE.txt file.
+
 ## Requirements
 
 The minimum requirements for running and using HstWB Installer are:
