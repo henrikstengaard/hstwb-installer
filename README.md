@@ -749,11 +749,12 @@ Workbench and Kickstart installation is complete. Reboot to continue with packag
 
 **9. Select packages to install**
 
-Select packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+Select the packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
 
 ![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
 
 For this example all packages are clicked and will be installed.
+**Note: Only one Workbench system package should be installed, so choose to install either BetterWB, HstWB or a ClassicWB package.**
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
