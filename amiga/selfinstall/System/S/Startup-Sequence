@@ -58,26 +58,80 @@ ask "Press ENTER to continue"
 echo ""
 
 
-; Check if disk is present in any floppy device, if not go back to insert workbench disk
+; Build mountlist for DF0:
+GenML DF0: >T:_devicefloppy
+
+; Check if mountlist for DF0: contains trackdisk.device, if not check DF1:
+search T:_devicefloppy "device = trackdisk.device" >NIL:
+IF WARN  
+  SKIP checkdf1
+ENDIF
+
+; Check if disk is present in DF0:, if not go back to insert workbench disk
 DiskInDrive DF0:
 IF NOT WARN
   set floppydevice "DF0"
   SKIP checkworkbenchdisk
 ENDIF
+
+
+; Check floppy device DF1:
+LAB checkdf1
+
+; Build mountlist for DF1:
+GenML DF1: >T:_devicefloppy
+
+; Check if mountlist for DF1: contains trackdisk.device, if not check DF2:
+search T:_devicefloppy "device = trackdisk.device" >NIL:
+IF WARN  
+  SKIP checkdf2
+ENDIF
+
+; Check if disk is present in DF1:, if not go back to insert workbench disk
 DiskInDrive DF1:
 IF NOT WARN
   set floppydevice "DF1"
   SKIP checkworkbenchdisk
 ENDIF
+
+
+; Check floppy device DF2:
+LAB checkdf2
+
+; Build mountlist for DF2:
+GenML DF2: >T:_devicefloppy
+
+; Check if mountlist for DF2: contains trackdisk.device, if not check DF3:
+search T:_devicefloppy "device = trackdisk.device" >NIL:
+IF WARN  
+  SKIP checkdf3
+ENDIF
+
+; Check if disk is present in DF2:, if not go back to insert workbench disk
 DiskInDrive DF2:
 IF NOT WARN
   set floppydevice "DF2"
   SKIP checkworkbenchdisk
 ENDIF
+
+
+; Check floppy device DF3:
+LAB checkdf3
+
+; Build mountlist for DF3:
+GenML DF3: >T:_devicefloppy
+
+; Check if mountlist for DF3: contains trackdisk.device, if not go back to insert workbench disk
+search T:_devicefloppy "device = trackdisk.device" >NIL:
+IF WARN  
+  echo "No disk is inserted in any floppy device!"
+  SKIP insertworkbenchdisk back
+ENDIF
+
+; Check if disk is present in DF3:, if not go back to insert workbench disk
 DiskInDrive DF3:
 IF NOT WARN
   set floppydevice "DF3"
-  SKIP checkworkbenchdisk
 ELSE
   echo "No disk is inserted in any floppy device!"
   SKIP insertworkbenchdisk back
@@ -86,6 +140,11 @@ ENDIF
 
 ; Check Workbench 3.1 Workbench disk is present in DF0, if not go back to insert workbench disk
 LAB checkworkbenchdisk
+
+IF EXISTS T:_devicefloppy
+  delete >NIL: T:_devicefloppy
+ENDIF
+
 IF NOT EXISTS $floppydevice:C/Which
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
