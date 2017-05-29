@@ -13,6 +13,7 @@ Param(
 )
 
 
+Import-Module (Resolve-Path('modules\HstwbInstaller-Version.psm1')) -Force
 Import-Module (Resolve-Path('modules\HstwbInstaller-Config.psm1')) -Force
 Import-Module (Resolve-Path('modules\HstwbInstaller-Dialog.psm1')) -Force
 Import-Module (Resolve-Path('modules\HstwbInstaller-Data.psm1')) -Force
@@ -1184,10 +1185,16 @@ function RunInstall()
         Write-Host "Copying Kickstart rom files to temp install dir"
         $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
 
-        # copy kickstart rom key file  to temp install dir, if kickstart roms are encrypted
-        if ($kickstartRomHash.Encrypted)
+        # get first kickstart rom hash
+        $installKickstartRomHash = $kickstartRomSetHashes | Select-Object -First 1
+
+        # kickstart rom key
+        $installKickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($installKickstartRomHash.File), "rom.key")
+
+        # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
+        if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
         {
-            Copy-Item -Path $kickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
+            Copy-Item -Path $installKickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
         }
     }
     else
