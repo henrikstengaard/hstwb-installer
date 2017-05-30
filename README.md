@@ -699,7 +699,7 @@ Start self install image either an emulator or on real Amiga.
 
 **2. Insert Workbench 3.1 disk**
 
-Insert required Workbench 3.1 disk in any floppy device.
+Insert required Workbench 3.1 disk in any floppy device and press enter to continue installation process.
 
 ![run_self_install_2.png](screenshots/run_self_install_2.png?raw=true)
 
@@ -713,6 +713,8 @@ If device name PATCHDIR: is present, it will copy Workbench.library from PATCHDI
 
 For this example device name PATCHDIR: is not present and patch installation is skipped.
 
+Press enter to continue installation process.
+
 ![run_self_install_4.png](screenshots/run_self_install_4.png?raw=true)
 
 **4. Automate installation**
@@ -721,11 +723,15 @@ Automate installation shows automation status.
 
 For this example both device name WORKBENCHDIR: and KICKSTARTDIR: are present and will be used to detect and install Workbench and Kickstart roms.
 
+Press enter to continue installation process.
+
 ![run_self_install_5.png](screenshots/run_self_install_5.png?raw=true)
 
 **5. Workbench installation**
 
 For this example device name WORKBENCHDIR: is present and is used to detect and install Workbench from adf files.
+
+Press enter to continue installation process.
 
 ![run_self_install_6.png](screenshots/run_self_install_6.png?raw=true)
 
@@ -733,34 +739,40 @@ For this example device name WORKBENCHDIR: is present and is used to detect and 
 
 For this example device name KICKSTARTDIR: is present and is used to detect and install Kickstart roms files.
 
+Press enter to continue installation process.
+
 ![run_self_install_7.png](screenshots/run_self_install_7.png?raw=true)
 
 **7. Eject disk**
 
-Eject Workbench 3.1 disk to continue.
+Eject Workbench 3.1 disk and press enter to continue installation process.
 
 ![run_self_install_8.png](screenshots/run_self_install_8.png?raw=true)
 
 **8. Workbench installation complete and reboot**
 
-Workbench and Kickstart installation is complete. Reboot to continue with package installation.
+Workbench and Kickstart installation is complete. 
+
+Press enter to continue reboot and start package installation.
 
 ![run_self_install_9.png](screenshots/run_self_install_9.png?raw=true)
 
 **9. Select packages to install**
 
-Select the packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+Select packages to install shows a list of packages that are included in package installation.
+Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
 
 ![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
 
-For this example all packages are clicked and will be installed.
-**Note: Only one Workbench system package should be installed, so choose to install either BetterWB, HstWB or a ClassicWB package.**
+For this example click on packages BetterWB, HstWB, EAB WHDLoad Games AGA Menu and EAB WHDLoad Demos AGA Menu to switch them to YES, so they will be installed.
+**Note: Only one Workbench system package should be installed, so choose to install either BetterWB, BetterWB + HstWB or a ClassicWB package.**
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
 **10. View readme**
 
-Click "View Readme" to view readme for a package included in the package installation.
+View readme shows Amiga guide readme for packages that are included in package installation.
+Click on a package to view it's readme for a package.
 
 This is optional and can be skipped.
 
@@ -768,7 +780,7 @@ This is optional and can be skipped.
 
 **11. Viewing EAB WHDLoad Games AGA Menu Package readme**
 
-For example EAB WHDLoad Games AGA Menu Package readme is clicked showing description and screenshots of package contents.
+For example EAB WHDLoad Games AGA Menu Package readme is clicked showing it's Amiga guide readme description and screenshots.
 
 This is optional and can be skipped.
 
@@ -782,6 +794,9 @@ This is optional and can be skipped.
 
 **12. Edit assigns**
 
+Edit assigns shows packages and the assigns each uses during package installation.
+Click on any assigns (ending with :) to edit them and change drawer the package will install it's content to.
+
 This is optional and can be skipped.
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
@@ -790,27 +805,43 @@ This is optional and can be skipped.
 
 ![run_self_install_17.png](screenshots/run_self_install_17.png?raw=true)
 
-**13. Install packages**
+**13. Ready to install packages**
+
+When assigns are edited (if needed) and packages to install are selected, click "Install packages".
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
 **14. Confirm package installation**
 
+Click "Yes" to confirm selected packages will be installed.
+
 ![run_self_install_18.png](screenshots/run_self_install_18.png?raw=true)
 
 **15. Package installation running**
+
+Package installation running showing progress if each package being installed.
 
 ![run_self_install_19.png](screenshots/run_self_install_19.png?raw=true)
 
 **16. Package installation done**
 
+Selected package are installed and package installation is done.
+
+Press enter to continue, which will continue package installation.
+
 ![run_self_install_20.png](screenshots/run_self_install_20.png?raw=true)
 
 **17. Installation cleanup**
 
+Packages and temp files used for installation process are deleted.
+
 ![run_self_install_21.png](screenshots/run_self_install_21.png?raw=true)
 
 **18. Package installation complete and reboot**
+
+Package installation is complete and the system is ready to use. It will wait 10 seconds to allow the system to write changes to the disk.
+
+Press enter to continue system reboot in 10 seconds.
 
 ![run_self_install_22.png](screenshots/run_self_install_22.png?raw=true)
 
