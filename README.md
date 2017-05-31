@@ -958,7 +958,7 @@ Open PC harddrive with double-click and package installation can be started.
 
 **1. Start package installation**.
 
-Start package installation with double-click.
+Double-click "Package Installation" icon to start package installation.
 
 ![run_package_installation_4.png](screenshots/run_package_installation_4.png?raw=true)
 
