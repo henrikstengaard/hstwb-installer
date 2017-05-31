@@ -759,7 +759,7 @@ Press enter to continue reboot and start package installation.
 
 **9. Select packages to install**
 
-Select packages to install shows a list of packages that are included in package installation.
+Select packages to install shows a list of packages that are included in the package installation.
 
 Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
 
@@ -964,7 +964,7 @@ Double-click "Package Installation" icon to start package installation.
 
 **2. Select packages to install**
 
-Select packages to install shows a list of packages that are included in package installation.
+Select packages to install shows a list of packages that are included in the package installation.
 
 Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
 
