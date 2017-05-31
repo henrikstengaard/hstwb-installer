@@ -2,7 +2,7 @@
 # ------------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-16
+# Date:   2017-05-31
 #
 # A powershell module for HstWB Installer with current version.
 
