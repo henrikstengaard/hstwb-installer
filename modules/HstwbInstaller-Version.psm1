@@ -8,5 +8,5 @@
 
 function HstwbInstallerVersion()
 {
-    return '1.1.0-BETA1'
+    return '1.1.0-BETA2'
 }
