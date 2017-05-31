@@ -760,29 +760,28 @@ Press enter to continue reboot and start package installation.
 **9. Select packages to install**
 
 Select packages to install shows a list of packages that are included in package installation.
+
 Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
 
 ![run_self_install_10.png](screenshots/run_self_install_10.png?raw=true)
 
 For this example click on packages BetterWB, HstWB, EAB WHDLoad Games AGA Menu and EAB WHDLoad Demos AGA Menu to switch them to YES, so they will be installed.
+
 **Note: Only one Workbench system package should be installed, so choose to install either BetterWB, BetterWB + HstWB or a ClassicWB package.**
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
 **10. View readme**
 
-View readme shows Amiga guide readme for packages that are included in package installation.
-Click on a package to view it's readme for a package.
+Click "View readme" to show readme for packages that are included in package installation.
 
 This is optional and can be skipped.
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
-**11. Viewing EAB WHDLoad Games AGA Menu Package readme**
+Click on a package to view it's readme for a package.
 
-For example EAB WHDLoad Games AGA Menu Package readme is clicked showing it's Amiga guide readme description and screenshots.
-
-This is optional and can be skipped.
+For example EAB WHDLoad Games AGA Menu is clicked showing it's Amiga guide readme description and screenshots.
 
 ![run_self_install_12.png](screenshots/run_self_install_12.png?raw=true)
 
@@ -792,38 +791,41 @@ This is optional and can be skipped.
 
 ![run_self_install_15.png](screenshots/run_self_install_15.png?raw=true)
 
-**12. Edit assigns**
+**11. Edit assigns**
 
-Edit assigns shows packages and the assigns each uses during package installation.
-Click on any assigns (ending with :) to edit them and change drawer the package will install it's content to.
+Click "Edit assigns" to change assigns each package uses during package installation.
 
 This is optional and can be skipped.
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
+Edit assigns shows packages and the assigns each package uses during package installation.
+
+Click on any assigns (ending with :) to edit them and change drawer the package will install it's content to.
+
 ![run_self_install_16.png](screenshots/run_self_install_16.png?raw=true)
 
 ![run_self_install_17.png](screenshots/run_self_install_17.png?raw=true)
 
-**13. Ready to install packages**
+**12. Ready to install packages**
 
-When assigns are edited (if needed) and packages to install are selected, click "Install packages".
+Click "Install packages", when packages to install are selected and assigns have been edited (if needed).
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
-**14. Confirm package installation**
+**13. Confirm package installation**
 
 Click "Yes" to confirm selected packages will be installed.
 
 ![run_self_install_18.png](screenshots/run_self_install_18.png?raw=true)
 
-**15. Package installation running**
+**14. Package installation running**
 
 Package installation running showing progress if each package being installed.
 
 ![run_self_install_19.png](screenshots/run_self_install_19.png?raw=true)
 
-**16. Package installation done**
+**15. Package installation done**
 
 Selected package are installed and package installation is done.
 
@@ -831,13 +833,13 @@ Press enter to continue, which will continue package installation.
 
 ![run_self_install_20.png](screenshots/run_self_install_20.png?raw=true)
 
-**17. Installation cleanup**
+**16. Installation cleanup**
 
 Packages and temp files used for installation process are deleted.
 
 ![run_self_install_21.png](screenshots/run_self_install_21.png?raw=true)
 
-**18. Package installation complete and reboot**
+**17. Package installation complete and reboot**
 
 Package installation is complete and the system is ready to use. It will wait 10 seconds to allow the system to write changes to the disk.
 
