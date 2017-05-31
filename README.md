@@ -960,13 +960,17 @@ Open PC harddrive with double-click and package installation can be started.
 
 Start package installation with double-click.
 
-![run_package_installation_5.png](screenshots/run_package_installation_5.png?raw=true)
+![run_package_installation_4.png](screenshots/run_package_installation_4.png?raw=true)
 
 **2. Select packages to install**
 
 Select packages to install shows a list of packages that are included in package installation.
 
 Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
+
+![run_package_installation_5.png](screenshots/run_package_installation_5.png?raw=true)
+
+For this example click on package EAB WHDLoad Games AGA Menu to switch it to YES, so it will be installed.
 
 ![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
 
@@ -976,11 +980,13 @@ Click "View Readme" to view readme for packages that are included in the package
 
 This is optional and can be skipped.
 
-![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
+![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
 
 Click on a package to view it's readme.
 
 For example EAB WHDLoad Games AGA Menu is clicked showing it's Amiga guide readme description and screenshots.
+
+![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
 
 ![run_package_installation_7.png](screenshots/run_package_installation_7.png?raw=true)
 
@@ -994,11 +1000,13 @@ Click "Edit assigns" to change assigns each package uses during package installa
 
 This is optional and can be skipped.
 
-![run_package_installation_11.png](screenshots/run_package_installation_11.png?raw=true)
+![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
 
 Edit assigns shows packages and the assigns each package uses during package installation.
 
 Click on any assigns (ending with :) to edit them and change drawer the package will install it's content to.
+
+![run_package_installation_11.png](screenshots/run_package_installation_11.png?raw=true)
 
 ![run_package_installation_12.png](screenshots/run_package_installation_12.png?raw=true)
 
@@ -1006,7 +1014,7 @@ Click on any assigns (ending with :) to edit them and change drawer the package 
 
 Click "Install packages", when packages to install are selected and assigns have been edited (if needed).
 
-![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
+![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
 
 **6. Confirm package installation**
 
