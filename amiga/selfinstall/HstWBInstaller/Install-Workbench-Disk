@@ -232,6 +232,9 @@ ENDIF
 echo "Installing Workbench 3.1 Storage files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Storage
 copy >NIL: $floppydevice: SYSTEMDIR:Storage ALL CLONE
+IF NOT EXISTS SYSTEMDIR:Devs/Monitors
+  makedir >NIL: SYSTEMDIR:Devs/Monitors
+ENDIF
 copy $floppydevice:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
 copy $floppydevice:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
 copy $floppydevice:Printers.info SYSTEMDIR:Storage.info CLONE 
