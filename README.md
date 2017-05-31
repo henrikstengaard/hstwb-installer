@@ -409,6 +409,14 @@ Running HstWB Installer in test mode does the following:
 
 - Boots image for testing configured image directory.
 
+## FAQ
+
+Find questions and answers to commonly asked questions using HstWB Installer and HDF images.
+
+**Q:** I have written a HDF image to a CF card and connected it to the PCMCIA port on my A1200/A600, but it won't boot from CF card?
+
+**A:** A standard A1200/A600 with Kickstart 3.1/3.0/2.05 can't boot a CF card from PCMCIA port. A HDF image written to CF/SD card works on a standard A1200/A600 using a CF/SD to IDE adapter. 
+
 ## Tutorials
 
 Tutorials showing how HstWB Installer is used and can be installed.
@@ -698,6 +706,8 @@ Start self install image either an emulator or on real Amiga.
 ![run_self_install_1.png](screenshots/run_self_install_1.png?raw=true)
 
 **2. Insert Workbench 3.1 disk**
+
+Installation process will automatically detect and use DF0:, DF1:, DF2: or DF3: containing required Workbench 3.1 disk.
 
 Insert required Workbench 3.1 disk in any floppy device and press enter to continue installation process.
 
