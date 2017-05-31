@@ -1038,7 +1038,7 @@ Press enter to continue, which will end and close package installation.
 
 ### Tutorial 6: Writing a HDF image to CF/SD card using Win32DiskImager
 
-This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
+This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager, which can be connected to eg. A1200 or A600 internal IDE port using a CF/SD to IDE adapter.
 
 Only RDB images will work, when written to a CF/SD card. If unsure about RDB, use WinUAE to check if HDF is in RDB mode with following steps:
 
@@ -1110,7 +1110,7 @@ When connecting Retro Pie use default credentials for Shell and Samba/Windows sh
 **1. Install Kickstart rom**
 
 UAE4ARM needs a Kickstart rom in order to run. 
-Since Amiga Kickstart roms are still under license and sold commercially, they can either be bought from Amiga Forever or dumped from own real Amiga using a tool like GrabKick [GrabKick](http://aminet.net/package/util/misc/GrabKick).
+Since Amiga Kickstart roms are still under license and sold commercially, they can either be bought from Amiga Forever or dumped from own real Amiga using a tool like GrabKick [http://aminet.net/package/util/misc/GrabKick](http://aminet.net/package/util/misc/GrabKick).
 
 Image HDF files and directories created by HstWB Installer are mainly target Kickstart 3.1 rom.
 
