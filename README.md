@@ -773,13 +773,13 @@ For this example click on packages BetterWB, HstWB, EAB WHDLoad Games AGA Menu a
 
 **10. View readme**
 
-Click "View readme" to show readme for packages that are included in package installation.
+Click "View Readme" to view readme for packages that are included in the package installation.
 
 This is optional and can be skipped.
 
 ![run_self_install_11.png](screenshots/run_self_install_11.png?raw=true)
 
-Click on a package to view it's readme for a package.
+Click on a package to view it's readme.
 
 For example EAB WHDLoad Games AGA Menu is clicked showing it's Amiga guide readme description and screenshots.
 
@@ -962,19 +962,25 @@ Start package installation with double-click.
 
 ![run_package_installation_5.png](screenshots/run_package_installation_5.png?raw=true)
 
-**2. View Readme**
+**2. Select packages to install**
 
-Click "View Readme" to view readme for a package included in the package installation.
+Select packages to install shows a list of packages that are included in package installation.
+
+Click on a package to select if it will be installed or not, which is indicated with YES or NO next to the package.
+
+![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
+
+**3. View readme**
+
+Click "View Readme" to view readme for packages that are included in the package installation.
 
 This is optional and can be skipped.
 
 ![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
 
-**3. Viewing EAB WHDLoad Games AGA Menu Package readme**
+Click on a package to view it's readme.
 
-For example EAB WHDLoad Games AGA Menu Package readme is clicked showing description and screenshots of package contents.
-
-This is optional and can be skipped.
+For example EAB WHDLoad Games AGA Menu is clicked showing it's Amiga guide readme description and screenshots.
 
 ![run_package_installation_7.png](screenshots/run_package_installation_7.png?raw=true)
 
@@ -982,31 +988,43 @@ This is optional and can be skipped.
 
 ![run_package_installation_9.png](screenshots/run_package_installation_9.png?raw=true)
 
-**4. Select packages to install**
+**4. Edit assigns**
 
-Selecting packages to install. Each package can be click and will switch between YES and NO indicating which packages will be installed.
+Click "Edit assigns" to change assigns each package uses during package installation.
 
-For example EAB WHDLoad Games AGA Menu v2.6.2 is clicked and will be installed.
-
-![run_package_installation_10.png](screenshots/run_package_installation_10.png?raw=true)
-
-**5. Edit assigns**
+This is optional and can be skipped.
 
 ![run_package_installation_11.png](screenshots/run_package_installation_11.png?raw=true)
 
-**6. Select path for assign**
+Edit assigns shows packages and the assigns each package uses during package installation.
+
+Click on any assigns (ending with :) to edit them and change drawer the package will install it's content to.
 
 ![run_package_installation_12.png](screenshots/run_package_installation_12.png?raw=true)
 
-**7. Confirm package installation**
+**5. Ready to install packages**
+
+Click "Install packages", when packages to install are selected and assigns have been edited (if needed).
+
+![run_package_installation_6.png](screenshots/run_package_installation_6.png?raw=true)
+
+**6. Confirm package installation**
+
+Click "Yes" to confirm selected packages will be installed.
 
 ![run_package_installation_13.png](screenshots/run_package_installation_13.png?raw=true)
 
-**8. Package installation running**
+**7. Package installation running**
+
+Package installation running showing progress if each package being installed.
 
 ![run_package_installation_14.png](screenshots/run_package_installation_14.png?raw=true)
 
-**9. Package installation done**
+**8. Package installation done**
+
+Selected package are installed and package installation is done.
+
+Press enter to continue, which will end and close package installation.
 
 ![run_package_installation_15.png](screenshots/run_package_installation_15.png?raw=true)
 
