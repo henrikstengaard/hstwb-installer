@@ -239,8 +239,8 @@ Own image templates can be created by following the examples above or use files 
 
 Following packages are included with HstWB Installer msi installation:
 
-* [BetterWB Package](https://github.com/henrikstengaard/betterwb-package): An enhancement built for Workbench 3.1 built by Gulliver for low end Amigas restricted to 68000 processors.
-* [HstWB Package](https://github.com/henrikstengaard/hstwb-package): An extension of BetterWB with some icons from ClassicWB and buildin support for ACA, Furia and Blizzard accelerator cards with boot selectors and easy configuration.
+* [BetterWB Package](https://github.com/henrikstengaard/betterwb-package): An enhancement built for Workbench 3.1 by Gulliver for low end Amigas restricted to 68000 processors.
+* [HstWB Package](https://github.com/henrikstengaard/hstwb-package): A minimalistic Workbench enhancement by Henrik Nørfjand Stengaard based on BetterWB targeted A500, A600, A1200 using 16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
 * [ClassicWB LITE Package](https://github.com/henrikstengaard/classicwb-lite-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 using 4/8/16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
 * [ClassicWB FULL Package](https://github.com/henrikstengaard/classicwb-full-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using PAL / NTSC / Non-Interlaced 640x256 display.
 * [ClassicWB ADV Package](https://github.com/henrikstengaard/classicwb-adv-package): A feature rich Workbench enhancement by Bloodwych targeted A1200 with 4MB memory expansion using 16 colour screenmode using Multisync / Interlaced 640x512 display.
