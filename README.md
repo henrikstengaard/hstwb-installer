@@ -412,6 +412,14 @@ Running HstWB Installer in test mode does the following:
 
 - Boots image for testing configured image directory.
 
+## FAQ
+
+Find questions and answers to commonly asked questions using HstWB Installer and HDF images.
+
+**Q:** I have written a HDF image to a CF card and connected it to the PCMCIA port on my A1200/A600, but it won't boot from CF card?
+
+**A:** A standard A1200/A600 with Kickstart 3.1/3.0/2.05 can't boot a CF card from PCMCIA port. A HDF image written to CF/SD card works on a standard A1200/A600 using a CF/SD to IDE adapter. 
+
 ## Tutorials
 
 Tutorials showing how HstWB Installer is used and can be installed.
@@ -701,6 +709,8 @@ Start self install image either an emulator or on real Amiga.
 ![run_self_install_1.png](screenshots/run_self_install_1.png?raw=true)
 
 **2. Insert Workbench 3.1 disk**
+
+Installation process will automatically detect and use DF0:, DF1:, DF2: or DF3: containing required Workbench 3.1 disk.
 
 Insert required Workbench 3.1 disk in any floppy device and press enter to continue installation process.
 
@@ -1041,7 +1051,7 @@ Press enter to continue, which will end and close package installation.
 
 ### Tutorial 6: Writing a HDF image to CF/SD card using Win32DiskImager
 
-This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager. 
+This tutorial describes step by step how to write an HDF image to a CF/SD card using Win32DiskImager, which can be connected to eg. A1200 or A600 internal IDE port using a CF/SD to IDE adapter.
 
 Only RDB images will work, when written to a CF/SD card. If unsure about RDB, use WinUAE to check if HDF is in RDB mode with following steps:
 
@@ -1113,7 +1123,7 @@ When connecting Retro Pie use default credentials for Shell and Samba/Windows sh
 **1. Install Kickstart rom**
 
 UAE4ARM needs a Kickstart rom in order to run. 
-Since Amiga Kickstart roms are still under license and sold commercially, they can either be bought from Amiga Forever or dumped from own real Amiga using a tool like GrabKick [GrabKick](http://aminet.net/package/util/misc/GrabKick).
+Since Amiga Kickstart roms are still under license and sold commercially, they can either be bought from Amiga Forever or dumped from own real Amiga using a tool like GrabKick [http://aminet.net/package/util/misc/GrabKick](http://aminet.net/package/util/misc/GrabKick).
 
 Image HDF files and directories created by HstWB Installer are mainly target Kickstart 3.1 rom.
 
