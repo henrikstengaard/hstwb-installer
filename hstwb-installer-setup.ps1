@@ -175,10 +175,12 @@ function ExistingImageDirectory()
 # create image directory menu
 function CreateImageDirectoryFromImageTemplateMenu()
 {
-    $imageTemplateOptions = @()
-    $imageTemplateOptions += $images.keys | Sort-Object
-    $imageTemplateOptions += "Back"
+    $toNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
 
+    $imageTemplateOptions = @()
+    $imageTemplateOptions += $images.keys | Sort-Object $toNatural
+    $imageTemplateOptions += "Back"
+    
 
     # create image directory from image template
     $choice = Menu "Create Image Directory From Image Template Menu" $imageTemplateOptions
