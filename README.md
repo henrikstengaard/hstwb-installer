@@ -179,20 +179,23 @@ Filename column defines the filename the Kickstart rom file will be renamed to. 
 
 ## Image templates
 
-Following image templates included to build new images:
+HstWB Installer has following image templates included to build new images:
 
-1. 2GB: HDF RDB, DH0 (100MB/PFS3), DH1 (1650MB/PFS3)
+1. 2GB: HDF RDB, DH0 (100MB/PFS3), DH1 (1700MB/PFS3)
+1. 2GB: HDF RDB, DH0 (300MB/PFS3), DH1 (1500MB/PFS3)
 1. 4GB: HDF RDB, DH0 (100MB/PFS3), DH1 (3500MB/PFS3)
 2. 4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)
-3. 8GB: HDF RDB, DH0 (100MB/PFS3), DH1 (7200MB/PFS3)
-4. 8GB: HDF RDB, DH0 (300MB/PFS3), DH1 (7000MB/PFS3)
-5. 16GB: HDF RDB, DH0 (300MB/PFS3), DH1 (13100MB/PFS3)
+3. 8GB: HDF RDB, DH0 (100MB/PFS3), DH1 (7110MB/PFS3)
+4. 8GB: HDF RDB, DH0 (300MB/PFS3), DH1 (6910MB/PFS3)
+5. 16GB: HDF RDB, DH0 (500MB/PFS3), DH1 (13GB/PFS3)
+5. 32GB: HDF RDB, DH0 (1000MB/PFS3), DH1 (27GB/PFS3)
+5. 64GB: HDF RDB, DH0 (1000MB/PFS3), DH1 (55GB/PFS3)
 6. UAE4ARM: DH0 (100MB/FFS/HDF), DH1 (DIR)
 7. UAE4ARM: DH0 (300MB/FFS/HDF), DH1 (DIR)
 
-4GB, 8GB and 16GB images are RDB HDF's using PFS3 AIO filesystem by Toni Wilen and are formatted with pfsformat filename size of 107 characters. Partitions are created with HDToolbox and configured with MaxTransfer value 0x1fe00. HDF files for these images are created so they are ~100MB smaller than various CF/SD cards, so they can be written to CF/SD card using eg. Win32DiskImager for use in real Amiga's.
+2GB, 4GB, 8GB, 16GB, 32GB and 64GB images are RDB HDF's using PFS3 AIO filesystem by Toni Wilen and are formatted with pfsformat filename size of 107 characters. Partitions are created with HDToolbox and configured with MaxTransfer value 0x1fe00. HDF files for these images are created so they are smaller than various CF/SD cards, so they can be written to CF/SD card using eg. Win32DiskImager for use in real Amiga's.
 
-UAE4ARM images doesn't use RDB as UAE4Arm doesn't support it and uses a directory mounted as DH1, so it can contain more than 1-2GB of games and demos. 
+UAE4ARM images doesn't use RDB as UAE4Arm doesn't support it and uses instead a directory mounted as DH1, so it can contain more than 1-2GB of games and demos. 
 The limit is then bound to the size of SD card. Using Samba/Windows share eg. "\\retropie\roms\amiga\hstwb\dh1" gives direct access to DH1 partition making it easy to manage content.
 
 ---
