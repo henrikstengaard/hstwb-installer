@@ -444,7 +444,8 @@ Type 2 and enter for create image directory from image template menu.
 
 **3. Pick an image template that matches your needs**
 
-For this example type 4 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template. 
+For this example type 4 and enter for '4GB: HDF RDB, DH0 (300MB/PFS3), DH1 (3300MB/PFS3)' image template.
+
 **Note: Option numbers depend on the images installed in HstWB Installer "images" directory, so they may vary.**
 
 ![build_install_3.png](screenshots/build_install_3.png?raw=true)
@@ -465,11 +466,12 @@ Type 3 and enter for back to main menu.
 
 **5. Configure packages that will be installed on the image**
 
-Type 1 and enter for configure packages menu.
+Type 4 and enter for configure packages menu.
 
 ![build_install_7.png](screenshots/build_install_7.png?raw=true)
 
 For this example type 1 and enter, 11 and enter, 9 and enter, 7 and enter to install packages: BetterWB, HstWB, EAB WHDLoad Games AGA Menu, EAB WHDLoad Demos AGA Menu.
+
 **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
 
 ![build_install_8.png](screenshots/build_install_8.png?raw=true)
@@ -478,9 +480,9 @@ Type 12 and enter for back to main menu.
 
 ![build_install_9.png](screenshots/build_install_9.png?raw=true)
 
-**6. Run installer to start HstWB Installer Run**
+**6. Run installer**
 
-Type 7 end enter.
+Type 7 end enter to run installer.
 
 ![build_install_10.png](screenshots/build_install_10.png?raw=true)
 
@@ -561,7 +563,7 @@ Type 3 and enter for back to main menu.
 
 **5. Configure packages that will be installed on the image**
 
-Type 1 and enter for configure packages menu.
+Type 4 and enter for configure packages menu.
 
 ![build_install_7.png](screenshots/build_install_7.png?raw=true)
 
@@ -592,9 +594,9 @@ Type 2 and enter for back to main menu.
 
 ![build_self_install_3.png](screenshots/build_self_install_3.png?raw=true)
 
-**7. Run installer to start HstWB Installer Run**
+**7. Run installer**
 
-Type 7 end enter.
+Type 7 end enter to run installer.
 
 ![build_self_install_4.png](screenshots/build_self_install_4.png?raw=true)
 
@@ -868,47 +870,57 @@ This tutorial describes step by step how to a package installation using build p
 
 Start HstWB Installer Setup from start menu or powershell.
 
+Type 4 and enter for configure packages menu.
+
 ![build_package_installation_1.png](screenshots/build_package_installation_1.png?raw=true)
 
 **2. Configure packages that will be installed in package installation**
 
-Type 4 and enter for configure packages menu.
+For this example type 7 and enter, 8 and enter, 9 and enter, 10 and enter to install packages: EAB WHDLoad Demos AGA Menu, EAB WHDLoad Demos OCS Menu, EAB WHDLoad Games AGA Menu, EAB WHDLoad Games OCS Menu. 
 
-For this example type 7 and enter, 8 and enter, 9 and enter, 10 and enter to install packages: EAB WHDLoad Demos AGA Menu, EAB WHDLoad Demos OCS Menu, EAB WHDLoad Games AGA Menu, EAB WHDLoad Games OCS Menu. **Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
+**Note: Option numbers depend on the packages installed in HstWB Installer "packages" directory, so they may vary.**
+
+![build_package_installation_2.png](screenshots/build_package_installation_2.png?raw=true)
 
 Type 12 and enter for back to main menu.
 
-![build_package_installation_2.png](screenshots/build_package_installation_2.png?raw=true)
+![build_package_installation_3.png](screenshots/build_package_installation_3.png?raw=true)
 
 **3. Switch install mode to build package installation**
 
 Type 6 and enter for configure installer menu.
 
+![build_package_installation_4.png](screenshots/build_package_installation_4.png?raw=true)
+
 Type 1 and enter for change installer mode.
+
+![build_package_installation_5.png](screenshots/build_package_installation_5.png?raw=true)
 
 Type 3 and enter for build package installation mode. 
 
+![build_package_installation_6.png](screenshots/build_package_installation_6.png?raw=true)
+
 Type 2 and enter for back to main menu.
 
-![build_package_installation_3.png](screenshots/build_package_installation_3.png?raw=true)
+![build_package_installation_7.png](screenshots/build_package_installation_7.png?raw=true)
 
 **4. Run installer**
 
-Type 7 end enter to start HstWB Installer Run.
+Type 7 end enter to run installer.
 
-![build_package_installation_4.png](screenshots/build_package_installation_4.png?raw=true)
+![build_package_installation_8.png](screenshots/build_package_installation_8.png?raw=true)
 
-**5. Select a directory for package installation**
+**5. Select a directory for building package installation**
 
 For this example create and select 'C:\Temp\Package Installation' directory.
 
-![build_package_installation_5.png](screenshots/build_package_installation_5.png?raw=true)
+![build_package_installation_9.png](screenshots/build_package_installation_9.png?raw=true)
 
 **6. Installer done**
 
 Package installation is now ready for use either in emulator or on real Amiga.
 
-![build_package_installation_6.png](screenshots/build_package_installation_6.png?raw=true)
+![build_package_installation_10.png](screenshots/build_package_installation_10.png?raw=true)
 
 ### Tutorial 5: Running package installation in an emulator or on real Amiga
 
