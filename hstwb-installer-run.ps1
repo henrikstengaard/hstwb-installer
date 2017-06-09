@@ -1164,11 +1164,11 @@ function RunInstall()
 
 
     # prepare install workbench
-    if ($settings.Workbench.InstallWorkbench -eq 'Yes')
+    if ($settings.Workbench.InstallWorkbench -eq 'Yes' -and $workbenchAdfSetHashes.Count -gt 0)
     {
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
     }
     else
     {
@@ -1179,11 +1179,11 @@ function RunInstall()
 
 
     # prepare install kickstart
-    if ($settings.Kickstart.InstallKickstart -eq 'Yes')
+    if ($settings.Kickstart.InstallKickstart -eq 'Yes' -and $kickstartRomSetHashes.Count -gt 0)
     {
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Path $_.File -Destination ([System.IO.Path]::Combine($tempInstallDir, $_.Filename)) }
+        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
 
         # get first kickstart rom hash
         $installKickstartRomHash = $kickstartRomSetHashes | Select-Object -First 1
