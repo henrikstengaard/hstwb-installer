@@ -864,7 +864,7 @@ Press enter to continue system reboot in 10 seconds.
 
 ### Tutorial 4: Create a package installation using build package installation mode
 
-This tutorial describes step by step how to a package installation using build package installation mode.
+This tutorial describes step by step how to build a package installation using build package installation mode.
 
 **1. Start HstWB Installer Setup**
 
