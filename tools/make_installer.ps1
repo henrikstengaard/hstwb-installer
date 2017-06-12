@@ -205,7 +205,7 @@ foreach($packageFile in $packageFiles)
 	mkdir -Path $packageReadmeDir | Out-Null
 
 	# extract readme and screenshot files from package
-	ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.png)' $packageReadmeDir
+	ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.(png|jpg))' $packageReadmeDir
 }
 
 
