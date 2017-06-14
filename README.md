@@ -36,6 +36,7 @@ HstWB Installer is licensed under MIT license, see LICENSE.txt file.
 The minimum requirements for running and using HstWB Installer are:
 
 * Windows 7, 8, 8.1 or 10.
+* Microsoft .NET Framework 4.5, if used on Windows 7.
 * Cloanto Amiga Forever installed or dumps of own Workbench adf files and Kickstart rom files located in a directory.
 * WinUAE installed.
 
