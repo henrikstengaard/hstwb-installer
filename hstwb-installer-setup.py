@@ -1,5 +1,10 @@
 # https://github.com/Chiel92/unicurses
 
+# UniCurses Installation
+# ----------------------
+# 1. sudo apt install python-pip.
+# 2. pip install https://sourceforge.net/projects/pyunicurses/files/unicurses-1.2/UniCurses-1.2.zip/download
+
 # import unicurses
 from unicurses import *
 
