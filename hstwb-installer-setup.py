@@ -1,11 +1,13 @@
+# https://github.com/Chiel92/unicurses
+
 # import unicurses
 from unicurses import *
 
-# initializes and clear standard screen
-stdscr = initscr()
+# initializes and clears standard screen
+initscr()
 clear()
 
-if has_colors() == False:
+if not has_colors():
     endwin()
     print "Your terminal does not support color!"
     exit(1)
