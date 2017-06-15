@@ -37,3 +37,4 @@ confirm_dialog() {
 
 if [ $1 == 'confirm_dialog' ] then confirm_dialog
 elif [ $1 == 'folder_dialog' ] then folder_dialog
+fi
