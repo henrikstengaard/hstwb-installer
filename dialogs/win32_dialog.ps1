@@ -15,17 +15,17 @@ Param(
 	[Parameter(Mandatory=$false)]
 	[string]$path,
 	[Parameter(Mandatory=$false)]
-	[switch]$showFolderBrowserDialog,
+	[switch]$folderDialog,
 	[Parameter(Mandatory=$false)]
-	[switch]$showConfirmDialog
+	[switch]$confirmDialog
 )
 
 
 Add-Type -AssemblyName System.Windows.Forms
 
 
-# show folder browser dialog using WinForms
-function FolderBrowserDialog($title, $directory, $showNewFolderButton)
+# folder dialog
+function FolderDialog($title, $directory, $showNewFolderButton)
 {
     $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
     $folderBrowserDialog.Description = $title
@@ -55,23 +55,23 @@ function ConfirmDialog($title, $message)
     return $false
 }
 
-# show folder browser dialog
-if ($showFolderBrowserDialog)
+# folder dialog
+if ($folderDialog)
 {
     if (!$path)
     {
-        $path = default?
+        $path = ${Env:USERPROFILE}
     }
 
-    $result = FolderBrowserDialog $title $path $true
+    $result = FolderDialog $title $path $true
 
     if ($result)
     {
         return $result
     }
 }
-# show confirm dialog
-elseif ($showConfirmDialog)
+# confirm dialog
+elseif ($confirmDialog)
 {
     if ((ConfirmDialog $title $message))
     {

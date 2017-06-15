@@ -1,21 +1,20 @@
 #! /bin/bash
 
 # displays a folder dialog for selecting a directory
-# @param $2 title
-# @param $3 message
-# @param $4 path
+# @param $1 title
+# @param $2 message
+# @param $3 path
 # @return path to selected directory
 folder_dialog() 
 {
-  RESULT=$(yad --form --title "$1" --field="$2":DIR "$3" 2>/dev/null)
-  if [ "$RESULT" != "" ]
-  then
-	OIFS=IFS
-	IFS="|"
-	echo $RESULT
-    #echo $RESULT
-	IFS=OIFS
-  fi
+	RESULT=$(yad --form --title "$1" --field="$2":DIR "$3" 2>/dev/null)
+	if [ "$RESULT" != "" ]
+	then
+		OIFS=IFS
+		IFS="|"
+		echo $RESULT
+		IFS=OIFS
+	fi
 }
 
 # displays a dialog for collecting a single line of text input
@@ -25,8 +24,8 @@ folder_dialog()
 # }
 
 # displays a confirmation dialog with a Yes/No button.
-# @param $2 title
-# @param $3 message
+# @param $1 title
+# @param $2 message
 # @return "0" - No, "1" - Yes
 confirm_dialog() {
 	if yad \
