@@ -18,8 +18,9 @@ def folder_dialog():
     """Show folder dialog"""
     if _platform == "linux" or _platform == "linux2":
         print "show linux dialog"
+	cmd = [ "/bin/bash", "./dialogs/linux_dialog.sh", "folder_dialog", "Select directory", "" ]
         proc = Popen(
-            "bash dialogs/linux_dialog.sh \"folder_dialog\" \"Select directory\" \"\"",
+            cmd,
             stdout=PIPE)
         proc.wait()
         print "PATH=" + proc.stdout.read()
