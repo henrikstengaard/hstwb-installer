@@ -2,17 +2,17 @@
 
 # displays a file dialog for choosing a *folder* not a file
 # @return the file path
-function folder_dialog() 
-{
-	RESULT=$(yad --title "title" --field="message":DIR "")
-	echo $RESULT
-}
+# function folder_dialog() 
+# {
+# 	RESULT=$(yad --title "title" --field="message":DIR "")
+# 	echo $RESULT
+# }
 
 # displays a dialog for collecting a single line of text input
 # @param $1 the text of the prompt
 # @return the input text
-function text_dialog() {
-}
+# function text_dialog() {
+# }
 
 # displays a confirmation dialog with a Yes/No button.
 # @param $1 the text of the prompt
@@ -31,5 +31,5 @@ function confirm_dialog() {
 	fi
 }
 
-folder_dialog()
+#folder_dialog()
 confirm_dialog()
