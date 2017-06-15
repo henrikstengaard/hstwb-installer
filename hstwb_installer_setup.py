@@ -1,31 +1,22 @@
-# https://github.com/Chiel92/unicurses
+"""HstWB Installer Setup"""
 
-# UniCurses Installation
+# colorama installation
 # ----------------------
 # 1. sudo apt install python-pip.
-# 2. pip install https://sourceforge.net/projects/pyunicurses/files/unicurses-1.2/UniCurses-1.2.zip/download
+# 2. pip install colorama
 
-# import unicurses
-from unicurses import *
+import os
+from colorama import init, Style, Fore
 
-# initializes and clears standard screen
-initscr()
-clear()
+def cls():
+    """Clear screen"""
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-if not has_colors():
-    endwin()
-    print "Your terminal does not support color!"
-    exit(1)
+# clear screen
+cls()
 
-start_color()
-init_pair(1, COLOR_YELLOW, COLOR_BLACK)
+init()
 
-attron(A_BOLD)
-attron(COLOR_PAIR(1))
-addstr('----------------------------\n')
-addstr('HstWB Installer Setup v1.1.0\n')
-addstr('----------------------------\n')
-attroff(COLOR_PAIR(1))
-attroff(A_BOLD)
-
-refresh()
+print Style.BRIGHT + Fore.YELLOW + '----------------------------\n'
+print Style.BRIGHT + Fore.YELLOW + 'HstWB Installer Setup v1.1.0\n'
+print Style.BRIGHT + Fore.YELLOW + '----------------------------\n'
