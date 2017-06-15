@@ -7,8 +7,15 @@
 # @return path to selected directory
 folder_dialog() 
 {
-	RESULT=$(yad --title "$2" --field="$3":DIR "$4")
+  RESULT=$(yad --form --title "$1" --field="$2":DIR "$3" 2>/dev/null)
+  if [ "$RESULT" != "" ]
+  then
+	OIFS=IFS
+	IFS="|"
 	echo $RESULT
+    #echo $RESULT
+	IFS=OIFS
+  fi
 }
 
 # displays a dialog for collecting a single line of text input
@@ -24,10 +31,10 @@ folder_dialog()
 confirm_dialog() {
 	if yad \
 		--image "dialog-question" \
-		--title "$2" \
+		--title "$1" \
 		--button=gtk-yes:0 \
 		--button=gtk-no:1 \
-		--text "$3"
+		--text "$2" 2>/dev/null
 	then
 		echo "1"
 	else
@@ -35,7 +42,12 @@ confirm_dialog() {
 	fi
 }
 
-if [ $1 == 'confirm_dialog' ] then confirm_dialog
-elif [ $1 == 'folder_dialog' ] then folder_dialog
+if [ "$1" == "confirm_dialog" ]
+then 
+  confirm_dialog "$2" "$3"
+elif [ "$1" == "folder_dialog" ]
+then
+  folder_dialog "$2" "$3" "$4"
 else
+  echo -n ''
 fi
