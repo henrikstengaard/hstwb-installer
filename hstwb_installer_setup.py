@@ -18,22 +18,19 @@ def folder_dialog():
     """Show folder dialog"""
     if _platform == "linux" or _platform == "linux2":
         print "show linux dialog"
-	cmd = [ "/bin/bash", "./dialogs/linux_dialog.sh", "folder_dialog", "Select directory", "" ]
-        proc = Popen(
-            cmd,
-            stdout=PIPE)
+        cmd = ["/bin/bash", "./dialogs/linux_dialog.sh", "folder_dialog", "Select directory", ""]
+        proc = Popen(cmd, stdout=PIPE)
         proc.wait()
-        print "PATH=" + proc.stdout.read()
+        print "PATH=" + proc.stdout.read().strip()
     elif _platform == "darwin":
         print "show mac dialog"
     elif _platform == "win32":
         print "show windows dialog"
-        proc = Popen(
-            "powershell -ExecutionPolicy Bypass -File dialogs\\win32_dialog.ps1" +
-            " -folderDialog -title \"Select directory\"",
-            stdout=PIPE)
+        cmd = "powershell -ExecutionPolicy Bypass -File \"dialogs\\win32_dialog.ps1\"" + \
+            " -folderDialog -title \"Select directory\""
+        proc = Popen(cmd, stdout=PIPE)
         proc.wait()
-        print "PATH=" + proc.stdout.read()
+        print "PATH=" + proc.stdout.read().strip()
 
 # clear screen
 cls()
