@@ -44,9 +44,23 @@ print '----------------------------'
 print Style.RESET_ALL
 
 #folder_dialog()
-print hstwbinstallerdata.calculate_md5_from_file(
-    'c:\\Users\\Public\\Documents\\Amiga Files\\Shared\\rom\\amiga-os-310-a1200.rom')
+#print hstwbinstallerdata.calculate_md5_from_file(
+#    'c:\\Users\\Public\\Documents\\Amiga Files\\Shared\\rom\\amiga-os-310-a1200.rom')
 
-kickstartRomHashes = hstwbinstallerdata.read_csv_file('kickstart\\kickstart-rom-hashes.csv') # pylint: disable=invalid-name
+settings_ini = hstwbinstallerdata.read_ini_file(
+    'c:\\Users\\hst\\AppData\\Local\\HstWB Installer\\hstwb-installer-settings.ini')
 
-print kickstartRomHashes[0]['Name']
+kickstart_rom_hashes = hstwbinstallerdata.read_csv_file('kickstart\\kickstart-rom-hashes.csv') # pylint: disable=invalid-name
+
+#print kickstartRomHashes[0]['Name']
+
+#print hstwbinstallerdata.get_file_hashes('c:\\Users\\Public\\Documents\\Amiga Files\\Shared\\rom')
+
+
+#hstwbinstallerdata.find_matching_file_hashes(
+#    kickstartRomHashes, 'c:\\Users\\Public\\Documents\\Amiga Files\\Shared\\rom')
+
+#print kickstartRomHashes
+print hstwbinstallerdata.find_kickstart_rom_set_hashes(
+    settings_ini,
+    kickstart_rom_hashes)
