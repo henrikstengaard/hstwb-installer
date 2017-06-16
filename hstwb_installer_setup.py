@@ -11,6 +11,7 @@ import csv
 from subprocess import Popen, PIPE
 from sys import platform as _platform
 from colorama import init, Style, Fore
+from modules import hstwbinstallerdata
 
 def cls():
     """Clear screen"""
@@ -67,3 +68,5 @@ print calculate_md5_from_file(
 kickstartRomHashes = read_csv_file('kickstart\\kickstart-rom-hashes.csv') # pylint: disable=invalid-name
 
 print kickstartRomHashes[0]['Name']
+
+hstwbinstallerdata.test()

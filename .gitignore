@@ -1,4 +1,5 @@
 hstwb-installer-settings.ini
+*.pyc
 *.msi
 hstwb-installer*.zip
 *.wixpdb
