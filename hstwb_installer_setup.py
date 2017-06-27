@@ -5,6 +5,10 @@
 # 1. sudo apt install python-pip.
 # 2. pip install colorama
 
+# osx:
+# 1. sudo easy_install pip
+# 2. pip install colorama
+
 import os
 from subprocess import Popen, PIPE
 from sys import platform as _platform
@@ -18,15 +22,16 @@ def cls():
 def folder_dialog():
     """Show folder dialog"""
     if _platform == "linux" or _platform == "linux2":
-        print "show linux dialog"
         cmd = ["/bin/bash", "./dialogs/linux_dialog.sh", "folder_dialog", "Select directory", ""]
         proc = Popen(cmd, stdout=PIPE)
         proc.wait()
         print "PATH=" + proc.stdout.read().strip()
     elif _platform == "darwin":
-        print "show mac dialog"
+        cmd = ["/bin/bash", "./dialogs/osx_dialog.sh", "folder_dialog", "Select directory", ""]
+        proc = Popen(cmd, stdout=PIPE)
+        proc.wait()
+        print "PATH=" + proc.stdout.read().strip()
     elif _platform == "win32":
-        print "show windows dialog"
         cmd = "powershell -ExecutionPolicy Bypass -File \"dialogs\\win32_dialog.ps1\"" + \
             " -folderDialog -title \"Select directory\""
         proc = Popen(cmd, stdout=PIPE)
@@ -52,10 +57,10 @@ settings_ini = hstwbinstallerdata.read_ini_file(
     'c:\\Users\\hst\\AppData\\Local\\HstWB Installer\\hstwb-installer-settings.ini')
 
 # pylint: disable=invalid-name
-kickstart_rom_hashes = hstwbinstallerdata.read_csv_file('kickstart\\kickstart-rom-hashes.csv')
+kickstart_rom_hashes = hstwbinstallerdata.read_csv_file('kickstart/kickstart-rom-hashes.csv')
 
 # pylint: disable=invalid-name
-workbench_adf_hashes = hstwbinstallerdata.read_csv_file('workbench\\workbench-adf-hashes.csv')
+workbench_adf_hashes = hstwbinstallerdata.read_csv_file('workbench/workbench-adf-hashes.csv')
 
 #print kickstartRomHashes[0]['Name']
 

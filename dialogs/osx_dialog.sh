@@ -13,12 +13,18 @@
 
 # displays a file dialog for choosing a *folder* not a file
 # @return the file path
+
+# displays a folder dialog for selecting a directory
+# @param $1 title
+# @param $2 message
+# @param $3 path
+# @return path to selected directory
 function folder_dialog() 
 {
 	local file_path=$(osascript << EOT
 		tell application "Finder"
 			activate
-			set fpath to POSIX path of (choose folder)
+			set fpath to POSIX path of (choose folder with prompt "$1")
 			return fpath
 		end tell
 	EOT)
@@ -65,3 +71,13 @@ function confirm_dialog() {
 	EOT)
 	echo $response
 }
+
+if [ "$1" == "confirm_dialog" ]
+then 
+  confirm_dialog "$2" "$3"
+elif [ "$1" == "folder_dialog" ]
+then
+  folder_dialog "$2" "$3" "$4"
+else
+  echo -n ''
+fi
