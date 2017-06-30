@@ -409,7 +409,7 @@ function ValidateSettings($settings)
     
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|Test)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|InstallOs39|BuildSelfInstall|BuildPackageInstallation|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false

@@ -1,0 +1,23 @@
+; Set stack, failat and load basic commands resident 
+stack 16384
+failat 21
+DF0:C/AddBuffers >NIL: DF0: 200
+resident DF0:C/Assign PURE
+resident DF0:C/Copy PURE
+resident DF0:C/Delete PURE
+resident DF0:C/Execute PURE
+resident DF0:C/Rename PURE
+resident DF0:C/MakeDir PURE
+resident DF0:C/Protect PURE
+resident DF0:C/Search PURE 
+resident DF0:C/Wait PURE 
+resident DF0:C/Which PURE 
+resident DF0:C/Mount PURE
+resident DF0:C/Type PURE
+resident DF0:C/RequestChoice PURE
+resident DF0:C/Dir PURE
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
+Assign ENV: RAM:Env
+Assign T: RAM:
+SetEnv TZ MST7

@@ -71,6 +71,7 @@ function PrintSettings()
     {
         "Test" { Write-Host "'Test'" }
         "Install" { Write-Host "'Install'" }
+        "InstallOs39" { Write-Host "'Install OS 3.9'" }
         "BuildSelfInstall" { Write-Host "'Build Self Install'" }
         "BuildPackageInstallation" { Write-Host "'Build Package Installation'" }
     }
