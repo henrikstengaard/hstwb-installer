@@ -50,15 +50,6 @@ ENDIF
 execute S:User-Assign
 
 
-; Mount and assign FMS 
-assign FMS: T:
-Mount FF0:
-
-
-; Wait
-Wait 2
-
-
 ; Install HstWB Installer Packages
 IF EXISTS INSTALL:HstWB-Installer.Packages.ini
   makepath >NIL: SYSTEMDIR:Prefs/Env-Archive
@@ -76,6 +67,12 @@ ENDIF
 ; Install Workbench
 IF EXISTS S:Install-Workbench
   execute S:Install-Workbench
+ENDIF
+
+
+; Install Amiga OS 3.9
+IF EXISTS S:Install-AmigaOS3.9
+  execute S:Install-AmigaOS3.9
 ENDIF
 
 

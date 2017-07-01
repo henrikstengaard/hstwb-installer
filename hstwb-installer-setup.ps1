@@ -117,11 +117,12 @@ function MainMenu()
 {
     do
     {
-        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
+        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
         switch ($choice)
         {
             "Select Image" { SelectImageMenu }
             "Configure Workbench" { ConfigureWorkbenchMenu }
+            "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu }
             "Configure Kickstart" { ConfigureKickstartMenu }
             "Configure Packages" { ConfigurePackagesMenu }
             "Configure WinUAE" { ConfigureWinuaeMenu }
@@ -383,6 +384,7 @@ function SwitchInstallWorkbench()
     else
     {
         $settings.Workbench.InstallWorkbench = 'Yes'
+        $settings.AmigaOS39.InstallAmigaOS39 = 'No'
     }
     Save
 }
@@ -459,6 +461,52 @@ function SelectWorkbenchAdfSet()
     if ($choise -ne 'Back')
     {
         $settings.Workbench.WorkbenchAdfSet = $choise
+        Save
+    }
+}
+
+
+# configure amiga os 3.9 menu
+function ConfigureAmigaOS39Menu()
+{
+    do
+    {
+        $choice = Menu "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Change Amiga OS 3.9 Iso File", "Back") 
+        switch ($choice)
+        {
+            "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 }
+            "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile }
+        }
+    }
+    until ($choice -eq 'Back')
+
+}
+
+# switch install amiga os 3.9
+function SwitchInstallAmigaOS39()
+{
+    if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes')
+    {
+        $settings.AmigaOS39.InstallAmigaOS39 = 'No'
+    }
+    else
+    {
+        $settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
+        $settings.Workbench.InstallWorkbench = 'No'
+    }
+    Save
+}
+
+
+# change amiga os 3.9 iso file
+function ChangeAmigaOS39IsoFile()
+{
+    $path = if (!$settings.AmigaOS39.AmigaOS39IsoFile) { ${Env:USERPROFILE} } else { $settings.AmigaOS39.AmigaOS39IsoFile }
+    $newPath = OpenFileDialog "Select Amiga OS 3.9 iso file" $path "Iso Files|*.iso|All Files|*.*"
+
+    if ($newPath -and $newPath -ne '')
+    {
+        $settings.AmigaOS39.AmigaOS39IsoFile = $newPath
         Save
     }
 }
@@ -688,13 +736,12 @@ function ConfigureInstaller()
 # change installer mode
 function ChangeInstallerMode()
 {
-    $choice = Menu "Change Installer Mode" @("Install", "Install OS 3.9", "Build Self Install", "Build Package Installation", "Test") 
+    $choice = Menu "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Test") 
 
     switch ($choice)
     {
         "Test" { $settings.Installer.Mode = "Test" }
         "Install" { $settings.Installer.Mode = "Install" }
-        "Install OS 3.9" { $settings.Installer.Mode = "InstallOs39" }
         "Build Self Install" { $settings.Installer.Mode = "BuildSelfInstall" }
         "Build Package Installation" { $settings.Installer.Mode = "BuildPackageInstallation" }
     }
@@ -798,6 +845,14 @@ if (!($settings.Packages))
 {
     $settings.Packages = @{}
     $settings.Packages.InstallPackages = ''
+}
+
+
+# create amiga os 3.9 section in settings, if it doesn't exist
+if (!($settings.AmigaOS39))
+{
+    $settings.AmigaOS39 = @{}
+    $settings.AmigaOS39.InstallAmigaOS39 = 'No'
 }
 
 

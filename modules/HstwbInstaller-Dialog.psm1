@@ -11,26 +11,31 @@
 function PrintSettings()
 {
     Write-Host "Settings"
-    Write-Host "  Settings File      : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Settings File         : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settingsFile + "'")
-    Write-Host "  Assigns File       : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Assigns File          : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $assignsFile + "'")
     Write-Host "Image"
-    Write-Host "  Image Dir          : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Image Dir             : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Image.ImageDir + "'")
     Write-Host "Workbench"
-    Write-Host "  Install Workbench  : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Install Workbench     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Workbench.InstallWorkbench + "'")
-    Write-Host "  Workbench Adf Path : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Workbench Adf Path    : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Workbench.WorkbenchAdfPath + "'")
-    Write-Host "  Workbench Adf Set  : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Workbench Adf Set     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Workbench.WorkbenchAdfSet + "'")
+    Write-Host "Amiga OS 3.9"
+    Write-Host "  Install Amiga OS 3.9  : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.AmigaOS39.InstallAmigaOS39 + "'")
+    Write-Host "  Amiga OS 3.9 Iso File : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.AmigaOS39.AmigaOS39IsoFile + "'")
     Write-Host "Kickstart"
-    Write-Host "  Install Kickstart  : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Install Kickstart     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.InstallKickstart + "'")
-    Write-Host "  Kickstart Rom Path : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Kickstart Rom Path    : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.KickstartRomPath + "'")
-    Write-Host "  Kickstart Rom Set  : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Kickstart Rom Set     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Kickstart.KickstartRomSet + "'")
     Write-Host "Packages"
 
@@ -43,11 +48,11 @@ function PrintSettings()
         {
             if ($i -eq 0)
             {
-                Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+                Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
             }
             else
             {
-                Write-Host "                       " -NoNewline
+                Write-Host "                          " -NoNewline
             }
 
             $packageFileName = $packageFileNames[$i]
@@ -58,20 +63,19 @@ function PrintSettings()
     }
     else
     {
-        Write-Host "  Install Packages   : " -NoNewline -foregroundcolor "Gray"
+        Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
         Write-Host "None" -foregroundcolor "Yellow"
     }
 
     Write-Host "WinUAE"
-    Write-Host "  WinUAE Path        : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  WinUAE Path           : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
     Write-Host "Installer"
-    Write-Host "  Mode               : " -NoNewline -foregroundcolor "Gray"
+    Write-Host "  Mode                  : " -NoNewline -foregroundcolor "Gray"
     switch ($settings.Installer.Mode)
     {
         "Test" { Write-Host "'Test'" }
         "Install" { Write-Host "'Install'" }
-        "InstallOs39" { Write-Host "'Install OS 3.9'" }
         "BuildSelfInstall" { Write-Host "'Build Self Install'" }
         "BuildPackageInstallation" { Write-Host "'Build Package Installation'" }
     }

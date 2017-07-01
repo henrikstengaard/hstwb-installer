@@ -67,6 +67,7 @@ function DefaultSettings($settings)
 {
     $settings.Image = @{}
     $settings.Workbench = @{}
+    $settings.AmigaOS39 = @{}
     $settings.Kickstart = @{}
     $settings.Winuae = @{}
     $settings.Packages = @{}
@@ -77,6 +78,8 @@ function DefaultSettings($settings)
     $settings.Packages.InstallPackages = ''
     $settings.Installer.Mode = 'Install'
     
+    $settings.AmigaOS39.InstallAmigaOS39 = 'No'
+
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
@@ -409,7 +412,7 @@ function ValidateSettings($settings)
     
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|InstallOs39|BuildSelfInstall|BuildPackageInstallation|Test)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false

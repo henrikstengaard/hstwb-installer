@@ -14,6 +14,15 @@ echo "Workbench Installation"
 echo "----------------------"
 
 
+; Mount and assign FMS 
+assign FMS: T:
+Mount FF0:
+
+
+; Wait
+Wait 2
+
+
 ; Workbench
 echo "Installing 'workbench31workbench.adf'..."
 diskwiz >NIL: "INSTALL:workbench31workbench.adf" ff0:

@@ -1270,6 +1270,36 @@ function RunInstall()
     $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
 
 
+
+    if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
+    {
+        $amigaOs39IsoDir = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Parent
+        $amigaOs39IsoFileName = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Leaf
+
+        # copy amiga install dir
+        $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install_os3.9")
+        Copy-Item -Path "$amigaInstallDir\*" $tempInstallDir -recurse -force
+
+
+        # get uaehf index of last uaehf config from winuae image harddrives config
+        $uaehfIndex = 0
+        $winuaeInstallHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+
+        $winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39:OS39:{0},-128" -f $amigaOs39IsoDir
+        $winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39:OS39:{1},-128" -f ([int]$uaehfIndex + 1), $amigaOs39IsoDir
+
+
+        $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
+        $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
+
+        $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
+
+        $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
+        
+    }
+
+
+
     # read winuae hstwb installer config file
     $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
     $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
