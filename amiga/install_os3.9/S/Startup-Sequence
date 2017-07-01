@@ -21,3 +21,7 @@ MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
+
+Mount FCD0:
+wait 3
+dir FCD0:
