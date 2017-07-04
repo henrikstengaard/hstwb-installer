@@ -126,7 +126,7 @@ Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PREFS/PVS.info" "SYSTEMDIR:Prefs"
 
 ; Copy picasso96 storage files
 MakePath >NIL: "SYSTEMDIR:Storage/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.INFO" "SYSTEMDIR:Storage"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.INFO" "SYSTEMDIR:Storage/Picasso96.info"
 Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96" "SYSTEMDIR:Storage/Picasso96" ALL
 Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DRIVERS" "SYSTEMDIR:Storage/Picasso96" ALL
 Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.README" "SYSTEMDIR:Storage/Picasso96/Picasso96.readme"
@@ -162,12 +162,14 @@ Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DisableAmigaBlitter
 Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Debug
 Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Experimental
 
-; Update or add picasso96 assign in user startup
+; Update or add picasso 96 assign in user startup
 IF EXISTS "SYSTEMDIR:S/User-Startup"
 ELSE
   Echo "Assign Picasso96: *"SYS:Storage/Picasso96*"" >SYSTEMDIR:S/User-Startup
 ENDIF
 
+; Copy default picasso 96 screenmode prefs with display mode set to "UAE:1024x 768 16bit PC"
+Copy >NIL: "INSTALL:Install/Picasso96/screenmode.prefs" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 
 ;quit
 
