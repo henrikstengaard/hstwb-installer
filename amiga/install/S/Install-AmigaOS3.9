@@ -56,7 +56,10 @@ Copy >NIL: FCD0:OS-VERSION3.9/LOCALE SYSTEMDIR:Locale ALL
 echo "Done"
 
 
-; printers ()
+; Printers
+; --------
+
+; Skipped!
 
 
 ; Copy keymaps
@@ -80,6 +83,67 @@ ENDIF
 IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
   Copy >NIL: "FCD0:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
 ENDIF
+
+
+; Update FastFileSystem
+; ---------------------
+IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+  Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 FILE
+  IF WARN
+    Rename >NIL: "SYSTEMDIR:L/FastFileSystem" "SYSTEMDIR:L/FastFileSystem-old"
+  ENDIF 
+ENDIF 
+
+Copy >NIL: "FCD0:OS-VERSION3.9/L/FastFileSystem" "SYSTEMDIR:L"
+
+
+; Fix fonts
+; ---------
+
+echo ""
+echo "Fix fonts..."
+
+Assign >NIL: Fonts: "SYSTEMDIR:Fonts"
+
+SYSTEMDIR:System/FixFonts
+
+Assign >NIL: Fonts: "SYSTEMDIR:Fonts" REMOVE
+
+echo "Done"
+
+
+; Install RTG
+; -----------
+
+;FCD0:EMERGENCY-DISK/C/CheckRTG
+
+;IF $RC EQ 0
+;ENDIF
+
+
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96" "SYSTEMDIR:Libs/PICASSO96" ALL
+
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/Devs" "SYSTEMDIR:Devs" ALL
+
+; cgxsystem.library v3/v4
+; EMERGENCY-DISK:Devs/Monitors
+;Copy >NIL: "FCD0:CONTRIBUTION/CYBERGRAPH3/"
+; EMERGENCY-DISK:Libs/cgxsystem.library
+
+;Copy >NIL: "FCD0:CONTRIBUTION/EMERGENCY-DISK/Prefs/Presets" "SYSTEMDIR:Prefs/Presets" ALL
+
+; EMERGENCY-DISK:Prefs/Env-Archive/cybergraphx
+
+; cybergraphics.library v2
+; "EMERGENCY-DISK:Devs/Monitors")
+; "EMERGENCY-DISK:Libs/cybergraphics.library")
+; "EMERGENCY-DISK:Libs/cyberintuition.library")
+; "EMERGENCY-DISK:Libs/cyberlayers.library")
+
+;MakePath >NIL: "Prefs/Env-Archive/cybergraphics"
+; "EMERGENCY-DISK:Prefs/Env-Archive/cybergraphics")
+
+quit
 
 
 ; Cleanup
