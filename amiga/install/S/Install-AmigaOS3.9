@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-07-01
+; Date: 2017-07-04
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -14,9 +14,7 @@ echo "Amiga OS 3.9 Installation"
 echo "-------------------------"
 ; Mount FCD0: with Amiga OS 3.9 iso
 Mount FCD0:
-wait 2
-
-;FCD0:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS
+wait 5
 
 ; Copy Workbench 3.9
 echo ""
@@ -32,7 +30,7 @@ echo "Done"
 echo ""
 echo "Copying libs..."
 
-Copy >NIL: FCD0:OS-VERSION3.9/Extras/Libs/mpega.library SYSTEMDIR:Libs
+;Copy >NIL: FCD0:OS-VERSION3.9/Extras/Libs/mpega.library SYSTEMDIR:Libs
 Copy >NIL: FCD0:OS-VERSION3.9/Extras/Libs/asyncio.library SYSTEMDIR:Libs
 
 echo "Done"
@@ -42,7 +40,7 @@ echo "Done"
 echo ""
 echo "Copying backdrop..."
 
-Copy >NIL: FCD0:OS-VERSION3.9/Extras/Backdrops SYSTEMDIR:Prefs/Presets/Backdrops
+Copy >NIL: FCD0:OS-VERSION3.9/Extras/Backdrops SYSTEMDIR:Prefs/Presets/Backdrops ALL
 
 echo "Done"
 
@@ -75,14 +73,14 @@ echo "Done"
 
 ;
 ; Copy 68040.library, if it doesn't exist
-IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
-  Copy >NIL: "FCD0:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
-ENDIF
+;IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
+;  Copy >NIL: "FCD0:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
+;ENDIF
 
 ; Copy 68060.library, if it doesn't exist
-IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
-  Copy >NIL: "FCD0:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
-ENDIF
+;IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
+;  Copy >NIL: "FCD0:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
+;ENDIF
 
 
 ; Update FastFileSystem
@@ -115,15 +113,71 @@ echo "Done"
 ; Install RTG
 ; -----------
 
+MakePath >NIL: "SYSTEMDIR:Libs/Picasso96"
+
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/rtg.library" "SYSTEMDIR:Libs/Picasso96"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/fastlayers.library" "SYSTEMDIR:Libs/Picasso96"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/emulation.library" "SYSTEMDIR:Libs/Picasso96"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/uaegfx.card" "SYSTEMDIR:Libs/Picasso96"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/Picasso96API.library" "SYSTEMDIR:Libs"
+
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PREFS/PVS" "SYSTEMDIR:Prefs"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PREFS/PVS.info" "SYSTEMDIR:Prefs"
+
+; Copy picasso96 storage files
+MakePath >NIL: "SYSTEMDIR:Storage/Picasso96"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.INFO" "SYSTEMDIR:Storage"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96" "SYSTEMDIR:Storage/Picasso96" ALL
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DRIVERS" "SYSTEMDIR:Storage/Picasso96" ALL
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.README" "SYSTEMDIR:Storage/Picasso96/Picasso96.readme"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DOCUMENTATION/PICASSO96_ENGLISH.GUIDE" "SYSTEMDIR:Storage/Picasso96/Picasso96_english.guide"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DOCUMENTATION/PICASSO96_ENGLISH.GUIDE.INFO" "SYSTEMDIR:Storage/Picasso96/Picasso96_english.guide.info"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/VERSION" "SYSTEMDIR:Storage/Picasso96/Version"
+
+; Copy picasso 96 monitor
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DEVS/MONITORS/PICASSO96" "SYSTEMDIR:Devs/Monitors/uaegfx"
+Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DEVS/MONITORS/PICASSO96.info" "SYSTEMDIR:Devs/Monitors/uaegfx.info"
+
+; Update uaegfx info tooltype
+Echo "BOARDTYPE=uaegfx" >RAM:uaegfx_tooltype
+Echo "SETTINGSFILE=SYS:Devs/Picasso96Settings" >>RAM:uaegfx_tooltype
+Echo "(BORDERBLANK=Yes)" >>RAM:uaegfx_tooltype
+Echo "(BIGSPRITE=Yes)" >>RAM:uaegfx_tooltype
+Echo "(SOFTSPRITE=Yes)" >>RAM:uaegfx_tooltype
+Echo "IGNOREMASK=Yes" >>RAM:uaegfx_tooltype
+Echo "(DISPLAYCHAIN=Yes)" >>RAM:uaegfx_tooltype
+FileToTT FROM "RAM:uaegfx_tooltype" TO "SYSTEMDIR:Devs/Monitors/uaegfx"
+
+; Create picasso 96 env-archive
+MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive/Picasso96"
+Echo "15kHz" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/AmigaVideo
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/BlackSwitching
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DirectColorMask
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DoNotSetMMU
+Echo "Essential" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/ShowModes
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/PlanarOnlyDIPFDBUF
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/PlanesToFast
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/EnableBootVGA
+Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DisableAmigaBlitter
+Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Debug
+Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Experimental
+
+; Update or add picasso96 assign in user startup
+IF EXISTS "SYSTEMDIR:S/User-Startup"
+ELSE
+  Echo "Assign Picasso96: *"SYS:Storage/Picasso96*"" >SYSTEMDIR:S/User-Startup
+ENDIF
+
+
+;quit
+
 ;FCD0:EMERGENCY-DISK/C/CheckRTG
 
 ;IF $RC EQ 0
 ;ENDIF
 
-
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96" "SYSTEMDIR:Libs/PICASSO96" ALL
-
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/Devs" "SYSTEMDIR:Devs" ALL
+;Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96" "SYSTEMDIR:Libs/PICASSO96" ALL
+;Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/Devs" "SYSTEMDIR:Devs" ALL
 
 ; cgxsystem.library v3/v4
 ; EMERGENCY-DISK:Devs/Monitors
@@ -143,7 +197,6 @@ Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/Devs" "SYSTEMDIR:Devs" ALL
 ;MakePath >NIL: "Prefs/Env-Archive/cybergraphics"
 ; "EMERGENCY-DISK:Prefs/Env-Archive/cybergraphics")
 
-quit
 
 
 ; Cleanup
