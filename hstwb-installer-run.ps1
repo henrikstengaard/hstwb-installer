@@ -1402,117 +1402,6 @@ function RunInstall()
 }
 
 
-# run install os 3.9
-function RunInstallOs39()
-{
-    # print preparing install message
-    Write-Host ""
-    Write-Host "Preparing Install OS 3.9..."
-
-
-    $os39IsoDir = 'c:\Temp'
-    $os39IsoFileName = 'AmigaOS39.iso'
-
-
-    # set temp install and packages dir
-    $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
-    $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
-
-
-    # create temp install path
-    if(!(test-path -path $tempInstallDir))
-    {
-        mkdir $tempInstallDir | Out-Null
-    }
-
-    # create temp packages path
-    if(!(test-path -path $tempPackagesDir))
-    {
-        mkdir $tempPackagesDir | Out-Null
-    }
-
-
-    # copy amiga shared dir
-    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
-    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
-
-
-    # copy amiga install dir
-    $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install_os3.9")
-    Copy-Item -Path "$amigaInstallDir\*" $tempInstallDir -recurse -force
-
-
-    # build winuae install harddrives config
-    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
-
-    # get uaehf index of last uaehf config from winuae image harddrives config
-    $uaehfIndex = 0
-    $winuaeInstallHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
-
-    # add cdrom
-    #$winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=cd0,ro,:,0,0,0,2048,0,,ide0_mainboard,ATA1" -f ([int]$uaehfIndex + 1)
-
-    $winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39:OS39:{0},-128" -f $os39IsoDir
-    $winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39:OS39:{1},-128" -f ([int]$uaehfIndex + 1), $os39IsoDir
-
-
-    # read winuae installer os 3.9 config file
-    $winuaeInstallOs39ConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
-    $winuaeInstallOs39ConfigText = [System.IO.File]::ReadAllText($winuaeInstallOs39ConfigFile)
-
-
-    # replace winuae installer os 3.9 config placeholders
-    $winuaeInstallOs39ConfigText = $winuaeInstallOs39ConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
-    $winuaeInstallOs39ConfigText = $winuaeInstallOs39ConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
-    #$winuaeInstallOs39ConfigText = $winuaeInstallOs39ConfigText.Replace('[$OS39ISOFILE]', 'c:\Users\hst\Downloads\AmigaOS 3.9\AmigaOS 3.9\AmigaOS39.iso')
-    $winuaeInstallOs39ConfigText = $winuaeInstallOs39ConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
-
-
-    # write winuae install os 3.9 config file to temp install dir
-    $tempWinuaeInstallOs39ConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
-    [System.IO.File]::WriteAllText($tempWinuaeInstallOs39ConfigFile, $winuaeInstallOs39ConfigText)
-
-    
-    $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
-    $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
-
-    $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $os39IsoFileName)
-
-    $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
-
-
-    # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
-    $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
-    [System.IO.File]::WriteAllText($installingFile, "")
-
-
-    # print preparing installation done message
-    Write-Host "Done."
-
-
-    # print launching winuae message
-    Write-Host ""
-    Write-Host "Launching Install OS 3.9 using WinUAE..."
-
-
-    # winuae args
-    $winuaeArgs = "-f ""$tempWinuaeInstallOs39ConfigFile"""
-
-    # exit, if winuae fails
-    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
-    {
-        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
-    }
-
-
-    # fail, if installing file exists
-    # if (Test-Path -path $installingFile)
-    # {
-    #     Fail "WinUAE installation failed"
-    # }
-}
-
-
 # run build self install
 function RunBuildSelfInstall()
 {
@@ -1947,7 +1836,6 @@ switch ($settings.Installer.Mode)
 {
     "Test" { RunTest }
     "Install" { RunInstall }
-    "InstallOs39" { RunInstallOs39 }
     "BuildSelfInstall" { RunBuildSelfInstall }
     "BuildSelfInstallPackageSelection" { RunBuildSelfInstall }
     "BuildPackageInstallation" { RunBuildPackageInstallation }
