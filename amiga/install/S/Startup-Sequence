@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-04-20
+; Date: 2017-07-05
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -65,26 +65,26 @@ IF EXISTS INSTALL:HstWB-Installer.Assigns.ini
 ENDIF
 
 
-; Install Workbench
-IF EXISTS S:Install-Workbench
+; Install Workbench, if prefs exists
+IF EXISTS SYS:Prefs/Install-Workbench
   execute S:Install-Workbench
 ENDIF
 
 
-; Install Amiga OS 3.9
-IF EXISTS S:Install-AmigaOS3.9
+; Install Amiga OS 3.9, if prefsexists
+IF EXISTS SYS:Prefs/Install-AmigaOS3.9
   execute S:Install-AmigaOS3.9
 ENDIF
 
 
-; Install Kickstart
-IF EXISTS S:Install-Kickstart
+; Install Kickstart, if prefs exists
+IF EXISTS SYS:Prefs/Install-Kickstart
   execute S:Install-Kickstart
 ENDIF
 
 
-; Install Packages
-IF EXISTS S:Install-Packages
+; Install Packages, if prefs exists
+IF EXISTS SYS:Prefs/Install-Packages
   execute S:Install-Packages
 ENDIF
 

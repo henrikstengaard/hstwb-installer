@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-06-09
+# Date:   2017-07-05
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1165,45 +1165,54 @@ function RunInstall()
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
+    # create install prefs directory
+    $tempInstallPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
+    if(!(test-path -path $tempInstallPrefsDir))
+    {
+        mkdir $tempInstallPrefsDir | Out-Null
+    }
+
+
     # prepare install workbench
     if ($settings.Workbench.InstallWorkbench -eq 'Yes' -and $workbenchAdfSetHashes.Count -gt 0)
     {
+        # create install workbench prefs file
+        $installWorkbenchFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Workbench'
+        Set-Content $installWorkbenchFile -Value ""
+        
+
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
         $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
-    }
-    else
-    {
-        # delete install workbench file in install dir
-        $installWorkbenchFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Workbench")
-        Remove-Item $installWorkbenchFile
     }
 
 
     # prepare install kickstart
     if ($settings.Kickstart.InstallKickstart -eq 'Yes' -and $kickstartRomSetHashes.Count -gt 0)
     {
+        # create install kickstart prefs file
+        $installKickstartFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Kickstart'
+        Set-Content $installKickstartFile -Value ""
+        
+
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
         $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
 
+
         # get first kickstart rom hash
         $installKickstartRomHash = $kickstartRomSetHashes | Select-Object -First 1
 
+
         # kickstart rom key
         $installKickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($installKickstartRomHash.File), "rom.key")
+
 
         # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
         if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
         {
             Copy-Item -Path $installKickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
         }
-    }
-    else
-    {
-        # delete install kickstart file in install dir
-        $installKickstartFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Kickstart")
-        Remove-Item $installKickstartFile
     }
 
 
@@ -1221,11 +1230,16 @@ function RunInstall()
 
     $hstwbInstallerPackagesIni = @{}
 
+
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
-        $installPackagesLines = @()
+        # create install packages prefs file
+        $installPackagesFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Packages'
+        Set-Content $installPackagesFile -Value ""
 
+
+        # extract packages to package directory
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory
@@ -1241,6 +1255,7 @@ function RunInstall()
 
             $hstwbInstallerPackagesIni.Set_Item($installPackage.Package.Name, @{ 'Version' = $installPackage.Package.Version })
         }
+
 
         # build install package script lines
         $installPackagesScriptLines = @()
@@ -1260,6 +1275,7 @@ function RunInstall()
         $installPackagesScriptLines += "echo """""
         $installPackagesScriptLines += "ask ""Press ENTER to continue"""
 
+
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
         WriteAmigaTextLines $installPackagesFile $installPackagesScriptLines 
@@ -1273,8 +1289,15 @@ function RunInstall()
 
     if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
     {
+        # create install amiga os 3.9 prefs file
+        $installAmigaOs39File = Join-Path $tempInstallPrefsDir -ChildPath 'Install-AmigaOS3.9'
+        Set-Content $installAmigaOs39File -Value ""
+
+
+        # get amiga os 3.9 directory and filename
         $amigaOs39IsoDir = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Parent
         $amigaOs39IsoFileName = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Leaf
+
 
         # copy amiga install dir
         $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install_os3.9")
@@ -1293,9 +1316,7 @@ function RunInstall()
         $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
 
         $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
-
         $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
-        
     }
 
 
