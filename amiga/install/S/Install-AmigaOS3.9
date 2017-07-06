@@ -111,95 +111,14 @@ Assign >NIL: Fonts: "SYSTEMDIR:Fonts" REMOVE
 echo "Done"
 
 
-; Install RTG
-; -----------
+; Prefs
+; -----
 
-MakePath >NIL: "SYSTEMDIR:Libs/Picasso96"
-
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/rtg.library" "SYSTEMDIR:Libs/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/fastlayers.library" "SYSTEMDIR:Libs/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/emulation.library" "SYSTEMDIR:Libs/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96/uaegfx.card" "SYSTEMDIR:Libs/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/Picasso96API.library" "SYSTEMDIR:Libs"
-
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PREFS/PVS" "SYSTEMDIR:Prefs"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PREFS/PVS.info" "SYSTEMDIR:Prefs"
-
-; Copy picasso96 storage files
-MakePath >NIL: "SYSTEMDIR:Storage/Picasso96"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.INFO" "SYSTEMDIR:Storage/Picasso96.info"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96" "SYSTEMDIR:Storage/Picasso96" ALL
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DRIVERS" "SYSTEMDIR:Storage/Picasso96" ALL
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/PICASSO96.README" "SYSTEMDIR:Storage/Picasso96/Picasso96.readme"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DOCUMENTATION/PICASSO96_ENGLISH.GUIDE" "SYSTEMDIR:Storage/Picasso96/Picasso96_english.guide"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DOCUMENTATION/PICASSO96_ENGLISH.GUIDE.INFO" "SYSTEMDIR:Storage/Picasso96/Picasso96_english.guide.info"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/VERSION" "SYSTEMDIR:Storage/Picasso96/Version"
-
-; Copy picasso 96 monitor
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DEVS/MONITORS/PICASSO96" "SYSTEMDIR:Devs/Monitors/uaegfx"
-Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/DEVS/MONITORS/PICASSO96.info" "SYSTEMDIR:Devs/Monitors/uaegfx.info"
-
-; Update uaegfx info tooltype
-Echo "BOARDTYPE=uaegfx" >RAM:uaegfx_tooltype
-Echo "SETTINGSFILE=SYS:Devs/Picasso96Settings" >>RAM:uaegfx_tooltype
-Echo "(BORDERBLANK=Yes)" >>RAM:uaegfx_tooltype
-Echo "(BIGSPRITE=Yes)" >>RAM:uaegfx_tooltype
-Echo "(SOFTSPRITE=Yes)" >>RAM:uaegfx_tooltype
-Echo "IGNOREMASK=Yes" >>RAM:uaegfx_tooltype
-Echo "(DISPLAYCHAIN=Yes)" >>RAM:uaegfx_tooltype
-FileToTT FROM "RAM:uaegfx_tooltype" TO "SYSTEMDIR:Devs/Monitors/uaegfx"
-
-; Create picasso 96 env-archive
-MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive/Picasso96"
-Echo "15kHz" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/AmigaVideo
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/BlackSwitching
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DirectColorMask
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DoNotSetMMU
-Echo "Essential" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/ShowModes
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/PlanarOnlyDIPFDBUF
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/PlanesToFast
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/EnableBootVGA
-Echo "No" NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/DisableAmigaBlitter
-Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Debug
-Echo "No*NDo not enable!*NOnly useful for the rtg.library developers." NOLINE >SYSTEMDIR:Prefs/Env-Archive/Picasso96/Experimental
-
-; Update or add picasso 96 assign in user startup
-IF EXISTS "SYSTEMDIR:S/User-Startup"
-ELSE
-  Echo "Assign Picasso96: *"SYS:Storage/Picasso96*"" >SYSTEMDIR:S/User-Startup
-ENDIF
-
-; Copy default picasso 96 screenmode prefs with display mode set to "UAE:1024x 768 16bit PC"
-Copy >NIL: "INSTALL:Install/Picasso96/screenmode.prefs" "SYSTEMDIR:Prefs/Env-Archive/Sys"
-
-;quit
-
-;FCD0:EMERGENCY-DISK/C/CheckRTG
-
-;IF $RC EQ 0
-;ENDIF
-
-;Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/LIBS/PICASSO96" "SYSTEMDIR:Libs/PICASSO96" ALL
-;Copy >NIL: "FCD0:CONTRIBUTION/PICASSO96INSTALL/Devs" "SYSTEMDIR:Devs" ALL
-
-; cgxsystem.library v3/v4
-; EMERGENCY-DISK:Devs/Monitors
-;Copy >NIL: "FCD0:CONTRIBUTION/CYBERGRAPH3/"
-; EMERGENCY-DISK:Libs/cgxsystem.library
-
-;Copy >NIL: "FCD0:CONTRIBUTION/EMERGENCY-DISK/Prefs/Presets" "SYSTEMDIR:Prefs/Presets" ALL
-
-; EMERGENCY-DISK:Prefs/Env-Archive/cybergraphx
-
-; cybergraphics.library v2
-; "EMERGENCY-DISK:Devs/Monitors")
-; "EMERGENCY-DISK:Libs/cybergraphics.library")
-; "EMERGENCY-DISK:Libs/cyberintuition.library")
-; "EMERGENCY-DISK:Libs/cyberlayers.library")
-
-;MakePath >NIL: "Prefs/Env-Archive/cybergraphics"
-; "EMERGENCY-DISK:Prefs/Env-Archive/cybergraphics")
-
+Copy >NIL: "FCD0:OS-VERSION3.9/EMERGENCY-DISK/PREFS/ENV-ARCHIVE/SYS/FONT.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/REACTION.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBCONFIG.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBPATTERN.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WORKBENCH.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 
 
 ; Cleanup
