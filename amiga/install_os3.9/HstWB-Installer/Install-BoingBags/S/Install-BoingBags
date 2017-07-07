@@ -82,6 +82,15 @@ ENDIF
 
 
 ; Install Boing Bag 2
+execute S:Install-BoingBag2
+
+
+; Goto clean up, if boing bag 3 file doesn't exist
+IF NOT EXISTS "OS39:BoingBag39-3.lha"
+  SKIP complete
+ENDIF
+
+
 ; Install Boing Bag 3
 ; Install Boing Bag 4
 
