@@ -1058,20 +1058,25 @@ function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
 }
 
 
-
-
 # build winuae install harddrives config text
-function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir)
+function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39Dir, $boot)
 {
     # build winuae image harddrives config
-    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $true
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $boot
 
     # get uaehf index of last uaehf config from winuae image harddrives config
     $uaehfIndex = 0
     $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
 
     # winuae install harddrives config file
-    $winuaeInstallHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives.uae")
+    if ($boot)
+    {
+        $winuaeInstallHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives_boot.uae")
+    }
+    else
+    {
+        $winuaeInstallHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives_noboot.uae")
+    }
 
     # fail, if winuae install harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeInstallHarddrivesConfigFile))
@@ -1087,6 +1092,8 @@ function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$InstallUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
 
     # return winuae image and install harddrives config
@@ -1171,6 +1178,11 @@ function RunInstall()
     {
         mkdir $tempInstallPrefsDir | Out-Null
     }
+
+
+    # create uae prefs file
+    $uaePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'UAE'
+    Set-Content $uaePrefsFile -Value ""
 
 
     # prepare install workbench
@@ -1282,10 +1294,6 @@ function RunInstall()
     }
 
 
-    # build winuae install harddrives config
-    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
-
-
 
     if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
     {
@@ -1305,11 +1313,11 @@ function RunInstall()
 
 
         # get uaehf index of last uaehf config from winuae image harddrives config
-        $uaehfIndex = 0
-        $winuaeInstallHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+        #$uaehfIndex = 0
+        #$winuaeInstallHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
 
-        $winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39:OS39:{0},-128" -f $amigaOs39IsoDir
-        $winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39:OS39:{1},-128" -f ([int]$uaehfIndex + 1), $amigaOs39IsoDir
+        #$winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39:OS39:{0},-128" -f $amigaOs39IsoDir
+        #$winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39:OS39:{1},-128" -f ([int]$uaehfIndex + 1), $amigaOs39IsoDir
 
 
         $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
@@ -1317,8 +1325,19 @@ function RunInstall()
 
         $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
         $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
+
+
+        #
+        $os39Dir = $amigaOs39IsoDir
+    }
+    else
+    {
+        $os39Dir = $tempInstallDir
     }
 
+
+    # build winuae install harddrives config with boot
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $os39Dir $true
 
 
     # read winuae hstwb installer config file
@@ -1391,6 +1410,42 @@ function RunInstall()
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
         Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+    }
+
+
+    $installBoingBagsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-BoingBags'
+
+    if (Test-Path -path $installBoingBagsFile)
+    {
+        # print launching winuae message
+        Write-Host ""
+        Write-Host "Launching WinUAE to install boing bags..."
+
+
+        # build winuae install harddrives config with boot
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $os39Dir $false
+
+
+        # read winuae hstwb installer config file
+        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
+
+
+        # replace winuae hstwb installer config placeholders
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+
+
+        # write winuae hstwb installer config file to temp install dir
+        [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
+
+
+        # exit, if winuae fails
+        if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+        {
+            Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        }
     }
 
 
@@ -1532,7 +1587,7 @@ function RunBuildSelfInstall()
 
 
     # build winuae install harddrives config
-    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $tempInstallDir $true
 
 
     # read winuae hstwb installer config file

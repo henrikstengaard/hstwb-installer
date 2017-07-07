@@ -16,8 +16,8 @@ FF0:	Device = fmsdisk.device
 
 FCD0:
 Unit           = "OS39:[$OS39IsoFileName]"
-Device         = filedisk.device
-FileSystem     = L:AmiCDFS
+Device         = INSTALL:Devs/filedisk.device
+FileSystem     = INSTALL:L/AmiCDFS
 Flags          = 0
 BlocksPerTrack = 32
 BlockSize      = 2048

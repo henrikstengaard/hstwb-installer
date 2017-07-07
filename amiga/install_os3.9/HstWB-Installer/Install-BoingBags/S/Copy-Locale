@@ -1,0 +1,144 @@
+.KEY sourcedir/a,targetdir/a
+.BRA { 
+.KET }  
+
+; Copy Locale Script
+; ------------------
+;
+; Date: 2017-07-07
+; Author: Henrik Noerfjand Stengaard
+;
+; An Amiga script to copy locale.
+
+
+IF EXISTS "{sourcedir}/bosanski"
+  IF EXISTS "{targetdir}/bosanski"
+    Copy >NIL: "{sourcedir}/bosanski" "{targetdir}/bosanski" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/català"
+  IF EXISTS "{targetdir}/català"
+    Copy >NIL: "{sourcedir}/català" "{targetdir}/català" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/czech"
+  IF EXISTS "{targetdir}/czech"
+    Copy >NIL: "{sourcedir}/czech" "{targetdir}/czech" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/dansk"
+  IF EXISTS "{targetdir}/dansk"
+    Copy >NIL: "{sourcedir}/dansk" "{targetdir}/dansk" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/deutsch"
+  IF EXISTS "{targetdir}/deutsch"
+    Copy >NIL: "{sourcedir}/deutsch" "{targetdir}/deutsch" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/español"
+  IF EXISTS "{targetdir}/español"
+    Copy >NIL: "{sourcedir}/español" "{targetdir}/español" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/français"
+  IF EXISTS "{targetdir}/français"
+    Copy >NIL: "{sourcedir}/français" "{targetdir}/français" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/hrvatski"
+  IF EXISTS "{targetdir}/hrvatski"
+    Copy >NIL: "{sourcedir}/hrvatski" "{targetdir}/hrvatski" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/italiano"
+  IF EXISTS "{targetdir}/italiano"
+    Copy >NIL: "{sourcedir}/italiano" "{targetdir}/italiano" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/latvian"
+  IF EXISTS "{targetdir}/latvian"
+    Copy >NIL: "{sourcedir}/latvian" "{targetdir}/latvian" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/nederlands"
+  IF EXISTS "{targetdir}/nederlands"
+    Copy >NIL: "{sourcedir}/nederlands" "{targetdir}/nederlands" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/norsk"
+  IF EXISTS "{targetdir}/norsk"
+    Copy >NIL: "{sourcedir}/norsk" "{targetdir}/norsk" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/polski"
+  IF EXISTS "{targetdir}/polski"
+    Copy >NIL: "{sourcedir}/polski" "{targetdir}/polski" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/português"
+  IF EXISTS "{targetdir}/português"
+    Copy >NIL: "{sourcedir}/português" "{targetdir}/português" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/português-brasil"
+  IF EXISTS "{targetdir}/português-brasil"
+    Copy >NIL: "{sourcedir}/português-brasil" "{targetdir}/português-brasil" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/russian"
+  IF EXISTS "{targetdir}/russian"
+    Copy >NIL: "{sourcedir}/russian" "{targetdir}/russian" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/slovak"
+  IF EXISTS "{targetdir}/slovak"
+    Copy >NIL: "{sourcedir}/slovak" "{targetdir}/slovak" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/slovensko"
+  IF EXISTS "{targetdir}/slovensko"
+    Copy >NIL: "{sourcedir}/slovensko" "{targetdir}/slovensko" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/srpski"
+  IF EXISTS "{targetdir}/srpski"
+    Copy >NIL: "{sourcedir}/srpski" "{targetdir}/srpski" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/suomi"
+  IF EXISTS "{targetdir}/suomi"
+    Copy >NIL: "{sourcedir}/suomi" "{targetdir}/suomi" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/svenska"
+  IF EXISTS "{targetdir}/svenska"
+    Copy >NIL: "{sourcedir}/svenska" "{targetdir}/svenska" ALL
+  ENDIF
+ENDIF
+
+IF EXISTS "{sourcedir}/türkçe"
+  IF EXISTS "{targetdir}/türkçe"
+    Copy >NIL: "{sourcedir}/türkçe" "{targetdir}/türkçe" ALL
+  ENDIF
+ENDIF

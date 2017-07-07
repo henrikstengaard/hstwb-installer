@@ -1,20 +1,26 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-07-04
+; Date: 2017-07-07
 ; Author: Henrik Noerfjand Stengaard
+;
+; An AmigsDOS script to automate installation of Amiga OS 3.9.
 
 
 ; Clear screen
 echo "*ec" 
 
 
-echo ""
 echo "Amiga OS 3.9 Installation"
 echo "-------------------------"
+
+
 ; Mount FCD0: with Amiga OS 3.9 iso
+echo ""
+echo "Mounting Amiga OS 3.9 iso..."
 Mount FCD0:
 wait 10
+echo "Done"
 
 
 ; Copy Workbench 3.9
@@ -121,12 +127,17 @@ Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBPATTERN.PREFS" "SYSTEMDI
 Copy >NIL: "FCD0:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WORKBENCH.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 
 
+; Copy uae prefs, if it exists in install
+IF EXISTS INSTALL:Prefs/UAE
+  Copy >NIL: INSTALL:Prefs/UAE SYSTEMDIR:Prefs
+ENDIF
+
+
 ; Cleanup
 ; -------
 
 echo ""
 echo "Cleaning up..."
-
 
 FCD0:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Prefs"   10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
 FCD0:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Prefs/Font"                       10 10
@@ -211,8 +222,24 @@ FCD0:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Trashcan" 160 220
 FCD0:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 
+; End, if boing bag 1 doesn't exist
+IF NOT EXISTS "OS39:BoingBag39-1.lha"
+  SKIP end
+ENDIF
+
+
+; Create install boing bags prefs
+Echo "" >SYS:Prefs/Install-BoingBags
+
+
+; Copy install boing bags to systemdir
+Copy >NIL: SYS:HstWB-Installer/Install-BoingBags SYSTEMDIR: ALL
+
+
 ; End
 ; ---
+LAB end
+
 echo ""
 echo "Amiga OS 3.9 installation is complete."
 echo ""
