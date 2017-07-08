@@ -50,12 +50,13 @@ IF NOT EXISTS "OS39:BoingBag39-1.lha"
 ENDIF
 
 
-; Mount FCD0: with Amiga OS 3.9 iso
-echo ""
-echo "Mounting Amiga OS 3.9 iso..."
-Mount FCD0: FROM INSTALL:Devs/Mountlist
-wait 10
-echo "Done"
+; Goto fail, if device CD0: doesn't exist
+Assign >NIL: EXISTS CD0:
+IF WARN
+  echo ""
+  echo "*e[1mERROR: Device CD0: doesn't exist!*e[22m"
+  SKIP fail
+ENDIF
 
 
 ; Goto fail, if device AmigaOS3.9: doesn't exist

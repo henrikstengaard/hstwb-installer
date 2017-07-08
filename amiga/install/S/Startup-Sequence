@@ -71,7 +71,7 @@ IF EXISTS SYS:Prefs/Install-Workbench
 ENDIF
 
 
-; Install Amiga OS 3.9, if prefsexists
+; Install Amiga OS 3.9, if prefs exists
 IF EXISTS SYS:Prefs/Install-AmigaOS3.9
   execute S:Install-AmigaOS3.9
 ENDIF

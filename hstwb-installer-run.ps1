@@ -1094,6 +1094,7 @@ function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
 
     # return winuae image and install harddrives config
@@ -1329,10 +1330,12 @@ function RunInstall()
 
         #
         $os39Dir = $amigaOs39IsoDir
+        $isoFile = $settings.AmigaOS39.AmigaOS39IsoFile
     }
     else
     {
         $os39Dir = $tempInstallDir
+        $isoFile = ''
     }
 
 
@@ -1349,6 +1352,7 @@ function RunInstall()
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$ISOFILE]', $isoFile)
 
 
     # write winuae hstwb installer config file to temp install dir
@@ -1435,6 +1439,7 @@ function RunInstall()
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$ISOFILE]', $isoFile)
 
 
         # write winuae hstwb installer config file to temp install dir
