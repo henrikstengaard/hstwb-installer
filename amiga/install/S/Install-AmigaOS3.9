@@ -133,56 +133,44 @@ IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS
 ENDIF
 
 
-; Copy Workbench 3.9
 echo ""
+echo "Amiga OS 3.9 installation"
+
+
+; Copy Workbench 3.9
 echo "Copying Workbench..."
 
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.5 SYSTEMDIR: ALL
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.9 SYSTEMDIR: ALL
 
-echo "Done"
-
 
 ; Copy libs
-echo ""
-echo "Copying libs..."
+echo "Copying Libs..."
 
 ;Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Libs/mpega.library SYSTEMDIR:Libs
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Libs/asyncio.library SYSTEMDIR:Libs
 
-echo "Done"
-
 
 ; Copy backdrops (optional)
-echo ""
-echo "Copying backdrop..."
+echo "Copying Backdrops..."
 
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Backdrops SYSTEMDIR:Prefs/Presets/Backdrops ALL
 
-echo "Done"
-
 
 ; Copy locale
-echo ""
-echo "Copying locale..."
+echo "Copying Locale..."
 
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/LOCALE SYSTEMDIR:Locale ALL
-
-echo "Done"
 
 
 ; Copy keymaps
 ; ------------
 
-echo ""
 echo "Copying keymaps..."
 
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.9/Storage/Keymaps SYSTEMDIR:Devs/Keymaps
 
-echo "Done"
 
-
-;
 ; Copy 68040.library, if it doesn't exist
 ;IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
 ;  Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
@@ -209,7 +197,6 @@ Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/L/FastFileSystem" "SYSTEMDIR:L"
 ; Fix fonts
 ; ---------
 
-echo ""
 echo "Fix fonts..."
 
 Assign >NIL: Fonts: "SYSTEMDIR:Fonts"
@@ -217,8 +204,6 @@ Assign >NIL: Fonts: "SYSTEMDIR:Fonts"
 SYSTEMDIR:System/FixFonts
 
 Assign >NIL: Fonts: "SYSTEMDIR:Fonts" REMOVE
-
-echo "Done"
 
 
 ; Prefs
@@ -240,7 +225,6 @@ ENDIF
 ; Cleanup
 ; -------
 
-echo ""
 echo "Cleaning up..."
 
 AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Prefs"   10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
@@ -326,6 +310,9 @@ AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Trashcan" 160 22
 AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 
+echo "Done"
+
+
 ; End, if boing bag 1 doesn't exist
 IF NOT EXISTS "OS39:BoingBag39-1.lha"
   SKIP complete
@@ -344,6 +331,7 @@ SKIP complete
 ; ----
 LAB fail
 
+echo ""
 echo "Amiga OS 3.9 installation failed."
 echo ""
 ask "Press ENTER to continue"
