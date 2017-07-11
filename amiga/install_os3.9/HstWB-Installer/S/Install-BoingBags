@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2017-07-10
+; Date: 2017-07-11
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Boing Bags.
@@ -15,38 +15,38 @@ echo "Amiga OS 3.9 Boing Bags installation"
 echo "------------------------------------"
 
 
-; Goto fail, if version.library is not version 45 (Amiga OS 3.9)
+; Goto end, if version.library is not version 45 (Amiga OS 3.9)
 Version >NIL: "SYS:Libs/version.library" 45 FILE
 IF WARN
   echo ""
   echo "*e[1mERROR: Boing Bags installation requires AmigaOS 3.9!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
-; Goto fail, if device OS39: doesn't exist
+; Goto end, if device OS39: doesn't exist
 Assign >NIL: EXISTS OS39:
 IF WARN
   echo ""
   echo "*e[1mERROR: Device OS39: doesn't exist!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
-; Goto fail, if device INSTALL: doesn't exist
+; Goto end, if device INSTALL: doesn't exist
 Assign >NIL: EXISTS INSTALL:
 IF WARN
   echo ""
   echo "*e[1mERROR: Device INSTALL: doesn't exist!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
-; Goto fail, if boing bag 1 file doesn't exist
+; Goto end, if boing bag 1 file doesn't exist
 IF NOT EXISTS "OS39:BoingBag39-1.lha"
   echo ""
   echo "*e[1mERROR: Boing bags doesn't exist in device OS39:. Skipping installation!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
@@ -88,12 +88,12 @@ wait 5
 echo "Done"
 
 
-; Goto fail, if device FCD0: doesn't exist
+; Goto end, if device FCD0: doesn't exist
 Assign >NIL: EXISTS FCD0:
 IF WARN
   echo ""
   echo "*e[1mERROR: Device FCD0: doesn't exist!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
@@ -101,12 +101,12 @@ ENDIF
 ; ---------------------
 LAB checkamigaos39cd
 
-; Goto fail, if device AmigaOS3.9: doesn't exist
+; Goto end, if device AmigaOS3.9: doesn't exist
 Assign >NIL: EXISTS AmigaOS3.9:
 IF WARN
   echo ""
   echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
-  SKIP fail
+  SKIP end
 ENDIF
 
 
@@ -118,7 +118,7 @@ makedir >NIL: SYS:T/BoingBags
 execute S:Install-BoingBag1
 
 
-; Goto clean up, if boing bag 2 file doesn't exist
+; Goto complete, if boing bag 2 file doesn't exist
 IF NOT EXISTS "OS39:BoingBag39-2.lha"
   SKIP complete
 ENDIF
@@ -128,73 +128,53 @@ ENDIF
 execute S:Install-BoingBag2
 
 
-; Goto clean up, if boing bag 3 file doesn't exist
-IF NOT EXISTS "OS39:BoingBag39-3.lha"
-  SKIP complete
-ENDIF
-
-
-; Install Boing Bag 3
-; Install Boing Bag 4
-
-
 ; Complete
 ; --------
 LAB complete
 
-echo ""
-echo "Boing Bags installation is complete"
-echo "-----------------------------------"
-echo ""
-echo "HstWB Installer has completed installation of"
-echo "Amiga OS 3.9 Boing Bags and system is now ready for use."
-
-
-; Clean up
-; --------
-LAB cleanup
-
 ; Delete temp boing bags directory
 Delete >NIL: SYS:T/BoingBags ALL
 
-; Delete install boing bags scripts from S:
-IF EXISTS S:Install-BoingBags
-	Delete >NIL: S:Install-BoingBag#?
+; Delete install boing bags scripts
+Delete >NIL: S:Copy-Locale
+Delete >NIL: S:Install-BoingBag#?
+Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
+
+; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists. Otherwise delete packages startup sequence
+IF EXISTS SYS:Prefs/Install-Packages
+  Rename >NIL: S:Startup-Sequence S:Startup-Sequence.Workbench
+  Rename >NIL: S:Startup-Sequence.Packages S:Startup-Sequence
+ELSE
+  Delete >NIL: S:Startup-Sequence.Packages
 ENDIF
 
-; Delete install boing bags scripts from S:
-IF EXISTS S:Install-BoingBags
-	Delete >NIL: S:Install-BoingBag#?
-ENDIF
+echo ""
+echo "Boing Bags installation is complete."
+echo ""
 
-; Delete start install boing bags from WBStartup, if it exists
-IF EXISTS SYS:WBStartup/Start-Install-BoingBags
-	Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
+IF EXISTS SYS:Prefs/Install-Packages
+  echo "HstWB Installer has completed installation of"
+  echo "Amiga OS 3.9 Boing Bags and will now reboot to"
+  echo "start package installation."
+ELSE
+  echo "HstWB Installer has completed installation of"
+  echo "Amiga OS 3.9 Boing Bags and system is now"
+  echo "ready for use."
 ENDIF
 
 echo ""
 echo "Please let the system wait 10 seconds before continuing"
 echo "to allow file system to write changes to disk." 
 echo ""
-
-; 
-IF EXISTS SYS:Prefs/UAE
-  echo "Continue will quit UAE in 10 seconds."
-ELSE
-  echo "Continue will reboot system in 10 seconds."
-ENDIF
-
-SKIP end
+ask "Press ENTER to continue"
 
 
-; Fail
-; ----
-LAB fail
-
-; Confirm removing installation of Boing Bags
-set confirmremove `RequestChoice "Failed" "Installation of Boing Bags failed and will restart at WBStartup,*Nwhen system is rebooted*N*NDo you want to remove installation of Boing Bags?" "Yes|No"`
-IF "$confirmremove" EQ "1"
-  SKIP BACK cleanup
+; Reboot system, if install packages prefs exist
+IF EXISTS SYS:Prefs/Install-Packages
+  echo ""
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  INSTALL:C/TotalReset
 ENDIF
 
 
@@ -205,6 +185,7 @@ LAB end
 echo ""
 ask "Press ENTER to continue"
 echo ""
+
 
 ; Quit uae, if uae is used. Otherwise reboot
 IF EXISTS SYS:Prefs/UAE

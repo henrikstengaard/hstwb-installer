@@ -133,10 +133,6 @@ IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS
 ENDIF
 
 
-echo ""
-echo "Amiga OS 3.9 installation"
-
-
 ; Copy Workbench 3.9
 echo "Copying Workbench..."
 
@@ -313,16 +309,30 @@ AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS
 echo "Done"
 
 
-; End, if boing bag 1 doesn't exist
-IF NOT EXISTS "OS39:BoingBag39-1.lha"
-  SKIP complete
+; Copy c, reqtools library and prefs
+Copy >NIL: INSTALL:C SYSTEMDIR:C ALL
+Copy >NIL: INSTALL:Libs/reqtools.library SYS:Libs
+Copy >NIL: INSTALL:Prefs/Env-Archive/ReqTools.prefs SYS:Prefs/Env-Archive
+
+
+; Copy install packages to systemdir, if install packages prefs exists
+IF EXISTS SYS:Prefs/Install-Packages
+  set copyhstwbinstaller "1"
+  Copy >NIL: SYS:Prefs/Install-Packages SYSTEMDIR:Prefs
+  Copy >NIL: S:Install-Packages SYSTEMDIR:S
 ENDIF
 
-; Create install boing bags prefs
-Echo "" >SYS:Prefs/Install-BoingBags
+; Create install boing bags prefs, if boing bag 1 exist
+IF EXISTS "OS39:BoingBag39-1.lha"
+  set copyhstwbinstaller "1"
+  Echo "" >SYS:Prefs/Install-BoingBags
+ENDIF
 
-; Copy install boing bags to systemdir
-Copy >NIL: SYS:HstWB-Installer/Install-BoingBags SYSTEMDIR: ALL
+; Copy hstwb installer to systemdir and replace startup sequence, if copy hstwb installer
+IF "$copyhstwbinstaller" EQ "1"
+  Copy >NIL: SYS:HstWB-Installer SYSTEMDIR: ALL
+  Copy >NIL: S:User-Assign SYSTEMDIR:S
+ENDIF
 
 SKIP complete
 

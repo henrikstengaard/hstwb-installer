@@ -42,6 +42,9 @@ Assign T: RAM:
 SetEnv TZ MST7
 
 
+wait 3
+
+
 ; Fail, if user assign doesn't exist
 IF NOT EXISTS S:User-Assign
   echo "" >INSTALL:Error
@@ -83,9 +86,11 @@ IF EXISTS SYS:Prefs/Install-Kickstart
 ENDIF
 
 
-; Install Packages, if prefs exists
-IF EXISTS SYS:Prefs/Install-Packages
-  execute S:Install-Packages
+; Install Packages, if install amiga os 3.9 prefs doesn't exist and install packages prefs exists
+IF NOT EXISTS SYS:Prefs/Install-AmigaOS3.9
+  IF EXISTS SYS:Prefs/Install-Packages
+    execute S:Install-Packages
+  ENDIF
 ENDIF
 
 
