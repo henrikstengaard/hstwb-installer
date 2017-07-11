@@ -1295,6 +1295,7 @@ function RunInstall()
     }
 
 
+    $installBoingBags = $false
 
     if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
     {
@@ -1307,6 +1308,15 @@ function RunInstall()
         $amigaOs39IsoDir = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Parent
         $amigaOs39IsoFileName = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Leaf
 
+
+        $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
+
+        if (Test-Path $boingBag1File)
+        {
+            $installBoingBags = $true
+            $installBoingBagsPrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-BoingBags'
+            Set-Content $installBoingBagsPrefsFile -Value ""
+        }
 
         # copy amiga install dir
         $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install_os3.9")
@@ -1417,9 +1427,7 @@ function RunInstall()
     }
 
 
-    $installBoingBagsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-BoingBags'
-
-    if (Test-Path -path $installBoingBagsFile)
+    if ($installBoingBags)
     {
         # print launching winuae message
         Write-Host ""

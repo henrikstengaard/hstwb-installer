@@ -323,9 +323,9 @@ IF EXISTS SYS:Prefs/Install-Packages
 ENDIF
 
 ; Create install boing bags prefs, if boing bag 1 exist
-IF EXISTS "OS39:BoingBag39-1.lha"
+IF EXISTS SYS:Prefs/Install-BoingBags
   set copyhstwbinstaller "1"
-  Echo "" >SYS:Prefs/Install-BoingBags
+  Copy >NIL: SYS:Prefs/Install-BoingBags SYSTEMDIR:Prefs
 ENDIF
 
 ; Copy hstwb installer to systemdir and replace startup sequence, if copy hstwb installer
