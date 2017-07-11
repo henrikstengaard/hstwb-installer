@@ -1311,7 +1311,7 @@ function RunInstall()
 
         $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
 
-        if (Test-Path $boingBag1File)
+        if ((Test-Path $boingBag1File) -and $settings.AmigaOS39.InstallBoingBags -eq 'Yes')
         {
             $installBoingBags = $true
             $installBoingBagsPrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-BoingBags'
@@ -1414,7 +1414,7 @@ function RunInstall()
 
     # print launching winuae message
     Write-Host ""
-    Write-Host "Launching WinUAE to install image..."
+    Write-Host "Launching WinUAE to run install..."
 
 
     # winuae args
@@ -1427,11 +1427,11 @@ function RunInstall()
     }
 
 
-    if ($installBoingBags)
+    if ($installBoingBags -or $installPackages.Count -gt 0)
     {
         # print launching winuae message
         Write-Host ""
-        Write-Host "Launching WinUAE to install boing bags..."
+        Write-Host "Launching WinUAE to run install boing bags and packages..."
 
 
         # build winuae install harddrives config with boot

@@ -86,7 +86,7 @@ IF EXISTS SYS:Prefs/Install-Kickstart
 ENDIF
 
 
-; Install Packages, if install amiga os 3.9 prefs doesn't exist and install packages prefs exists
+; Install Packages, if install amiga os 3.9 prefs doesn't exist
 IF NOT EXISTS SYS:Prefs/Install-AmigaOS3.9
   IF EXISTS SYS:Prefs/Install-Packages
     execute S:Install-Packages

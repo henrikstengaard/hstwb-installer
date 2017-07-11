@@ -29,7 +29,9 @@ Assign >NIL: KEYMAPS: DEVS:Keymaps
 Assign >NIL: LOCALE: SYS:Locale
 Assign >NIL: LIBS: SYS:Classes ADD
 Assign >NIL: HELP: LOCALE:Help DEFER
- 
+
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
 ; Timezone for unzip
 SetEnv TZ MST7
 

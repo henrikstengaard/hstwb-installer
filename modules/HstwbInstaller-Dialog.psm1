@@ -28,6 +28,8 @@ function PrintSettings()
     Write-Host "Amiga OS 3.9"
     Write-Host "  Install Amiga OS 3.9  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.AmigaOS39.InstallAmigaOS39 + "'")
+    Write-Host "  Install Boing Bags    : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $settings.AmigaOS39.InstallBoingBags + "'")
     Write-Host "  Amiga OS 3.9 Iso File : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $settings.AmigaOS39.AmigaOS39IsoFile + "'")
     Write-Host "Kickstart"

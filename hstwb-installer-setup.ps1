@@ -471,16 +471,18 @@ function ConfigureAmigaOS39Menu()
 {
     do
     {
-        $choice = Menu "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Change Amiga OS 3.9 Iso File", "Back") 
+        $choice = Menu "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Switch Install Boing Bags", "Change Amiga OS 3.9 Iso File", "Back") 
         switch ($choice)
         {
             "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 }
+            "Switch Install Boing Bags" { SwitchInstallBoingBags }
             "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile }
         }
     }
     until ($choice -eq 'Back')
 
 }
+
 
 # switch install amiga os 3.9
 function SwitchInstallAmigaOS39()
@@ -492,7 +494,23 @@ function SwitchInstallAmigaOS39()
     else
     {
         $settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
+        $settings.AmigaOS39.InstallBoingBags = 'Yes'
         $settings.Workbench.InstallWorkbench = 'No'
+    }
+    Save
+}
+
+
+# switch install boing bags
+function SwitchInstallBoingBags()
+{
+    if ($settings.AmigaOS39.InstallBoingBags -eq 'Yes')
+    {
+        $settings.AmigaOS39.InstallBoingBags = 'No'
+    }
+    else
+    {
+        $settings.AmigaOS39.InstallBoingBags = 'Yes'
     }
     Save
 }
@@ -853,6 +871,7 @@ if (!($settings.AmigaOS39))
 {
     $settings.AmigaOS39 = @{}
     $settings.AmigaOS39.InstallAmigaOS39 = 'No'
+    $settings.AmigaOS39.InstallBoingBags = 'No'
 }
 
 

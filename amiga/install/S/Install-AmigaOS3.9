@@ -328,10 +328,16 @@ IF EXISTS SYS:Prefs/Install-BoingBags
   Copy >NIL: SYS:Prefs/Install-BoingBags SYSTEMDIR:Prefs
 ENDIF
 
-; Copy hstwb installer to systemdir and replace startup sequence, if copy hstwb installer
+; Copy hstwb installer to systemdir, if copy hstwb installer
 IF "$copyhstwbinstaller" EQ "1"
   Copy >NIL: SYS:HstWB-Installer SYSTEMDIR: ALL
   Copy >NIL: S:User-Assign SYSTEMDIR:S
+
+  ; Replace workbench startup-sequence with packages startup-sequence, if install boing bags prefs doesn't exists
+  IF NOT EXISTS SYS:Prefs/Install-BoingBags
+    Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+    Rename >NIL: SYSTEMDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+  ENDIF
 ENDIF
 
 SKIP complete
