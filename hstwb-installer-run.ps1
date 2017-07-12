@@ -1427,11 +1427,11 @@ function RunInstall()
     }
 
 
-    if ($installBoingBags -or $installPackages.Count -gt 0)
+    if ($installBoingBags)
     {
         # print launching winuae message
         Write-Host ""
-        Write-Host "Launching WinUAE to run install boing bags and packages..."
+        Write-Host "Launching WinUAE to run install boing bags..."
 
 
         # build winuae install harddrives config with boot

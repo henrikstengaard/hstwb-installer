@@ -13,8 +13,11 @@ LoadModule DEVS:scsi.device
 echo "*ec" 
 
 
-; Installer message
-echo "HstWB Installer running..."
+; Install message
+echo "Install"
+echo "-------"
+echo ""
+echo "HstWB Installer running install..."
 
 
 ; Set stack, failat and load basic commands resident 
@@ -86,8 +89,8 @@ IF EXISTS SYS:Prefs/Install-Kickstart
 ENDIF
 
 
-; Install Packages, if install amiga os 3.9 prefs doesn't exist
-IF NOT EXISTS SYS:Prefs/Install-AmigaOS3.9
+; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
+IF NOT EXISTS SYS:Prefs/Install-BoingBags
   IF EXISTS SYS:Prefs/Install-Packages
     execute S:Install-Packages
   ENDIF
@@ -104,14 +107,54 @@ ENDIF
 echo "*ec" 
 
 
-; Done
+; Install complete message
+echo "Install complete"
+echo "----------------"
 echo ""
-echo "Installation is now complete."
+
+IF EXISTS SYS:Prefs/Install-BoingBags
+  IF EXISTS SYS:Prefs/UAE
+    echo "HstWB Installer has completed install and will quit and"
+    echo "restart UAE to start installation of Boing Bags in"
+    echo "Amiga OS 3.9 during WBStartup."
+  ELSE
+    echo "HstWB Installer has completed install and will reboot"
+    echo "system to start installation of Boing Bags in"
+    echo "Amiga OS 3.9 during WBStartup."
+  ENDIF
+ELSE
+  echo "HstWB Installer has completed install and system is"
+  echo "now ready for use"
+ENDIF
+
+echo ""
+echo "Please let the system wait 10 seconds before continuing"
+echo "to allow file system to write changes to disk." 
+echo ""
+
+; Quit UAE or reboot message
+IF EXISTS SYS:Prefs/UAE
+  echo "Continue will quit UAE in 10 seconds."
+ELSE
+  echo "Continue will reboot system in 10 seconds."
+ENDIF
+
+echo ""
+ask "Press ENTER to continue"
 echo ""
 
 
 ; End
 LAB end
-echo "UAE will quit in 10 seconds..."
-wait 10
-uaequit >NIL:
+
+; Quit UAE, if UAE is used. Otherwise reboot
+IF EXISTS SYS:Prefs/UAE
+  Delete >NIL: SYS:Prefs/UAE
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  INSTALL:C/UAEquit
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  INSTALL:C/Reboot
+ENDIF

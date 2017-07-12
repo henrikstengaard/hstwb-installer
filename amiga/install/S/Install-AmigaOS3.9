@@ -306,7 +306,10 @@ AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Trashcan" 160 22
 AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 
+; Done message
 echo "Done"
+echo ""
+echo "Amiga OS 3.9 installation is complete."
 
 
 ; Copy c, reqtools library and prefs
@@ -340,7 +343,7 @@ IF "$copyhstwbinstaller" EQ "1"
   ENDIF
 ENDIF
 
-SKIP complete
+SKIP end
 
 
 ; Fail
@@ -348,22 +351,18 @@ SKIP complete
 LAB fail
 
 echo ""
-echo "Amiga OS 3.9 installation failed."
+echo "Amiga OS 3.9 installation failed and has stopped"
+echo "installation process."
 echo ""
-ask "Press ENTER to continue"
-SKIP end
-
-
-; Complete
-; --------
-LAB complete
-
+echo "Try to resolve error, if possible then restart to"
+echo "rerun installation process."
 echo ""
-echo "Amiga OS 3.9 installation is complete."
-echo ""
-ask "Press ENTER to continue"
+quit
 
 
 ; End
 ; ---
 LAB end
+
+echo ""
+ask "Press ENTER to continue"
