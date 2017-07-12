@@ -165,11 +165,11 @@ ENDIF
 echo ""
 echo "Please let the system wait 10 seconds before continuing"
 echo "to allow file system to write changes to disk." 
-echo ""
 
 
 ; Reboot system, if install packages prefs exist
 IF EXISTS SYS:Prefs/Install-Packages
+  echo ""
   ask "Press ENTER to continue"
   echo ""
   echo "System will reboot in 10 seconds..."
