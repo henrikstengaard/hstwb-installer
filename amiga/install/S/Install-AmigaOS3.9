@@ -312,6 +312,10 @@ echo ""
 echo "Amiga OS 3.9 installation is complete."
 
 
+; Copy default 640 x 512 display mode screenmode prefs
+Copy >NIL: INSTALL:HstWB-Installer/Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
+
+
 ; Copy c, reqtools library and prefs
 Copy >NIL: INSTALL:C SYSTEMDIR:C ALL
 Copy >NIL: INSTALL:Libs/reqtools.library SYS:Libs
@@ -319,28 +323,18 @@ Copy >NIL: INSTALL:Prefs/Env-Archive/ReqTools.prefs SYS:Prefs/Env-Archive
 
 
 ; Copy install packages to systemdir, if install packages prefs exists
-IF EXISTS SYS:Prefs/Install-Packages
-  set copyhstwbinstaller "1"
-  Copy >NIL: SYS:Prefs/Install-Packages SYSTEMDIR:Prefs
-  Copy >NIL: S:Install-Packages SYSTEMDIR:S
+IF EXISTS INSTALL:Prefs/Install-Packages
+  Copy >NIL: INSTALL:S/User-Assign SYSTEMDIR:S
+  Copy >NIL: INSTALL:Prefs/Install-Packages SYSTEMDIR:Prefs
+  Copy >NIL: INSTALL:S/Install-Packages SYSTEMDIR:S
 ENDIF
 
-; Create install boing bags prefs, if boing bag 1 exist
-IF EXISTS SYS:Prefs/Install-BoingBags
-  set copyhstwbinstaller "1"
-  Copy >NIL: SYS:Prefs/Install-BoingBags SYSTEMDIR:Prefs
-ENDIF
 
-; Copy hstwb installer to systemdir, if copy hstwb installer
-IF "$copyhstwbinstaller" EQ "1"
-  Copy >NIL: SYS:HstWB-Installer SYSTEMDIR: ALL
-  Copy >NIL: S:User-Assign SYSTEMDIR:S
-
-  ; Replace workbench startup-sequence with packages startup-sequence, if install boing bags prefs doesn't exists
-  IF NOT EXISTS SYS:Prefs/Install-BoingBags
-    Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
-    Rename >NIL: SYSTEMDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
-  ENDIF
+; Create install boing bags prefs and copy hstwb installer to systemdir, if boing bag 1 exist
+IF EXISTS INSTALL:Prefs/Install-BoingBags
+  Copy >NIL: INSTALL:S/User-Assign SYSTEMDIR:S
+  Copy >NIL: INSTALL:Prefs/Install-BoingBags SYSTEMDIR:Prefs
+  Copy >NIL: INSTALL:HstWB-Installer SYSTEMDIR: ALL
 ENDIF
 
 SKIP end
