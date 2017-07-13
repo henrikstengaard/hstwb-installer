@@ -1427,6 +1427,13 @@ function RunInstall()
     }
 
 
+    # fail, if installing file exists
+    if (Test-Path -path $installingFile)
+    {
+        Fail "WinUAE installation failed"
+    }
+
+    
     if ($installBoingBags)
     {
         # print launching winuae message
@@ -1459,13 +1466,6 @@ function RunInstall()
         {
             Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
         }
-    }
-
-
-    # fail, if installing file exists
-    if (Test-Path -path $installingFile)
-    {
-        Fail "WinUAE installation failed"
     }
 }
 
