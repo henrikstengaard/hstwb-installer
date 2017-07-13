@@ -1318,9 +1318,9 @@ function RunInstall()
             Set-Content $installBoingBagsPrefsFile -Value ""
         }
 
-        # copy amiga install dir
-        $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install_os3.9")
-        Copy-Item -Path "$amigaInstallDir\*" $tempInstallDir -recurse -force
+        # copy amiga os 3.9 dir
+        $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")
+        Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
 
 
         # get uaehf index of last uaehf config from winuae image harddrives config
