@@ -122,7 +122,7 @@ function ReadPartitionBlock($binaryReader)
     $secOrg = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
     $surfaces = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
     $sectors = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
-    $blocks = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
+    $blocksPerTrack = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
     $binaryReader.ReadUInt32()
     $preAlloc = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
     $interleave = GetLittleEndianUInt32 $binaryReader.ReadUInt32()
@@ -136,6 +136,7 @@ function ReadPartitionBlock($binaryReader)
     $dosTypeBytes = $binaryReader.ReadBytes(4)
     $dosType = $iso88591.GetString($dosTypeBytes)
 
+
     return New-Object PSObject -Property @{
 		'Size' = $size;
 		'Checksum' = $checksum;
@@ -143,7 +144,9 @@ function ReadPartitionBlock($binaryReader)
 		'NextPartitionBlock' = $nextPartitionBlock;
 		'Flags' = $flags;
 		'DevFlags' = $devFlags;
-		'DriveName' = $driveName;
+        'DriveName' = $driveName;
+        'Surfaces' = $surfaces;
+        'BlocksPerTrack' = $blocksPerTrack;
 		'LowCyl' = $lowCyl;
 		'HighCyl' = $highCyl;
 		'NumBuffer' = $numBuffer;
@@ -188,7 +191,11 @@ do
 
     $partitionBlock = ReadPartitionBlock $hdfFileBinaryReader
 
+    # Calculate partition size
+    $partitionSize = ($partitionBlock.HighCyl - $partitionBlock.LowCyl + 1) * $partitionBlock.Surfaces * $partitionBlock.BlocksPerTrack * $rigidDiskBlock.BlockSize
+    
     Write-Output ''
+    Write-Output $partitionBlock.Surfaces
     Write-Output ("DriveName = '{0}'" -f $partitionBlock.DriveName)
     Write-Output ("LowCyl = '{0}'" -f $partitionBlock.LowCyl)
     Write-Output ("HighCyl = '{0}'" -f $partitionBlock.HighCyl)
@@ -196,6 +203,7 @@ do
     Write-Output ("MaxTransfer = '{0}'" -f $partitionBlock.MaxTransfer)
     Write-Output ("BootPriority = '{0}'" -f $partitionBlock.BootPriority)
     Write-Output ("DosType = '{0}'" -f $partitionBlock.DosType)
+    Write-Output ("Partition Size = '{0}'" -f $partitionSize)
 
     $partitionList = $partitionBlock.NextPartitionBlock
 } while ($partitionList -gt 0)
