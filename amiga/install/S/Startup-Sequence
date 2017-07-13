@@ -19,13 +19,6 @@ echo "-------"
 echo ""
 echo "HstWB Installer running install..."
 
-;echo "DH0: analyse..."
-;diskvalid DH0: ANALYSE
-;ask "Press ENTER to continue"
-
-;echo "DH0: fix..."
-;diskvalid DH0: FIX
-;ask "Press ENTER to continue"
 
 ; Set stack, failat and load basic commands resident 
 stack 16384
@@ -45,6 +38,7 @@ resident DF0:C/Mount PURE
 resident DF0:C/Type PURE
 resident DF0:C/Version PURE
 resident DF0:C/RequestChoice PURE
+resident DF0:C/Eval PURE
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
