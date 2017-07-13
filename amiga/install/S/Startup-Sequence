@@ -19,6 +19,13 @@ echo "-------"
 echo ""
 echo "HstWB Installer running install..."
 
+;echo "DH0: analyse..."
+;diskvalid DH0: ANALYSE
+;ask "Press ENTER to continue"
+
+;echo "DH0: fix..."
+;diskvalid DH0: FIX
+;ask "Press ENTER to continue"
 
 ; Set stack, failat and load basic commands resident 
 stack 16384
