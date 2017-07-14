@@ -34,13 +34,13 @@ Assign ENV: RAM:Env
 SetEnv TZ MST7
 
 
-; Fail, if user assign doesn't exist
-IF NOT EXISTS S:User-Assign
+; Fail, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
   echo "" >INSTALL:Error
-  echo "Error: User assign doesn't exist!"
+  echo "Error: assign hstwb installer doesn't exist!"
   SKIP end
 ENDIF
-execute S:User-Assign
+execute S:Assign-HstWB-Installer
 
 
 echo ""

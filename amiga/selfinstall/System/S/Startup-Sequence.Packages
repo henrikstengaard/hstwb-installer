@@ -48,15 +48,15 @@ Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup
 echo "*ec" 
 
 
-; Fail, if user assign doesn't exist
-IF NOT EXISTS S:User-Assign
-  echo "Error: User assign doesn't exist!"
+; Fail, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
+  echo "Error: assign hstwb installer doesn't exist!"
   SKIP fail
 ENDIF
 
 
-; Run User-Assign
-execute S:User-Assign
+; Run Assign-HstWB-Installer
+execute S:Assign-HstWB-Installer
 
 
 ; Delete fms temp directory, if it exist

@@ -148,12 +148,12 @@ Assign >NIL: T: RAM:
 SetEnv TZ MST7
 
 
-; Fail, if user assign doesn't exist
-IF NOT EXISTS S:User-Assign
-  echo "Error: User assign doesn't exist!"
+; Fail, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
+  echo "Error: assign hstwb installer doesn't exist!"
   SKIP fail
 ENDIF
-execute S:User-Assign
+execute S:Assign-HstWB-Installer
 
 
 ; Run Patch Installation, if PATCHDIR: exists

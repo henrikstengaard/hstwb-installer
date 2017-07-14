@@ -318,7 +318,7 @@ Copy >NIL: INSTALL:Prefs/Env-Archive/ReqTools.prefs SYS:Prefs/Env-Archive
 
 ; Copy install packages to systemdir, if install packages prefs exists
 IF EXISTS INSTALL:Prefs/Install-Packages
-  Copy >NIL: INSTALL:S/User-Assign SYSTEMDIR:S
+  Copy >NIL: INSTALL:S/Assign-HstWB-Installer SYSTEMDIR:S
   Copy >NIL: INSTALL:Prefs/Install-Packages SYSTEMDIR:Prefs
   Copy >NIL: INSTALL:S/Install-Packages SYSTEMDIR:S
 ENDIF
@@ -326,7 +326,7 @@ ENDIF
 
 ; Create install boing bags prefs and copy install amiga os 3.9 to systemdir, if boing bag 1 exist
 IF EXISTS INSTALL:Prefs/Install-BoingBags
-  Copy >NIL: INSTALL:S/User-Assign SYSTEMDIR:S
+  Copy >NIL: INSTALL:S/Assign-HstWB-Installer SYSTEMDIR:S
   Copy >NIL: INSTALL:Prefs/Install-BoingBags SYSTEMDIR:Prefs
   Copy >NIL: INSTALL:Install-AmigaOS3.9 SYSTEMDIR: ALL
 ENDIF

@@ -288,12 +288,12 @@ function FindPackagesToInstall()
 }
 
 
-# build user assign script lines
-function BuildUserAssignScriptLines($createDirectories)
+# build assign hstwb installer script lines
+function BuildAssignHstwbInstallerScriptLines($createDirectories)
 {
     $globalAssigns = $assigns.Get_Item('Global')
 
-    $userAssignScriptLines = @()
+    $assignHstwbInstallerScriptLines = @()
 
     foreach ($assignName in $globalAssigns.keys)
     {
@@ -308,35 +308,35 @@ function BuildUserAssignScriptLines($createDirectories)
         $assignDrive = $assignPath -replace '^([^:]+:).*', '$1'
 
         # add package assign lines
-        $userAssignScriptLines += "; Add assign for '$assignName' to '$assignPath'"
-        $userAssignScriptLines += "Assign >NIL: EXISTS ""$assignDrive"""
-        $userAssignScriptLines += "IF WARN"
-        $userAssignScriptLines += "  echo ""Error: Drive '$assignDrive' doesn't exist for assign '$assignPath'!"""
-        $userAssignScriptLines += "  ask ""Press ENTER to exit"""
-        $userAssignScriptLines += "  QUIT 5"
-        $userAssignScriptLines += "ELSE"
+        $assignHstwbInstallerScriptLines += "; Add assign for '$assignName' to '$assignPath'"
+        $assignHstwbInstallerScriptLines += "Assign >NIL: EXISTS ""$assignDrive"""
+        $assignHstwbInstallerScriptLines += "IF WARN"
+        $assignHstwbInstallerScriptLines += "  echo ""Error: Drive '$assignDrive' doesn't exist for assign '$assignPath'!"""
+        $assignHstwbInstallerScriptLines += "  ask ""Press ENTER to exit"""
+        $assignHstwbInstallerScriptLines += "  QUIT 5"
+        $assignHstwbInstallerScriptLines += "ELSE"
 
         # create directory for assignpath or check if path exist
         if ($createDirectories)
         {
-            $userAssignScriptLines += ("  makepath """ + $assignPath + """")
-            $userAssignScriptLines += ("  Assign " + $assignName + ": """ + $assignPath + """")
+            $assignHstwbInstallerScriptLines += ("  makepath """ + $assignPath + """")
+            $assignHstwbInstallerScriptLines += ("  Assign " + $assignName + ": """ + $assignPath + """")
         }
         else
         {
-            $userAssignScriptLines += ("  IF EXISTS """ + $assignPath + """")
-            $userAssignScriptLines += ("    Assign " + $assignName + ": """ + $assignPath + """")
-            $userAssignScriptLines += "  ELSE"
-            $userAssignScriptLines += "    echo ""Error: Path '$assignPath' doesn't exist for assign!"""
-            $userAssignScriptLines += "    ask ""Press ENTER to exit"""
-            $userAssignScriptLines += "    QUIT 5"
-            $userAssignScriptLines += "  ENDIF"
+            $assignHstwbInstallerScriptLines += ("  IF EXISTS """ + $assignPath + """")
+            $assignHstwbInstallerScriptLines += ("    Assign " + $assignName + ": """ + $assignPath + """")
+            $assignHstwbInstallerScriptLines += "  ELSE"
+            $assignHstwbInstallerScriptLines += "    echo ""Error: Path '$assignPath' doesn't exist for assign!"""
+            $assignHstwbInstallerScriptLines += "    ask ""Press ENTER to exit"""
+            $assignHstwbInstallerScriptLines += "    QUIT 5"
+            $assignHstwbInstallerScriptLines += "  ENDIF"
         }
 
-        $userAssignScriptLines += "ENDIF"
+        $assignHstwbInstallerScriptLines += "ENDIF"
     }
 
-    return $userAssignScriptLines
+    return $assignHstwbInstallerScriptLines
 }
 
 
@@ -1233,12 +1233,12 @@ function RunInstall()
     $installPackages = FindPackagesToInstall
 
 
-    # build user assigns script lines
-    $userAssignScriptLines = BuildUserAssignScriptLines $true
+    # build assign hstwb installers script lines
+    $assignHstwbInstallerScriptLines = BuildAssignHstwbInstallerScriptLines $true
 
-    # write user assign to install dir
-    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-    WriteAmigaTextLines $userAssignFile $userAssignScriptLines 
+    # write assign hstwb installer to install dir
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\Assign-HstWB-Installer")
+    WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines 
 
 
     $hstwbInstallerPackagesIni = @{}
@@ -1510,18 +1510,18 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
-    # build user assigns script lines
-    $userAssignScriptLines = @()
-    $userAssignScriptLines += BuildUserAssignScriptLines $true
+    # build assign hstwb installers script lines
+    $assignHstwbInstallerScriptLines = @()
+    $assignHstwbInstallerScriptLines += BuildAssignHstwbInstallerScriptLines $true
 
-    # write user assign script for building self install
-    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\User-Assign")
-    WriteAmigaTextLines $userAssignFile $userAssignScriptLines
+    # write assign hstwb installer script for building self install
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\Assign-HstWB-Installer")
+    WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
-    # write user assign script for self install
-    $userAssignScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
-    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\User-Assign")
-    WriteAmigaTextLines $userAssignFile $userAssignScriptLines
+    # write assign hstwb installer script for self install
+    $assignHstwbInstallerScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\Assign-HstWB-Installer")
+    WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
 
     # find packages to install
