@@ -2,12 +2,191 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-05
+# Date:   2017-07-21
 #
 # A powershell module for HstWB Installer with data functions.
 
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+
+# $nodes = @()
+# $nodes += @{ 'Name'= 'package1'; 'Dependencies' = @() }
+# $nodes += @{ 'Name'= 'package2'; 'Dependencies' = @() }
+# $nodes += @{ 'Name'= 'package3'; 'Dependencies' = @('package1') }
+# $nodes += @{ 'Name'= 'package4'; 'Dependencies' = @('package1') }
+# $nodes += @{ 'Name'= 'package5'; 'Dependencies' = @('package3') }
+
+
+# # package1
+# # - package3
+# #   - package5
+# # - package4
+# # package2
+
+# TopologicalSort $nodes
+
+
+# topological sort
+function TopologicalSort {
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        $nodes
+    )
+
+    $nodesIndex = @{}
+    $nodesDependencyIndex = @{}
+    $currentNodes = New-Object -TypeName System.Collections.Generic.Stack[object]
+
+    for($i = $nodes.Count - 1; $i -ge 0; $i--)
+    {
+        $node = $nodes[$i]
+
+        if (!$nodesIndex.ContainsKey($node.Name))
+        {
+            $nodesIndex.Set_Item($node.Name, $node)
+        }
+        else
+        {
+            throw ("'{0}' is duplicate" -f $node.Name)    
+        }
+
+        if ($node.Dependencies.Count -eq 0)
+        {
+            [void]$currentNodes.Push($node.Name)
+            continue
+        }
+
+        foreach($nodeDependency in $node.Dependencies)
+        {
+            if ($nodesDependencyIndex.ContainsKey($nodeDependency))
+            {
+                $nodeDependencies = $nodesDependencyIndex.Get_Item($nodeDependency)
+            }
+            else
+            {
+                $nodeDependencies = @()
+            }
+
+            if ($nodeDependencies.Contains($node.Name))
+            {
+                continue
+            }
+
+            $nodeDependencies += $node.Name
+            $nodesDependencyIndex.Set_Item($nodeDependency, $nodeDependencies)
+        }
+    }
+
+    # throw error, if node dependency doesn't exist or circular dependency detected between nodes
+    foreach($node in $nodesIndex.keys)
+    {
+        foreach($nodeDependency in $nodesIndex[$node].Dependencies)
+        {
+            if (!$nodesIndex.ContainsKey($nodeDependency))
+            {
+                throw ("'{0}' dependency '{1}' doesn't exist" -f $node, $nodeDependency)
+            }
+            else
+            {
+                if ($nodesIndex[$nodeDependency].Contains($node))
+                {
+                    throw ("Circular dependency between '{0}' and '{1}'" -f $node, $nodeDependency)
+                }
+            }
+        }
+    }
+
+    $topologicallySortedNodes = New-Object System.Collections.ArrayList
+
+    while($currentNodes.Count -gt 0)
+    {
+        $node = $currentNodes.Pop()
+
+        [void]$topologicallySortedNodes.Add($node)
+
+        if ($nodesDependencyIndex.ContainsKey($node))
+        {
+            $nodesDependencyIndex[$node] | ForEach-Object { [void]$currentNodes.Push($_) }
+        }
+    }
+
+    return $topologicallySortedNodes
+}
+
+
+# topological sort v2
+function TopologicalSortV2 {
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [hashtable]$nodes
+    )
+
+    $nodeDependenciesIndex = @{}
+    $currentNodes = New-Object -TypeName System.Collections.Generic.Stack[object]
+
+    foreach($node in ($nodes.keys | Sort-Object @{expression={$nodes[$_].SortOrder};Ascending=$false}))
+    {
+        if ($nodes[$node].Dependencies.Count -eq 0)
+        {
+            [void]$currentNodes.Push($_)
+            continue
+        }
+
+        foreach($nodeDependency in $nodes[$node].Dependencies)
+        {
+            if (!$nodes.ContainsKey($nodeDependency))
+            {
+                throw ("'{0}' dependency '{1}' doesn't exist" -f $node, $nodeDependency)
+            }
+            else
+            {
+                if ($nodes[$nodeDependency].Dependencies.Contains($node))
+                {
+                    throw ("Circular dependency between '{0}' and '{1}'" -f $node, $nodeDependency)
+                }
+            }
+
+            if ($nodeDependenciesIndex.ContainsKey($nodeDependency))
+            {
+                $nodeDependencies = $nodeDependenciesIndex.Get_Item($nodeDependency)
+            }
+            else
+            {
+                $nodeDependencies = @()
+            }
+
+            if ($nodeDependencies.Contains($node))
+            {
+                continue
+            }
+
+            $nodeDependencies += $node
+            $nodeDependenciesIndex.Set_Item($nodeDependency, $nodeDependencies)
+        }
+    }
+
+    foreach($node in $currentNodes)
+    {
+        Write-Host $node
+    }
+
+    $topologicallySortedNodes = New-Object System.Collections.ArrayList
+
+    while($currentNodes.Count -gt 0)
+    {
+        $node = $currentNodes.Pop()
+
+        [void]$topologicallySortedNodes.Add($node)
+
+        if ($nodeDependenciesIndex.ContainsKey($node))
+        {
+            $nodeDependenciesIndex[$node] | ForEach-Object { [void]$currentNodes.Push($_) }
+        }
+    }
+
+    return $topologicallySortedNodes
+}
 
 
 # read zip entry text file

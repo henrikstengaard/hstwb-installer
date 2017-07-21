@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-07-05
+# Date:   2017-07-21
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -23,89 +23,89 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
 
 
-# http://stackoverflow.com/questions/8982782/does-anyone-have-a-dependency-graph-and-topological-sorting-code-snippet-for-pow
-function Get-TopologicalSort {
-  param(
-      [Parameter(Mandatory = $true, Position = 0)]
-      [hashtable] $edgeList
-  )
+# # http://stackoverflow.com/questions/8982782/does-anyone-have-a-dependency-graph-and-topological-sorting-code-snippet-for-pow
+# function Get-TopologicalSort {
+#   param(
+#       [Parameter(Mandatory = $true, Position = 0)]
+#       [hashtable] $edgeList
+#   )
 
-  # Make sure we can use HashSet
-  Add-Type -AssemblyName System.Core
+#   # Make sure we can use HashSet
+#   Add-Type -AssemblyName System.Core
 
-  # Clone it so as to not alter original
-  $currentEdgeList = [hashtable] (Get-ClonedObject $edgeList)
+#   # Clone it so as to not alter original
+#   $currentEdgeList = [hashtable] (Get-ClonedObject $edgeList)
 
-  # algorithm from http://en.wikipedia.org/wiki/Topological_sorting#Algorithms
-  $topologicallySortedElements = New-Object System.Collections.ArrayList
-  $setOfAllNodesWithNoIncomingEdges = New-Object System.Collections.Queue
+#   # algorithm from http://en.wikipedia.org/wiki/Topological_sorting#Algorithms
+#   $topologicallySortedElements = New-Object System.Collections.ArrayList
+#   $setOfAllNodesWithNoIncomingEdges = New-Object System.Collections.Queue
 
-  $fasterEdgeList = @{}
+#   $fasterEdgeList = @{}
 
-  # Keep track of all nodes in case they put it in as an edge destination but not source
-  $allNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentEdgeList.Keys)
+#   # Keep track of all nodes in case they put it in as an edge destination but not source
+#   $allNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentEdgeList.Keys)
 
-  foreach($currentNode in $currentEdgeList.Keys) {
-      $currentDestinationNodes = [array] $currentEdgeList[$currentNode]
-      if($currentDestinationNodes.Length -eq 0) {
-          $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
-      }
+#   foreach($currentNode in $currentEdgeList.Keys) {
+#       $currentDestinationNodes = [array] $currentEdgeList[$currentNode]
+#       if($currentDestinationNodes.Length -eq 0) {
+#           $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
+#       }
 
-      foreach($currentDestinationNode in $currentDestinationNodes) {
-          if(!$allNodes.Contains($currentDestinationNode)) {
-              [void] $allNodes.Add($currentDestinationNode)
-          }
-      }
+#       foreach($currentDestinationNode in $currentDestinationNodes) {
+#           if(!$allNodes.Contains($currentDestinationNode)) {
+#               [void] $allNodes.Add($currentDestinationNode)
+#           }
+#       }
 
-      # Take this time to convert them to a HashSet for faster operation
-      $currentDestinationNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentDestinationNodes )
-      [void] $fasterEdgeList.Add($currentNode, $currentDestinationNodes)        
-  }
+#       # Take this time to convert them to a HashSet for faster operation
+#       $currentDestinationNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentDestinationNodes )
+#       [void] $fasterEdgeList.Add($currentNode, $currentDestinationNodes)        
+#   }
 
-  # Now let's reconcile by adding empty dependencies for source nodes they didn't tell us about
-  foreach($currentNode in $allNodes) {
-      if(!$currentEdgeList.ContainsKey($currentNode)) {
-          [void] $currentEdgeList.Add($currentNode, (New-Object -TypeName System.Collections.Generic.HashSet[object]))
-          $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
-      }
-  }
+#   # Now let's reconcile by adding empty dependencies for source nodes they didn't tell us about
+#   foreach($currentNode in $allNodes) {
+#       if(!$currentEdgeList.ContainsKey($currentNode)) {
+#           [void] $currentEdgeList.Add($currentNode, (New-Object -TypeName System.Collections.Generic.HashSet[object]))
+#           $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
+#       }
+#   }
 
-  $currentEdgeList = $fasterEdgeList
+#   $currentEdgeList = $fasterEdgeList
 
-  while($setOfAllNodesWithNoIncomingEdges.Count -gt 0) {        
-      $currentNode = $setOfAllNodesWithNoIncomingEdges.Dequeue()
-      [void] $currentEdgeList.Remove($currentNode)
-      [void] $topologicallySortedElements.Add($currentNode)
+#   while($setOfAllNodesWithNoIncomingEdges.Count -gt 0) {        
+#       $currentNode = $setOfAllNodesWithNoIncomingEdges.Dequeue()
+#       [void] $currentEdgeList.Remove($currentNode)
+#       [void] $topologicallySortedElements.Add($currentNode)
 
-      foreach($currentEdgeSourceNode in $currentEdgeList.Keys) {
-          $currentNodeDestinations = $currentEdgeList[$currentEdgeSourceNode]
-          if($currentNodeDestinations.Contains($currentNode)) {
-              [void] $currentNodeDestinations.Remove($currentNode)
+#       foreach($currentEdgeSourceNode in $currentEdgeList.Keys) {
+#           $currentNodeDestinations = $currentEdgeList[$currentEdgeSourceNode]
+#           if($currentNodeDestinations.Contains($currentNode)) {
+#               [void] $currentNodeDestinations.Remove($currentNode)
 
-              if($currentNodeDestinations.Count -eq 0) {
-                  [void] $setOfAllNodesWithNoIncomingEdges.Enqueue($currentEdgeSourceNode)
-              }                
-          }
-      }
-  }
+#               if($currentNodeDestinations.Count -eq 0) {
+#                   [void] $setOfAllNodesWithNoIncomingEdges.Enqueue($currentEdgeSourceNode)
+#               }                
+#           }
+#       }
+#   }
 
-  if($currentEdgeList.Count -gt 0) {
-      throw "Graph has at least one cycle!"
-  }
+#   if($currentEdgeList.Count -gt 0) {
+#       throw "Graph has at least one cycle!"
+#   }
 
-  return $topologicallySortedElements
-}
+#   return $topologicallySortedElements
+# }
 
 
-# Idea from http://stackoverflow.com/questions/7468707/deep-copy-a-dictionary-hashtable-in-powershell 
-function Get-ClonedObject {
-    param($DeepCopyObject)
-    $memStream = new-object IO.MemoryStream
-    $formatter = new-object Runtime.Serialization.Formatters.Binary.BinaryFormatter
-    $formatter.Serialize($memStream,$DeepCopyObject)
-    $memStream.Position=0
-    $formatter.Deserialize($memStream)
-}
+# # Idea from http://stackoverflow.com/questions/7468707/deep-copy-a-dictionary-hashtable-in-powershell 
+# function Get-ClonedObject {
+#     param($DeepCopyObject)
+#     $memStream = new-object IO.MemoryStream
+#     $formatter = new-object Runtime.Serialization.Formatters.Binary.BinaryFormatter
+#     $formatter.Serialize($memStream,$DeepCopyObject)
+#     $memStream.Position=0
+#     $formatter.Deserialize($memStream)
+# }
 
 
 # show folder browser dialog using WinForms
@@ -209,7 +209,7 @@ function FindPackagesToInstall()
 
     $packageNames = @{}
     $packageDetails = @{}
-    $packageDependencies = @{}
+    $packageDependencies = @()
 
     foreach ($packageFileName in $packageFileNames)
     {
@@ -249,18 +249,21 @@ function FindPackagesToInstall()
         $packageName = $packageIni.Package.Name
 
 
+        $priority = if ($packageIni.Package.Priority) { [Int32]$packageIni.Package.Priority } else { 9999 }
+
+
         # package full name
         $packageFullName = "{0} v{1}" -f $packageIni.Package.Name, $packageIni.Package.Version
 
 
         # add package details
-        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "FullName" = $packageFullName; "PackageFileName" = $packageFileName; "PackageFile" = $packageFile.FullName; "Package" = $packageIni.Package })
+        $packageDetails.Set_Item($packageName, @{ "Name" = $packageName; "Priority" = $priority; "FullName" = $packageFullName; "PackageFileName" = $packageFileName; "PackageFile" = $packageFile.FullName; "Package" = $packageIni.Package })
 
 
         # add package dependencies
         $dependencies = @()
         $dependencies += $packageIni.Package.Dependencies -split ',' | Where-Object { $_ }
-        $packageDependencies.Set_Item($packageName, $dependencies)
+        $packageDependencies += @{ 'Name'= $packageName; 'Dependencies' = $dependencies }
     }
 
 
@@ -270,7 +273,7 @@ function FindPackagesToInstall()
     # write install packages script, if there are any packages to install
     if ($packageFileNames.Count -gt 0)
     {
-        $packagesSortedByDependencies = Get-TopologicalSort $packageDependencies
+        $packagesSortedByDependencies = TopologicalSort ($packageDependencies | Sort-Object @{expression={$packageDetails[$_.Name].Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true})
 
         foreach($packageName in $packagesSortedByDependencies)
         {
