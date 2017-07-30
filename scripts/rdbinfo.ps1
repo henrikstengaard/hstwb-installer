@@ -6,7 +6,8 @@
 #
 # A powershell script to read rigid disk block from a hdf file and display drive and partition information.
 #
-# Reference: http://lclevy.free.fr/adflib/adf_info.html#p6
+# Reference 1: http://lclevy.free.fr/adflib/adf_info.html#p6
+# Reference 2: https://searchcode.com/file/55055344/partmap/amiga.c
 
 
 Param(
