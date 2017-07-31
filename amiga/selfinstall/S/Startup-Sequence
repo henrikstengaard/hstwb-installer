@@ -56,6 +56,19 @@ copy >NIL: "INSTALL:HstWBInstaller/" TO "HSTWBINSTALLERDIR:" ALL
 echo "Done."
 
 
+; Create install directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLERDIR:Install/"
+  makedir >NIL: "HSTWBINSTALLERDIR:Install"
+ENDIF
+
+
+; Copy install scripts
+echo ""
+echo "Copying install scripts..."
+copy >NIL: "INSTALL:" TO "HSTWBINSTALLERDIR:Install/" ALL
+echo "Done."
+
+
 ; Create packages directory, if it doesn't exist
 IF NOT EXISTS "HSTWBINSTALLERDIR:Packages/"
   makedir >NIL: "HSTWBINSTALLERDIR:Packages"
