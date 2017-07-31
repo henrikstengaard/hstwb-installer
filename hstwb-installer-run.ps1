@@ -273,7 +273,12 @@ function FindPackagesToInstall()
     # write install packages script, if there are any packages to install
     if ($packageFileNames.Count -gt 0)
     {
-        $packagesSortedByDependencies = TopologicalSort ($packageDependencies | Sort-Object @{expression={$packageDetails[$_.Name].Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true})
+        # sort packages by priority and name
+        $packagesSortedByPriorityAndName = @()
+        $packagesSortedByPriorityAndName += ,$packageDependencies | Sort-Object @{expression={$packageDetails[$_.Name].Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true}
+
+        # sort packages by dependencies
+        $packagesSortedByDependencies = TopologicalSort $packagesSortedByPriorityAndName
 
         foreach($packageName in $packagesSortedByDependencies)
         {
@@ -1501,7 +1506,7 @@ function RunBuildSelfInstall()
     $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
     Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
 
-
+        
     # copy amiga shared dir
     $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
@@ -1513,6 +1518,24 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
+    # create install prefs directory
+    $tempInstallPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
+    if(!(test-path -path $tempInstallPrefsDir))
+    {
+        mkdir $tempInstallPrefsDir | Out-Null
+    }
+
+
+    # copy amiga os 3.9 dir
+    $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")
+    Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
+    
+
+    # create self install prefs file
+    $uaePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Self-Install'
+    Set-Content $uaePrefsFile -Value ""
+
+
     # build assign hstwb installers script lines
     $assignHstwbInstallerScriptLines = @()
     $assignHstwbInstallerScriptLines += BuildAssignHstwbInstallerScriptLines $true
@@ -1522,6 +1545,7 @@ function RunBuildSelfInstall()
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
     # write assign hstwb installer script for self install
+    $assignHstwbInstallerScriptLines +="Assign INSTALL: ""HstWBInstallerDir:"""
     $assignHstwbInstallerScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\Assign-HstWB-Installer")
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
@@ -1534,6 +1558,12 @@ function RunBuildSelfInstall()
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
+        # create install packages prefs file
+        $installPackagesFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Packages'
+        Set-Content $installPackagesFile -Value ""
+
+
+        # extract packages to package directory
         foreach($installPackage in $installPackages)
         {
             # extract package file to package directory

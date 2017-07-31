@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-04-07
+; Date: 2017-07-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -18,16 +18,19 @@ echo "HstWB Installer"
 echo "---------------"
 echo ""
 echo "Welcome to HstWB Installer, an installer which automates"
-echo "installation of Workbench 3.1, Kickstart roms and packages"
-echo "with additional content."
+echo "installation of Amiga OS 3.9, Workbench 3.1, Kickstart roms"
+echo "and packages with additional content."
 echo ""
-echo "As both Workbench adf and Kickstart rom files are still"
-echo "under license and sold commercially these files can not"
-echo "be included."
+echo "As Amiga OS 3.9, Workbench 3.1 and Kickstart roms are still"
+echo "under license and sold commercially, these are not"
+echo "included and must be provided during installation process."
 echo ""
-echo "Please buy Cloanto Amiga Forever from"
-echo "https://www.amigaforever.com or use own dumps of"
-echo "Workbench adf and Kickstart rom files."
+echo "Amiga OS 3.9 can be bought from either http://www.vesalia.de"
+echo "or http://www.amigakit.com/."
+echo ""
+echo "Cloanto Amiga Forever Plus Edition contains both"
+echo "Workbench 3.1 and Kickstart roms and can be bought from"
+echo "https://www.amigaforever.com."
 echo ""
 ask "Press ENTER to continue"
 
@@ -156,6 +159,20 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
+; Fail, if HSTWBINSTALLERDIR: device name doesn't exist
+Assign >NIL: EXISTS HSTWBINSTALLERDIR:
+IF WARN
+  echo "Error: HSTWBINSTALLERDIR: device name doesn't exist!"
+  SKIP fail
+ENDIF
+
+
+; Create install prefs drawer, if it doesn't exist
+IF NOT EXISTS INSTALL:Prefs
+  makepath INSTALL:Prefs
+ENDIF
+
+
 ; Run Patch Installation, if PATCHDIR: exists
 execute "HSTWBINSTALLERDIR:Patch-Installation"
 
@@ -173,7 +190,7 @@ IF NOT EXISTS "SYSTEMDIR:Temp/FMS"
 ENDIF
 
 
-; Mount and assign FMS 
+; Mount and assign FMS
 assign FMS: SYSTEMDIR:Temp/FMS
 Mount FF0:
 
@@ -182,26 +199,95 @@ Mount FF0:
 echo "*ec" 
 
 
-echo "Automate Installation"
+echo "Installation Description"
+echo "------------------------"
+echo ""
+echo "Using UAE emulator following directories can be added for installation"
+echo "of Amiga OS 3.9, Workbench 3.1 and Kickstart roms:"
+echo "- Device name *e[1mCD0*e[22m, CD drive with Amiga OS 3.9 CD-Rom."
+echo "- Device name *e[1mOS39*e[22m, directory with Amiga 3.9 iso and boing"
+echo "  bag files."
+echo "- Device name *e[1mWORKBENCHDIR*e[22m, directory with Workbench 3.1"
+echo "  adf files."
+echo "- Device name *e[1mKICKSTARTDIR*e[22m, directory with Kickstart rom"
+echo "  files."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Clear screen
+echo "*ec" 
+
+
+echo "Installation Overview"
 echo "---------------------"
 echo ""
-echo "For installation through WinUAE, following directories can"
-echo "be added to automate installation of Workbench 3.1 and"
-echo "Kickstart roms:"
-echo "- Device name WORKBENCHDIR with Workbench 3.1 adf files."
-echo "- Device name KICKSTARTDIR with Kickstart rom files."
-echo ""
-echo "Automation status:"
+echo "Installation status:"
 
-; Check if WORKBENCHDIR: exists and print message
-Assign >NIL: EXISTS WORKBENCHDIR:
+; Check if CD0: and AmigaOS3.9: device names exists and set installos39
+set installos39 "0"
+Assign >NIL: EXISTS CD0:
 IF NOT WARN
-  echo "- WORKBENCHDIR: Present! Install Workbench from adf."
-ELSE
-  echo "- WORKBENCHDIR: Not present! Install Workbench from disks."
+  Assign >NIL: EXISTS AmigaOS3.9:
+  IF NOT WARN
+    set installos39 "1"
+  ENDIF
 ENDIF
 
-; Check if KICKSTARTDIR: exists and print message
+; Print cd drive status depending on installos39
+IF $installos39 EQ 1 VAL
+  echo "- CD0: Present! Install Amiga OS 3.9 from CD drive."
+ELSE
+  echo "- CD0: Not present! Skip Amiga OS 3.9 installation"
+  echo "  from CD drive."
+ENDIF
+
+; Check if OS39: device name and amiga os 3.9 iso exists and print message
+set amigaos39isofile ""
+Assign >NIL: EXISTS OS39:
+IF NOT WARN
+  ; Find boing bag files
+  fsearch "OS39:" PAT BoingBag39#?.lha >T:_boingbagfiles
+
+  IF $installos39 EQ 0 VAL
+    ; Find amiga os 3.9 iso files
+    echo "" NOLINE >T:_amigaos39isofiles
+    fsearch "OS39:" PAT amigaos39.iso >>T:_amigaos39isofiles
+    fsearch "OS39:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
+
+    ; Get first amiga os 3.9 iso file
+    sed "1q;d" T:_amigaos39isofiles >T:_amigaos39isofile
+    set amigaos39isofile "`type T:_amigaos39isofile`"
+    IF NOT "$amigaos39isofile" EQ ""
+      echo "- OS39: Present! Install Amiga OS 3.9 from iso and"
+      echo "  apply Boing Bag updates, if available."
+    ELSE
+      echo "- OS39: Present! Apply Boing Bag updates, if available."
+    ENDIF
+  ELSE
+    echo "- OS39: Present! Apply Boing Bag updates, if available."
+  ENDIF
+ELSE
+  echo "- OS39: Not present! Skip Amiga OS 3.9 installation"
+  echo "  from iso and Boing Bag updates."
+ENDIF
+
+
+; Skip Workbench 3.1 installation, if Amiga OS 3.9 will be installed
+IF $installos39 EQ 1 VAL
+  echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
+ELSE
+  ; Check if WORKBENCHDIR: device name exists and print message
+  Assign >NIL: EXISTS WORKBENCHDIR:
+  IF NOT WARN
+    echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
+  ELSE
+    echo "- WORKBENCHDIR: Not present! Skip Workbench 3.1 installation"
+    echo "  from adf."
+  ENDIF
+ENDIF
+
+; Check if KICKSTARTDIR: device name exists and print message
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
   echo "- KICKSTARTDIR: Present! Install Kickstart rom files."
@@ -209,12 +295,52 @@ ELSE
   echo "- KICKSTARTDIR: Not present! Skip Kickstart rom installation."
 ENDIF
 
-echo ""
-echo "If these directories are not present, they can be added in"
-echo "WinUAE and reset to restart installation will detect them."
+; Create backup of mountlist, if it doesn't exist. Otherwise overwrite mountlist with backup.
+IF NOT EXISTS INSTALL:Devs/Mountlist.bak
+  Copy >NIL: INSTALL:Devs/Mountlist INSTALL:Devs/Mountlist.bak
+ELSE
+  Copy >NIL: INSTALL:Devs/Mountlist.bak INSTALL:Devs/Mountlist
+ENDIF
+
+
+; Replace os39isofilename placeholder in mountlist and print amiga os 3.9 iso file, if present 
+IF NOT "$amigaos39isofile" EQ ""
+  echo ""
+  echo "Using Amiga OS 3.9 iso file:"
+  echo "$amigaos39isofile"
+  rep INSTALL:Devs/Mountlist "OS39:[*$OS39IsoFileName]" "$amigaos39isofile"
+ELSE
+  rep INSTALL:Devs/Mountlist "OS39:[*$OS39IsoFileName]" ""
+ENDIF
+
+
+; Print boing bag files, if present
+IF EXISTS T:_boingbagfiles
+  set boingbagfilescount `wc -l <T:_boingbagfiles`
+  IF $boingbagfilescount gt 0 VAL
+    set installboingbags "1"
+    echo ""
+    echo "Using Boing Bag file(s):"
+    type T:_boingbagfiles
+  ENDIF
+ENDIF
+
+
+; Create install amiga os 3.9 prefs, if installos39 is 1
+IF $installos39 EQ 1 VAL
+  echo "" >INSTALL:Prefs/Install-AmigaOS3.9
+ENDIF
+
+
+; Create install boing bags prefs, if installboingbags is 1
+IF $installboingbags EQ 1 VAL
+  echo "" >INSTALL:Prefs/Install-BoingBags
+ENDIF
+
+
 echo ""
 ask "Press ENTER to continue"
-
+quit
 
 ; Clear screen
 echo "*ec" 

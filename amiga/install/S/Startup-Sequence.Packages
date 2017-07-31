@@ -1,10 +1,10 @@
 ; HstWB Installer Script
 ; ----------------------
 ;
-; Date: 2017-07-11
+; Date: 2017-07-31
 ; Author: Henrik Noerfjand Stengaard 
 ;
-; An AmigaDOS script to start installation of packages and boing bags for Amiga OS 3.9.
+; An AmigaDOS script to start installation of packages.
 
 
 C:SetPatch NOROMUPDATE QUIET
