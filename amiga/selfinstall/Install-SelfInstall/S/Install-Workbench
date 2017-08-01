@@ -1,0 +1,20 @@
+; Install Workbench
+; -----------------
+;
+; Date: 2017-08-01
+; Author: Henrik Noerfjand Stengaard
+
+
+; Run Install-Workbench-Adf, if WORKBENCHDIR: exists
+Assign >NIL: EXISTS WORKBENCHDIR:
+IF NOT WARN
+  execute "INSTALL:S/Install-Workbench-Adf"
+ELSE
+  execute "INSTALL:S/Install-Workbench-Disk"
+ENDIF
+
+
+echo ""
+echo "Workbench installation is complete."
+echo ""
+ask "Press ENTER to continue"

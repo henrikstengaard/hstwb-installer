@@ -9,6 +9,17 @@
 echo "*ec" 
 
 
+; Create temp directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Temp/FMS"
+  makepath >NIL: "SYSTEMDIR:Temp/FMS"
+ENDIF
+
+
+; Mount and assign FMS
+assign FMS: SYSTEMDIR:Temp/FMS
+Mount FF0:
+
+
 ; Create workbench directory, if it doesn't exist
 IF NOT EXISTS "HSTWBINSTALLERDIR:Workbench/"
   makedir >NIL: "HSTWBINSTALLERDIR:Workbench"

@@ -1502,28 +1502,33 @@ function RunBuildSelfInstall()
     }
 
 
-    # copy amiga self install build dir
-    $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
-    Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
-
-        
-    # copy amiga shared dir
-    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
-    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
-    Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\System" -recurse -force
-
-
-    # copy amiga packages dir
-    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
-    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
-
-
     # create install prefs directory
     $tempInstallPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
     if(!(test-path -path $tempInstallPrefsDir))
     {
         mkdir $tempInstallPrefsDir | Out-Null
     }
+
+
+    # copy amiga self install build dir
+    $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
+    Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
+
+
+    # copy generic to install directory
+    $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
+    Copy-Item -Path "$amigaGenericDir\*" $tempInstallDir -recurse -force
+
+    
+    # copy amiga shared dir
+    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+
+    # copy amiga packages dir
+    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
     # copy amiga os 3.9 dir
@@ -1540,14 +1545,16 @@ function RunBuildSelfInstall()
     $assignHstwbInstallerScriptLines = @()
     $assignHstwbInstallerScriptLines += BuildAssignHstwbInstallerScriptLines $true
 
+
     # write assign hstwb installer script for building self install
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\Assign-HstWB-Installer")
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
+
     # write assign hstwb installer script for self install
-    $assignHstwbInstallerScriptLines +="Assign INSTALL: ""HstWBInstallerDir:"""
+    $assignHstwbInstallerScriptLines +="Assign INSTALL: ""HstWBInstallerDir:Install"""
     $assignHstwbInstallerScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
-    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\Assign-HstWB-Installer")
+    $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Assign-HstWB-Installer")
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
 
@@ -1596,7 +1603,7 @@ function RunBuildSelfInstall()
 
 
     # write install packages script
-    $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "HstWBInstaller\Install-Packages")
+    $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Install-Packages")
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
@@ -1628,7 +1635,7 @@ function RunBuildSelfInstall()
     $removeHstwbInstallerScriptLines += "ENDIF"
     
     # write remove hstwb installer script
-    $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "System\S\Remove-HstWBInstaller")
+    $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Remove-HstWBInstaller")
     WriteAmigaTextLines $removeHstwbInstallerScriptFile $removeHstwbInstallerScriptLines 
 
 

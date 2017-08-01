@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-01-02
+; Date: 2017-08-01
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -13,8 +13,12 @@ LoadModule DEVS:scsi.device
 echo "*ec" 
 
 
-; Installer message
-echo "HstWB Installer building self install..."
+; Startup message
+echo "HstWB Installer"
+echo "---------------"
+echo ""
+echo "HstWB Installer is running build self install..."
+
 
 
 ; Set stack, failat and load basic commands resident 
@@ -44,8 +48,8 @@ execute S:Assign-HstWB-Installer
 
 
 echo ""
-echo "Copying system..."
-copy >NIL: "INSTALL:System/" TO "SYSTEMDIR:" ALL
+echo "Copying self install..."
+copy >NIL: "INSTALL:Install-SelfInstall/" TO "SYSTEMDIR:" ALL
 echo "Done."
 
 

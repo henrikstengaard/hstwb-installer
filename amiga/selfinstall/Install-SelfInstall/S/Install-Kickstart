@@ -1,12 +1,16 @@
-; Install Kickstart Rom Script
-; ----------------------------
+; Install Kickstart
+; -----------------
 ;
-; Date: 2017-01-09
+; Date: 2017-08-01
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; Clear screen
 echo "*ec"
+
+
+echo "Kickstart Installation"
+echo "----------------------"
 
 
 ; Create desv and kickstarts directory, if doesn't exists
@@ -19,13 +23,11 @@ ENDIF
 
 
 ; Kickstart installation
-echo "Install Kickstart rom files"
-echo "---------------------------"
 echo ""
 echo "Find Kickstart rom files in KICKSTARTDIR:..."
 fsearch KICKSTARTDIR:#?.rom >T:kickstart-rom-files1
 fsearch KICKSTARTDIR:#?.key >>T:kickstart-rom-files1
-sed "s/^\(.\)/execute *"HSTWBINSTALLERDIR:Copy-Kickstart-Rom*" *"\1/" T:kickstart-rom-files1 >T:kickstart-rom-files2
+sed "s/^\(.\)/execute *"INSTALL:S/Copy-Kickstart-Rom*" *"\1/" T:kickstart-rom-files1 >T:kickstart-rom-files2
 sed "s/\(.\)$/\1*" *"SYSTEMDIR:Devs\/Kickstarts\/*"/" T:kickstart-rom-files2 >T:kickstart-rom-files3
 execute T:kickstart-rom-files3
 

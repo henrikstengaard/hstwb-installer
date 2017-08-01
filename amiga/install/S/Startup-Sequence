@@ -13,11 +13,11 @@ LoadModule DEVS:scsi.device
 echo "*ec" 
 
 
-; Install message
-echo "Install"
-echo "-------"
+; Startup message
+echo "HstWB Installer"
+echo "---------------"
 echo ""
-echo "HstWB Installer running install..."
+echo "HstWB Installer is running install..."
 
 
 ; Set stack, failat and load basic commands resident 
