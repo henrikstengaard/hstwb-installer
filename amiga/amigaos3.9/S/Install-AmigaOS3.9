@@ -40,6 +40,24 @@ IF WARN
 ENDIF
 
 
+; Set fail at 255 for DiskInDrive to fail properly
+failat 255
+
+
+; Goto mount amiga os 3.9 iso, if device CD0: doesn't contain a cd-rom
+DiskInDrive >NIL: CD0:
+IF WARN
+  ; Set fail at 21
+  failat 21
+
+  SKIP mountamigaos39iso
+ENDIF
+
+
+; Set fail at 21
+failat 21
+
+
 ; Goto check amiga os 3.9 cd, if CD0:OS-VERSION3.9.INFO exists
 IF EXISTS CD0:OS-VERSION3.9.INFO
   SKIP checkamigaos39cd

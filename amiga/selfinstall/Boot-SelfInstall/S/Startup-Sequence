@@ -173,6 +173,10 @@ IF NOT EXISTS INSTALL:Prefs
 ENDIF
 
 
+; Create install packages prefs
+echo "" >INSTALL:Prefs/Install-Packages
+
+
 ; Run Patch Installation
 execute "INSTALL:S/Patch-Installation"
 
@@ -188,8 +192,8 @@ resident SYSTEMDIR:C/MakePath PURE
 execute "INSTALL:S/Prepare-Self-Install"
 
 
-; Run Installation-Process
-execute "INSTALL:S/Installation-Process"
+; Run Install
+execute "INSTALL:S/Install"
 
 
 ; Clear screen
@@ -215,9 +219,16 @@ IF NOT WARN
 ENDIF
 
 
+; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
+;IF NOT EXISTS SYS:Prefs/Install-BoingBags
+;  IF EXISTS SYS:Prefs/Install-Packages
+;    execute S:Install-Packages
+;  ENDIF
+;ENDIF
+
 ; Replace workbench startup-sequence with packages startup-sequence
-Rename SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench 
-Rename SYSTEMDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence 
+; Rename SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench 
+; Rename SYSTEMDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence 
 
 
 ; Clear screen
@@ -225,7 +236,6 @@ echo "*ec"
 
 
 ; Workbench installation complete
-echo ""
 echo "Workbench Installation Complete"
 echo "-------------------------------"
 echo ""

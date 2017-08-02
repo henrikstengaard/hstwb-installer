@@ -17,6 +17,8 @@ echo "following device names for installation of Amiga OS 3.9,"
 echo "Workbench 3.1 and Kickstart roms:"
 echo "- CD0: CD drive with Amiga OS 3.9 CD-Rom."
 echo "- OS39: Directory with Amiga 3.9 iso and boing bag files."
+echo "  Note: Directory must be read/write, if installing Amiga"
+echo "  OS 3.9 from iso."
 echo "- WORKBENCHDIR: Directory with Workbench 3.1 adf files."
 echo "- KICKSTARTDIR: Directory with Kickstart rom files."
 echo ""
@@ -152,11 +154,6 @@ IF $installos39 EQ 1 VAL
   ENDIF
 ENDIF
 
-
-; Create 
-Assign >NIL: EXISTS KICKSTARTDIR:
-IF NOT WARN
-ENDIF
 
 echo ""
 ask "Press ENTER to continue"

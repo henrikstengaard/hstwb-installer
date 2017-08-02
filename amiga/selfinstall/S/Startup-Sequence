@@ -48,8 +48,8 @@ execute S:Assign-HstWB-Installer
 
 
 echo ""
-echo "Copying self install..."
-copy >NIL: "INSTALL:Install-SelfInstall/" TO "SYSTEMDIR:" ALL
+echo "Copying boot scripts and tools..."
+copy >NIL: "INSTALL:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
 echo "Done."
 
 
@@ -59,10 +59,13 @@ IF NOT EXISTS "HSTWBINSTALLERDIR:Install/"
 ENDIF
 
 
-; Copy install scripts
+; Copy self install scripts and tools
 echo ""
-echo "Copying install scripts..."
-copy >NIL: "INSTALL:" TO "HSTWBINSTALLERDIR:Install/" ALL
+echo "Copying install scripts and tools..."
+copy >NIL: "INSTALL:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
+makedir >NIL: "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9"
+copy >NIL: "INSTALL:Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9/" ALL
+copy >NIL: "INSTALL:S/Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/S" ALL
 echo "Done."
 
 
@@ -74,7 +77,7 @@ ENDIF
 
 ; Copy Packages
 echo ""
-echo "Copying packages..."
+echo "Copying package files..."
 copy >NIL: "PACKAGES:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 echo "Done."
 

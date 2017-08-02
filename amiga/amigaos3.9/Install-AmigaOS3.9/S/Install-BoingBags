@@ -135,11 +135,9 @@ Delete >NIL: S:Install-BoingBag#?
 Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
 
 ; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists. Otherwise delete packages startup sequence
-IF EXISTS SYS:Prefs/Install-Packages
-  Rename >NIL: S:Startup-Sequence S:Startup-Sequence.Workbench
-  Rename >NIL: S:Startup-Sequence.Packages S:Startup-Sequence
-ELSE
-  Delete >NIL: S:Startup-Sequence.Packages
+IF EXISTS INSTALL:Prefs/Install-Packages
+  Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+  Copy >NIL: INSTALL:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 ENDIF
 
 echo ""
