@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-07-10
+; Date: 2017-08-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -146,6 +146,8 @@ ENDIF
 
 
 ; Copy Workbench 3.9
+echo ""
+echo "Installing Amiga OS 3.9:"
 echo "Copying Workbench..."
 
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.5 SYSTEMDIR: ALL
@@ -328,24 +330,8 @@ echo "Amiga OS 3.9 installation is complete."
 Copy >NIL: INSTALL:Install-AmigaOS3.9/Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
 
 
-; Copy c, reqtools library and prefs
-Copy >NIL: INSTALL:C SYSTEMDIR:C ALL
-Copy >NIL: INSTALL:Libs/reqtools.library SYS:Libs
-Copy >NIL: INSTALL:Prefs/Env-Archive/ReqTools.prefs SYS:Prefs/Env-Archive
-
-
-; Copy install packages to systemdir, if install packages prefs exists
-IF EXISTS INSTALL:Prefs/Install-Packages
-  Copy >NIL: INSTALL:S/Assign-HstWB-Installer SYSTEMDIR:S
-  Copy >NIL: INSTALL:Prefs/Install-Packages SYSTEMDIR:Prefs
-  Copy >NIL: INSTALL:S/Install-Packages SYSTEMDIR:S
-ENDIF
-
-
 ; Create install boing bags prefs and copy install amiga os 3.9 to systemdir, if boing bag 1 exist
 IF EXISTS INSTALL:Prefs/Install-BoingBags
-  Copy >NIL: INSTALL:S/Assign-HstWB-Installer SYSTEMDIR:S
-  Copy >NIL: INSTALL:Prefs/Install-BoingBags SYSTEMDIR:Prefs
   Copy >NIL: INSTALL:Install-AmigaOS3.9 SYSTEMDIR: ALL
 ENDIF
 

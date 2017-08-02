@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-07-31
+; Date: 2017-08-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -153,7 +153,7 @@ SetEnv TZ MST7
 
 ; Fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "Error: assign hstwb installer doesn't exist!"
+  echo "Error: Assign hstwb installer doesn't exist!"
   SKIP fail
 ENDIF
 execute S:Assign-HstWB-Installer
@@ -220,15 +220,11 @@ ENDIF
 
 
 ; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
-;IF NOT EXISTS SYS:Prefs/Install-BoingBags
-;  IF EXISTS SYS:Prefs/Install-Packages
-;    execute S:Install-Packages
-;  ENDIF
-;ENDIF
-
-; Replace workbench startup-sequence with packages startup-sequence
-; Rename SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench 
-; Rename SYSTEMDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence 
+IF NOT EXISTS INSTALL:Prefs/Install-BoingBags
+  IF EXISTS INSTALL:Prefs/Install-Packages
+    execute INSTALL:S/Install-Packages
+  ENDIF
+ENDIF
 
 
 ; Clear screen
@@ -251,7 +247,7 @@ ask "Press ENTER to continue"
 echo ""
 echo "Rebooting in 10 seconds..."
 wait 10
-reboot
+INSTALL:C/TotalReset
 
 
 ; Fail

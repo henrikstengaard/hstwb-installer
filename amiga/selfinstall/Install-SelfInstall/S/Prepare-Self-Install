@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-08-01
+; Date: 2017-08-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -125,15 +125,10 @@ ELSE
   rep INSTALL:Devs/Mountlist "OS39:[*$OS39IsoFileName]" ""
 ENDIF
 
-; Print amiga os 3.9 and boing bag files, if installos39 is 1
+; Install amiga os 3.9, if installos39 is 1
 IF $installos39 EQ 1 VAL 
   ; Create install amiga os 3.9 prefs, if installos39 is 1
   echo "" >INSTALL:Prefs/Install-AmigaOS3.9
-
-  ; Create install boing bags prefs, if installboingbags is 1
-  IF $installboingbags EQ 1 VAL
-    echo "" >INSTALL:Prefs/Install-BoingBags
-  ENDIF
 
   ; Print amiga os 3.9 iso file, if present
   IF NOT "$amigaos39isofile" EQ ""
@@ -142,11 +137,15 @@ IF $installos39 EQ 1 VAL
     echo "$amigaos39isofile"
   ENDIF
 
-  ; Print boing bag files, if present
+  ; Examine if boing bag files exists
   IF EXISTS T:_boingbagfiles
     set boingbagfilescount `wc -l <T:_boingbagfiles`
+    ; Install boing bags, if one or more boing bag files exists
     IF $boingbagfilescount gt 0 VAL
-      set installboingbags "1"
+      ; Create install boing bags prefs
+      echo "" >INSTALL:Prefs/Install-BoingBags
+
+      ; Print boing bag files
       echo ""
       echo "Using Boing Bag file(s):"
       type T:_boingbagfiles

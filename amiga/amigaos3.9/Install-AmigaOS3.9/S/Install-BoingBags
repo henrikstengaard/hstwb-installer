@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2017-07-11
+; Date: 2017-08-02
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Boing Bags.
@@ -22,6 +22,18 @@ IF WARN
   echo "*e[1mERROR: Boing Bags installation requires AmigaOS 3.9!*e[22m"
   SKIP end
 ENDIF
+
+
+; Goto end, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
+  echo ""
+  echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
+  SKIP end
+ENDIF
+
+
+; Run assign hstwb installer
+execute S:Assign-HstWB-Installer
 
 
 ; Goto end, if device OS39: doesn't exist
@@ -55,6 +67,24 @@ Assign >NIL: EXISTS CD0:
 IF WARN
   SKIP mountamigaos39iso
 ENDIF
+
+
+; Set fail at 255 for DiskInDrive to fail properly
+failat 255
+
+
+; Goto mount amiga os 3.9 iso, if device CD0: doesn't contain a cd-rom
+DiskInDrive >NIL: CD0:
+IF WARN
+  ; Set fail at 21
+  failat 21
+
+  SKIP mountamigaos39iso
+ENDIF
+
+
+; Set fail at 21
+failat 21
 
 
 ; Goto check amiga os 3.9 cd, if CD0:OS-VERSION3.9.INFO exists
@@ -134,7 +164,7 @@ Delete >NIL: S:Copy-Locale
 Delete >NIL: S:Install-BoingBag#?
 Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
 
-; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists. Otherwise delete packages startup sequence
+; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
 IF EXISTS INSTALL:Prefs/Install-Packages
   Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
   Copy >NIL: INSTALL:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
@@ -188,7 +218,7 @@ IF EXISTS SYS:Prefs/UAE
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALL:C/Reboot
+  INSTALL:C/TotalReset
 ENDIF
 
 ENDSHELL
