@@ -78,7 +78,7 @@ ENDIF
 ; Copy Packages
 echo ""
 echo "Copying package files..."
-copy >NIL: "PACKAGES:" TO "HSTWBINSTALLERDIR:Packages/" ALL
+copy >NIL: "PACKAGESDIR:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 echo "Done."
 
 
