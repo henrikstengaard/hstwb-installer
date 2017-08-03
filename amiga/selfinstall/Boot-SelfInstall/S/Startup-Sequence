@@ -222,6 +222,8 @@ ENDIF
 ; Run Install-Complete
 execute "INSTALLDIR:S/Install-Complete"
 
+SKIP end
+
 
 ; Fail
 LAB fail

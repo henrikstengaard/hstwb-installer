@@ -1,0 +1,61 @@
+; Install Workbench
+; -----------------
+;
+; Date: 2017-08-03
+; Author: Henrik Noerfjand Stengaard
+
+
+; Clear screen
+echo "*ec" 
+
+
+echo "Workbench Installation"
+echo "----------------------"
+
+
+; Assign FMS to install temp dir, if self install prefs exists. Otherwise assign FMS to T:
+IF EXISTS INSTALLDIR:Prefs/Self-Install
+  ; Create fms temp directory, if it doesn't exist
+  IF NOT EXISTS "INSTALLDIR:Temp/FMS"
+    makepath >NIL: "INSTALLDIR:Temp/FMS"
+  ENDIF
+
+  assign FMS: INSTALLDIR:Temp/FMS
+ELSE
+  assign FMS: T:
+ENDIF
+
+
+; Mount FF0:
+Mount FF0:
+
+
+; Create workbench directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Workbench/"
+  makedir >NIL: "INSTALLDIR:Workbench"
+ENDIF
+
+
+; Find, install workbench from adf and fallback to disk, if self install prefs exists. Otherwise install workbench adf
+IF EXISTS INSTALLDIR:Prefs/Self-Install
+  ; Run find workbench adf, if WORKBENCHDIR: exists
+  Assign >NIL: EXISTS WORKBENCHDIR:
+  IF NOT WARN
+    execute "INSTALLDIR:S/Find-Workbench-Adf"
+  ENDIF
+
+  ; Run install workbench adf, if prefs exists
+  IF EXISTS INSTALLDIR:Prefs/Install-Workbench-Adf
+    execute "INSTALLDIR:S/Install-Workbench-Adf"
+  ELSE
+    execute "INSTALLDIR:S/Install-Workbench-Disk"
+  ENDIF
+ELSE
+  execute "INSTALLDIR:S/Install-Workbench-Adf"
+ENDIF
+
+
+echo ""
+echo "Workbench installation is complete."
+echo ""
+ask "Press ENTER to continue"

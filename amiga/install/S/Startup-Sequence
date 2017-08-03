@@ -53,7 +53,7 @@ wait 3
 IF NOT EXISTS S:Assign-HstWB-Installer
   echo "" >INSTALLDIR:Error
   echo "Error: assign hstwb installer doesn't exist!"
-  SKIP end
+  SKIP fail
 ENDIF
 execute S:Assign-HstWB-Installer
 
@@ -72,90 +72,22 @@ IF EXISTS INSTALLDIR:HstWB-Installer.Assigns.ini
 ENDIF
 
 
-; Install Workbench, if prefs exists
-IF EXISTS SYS:Prefs/Install-Workbench
-  execute S:Install-Workbench
-ENDIF
+; Run Install-Start
+execute "INSTALLDIR:S/Install-Start"
 
 
-; Install Amiga OS 3.9, if prefs exists
-IF EXISTS SYS:Prefs/Install-AmigaOS3.9
-  execute S:Install-AmigaOS3.9
-ENDIF
+; Run Install-Complete
+execute "INSTALLDIR:S/Install-Complete"
+
+SKIP end
 
 
-; Install Kickstart, if prefs exists
-IF EXISTS SYS:Prefs/Install-Kickstart
-  execute S:Install-Kickstart
-ENDIF
-
-
-; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
-IF NOT EXISTS SYS:Prefs/Install-BoingBags
-  IF EXISTS SYS:Prefs/Install-Packages
-    execute S:Install-Packages
-  ENDIF
-ENDIF
-
-
-; Delete Installing file, if it exists
-IF EXISTS S:Installing
-  delete >NIL: S:Installing
-ENDIF
-
-
-; Clear screen
-echo "*ec" 
-
-
-; Install complete message
-echo "Install complete"
-echo "----------------"
+; Fail
+LAB fail
 echo ""
-
-IF EXISTS SYS:Prefs/Install-BoingBags
-  IF EXISTS SYS:Prefs/UAE
-    echo "HstWB Installer has completed install and will quit and"
-    echo "restart UAE to start installation of Boing Bags in"
-    echo "Amiga OS 3.9 during WBStartup."
-  ELSE
-    echo "HstWB Installer has completed install and will reboot"
-    echo "system to start installation of Boing Bags in"
-    echo "Amiga OS 3.9 during WBStartup."
-  ENDIF
-ELSE
-  echo "HstWB Installer has completed install and system is"
-  echo "now ready for use"
-ENDIF
-
-echo ""
-echo "Please let the system wait 10 seconds before continuing"
-echo "to allow file system to write changes to disk." 
-echo ""
-
-; Quit UAE or reboot message
-IF EXISTS SYS:Prefs/UAE
-  echo "Continue will quit UAE in 10 seconds."
-ELSE
-  echo "Continue will reboot system in 10 seconds."
-ENDIF
-
-echo ""
-ask "Press ENTER to continue"
-echo ""
+echo "Installation failed."
+quit
 
 
 ; End
 LAB end
-
-; Quit UAE, if UAE is used. Otherwise reboot
-IF EXISTS SYS:Prefs/UAE
-  Delete >NIL: SYS:Prefs/UAE
-  echo "UAE will quit in 10 seconds..."
-  wait 10
-  INSTALLDIR:C/UAEquit
-ELSE
-  echo "System will reboot in 10 seconds..."
-  wait 10
-  INSTALLDIR:C/Reboot
-ENDIF

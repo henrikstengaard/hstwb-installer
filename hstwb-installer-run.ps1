@@ -1161,13 +1161,14 @@ function RunInstall()
 
     # set temp install and packages dir
     $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+    $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
     $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
 
-
-    # copy amiga shared dir
-    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
-    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
-
+    # create temp packages path
+    if(!(test-path -path $tempWorkbenchDir))
+    {
+        mkdir $tempWorkbenchDir | Out-Null
+    }
 
     # create temp packages path
     if(!(test-path -path $tempPackagesDir))
@@ -1176,6 +1177,18 @@ function RunInstall()
     }
 
 
+    # copy amiga shared dir
+    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
+
+    # copy workbench to install directory
+    $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
+    Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
+
+    # copy generic to install directory
+    $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
+    Copy-Item -Path "$amigaGenericDir\*" $tempInstallDir -recurse -force
+    
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
@@ -1204,7 +1217,7 @@ function RunInstall()
 
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
+        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
     }
 
 
@@ -1520,10 +1533,14 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\Boot-SelfInstall" -recurse -force
     Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
-
+    
     # copy amiga os 3.9 to install directory
     $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")
     Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
+
+    # copy workbench to install directory
+    $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
+    Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
 
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
