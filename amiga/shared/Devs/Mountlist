@@ -15,7 +15,7 @@ FF0:	Device = fmsdisk.device
 #
 
 FCD0:
-Unit           = "OS39:[$OS39IsoFileName]"
+Unit           = "OS39DIR:[$OS39IsoFileName]"
 Device         = INSTALL:Devs/filedisk.device
 FileSystem     = INSTALL:L/AmiCDFS
 Flags          = 0

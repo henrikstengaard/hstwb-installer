@@ -18,7 +18,7 @@ echo "Using UAE emulator HstWB-Installer can detect and use"
 echo "following device names for installation of Amiga OS 3.9,"
 echo "Workbench 3.1 and Kickstart roms:"
 echo "- CD0: CD drive with Amiga OS 3.9 CD-Rom."
-echo "- OS39: Directory with Amiga 3.9 iso and boing bag files."
+echo "- OS39DIR: Directory with Amiga 3.9 iso and boing bag files."
 echo "  Note: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device)."
 echo "- WORKBENCHDIR: Directory with Workbench 3.1 adf files."
@@ -58,35 +58,35 @@ ELSE
 ENDIF
 
 
-; Check if OS39: device name and amiga os 3.9 iso exists and print message
+; Check if OS39DIR: device name and amiga os 3.9 iso exists and print message
 set amigaos39isofile ""
-Assign >NIL: EXISTS OS39:
+Assign >NIL: EXISTS OS39DIR:
 IF NOT WARN
   ; Find boing bag files
-  fsearch "OS39:" PAT BoingBag39#?.lha >T:_boingbagfiles1
+  fsearch "OS39DIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
   frsort <T:_boingbagfiles1 >T:_boingbagfiles
 
   IF $installos39 EQ 0 VAL
     ; Find amiga os 3.9 iso files
     echo "" NOLINE >T:_amigaos39isofiles
-    fsearch "OS39:" PAT amigaos39.iso >>T:_amigaos39isofiles
-    fsearch "OS39:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
+    fsearch "OS39DIR:" PAT amigaos39.iso >>T:_amigaos39isofiles
+    fsearch "OS39DIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
 
     ; Get first amiga os 3.9 iso file
     sed "1q;d" T:_amigaos39isofiles >T:_amigaos39isofile
     set amigaos39isofile "`type T:_amigaos39isofile`"
     IF NOT "$amigaos39isofile" EQ ""
       set installos39 "1"
-      echo "- OS39: Present! Install Amiga OS 3.9 from iso and"
+      echo "- OS39DIR: Present! Install Amiga OS 3.9 from iso and"
       echo "  apply Boing Bag updates."
     ELSE
-      echo "- OS39: Present! Apply Boing Bag updates."
+      echo "- OS39DIR: Present! Apply Boing Bag updates."
     ENDIF
   ELSE
-    echo "- OS39: Present! Apply Boing Bag updates."
+    echo "- OS39DIR: Present! Apply Boing Bag updates."
   ENDIF
 ELSE
-  echo "- OS39: Not present! Skip Amiga OS 3.9 installation"
+  echo "- OS39DIR: Not present! Skip Amiga OS 3.9 installation"
   echo "  from iso and Boing Bag updates."
 ENDIF
 
@@ -131,9 +131,9 @@ ENDIF
 
 ; Replace os39isofilename placeholder in mountlist 
 IF NOT "$amigaos39isofile" EQ ""
-  rep INSTALL:Devs/Mountlist "OS39:[*$OS39IsoFileName]" "$amigaos39isofile"
+  rep INSTALL:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" "$amigaos39isofile"
 ELSE
-  rep INSTALL:Devs/Mountlist "OS39:[*$OS39IsoFileName]" ""
+  rep INSTALL:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" ""
 ENDIF
 
 

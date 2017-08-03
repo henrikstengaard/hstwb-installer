@@ -36,11 +36,11 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
-; Goto end, if device OS39: doesn't exist
-Assign >NIL: EXISTS OS39:
+; Goto end, if device OS39DIR: doesn't exist
+Assign >NIL: EXISTS OS39DIR:
 IF WARN
   echo ""
-  echo "*e[1mERROR: Device OS39: doesn't exist!*e[22m"
+  echo "*e[1mERROR: Device OS39DIR: doesn't exist!*e[22m"
   SKIP end
 ENDIF
 
@@ -55,9 +55,9 @@ ENDIF
 
 
 ; Goto end, if boing bag 1 file doesn't exist
-IF NOT EXISTS "OS39:BoingBag39-1.lha"
+IF NOT EXISTS "OS39DIR:BoingBag39-1.lha"
   echo ""
-  echo "*e[1mERROR: Boing bags doesn't exist in device OS39:. Skipping installation!*e[22m"
+  echo "*e[1mERROR: Boing bags doesn't exist in device OS39DIR:. Skipping installation!*e[22m"
   SKIP end
 ENDIF
 
@@ -143,7 +143,7 @@ execute S:Install-BoingBag1
 
 
 ; Goto complete, if boing bag 2 file doesn't exist
-IF NOT EXISTS "OS39:BoingBag39-2.lha"
+IF NOT EXISTS "OS39DIR:BoingBag39-2.lha"
   SKIP complete
 ENDIF
 

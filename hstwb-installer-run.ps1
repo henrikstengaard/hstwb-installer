@@ -1335,8 +1335,8 @@ function RunInstall()
         #$uaehfIndex = 0
         #$winuaeInstallHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
 
-        #$winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39:OS39:{0},-128" -f $amigaOs39IsoDir
-        #$winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39:OS39:{1},-128" -f ([int]$uaehfIndex + 1), $amigaOs39IsoDir
+        #$winuaeInstallHarddrivesConfigText += "`r`nfilesystem2=rw,OS39DIR:OS39DIR:{0},-128" -f $amigaOs39IsoDir
+        #$winuaeInstallHarddrivesConfigText += "`r`nuaehf{0}=dir,rw,OS39DIR:OS39DIR:{1},-128" -f ([int]$uaehfIndex + 1), $amigaOs39IsoDir
 
 
         $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"

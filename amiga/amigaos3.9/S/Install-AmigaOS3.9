@@ -15,11 +15,11 @@ echo "Amiga OS 3.9 Installation"
 echo "-------------------------"
 
 
-; Goto fail, if device OS39: doesn't exist
-Assign >NIL: EXISTS OS39:
+; Goto fail, if device OS39DIR: doesn't exist
+Assign >NIL: EXISTS OS39DIR:
 IF WARN
   echo ""
-  echo "*e[1mERROR: Device OS39: doesn't exist!*e[22m"
+  echo "*e[1mERROR: Device OS39DIR: doesn't exist!*e[22m"
   SKIP fail
 ENDIF
 
