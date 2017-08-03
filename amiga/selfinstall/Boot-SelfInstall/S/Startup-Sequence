@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-08-02
+; Date: 2017-08-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -192,8 +192,8 @@ resident SYSTEMDIR:C/MakePath PURE
 execute "INSTALL:S/Prepare-Self-Install"
 
 
-; Run Install
-execute "INSTALL:S/Install"
+; Run Install-Start
+execute "INSTALL:S/Install-Start"
 
 
 ; Clear screen
@@ -219,41 +219,15 @@ IF NOT WARN
 ENDIF
 
 
-; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
-IF NOT EXISTS INSTALL:Prefs/Install-BoingBags
-  IF EXISTS INSTALL:Prefs/Install-Packages
-    execute INSTALL:S/Install-Packages
-  ENDIF
-ENDIF
-
-
-; Clear screen
-echo "*ec" 
-
-
-; Workbench installation complete
-echo "Workbench Installation Complete"
-echo "-------------------------------"
-echo ""
-echo "HstWB Installer has completed installation of"
-echo "Workbench, Kickstart roms and will now reboot to"
-echo "start package installation."
-echo ""
-echo "Please wait 10 seconds before restarting to allow file"
-echo "system to write changes to disk. Continue will reboot"
-echo "the system in 10 seconds."
-echo ""
-ask "Press ENTER to continue"
-echo ""
-echo "Rebooting in 10 seconds..."
-wait 10
-INSTALL:C/TotalReset
+; Run Install-Complete
+execute "INSTALL:S/Install-Complete"
 
 
 ; Fail
 LAB fail
 echo ""
 echo "Installation failed."
+quit
 
 
 ; End

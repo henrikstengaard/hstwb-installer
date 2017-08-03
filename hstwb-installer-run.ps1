@@ -1378,10 +1378,6 @@ function RunInstall()
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
-    # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
-    $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
-    [System.IO.File]::WriteAllText($installingFile, "")
-
     # write hstwb installer packages ini file
     $hstwbInstallerPackagesIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Packages.ini'
     WriteIniFile $hstwbInstallerPackagesIniFile $hstwbInstallerPackagesIni
@@ -1435,8 +1431,9 @@ function RunInstall()
     }
 
 
-    # fail, if installing file exists
-    if (Test-Path -path $installingFile)
+    # fail, if install complete prefs file doesn't exists
+    $installCompletePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Complete'
+    if (!(Test-Path -path $installCompletePrefsFile))
     {
         Fail "WinUAE installation failed"
     }
@@ -1656,11 +1653,6 @@ function RunBuildSelfInstall()
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
-    # write installing file in install dir. should be deleted by winuae and is used to verify if installation process succeeded
-    $installingFile = [System.IO.Path]::Combine($tempInstallDir, "S\Installing")
-    [System.IO.File]::WriteAllText($installingFile, "")
-
-
     # print preparing installation done message
     Write-Host "Done."
 
@@ -1673,15 +1665,16 @@ function RunBuildSelfInstall()
     # winuae args
     $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
-    # exit, if winuae fails
+    # fail, if winuae returns error
     if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
         Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
     }
 
 
-    # fail, if installing file exists
-    if (Test-Path -path $installingFile)
+    # fail, if install complete prefs file doesn't exists
+    $installCompletePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Complete'
+    if (!(Test-Path -path $installCompletePrefsFile))
     {
         Fail "WinUAE installation failed"
     }

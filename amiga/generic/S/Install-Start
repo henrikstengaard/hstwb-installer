@@ -1,10 +1,10 @@
-; Install
-; -------
+; Install Start
+; -------------
 ;
-; Date: 2017-08-02
+; Date: 2017-08-03
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to install Workbench, Amiga OS 3.9, Kickstarts and packages.
+; An AmigaDOS script to start installation of Workbench, Amiga OS 3.9, Kickstarts and packages.
 
 
 ; Install Workbench, if prefs exists

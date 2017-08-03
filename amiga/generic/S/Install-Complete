@@ -1,0 +1,70 @@
+; Install Complete
+; ----------------
+;
+; Date: 2017-08-03
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
+
+
+; Create install complete prefs
+echo "" >INSTALL:Prefs/Install-Complete
+
+
+; Clear screen
+echo "*ec"
+
+
+; Print self install or install complete message
+IF EXISTS INSTALL:Prefs/Self-Install
+  echo "Self Install complete"
+  echo "---------------------"
+ELSE
+  echo "Install complete"
+  echo "----------------"
+ENDIF
+echo ""
+
+
+IF EXISTS INSTALL:Prefs/Install-BoingBags
+  IF EXISTS INSTALL:Prefs/UAE
+    echo "HstWB Installer has completed installation and will"
+    echo "quit and restart UAE to start installation of"
+    echo "Boing Bags in Amiga OS 3.9 during WBStartup."
+  ELSE
+    echo "HstWB Installer has completed installation and will"
+    echo "reboot system to start installation of"
+    echo "Boing Bags in Amiga OS 3.9 during WBStartup."
+  ENDIF
+ELSE
+  echo "HstWB Installer has completed installation and system is"
+  echo "now ready for use."
+ENDIF
+
+echo ""
+echo "Please let the system wait 10 seconds before continuing"
+echo "to allow file system to write changes to disk." 
+echo ""
+
+; Quit UAE or reboot message
+IF EXISTS INSTALL:Prefs/UAE
+  echo "Continue will quit UAE in 10 seconds."
+ELSE
+  echo "Continue will reboot system in 10 seconds."
+ENDIF
+
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+; Quit UAE, if UAE is used. Otherwise reboot
+IF EXISTS SYS:Prefs/UAE
+  Delete >NIL: SYS:Prefs/UAE
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  INSTALL:C/UAEquit
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  INSTALL:C/Reboot
+ENDIF
