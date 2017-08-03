@@ -8,7 +8,7 @@
 
 
 ; Create install complete prefs
-echo "" >INSTALL:Prefs/Install-Complete
+echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
 ; Clear screen
@@ -16,7 +16,7 @@ echo "*ec"
 
 
 ; Print self install or install complete message
-IF EXISTS INSTALL:Prefs/Self-Install
+IF EXISTS INSTALLDIR:Prefs/Self-Install
   echo "Self Install complete"
   echo "---------------------"
 ELSE
@@ -26,8 +26,8 @@ ENDIF
 echo ""
 
 
-IF EXISTS INSTALL:Prefs/Install-BoingBags
-  IF EXISTS INSTALL:Prefs/UAE
+IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  IF EXISTS INSTALLDIR:Prefs/UAE
     echo "HstWB Installer has completed installation and will"
     echo "quit and restart UAE to start installation of"
     echo "Boing Bags in Amiga OS 3.9 during WBStartup."
@@ -47,7 +47,7 @@ echo "to allow file system to write changes to disk."
 echo ""
 
 ; Quit UAE or reboot message
-IF EXISTS INSTALL:Prefs/UAE
+IF EXISTS INSTALLDIR:Prefs/UAE
   echo "Continue will quit UAE in 10 seconds."
 ELSE
   echo "Continue will reboot system in 10 seconds."
@@ -62,9 +62,9 @@ IF EXISTS SYS:Prefs/UAE
   Delete >NIL: SYS:Prefs/UAE
   echo "UAE will quit in 10 seconds..."
   wait 10
-  INSTALL:C/UAEquit
+  INSTALLDIR:C/UAEquit
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALL:C/Reboot
+  INSTALLDIR:C/Reboot
 ENDIF

@@ -96,7 +96,7 @@ IF $installos39 EQ 1 VAL
   echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
 ELSE
   ; Create install workbench prefs
-  echo "" >INSTALL:Prefs/Install-Workbench
+  echo "" >INSTALLDIR:Prefs/Install-Workbench
 
   ; Check if WORKBENCHDIR: device name exists and print message
   Assign >NIL: EXISTS WORKBENCHDIR:
@@ -113,7 +113,7 @@ ENDIF
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
   ; Create install kickstart prefs
-  echo "" >INSTALL:Prefs/Install-Kickstart
+  echo "" >INSTALLDIR:Prefs/Install-Kickstart
 
   echo "- KICKSTARTDIR: Present! Install Kickstart rom files."
 ELSE
@@ -122,25 +122,25 @@ ENDIF
 
 
 ; Create backup of mountlist, if it doesn't exist. Otherwise overwrite mountlist with backup.
-IF NOT EXISTS INSTALL:Devs/Mountlist.bak
-  Copy >NIL: INSTALL:Devs/Mountlist INSTALL:Devs/Mountlist.bak
+IF NOT EXISTS INSTALLDIR:Devs/Mountlist.bak
+  Copy >NIL: INSTALLDIR:Devs/Mountlist INSTALLDIR:Devs/Mountlist.bak
 ELSE
-  Copy >NIL: INSTALL:Devs/Mountlist.bak INSTALL:Devs/Mountlist
+  Copy >NIL: INSTALLDIR:Devs/Mountlist.bak INSTALLDIR:Devs/Mountlist
 ENDIF
 
 
 ; Replace os39isofilename placeholder in mountlist 
 IF NOT "$amigaos39isofile" EQ ""
-  rep INSTALL:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" "$amigaos39isofile"
+  rep INSTALLDIR:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" "$amigaos39isofile"
 ELSE
-  rep INSTALL:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" ""
+  rep INSTALLDIR:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" ""
 ENDIF
 
 
 ; Install amiga os 3.9, if installos39 is 1
 IF $installos39 EQ 1 VAL 
   ; Create install amiga os 3.9 prefs, if installos39 is 1
-  echo "" >INSTALL:Prefs/Install-AmigaOS3.9
+  echo "" >INSTALLDIR:Prefs/Install-AmigaOS3.9
 
   ; Print amiga os 3.9 iso file, if present
   IF NOT "$amigaos39isofile" EQ ""
@@ -157,7 +157,7 @@ IF $installos39 EQ 1 VAL
     echo ""
     IF $boingbagfilescount gt 0 VAL
       ; Create install boing bags prefs
-      echo "" >INSTALL:Prefs/Install-BoingBags
+      echo "" >INSTALLDIR:Prefs/Install-BoingBags
 
       ; Print boing bag files
       echo "Using Boing Bag file(s):"

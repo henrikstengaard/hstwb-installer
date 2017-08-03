@@ -16,7 +16,7 @@ echo "Boing Bag 2 installation"
 
 ; Extract boing bag 2
 echo "Extracting..."
-INSTALL:C/lha -m1 x "OS39DIR:BoingBag39-2.lha" SYS:T/BoingBags/ >NIL:
+INSTALLDIR:C/lha -m1 x "OS39DIR:BoingBag39-2.lha" SYS:T/BoingBags/ >NIL:
 echo "Installing..."
 
 

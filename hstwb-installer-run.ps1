@@ -464,7 +464,7 @@ function BuildInstallPackageScriptLines($packageNames)
             # append ini file set for package assignm, if installer mode is build self install or build package installation
             if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
             {
-                $installPackageLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+                $installPackageLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
             }
 
             # append remove package assign
@@ -475,13 +475,13 @@ function BuildInstallPackageScriptLines($packageNames)
         # add package dir assign, execute package install script and remove package dir assign
         $installPackageLines += ""
         $installPackageLines += "; Add package dir assign"
-        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """")
+        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:" + $packageName + """")
         $installPackageLines += ""
         $installPackageLines += "; Execute package install script"
         $installPackageLines += "execute ""PACKAGEDIR:Install"""
         $installPackageLines += ""
         $installPackageLines += "; Remove package dir assign"
-        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGES:" + $packageName + """ REMOVE")
+        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:" + $packageName + """ REMOVE")
 
 
         # add remove package assign lines, if there are any
@@ -517,7 +517,7 @@ function BuildResetAssignsScriptLines()
             $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
             $resetAssignsScriptLines += '; Get assign path from ini'
             $resetAssignsScriptLines += 'set assignpath ""'
-            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGES:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGESDIR:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
             $resetAssignsScriptLines += ''
             $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
             $resetAssignsScriptLines += 'IF NOT "$assignpath" eq ""'
@@ -631,7 +631,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         # append ini file set for global assign, if installer mode is build self install or build package installation
         if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $addGlobalAssignScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+            $addGlobalAssignScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
         }
         
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
@@ -798,10 +798,10 @@ function BuildInstallPackagesScriptLines($installPackages)
 
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGES:{0}/README.guide""" -f $installPackageScript.PackageName)
-            $installPackagesScriptLines += ("    cd ""PACKAGES:{0}""" -f $installPackageScript.PackageName)
+            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGESDIR:{0}/README.guide""" -f $installPackageScript.PackageName)
+            $installPackagesScriptLines += ("    cd ""PACKAGESDIR:{0}""" -f $installPackageScript.PackageName)
             $installPackagesScriptLines += "    multiview README.guide"
-            $installPackagesScriptLines += "    cd ""PACKAGES:"""
+            $installPackagesScriptLines += "    cd ""PACKAGESDIR:"""
             $installPackagesScriptLines += "  ELSE"
             $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Name)
             $installPackagesScriptLines += "  ENDIF"
@@ -986,7 +986,7 @@ function BuildInstallPackagesScriptLines($installPackages)
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("; Install package '{0}', if it's selected" -f $installPackageScript.Name)
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += 'execute PACKAGES:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $envArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
+            $installPackagesScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $envArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1546,8 +1546,8 @@ function RunBuildSelfInstall()
 
 
     # write assign hstwb installer script for self install
-    $assignHstwbInstallerScriptLines +="Assign INSTALL: ""HstWBInstallerDir:Install"""
-    $assignHstwbInstallerScriptLines +="Assign PACKAGES: ""HstWBInstallerDir:Packages"""
+    $assignHstwbInstallerScriptLines +="Assign INSTALLDIR: ""HstWBInstallerDir:Install"""
+    $assignHstwbInstallerScriptLines +="Assign PACKAGESDIR: ""HstWBInstallerDir:Packages"""
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "Boot-SelfInstall\S\Assign-HstWB-Installer")
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines
 
@@ -1619,7 +1619,7 @@ function RunBuildSelfInstall()
     $hstwbInstallDir = $globalAssigns.Get_Item($hstwbInstallDirAssignName)
 
     $removeHstwbInstallerScriptLines = @()
-    $removeHstwbInstallerScriptLines += "Assign PACKAGES: ""HstWBInstallerDir:Packages"" REMOVE"
+    $removeHstwbInstallerScriptLines += "Assign PACKAGESDIR: ""HstWBInstallerDir:Packages"" REMOVE"
     $removeHstwbInstallerScriptLines += "Assign >NIL: EXISTS ""HSTWBINSTALLERDIR:"""
     $removeHstwbInstallerScriptLines += "IF NOT WARN"
     $removeHstwbInstallerScriptLines += "  Assign >NIL: HSTWBINSTALLERDIR: ""$hstwbInstallDir"" REMOVE"
@@ -1752,7 +1752,7 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Add assigns and set environment variables for package installation"
     $packageInstallationScriptLines += "SetEnv Packages ""``CD``"""
-    $packageInstallationScriptLines += "Assign PACKAGES: ""`$Packages"""
+    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$Packages"""
     $packageInstallationScriptLines += 'Assign SYSTEMDIR: SYS:'
     $packageInstallationScriptLines += "SetEnv TZ MST7"
     $packageInstallationScriptLines += ""
@@ -1764,7 +1764,7 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Remove assigns for package installation"
-    $packageInstallationScriptLines += "Assign PACKAGES: ""`$Packages"" REMOVE"
+    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$Packages"" REMOVE"
     $packageInstallationScriptLines += "Assign >NIL: EXISTS ""SYSTEMDIR:"""
     $packageInstallationScriptLines += "IF NOT WARN"
     $packageInstallationScriptLines += "  Assign SYSTEMDIR: SYS: REMOVE"

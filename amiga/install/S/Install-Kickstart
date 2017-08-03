@@ -20,44 +20,44 @@ ENDIF
 
 
 ; Copy Kickstart 1.2 (33.180) (A500) rom, if it exists
-IF EXISTS Install:kick33180.A500
+IF EXISTS INSTALLDIR:kick33180.A500
   echo "Installing Kickstart 1.2 (33.180) (A500) rom..."
-  copy Install:kick33180.A500 SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:kick33180.A500 SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 
 ; Copy Kickstart 1.3 (34.5) (A500) rom, if it exists
-IF EXISTS Install:kick34005.A500
+IF EXISTS INSTALLDIR:kick34005.A500
   echo "Installing Kickstart 1.3 (34.5) (A500) rom..."
-  copy Install:kick34005.A500 SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:kick34005.A500 SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 
 ; Copy Kickstart 3.1 (40.063) (A600) rom, if it exists
-IF EXISTS Install:kick40063.A600
+IF EXISTS INSTALLDIR:kick40063.A600
   echo "Installing Kickstart 3.1 (40.063) (A600) rom..."
-  copy Install:kick40063.A600 SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:kick40063.A600 SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 
 ; Copy Kickstart 3.1 (40.068) (A1200) rom, if it exists
-IF EXISTS Install:kick40068.A1200
+IF EXISTS INSTALLDIR:kick40068.A1200
   echo "Installing Kickstart 3.1 (40.068) (A1200) rom..."
-  copy Install:kick40068.A1200 SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:kick40068.A1200 SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 
 ; Copy Kickstart 3.1 (40.068) (A4000) rom, if it exists
-IF EXISTS Install:kick40068.A4000
+IF EXISTS INSTALLDIR:kick40068.A4000
   echo "Installing Kickstart 3.1 (40.068) (A4000) rom..."
-  copy Install:kick40068.A4000 SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:kick40068.A4000 SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 
 ; Copy Kickstart rom key, if it exists
-IF EXISTS Install:rom.key
+IF EXISTS INSTALLDIR:rom.key
   echo "Installing Kickstart rom key..."
-  copy Install:rom.key SYSTEMDIR:Devs/Kickstarts
+  copy INSTALLDIR:rom.key SYSTEMDIR:Devs/Kickstarts
 ENDIF
 
 

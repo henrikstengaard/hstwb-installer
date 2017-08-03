@@ -168,17 +168,17 @@ ENDIF
 
 
 ; Create install prefs drawer, if it doesn't exist
-IF NOT EXISTS INSTALL:Prefs
-  makepath INSTALL:Prefs
+IF NOT EXISTS INSTALLDIR:Prefs
+  makepath INSTALLDIR:Prefs
 ENDIF
 
 
 ; Create install packages prefs
-echo "" >INSTALL:Prefs/Install-Packages
+echo "" >INSTALLDIR:Prefs/Install-Packages
 
 
 ; Run Patch Installation
-execute "INSTALL:S/Patch-Installation"
+execute "INSTALLDIR:S/Patch-Installation"
 
 
 ; Load system commands resident 
@@ -189,11 +189,11 @@ resident SYSTEMDIR:C/MakePath PURE
 
 
 ; Run Prepare Self Install
-execute "INSTALL:S/Prepare-Self-Install"
+execute "INSTALLDIR:S/Prepare-Self-Install"
 
 
 ; Run Install-Start
-execute "INSTALL:S/Install-Start"
+execute "INSTALLDIR:S/Install-Start"
 
 
 ; Clear screen
@@ -220,7 +220,7 @@ ENDIF
 
 
 ; Run Install-Complete
-execute "INSTALL:S/Install-Complete"
+execute "INSTALLDIR:S/Install-Complete"
 
 
 ; Fail

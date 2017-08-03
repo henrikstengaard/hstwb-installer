@@ -40,7 +40,7 @@ SetEnv TZ MST7
 
 ; Fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "" >INSTALL:Error
+  echo "" >INSTALLDIR:Error
   echo "Error: assign hstwb installer doesn't exist!"
   SKIP end
 ENDIF
@@ -49,7 +49,7 @@ execute S:Assign-HstWB-Installer
 
 echo ""
 echo "Copying boot scripts and tools..."
-copy >NIL: "INSTALL:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
+copy >NIL: "INSTALLDIR:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
 echo "Done."
 
 
@@ -62,10 +62,10 @@ ENDIF
 ; Copy self install scripts and tools
 echo ""
 echo "Copying install scripts and tools..."
-copy >NIL: "INSTALL:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
+copy >NIL: "INSTALLDIR:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
 makedir >NIL: "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9"
-copy >NIL: "INSTALL:Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9/" ALL
-copy >NIL: "INSTALL:S/Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/S" ALL
+copy >NIL: "INSTALLDIR:Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9/" ALL
+copy >NIL: "INSTALLDIR:S/Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/S" ALL
 echo "Done."
 
 
@@ -83,7 +83,7 @@ echo "Done."
 
 
 ; Create install complete prefs
-echo "" >INSTALL:Prefs/Install-Complete
+echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
 ; Done

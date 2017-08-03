@@ -25,34 +25,34 @@ Wait 2
 
 ; Workbench
 echo "Installing 'workbench31workbench.adf'..."
-diskwiz >NIL: "INSTALL:workbench31workbench.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31workbench.adf" ff0:
 copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 copy >NIL: SYSTEMDIR:c/Dir SYSTEMDIR:c/wbDir
 
 
 ; Locale
 echo "Installing 'workbench31locale.adf'..."
-diskwiz >NIL: "INSTALL:workbench31locale.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31locale.adf" ff0:
 makedir >NIL: SYSTEMDIR:Locale
 copy >NIL: ff0: SYSTEMDIR:Locale ALL CLONE
 
 
 ; Extras
 echo "Installing 'workbench31extras.adf'..."
-diskwiz >NIL: "INSTALL:workbench31extras.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31extras.adf" ff0:
 copy >NIL: ff0: SYSTEMDIR: ALL CLONE
 
 
 ; Fonts
 echo "Installing 'workbench31fonts.adf'..."
-diskwiz >NIL: "INSTALL:workbench31fonts.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31fonts.adf" ff0:
 makedir >NIL: SYSTEMDIR:Fonts
 copy >NIL: ff0: SYSTEMDIR:Fonts ALL CLONE
 
 
 ; Install
 echo "Installing 'workbench31install.adf'..."
-diskwiz >NIL: "INSTALL:workbench31install.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31install.adf" ff0:
 makedir >NIL: SYSTEMDIR:Tools
 copy ff0:HDTools/BRU SYSTEMDIR:Tools CLONE
 copy ff0:HDTools/HDBackup SYSTEMDIR:Tools CLONE
@@ -72,7 +72,7 @@ copy ff0:Update/Disk.info SYSTEMDIR: CLONE
 
 ; Storage
 echo "Installing 'workbench31storage.adf'..."
-diskwiz >NIL: "INSTALL:workbench31storage.adf" ff0:
+diskwiz >NIL: "INSTALLDIR:workbench31storage.adf" ff0:
 makedir >NIL: SYSTEMDIR:Storage
 copy >NIL: ff0: SYSTEMDIR:Storage ALL CLONE
 IF NOT EXISTS SYSTEMDIR:Devs/Monitors

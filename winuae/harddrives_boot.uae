@@ -1,7 +1,7 @@
-filesystem2=rw,INSTALL:Install:[$InstallDir],6
-uaehf[$InstallUaehfIndex]=dir,rw,INSTALL:Install:[$InstallDir],6
-filesystem2=rw,PACKAGES:Packages:[$PackagesDir],-128
-uaehf[$PackagesUaehfIndex]=dir,rw,PACKAGES:Packages:[$PackagesDir],-128
+filesystem2=rw,INSTALLDIR:INSTALLDIR:[$InstallDir],6
+uaehf[$InstallUaehfIndex]=dir,rw,INSTALLDIR:INSTALLDIR:[$InstallDir],6
+filesystem2=rw,PACKAGESDIR:PACKAGESDIR:[$PackagesDir],-128
+uaehf[$PackagesUaehfIndex]=dir,rw,PACKAGESDIR:PACKAGESDIR:[$PackagesDir],-128
 filesystem2=rw,OS39DIR:OS39DIR:[$Os39Dir],-128
 uaehf[$Os39UaehfIndex]=dir,rw,OS39DIR:OS39DIR:[$Os39Dir],-128
 uaehf[$Cd0UaehfIndex]=cd0,ro,:,0,0,0,2048,0,,ide0,ATA1

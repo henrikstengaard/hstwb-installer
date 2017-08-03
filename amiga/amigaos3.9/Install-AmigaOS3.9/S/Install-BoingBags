@@ -45,11 +45,11 @@ IF WARN
 ENDIF
 
 
-; Goto end, if device INSTALL: doesn't exist
-Assign >NIL: EXISTS INSTALL:
+; Goto end, if device INSTALLDIR: doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
 IF WARN
   echo ""
-  echo "*e[1mERROR: Device INSTALL: doesn't exist!*e[22m"
+  echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
   SKIP end
 ENDIF
 
@@ -107,7 +107,7 @@ ask "Press ENTER to continue"
 
 echo ""
 echo "Mounting Amiga OS 3.9 iso..."
-Mount FCD0: FROM INSTALL:Devs/Mountlist
+Mount FCD0: FROM INSTALLDIR:Devs/Mountlist
 wait 5
 echo "Done"
 
@@ -165,9 +165,9 @@ Delete >NIL: S:Install-BoingBag#?
 Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
 
 ; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
-IF EXISTS INSTALL:Prefs/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
   Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
-  Copy >NIL: INSTALL:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+  Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 ENDIF
 
 echo ""
@@ -196,7 +196,7 @@ IF EXISTS SYS:Prefs/Install-Packages
   echo ""
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALL:C/TotalReset
+  INSTALLDIR:C/TotalReset
 ENDIF
 
 
@@ -214,11 +214,11 @@ IF EXISTS SYS:Prefs/UAE
   Delete >NIL: SYS:Prefs/UAE
   echo "UAE will quit in 10 seconds..."
   wait 10
-  INSTALL:C/UAEquit
+  INSTALLDIR:C/UAEquit
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALL:C/TotalReset
+  INSTALLDIR:C/TotalReset
 ENDIF
 
 ENDSHELL

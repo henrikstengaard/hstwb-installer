@@ -86,7 +86,7 @@ echo "*ec"
 
 
 ; Run Install-Packages
-execute INSTALL:S/Install-Packages
+execute INSTALLDIR:S/Install-Packages
 
 
 ; Clear screen

@@ -121,9 +121,9 @@ IF EXISTS SYS:Prefs/UAE
   Delete >NIL: SYS:Prefs/UAE
   echo "UAE will quit in 10 seconds..."
   wait 10
-  INSTALL:C/UAEquit
+  INSTALLDIR:C/UAEquit
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALL:C/Reboot
+  INSTALLDIR:C/Reboot
 ENDIF

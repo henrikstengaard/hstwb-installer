@@ -8,9 +8,9 @@
 ; Run Install-Workbench-Adf, if WORKBENCHDIR: exists
 Assign >NIL: EXISTS WORKBENCHDIR:
 IF NOT WARN
-  execute "INSTALL:S/Install-Workbench-Adf"
+  execute "INSTALLDIR:S/Install-Workbench-Adf"
 ELSE
-  execute "INSTALL:S/Install-Workbench-Disk"
+  execute "INSTALLDIR:S/Install-Workbench-Disk"
 ENDIF
 
 

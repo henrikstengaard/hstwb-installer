@@ -8,26 +8,26 @@
 
 
 ; Install Workbench, if prefs exists
-IF EXISTS "INSTALL:Prefs/Install-Workbench"
-  execute "INSTALL:S/Install-Workbench"
+IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
+  execute "INSTALLDIR:S/Install-Workbench"
 ENDIF
 
 
 ; Install Amiga OS 3.9, if prefs exists
-IF EXISTS "INSTALL:Prefs/Install-AmigaOS3.9"
-  execute "INSTALL:S/Install-AmigaOS3.9"
+IF EXISTS "INSTALLDIR:Prefs/Install-AmigaOS3.9"
+  execute "INSTALLDIR:S/Install-AmigaOS3.9"
 ENDIF
 
 
 ; Install Kickstart, if prefs exists
-IF EXISTS "INSTALL:Prefs/Install-Kickstart"
-  execute "INSTALL:S/Install-Kickstart"
+IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
+  execute "INSTALLDIR:S/Install-Kickstart"
 ENDIF
 
 
 ; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
-IF NOT EXISTS INSTALL:Prefs/Install-BoingBags
-  IF EXISTS INSTALL:Prefs/Install-Packages
-    execute INSTALL:S/Install-Packages
+IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    execute INSTALLDIR:S/Install-Packages
   ENDIF
 ENDIF
