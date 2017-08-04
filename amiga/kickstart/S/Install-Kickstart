@@ -25,8 +25,12 @@ IF NOT EXISTS "INSTALLDIR:Kickstart/"
 ENDIF
 
 
-; Run find kickstart rom, if self install prefs exists
+; Delete existing kickstart files and run find kickstart rom, if self install prefs exists
 IF EXISTS INSTALLDIR:Prefs/Self-Install
+  ; Delete existing files from kickstart directory
+  Delete >NIL: "INSTALLDIR:Kickstart/#?"
+
+  ; Run find kickstart rom
   execute "INSTALLDIR:S/Find-Kickstart-Rom"
 ENDIF
 

@@ -38,6 +38,14 @@ ENDIF
 
 ; Find, install workbench from adf and fallback to disk, if self install prefs exists. Otherwise install workbench adf
 IF EXISTS INSTALLDIR:Prefs/Self-Install
+  ; Delete existing files from workbench directory
+  Delete >NIL: "INSTALLDIR:Workbench/#?"
+
+  ; Delete install workbench adf prefs, if it exists
+  IF EXISTS "INSTALLDIR:Prefs/Install-Workbench-Adf"
+    Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench-Adf"
+  ENDIF
+
   ; Run find workbench adf, if WORKBENCHDIR: exists
   Assign >NIL: EXISTS WORKBENCHDIR:
   IF NOT WARN

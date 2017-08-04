@@ -11,6 +11,30 @@
 echo "*ec" 
 
 
+; Delete install workbench prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench"
+ENDIF
+
+
+; Delete install amiga os 3.9 prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-AmigaOS3.9"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-AmigaOS3.9"
+ENDIF
+
+
+; Delete install kickstart prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-Kickstart"
+ENDIF
+
+
+; Delete install boing bags prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-BoingBags"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-BoingBags"
+ENDIF
+
+
 echo "Device Names Overview"
 echo "---------------------"
 echo ""
@@ -38,13 +62,30 @@ echo "HstWB-Installer has detected device names with"
 echo "following status:"
 
 
+; Set installso39 to 1
+set installos39 "1"
+
+
+; Set fail at 255 for DiskInDrive to fail silently
+failat 255
+
+
+; Set installos39 to 0, if device CD0: doesn't contain a cd-rom
+DiskInDrive >NIL: CD0:
+IF WARN
+  set installos39 "0"
+ENDIF
+
+
+; Set fail at 21
+failat 21
+
+
 ; Check if CD0: and AmigaOS3.9: device names exists and set installos39
-set installos39 "0"
-Assign >NIL: EXISTS CD0:
-IF NOT WARN
+IF $installos39 EQ 1 VAL
   Assign >NIL: EXISTS AmigaOS3.9:
-  IF NOT WARN
-    set installos39 "1"
+  IF WARN
+    set installos39 "0"
   ENDIF
 ENDIF
 
@@ -58,10 +99,29 @@ ELSE
 ENDIF
 
 
-; Check if OS39DIR: device name and amiga os 3.9 iso exists and print message
+; Set os39dir to 1, if device name OS39DIR: exists
+set os39dir "0"
+IF $installos39 EQ 0 VAL
+  Assign >NIL: EXISTS OS39DIR:
+  IF NOT WARN
+
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set os39dir to 1, if device OS39DIR: exists
+  DiskInDrive >NIL: OS39DIR:
+  IF NOT WARN
+    set os39dir "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Check for amiga os 3.9 iso and boing bags, if OS39DIR: device name exists
 set amigaos39isofile ""
-Assign >NIL: EXISTS OS39DIR:
-IF NOT WARN
+IF $os39dir EQ 1 VAL
   ; Find boing bag files
   fsearch "OS39DIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
   frsort <T:_boingbagfiles1 >T:_boingbagfiles
