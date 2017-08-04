@@ -9,7 +9,7 @@
 echo ""
 echo "Finding Workbench adf files in WORKBENCHDIR:"
 fsearch WORKBENCHDIR:#?.adf >T:workbench-adf-files1
-sed "s/^\(.\)/execute *"INSTALLDIR:S/Copy-Workbench-Adf*" *"\1/" T:workbench-adf-files1 >T:workbench-adf-files2
+sed "s/^\(.\)/execute *"INSTALLDIR:S\/Copy-Workbench-Adf*" *"\1/" T:workbench-adf-files1 >T:workbench-adf-files2
 sed "s/\(.\)$/\1*" *"INSTALLDIR:Workbench\/*"/" T:workbench-adf-files2 >T:workbench-adf-files3
 execute T:workbench-adf-files3
 
@@ -42,7 +42,20 @@ IF NOT EXISTS "INSTALLDIR:Workbench/workbench31storage.adf"
 ENDIF
 
 
-; Create install workbench adf, if install workbench adf is 1
+echo "Done"
+
+
+; Create install workbench adf, if install workbench adf is 1. Otherwise show install workbench from disk fallback message
 IF $installworkbenchadf EQ "1" VAL
   echo "" >INSTALLDIR:Prefs/Install-Workbench-Adf
+ELSE
+  echo ""
+  echo "Not all Workbench adf files exists. Installation will"
+  echo "fallback to install Workbench from disks."
+  echo ""
+  echo "It's also possible to change directory for WORKBENCHDIR"
+  echo "and reset to retry installing Workbench from adf files"
+  echo "again."
+  echo ""
+  ask "Press ENTER to continue"
 ENDIF

@@ -1155,21 +1155,28 @@ function RunInstall()
 
 
     # copy amiga install dir
-    $amigaInstallDir = [System.IO.Path]::Combine($amigaPath, "install")
+    $amigaInstallDir = Join-Path $amigaPath -ChildPath "install"
     Copy-Item -Path $amigaInstallDir $tempPath -recurse -force
 
 
     # set temp install and packages dir
-    $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+    $tempInstallDir = Join-Path $tempPath -ChildPath "install"
     $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
-    $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
+    $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
+    $tempPackagesDir = Join-Path $tempPath -ChildPath "packages"
 
-    # create temp packages path
+    # create temp workbench path
     if(!(test-path -path $tempWorkbenchDir))
     {
         mkdir $tempWorkbenchDir | Out-Null
     }
 
+    # create temp kickstart path
+    if(!(test-path -path $tempKickstartDir))
+    {
+        mkdir $tempKickstartDir | Out-Null
+    }
+    
     # create temp packages path
     if(!(test-path -path $tempPackagesDir))
     {
@@ -1185,6 +1192,10 @@ function RunInstall()
     $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
     Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
 
+    # copy kickstart to install directory
+    $amigaKickstartDir = [System.IO.Path]::Combine($amigaPath, "kickstart")
+    Copy-Item -Path "$amigaKickstartDir\*" $tempInstallDir -recurse -force
+
     # copy generic to install directory
     $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" $tempInstallDir -recurse -force
@@ -1194,16 +1205,16 @@ function RunInstall()
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
-    # create install prefs directory
-    $tempInstallPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
-    if(!(test-path -path $tempInstallPrefsDir))
+    # create prefs directory
+    $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
+    if(!(test-path -path $prefsDir))
     {
-        mkdir $tempInstallPrefsDir | Out-Null
+        mkdir $prefsDir | Out-Null
     }
 
 
     # create uae prefs file
-    $uaePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'UAE'
+    $uaePrefsFile = Join-Path $prefsDir -ChildPath 'UAE'
     Set-Content $uaePrefsFile -Value ""
 
 
@@ -1211,7 +1222,7 @@ function RunInstall()
     if ($settings.Workbench.InstallWorkbench -eq 'Yes' -and $workbenchAdfSetHashes.Count -gt 0)
     {
         # create install workbench prefs file
-        $installWorkbenchFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Workbench'
+        $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
         Set-Content $installWorkbenchFile -Value ""
         
 
@@ -1225,13 +1236,13 @@ function RunInstall()
     if ($settings.Kickstart.InstallKickstart -eq 'Yes' -and $kickstartRomSetHashes.Count -gt 0)
     {
         # create install kickstart prefs file
-        $installKickstartFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Kickstart'
+        $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
         Set-Content $installKickstartFile -Value ""
         
 
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempInstallDir -ChildPath $_.Filename), $true) }
+        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
 
 
         # get first kickstart rom hash
@@ -1269,7 +1280,7 @@ function RunInstall()
     if ($installPackages.Count -gt 0)
     {
         # create install packages prefs file
-        $installPackagesFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Packages'
+        $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
 
@@ -1321,7 +1332,7 @@ function RunInstall()
     if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
     {
         # create install amiga os 3.9 prefs file
-        $installAmigaOs39File = Join-Path $tempInstallPrefsDir -ChildPath 'Install-AmigaOS3.9'
+        $installAmigaOs39File = Join-Path $prefsDir -ChildPath 'Install-AmigaOS3.9'
         Set-Content $installAmigaOs39File -Value ""
 
 
@@ -1335,7 +1346,7 @@ function RunInstall()
         if ((Test-Path $boingBag1File) -and $settings.AmigaOS39.InstallBoingBags -eq 'Yes')
         {
             $installBoingBags = $true
-            $installBoingBagsPrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-BoingBags'
+            $installBoingBagsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-BoingBags'
             Set-Content $installBoingBagsPrefsFile -Value ""
         }
 
@@ -1429,9 +1440,9 @@ function RunInstall()
     Write-Host "Done."
 
 
-    # print launching winuae message
+    # print start winuae message
     Write-Host ""
-    Write-Host "Launching WinUAE to run install..."
+    Write-Host "Starting WinUAE to run install..."
 
 
     # winuae args
@@ -1445,18 +1456,18 @@ function RunInstall()
 
 
     # fail, if install complete prefs file doesn't exists
-    $installCompletePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Complete'
+    $installCompletePrefsFile = Join-Path $prefsDir -ChildPath 'Install-Complete'
     if (!(Test-Path -path $installCompletePrefsFile))
     {
-        Fail "WinUAE installation failed"
+        Fail "Installation failed"
     }
 
     
     if ($installBoingBags)
     {
-        # print launching winuae message
+        # print start winuae message
         Write-Host ""
-        Write-Host "Launching WinUAE to run install boing bags..."
+        Write-Host "Starting WinUAE to run install boing bags..."
 
 
         # build winuae install harddrives config with boot
@@ -1513,10 +1524,10 @@ function RunBuildSelfInstall()
 
 
     # create install prefs directory
-    $tempInstallPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
-    if(!(test-path -path $tempInstallPrefsDir))
+    $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
+    if(!(test-path -path $prefsDir))
     {
-        mkdir $tempInstallPrefsDir | Out-Null
+        mkdir $prefsDir | Out-Null
     }
 
 
@@ -1540,15 +1551,19 @@ function RunBuildSelfInstall()
 
     # copy workbench to install directory
     $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
-    Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$amigaWorkbenchDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
+    # copy kickstart to install directory
+    $amigaKickstartDir = [System.IO.Path]::Combine($amigaPath, "kickstart")
+    Copy-Item -Path "$amigaKickstartDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
   
 
     # create self install prefs file
-    $uaePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Self-Install'
+    $uaePrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
     Set-Content $uaePrefsFile -Value ""
 
 
@@ -1577,7 +1592,7 @@ function RunBuildSelfInstall()
     if ($installPackages.Count -gt 0)
     {
         # create install packages prefs file
-        $installPackagesFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Packages'
+        $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
 
@@ -1650,6 +1665,11 @@ function RunBuildSelfInstall()
     WriteAmigaTextLines $removeHstwbInstallerScriptFile $removeHstwbInstallerScriptLines 
 
 
+    # copy prefs to install self install
+    $selfInstallDir = Join-Path $tempInstallDir -ChildPath "Install-SelfInstall"
+    Copy-Item -Path $prefsDir $selfInstallDir -recurse -force
+
+
     # build winuae install harddrives config
     $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $tempInstallDir $true
 
@@ -1690,7 +1710,7 @@ function RunBuildSelfInstall()
 
 
     # fail, if install complete prefs file doesn't exists
-    $installCompletePrefsFile = Join-Path $tempInstallPrefsDir -ChildPath 'Install-Complete'
+    $installCompletePrefsFile = Join-Path $prefsDir -ChildPath 'Install-Complete'
     if (!(Test-Path -path $installCompletePrefsFile))
     {
         Fail "WinUAE installation failed"

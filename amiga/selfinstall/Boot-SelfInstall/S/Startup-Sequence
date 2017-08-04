@@ -173,10 +173,6 @@ IF NOT EXISTS INSTALLDIR:Prefs
 ENDIF
 
 
-; Create install packages prefs
-echo "" >INSTALLDIR:Prefs/Install-Packages
-
-
 ; Run Patch Installation
 execute "INSTALLDIR:S/Patch-Installation"
 

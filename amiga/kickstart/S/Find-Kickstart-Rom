@@ -1,0 +1,19 @@
+; Find Kickstart Rom
+; ------------------
+;
+; Date: 2017-08-04
+; Author: Henrik Noerfjand Stengaard
+
+
+; Find Kickstart rom files
+echo ""
+echo "Finding Kickstart rom files in KICKSTARTDIR:"
+fsearch KICKSTARTDIR:#?.rom >T:kickstart-rom-files1
+fsearch KICKSTARTDIR:#?.key >>T:kickstart-rom-files1
+sed "s/^\(.\)/execute *"INSTALLDIR:S\/Copy-Kickstart-Rom*" *"\1/" T:kickstart-rom-files1 >T:kickstart-rom-files2
+sed "s/\(.\)$/\1*" *"INSTALLDIR:Kickstart\/*"/" T:kickstart-rom-files2 >T:kickstart-rom-files3
+execute T:kickstart-rom-files3
+
+
+; End
+echo "Done"

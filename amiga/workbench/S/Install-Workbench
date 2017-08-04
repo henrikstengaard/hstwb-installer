@@ -32,7 +32,7 @@ Mount FF0:
 
 ; Create workbench directory, if it doesn't exist
 IF NOT EXISTS "INSTALLDIR:Workbench/"
-  makedir >NIL: "INSTALLDIR:Workbench"
+  makepath >NIL: "INSTALLDIR:Workbench"
 ENDIF
 
 
