@@ -1110,6 +1110,42 @@ function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39
 }
 
 
+# build winuae self install harddrives config text
+function BuildWinuaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir, $os39Dir)
+{
+    # build winuae image harddrives config
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+
+    # get uaehf index of last uaehf config from winuae image harddrives config
+    $uaehfIndex = 0
+    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+
+    $winuaeSelfInstallHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives_selfinstall.uae")
+
+    # fail, if winuae self install harddrives config file doesn't exist
+    if (!(Test-Path -Path $winuaeSelfInstallHarddrivesConfigFile))
+    {
+        Fail ("Error: Self install harddrives config file '" + $winuaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
+    }
+
+    # read winuae self install harddrives config file
+    $winuaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeSelfInstallHarddrivesConfigFile)
+
+    # replace winuae self install harddrives placeholders
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchUaehfIndex]', [int]$uaehfIndex + 1)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartUaehfIndex]', [int]$uaehfIndex + 2)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Trim()
+
+    # return winuae image and self install harddrives config
+    return $winuaeImageHarddrivesConfigText + "`r`n" + $winuaeSelfInstallHarddrivesConfigText
+}
+
+
 # run test
 function RunTest
 {
@@ -1402,6 +1438,24 @@ function RunInstall()
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
+    # write hstwb installer uae winuae configuration file to image dir
+    $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
+
+    # build winuae run harddrives config with boot
+    $winuaeRunHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+
+    # replace hstwb installer uae winuae configuration placeholders
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$HARDDRIVES]', $winuaeRunHarddrivesConfigText)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
+
+    # write hstwb installer uae winuae configuration file to image dir
+    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
+    [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
+    
+
     # write hstwb installer packages ini file
     $hstwbInstallerPackagesIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Packages.ini'
     WriteIniFile $hstwbInstallerPackagesIniFile $hstwbInstallerPackagesIni
@@ -1688,6 +1742,38 @@ function RunBuildSelfInstall()
     # write winuae hstwb installer config file to temp install dir
     $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
+
+
+    # hstwb uae run workbench dir
+    $workbenchDir = ''
+    if ($settings.Workbench.WorkbenchAdfPath -and (Test-Path -Path $settings.Workbench.WorkbenchAdfPath))
+    {
+        $workbenchDir = $settings.Workbench.WorkbenchAdfPath
+    }
+    
+    # hstwb uae kickstart dir
+    $kickstartDir = ''
+    if ($settings.Kickstart.KickstartRomPath -and (Test-Path -Path $settings.Kickstart.KickstartRomPath))
+    {
+        $kickstartDir = $settings.Kickstart.KickstartRomPath
+    }
+
+    # write hstwb installer uae winuae configuration file to image dir
+    $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
+
+    # build winuae self install harddrives config
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $workbenchDir $kickstartDir ''
+
+    # replace hstwb installer uae winuae configuration placeholders
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
+    
+    # write hstwb installer uae winuae configuration file to image dir
+    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
+    [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
 
 
     # print preparing installation done message
