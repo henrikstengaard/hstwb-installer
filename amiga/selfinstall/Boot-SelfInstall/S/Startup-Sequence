@@ -61,7 +61,7 @@ ask "Press ENTER to continue"
 echo ""
 
 
-; Using fail at 255 for DiskInDrive to fail properly
+; Using fail at 255 for DiskInDrive to fail silently
 failat 255
 
 ; Check if disk is present in DF0:

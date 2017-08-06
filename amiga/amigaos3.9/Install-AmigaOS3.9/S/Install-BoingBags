@@ -69,7 +69,7 @@ IF WARN
 ENDIF
 
 
-; Set fail at 255 for DiskInDrive to fail properly
+; Set fail at 255 for DiskInDrive to fail silently
 failat 255
 
 

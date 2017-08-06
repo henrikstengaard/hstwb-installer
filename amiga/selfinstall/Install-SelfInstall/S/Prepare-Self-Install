@@ -104,18 +104,18 @@ set os39dir "0"
 IF $installos39 EQ 0 VAL
   Assign >NIL: EXISTS OS39DIR:
   IF NOT WARN
+    ; Set fail at 255 for DiskInDrive to fail silently
+    failat 255
 
-  ; Set fail at 255 for DiskInDrive to fail silently
-  failat 255
+    ; Set os39dir to 1, if device OS39DIR: exists
+    DiskInDrive >NIL: OS39DIR:
+    IF NOT WARN
+      set os39dir "1"
+    ENDIF
 
-  ; Set os39dir to 1, if device OS39DIR: exists
-  DiskInDrive >NIL: OS39DIR:
-  IF NOT WARN
-    set os39dir "1"
+    ; Set fail at 21
+    failat 21
   ENDIF
-
-  ; Set fail at 21
-  failat 21
 ENDIF
 
 
@@ -155,23 +155,56 @@ ENDIF
 IF $installos39 EQ 1 VAL
   echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
 ELSE
-  ; Create install workbench prefs
-  echo "" >INSTALLDIR:Prefs/Install-Workbench
-
-  ; Check if WORKBENCHDIR: device name exists and print message
+  ; Check if WORKBENCHDIR: and set workbench
+  set workbench "0"
   Assign >NIL: EXISTS WORKBENCHDIR:
   IF NOT WARN
+    ; Set fail at 255 for DiskInDrive to fail silently
+    failat 255
+
+    ; Set workbench to 1, if device WORKBENCHDIR: exists
+    DiskInDrive >NIL: WORKBENCHDIR:
+    IF NOT WARN
+      set workbench "1"
+    ENDIF
+
+    ; Set fail at 21
+    failat 21
+  ENDIF
+
+  ; Print workbench status and create install workbench prefs, if WORKBENCHDIR: exists
+  IF $workbench EQ 1 VAL
+    ; Create install workbench prefs
+    echo "" >INSTALLDIR:Prefs/Install-Workbench
+
     echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
   ELSE
     echo "- WORKBENCHDIR: Not present! Skip Workbench 3.1 installation"
     echo "  from adf and install Workbench 3.1 from disks."
-  ENDIF
+  ENDIF  
 ENDIF
 
 
-; Check if KICKSTARTDIR: device name exists and print message
+; Check if KICKSTARTDIR: and set kickstart
+set kickstart "0"
 Assign >NIL: EXISTS KICKSTARTDIR:
 IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set workbench to 1, if device KICKSTARTDIR: exists
+  DiskInDrive >NIL: KICKSTARTDIR:
+  IF NOT WARN
+    set kickstart "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Print kickstart status and create install kickstart prefs, if KICKSTARTDIR: exists
+IF $kickstart EQ 1 VAL
   ; Create install kickstart prefs
   echo "" >INSTALLDIR:Prefs/Install-Kickstart
 
