@@ -1,0 +1,25 @@
+; Install Boing Bag 3 & 4
+; -----------------------
+;
+; Date: 2017-08-06
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to automate installation of Boing Bag 3 & 4.
+
+
+; Install Boing Bag 3 & 4
+; -----------------------
+
+echo ""
+echo "Boing Bag 3 & 4 installation"
+
+
+; Extract boing bag 3 & 4
+echo "Extracting..."
+INSTALLDIR:C/lha -m1 x "OS39DIR:BoingBags3&4.lha" SYS:T/BoingBags/ >NIL:
+echo "Installing..."
+
+
+; End
+; ---
+LAB end
