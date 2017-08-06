@@ -1146,6 +1146,36 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir
 }
 
 
+# build winuae run harddrives config text
+function BuildWinuaeRunHarddrivesConfigText
+{
+    # build winuae image harddrives config
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+
+    # get uaehf index of last uaehf config from winuae image harddrives config
+    $uaehfIndex = 0
+    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf(\d+)=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfIndex = $_.Groups[1].Value.Trim() } }
+
+    $winuaeRunHarddrivesConfigFile = [System.IO.Path]::Combine($winuaePath, "harddrives_run.uae")
+
+    # fail, if winuae run harddrives config file doesn't exist
+    if (!(Test-Path -Path $winuaeRunHarddrivesConfigFile))
+    {
+        Fail ("Error: Run harddrives config file '" + $winuaeRunHarddrivesConfigFile + "' doesn't exist!")
+    }
+
+    # read winuae run harddrives config file
+    $winuaeRunHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeRunHarddrivesConfigFile)
+
+    # replace winuae self install harddrives placeholders
+    $winuaeRunHarddrivesConfigText = $winuaeRunHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 1)
+    $winuaeRunHarddrivesConfigText = $winuaeRunHarddrivesConfigText.Trim()
+
+    # return winuae image and self install harddrives config
+    return $winuaeImageHarddrivesConfigText + "`r`n" + $winuaeRunHarddrivesConfigText
+}
+
+
 # run test
 function RunTest
 {
@@ -1442,7 +1472,7 @@ function RunInstall()
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae run harddrives config with boot
-    $winuaeRunHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+    $winuaeRunHarddrivesConfigText = BuildWinuaeRunHarddrivesConfigText
 
     # replace hstwb installer uae winuae configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
