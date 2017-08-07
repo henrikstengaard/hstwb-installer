@@ -1322,7 +1322,7 @@ function RunInstall()
         # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
         if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
         {
-            Copy-Item -Path $installKickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempInstallDir, "rom.key"))
+            Copy-Item -Path $installKickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempKickstartDir, "rom.key"))
         }
     }
 
