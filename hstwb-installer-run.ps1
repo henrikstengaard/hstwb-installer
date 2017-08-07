@@ -327,7 +327,22 @@ function BuildAssignHstwbInstallerScriptLines($createDirectories)
         # create directory for assignpath or check if path exist
         if ($createDirectories)
         {
-            $assignHstwbInstallerScriptLines += ("  makepath """ + $assignPath + """")
+            # add makedir dir each directory in assign path
+            $assignDirs = @()
+            $assignDirs += ($assignPath -replace '^[^:]+:(.*)', '$1') -split '/' | Where-Object { $_ }
+            $currentAssignPath = $assignDrive
+            foreach ($assignDir in $assignDirs)
+            {
+                if ($currentAssignPath -notmatch ':$')
+                {
+                    $currentAssignPath += '/'
+                }
+                $currentAssignPath += $assignDir
+                $assignHstwbInstallerScriptLines += ("  IF NOT EXISTS """ + $currentAssignPath + """")
+                $assignHstwbInstallerScriptLines += ("    MakeDir >NIL: """ + $currentAssignPath + """")
+                $assignHstwbInstallerScriptLines += ("  ENDIF")
+            }
+
             $assignHstwbInstallerScriptLines += ("  Assign " + $assignName + ": """ + $assignPath + """")
         }
         else
