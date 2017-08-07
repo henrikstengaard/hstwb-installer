@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-08-02
+; Date: 2017-08-07
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -320,20 +320,21 @@ AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Trashcan" 160 22
 AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 
-; Done message
-echo "Done"
-echo ""
-echo "Amiga OS 3.9 installation is complete."
-
-
 ; Copy default 640 x 512 display mode screenmode prefs
 Copy >NIL: INSTALLDIR:Install-AmigaOS3.9/Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
 
 
 ; Create install boing bags prefs and copy install amiga os 3.9 to systemdir, if boing bag 1 exist
 IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
   Copy >NIL: INSTALLDIR:Install-AmigaOS3.9 SYSTEMDIR: ALL
 ENDIF
+
+
+; Done message
+echo "Done"
+echo ""
+echo "Amiga OS 3.9 installation is complete."
 
 SKIP end
 

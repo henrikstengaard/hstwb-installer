@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install Packages
 ; ------------------------------------------------
 ;
-; Date: 2017-08-02
+; Date: 2017-08-07
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -39,6 +39,8 @@ Assign >NIL: LOCALE: SYS:Locale
 Assign >NIL: LIBS: SYS:Classes ADD
 Assign >NIL: HELP: LOCALE:Help DEFER
 
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
 ; Timezone for unzip
 SetEnv TZ MST7
 
@@ -68,16 +70,13 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
+; Assign add install dir c to C:
+Assign >NIL: C: INSTALLDIR:C ADD
+
+
 ; Delete fms temp directory, if it exist
 IF EXISTS "SYSTEMDIR:Temp/FMS"
   delete >NIL: "SYSTEMDIR:Temp/FMS" ALL
-ENDIF
-
-
-; Replace startup-sequence with workbench startup-sequence
-IF EXISTS S:Startup-Sequence.Workbench
-  Delete >NIL: S:Startup-Sequence
-  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
 ENDIF
 
 
@@ -87,6 +86,13 @@ echo "*ec"
 
 ; Run Install-Packages
 execute INSTALLDIR:S/Install-Packages
+
+
+; Replace startup-sequence with workbench startup-sequence
+IF EXISTS S:Startup-Sequence.Workbench
+  Delete >NIL: S:Startup-Sequence
+  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
+ENDIF
 
 
 ; Clear screen
@@ -103,9 +109,8 @@ echo "will now be deleted."
 echo ""
 echo "Deleting HstWB Installer files..."
 
-IF EXISTS S:Remove-HstWBInstaller
-  execute S:Remove-HstWBInstaller
-  delete >NIL: S:Remove-HstWBInstaller
+IF EXISTS INSTALLDIR:S/Remove-HstWBInstaller
+  execute INSTALLDIR:S/Remove-HstWBInstaller
 ENDIF
 
 echo "Done."

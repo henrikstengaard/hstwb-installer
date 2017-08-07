@@ -1,7 +1,7 @@
 ; HstWB Installer Script
 ; ----------------------
 ;
-; Date: 2017-07-31
+; Date: 2017-08-07
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to start installation of packages.
@@ -19,6 +19,7 @@ C:Copy >NIL: ENVARC: RAM:ENV ALL NOREQ
 
 Resident >NIL: C:Assign PURE
 Resident >NIL: C:Execute PURE
+Resident >NIL: C:UnZip PURE
 
 Assign >NIL: ENV: RAM:ENV
 Assign >NIL: T: RAM:T
@@ -62,25 +63,23 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
-; Install Packages
-execute S:Install-Packages
+; Assign add install dir c to C:
+Assign >NIL: C: INSTALLDIR:C ADD
 
 
-; Replace packages startup-sequence with workbench startup-sequence
-Rename >NIL: S:Startup-Sequence S:Startup-Sequence.Packages
-Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
-Delete >NIL: S:Startup-Sequence.Packages
+; Run Install-Packages
+execute INSTALLDIR:S/Install-Packages
+
+
+; Replace startup-sequence with workbench startup-sequence
+IF EXISTS S:Startup-Sequence.Workbench
+  Delete >NIL: S:Startup-Sequence
+  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
+ENDIF
 
 
 ; Clean up
 ; --------
-
-;Delete >NIL: S:HstWB-Installer
-
-; Delete start hstwb installer from WBStartup, if it exists
-;IF EXISTS SYS:Start-HstWB-Installer
-;	Delete >NIL: SYS:Start-HstWB-Installer#?
-;ENDIF
 
 
 ; Clear screen
@@ -100,7 +99,7 @@ echo "the system in 10 seconds."
 echo ""
 
 ; Quit UAE or reboot message
-IF EXISTS SYS:Prefs/UAE
+IF EXISTS INSTALLDIR:Prefs/UAE
   echo "Continue will quit UAE in 10 seconds."
 ELSE
   echo "Continue will reboot system in 10 seconds."
@@ -117,8 +116,7 @@ LAB end
 echo ""
 
 ; Quit UAE, if UAE is used. Otherwise reboot
-IF EXISTS SYS:Prefs/UAE
-  Delete >NIL: SYS:Prefs/UAE
+IF EXISTS INSTALLDIR:Prefs/UAE
   echo "UAE will quit in 10 seconds..."
   wait 10
   INSTALLDIR:C/UAEquit

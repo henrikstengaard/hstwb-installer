@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-07
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
@@ -58,8 +58,7 @@ ask "Press ENTER to continue"
 echo ""
 
 ; Quit UAE, if UAE is used. Otherwise reboot
-IF EXISTS SYS:Prefs/UAE
-  Delete >NIL: SYS:Prefs/UAE
+IF EXISTS INSTALLDIR:Prefs/UAE
   echo "UAE will quit in 10 seconds..."
   wait 10
   INSTALLDIR:C/UAEquit
