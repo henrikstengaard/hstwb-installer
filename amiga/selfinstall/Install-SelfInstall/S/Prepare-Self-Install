@@ -101,21 +101,19 @@ ENDIF
 
 ; Set os39dir to 1, if device name OS39DIR: exists
 set os39dir "0"
-IF $installos39 EQ 0 VAL
-  Assign >NIL: EXISTS OS39DIR:
+Assign >NIL: EXISTS OS39DIR:
+IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set os39dir to 1, if device OS39DIR: is mapped to a directory
+  DiskInDrive >NIL: OS39DIR:
   IF NOT WARN
-    ; Set fail at 255 for DiskInDrive to fail silently
-    failat 255
-
-    ; Set os39dir to 1, if device OS39DIR: exists
-    DiskInDrive >NIL: OS39DIR:
-    IF NOT WARN
-      set os39dir "1"
-    ENDIF
-
-    ; Set fail at 21
-    failat 21
+    set os39dir "1"
   ENDIF
+
+  ; Set fail at 21
+  failat 21
 ENDIF
 
 
@@ -154,6 +152,7 @@ ENDIF
 ; Skip Workbench 3.1 installation, if Amiga OS 3.9 will be installed
 IF $installos39 EQ 1 VAL
   echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
+  echo "  when Amiga OS 3.9 will be installed."
 ELSE
   ; Check if WORKBENCHDIR: and set workbench
   set workbench "0"
@@ -162,7 +161,7 @@ ELSE
     ; Set fail at 255 for DiskInDrive to fail silently
     failat 255
 
-    ; Set workbench to 1, if device WORKBENCHDIR: exists
+    ; Set workbench to 1, if device WORKBENCHDIR: is mapped to a directory
     DiskInDrive >NIL: WORKBENCHDIR:
     IF NOT WARN
       set workbench "1"
@@ -192,7 +191,7 @@ IF NOT WARN
   ; Set fail at 255 for DiskInDrive to fail silently
   failat 255
 
-  ; Set workbench to 1, if device KICKSTARTDIR: exists
+  ; Set workbench to 1, if device KICKSTARTDIR: is mapped to a directory
   DiskInDrive >NIL: KICKSTARTDIR:
   IF NOT WARN
     set kickstart "1"
