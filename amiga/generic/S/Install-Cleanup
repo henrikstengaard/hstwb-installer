@@ -1,0 +1,29 @@
+; Install Cleanup
+; ---------------
+;
+; Date: 2017-08-09
+; Author: Henrik Noerfjand Stengaard
+
+
+cls
+echo "Installation cleanup"
+echo "--------------------"
+echo ""
+echo "HstWB Installer and temp files used for installation"
+echo "process will now be deleted."
+echo ""
+echo "Deleting HstWB Installer and temp files..."
+
+; Delete assign hstwb installer, if it exists
+IF EXISTS S:Assign-HstWB-Installer
+  Delete >NIL: S:Assign-HstWB-Installer
+ENDIF
+
+; Run remove hstwb Installer, if it exists
+IF EXISTS INSTALLDIR:S/Remove-HstWBInstaller
+  execute INSTALLDIR:S/Remove-HstWBInstaller
+ENDIF
+
+echo "Done"
+echo ""
+ask "Press ENTER to continue"

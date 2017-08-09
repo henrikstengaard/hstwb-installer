@@ -1,7 +1,7 @@
-; Startup Sequence for HstWB Self Install Packages
-; ------------------------------------------------
+; Startup Sequence for Packages Installation
+; ------------------------------------------
 ;
-; Date: 2017-08-07
+; Date: 2017-08-09
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -9,6 +9,7 @@
 LoadModule DEVS:scsi.device
 
 
+; Run setpatch for Workbench 3.1 or Amiga OS 3.9 depending on exec.library version
 C:Version >NIL: exec.library 45 20
 If WARN
   C:SetPatch QUIET
@@ -55,8 +56,8 @@ C:AddDataTypes REFRESH QUIET
 Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
 
 
-; Clear screen
-echo "*ec" 
+; Startup clear screen
+cls
 
 
 ; Fail, if assign hstwb installer doesn't exist
@@ -70,21 +71,16 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
-; Assign add install dir c to C:
+; Add assigns to installdir
 Assign >NIL: C: INSTALLDIR:C ADD
-
-
-; Delete fms temp directory, if it exist
-IF EXISTS "SYSTEMDIR:Temp/FMS"
-  delete >NIL: "SYSTEMDIR:Temp/FMS" ALL
-ENDIF
-
-
-; Clear screen
-echo "*ec" 
+Assign >NIL: Devs: INSTALLDIR:Devs ADD
+Assign >NIL: L: INSTALLDIR:L ADD
+Assign >NIL: Libs: INSTALLDIR:Libs ADD
+Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
 
 ; Run Install-Packages
+cls
 execute INSTALLDIR:S/Install-Packages
 
 
@@ -95,34 +91,25 @@ IF EXISTS S:Startup-Sequence.Workbench
 ENDIF
 
 
-; Clear screen
-echo "*ec" 
-
-echo "Installation cleanup"
-echo "--------------------"
-echo ""
-echo "Package and temp files used for installation process"
-echo "will now be deleted."
-
-
-; Delete HstWB Installer directories
-echo ""
-echo "Deleting HstWB Installer files..."
-
-IF EXISTS INSTALLDIR:S/Remove-HstWBInstaller
-  execute INSTALLDIR:S/Remove-HstWBInstaller
+; Remove C: assign from install dir, if self install prefs exists
+IF EXISTS INSTALLDIR:Prefs/Self-Install
+  Assign >NIL: C: INSTALLDIR:C REMOVE
 ENDIF
 
-echo "Done."
-echo ""
-ask "Press ENTER to continue"
+
+; Set use to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
 
 
-; Clear screen
-echo "*ec" 
+; Run install cleanup
+execute INSTALLDIR:S/Install-Cleanup
 
 
 ; Package installation complete
+cls
 echo "Package Installation Complete"
 echo "-----------------------------"
 echo ""
@@ -133,12 +120,31 @@ echo "Please wait 10 seconds before restarting to allow file"
 echo "system to write changes to disk. Continue will reboot"
 echo "the system in 10 seconds."
 echo ""
-ask "Press ENTER to continue"
+
+; Quit UAE or reboot message
+IF $uae EQ 1 VAL
+  echo "Continue will quit UAE in 10 seconds."
+ELSE
+  echo "Continue will reboot system in 10 seconds."
+ENDIF
+
 echo ""
-echo "Rebooting in 10 seconds..."
-wait 10
-reboot
+ask "Press ENTER to continue"
 
 
 ; End
+; ---
 LAB end
+
+echo ""
+
+; Quit UAE, if UAE is used. Otherwise reboot
+IF $uae EQ 1 VAL
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  UAEquit
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  Reboot
+ENDIF

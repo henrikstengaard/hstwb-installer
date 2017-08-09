@@ -1,10 +1,16 @@
 ; Install Start
 ; -------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to start installation of Workbench, Amiga OS 3.9, Kickstarts and packages.
+; An AmigaDOS script to start installation of Large Harddisk, Workbench, Amiga OS 3.9, Kickstarts and packages.
+
+
+; Copy large harddisk, if install large harddisk exists
+IF EXISTS "INSTALLDIR:Install-LargeHarddisk"
+  copy >NIL: "INSTALLDIR:Install-LargeHarddisk/" TO "SYSTEMDIR:" ALL
+ENDIF
 
 
 ; Install Workbench, if prefs exists

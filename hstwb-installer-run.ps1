@@ -1265,6 +1265,12 @@ function RunInstall()
     }
 
 
+    # copy large harddisk to install directory
+    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
+    Copy-Item -Path "$largeHarddiskDir\*" $tempInstallDir -recurse -force
+    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk"
+    Copy-Item -Path "$largeHarddiskDir\*" $tempInstallDir -recurse -force
+
     # copy amiga shared dir
     $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
@@ -1638,6 +1644,21 @@ function RunBuildSelfInstall()
     $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
+    # copy large harddisk
+    $installLargeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
+    Copy-Item -Path "$installLargeHarddiskDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$installLargeHarddiskDir\*" "$tempInstallDir\Boot-SelfInstall" -recurse -force
+    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk"
+    Copy-Item -Path "$largeHarddiskDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+    # copy large harddisk to self install directory
+    $selfInstallLargeHarddiskDir = Join-Path "$tempInstallDir\Install-SelfInstall" -ChildPath "Large-Harddisk"
+    if(!(test-path -path $selfInstallLargeHarddiskDir))
+    {
+        mkdir $selfInstallLargeHarddiskDir | Out-Null
+    }
+    Copy-Item -Path "$largeHarddiskDir\*" $selfInstallLargeHarddiskDir -recurse -force
+
     # copy shared to install directory
     $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
@@ -1739,7 +1760,24 @@ function RunBuildSelfInstall()
         Fail ("Failed to run install. Global assigns doesn't exist!")
     }
 
+    $removeHstwbInstallerScriptLines = @()
+    $removeHstwbInstallerScriptLines += "; Remove INSTALLDIR: assign"
+    $removeHstwbInstallerScriptLines += "Assign INSTALLDIR: ""HstWBInstallerDir:Install"" REMOVE"
+    $removeHstwbInstallerScriptLines += "; Remove PACKAGESDIR: assign"
+    $removeHstwbInstallerScriptLines += "Assign PACKAGESDIR: ""HstWBInstallerDir:Packages"" REMOVE"
 
+    foreach ($assignName in $globalAssigns.keys)
+    {
+        # get assign path and drive
+        $assignPath = $globalAssigns.Get_Item($assignName)
+        
+        $removeHstwbInstallerScriptLines += ("; Remove {0}: assign, if it exists" -f $assignName)
+        $removeHstwbInstallerScriptLines += ("Assign >NIL: EXISTS ""{0}:""" -f $assignName)
+        $removeHstwbInstallerScriptLines += "IF NOT WARN"
+        $removeHstwbInstallerScriptLines += ("  Assign >NIL: {0}: ""{1}"" REMOVE" -f $assignName, $assignPath)
+        $removeHstwbInstallerScriptLines += "ENDIF"
+    }
+    
     $hstwbInstallDirAssignName = $globalAssigns.keys | Where-Object { $_ -match 'HstWBInstallerDir' } | Select-Object -First 1
 
     if (!$hstwbInstallDirAssignName)
@@ -1749,15 +1787,11 @@ function RunBuildSelfInstall()
 
     $hstwbInstallDir = $globalAssigns.Get_Item($hstwbInstallDirAssignName)
 
-    $removeHstwbInstallerScriptLines = @()
-    $removeHstwbInstallerScriptLines += "Assign PACKAGESDIR: ""HstWBInstallerDir:Packages"" REMOVE"
-    $removeHstwbInstallerScriptLines += "Assign >NIL: EXISTS ""HSTWBINSTALLERDIR:"""
-    $removeHstwbInstallerScriptLines += "IF NOT WARN"
-    $removeHstwbInstallerScriptLines += "  Assign >NIL: HSTWBINSTALLERDIR: ""$hstwbInstallDir"" REMOVE"
-    $removeHstwbInstallerScriptLines += "  IF EXISTS ""$hstwbInstallDir"""
-    $removeHstwbInstallerScriptLines += "    delete >NIL: ""$hstwbInstallDir"" ALL"
-    $removeHstwbInstallerScriptLines += "  ENDIF"
+    $removeHstwbInstallerScriptLines += "; Delete hstwb installer dir, if it exists"
+    $removeHstwbInstallerScriptLines += "IF EXISTS ""$hstwbInstallDir"""
+    $removeHstwbInstallerScriptLines += "  Delete >NIL: ""$hstwbInstallDir"" ALL"
     $removeHstwbInstallerScriptLines += "ENDIF"
+
     
     # write remove hstwb installer script
     $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Remove-HstWBInstaller")
