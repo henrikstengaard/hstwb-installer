@@ -58,7 +58,7 @@ function WriteIniFile($iniFile, $ini)
         }
     }
 
-    [System.IO.File]::WriteAllText($iniFile, $iniLines -join [System.Environment]::NewLine)
+    [System.IO.File]::WriteAllText($iniFile, ($iniLines -join [System.Environment]::NewLine) + [System.Environment]::NewLine)
 }
 
 
