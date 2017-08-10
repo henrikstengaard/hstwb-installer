@@ -735,8 +735,8 @@ function BuildInstallPackagesScriptLines($installPackages)
         }
 
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "set installpackagesmenu ````"
-        $installPackagesScriptLines += "set installpackagesmenu ``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"
+        $installPackagesScriptLines += "set installpackagesmenu """""
+        $installPackagesScriptLines += "set installpackagesmenu ""``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"""
         $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
 
         # switch package options
