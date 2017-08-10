@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2017-08-09
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -40,7 +40,10 @@ Assign >NIL: LOCALE: SYS:Locale
 Assign >NIL: LIBS: SYS:Classes ADD
 Assign >NIL: HELP: LOCALE:Help DEFER
 
+
+; Add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
 
 ; Timezone for unzip
 SetEnv TZ MST7
@@ -79,6 +82,13 @@ Assign >NIL: Libs: INSTALLDIR:Libs ADD
 Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
 
+; Load commands resident 
+resident INSTALLDIR:C/Reboot PURE 
+resident INSTALLDIR:C/UnZip PURE 
+resident INSTALLDIR:C/UAEquit PURE 
+resident INSTALLDIR:C/MakePath PURE 
+
+
 ; Run Install-Packages
 cls
 execute INSTALLDIR:S/Install-Packages
@@ -91,10 +101,12 @@ IF EXISTS S:Startup-Sequence.Workbench
 ENDIF
 
 
-; Remove C: assign from install dir, if self install prefs exists
-IF EXISTS INSTALLDIR:Prefs/Self-Install
-  Assign >NIL: C: INSTALLDIR:C REMOVE
-ENDIF
+; Remove assigns from installdir
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
 
 ; Set use to 1, if use prefs exists
@@ -105,6 +117,7 @@ ENDIF
 
 
 ; Run install cleanup
+cls
 execute INSTALLDIR:S/Install-Cleanup
 
 

@@ -1,11 +1,10 @@
 ; Install Cleanup
 ; ---------------
 ;
-; Date: 2017-08-09
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
-cls
 echo "Installation cleanup"
 echo "--------------------"
 echo ""

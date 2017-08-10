@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-07-05
+; Date: 2017-07-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -17,7 +17,7 @@ echo "*ec"
 echo "HstWB Installer"
 echo "---------------"
 echo ""
-echo "HstWB Installer is running install..."
+echo "HstWB Installer is now running install..."
 
 
 ; Set stack, failat and load basic commands resident 
@@ -39,14 +39,17 @@ resident DF0:C/Type PURE
 resident DF0:C/Version PURE
 resident DF0:C/RequestChoice PURE
 resident DF0:C/Eval PURE
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
 
 
-wait 3
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
+
+wait 1
 
 
 ; Fail, if assign hstwb installer doesn't exist

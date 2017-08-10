@@ -1,7 +1,7 @@
 ; Install Workbench
 ; -----------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -20,14 +20,25 @@ IF EXISTS INSTALLDIR:Prefs/Self-Install
     makepath >NIL: "INSTALLDIR:Temp/FMS"
   ENDIF
 
-  assign FMS: INSTALLDIR:Temp/FMS
+  ; Assign FMS: to fms temp directory, if it doesn't exist
+  Assign >NIL: EXISTS FMS:
+  IF WARN
+    assign >NIL: FMS: INSTALLDIR:Temp/FMS
+  ENDIF
 ELSE
-  assign FMS: T:
+  ; Assign FMS: to T:, if it doesn't exist
+  Assign >NIL: EXISTS FMS:
+  IF WARN
+    assign >NIL: FMS: T:
+  ENDIF
 ENDIF
 
 
-; Mount FF0:
-Mount FF0:
+; Mount FF0:, if it doesn't exist
+Assign >NIL: EXISTS FF0:
+IF WARN
+  Mount FF0: FROM INSTALLDIR:Devs/Mountlist
+ENDIF
 
 
 ; Create workbench directory, if it doesn't exist

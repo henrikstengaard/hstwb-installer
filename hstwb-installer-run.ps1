@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-07-21
+# Date:   2017-08-10
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1660,10 +1660,9 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$largeHarddiskDir\*" $selfInstallLargeHarddiskDir -recurse -force
 
     # copy shared to install directory
-    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
-    Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
-    Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\Boot-SelfInstall" -recurse -force
-    Copy-Item -Path "$amigaSharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    $sharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy amiga os 3.9 to install directory
     $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")

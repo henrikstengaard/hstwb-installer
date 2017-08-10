@@ -1,16 +1,17 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2017-08-07
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Boing Bags.
 
 
-; Clear screen
-echo "*ec" 
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
+cls
 echo "Amiga OS 3.9 Boing Bags installation"
 echo "------------------------------------"
 
@@ -36,8 +37,12 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
-; Assign add install dir c to C:
+; Add assigns to installdir
 Assign >NIL: C: INSTALLDIR:C ADD
+Assign >NIL: Devs: INSTALLDIR:Devs ADD
+Assign >NIL: L: INSTALLDIR:L ADD
+Assign >NIL: Libs: INSTALLDIR:Libs ADD
+Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
 
 ; Goto end, if device OS39DIR: doesn't exist
@@ -160,6 +165,13 @@ execute S:Install-BoingBag2
 ; --------
 LAB complete
 
+; Remove assigns from installdir
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
+
 ; Delete temp boing bags directory
 Delete >NIL: SYS:T/BoingBags ALL
 
@@ -178,6 +190,17 @@ echo ""
 echo "Boing Bags installation is complete."
 echo ""
 
+
+; Run install cleanup, if install packages prefs doesn't exist
+IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+  ask "Press ENTER to continue"
+  echo ""
+  execute INSTALLDIR:S/Install-Cleanup
+  echo ""
+ENDIF
+
+
+; Reboot message
 IF EXISTS INSTALLDIR:Prefs/Install-Packages
   echo "HstWB Installer has completed installation of"
   echo "Amiga OS 3.9 Boing Bags and will now reboot to"

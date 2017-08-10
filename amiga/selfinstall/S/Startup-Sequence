@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -17,8 +17,7 @@ echo "*ec"
 echo "HstWB Installer"
 echo "---------------"
 echo ""
-echo "HstWB Installer is running build self install..."
-
+echo "HstWB Installer is now running build self install."
 
 
 ; Set stack, failat and load basic commands resident 
@@ -38,6 +37,10 @@ Assign ENV: RAM:Env
 SetEnv TZ MST7
 
 
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
+
+
 ; Fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
   echo "" >INSTALLDIR:Error
@@ -47,39 +50,46 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
+; Load commands resident 
+resident INSTALLDIR:C/Reboot PURE 
+resident INSTALLDIR:C/UnZip PURE 
+resident INSTALLDIR:C/UAEquit PURE 
+resident INSTALLDIR:C/MakePath PURE 
+
+
 echo ""
+echo "Building self install:"
 echo "Copying boot scripts and tools..."
 copy >NIL: "INSTALLDIR:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
-echo "Done."
+IF NOT EXISTS "SYSTEMDIR:Prefs/Env-Archive"
+  MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive"
+ENDIF
+copy >NIL: "INSTALLDIR:Prefs/Env-Archive" "SYSTEMDIR:Prefs/Env-Archive" ALL
 
 
 ; Create install directory, if it doesn't exist
 IF NOT EXISTS "HSTWBINSTALLERDIR:Install/"
-  makedir >NIL: "HSTWBINSTALLERDIR:Install"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Install"
 ENDIF
 
 
 ; Copy self install scripts and tools
-echo ""
-echo "Copying install scripts and tools..."
+echo "Copying self install scripts and tools..."
 copy >NIL: "INSTALLDIR:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
-makedir >NIL: "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9"
+MakePath >NIL: "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9"
 copy >NIL: "INSTALLDIR:Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9/" ALL
 copy >NIL: "INSTALLDIR:S/Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/S" ALL
-echo "Done."
 
 
 ; Create packages directory, if it doesn't exist
 IF NOT EXISTS "HSTWBINSTALLERDIR:Packages/"
-  makedir >NIL: "HSTWBINSTALLERDIR:Packages"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Packages"
 ENDIF
 
 
 ; Copy Packages
-echo ""
-echo "Copying package files..."
+echo "Copying packages..."
 copy >NIL: "PACKAGESDIR:" TO "HSTWBINSTALLERDIR:Packages/" ALL
-echo "Done."
 
 
 ; Create install complete prefs
@@ -87,6 +97,7 @@ echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
 ; Done
+echo "Done"
 echo ""
 echo "Installation is now complete."
 echo ""

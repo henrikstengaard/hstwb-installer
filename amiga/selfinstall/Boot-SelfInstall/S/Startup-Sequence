@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -115,12 +115,6 @@ IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
 ENDIF 
 
 
-; Delete mountlist used for checking floppy devices
-IF EXISTS RAM:_mountlist
-  delete >NIL: RAM:_mountlist
-ENDIF
-
-
 ; Detected floppy device message
 echo "Detected Workbench disk in floppy device $floppydevice:"
 echo ""
@@ -146,9 +140,12 @@ resident $floppydevice:C/Type PURE
 resident $floppydevice:C/RequestChoice PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign >NIL: ENV: RAM:Env
-copy ENVARC:~(#?.info) ENV: ALL QUIET
-Assign >NIL: T: RAM:
+Copy ENVARC:~(#?.info) ENV: ALL QUIET
 SetEnv TZ MST7
+
+
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
 ; Fail, if assign hstwb installer doesn't exist
@@ -159,12 +156,27 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
+; Add assigns to installdir
+Assign >NIL: C: INSTALLDIR:C ADD
+Assign >NIL: Devs: INSTALLDIR:Devs ADD
+Assign >NIL: L: INSTALLDIR:L ADD
+Assign >NIL: Libs: INSTALLDIR:Libs ADD
+Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
+
+
 ; Fail, if HSTWBINSTALLERDIR: device name doesn't exist
 Assign >NIL: EXISTS HSTWBINSTALLERDIR:
 IF WARN
   echo "Error: HSTWBINSTALLERDIR: device name doesn't exist!"
   SKIP fail
 ENDIF
+
+
+; Load commands resident 
+resident INSTALLDIR:C/Reboot PURE 
+resident INSTALLDIR:C/UnZip PURE 
+resident INSTALLDIR:C/UAEquit PURE 
+resident INSTALLDIR:C/MakePath PURE 
 
 
 ; Create install prefs drawer, if it doesn't exist
@@ -175,13 +187,6 @@ ENDIF
 
 ; Run Patch Installation
 execute "INSTALLDIR:S/Patch-Installation"
-
-
-; Load system commands resident 
-resident SYSTEMDIR:C/Reboot PURE 
-resident SYSTEMDIR:C/UnZip PURE 
-resident SYSTEMDIR:C/UAEquit PURE 
-resident SYSTEMDIR:C/MakePath PURE 
 
 
 ; Run Prepare Self Install
@@ -213,6 +218,20 @@ IF NOT WARN
   ask "Press ENTER to continue"
   SKIP ejectdisk back
 ENDIF
+
+
+; Delete DiskInDrive, if it exists
+IF EXISTS SYS:C/DiskInDrive
+  Delete >NIL: SYS:C/DiskInDrive
+ENDIF
+
+
+; Remove assigns from installdir
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
 
 ; Run Install-Complete
