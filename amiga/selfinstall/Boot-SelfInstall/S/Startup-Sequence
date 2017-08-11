@@ -9,11 +9,12 @@
 LoadModule DEVS:scsi.device
 
 
-; Clear screen
-echo "*ec" 
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
 ; Welcome message
+cls 
 echo "HstWB Installer"
 echo "---------------"
 echo ""
@@ -36,7 +37,7 @@ ask "Press ENTER to continue"
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 ; Workbench message
@@ -144,10 +145,6 @@ Copy ENVARC:~(#?.info) ENV: ALL QUIET
 SetEnv TZ MST7
 
 
-; Add alias
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
-
-
 ; Fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
   echo "Error: Assign hstwb installer doesn't exist!"
@@ -198,7 +195,7 @@ execute "INSTALLDIR:S/Install-Start"
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 echo "Eject disk"

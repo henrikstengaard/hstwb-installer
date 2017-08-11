@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-08-09
+; Date: 2017-08-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -13,7 +13,7 @@
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 echo "Amiga OS 3.9 Installation"
@@ -329,10 +329,18 @@ AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS
 Copy >NIL: INSTALLDIR:Install-AmigaOS3.9/Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
 
 
-; Create install boing bags prefs and copy install amiga os 3.9 to systemdir, if boing bag 1 exist
+; Copy install amiga os 3.9 to systemdir and update startup sequence to load patch scsi.device, if install boing bags prefs exist
 IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  ; Copy install amiga os 3.9 for installing boing bags
   Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
   Copy >NIL: INSTALLDIR:Install-AmigaOS3.9 SYSTEMDIR: ALL
+
+  ; Update startup sequence with loadmodule patched scsi.device
+  echo "; Load patched scsi.device v43.45" >T:Startup-Sequence
+  echo "LoadModule DEVS:scsi.device" >>T:Startup-Sequence
+  echo "" >>T:Startup-Sequence
+  Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
+  Copy T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
 ENDIF
 
 

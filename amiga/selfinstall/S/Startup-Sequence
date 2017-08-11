@@ -9,11 +9,12 @@
 LoadModule DEVS:scsi.device
 
 
-; Clear screen
-echo "*ec" 
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
 ; Startup message
+cls 
 echo "HstWB Installer"
 echo "---------------"
 echo ""
@@ -35,10 +36,6 @@ resident DF0:C/Wait PURE
 MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 SetEnv TZ MST7
-
-
-; Add alias
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 
 
 ; Fail, if assign hstwb installer doesn't exist

@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-07-10
+; Date: 2017-08-10
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -9,11 +9,12 @@
 LoadModule DEVS:scsi.device
 
 
-; Clear screen
-echo "*ec" 
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
 ; Startup message
+cls 
 echo "HstWB Installer"
 echo "---------------"
 echo ""
@@ -43,10 +44,6 @@ MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
-
-
-; Add alias
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
 wait 1

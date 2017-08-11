@@ -8,7 +8,7 @@
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 ; Delete install workbench prefs, if it exists
@@ -52,7 +52,7 @@ ask "Press ENTER to continue"
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 echo "Device Names Status"

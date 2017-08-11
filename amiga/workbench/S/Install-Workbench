@@ -6,7 +6,7 @@
 
 
 ; Clear screen
-echo "*ec" 
+cls 
 
 
 echo "Workbench Installation"

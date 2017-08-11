@@ -12,7 +12,7 @@ echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
 ; Clear screen
-echo "*ec"
+cls
 
 
 ; Print self install or install complete message

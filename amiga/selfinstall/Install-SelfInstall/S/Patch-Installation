@@ -6,7 +6,7 @@
 
 
 ; Clear screen
-echo "*ec"
+cls
 
 
 ; Patch Installation
