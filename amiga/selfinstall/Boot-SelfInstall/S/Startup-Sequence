@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-08-10
+; Date: 2017-08-14
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -36,24 +36,207 @@ echo ""
 ask "Press ENTER to continue"
 
 
-; Clear screen
-cls 
-
-
 ; Workbench message
-echo "Workbench 3.1 Disk"
-echo "------------------"
+cls 
+echo "Workbench 3.1"
+echo "-------------"
 echo ""
-echo "Workbench system files are required for the"
+echo "Workbench 3.1 system files are required for the"
 echo "installation process and these will be loaded from"
 echo "Workbench 3.1 disk."
 echo ""
-echo "Floppy device to use will now be autodetected by"
-echo "checking if a disk is inserted in any floppy device."
+echo "Workbench 3.1 disk adf file will now be autodetected and"
+echo "used from WORKBENCHDIR:, if it's present."
+echo ""
+echo "If WORKBENCHDIR: is not present, it will fallback to"
+echo "use floppy devices and autodetect first floppy device"
+echo "with Workbench 3.1 disk inserted."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Set stack
+stack 16384
+
+
+; Set floppydevice empty
+Set floppydevice ""
+
+
+; Set failat to 255 for DiskInDrive to fail silently
+failat 255
+
+
+; Goto insert workbench disk, if WORKBENCHDIR: is not mapped
+DiskInDrive >NIL: WORKBENCHDIR:
+IF WARN
+  ; Set failat to 21
+  failat 21
+  SKIP insertworkbenchdisk
+ENDIF
+
+
+; Set failat to 21
+failat 21
+
+
+; Autodetect workbench 3.1 adf message
+cls 
+echo "Autodetect Workbench 3.1 adf"
+echo "----------------------------"
+echo ""
+echo "Finding Workbench 3.1 adf in WORKBENCHDIR:..."
+
+
+; Add assigns from S:AssignList
+AssPlus >NIL:
+
+
+; Find adf files in WORKBENCHDIR:
+FSearch >RAM:_adffiles "WORKBENCHDIR:" PAT="#?.adf"
+
+; Initialize variables
+set linescount `wc -l <RAM:_adffiles`
+set linenumber 1
+set adffile ""
+
+; Examine adf files
+LAB start
+IF NOT $linenumber GT $linescount VAL 
+  ; Get adf file from line
+  echo "$linenumber" >RAM:_linenumber
+  set lineregexp `sed "s/\(.\)*$/\1q;d/" RAM:_linenumber`
+  set line `sed "$lineregexp" "RAM:_adffiles"`
+
+  ; Set workbench disk valid to 1
+  set workbenchdiskvalid "1"
+
+  ; Examine adf list, if xadunfile return error code 0
+  xadUnFile >RAM:_adflist "$line" DIMG LIST
+  IF $RC EQ 0
+    ; Set workbench disk valid to 0, if adf doesn't contain which file
+    grep >NIL: "C/Which" <RAM:_adflist
+    IF NOT $RC EQ 0 VAL
+      set workbenchdiskvalid "0"
+    ENDIF
+
+    ; Set workbench disk valid to 0, if adf doesn't contain assign file
+    grep >NIL: "C/Assign" <RAM:_adflist
+    IF NOT $RC EQ 0 VAL
+      set workbenchdiskvalid "0"
+    ENDIF
+
+    ; Set workbench disk valid to 0, if adf doesn't contain datatypes.library file
+    grep >NIL: "Libs/datatypes.library" <RAM:_adflist
+    IF NOT $RC EQ 0 VAL
+      set workbenchdiskvalid "0"
+    ENDIF
+
+    ; Set workbench disk valid to 0, if adf doesn't contain cli file
+    grep >NIL: "System/CLI" <RAM:_adflist
+    IF NOT $RC EQ 0 VAL
+      set workbenchdiskvalid "0"
+    ENDIF
+
+    ; Set workbench disk valid to 0, if adf doesn't contain shell.info file
+    grep >NIL: "System/Shell.info" <RAM:_adflist
+    IF NOT $RC EQ 0 VAL
+      set workbenchdiskvalid "0"
+    ENDIF
+  ELSE
+    set workbenchdiskvalid "0"
+  ENDIF
+
+  ; Copy adf file, if it's a valid workbench disk
+  IF "$workbenchdiskvalid" EQ "1" VAL
+    set adffile "$line"
+    SKIP extractworkbenchadf
+  ENDIF
+
+  ; Next
+  LAB next
+  JWEval "$linenumber + 1" >RAM:_linenumber
+  set linenumber `sed "s/^-> //" RAM:_linenumber`
+  SKIP BACK start
+ENDIF
+
+
+; Print workbench disk floppy device fallback message
+echo "Done"
+echo ""
+echo "Workbench 3.1 adf doesn't exist in WORKBENCHDIR:."
+echo "Installation will fallback to autodetect Workbench 3.1"
+echo "disk in any floppy device."
+echo ""
+ask "Press ENTER to continue"
+SKIP insertworkbenchdisk
+
+
+; Extract workbench adf
+; ---------------------
+LAB extractworkbenchadf
+
+echo "Done"
+echo ""
+echo "Detected Workbench 3.1 adf file:"
+echo "$adffile"
+echo ""
+echo "Workbench 3.1 system will now be extracted from adf file"
+echo "to a temp directory and prepared for self install."
+echo ""
+ask "Press ENTER to continue"
+echo ""
+echo "Preparing Workbench system files..."
+
+
+; Create temp workbench directory, if it doesn't exist
+IF NOT EXISTS "SYS:Temp/Workbench"
+  MakePath >NIL: "SYS:Temp/Workbench"
+ENDIF
+
+
+; Extract files from workbench 3.1 adf
+xadUnFile >NIL: "$adffile" "SYS:Temp/Workbench" DIMG OVERWRITE
+
+
+; Add buffers, load commands resident and setup shell
+SYS:Temp/Workbench/C/AddBuffers >NIL: DF0: 200
+resident SYS:Temp/Workbench/C/Assign PURE
+resident SYS:Temp/Workbench/C/Copy PURE
+resident SYS:Temp/Workbench/C/Delete PURE
+resident SYS:Temp/Workbench/C/Execute PURE
+resident SYS:Temp/Workbench/C/Rename PURE
+resident SYS:Temp/Workbench/C/MakeDir PURE
+resident SYS:Temp/Workbench/C/Protect PURE
+resident SYS:Temp/Workbench/C/Search PURE 
+resident SYS:Temp/Workbench/C/Wait PURE 
+resident SYS:Temp/Workbench/C/Which PURE 
+resident SYS:Temp/Workbench/C/Mount PURE
+resident SYS:Temp/Workbench/C/Type PURE
+resident SYS:Temp/Workbench/C/RequestChoice PURE
+MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
+Copy ENVARC:~(#?.info) ENV: ALL QUIET
+SetEnv TZ MST7
+
+
+; cleanup SYS!
+
+
+; Print prepare workbench system files done message
+echo "Done"
+echo ""
+ask "Press ENTER to continue"
+SKIP selfinstall
 
 
 ; Print insert Workbench disk
 LAB insertworkbenchdisk
+
+
+; Autodetect workbench 3.1 disk message
+cls 
+echo "Autodetect Workbench 3.1 disk"
+echo "-----------------------------"
 echo ""
 echo "Please insert Workbench 3.1 Workbench disk in any"
 echo "floppy device."
@@ -68,28 +251,28 @@ failat 255
 ; Check if disk is present in DF0:
 DiskInDrive >NIL: DF0:
 IF NOT WARN
-  set floppydevice "DF0"
+  Set floppydevice "DF0"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF1:
 DiskInDrive >NIL: DF1:
 IF NOT WARN
-  set floppydevice "DF1"
+  Set floppydevice "DF1"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF2:
 DiskInDrive >NIL: DF2:
 IF NOT WARN
-  set floppydevice "DF2"
+  Set floppydevice "DF2"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF3:, if not go back to insert workbench disk
 DiskInDrive >NIL: DF3:
 IF NOT WARN
-  set floppydevice "DF3"
+  Set floppydevice "DF3"
 ELSE
   echo "No disk is inserted in any floppy device!"
   SKIP insertworkbenchdisk back
@@ -107,8 +290,8 @@ ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
   echo "Workbench disk is not valid!"
   SKIP insertworkbenchdisk back
-ELSE
-  $floppydevice:C/Assign >NIL: T: RAM:
+;ELSE
+;  $floppydevice:C/Assign >NIL: T: RAM:
 ENDIF
 IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
   echo "Workbench disk is not valid!"
@@ -117,7 +300,7 @@ ENDIF
 
 
 ; Detected floppy device message
-echo "Detected Workbench disk in floppy device $floppydevice:"
+echo "Detected Workbench 3.1 disk in floppy device $floppydevice:"
 echo ""
 ask "Press ENTER to continue"
 
@@ -140,9 +323,14 @@ resident $floppydevice:C/Mount PURE
 resident $floppydevice:C/Type PURE
 resident $floppydevice:C/RequestChoice PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
-Assign >NIL: ENV: RAM:Env
+;Assign >NIL: ENV: RAM:Env
 Copy ENVARC:~(#?.info) ENV: ALL QUIET
 SetEnv TZ MST7
+
+
+; Self install
+; ------------
+LAB selfinstall
 
 
 ; Fail, if assign hstwb installer doesn't exist

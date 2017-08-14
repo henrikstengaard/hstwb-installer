@@ -1,7 +1,7 @@
 ; Install Workbench
 ; -----------------
 ;
-; Date: 2017-08-10
+; Date: 2017-08-14
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -11,34 +11,6 @@ cls
 
 echo "Workbench Installation"
 echo "----------------------"
-
-
-; Assign FMS to install temp dir, if self install prefs exists. Otherwise assign FMS to T:
-IF EXISTS INSTALLDIR:Prefs/Self-Install
-  ; Create fms temp directory, if it doesn't exist
-  IF NOT EXISTS "INSTALLDIR:Temp/FMS"
-    makepath >NIL: "INSTALLDIR:Temp/FMS"
-  ENDIF
-
-  ; Assign FMS: to fms temp directory, if it doesn't exist
-  Assign >NIL: EXISTS FMS:
-  IF WARN
-    assign >NIL: FMS: INSTALLDIR:Temp/FMS
-  ENDIF
-ELSE
-  ; Assign FMS: to T:, if it doesn't exist
-  Assign >NIL: EXISTS FMS:
-  IF WARN
-    assign >NIL: FMS: T:
-  ENDIF
-ENDIF
-
-
-; Mount FF0:, if it doesn't exist
-Assign >NIL: EXISTS FF0:
-IF WARN
-  Mount FF0: FROM INSTALLDIR:Devs/Mountlist
-ENDIF
 
 
 ; Create workbench directory, if it doesn't exist
@@ -61,6 +33,49 @@ IF EXISTS INSTALLDIR:Prefs/Self-Install
   Assign >NIL: EXISTS WORKBENCHDIR:
   IF NOT WARN
     execute "INSTALLDIR:S/Find-Workbench-Adf"
+
+    ; Set fallback to 1, if one or more workbench adf files doesn't exist
+    echo ""
+    set installworkbenchadf "1"
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31workbench.adf"
+      ECHO "Workbench 3.1 Workbench adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31locale.adf"
+      ECHO "Workbench 3.1 Locale adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31extras.adf"
+      ECHO "Workbench 3.1 Extras adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31fonts.adf"
+      ECHO "Workbench 3.1 Fonts adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31install.adf"
+      ECHO "Workbench 3.1 Install adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31storage.adf"
+      ECHO "Workbench 3.1 Storage adf doesn't exist!"
+      set installworkbenchadf "0"
+    ENDIF
+
+    ; Create install workbench adf, if install workbench adf is 1. Otherwise show install workbench from disk fallback message
+    IF $installworkbenchadf EQ "1" VAL
+      echo "" >INSTALLDIR:Prefs/Install-Workbench-Adf
+    ELSE
+      echo ""
+      echo "Not all Workbench adf files exists. Installation will"
+      echo "fallback to install Workbench from disks."
+      echo ""
+      echo "It's also possible to change directory for WORKBENCHDIR"
+      echo "and reset to retry installing Workbench from adf files"
+      echo "again."
+      echo ""
+      ask "Press ENTER to continue"
+    ENDIF
   ENDIF
 
   ; Run install workbench adf, if prefs exists
