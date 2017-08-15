@@ -1257,7 +1257,7 @@ function RunInstall()
     {
         mkdir $tempKickstartDir | Out-Null
     }
-    
+
     # create temp packages path
     if(!(test-path -path $tempPackagesDir))
     {
@@ -1619,6 +1619,12 @@ function RunBuildSelfInstall()
         mkdir $tempInstallDir | Out-Null
     }
 
+    # create temp licenses path
+    $tempLicensesDir = Join-Path $tempInstallDir -ChildPath "Licenses"
+    if(!(test-path -path $tempLicensesDir))
+    {
+        mkdir $tempLicensesDir | Out-Null
+    }
 
     # create temp packages path
     $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
@@ -1636,6 +1642,9 @@ function RunBuildSelfInstall()
     }
 
 
+    # copy licenses dir
+    Copy-Item -Path "$licensesPath\*" $tempLicensesDir -recurse -force
+    
     # copy self install to install directory
     $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
     Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
@@ -2016,6 +2025,7 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $amigaPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("amiga")
+$licensesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("licenses")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 

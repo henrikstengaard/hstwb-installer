@@ -89,6 +89,16 @@ echo "Copying packages..."
 copy >NIL: "PACKAGESDIR:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 
 
+; Create licenses directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLERDIR:Licenses/"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Licenses"
+ENDIF
+
+; Copy licenses
+echo "Copying licenses..."
+copy >NIL: "INSTALLDIR:Licenses" TO "HSTWBINSTALLERDIR:Licenses/" ALL
+
+
 ; Create install complete prefs
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
