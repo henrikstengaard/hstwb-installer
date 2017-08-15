@@ -1,0 +1,50 @@
+; Remove Self Install
+; -------------------
+;
+; Date: 2017-08-15
+; Author: Henrik Noerfjand Stengaard
+
+
+; Remove boot self install files
+IF EXISTS "SYS:C/AssPlus"
+  Delete >NIL: "SYS:C/AssPlus"
+ENDIF
+IF EXISTS "SYS:C/DiskInDrive"
+  Delete >NIL: "SYS:C/DiskInDrive"
+ENDIF
+IF EXISTS "SYS:C/FSearch"
+  Delete >NIL: "SYS:C/FSearch"
+ENDIF
+IF EXISTS "SYS:C/grep"
+  Delete >NIL: "SYS:C/grep"
+ENDIF
+IF EXISTS "SYS:C/JWEval"
+  Delete >NIL: "SYS:C/JWEval"
+ENDIF
+IF EXISTS "SYS:C/MakePath"
+  Delete >NIL: "SYS:C/MakePath"
+ENDIF
+IF EXISTS "SYS:C/sed"
+  Delete >NIL: "SYS:C/sed"
+ENDIF
+IF EXISTS "SYS:C/wc"
+  Delete >NIL: "SYS:C/wc"
+ENDIF
+IF EXISTS "SYS:C/xadUnFile"
+  Delete >NIL: "SYS:C/xadUnFile"
+ENDIF
+IF EXISTS "SYS:Libs/xad"
+  Delete >NIL: "SYS:Libs/xad" ALL
+ENDIF
+IF EXISTS "SYS:Libs/xadmaster.library"
+  Delete >NIL: "SYS:Libs/xadmaster.library"
+ENDIF
+IF EXISTS "SYS:S/AssignList"
+  Delete >NIL: "SYS:S/AssignList"
+ENDIF
+IF EXISTS "SYS:S/xadmaster.key"
+  Delete >NIL: "SYS:S/xadmaster.key"
+ENDIF
+IF EXISTS "SYS:Temp/Workbench"
+  Delete >NIL: "SYS:Temp/Workbench" ALL
+ENDIF

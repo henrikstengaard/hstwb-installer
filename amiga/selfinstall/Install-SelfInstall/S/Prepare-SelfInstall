@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-08-03
+; Date: 2017-08-15
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -262,5 +262,9 @@ IF $installos39 EQ 1 VAL
 ENDIF
 
 
+echo ""
+echo "This is last chance to adjust device names, files used"
+echo "during installation. It's still possible to apply changes"
+echo "and reset before starting self install."
 echo ""
 ask "Press ENTER to continue"
