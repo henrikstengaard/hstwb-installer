@@ -1503,7 +1503,7 @@ function RunInstall()
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
 
     # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
+    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.winuae.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
     
 
@@ -1850,7 +1850,7 @@ function RunBuildSelfInstall()
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
     
     # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
+    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.winuae.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
 
 
