@@ -1,0 +1,3 @@
+hard_drive_[$WorkbenchHarddriveIndex] = [$WorkbenchDir]
+hard_drive_[$KickstartHarddriveIndex] = [$KickstartDir]
+hard_drive_[$Os39HarddriveIndex] = [$Os39Dir]

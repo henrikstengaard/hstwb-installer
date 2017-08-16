@@ -1053,6 +1053,75 @@ function BuildInstallPackagesScriptLines($installPackages)
 
 
 # build winuae image harddrives config text
+function BuildFsUaeHarddrivesConfigText()
+{
+    # winuae image harddrives config file
+    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($settings.Image.ImageDir, "harddrives.uae")
+
+    # fail, if winuae image harddrives config file doesn't exist
+    if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
+    {
+        Fail ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+    }
+
+    # read winuae image harddrives config text
+    $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
+
+    # replace imagedir placeholders
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('\\', '\')
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
+
+    $fsUaeImageHarddrives = @()
+    $uaehfs = @()
+
+    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfs += $_.Groups[1].Value.Trim() } }
+
+    foreach ($uaehf in $uaehfs)
+    {
+        $uaehf | Select-String -Pattern '^hdf,[^,]*,[^,:]*:"?([^"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $fsUaeImageHarddrives += "hard_drive_{0} = {1}" -f $fsUaeImageHarddrives.Count, $_.Groups[1].Value.Trim() }
+        $uaehf | Select-String -Pattern '^dir,[^,]*,[^,:]*:[^,:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $fsUaeImageHarddrives += "hard_drive_{0} = {1}" -f $fsUaeImageHarddrives.Count, $_.Groups[1].Value.Trim() }
+    }
+    
+    return $fsUaeImageHarddrives -join "`r`n"
+}
+
+
+function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir, $os39Dir)
+{
+    # build fs-uae image harddrives config
+    $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText
+
+    # get harddrive index of last hard drive config from fs-uae image harddrives config
+    $harddriveIndex = 0
+    $fsUaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^hard_drive_(\d+)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddriveIndex = $_.Groups[1].Value.Trim() } }
+
+    $fsUaeSelfInstallHarddrivesConfigFile = [System.IO.Path]::Combine($fsUaePath, "harddrives_selfinstall.fs-uae")
+
+    # fail, if fs-uae self install harddrives config file doesn't exist
+    if (!(Test-Path -Path $fsUaeSelfInstallHarddrivesConfigFile))
+    {
+        Fail ("Error: Self install harddrives config file '" + $fsUaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
+    }
+
+    # read fs-uae self install harddrives config file
+    $fsUaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($fsUaeSelfInstallHarddrivesConfigFile)
+
+    # replace winuae self install harddrives placeholders
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchHarddriveIndex]', [int]$harddriveIndex + 1)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartHarddriveIndex]', [int]$harddriveIndex + 2)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Trim()
+
+    # return fs-uae image and self install harddrives config
+    return $fsUaeImageHarddrivesConfigText + "`r`n" + $fsUaeSelfInstallHarddrivesConfigText
+}
+
+# build winuae image harddrives config text
 function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
 {
     # winuae image harddrives config file
@@ -1859,9 +1928,27 @@ function RunBuildSelfInstall()
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
     
     # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.winuae.uae"
+    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
 
+
+    # read fs-uae hstwb installer config file
+    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($fsUaePath, "hstwb-installer.fs-uae")
+    $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
+
+    # build fs-uae self install harddrives config
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $workbenchDir $kickstartDir ''
+    
+    # replace hstwb installer fs-uae configuration placeholders
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ISOFILE]', '')
+    
+    # write hstwb installer fs-uae configuration file to image dir
+    $hstwbInstallerFsUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
+    [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
+    
 
     # print preparing installation done message
     Write-Host "Done."
@@ -2024,6 +2111,7 @@ $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
+$fsUaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("fs-uae")
 $amigaPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("amiga")
 $licensesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("licenses")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
