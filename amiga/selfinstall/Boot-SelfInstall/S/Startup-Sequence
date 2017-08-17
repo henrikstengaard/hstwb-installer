@@ -87,79 +87,71 @@ echo "----------------------------"
 echo ""
 echo "Finding Workbench 3.1 adf in WORKBENCHDIR:..."
 
-
 ; Add assigns from S:AssignList
 AssPlus >NIL:
-
 
 ; Find adf files in WORKBENCHDIR:
 FSearch >RAM:_adffiles "WORKBENCHDIR:" PAT="#?.adf"
 
-; Initialize variables
-set linescount `wc -l <RAM:_adffiles`
-set linenumber 1
-set adffile ""
+; Get next adf file
+LAB nextadffile
+set adffile `FirstLine RAM:_adffiles DELETE`
 
-; Examine adf files
-LAB start
-IF NOT $linenumber GT $linescount VAL 
-  ; Get adf file from line
-  echo "$linenumber" >RAM:_linenumber
-  set lineregexp `sed "s/\(.\)*$/\1q;d/" RAM:_linenumber`
-  set line `sed "$lineregexp" "RAM:_adffiles"`
+; Goto workbench
+IF "$adffile" EQ ""
+  SKIP workbenckdiskfallback
+ENDIF
 
-  ; Set workbench disk valid to 1
-  set workbenchdiskvalid "1"
+; Set workbench disk valid to 1
+set workbenchdiskvalid "1"
 
-  ; Examine adf list, if xadunfile return error code 0
-  xadUnFile >RAM:_adflist "$line" DIMG LIST
-  IF $RC EQ 0
-    ; Set workbench disk valid to 0, if adf doesn't contain which file
-    grep >NIL: "C/Which" <RAM:_adflist
-    IF NOT $RC EQ 0 VAL
-      set workbenchdiskvalid "0"
-    ENDIF
-
-    ; Set workbench disk valid to 0, if adf doesn't contain assign file
-    grep >NIL: "C/Assign" <RAM:_adflist
-    IF NOT $RC EQ 0 VAL
-      set workbenchdiskvalid "0"
-    ENDIF
-
-    ; Set workbench disk valid to 0, if adf doesn't contain datatypes.library file
-    grep >NIL: "Libs/datatypes.library" <RAM:_adflist
-    IF NOT $RC EQ 0 VAL
-      set workbenchdiskvalid "0"
-    ENDIF
-
-    ; Set workbench disk valid to 0, if adf doesn't contain cli file
-    grep >NIL: "System/CLI" <RAM:_adflist
-    IF NOT $RC EQ 0 VAL
-      set workbenchdiskvalid "0"
-    ENDIF
-
-    ; Set workbench disk valid to 0, if adf doesn't contain shell.info file
-    grep >NIL: "System/Shell.info" <RAM:_adflist
-    IF NOT $RC EQ 0 VAL
-      set workbenchdiskvalid "0"
-    ENDIF
-  ELSE
+; Examine adf list, if xadunfile return error code 0
+xadUnFile >RAM:_adflist "$adffile" DIMG LIST
+IF $RC EQ 0
+  ; Set workbench disk valid to 0, if adf doesn't contain which file
+  grep >NIL: "C/Which" <RAM:_adflist
+  IF NOT $RC EQ 0 VAL
     set workbenchdiskvalid "0"
   ENDIF
 
-  ; Copy adf file, if it's a valid workbench disk
-  IF "$workbenchdiskvalid" EQ "1" VAL
-    set adffile "$line"
-    SKIP extractworkbenchadf
+  ; Set workbench disk valid to 0, if adf doesn't contain assign file
+  grep >NIL: "C/Assign" <RAM:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchdiskvalid "0"
   ENDIF
 
-  ; Next
-  LAB next
-  JWEval "$linenumber + 1" >RAM:_linenumber
-  set linenumber `sed "s/^-> //" RAM:_linenumber`
-  SKIP BACK start
+  ; Set workbench disk valid to 0, if adf doesn't contain datatypes.library file
+  grep >NIL: "Libs/datatypes.library" <RAM:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchdiskvalid "0"
+  ENDIF
+
+  ; Set workbench disk valid to 0, if adf doesn't contain cli file
+  grep >NIL: "System/CLI" <RAM:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchdiskvalid "0"
+  ENDIF
+
+  ; Set workbench disk valid to 0, if adf doesn't contain shell.info file
+  grep >NIL: "System/Shell.info" <RAM:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchdiskvalid "0"
+  ENDIF
+ELSE
+  set workbenchdiskvalid "0"
 ENDIF
 
+; Copy adf file, if it's a valid workbench disk
+IF "$workbenchdiskvalid" EQ "1" VAL
+  SKIP extractworkbenchadf
+ENDIF
+
+SKIP BACK nextadffile
+
+
+; Workbench disk fallback
+; -----------------------
+LAB workbenckdiskfallback
 
 ; Print workbench disk floppy device fallback message
 echo "Done"
