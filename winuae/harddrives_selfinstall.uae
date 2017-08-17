@@ -1,7 +1,7 @@
-filesystem2=rw,WORKBENCHDIR:WORKBENCHDIR:[$WorkbenchDir],-128
-uaehf[$WorkbenchUaehfIndex]=dir,rw,WORKBENCHDIR:WORKBENCHDIR:[$WorkbenchDir],-128
-filesystem2=rw,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
-uaehf[$KickstartUaehfIndex]=dir,rw,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
+filesystem2=ro,WORKBENCHDIR:WORKBENCHDIR:[$WorkbenchDir],-128
+uaehf[$WorkbenchUaehfIndex]=dir,ro,WORKBENCHDIR:WORKBENCHDIR:[$WorkbenchDir],-128
+filesystem2=ro,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
+uaehf[$KickstartUaehfIndex]=dir,ro,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
 filesystem2=rw,OS39DIR:OS39DIR:[$Os39Dir],-128
 uaehf[$Os39UaehfIndex]=dir,rw,OS39DIR:OS39DIR:[$Os39Dir],-128
 uaehf[$Cd0UaehfIndex]=cd0,ro,:,0,0,0,2048,0,,ide0,ATA1
