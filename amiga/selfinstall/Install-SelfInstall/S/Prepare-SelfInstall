@@ -119,11 +119,16 @@ ENDIF
 
 ; Check for amiga os 3.9 iso and boing bags, if OS39DIR: device name exists
 set amigaos39isofile ""
+set installboingbags "0"
 IF $os39dir EQ 1 VAL
-  ; Find boing bag files
+  ; Find and sort boing bag files
   fsearch "OS39DIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
   frsort <T:_boingbagfiles1 >T:_boingbagfiles
 
+  ; Set install boing bags
+  set installboingbags `wc -l <T:_boingbagfiles` 
+
+  ; Find amiga os 3.9 iso, if not installing amiga os 3.9 from cd-drive
   IF $installos39 EQ 0 VAL
     ; Find amiga os 3.9 iso files
     echo "" NOLINE >T:_amigaos39isofiles
@@ -135,13 +140,20 @@ IF $os39dir EQ 1 VAL
     set amigaos39isofile "`type T:_amigaos39isofile`"
     IF NOT "$amigaos39isofile" EQ ""
       set installos39 "1"
+    ENDIF
+  ENDIF
+
+  ; Print os39dir installation status
+  IF $installos39 EQ 1 VAL
+    IF NOT $installboingbags EQ 0 VAL
       echo "- OS39DIR: Present! Install Amiga OS 3.9 from iso and"
       echo "  apply Boing Bag updates."
     ELSE
-      echo "- OS39DIR: Present! Apply Boing Bag updates."
+      echo "- OS39DIR: Present! Install Amiga OS 3.9 from iso."
     ENDIF
   ELSE
-    echo "- OS39DIR: Present! Apply Boing Bag updates."
+    echo "- OS39DIR: Present! Skip Amiga OS 3.9 installation"
+    echo "  from iso, Amiga OS 3.9 iso doesn't exist."
   ENDIF
 ELSE
   echo "- OS39DIR: Not present! Skip Amiga OS 3.9 installation"
@@ -149,7 +161,7 @@ ELSE
 ENDIF
 
 
-; Skip Workbench 3.1 installation, if Amiga OS 3.9 will be installed
+; Print workbench installation depending on amiga os 3.9 will be installed
 IF $installos39 EQ 1 VAL
   echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
   echo "  when Amiga OS 3.9 will be installed."
@@ -265,6 +277,6 @@ ENDIF
 echo ""
 echo "This is last chance to adjust device names, files used"
 echo "during installation. It's still possible to apply changes"
-echo "and reset before starting self install."
+echo "to device names and reset before starting self install."
 echo ""
 ask "Press ENTER to continue"
