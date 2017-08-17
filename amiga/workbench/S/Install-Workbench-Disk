@@ -1,13 +1,16 @@
 ; Install Workbench Disk
 ; ----------------------
 ;
-; Date: 2017-08-14
+; Date: 2017-08-17
 ; Author: Henrik Noerfjand Stengaard
 
 
+; Print install workbench 3.1 from disk message
+echo "Installing Workbench 3.1 from disk."
+
 ; Run detect workbench disk, if floppy device is not set
 IF "$floppydevice" EQ ""
-  execute S:Detect-Workbench-Disk
+  execute INSTALLDIR:S/Detect-Workbench-Disk
 ENDIF
 
 
@@ -17,7 +20,7 @@ LAB installworkbench
 
 ; Install Workbench 3.1 Workbench
 echo ""
-echo "Installing Workbench 3.1 Workbench files from $floppydevice:..."
+echo "Copying Workbench 3.1 Workbench files from $floppydevice:..."
 copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
 echo "Done"
 
@@ -51,7 +54,7 @@ ENDIF
 
 
 ; Install Workbench 3.1 Locale
-echo "Installing Workbench 3.1 Locale files from $floppydevice:..."
+echo "Copying Workbench 3.1 Locale files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Locale
 copy >NIL: $floppydevice: SYSTEMDIR:Locale ALL CLONE
 echo "Done"
@@ -86,7 +89,7 @@ ENDIF
 
 
 ; Install Workbench 3.1 Extras
-echo "Installing Workbench 3.1 Extras files from $floppydevice:..."
+echo "Copying Workbench 3.1 Extras files from $floppydevice:..."
 copy >NIL: $floppydevice: SYSTEMDIR: ALL CLONE
 echo "Done"
 
@@ -120,7 +123,7 @@ ENDIF
 
 
 ; Install Workbench 3.1 Fonts
-echo "Installing Workbench 3.1 Fonts files from $floppydevice:..."
+echo "Copying Workbench 3.1 Fonts files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Fonts
 copy >NIL: $floppydevice: SYSTEMDIR:Fonts ALL CLONE
 echo "Done"
@@ -155,7 +158,7 @@ ENDIF
 
 
 ; Install Workbench 3.1 Install
-echo "Installing Workbench 3.1 Install files from $floppydevice:..."
+echo "Copying Workbench 3.1 Install files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Tools
 copy $floppydevice:HDTools/BRU SYSTEMDIR:Tools CLONE
 copy $floppydevice:HDTools/HDBackup SYSTEMDIR:Tools CLONE
@@ -200,7 +203,7 @@ ENDIF
 
 
 ; Install Workbench 3.1 Storage
-echo "Installing Workbench 3.1 Storage files from $floppydevice:..."
+echo "Copying Workbench 3.1 Storage files from $floppydevice:..."
 makedir >NIL: SYSTEMDIR:Storage
 copy >NIL: $floppydevice: SYSTEMDIR:Storage ALL CLONE
 IF NOT EXISTS SYSTEMDIR:Devs/Monitors

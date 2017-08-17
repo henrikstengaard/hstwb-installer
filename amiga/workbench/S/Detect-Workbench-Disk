@@ -1,8 +1,20 @@
 ; Detect Workbench Disk
 ; ---------------------
 ;
-; Date: 2017-08-14
+; Date: 2017-08-17
 ; Author: Henrik Noerfjand Stengaard
+
+
+; Insert workbench disk
+; ---------------------
+LAB insertworkbenchdisk
+
+echo ""
+echo "Please insert Workbench 3.1 Workbench disk in any"
+echo "floppy device."
+echo ""
+ask "Press ENTER to continue"
+echo ""
 
 
 ; Using fail at 255 for DiskInDrive to fail silently
@@ -35,7 +47,7 @@ IF NOT WARN
   SetEnv floppydevice "DF3"
 ELSE
   echo "No disk is inserted in any floppy device!"
-  SKIP insertworkbenchdisk back
+  SKIP BACK insertworkbenchdisk
 ENDIF
 
 
@@ -45,15 +57,15 @@ failat 21
 
 IF NOT EXISTS $floppydevice:C/Which
   echo "Workbench disk is not valid!"
-  SKIP insertworkbenchdisk back
+  SKIP BACK insertworkbenchdisk
 ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
   echo "Workbench disk is not valid!"
-  SKIP insertworkbenchdisk back
+  SKIP BACK insertworkbenchdisk
 ENDIF
 IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
   echo "Workbench disk is not valid!"
-  SKIP insertworkbenchdisk back
+  SKIP BACK insertworkbenchdisk
 ENDIF 
 
 

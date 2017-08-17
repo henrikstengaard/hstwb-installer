@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-08-15
+; Date: 2017-08-17
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -67,12 +67,12 @@ Set floppydevice ""
 failat 255
 
 
-; Goto insert workbench disk, if WORKBENCHDIR: is not mapped
+; Goto detect workbench disk, if WORKBENCHDIR: is not mapped
 DiskInDrive >NIL: WORKBENCHDIR:
 IF WARN
   ; Set failat to 21
   failat 21
-  SKIP insertworkbenchdisk
+  SKIP detectworkbenchdisk
 ENDIF
 
 
@@ -95,6 +95,7 @@ FSearch >RAM:_adffiles "WORKBENCHDIR:" PAT="#?.adf"
 
 ; Get next adf file
 LAB nextadffile
+set adffile ""
 set adffile `FirstLine RAM:_adffiles DELETE`
 
 ; Goto workbench
@@ -166,7 +167,7 @@ echo "Otherwise installation will continue and fallback to"
 echo "autodetect Workbench 3.1 disk in any floppy device."
 echo ""
 ask "Press ENTER to continue"
-SKIP insertworkbenchdisk
+SKIP detectworkbenchdisk
 
 
 ; Extract workbench adf
@@ -229,14 +230,16 @@ ask "Press ENTER to continue"
 SKIP selfinstallstart
 
 
-; Print insert Workbench disk
-LAB insertworkbenchdisk
+; Detect workbench disk
+; ----------------------
+LAB detectworkbenchdisk
 
-
-; Autodetect workbench 3.1 disk message
+; Print autodetect workbench 3.1 disk message
 cls 
 echo "Autodetect Workbench 3.1 disk"
 echo "-----------------------------"
+
+LAB insertworkbenchdisk
 echo ""
 echo "Please insert Workbench 3.1 Workbench disk in any"
 echo "floppy device."
