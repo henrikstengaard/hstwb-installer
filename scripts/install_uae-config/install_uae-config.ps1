@@ -48,10 +48,11 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
     # find A1200 kickstart 3.1 rom file
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
     
-    # read winuae config lines
+    # read winuae config file
     $winuaeConfigLines = @()
     $winuaeConfigLines += Get-Content $winuaeConfigFile
 
+    # patch winuae config lines
     for ($i = 0; $i -lt $winuaeConfigLines.Count; $i++)
     {
         $line = $winuaeConfigLines[$i]
@@ -155,25 +156,101 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
         }
     }
 
+    # write winuae config file
+    Set-Content -Path $winuaeConfigFile -Value $winuaeConfigLines -Encoding UTF8
+}
 
-    # write config file
-    Set-Content -Path ($winuaeConfigFile + ".new") -Value $winuaeConfigLines -Encoding UTF8
+
+# patch fs-uae config file
+function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir)
+{
+    # find A1200 kickstart 3.1 rom file
+    $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
+    
+    # read fs-uae config file
+    $fsuaeConfigLines = @()
+    $fsuaeConfigLines += Get-Content $fsuaeConfigFile | Where-Object { $_ -notmatch '^floppy_image_\d+' }
+
+    # get self install harddrives
+    $selfInstallHarddrives = @{}
+    $fsuaeConfigLines | ForEach-Object { $_ | Select-String -Pattern '^(hard_drive_\d+)_label\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $selfInstallHarddrives.Set_Item($_.Groups[1].Value.Trim(), $_.Groups[2].Value.Trim()) } }
+
+    # patch fs-uae config lines
+    for ($i = 0; $i -lt $fsuaeConfigLines.Count; $i++)
+    {
+        $line = $fsuaeConfigLines[$i]
+
+        # update kickstart file
+        if ($line -match '^kickstart_file\s*=')
+        {
+            if ($a1200Kickstart31RomFile)
+            {
+                $line = "kickstart_file = {0}" -f $a1200Kickstart31RomFile.Replace('\', '/')
+            }
+            else
+            {
+                $line = 'kickstart_file = '
+            }
+        }
+        
+        # update hard_drive parameters
+        if ($line -match '^hard_drive_\d+\s*=')
+        {
+            $harddriveIndex = $line | Select-String -Pattern '^(hard_drive_\d+)\s*=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+
+            if ($harddriveIndex -and $selfInstallHarddrives.ContainsKey($harddriveIndex))
+            {
+                if ($selfInstallHarddrives[$harddriveIndex] -match 'WORKBENCHDIR')
+                {
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $workbenchDir.Replace('\', '/'))
+                }
+                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'KICKSTARTDIR')
+                {
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $kickstartDir.Replace('\', '/'))
+                }
+                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'OS39DIR')
+                {
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $os39Dir.Replace('\', '/'))
+                }
+            }
+            else
+            {
+                $harddrivePath = $line | Select-String -Pattern '^hard_drive_\d+\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+
+                if ($harddrivePath)
+                {
+                    $harddrivePath = Join-Path $currentDir -ChildPath (Split-Path $harddrivePath -Leaf)
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
+                }
+            }
+        }
+
+        # update line, if it's changed
+        if ($line -ne $fsuaeConfigLines[$i])
+        {
+            $fsuaeConfigLines[$i] = $line
+        }
+    }
+
+    # get adf files from workbench dir
+    $adfFiles = @()
+    $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf -File
+
+    # add adf files to fs-uae config lines as swappable floppies
+    for ($i = 0; $i -lt $adfFiles.Count; $i++)
+    {
+        $fsuaeConfigLines += "floppy_image_{0} = {1}" -f $i, $adfFiles[$i].FullName.Replace('\', '/')
+    }
+
+    # write fs-uae config file
+    $utf8Encoding = New-Object System.Text.UTF8Encoding $False
+    [System.IO.File]::WriteAllLines($fsuaeConfigFile, $fsuaeConfigLines, $utf8Encoding)
+    #Set-Content -Path $fsuaeConfigFile -Value $fsuaeConfigLines -Encoding UTF8
 }
 
 
 # get current directory
 $currentDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.')
-
-# winuae config file
-$winuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.uae"
-
-
-# fail, if winuae config file doesn't exist
-if (!(Test-Path -Path $winuaeConfigFile))
-{
-    Write-Error ("WinUAE configuration file '{0}' doesn't exist" -f $winuaeConfigFile)
-    exit 1
-}
 
 
 # default self install directories
@@ -210,29 +287,72 @@ foreach ($dir in @($workbenchDir, $kickstartDir, $os39Dir))
 }
 
 
-# patch winuae config file
-Write-Output ("Patching WinUAE configuration '{0}'" -f $winuaeConfigFile)
-Write-Output ""
-PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir
-    
-
-# get winuae directory from public directory
-$winuaeConfigDir = Get-ChildItem -Path ${Env:PUBLIC} -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'Amiga Files\\WinUAE\\Configurations$' } | Select-Object -First 1
+# winuae config file
+$winuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.uae"
 
 
-# prompt for install winuae confiuration, if winuae configuration directory exists
-if ($winuaeConfigDir)
+# patch and install winuae config file, if it exists
+if (Test-Path -Path $winuaeConfigFile)
 {
-    Write-Output ("Detected WinUAE configurations directory '{0}'" -f $winuaeConfigDir.FullName)
+    # patch winuae config file
+    Write-Output ("Patching WinUAE configuration '{0}'" -f $winuaeConfigFile)
     Write-Output ""
-    
-    # copy winuae configuration file to winuae config dir, if confirmed install winuae configuration
-    if ((Read-Host -Prompt "Install WinUAE configuration? [Y/N]") -match '^y')
+    PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir
+
+
+    # get winuae directory from public directory
+    $winuaeConfigDir = Get-ChildItem -Path ${Env:PUBLIC} -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'Amiga Files\\WinUAE\\Configurations$' } | Select-Object -First 1
+
+    # prompt for install winuae configuration, if winuae configuration directory exists
+    if ($winuaeConfigDir)
     {
-        Copy-Item $winuaeConfigFile -Destination $winuaeConfigDir.FullName -Force
+        Write-Output ("Detected WinUAE configurations directory '{0}'" -f $winuaeConfigDir.FullName)
+        Write-Output ""
+        
+        # copy winuae configuration file to winuae config dir, if confirmed install winuae configuration
+        if ((Read-Host -Prompt "Install WinUAE configuration? [Y/N]") -match '^y')
+        {
+            Copy-Item $winuaeConfigFile -Destination $winuaeConfigDir.FullName -Force
+        }
     }
+    else
+    {
+        Write-Output ("WinUAE configurations directory doesn't exist in '{0}'" -f ${Env:PUBLIC})
+    }
+    Write-Output ""
 }
-else
+
+
+# fs-uae config file
+$fsuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.fs-uae"
+
+
+# patch and install fs-uae config file, if it exists
+if (Test-Path -Path $fsuaeConfigFile)
 {
-    Write-Output ("WinUAE configurations directory doesn't exist in '{0}'" -f ${Env:PUBLIC}) -ForegroundColor Yellow
+    # patch fs-uae config file
+    Write-Output ("Patching FS-UAE configuration '{0}'" -f $fsuaeConfigFile)
+    Write-Output ""
+    PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir
+
+
+    # get fs-uae directory from public directory
+    $fsuaeConfigDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | Select-Object -First 1
+    
+    # prompt for install fs-uae configuration, if winuae configuration directory exists
+    if ($fsuaeConfigDir)
+    {
+        Write-Output ("Detected FS-UAE configurations directory '{0}'" -f $fsuaeConfigDir.FullName)
+        Write-Output ""
+        
+        # copy fs-uae configuration file to fs-uae config dir, if confirmed install fs-uae configuration
+        if ((Read-Host -Prompt "Install FS-UAE configuration? [Y/N]") -match '^y')
+        {
+            Copy-Item $fsuaeConfigFile -Destination $fsuaeConfigDir.FullName -Force
+        }
+    }
+    else
+    {
+        Write-Output ("FS-UAE configurations directory doesn't exist in '{0}'" -f ([System.Environment]::GetFolderPath("MyDocuments")))
+    }
 }
