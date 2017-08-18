@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-08-10
+# Date:   2017-08-18
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1088,6 +1088,7 @@ function BuildFsUaeHarddrivesConfigText()
 }
 
 
+# build fs-uae self install harddrives config text
 function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir, $os39Dir)
 {
     # build fs-uae image harddrives config
@@ -1120,6 +1121,7 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir,
     # return fs-uae image and self install harddrives config
     return $fsUaeImageHarddrivesConfigText + "`r`n" + $fsUaeSelfInstallHarddrivesConfigText
 }
+
 
 # build winuae image harddrives config text
 function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
@@ -1574,6 +1576,29 @@ function RunInstall()
     # write hstwb installer uae winuae configuration file to image dir
     $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.winuae.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
+
+    
+    # read fs-uae hstwb installer config file
+    $hstwbInstallerFsUaeConfigFile = [System.IO.Path]::Combine($fsUaePath, "hstwb-installer.fs-uae")
+    $hstwbInstallerFsUaeConfigText = [System.IO.File]::ReadAllText($hstwbInstallerFsUaeConfigFile)
+
+    # build fs-uae install harddrives config
+    $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText
+    
+    # replace hstwb installer fs-uae configuration placeholders
+    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
+    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
+    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$ISOFILE]', '')
+    
+    # write hstwb installer fs-uae configuration file to image dir
+    $hstwbInstallerFsUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
+    [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $hstwbInstallerFsUaeConfigText)
+    
+
+    # copy install uae config to image dir
+    $installUaeConfigDir = [System.IO.Path]::Combine($scriptsPath, "install_uae-config")
+    Copy-Item -Path "$installUaeConfigDir\*" $settings.Image.ImageDir -recurse -force
     
 
     # write hstwb installer packages ini file
@@ -1950,6 +1975,11 @@ function RunBuildSelfInstall()
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
 
+    # copy install uae config to image dir
+    $installUaeConfigDir = [System.IO.Path]::Combine($scriptsPath, "install_uae-config")
+    Copy-Item -Path "$installUaeConfigDir\*" $settings.Image.ImageDir -recurse -force
+
+
     # print preparing installation done message
     Write-Host "Done."
 
@@ -2114,6 +2144,7 @@ $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromP
 $fsUaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("fs-uae")
 $amigaPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("amiga")
 $licensesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("licenses")
+$scriptsPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("scripts")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
@@ -2234,7 +2265,6 @@ switch ($settings.Installer.Mode)
     "Test" { RunTest }
     "Install" { RunInstall }
     "BuildSelfInstall" { RunBuildSelfInstall }
-    "BuildSelfInstallPackageSelection" { RunBuildSelfInstall }
     "BuildPackageInstallation" { RunBuildPackageInstallation }
 }
 
