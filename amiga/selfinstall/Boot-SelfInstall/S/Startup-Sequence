@@ -254,28 +254,28 @@ failat 255
 ; Check if disk is present in DF0:
 DiskInDrive >NIL: DF0:
 IF NOT WARN
-  SetEnv floppydevice "DF0"
+  set floppydevice "DF0"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF1:
 DiskInDrive >NIL: DF1:
 IF NOT WARN
-  SetEnv floppydevice "DF1"
+  set floppydevice "DF1"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF2:
 DiskInDrive >NIL: DF2:
 IF NOT WARN
-  SetEnv floppydevice "DF2"
+  set floppydevice "DF2"
   SKIP checkworkbenchdisk
 ENDIF
 
 ; Check if disk is present in DF3:, if not go back to insert workbench disk
 DiskInDrive >NIL: DF3:
 IF NOT WARN
-  SetEnv floppydevice "DF3"
+  set floppydevice "DF3"
 ELSE
   echo "No disk is inserted in any floppy device!"
   SKIP insertworkbenchdisk back
@@ -287,15 +287,15 @@ LAB checkworkbenchdisk
 failat 21
 
 IF NOT EXISTS $floppydevice:C/Which
-  echo "Workbench disk is not valid!"
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
-  echo "Workbench disk is not valid!"
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF
 IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
-  echo "Workbench disk is not valid!"
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
   SKIP insertworkbenchdisk back
 ENDIF 
 
