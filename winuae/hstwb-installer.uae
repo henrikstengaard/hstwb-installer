@@ -1,3 +1,5 @@
+; WinUAE configuration build by HstWB Installer
+
 config_description=
 config_hardware=true
 config_host=true
