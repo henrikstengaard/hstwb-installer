@@ -1,7 +1,7 @@
 ; Install Workbench
 ; -----------------
 ;
-; Date: 2017-08-17
+; Date: 2017-08-29
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -82,6 +82,7 @@ IF EXISTS INSTALLDIR:Prefs/Self-Install
     execute "INSTALLDIR:S/Install-Workbench-Disk"
   ENDIF
 ELSE
+  echo ""
   execute "INSTALLDIR:S/Install-Workbench-Adf"
 ENDIF
 

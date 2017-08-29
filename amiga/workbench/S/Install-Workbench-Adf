@@ -1,7 +1,7 @@
 ; Install Workbench Adf
 ; ---------------------
 ;
-; Date: 2017-08-17
+; Date: 2017-08-29
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -11,62 +11,73 @@ echo "Installing Workbench 3.1 from adf:"
 
 ; Install Workbench 3.1 Workbench adf
 echo "Copying Workbench 3.1 Workbench files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31workbench.adf" ff0:
-copy >NIL: ff0: SYSTEMDIR: ALL CLONE
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31workbench"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31workbench.adf" "SYSTEMDIR:Temp/workbench31workbench" DIMG OVERWRITE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31workbench" "SYSTEMDIR:" ALL CLONE
+Delete >NIL: "SYSTEMDIR:Temp/workbench31workbench" ALL
 
 
 ; Install Workbench 3.1 Locale adf
 echo "Copying Workbench 3.1 Locale files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31locale.adf" ff0:
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31locale"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31locale.adf" "SYSTEMDIR:Temp/workbench31locale" DIMG OVERWRITE
 makedir >NIL: SYSTEMDIR:Locale
-copy >NIL: ff0: SYSTEMDIR:Locale ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31locale" "SYSTEMDIR:Locale" ALL CLONE
+Delete >NIL: "SYSTEMDIR:Temp/workbench31locale" ALL
 
 
 ; Install Workbench 3.1 Extras adf
 echo "Copying Workbench 3.1 Extras files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31extras.adf" ff0:
-copy >NIL: ff0: SYSTEMDIR: ALL CLONE
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31extras"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31extras.adf" "SYSTEMDIR:Temp/workbench31extras" DIMG OVERWRITE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31extras" "SYSTEMDIR:" ALL CLONE
+Delete >NIL: "SYSTEMDIR:Temp/workbench31extras" ALL
 
 
 ; Install Workbench 3.1 Fonts adf
 echo "Copying Workbench 3.1 Fonts files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31fonts.adf" ff0:
-makedir >NIL: SYSTEMDIR:Fonts
-copy >NIL: ff0: SYSTEMDIR:Fonts ALL CLONE
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31fonts"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31fonts.adf" "SYSTEMDIR:Temp/workbench31fonts" DIMG OVERWRITE
+MakePath >NIL: "SYSTEMDIR:Fonts"
+Copy >NIL: "SYSTEMDIR:Temp/workbench31fonts" "SYSTEMDIR:Fonts" ALL CLONE
+Delete >NIL: "SYSTEMDIR:Temp/workbench31fonts" ALL
 
 
 ; Install Workbench 3.1 Install adf
 echo "Copying Workbench 3.1 Install files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31install.adf" ff0:
-makedir >NIL: SYSTEMDIR:Tools
-copy ff0:HDTools/BRU SYSTEMDIR:Tools CLONE
-copy ff0:HDTools/HDBackup SYSTEMDIR:Tools CLONE
-copy ff0:HDTools/HDBackup.help SYSTEMDIR:Tools CLONE
-copy ff0:HDTools/HDToolBox SYSTEMDIR:Tools CLONE
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31install"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31install.adf" "SYSTEMDIR:Temp/workbench31install" DIMG OVERWRITE
+MakePath >NIL: "SYSTEMDIR:Tools"
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/BRU" SYSTEMDIR:Tools CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDBackup" SYSTEMDIR:Tools CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDBackup.help" SYSTEMDIR:Tools CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDToolBox" SYSTEMDIR:Tools CLONE
 
-copy ff0:HDTools/HDBackup.info SYSTEMDIR:Tools CLONE
-copy ff0:HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDBackup.info" SYSTEMDIR:Tools CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDToolBox.info" SYSTEMDIR:Tools CLONE
 
-copy ff0:HDTools/S/BRUtab SYSTEMDIR:S CLONE
-copy ff0:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
-copy ff0:L/FastFileSystem SYSTEMDIR:L CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/S/BRUtab" SYSTEMDIR:S CLONE
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/S/HDBackup.config" SYSTEMDIR:S CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/L/FastFileSystem" SYSTEMDIR:L CLONE 
 
-copy ff0:Libs/68040.library SYSTEMDIR:Libs CLONE 
-copy ff0:Update/Disk.info SYSTEMDIR: CLONE 
-
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/Libs/68040.library" SYSTEMDIR:Libs CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31install/Update/Disk.info" SYSTEMDIR: CLONE 
+Delete >NIL: "SYSTEMDIR:Temp/workbench31install" ALL
 
 
 ; Install Workbench 3.1 Storage adf
 echo "Copying Workbench 3.1 Storage files..."
-diskwiz >NIL: "INSTALLDIR:Workbench/workbench31storage.adf" ff0:
-makedir >NIL: SYSTEMDIR:Storage
-copy >NIL: ff0: SYSTEMDIR:Storage ALL CLONE
-IF NOT EXISTS SYSTEMDIR:Devs/Monitors
-  makedir >NIL: SYSTEMDIR:Devs/Monitors
+MakePath >NIL: "SYSTEMDIR:Temp/workbench31storage"
+xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31storage.adf" "SYSTEMDIR:Temp/workbench31storage" DIMG OVERWRITE
+MakePath >NIL: SYSTEMDIR:Storage
+Copy >NIL: "SYSTEMDIR:Temp/workbench31storage" "SYSTEMDIR:Storage" ALL CLONE
+IF NOT EXISTS "SYSTEMDIR:Devs/Monitors"
+  MakePath >NIL: "SYSTEMDIR:Devs/Monitors"
 ENDIF
-copy ff0:Monitors/PAL SYSTEMDIR:Devs/Monitors CLONE 
-copy ff0:Monitors/PAL.info SYSTEMDIR:Devs/Monitors CLONE 
-copy ff0:Printers.info SYSTEMDIR:Storage.info CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE 
+Copy >NIL: "SYSTEMDIR:Temp/workbench31storage/Printers.info" "SYSTEMDIR:Storage.info" CLONE 
+Delete >NIL: "SYSTEMDIR:Temp/workbench31storage" ALL
 
 
 echo "Done"
