@@ -384,7 +384,6 @@ function SwitchInstallWorkbench()
     else
     {
         $settings.Workbench.InstallWorkbench = 'Yes'
-        $settings.AmigaOS39.InstallAmigaOS39 = 'No'
     }
     Save
 }
@@ -495,7 +494,6 @@ function SwitchInstallAmigaOS39()
     {
         $settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
         $settings.AmigaOS39.InstallBoingBags = 'Yes'
-        $settings.Workbench.InstallWorkbench = 'No'
     }
     Save
 }
