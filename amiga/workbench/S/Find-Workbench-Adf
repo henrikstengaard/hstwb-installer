@@ -1,36 +1,8 @@
 ; Find Workbench Adf
 ; ------------------
 ;
-; Date: 2017-08-14
+; Date: 2017-09-03
 ; Author: Henrik Noerfjand Stengaard
-
-
-; Assign FMS to install temp dir, if self install prefs exists. Otherwise assign FMS to T:
-IF EXISTS INSTALLDIR:Prefs/Self-Install
-  ; Create fms temp directory, if it doesn't exist
-  IF NOT EXISTS "INSTALLDIR:Temp/FMS"
-    makepath >NIL: "INSTALLDIR:Temp/FMS"
-  ENDIF
-
-  ; Assign FMS: to fms temp directory, if it doesn't exist
-  Assign >NIL: EXISTS FMS:
-  IF WARN
-    assign >NIL: FMS: INSTALLDIR:Temp/FMS
-  ENDIF
-ELSE
-  ; Assign FMS: to T:, if it doesn't exist
-  Assign >NIL: EXISTS FMS:
-  IF WARN
-    assign >NIL: FMS: T:
-  ENDIF
-ENDIF
-
-
-; Mount FF0:, if it doesn't exist
-Assign >NIL: EXISTS FF0:
-IF WARN
-  Mount FF0: FROM INSTALLDIR:Devs/Mountlist
-ENDIF
 
 
 ; Find Workbench adf files

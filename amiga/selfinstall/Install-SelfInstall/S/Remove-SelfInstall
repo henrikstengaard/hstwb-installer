@@ -1,7 +1,7 @@
 ; Remove Self Install
 ; -------------------
 ;
-; Date: 2017-08-15
+; Date: 2017-09-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -17,9 +17,6 @@ IF EXISTS "SYS:C/FSearch"
 ENDIF
 IF EXISTS "SYS:C/grep"
   Delete >NIL: "SYS:C/grep"
-ENDIF
-IF EXISTS "SYS:C/JWEval"
-  Delete >NIL: "SYS:C/JWEval"
 ENDIF
 IF EXISTS "SYS:C/MakePath"
   Delete >NIL: "SYS:C/MakePath"

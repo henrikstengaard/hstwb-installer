@@ -1,7 +1,7 @@
 ; Detect Workbench Disk
 ; ---------------------
 ;
-; Date: 2017-08-17
+; Date: 2017-09-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -60,6 +60,18 @@ IF NOT EXISTS $floppydevice:C/Which
   SKIP BACK insertworkbenchdisk
 ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:Libs/datatypes.library
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/CLI
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/Shell.info
   echo "Workbench disk in floppy device $floppydevice: is not valid!"
   SKIP BACK insertworkbenchdisk
 ENDIF

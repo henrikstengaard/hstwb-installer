@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-08-17
+; Date: 2017-09-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -98,56 +98,62 @@ LAB nextadffile
 set adffile ""
 set adffile `FirstLine RAM:_adffiles DELETE`
 
-; Goto workbench
+; Goto workbench disk fallback, if no valid workbench adf was detected
 IF "$adffile" EQ ""
   SKIP workbenckdiskfallback
 ENDIF
 
-; Set workbench disk valid to 1
-set workbenchdiskvalid "1"
+; Goto next adf file, if file size is not 901120 bytes
+set filesize `wc -c <"$adffile"`
+IF NOT $filesize EQ 901120 VAL
+  SKIP BACK nextadffile
+ENDIF
 
-; Examine adf list, if xadunfile return error code 0
+; Goto next adf file, if adf files doesn't contain text "Workbench 3.1"
+FSearch >RAM:_workbenchadffiles "$adffile" TXT="Workbench3.1"
+set workbenchadffiles `wc -l <RAM:_workbenchadffiles`
+IF $workbenchadffiles EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; Goto next adf file, if xadunfile doesn't return error code 0
 xadUnFile >RAM:_adflist "$adffile" DIMG LIST
-IF $RC EQ 0
-  ; Set workbench disk valid to 0, if adf doesn't contain which file
-  grep >NIL: "C/Which" <RAM:_adflist
-  IF NOT $RC EQ 0 VAL
-    set workbenchdiskvalid "0"
-  ENDIF
-
-  ; Set workbench disk valid to 0, if adf doesn't contain assign file
-  grep >NIL: "C/Assign" <RAM:_adflist
-  IF NOT $RC EQ 0 VAL
-    set workbenchdiskvalid "0"
-  ENDIF
-
-  ; Set workbench disk valid to 0, if adf doesn't contain datatypes.library file
-  grep >NIL: "Libs/datatypes.library" <RAM:_adflist
-  IF NOT $RC EQ 0 VAL
-    set workbenchdiskvalid "0"
-  ENDIF
-
-  ; Set workbench disk valid to 0, if adf doesn't contain cli file
-  grep >NIL: "System/CLI" <RAM:_adflist
-  IF NOT $RC EQ 0 VAL
-    set workbenchdiskvalid "0"
-  ENDIF
-
-  ; Set workbench disk valid to 0, if adf doesn't contain shell.info file
-  grep >NIL: "System/Shell.info" <RAM:_adflist
-  IF NOT $RC EQ 0 VAL
-    set workbenchdiskvalid "0"
-  ENDIF
-ELSE
-  set workbenchdiskvalid "0"
+IF NOT $RC EQ 0
+  SKIP BACK nextadffile
 ENDIF
 
-; Copy adf file, if it's a valid workbench disk
-IF "$workbenchdiskvalid" EQ "1" VAL
-  SKIP extractworkbenchadf
+; Goto next adf file, if adf doesn't contain which file
+grep >NIL: -i "C/Which" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
 ENDIF
 
-SKIP BACK nextadffile
+; Goto next adf file, if adf doesn't contain assign file
+grep >NIL: -i "C/Assign" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; Goto next adf file, if adf doesn't contain datatypes.library file
+grep >NIL: -i "Libs/datatypes.library" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; Goto next adf file, if adf doesn't contain cli file
+grep >NIL: -i "System/CLI" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; Goto next adf file, if adf doesn't contain shell.info file
+grep >NIL: -i "System/Shell.info" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; Workbench 3.1 adf detected, goto extract workbench adf
+SKIP extractworkbenchadf
 
 
 ; Workbench disk fallback
@@ -293,6 +299,18 @@ ENDIF
 IF NOT EXISTS $floppydevice:C/Assign
   echo "Workbench disk in floppy device $floppydevice: is not valid!"
   SKIP insertworkbenchdisk back
+ENDIF
+IF NOT EXISTS $floppydevice:Libs/datatypes.library
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/CLI
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/Shell.info
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
 ENDIF
 IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
   echo "Workbench disk in floppy device $floppydevice: is not valid!"
