@@ -161,11 +161,19 @@ ELSE
 ENDIF
 
 
-; Print workbench installation depending on amiga os 3.9 will be installed
+; Confirm install workbench 3.1, if installing amiga os 3.9
 IF $installos39 EQ 1 VAL
-  echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation,"
-  echo "  when Amiga OS 3.9 will be installed."
+  ; Install Workbench 3.1
+  set installworkbench `RequestChoice "Install Workbench 3.1" "Do you want to install Workbench 3.1*Nbefore installing Amiga OS 3.9?" "Yes|No"`
 ELSE
+  set installworkbench "1"
+ENDIF
+
+; Check workbench, if installing workbench
+IF $installworkbench EQ 1 VAL
+  ; Create install workbench prefs
+  echo "" >INSTALLDIR:Prefs/Install-Workbench
+
   ; Check if WORKBENCHDIR: and set workbench
   set workbench "0"
   Assign >NIL: EXISTS WORKBENCHDIR:
@@ -183,16 +191,15 @@ ELSE
     failat 21
   ENDIF
 
-  ; Print workbench status and create install workbench prefs, if WORKBENCHDIR: exists
+  ; Print workbench status
   IF $workbench EQ 1 VAL
-    ; Create install workbench prefs
-    echo "" >INSTALLDIR:Prefs/Install-Workbench
-
     echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
   ELSE
-    echo "- WORKBENCHDIR: Not present! Skip Workbench 3.1 installation"
-    echo "  from adf and install Workbench 3.1 from disks."
-  ENDIF  
+    echo "- WORKBENCHDIR: Not present! Install Workbench 3.1 from 
+    echo "  disks."
+  ENDIF 
+ELSE
+  echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation."
 ENDIF
 
 
