@@ -50,10 +50,12 @@ IF EXISTS INSTALLDIR:Prefs/UAE
 ENDIF
 
 
-; Run install cleanup, if self install exists prefs and install packages prefs doesn't exist
+; Run install cleanup, if self install exists prefs, install boing bags and install packages prefs doesn't exist
 IF EXISTS INSTALLDIR:Prefs/Self-Install
-  IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
-    execute INSTALLDIR:S/Install-Cleanup
+  IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
+    IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+      execute INSTALLDIR:S/Install-Cleanup
+    ENDIF
   ENDIF
 ENDIF
 
