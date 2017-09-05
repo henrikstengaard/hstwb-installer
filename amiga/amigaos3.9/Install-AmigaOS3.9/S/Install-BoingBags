@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2017-08-15
+; Date: 2017-09-05
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Boing Bags.
@@ -43,6 +43,12 @@ Assign >NIL: Devs: INSTALLDIR:Devs ADD
 Assign >NIL: L: INSTALLDIR:L ADD
 Assign >NIL: Libs: INSTALLDIR:Libs ADD
 Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
+
+
+; Load commands resident
+resident INSTALLDIR:C/Reboot PURE 
+resident INSTALLDIR:C/TotalReset PURE
+resident INSTALLDIR:C/UAEquit PURE
 
 
 ; Goto end, if device OS39DIR: doesn't exist
@@ -203,23 +209,35 @@ ELSE
 ENDIF
 echo ""
 
-; Run install cleanup, if install packages prefs doesn't exist
-IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+
+; Set uae to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
+
+
+; Set installpackages to 1, if install packages prefs exists. Otherwise run install cleanup
+set installpackages "0"
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  set installpackages "1"
+ELSE
   execute INSTALLDIR:S/Install-Cleanup
 ENDIF
+
 
 echo "Please let the system wait 10 seconds before continuing"
 echo "to allow file system to write changes to disk." 
 
 
 ; Reboot system, if install packages prefs exist
-IF EXISTS INSTALLDIR:Prefs/Install-Packages
+IF $installpackages EQ 1 VAL
   echo ""
   ask "Press ENTER to continue"
   echo ""
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALLDIR:C/TotalReset
+  TotalReset
 ENDIF
 
 
@@ -233,14 +251,14 @@ echo ""
 
 
 ; Quit uae, if uae is used. Otherwise reboot
-IF EXISTS INSTALLDIR:Prefs/UAE
+IF $uae EQ 1 VAL
   echo "UAE will quit in 10 seconds..."
   wait 10
-  INSTALLDIR:C/UAEquit
+  UAEquit
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  INSTALLDIR:C/TotalReset
+  TotalReset
 ENDIF
 
 ENDSHELL

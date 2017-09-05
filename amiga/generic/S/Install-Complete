@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2017-08-15
+; Date: 2017-09-05
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
@@ -43,7 +43,7 @@ ENDIF
 echo ""
 
 
-; Set use to 1, if use prefs exists
+; Set uae to 1, if use prefs exists
 set uae "0"
 IF EXISTS INSTALLDIR:Prefs/UAE
   set uae "1"
