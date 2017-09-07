@@ -6,7 +6,8 @@
 #
 # A powershell script to decrypt Amiga kickstart roms.
 #
-# Reference: https://github.com/keirf/Amiga-Stuff/blob/master/kickconv.c
+# Reference 1: https://github.com/keirf/Amiga-Stuff/blob/master/kickconv.c
+# Reference 2: http://eab.abime.net/showpost.php?p=932672&postcount=20
 
 
 Param(
