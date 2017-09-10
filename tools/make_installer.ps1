@@ -14,9 +14,9 @@
 # WiX Toolset is used to build a msi installer and can be downloaded here http://wixtoolset.org/releases/.
 
 
-Import-Module (Resolve-Path('..\modules\HstwbInstaller-Version.psm1')) -Force
-Import-Module (Resolve-Path('..\modules\HstwbInstaller-Config.psm1')) -Force
-Import-Module (Resolve-Path('..\modules\HstwbInstaller-Data.psm1')) -Force
+Import-Module (Resolve-Path('..\modules\version.psm1')) -Force
+Import-Module (Resolve-Path('..\modules\config.psm1')) -Force
+Import-Module (Resolve-Path('..\modules\data.psm1')) -Force
 
 
 # start process
