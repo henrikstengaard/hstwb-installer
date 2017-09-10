@@ -3,7 +3,7 @@
 :: ------
 ::
 :: Author: Henrik Noerfjand Stengaard
-:: Date:   2017-09-09
+:: Date:   2017-09-10
 ::
 :: A Windows batch script to launch HstWB Installer.
 
@@ -34,11 +34,11 @@ GOTO END
 
 :: run hstwb installer setup script
 :setup
-powershell -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir "%SETTINGSDIR%"
+powershell -ExecutionPolicy Bypass -File setup.ps1 -settingsDir "%SETTINGSDIR%"
 GOTO END
 
 :: run hstwb installer run script
 :run
-powershell -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsDir "%SETTINGSDIR%"
+powershell -ExecutionPolicy Bypass -File run.ps1 -settingsDir "%SETTINGSDIR%"
 
 :end
