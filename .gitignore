@@ -1,9 +1,11 @@
 hstwb-installer-settings.ini
+hstwb-installer-assigns.ini
 *.msi
 hstwb-installer*.zip
 *.wixpdb
 *.wixobj
 *.wxs
+*.log
 !hstwb-installer.wxs
 /packages/
 output/
