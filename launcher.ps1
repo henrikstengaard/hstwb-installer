@@ -43,62 +43,14 @@ function ConfirmDialog($title, $message)
 
 function Run($runFile, $settingsDir)
 {
-    try
-    {
-        & $runFile -settingsDir $settingsDir
-    }
-    catch
-    {
-        $errorFormatingString = "{0} : {1}`n{2}`n" +
-        "    + CategoryInfo          : {3}`n" +
-        "    + FullyQualifiedErrorId : {4}`n"
-
-        $errorFields = $_.InvocationInfo.MyCommand.Name,
-        $_.ErrorDetails.Message,
-        $_.InvocationInfo.PositionMessage,
-        $_.CategoryInfo.ToString(),
-        $_.FullyQualifiedErrorId
-
-        $message = $errorFormatingString -f $errorFields
-        $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
-        Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
-        Write-Host ""
-        Write-Error "HstWB Installer Run Failed: $message"
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-    }
-    Clear-Host
+    $runArgs = "-ExecutionPolicy Bypass -File ""$runFile"" -settingsDir ""$settingsDir"""
+    Start-Process "powershell.exe" "$runArgs" -Wait -WindowStyle Maximized
 }
 
 function Setup($setupFile, $settingsDir)
 {
-    try
-    {
-        & $setupFile -settingsDir $settingsDir
-    }
-    catch
-    {
-        $errorFormatingString = "{0} : {1}`n{2}`n" +
-        "    + CategoryInfo          : {3}`n" +
-        "    + FullyQualifiedErrorId : {4}`n"
-
-        $errorFields = $_.InvocationInfo.MyCommand.Name,
-        $_.ErrorDetails.Message,
-        $_.InvocationInfo.PositionMessage,
-        $_.CategoryInfo.ToString(),
-        $_.FullyQualifiedErrorId
-
-        $message = $errorFormatingString -f $errorFields
-        $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
-        Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
-        Write-Host ""
-        Write-Error "HstWB Installer Setup Failed: $message"
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-    }
-    Clear-Host
+    $setupArgs = "-ExecutionPolicy Bypass -File ""$setupFile"" -settingsDir ""$settingsDir"""
+    Start-Process "powershell.exe" "$setupArgs" -Wait -WindowStyle Maximized
 }
 
 function Settings($settingsFile)
@@ -109,6 +61,35 @@ function Settings($settingsFile)
 function Assigns($assignsFile)
 {
     Start-Process "Notepad.exe" "$assignsFile" -Wait
+}
+
+function ShowReadme()
+{
+    $readmeDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('Readme')
+
+    if (Test-Path -Path $readmeDir)
+    {
+        Start-Process $readmeDir
+    }
+    else
+    {
+        Start-Process "https://github.com/henrikstengaard/hstwb-installer#hstwb-installer"
+    }
+}
+
+function ShowWebsite()
+{
+    Start-Process "http://hstwb.firstrealize.com/"
+}
+
+function ShowSourceCode()
+{
+    Start-Process "https://github.com/henrikstengaard/hstwb-installer"
+}
+
+function ReportAnIssue()
+{
+    Start-Process "https://github.com/henrikstengaard/hstwb-installer/issues"
 }
 
 function GuiMenu($title, $options)
@@ -234,7 +215,14 @@ function HelpMenu($hstwb)
 {
     do
     {
-        $option = GuiMenu "Help" @('Readme', 'Website', 'Source Code', 'Report Issue', 'Back')
+        $option = GuiMenu "Help" @('View Readme', 'Show Website', 'Show Source Code', 'Report An Issue', 'Back')
+        switch ($option)
+        {
+            'View Readme' { ShowReadme }
+            'Show Website' { ShowWebsite }
+            'Show Source Code' { ShowSourceCode }
+            'Report An Issue' { ReportAnIssue }
+        }
     } while ($option -ne $null -and $option -ne 'Back')    
 }
 
@@ -247,6 +235,7 @@ $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPa
 $setupFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('setup.ps1')
 $settingsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-settings.ini'
 $assignsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-assigns.ini'
+$host.ui.RawUI.WindowTitle = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
 
 $runSetupFirstTime = $false
 
@@ -257,6 +246,7 @@ if (!(Test-Path $settingsFile))
     Setup $setupFile $settingsDir
 }
 
+# hstwb
 $hstwb = @{
     'Paths' = @{
         'SettingsDir' = $settingsDir;
@@ -267,4 +257,5 @@ $hstwb = @{
     };
 }
 
+# show launcher menu
 LauncherMenu $hstwb

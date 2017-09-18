@@ -2152,155 +2152,181 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-$hstwb = @{
-    'Version' = HstwbInstallerVersion;
-    'Paths' = @{
-        'KickstartRomHashesFile' = $kickstartRomHashesFile;
-        'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
-        'AmigaPath' = $amigaPath;
-        'WinuaePath' = $winuaePath;
-        'FsUaePath' = $fsUaePath;
-        'LicensesPath' = $licensesPath;
-        'PackagesPath' = $packagesPath;
-        'SettingsFile' = $settingsFile;
-        'ScriptsPath' = $scriptsPath;
-        'TempPath' = $tempPath;
-        'AssignsFile' = $assignsFile;
-        'SettingsDir' = $settingsDir;
-        'EnvArcDir' = 'SYSTEMDIR:Prefs/Env-Archive'
-    };
-    'Images' = ReadImages $imagesPath;
-    'Packages' = ReadPackages $packagesPath;
-    'Settings' = ReadIniFile $settingsFile;
-    'Assigns' = ReadIniFile $assignsFile
-}
+$host.ui.RawUI.WindowTitle = "HstWB Installer Run v{0}" -f (HstwbInstallerVersion)
 
-
-# fail, if settings file doesn't exist
-if (!(test-path -path $settingsFile))
+try
 {
-    Fail $hstwb ("Error: Settings file '$settingsFile' doesn't exist!")
+    $hstwb = @{
+        'Version' = HstwbInstallerVersion;
+        'Paths' = @{
+            'KickstartRomHashesFile' = $kickstartRomHashesFile;
+            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'AmigaPath' = $amigaPath;
+            'WinuaePath' = $winuaePath;
+            'FsUaePath' = $fsUaePath;
+            'LicensesPath' = $licensesPath;
+            'PackagesPath' = $packagesPath;
+            'SettingsFile' = $settingsFile;
+            'ScriptsPath' = $scriptsPath;
+            'TempPath' = $tempPath;
+            'AssignsFile' = $assignsFile;
+            'SettingsDir' = $settingsDir;
+            'EnvArcDir' = 'SYSTEMDIR:Prefs/Env-Archive'
+        };
+        'Images' = ReadImages $imagesPath;
+        'Packages' = ReadPackages $packagesPath;
+        'Settings' = ReadIniFile $settingsFile;
+        'Assigns' = ReadIniFile $assignsFile
+    }
+
+
+    # fail, if settings file doesn't exist
+    if (!(test-path -path $settingsFile))
+    {
+        Fail $hstwb ("Error: Settings file '$settingsFile' doesn't exist!")
+    }
+
+
+    # fail, if assigns file doesn't exist
+    if (!(test-path -path $assignsFile))
+    {
+        Fail $hstwb ("Error: Assigns file '$assignsFile' doesn't exist!")
+    }
+
+
+    # set default installer mode, if not present
+    if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
+    {
+        $hstwb.Settings.Installer = @{}
+        $hstwb.Settings.Installer.Mode = "Install"
+    }
+
+
+    # print title and settings 
+    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ""
+    PrintSettings $hstwb
+    Write-Host ""
+
+
+    # validate settings
+    if (!(ValidateSettings $hstwb.Settings))
+    {
+        Fail $hstwb "Validate settings failed"
+    }
+
+
+    # validate assigns
+    if (!(ValidateAssigns $hstwb.Assigns))
+    {
+        Fail $hstwb "Validate assigns failed"
+    }
+
+
+    # find workbench adf set hashes 
+    $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
+
+    # find workbench 3.1 workbench disk
+    $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+
+    # fail, if workbench adf hash doesn't exist
+    if (!$workbenchAdfHash)
+    {
+        Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
+    }
+
+
+    # set workbench adf set hashes workbench adf file
+    $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
+    $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
+
+
+    # print workbench adf hash file
+    Write-Host ("Using Workbench 3.1 Workbench Disk adf: '" + $workbenchAdfHash.File + "'")
+
+
+    # find kickstart rom set hashes
+    $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
+
+
+    # find kickstart 3.1 a1200 rom
+    $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+
+
+    # fail, if kickstart rom hash doesn't exist
+    if (!$kickstartRomHash)
+    {
+        Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+    }
+
+
+    # set kickstart rom set hashes kickstart rom file
+    $hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
+    $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
+
+
+    # print kickstart rom hash file
+    Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
+
+
+    # kickstart rom key
+    $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
+
+    # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
+    if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
+    {
+        Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+    }
+
+
+    # create temp path
+    if(!(test-path -path $hstwb.Paths.TempPath))
+    {
+        mkdir $hstwb.Paths.TempPath | Out-Null
+    }
+
+
+    # installer mode
+    switch ($hstwb.Settings.Installer.Mode)
+    {
+        "Test" { RunTest $hstwb }
+        "Install" { RunInstall $hstwb }
+        "BuildSelfInstall" { RunBuildSelfInstall $hstwb }
+        "BuildPackageInstallation" { RunBuildPackageInstallation $hstwb }
+    }
+
+
+    # remove temp path
+    Remove-Item -Recurse -Force $hstwb.Paths.TempPath
+
+
+    # print done message 
+    Write-Host "Done."
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
-
-
-# fail, if assigns file doesn't exist
-if (!(test-path -path $assignsFile))
+catch
 {
-    Fail $hstwb ("Error: Assigns file '$assignsFile' doesn't exist!")
+    $errorFormatingString = "{0} : {1}`n{2}`n" +
+    "    + CategoryInfo          : {3}`n" +
+    "    + FullyQualifiedErrorId : {4}`n"
+
+    $errorFields = $_.InvocationInfo.MyCommand.Name,
+    $_.ErrorDetails.Message,
+    $_.InvocationInfo.PositionMessage,
+    $_.CategoryInfo.ToString(),
+    $_.FullyQualifiedErrorId
+
+    $message = $errorFormatingString -f $errorFields
+    $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
+    Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
+    Write-Host ""
+    Write-Error "HstWB Installer Setup Failed: $message"
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
-
-
-# set default installer mode, if not present
-if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
-{
-    $hstwb.Settings.Installer = @{}
-    $hstwb.Settings.Installer.Mode = "Install"
-}
-
-
-# print title and settings 
-$versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
-Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
-Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-Write-Host ""
-PrintSettings $hstwb
-Write-Host ""
-
-
-# validate settings
-if (!(ValidateSettings $hstwb.Settings))
-{
-    Fail $hstwb "Validate settings failed"
-}
-
-
-# validate assigns
-if (!(ValidateAssigns $hstwb.Assigns))
-{
-    Fail $hstwb "Validate assigns failed"
-}
-
-
-# find workbench adf set hashes 
-$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
-
-# find workbench 3.1 workbench disk
-$workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-
-# fail, if workbench adf hash doesn't exist
-if (!$workbenchAdfHash)
-{
-    Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
-}
-
-
-# set workbench adf set hashes workbench adf file
-$hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
-$hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
-
-
-# print workbench adf hash file
-Write-Host ("Using Workbench 3.1 Workbench Disk adf: '" + $workbenchAdfHash.File + "'")
-
-
-# find kickstart rom set hashes
-$kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
-
-
-# find kickstart 3.1 a1200 rom
-$kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
-
-
-# fail, if kickstart rom hash doesn't exist
-if (!$kickstartRomHash)
-{
-    Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
-}
-
-
-# set kickstart rom set hashes kickstart rom file
-$hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
-$hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
-
-
-# print kickstart rom hash file
-Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
-
-
-# kickstart rom key
-$kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
-
-# fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
-if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
-{
-    Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
-}
-
-
-# create temp path
-if(!(test-path -path $hstwb.Paths.TempPath))
-{
-	mkdir $hstwb.Paths.TempPath | Out-Null
-}
-
-
-# installer mode
-switch ($hstwb.Settings.Installer.Mode)
-{
-    "Test" { RunTest $hstwb }
-    "Install" { RunInstall $hstwb }
-    "BuildSelfInstall" { RunBuildSelfInstall $hstwb }
-    "BuildPackageInstallation" { RunBuildPackageInstallation $hstwb }
-}
-
-
-# remove temp path
-Remove-Item -Recurse -Force $hstwb.Paths.TempPath
-
-
-# print done message 
-Write-Host "Done."
-Write-Host ""
-Write-Host "Press enter to continue"
-Read-Host

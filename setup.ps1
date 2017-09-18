@@ -814,116 +814,142 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-$hstwb = @{
-    'Version' = HstwbInstallerVersion;
-    'Paths' = @{
-        'KickstartRomHashesFile' = $kickstartRomHashesFile;
-        'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
-        'ImagesPath' = $imagesPath;
-        'PackagesPath' = $packagesPath;
-        'SettingsFile' = $settingsFile;
-        'AssignsFile' = $assignsFile;
-        'RunFile' = $runFile;
-        'SettingsDir' = $settingsDir
-    };
-    'Images' = ReadImages $imagesPath;
-    'Packages' = ReadPackages $packagesPath;
-    'Settings' = @{};
-    'Assigns' = @{}
-}
+$host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVersion)
 
-
-# create settings dir, if it doesn't exist
-if(!(test-path -path $hstwb.Paths.SettingsDir))
+try
 {
-    mkdir $hstwb.Paths.SettingsDir | Out-Null
+    $hstwb = @{
+        'Version' = HstwbInstallerVersion;
+        'Paths' = @{
+            'KickstartRomHashesFile' = $kickstartRomHashesFile;
+            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'ImagesPath' = $imagesPath;
+            'PackagesPath' = $packagesPath;
+            'SettingsFile' = $settingsFile;
+            'AssignsFile' = $assignsFile;
+            'RunFile' = $runFile;
+            'SettingsDir' = $settingsDir
+        };
+        'Images' = ReadImages $imagesPath;
+        'Packages' = ReadPackages $packagesPath;
+        'Settings' = @{};
+        'Assigns' = @{}
+    }
+    
+    
+    # create settings dir, if it doesn't exist
+    if(!(test-path -path $hstwb.Paths.SettingsDir))
+    {
+        mkdir $hstwb.Paths.SettingsDir | Out-Null
+    }
+    
+    
+    # create default settings, if settings file doesn't exist
+    if (test-path -path $hstwb.Paths.SettingsFile)
+    {
+        $hstwb.Settings = ReadIniFile $hstwb.Paths.SettingsFile
+    }
+    else
+    {
+        DefaultSettings $hstwb.Settings
+    }
+    
+    
+    # read assigns, if assigns file exist
+    if (test-path -path $hstwb.Paths.AssignsFile)
+    {
+        $hstwb.Assigns = ReadIniFile $hstwb.Paths.AssignsFile
+    }
+    
+    # create defailt assigns, if assigns is empty or doesn't contain global assigns
+    if ($hstwb.Assigns.Keys.Count -eq 0 -or !$hstwb.Assigns.ContainsKey('Global'))
+    {
+        DefaultAssigns $hstwb.Assigns
+    }
+    
+    
+    # set default installer mode, if not present
+    if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
+    {
+        $hstwb.Settings.Installer = @{}
+        $hstwb.Settings.Installer.Mode = "Install"
+    }
+    
+    
+    # create packages section in settings, if it doesn't exist
+    if (!($hstwb.Settings.Packages))
+    {
+        $hstwb.Settings.Packages = @{}
+        $hstwb.Settings.Packages.InstallPackages = ''
+    }
+    
+    
+    # create amiga os 3.9 section in settings, if it doesn't exist
+    if (!($hstwb.Settings.AmigaOS39))
+    {
+        $hstwb.Settings.AmigaOS39 = @{}
+        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
+        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
+    }
+    
+    
+    # set default image dir, if image dir doesn't exist
+    if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
+    {
+        $hstwb.Settings.Image.ImageDir = ''
+    }
+    
+    
+    
+    # update packages
+    UpdatePackages $hstwb.Packages $hstwb.Settings
+    
+    
+    # update assigns
+    UpdateAssigns $hstwb.Packages $hstwb.Settings $hstwb.Assigns
+    
+    
+    # save settings and assigns
+    Save $hstwb
+    
+    
+    # validate settings
+    if (!(ValidateSettings $hstwb.Settings))
+    {
+        Write-Error "Validate settings failed"
+        exit 1
+    }
+    
+    
+    # validate assigns
+    if (!(ValidateAssigns $hstwb.Assigns))
+    {
+        Write-Error "Validate assigns failed"
+        exit 1
+    }
+    
+    
+    # show main menu
+    MainMenu $hstwb
 }
-
-
-# create default settings, if settings file doesn't exist
-if (test-path -path $hstwb.Paths.SettingsFile)
+catch
 {
-    $hstwb.Settings = ReadIniFile $hstwb.Paths.SettingsFile
+    $errorFormatingString = "{0} : {1}`n{2}`n" +
+    "    + CategoryInfo          : {3}`n" +
+    "    + FullyQualifiedErrorId : {4}`n"
+
+    $errorFields = $_.InvocationInfo.MyCommand.Name,
+    $_.ErrorDetails.Message,
+    $_.InvocationInfo.PositionMessage,
+    $_.CategoryInfo.ToString(),
+    $_.FullyQualifiedErrorId
+
+    $message = $errorFormatingString -f $errorFields
+    $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
+    Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
+    Write-Host ""
+    Write-Error "HstWB Installer Run Failed: $message"
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
-else
-{
-    DefaultSettings $hstwb.Settings
-}
-
-
-# read assigns, if assigns file exist
-if (test-path -path $hstwb.Paths.AssignsFile)
-{
-    $hstwb.Assigns = ReadIniFile $hstwb.Paths.AssignsFile
-}
-
-# create defailt assigns, if assigns is empty or doesn't contain global assigns
-if ($hstwb.Assigns.Keys.Count -eq 0 -or !$hstwb.Assigns.ContainsKey('Global'))
-{
-    DefaultAssigns $hstwb.Assigns
-}
-
-
-# set default installer mode, if not present
-if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
-{
-    $hstwb.Settings.Installer = @{}
-    $hstwb.Settings.Installer.Mode = "Install"
-}
-
-
-# create packages section in settings, if it doesn't exist
-if (!($hstwb.Settings.Packages))
-{
-    $hstwb.Settings.Packages = @{}
-    $hstwb.Settings.Packages.InstallPackages = ''
-}
-
-
-# create amiga os 3.9 section in settings, if it doesn't exist
-if (!($hstwb.Settings.AmigaOS39))
-{
-    $hstwb.Settings.AmigaOS39 = @{}
-    $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-    $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
-}
-
-
-# set default image dir, if image dir doesn't exist
-if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
-{
-    $hstwb.Settings.Image.ImageDir = ''
-}
-
-
-
-# update packages
-UpdatePackages $hstwb.Packages $hstwb.Settings
-
-
-# update assigns
-UpdateAssigns $hstwb.Packages $hstwb.Settings $hstwb.Assigns
-
-
-# save settings and assigns
-Save $hstwb
-
-
-# validate settings
-if (!(ValidateSettings $hstwb.Settings))
-{
-    Write-Error "Validate settings failed"
-    exit 1
-}
-
-
-# validate assigns
-if (!(ValidateAssigns $hstwb.Assigns))
-{
-    Write-Error "Validate assigns failed"
-    exit 1
-}
-
-
-# show main menu
-MainMenu $hstwb
