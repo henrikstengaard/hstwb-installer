@@ -237,25 +237,49 @@ $settingsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-settings.ini'
 $assignsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-assigns.ini'
 $host.ui.RawUI.WindowTitle = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
 
-$runSetupFirstTime = $false
-
-if (!(Test-Path $settingsFile))
+try
 {
-    $runSetupFirstTime = $true
-    MessageDialog "First time use" ("It appears this is the first time you're using HstWB Installer,{1}since settings file '{0}' doesn't exist.{1}{1}HstWB Installer will now start setup to{1}create a default settings file?" -f $settingsFile, [Environment]::NewLine)
-    Setup $setupFile $settingsDir
-}
+    $runSetupFirstTime = $false
 
-# hstwb
-$hstwb = @{
-    'Paths' = @{
-        'SettingsDir' = $settingsDir;
-        'SetupFile' = $setupFile;
-        'RunFile' = $runFile;
-        'SettingsFile' = $settingsFile;
-        'AssignsFile' = $assignsFile;
-    };
-}
+    if (!(Test-Path $settingsFile))
+    {
+        $runSetupFirstTime = $true
+        MessageDialog "First time use" ("It appears this is the first time you're using HstWB Installer,{1}since settings file '{0}' doesn't exist.{1}{1}HstWB Installer will now start setup to{1}create a default settings file?" -f $settingsFile, [Environment]::NewLine)
+        Setup $setupFile $settingsDir
+    }
 
-# show launcher menu
-LauncherMenu $hstwb
+    # hstwb
+    $hstwb = @{
+        'Paths' = @{
+            'SettingsDir' = $settingsDir;
+            'SetupFile' = $setupFile;
+            'RunFile' = $runFile;
+            'SettingsFile' = $settingsFile;
+            'AssignsFile' = $assignsFile;
+        };
+    }
+
+    # show launcher menu
+    LauncherMenu $hstwb
+}
+catch
+{
+    $errorFormatingString = "{0} : {1}`n{2}`n" +
+    "    + CategoryInfo          : {3}`n" +
+    "    + FullyQualifiedErrorId : {4}`n"
+
+    $errorFields = $_.InvocationInfo.MyCommand.Name,
+    $_.ErrorDetails.Message,
+    $_.InvocationInfo.PositionMessage,
+    $_.CategoryInfo.ToString(),
+    $_.FullyQualifiedErrorId
+
+    $message = $errorFormatingString -f $errorFields
+    $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
+    Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
+    Write-Host ""
+    Write-Error "HstWB Installer Launcher Failed: $message"
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
+}
