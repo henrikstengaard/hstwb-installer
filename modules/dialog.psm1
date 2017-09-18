@@ -2,47 +2,47 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-05
+# Date:   2017-09-18
 #
 # A powershell module for HstWB Installer with dialog functions.
 
 
 # print settings
-function PrintSettings()
+function PrintSettings($hstwb)
 {
     Write-Host "Settings"
     Write-Host "  Settings File         : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settingsFile + "'")
+    Write-Host ("'" + $hstwb.Paths.SettingsFile + "'")
     Write-Host "  Assigns File          : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $assignsFile + "'")
+    Write-Host ("'" + $hstwb.Paths.AssignsFile + "'")
     Write-Host "Image"
     Write-Host "  Image Dir             : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Image.ImageDir + "'")
+    Write-Host ("'" + $hstwb.Settings.Image.ImageDir + "'")
     Write-Host "Workbench"
     Write-Host "  Install Workbench     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Workbench.InstallWorkbench + "'")
+    Write-Host ("'" + $hstwb.Settings.Workbench.InstallWorkbench + "'")
     Write-Host "  Workbench Adf Path    : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Workbench.WorkbenchAdfPath + "'")
+    Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfPath + "'")
     Write-Host "  Workbench Adf Set     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Workbench.WorkbenchAdfSet + "'")
+    Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "'")
     Write-Host "Amiga OS 3.9"
     Write-Host "  Install Amiga OS 3.9  : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.AmigaOS39.InstallAmigaOS39 + "'")
+    Write-Host ("'" + $hstwb.Settings.AmigaOS39.InstallAmigaOS39 + "'")
     Write-Host "  Install Boing Bags    : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.AmigaOS39.InstallBoingBags + "'")
+    Write-Host ("'" + $hstwb.Settings.AmigaOS39.InstallBoingBags + "'")
     Write-Host "  Amiga OS 3.9 Iso File : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.AmigaOS39.AmigaOS39IsoFile + "'")
+    Write-Host ("'" + $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile + "'")
     Write-Host "Kickstart"
     Write-Host "  Install Kickstart     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Kickstart.InstallKickstart + "'")
+    Write-Host ("'" + $hstwb.Settings.Kickstart.InstallKickstart + "'")
     Write-Host "  Kickstart Rom Path    : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Kickstart.KickstartRomPath + "'")
+    Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomPath + "'")
     Write-Host "  Kickstart Rom Set     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Kickstart.KickstartRomSet + "'")
+    Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomSet + "'")
     Write-Host "Packages"
 
     $packageFileNames = @()
-    $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+    $packageFileNames += $hstwb.Settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
 
     if ($packageFileNames.Count -gt 0)
     {
@@ -58,7 +58,7 @@ function PrintSettings()
             }
 
             $packageFileName = $packageFileNames[$i]
-            $package = $packages.Get_Item($packageFileName)
+            $package = $hstwb.Packages.Get_Item($packageFileName)
 
             Write-Host ("'" + $package.Package.Name + " v" + $package.Package.Version + "'")
         }
@@ -71,10 +71,10 @@ function PrintSettings()
 
     Write-Host "WinUAE"
     Write-Host "  WinUAE Path           : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $settings.Winuae.WinuaePath + "'")
+    Write-Host ("'" + $hstwb.Settings.Winuae.WinuaePath + "'")
     Write-Host "Installer"
     Write-Host "  Mode                  : " -NoNewline -foregroundcolor "Gray"
-    switch ($settings.Installer.Mode)
+    switch ($hstwb.Settings.Installer.Mode)
     {
         "Test" { Write-Host "'Test'" }
         "Install" { Write-Host "'Install'" }

@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-16
+# Date:   2017-09-18
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -95,15 +95,15 @@ function ConfirmDialog($title, $message)
 
 
 # menu
-function Menu($title, $options)
+function Menu($hstwb, $title, $options)
 {
     Clear-Host
-    $versionPadding = new-object System.String('-', ($hstwbInstallerVersion.Length + 2))
+    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
     Write-Host ("---------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-    Write-Host ("HstWB Installer Setup v{0}" -f $hstwbInstallerVersion) -foregroundcolor "Yellow"
+    Write-Host ("HstWB Installer Setup v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
     Write-Host ("---------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
     Write-Host ""
-    PrintSettings
+    PrintSettings $hstwb
     Write-Host ""
     Write-Host $title -foregroundcolor "Cyan"
     Write-Host ""
@@ -113,22 +113,22 @@ function Menu($title, $options)
 
 
 # main menu
-function MainMenu()
+function MainMenu($hstwb)
 {
     do
     {
-        $choice = Menu "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
+        $choice = Menu $hstwb "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
         switch ($choice)
         {
-            "Select Image" { SelectImageMenu }
-            "Configure Workbench" { ConfigureWorkbenchMenu }
-            "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu }
-            "Configure Kickstart" { ConfigureKickstartMenu }
-            "Configure Packages" { ConfigurePackagesMenu }
-            "Configure WinUAE" { ConfigureWinuaeMenu }
-            "Configure Installer" { ConfigureInstaller }
-            "Run Installer" { RunInstaller }
-            "Reset" { Reset }
+            "Select Image" { SelectImageMenu $hstwb }
+            "Configure Workbench" { ConfigureWorkbenchMenu $hstwb }
+            "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu $hstwb }
+            "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
+            "Configure Packages" { ConfigurePackagesMenu $hstwb }
+            "Configure WinUAE" { ConfigureWinuaeMenu $hstwb }
+            "Configure Installer" { ConfigureInstaller $hstwb }
+            "Run Installer" { RunInstaller $hstwb }
+            "Reset" { Reset $hstwb }
         }
     }
     until ($choice -eq 'Exit')
@@ -136,15 +136,15 @@ function MainMenu()
 
 
 # select image menu
-function SelectImageMenu()
+function SelectImageMenu($hstwb)
 {
     do
     {
-        $choice = Menu "Select Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
+        $choice = Menu $hstwb "Select Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
         switch ($choice)
         {
-            "Existing Image Directory" { ExistingImageDirectory }
-            "Create Image Directory From Image Template" { CreateImageDirectoryFromImageTemplateMenu }
+            "Existing Image Directory" { ExistingImageDirectory $hstwb }
+            "Create Image Directory From Image Template" { CreateImageDirectoryFromImageTemplateMenu $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -152,11 +152,11 @@ function SelectImageMenu()
 
 
 # existing image directory
-function ExistingImageDirectory()
+function ExistingImageDirectory($hstwb)
 {
-    if ($settings.Image.ImageDir -and (Test-Path -path $settings.Image.ImageDir))
+    if ($hstwb.Settings.Image.ImageDir -and (Test-Path -path $hstwb.Settings.Image.ImageDir))
     {
-        $defaultImageDir = $settings.Image.ImageDir
+        $defaultImageDir = $hstwb.Settings.Image.ImageDir
     }
     else
     {
@@ -167,24 +167,24 @@ function ExistingImageDirectory()
 
     if ($newPath -and $newPath -ne '')
     {
-        $settings.Image.ImageDir = $newPath
-        Save
+        $hstwb.Settings.Image.ImageDir = $newPath
+        Save $hstwb
     }
 }
 
 
 # create image directory menu
-function CreateImageDirectoryFromImageTemplateMenu()
+function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 {
     $toNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
 
     $imageTemplateOptions = @()
-    $imageTemplateOptions += $images.keys | Sort-Object $toNatural
+    $imageTemplateOptions += $hstwb.Images.keys | Sort-Object $toNatural
     $imageTemplateOptions += "Back"
     
 
     # create image directory from image template
-    $choice = Menu "Create Image Directory From Image Template Menu" $imageTemplateOptions
+    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions
 
     if ($choice -eq 'Back')
     {
@@ -192,12 +192,12 @@ function CreateImageDirectoryFromImageTemplateMenu()
     }
 
     # get image file
-    $imageFile = [System.IO.Path]::Combine($imagesPath, $images.Get_Item($choice))
+    $imageFile = $hstwb.Images.Get_Item($choice)
 
     # default image dir
-    if ($settings.Image.ImageDir)
+    if ($hstwb.Settings.Image.ImageDir)
     {
-        $defaultImageDir = $settings.Image.ImageDir
+        $defaultImageDir = $hstwb.Settings.Image.ImageDir
     }
     else
     {
@@ -218,7 +218,7 @@ function CreateImageDirectoryFromImageTemplateMenu()
     # return, if no write permission
     try 
     {
-        $tempFile = [System.IO.Path]::Combine($newImageDirectoryPath, "__test__")
+        $tempFile = Join-Path $newImageDirectoryPath -ChildPath "__test__"
         [System.IO.File]::OpenWrite($tempFile).Close()
         Remove-Item -Path $tempFile -Force
     }
@@ -272,7 +272,7 @@ function CreateImageDirectoryFromImageTemplateMenu()
 
 
     # harddrives uae file
-    $harddrivesUaeFile = [System.IO.Path]::Combine($newImageDirectoryPath, "harddrives.uae")
+    $harddrivesUaeFile = Join-Path $newImageDirectoryPath -ChildPath "harddrives.uae"
 
     # confirm overwrite, if harddrives.uae already exists in new image directory path
     if (Test-Path -Path $harddrivesUaeFile)
@@ -346,8 +346,8 @@ function CreateImageDirectoryFromImageTemplateMenu()
 
 
     # save settings
-    $settings.Image.ImageDir = $newImageDirectoryPath
-    Save
+    $hstwb.Settings.Image.ImageDir = $newImageDirectoryPath
+    Save $hstwb
 
 
     # wait 5 seconds
@@ -358,16 +358,16 @@ function CreateImageDirectoryFromImageTemplateMenu()
 
 
 # configure workbench menu
-function ConfigureWorkbenchMenu()
+function ConfigureWorkbenchMenu($hstwb)
 {
     do
     {
-        $choice = Menu "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Path", "Select Workbench Adf Set", "Back") 
+        $choice = Menu $hstwb "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Path", "Select Workbench Adf Set", "Back") 
         switch ($choice)
         {
-            "Switch Install Workbench" { SwitchInstallWorkbench }
-            "Change Workbench Adf Path" { ChangeWorkbenchAdfPath }
-            "Select Workbench Adf Set" { SelectWorkbenchAdfSet }
+            "Switch Install Workbench" { SwitchInstallWorkbench $hstwb }
+            "Change Workbench Adf Path" { ChangeWorkbenchAdfPath $hstwb }
+            "Select Workbench Adf Set" { SelectWorkbenchAdfSet $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -375,62 +375,62 @@ function ConfigureWorkbenchMenu()
 
 
 # switch install workbench
-function SwitchInstallWorkbench()
+function SwitchInstallWorkbench($hstwb)
 {
-    if ($settings.Workbench.InstallWorkbench -eq 'Yes')
+    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes')
     {
-        $settings.Workbench.InstallWorkbench = 'No'
+        $hstwb.Settings.Workbench.InstallWorkbench = 'No'
     }
     else
     {
-        $settings.Workbench.InstallWorkbench = 'Yes'
+        $hstwb.Settings.Workbench.InstallWorkbench = 'Yes'
     }
-    Save
+    Save $hstwb
 }
 
 
 # change workbench adf path
-function ChangeWorkbenchAdfPath()
+function ChangeWorkbenchAdfPath($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $defaultWorkbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
+        $defaultWorkbenchAdfPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\adf"
     }
     else
     {
         $defaultWorkbenchAdfPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$settings.Workbench.WorkbenchAdfPath) { $defaultWorkbenchAdfPath } else { $settings.Workbench.WorkbenchAdfPath }
+    $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfPath) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfPath }
     $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
-        $settings.Workbench.WorkbenchAdfPath = $newPath
-        Save
+        $hstwb.Settings.Workbench.WorkbenchAdfPath = $newPath
+        Save $hstwb
     }
 }
 
 
 # select workbench adf set
-function SelectWorkbenchAdfSet()
+function SelectWorkbenchAdfSet($hstwb)
 {
     # read workbench adf hashes
     $workbenchAdfHashes = @()
-    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-    $workbenchNamePadding = ($workbenchAdfHashes | % { $_.Name } | sort @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $hstwb.Paths.WorkbenchAdfHashesFile)
+    $workbenchNamePadding = ($workbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+    FindMatchingFileHashes $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfPath
 
 
     # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+    FindMatchingWorkbenchAdfs $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfPath
 
 
     # get workbench rom sets
-    $workbenchAdfSets = $workbenchAdfHashes | % { $_.Set } | Sort-Object | Get-Unique
+    $workbenchAdfSets = $workbenchAdfHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
 
     foreach($workbenchAdfSet in $workbenchAdfSets)
     {
@@ -438,7 +438,7 @@ function SelectWorkbenchAdfSet()
         Write-Host $workbenchAdfSet
 
         # get workbench adf set hashes
-        $workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $workbenchAdfSet }
+        $workbenchAdfSetHashes = $workbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
         
         foreach($workbenchAdfSetHash in $workbenchAdfSetHashes)
         {
@@ -459,23 +459,23 @@ function SelectWorkbenchAdfSet()
 
     if ($choise -ne 'Back')
     {
-        $settings.Workbench.WorkbenchAdfSet = $choise
-        Save
+        $hstwb.Settings.Workbench.WorkbenchAdfSet = $choise
+        Save $hstwb
     }
 }
 
 
 # configure amiga os 3.9 menu
-function ConfigureAmigaOS39Menu()
+function ConfigureAmigaOS39Menu($hstwb)
 {
     do
     {
-        $choice = Menu "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Switch Install Boing Bags", "Change Amiga OS 3.9 Iso File", "Back") 
+        $choice = Menu $hstwb "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Switch Install Boing Bags", "Change Amiga OS 3.9 Iso File", "Back") 
         switch ($choice)
         {
-            "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 }
-            "Switch Install Boing Bags" { SwitchInstallBoingBags }
-            "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile }
+            "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 $hstwb }
+            "Switch Install Boing Bags" { SwitchInstallBoingBags $hstwb }
+            "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -484,61 +484,61 @@ function ConfigureAmigaOS39Menu()
 
 
 # switch install amiga os 3.9
-function SwitchInstallAmigaOS39()
+function SwitchInstallAmigaOS39($hstwb)
 {
-    if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes')
+    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes')
     {
-        $settings.AmigaOS39.InstallAmigaOS39 = 'No'
+        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
     }
     else
     {
-        $settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
-        $settings.AmigaOS39.InstallBoingBags = 'Yes'
+        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
+        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
     }
-    Save
+    Save $hstwb
 }
 
 
 # switch install boing bags
-function SwitchInstallBoingBags()
+function SwitchInstallBoingBags($hstwb)
 {
-    if ($settings.AmigaOS39.InstallBoingBags -eq 'Yes')
+    if ($hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
     {
-        $settings.AmigaOS39.InstallBoingBags = 'No'
+        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
     }
     else
     {
-        $settings.AmigaOS39.InstallBoingBags = 'Yes'
+        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
     }
-    Save
+    Save $hstwb
 }
 
 
 # change amiga os 3.9 iso file
-function ChangeAmigaOS39IsoFile()
+function ChangeAmigaOS39IsoFile($hstwb)
 {
-    $path = if (!$settings.AmigaOS39.AmigaOS39IsoFile) { ${Env:USERPROFILE} } else { $settings.AmigaOS39.AmigaOS39IsoFile }
+    $path = if (!$hstwb.Settings.AmigaOS39.AmigaOS39IsoFile) { ${Env:USERPROFILE} } else { $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile }
     $newPath = OpenFileDialog "Select Amiga OS 3.9 iso file" $path "Iso Files|*.iso|All Files|*.*"
 
     if ($newPath -and $newPath -ne '')
     {
-        $settings.AmigaOS39.AmigaOS39IsoFile = $newPath
-        Save
+        $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile = $newPath
+        Save $hstwb
     }
 }
 
 
 # configure kickstart menu
-function ConfigureKickstartMenu()
+function ConfigureKickstartMenu($hstwb)
 {
     do
     {
-        $choice = Menu "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Path", "Select Kickstart Rom Set", "Back") 
+        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Path", "Select Kickstart Rom Set", "Back") 
         switch ($choice)
         {
-            "Switch Install Kickstart" { SwitchInstallKickstart }
-            "Change Kickstart Rom Path" { ChangeKickstartRomPath }
-            "Select Kickstart Rom Set" { SelectKickstartRomSet }
+            "Switch Install Kickstart" { SwitchInstallKickstart $hstwb }
+            "Change Kickstart Rom Path" { ChangeKickstartRomPath $hstwb }
+            "Select Kickstart Rom Set" { SelectKickstartRomSet $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -546,57 +546,57 @@ function ConfigureKickstartMenu()
 
 
 # switch install kickstart
-function SwitchInstallKickstart()
+function SwitchInstallKickstart($hstwb)
 {
-    if ($settings.Kickstart.InstallKickstart -eq 'Yes')
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes')
     {
-        $settings.Kickstart.InstallKickstart = 'No'
+        $hstwb.Settings.Kickstart.InstallKickstart = 'No'
     }
     else
     {
-        $settings.Kickstart.InstallKickstart = 'Yes'
+        $hstwb.Settings.Kickstart.InstallKickstart = 'Yes'
     }
-    Save
+    Save $hstwb
 }
 
 
 # change kickstart rom path
-function ChangeKickstartRomPath()
+function ChangeKickstartRomPath($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $defaultKickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
+        $defaultKickstartRomPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\rom"
     }
     else
     {
         $defaultKickstartRomPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$settings.Kickstart.KickstartRomPath) { $defaultKickstartRomPath } else { $settings.Kickstart.KickstartRomPath }
+    $path = if (!$hstwb.Settings.Kickstart.KickstartRomPath) { $defaultKickstartRomPath } else { $hstwb.Settings.Kickstart.KickstartRomPath }
     $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
-        $settings.Kickstart.KickstartRomPath = $newPath
-        Save
+        $hstwb.Settings.Kickstart.KickstartRomPath = $newPath
+        Save $hstwb
     }
 }
 
 
 # select kickstart rom path
-function SelectKickstartRomSet()
+function SelectKickstartRomSet($hstwb)
 {
     # read kickstart rom hashes
     $kickstartRomHashes = @()
-    $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-    $kickstartNamePadding = ($kickstartRomHashes | % { $_.Name } | sort @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    $kickstartRomHashes += (Import-Csv -Delimiter ';' $hstwb.Paths.KickstartRomHashesFile)
+    $kickstartNamePadding = ($kickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomPath
+    FindMatchingFileHashes $kickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomPath
 
     # get kickstart rom sets
-    $kickstartRomSets = $kickstartRomHashes | % { $_.Set } | Sort-Object | Get-Unique
+    $kickstartRomSets = $kickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
 
     foreach($kickstartRomSet in $kickstartRomSets)
     {
@@ -604,7 +604,7 @@ function SelectKickstartRomSet()
         Write-Host $kickstartRomSet
 
         # get kickstart rom set hashes
-        $kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $kickstartRomSet }
+        $kickstartRomSetHashes = $kickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
         
         foreach($kickstartRomSetHash in $kickstartRomSetHashes)
         {
@@ -625,29 +625,29 @@ function SelectKickstartRomSet()
 
     if ($choise -ne 'Back')
     {
-        $settings.Kickstart.KickstartRomSet = $choise
-        Save
+        $hstwb.Settings.Kickstart.KickstartRomSet = $choise
+        Save $hstwb
     }
 }
 
 
 # configure packages menu
-function ConfigurePackagesMenu()
+function ConfigurePackagesMenu($hstwb)
 {
     # build old install packages index
     $oldInstallPackages = @{}
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
     {
-        $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ } | ForEach-Object { $oldInstallPackages.Set_Item($_, $true) }
+        $hstwb.Settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ } | ForEach-Object { $oldInstallPackages.Set_Item($_, $true) }
     }
 
     # build available and install packages indexes
     $availablePackages = @{}
     $installPackages = @{}
 
-    foreach ($packageFileName in $packages.keys)
+    foreach ($packageFileName in $hstwb.Packages.keys)
     {
-        $package = $packages.Get_Item($packageFileName)
+        $package = $hstwb.Packages.Get_Item($packageFileName)
         $packageName = $package.Package.Name + ' v' + $package.Package.Version
 
         $availablePackages.Set_Item($packageName, $packageFileName)
@@ -665,23 +665,23 @@ function ConfigurePackagesMenu()
         $packageOptions += $availablePackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $_) } else { ("+ " + $_) } }
         $packageOptions += "Back"
 
-        $choice = Menu "Configure Packages Menu" $packageOptions
+        $choice = Menu $hstwb "Configure Packages Menu" $packageOptions
 
         if ($choice -ne 'Back')
         {
             $packageName = $choice -replace '^(\+|\-) ', ''
 
             # get package
-            $package = $packages.Get_Item($availablePackages.Get_Item($packageName))
+            $package = $hstwb.Packages.Get_Item($availablePackages.Get_Item($packageName))
 
             # remove package and assigns, if package exists in install packages. otherwise, add package to install packages and package default assigns
             if ($installPackages.ContainsKey($packageName))
             {
                 $installPackages.Remove($packageName)
 
-                if ($assigns.ContainsKey($package.Package.Name))
+                if ($hstwb.Assigns.ContainsKey($package.Package.Name))
                 {
-                    $assigns.Remove($package.Package.Name)
+                    $hstwb.Assigns.Remove($package.Package.Name)
                 }
             }
             else
@@ -690,15 +690,15 @@ function ConfigurePackagesMenu()
                 
                 if ($package.DefaultAssigns)
                 {
-                    $assigns.Set_Item($package.Package.Name, $package.DefaultAssigns)
+                    $hstwb.Assigns.Set_Item($package.Package.Name, $package.DefaultAssigns)
                 }
             }
             
             # build and set new install packages
             $newInstallPackages = @()
             $newInstallPackages += $installPackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { $installPackages.Get_Item($_) }
-            $settings.Packages.InstallPackages = $newInstallPackages -join ','
-            Save
+            $hstwb.Settings.Packages.InstallPackages = $newInstallPackages -join ','
+            Save $hstwb
         }
     }
     until ($choice -eq 'Back')
@@ -706,14 +706,14 @@ function ConfigurePackagesMenu()
 
 
 # configure winuae menu
-function ConfigureWinuaeMenu()
+function ConfigureWinuaeMenu($hstwb)
 {
     do
     {
-        $choice = Menu "Configure WinUAE Menu" @("Change WinUAE Path", "Back") 
+        $choice = Menu $hstwb "Configure WinUAE Menu" @("Change WinUAE Path", "Back") 
         switch ($choice)
         {
-            "Change WinUAE Path" { ChangeWinuaePath }
+            "Change WinUAE Path" { ChangeWinuaePath $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -721,28 +721,28 @@ function ConfigureWinuaeMenu()
 
 
 # change winuae path
-function ChangeWinuaePath()
+function ChangeWinuaePath($hstwb)
 {
-    $path = if (!$settings.Winuae.WinuaePath) { ${Env:ProgramFiles(x86)} } else { [System.IO.Path]::GetDirectoryName($settings.Winuae.WinuaePath) }
+    $path = if (!$hstwb.Settings.Winuae.WinuaePath) { ${Env:ProgramFiles(x86)} } else { [System.IO.Path]::GetDirectoryName($hstwb.Settings.Winuae.WinuaePath) }
     $newPath = OpenFileDialog "Select WinUAE.exe file" $path "Exe Files|*.exe|All Files|*.*"
 
     if ($newPath -and $newPath -ne '')
     {
-        $settings.Winuae.WinuaePath = $newPath
-        Save
+        $hstwb.Settings.Winuae.WinuaePath = $newPath
+        Save $hstwb
     }
 }
 
 
 # configure installer
-function ConfigureInstaller()
+function ConfigureInstaller($hstwb)
 {
     do
     {
-        $choice = Menu "Configure Installer" @("Change Installer Mode", "Back") 
+        $choice = Menu $hstwb "Configure Installer" @("Change Installer Mode", "Back") 
         switch ($choice)
         {
-            "Change Installer Mode" { ChangeInstallerMode }
+            "Change Installer Mode" { ChangeInstallerMode $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -750,41 +750,46 @@ function ConfigureInstaller()
 
 
 # change installer mode
-function ChangeInstallerMode()
+function ChangeInstallerMode($hstwb)
 {
-    $choice = Menu "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Test") 
+    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Test") 
 
     switch ($choice)
     {
-        "Test" { $settings.Installer.Mode = "Test" }
-        "Install" { $settings.Installer.Mode = "Install" }
-        "Build Self Install" { $settings.Installer.Mode = "BuildSelfInstall" }
-        "Build Package Installation" { $settings.Installer.Mode = "BuildPackageInstallation" }
+        "Test" { $hstwb.Settings.Installer.Mode = "Test" }
+        "Install" { $hstwb.Settings.Installer.Mode = "Install" }
+        "Build Self Install" { $hstwb.Settings.Installer.Mode = "BuildSelfInstall" }
+        "Build Package Installation" { $hstwb.Settings.Installer.Mode = "BuildPackageInstallation" }
     }
 
-    Save
+    Save $hstwb
 }
 
 
 # run installer
-function RunInstaller
+function RunInstaller($hstwb)
 {
     Write-Host ""
-	& $runFile -settingsDir $settingsDir
+    & $hstwb.Paths.RunFile -settingsDir $hstwb.Paths.SettingsDir
     Write-Host ""
+    if ($LastExitCode -ne 0)
+    {
+        Write-Host "Press enter to continue"
+        Read-Host
+    }
 }
 
 
 # save
-function Save()
+function Save($hstwb)
 {
-    WriteIniFile $settingsFile $settings
-    WriteIniFile $assignsFile $assigns
+    WriteIniFile $hstwb.Paths.SettingsFile $hstwb.Settings
+    WriteIniFile $hstwb.Paths.AssignsFile $hstwb.Assigns
 }
 
 
 # reset
-function Reset()
+function Reset($hstwb)
 {
     $confirm = ConfirmDialog "Reset" "Do you really want to reset settings?"
     if (!$confirm)
@@ -792,109 +797,120 @@ function Reset()
         return
     }
 
-    DefaultSettings $settings
-    DefaultAssigns $assigns
-    Save
+    DefaultSettings $hstwb.Settings
+    DefaultAssigns $hstwb.Assigns
+    Save $hstwb
 }
 
 
 # resolve paths
-$hstwbInstallerVersion = HstwbInstallerVersion
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
-$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("hstwb-installer-run.ps1")
+$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
-$settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
-$assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
+$settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
+$assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-
-$images = ReadImages $imagesPath
-$packages = ReadPackages $packagesPath
-$settings = @{}
-$assigns = @{}
+$hstwb = @{
+    'Version' = HstwbInstallerVersion;
+    'Paths' = @{
+        'KickstartRomHashesFile' = $kickstartRomHashesFile;
+        'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+        'ImagesPath' = $imagesPath;
+        'PackagesPath' = $packagesPath;
+        'SettingsFile' = $settingsFile;
+        'AssignsFile' = $assignsFile;
+        'RunFile' = $runFile;
+        'SettingsDir' = $settingsDir
+    };
+    'Images' = ReadImages $imagesPath;
+    'Packages' = ReadPackages $packagesPath;
+    'Settings' = @{};
+    'Assigns' = @{}
+}
 
 
 # create settings dir, if it doesn't exist
-if(!(test-path -path $settingsDir))
+if(!(test-path -path $hstwb.Paths.SettingsDir))
 {
-    mkdir $settingsDir | Out-Null
+    mkdir $hstwb.Paths.SettingsDir | Out-Null
 }
 
 
 # create default settings, if settings file doesn't exist
-if (test-path -path $settingsFile)
+if (test-path -path $hstwb.Paths.SettingsFile)
 {
-    $settings = ReadIniFile $settingsFile
+    $hstwb.Settings = ReadIniFile $hstwb.Paths.SettingsFile
 }
 else
 {
-    DefaultSettings $settings
+    DefaultSettings $hstwb.Settings
 }
 
 
 # read assigns, if assigns file exist
-if (test-path -path $assignsFile)
+if (test-path -path $hstwb.Paths.AssignsFile)
 {
-    $assigns = ReadIniFile $assignsFile
+    $hstwb.Assigns = ReadIniFile $hstwb.Paths.AssignsFile
 }
 
 # create defailt assigns, if assigns is empty or doesn't contain global assigns
-if ($assigns.Keys.Count -eq 0 -or !$assigns.ContainsKey('Global'))
+if ($hstwb.Assigns.Keys.Count -eq 0 -or !$hstwb.Assigns.ContainsKey('Global'))
 {
-    DefaultAssigns $assigns
+    DefaultAssigns $hstwb.Assigns
 }
 
 
 # set default installer mode, if not present
-if (!$settings.Installer -or !$settings.Installer.Mode)
+if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
 {
-    $settings.Installer = @{}
-    $settings.Installer.Mode = "Install"
+    $hstwb.Settings.Installer = @{}
+    $hstwb.Settings.Installer.Mode = "Install"
 }
 
 
 # create packages section in settings, if it doesn't exist
-if (!($settings.Packages))
+if (!($hstwb.Settings.Packages))
 {
-    $settings.Packages = @{}
-    $settings.Packages.InstallPackages = ''
+    $hstwb.Settings.Packages = @{}
+    $hstwb.Settings.Packages.InstallPackages = ''
 }
 
 
 # create amiga os 3.9 section in settings, if it doesn't exist
-if (!($settings.AmigaOS39))
+if (!($hstwb.Settings.AmigaOS39))
 {
-    $settings.AmigaOS39 = @{}
-    $settings.AmigaOS39.InstallAmigaOS39 = 'No'
-    $settings.AmigaOS39.InstallBoingBags = 'No'
+    $hstwb.Settings.AmigaOS39 = @{}
+    $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
+    $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
 }
 
 
 # set default image dir, if image dir doesn't exist
-if ($settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
+if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
 {
-    $settings.Image.ImageDir = ''
+    $hstwb.Settings.Image.ImageDir = ''
 }
 
 
 
 # update packages
-UpdatePackages $packages $settings
+UpdatePackages $hstwb.Packages $hstwb.Settings
 
 
 # update assigns
-UpdateAssigns $packages $settings $assigns
+UpdateAssigns $hstwb.Packages $hstwb.Settings $hstwb.Assigns
 
 
 # save settings and assigns
-Save
+Save $hstwb
 
 
 # validate settings
-if (!(ValidateSettings $settings))
+if (!(ValidateSettings $hstwb.Settings))
 {
     Write-Error "Validate settings failed"
     exit 1
@@ -902,7 +918,7 @@ if (!(ValidateSettings $settings))
 
 
 # validate assigns
-if (!(ValidateAssigns $assigns))
+if (!(ValidateAssigns $hstwb.Assigns))
 {
     Write-Error "Validate assigns failed"
     exit 1
@@ -910,4 +926,4 @@ if (!(ValidateAssigns $assigns))
 
 
 # show main menu
-MainMenu
+MainMenu $hstwb

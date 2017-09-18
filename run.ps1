@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-08-18
+# Date:   2017-09-18
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -192,22 +192,21 @@ function StartProcess($fileName, $arguments, $workingDirectory)
 
 
 # find packages to install
-function FindPackagesToInstall()
+function FindPackagesToInstall($hstwb)
 {
     # get package files in packages directory
     $packageFiles = @()
-    $packageFiles += Get-ChildItem -Path $packagesPath -filter *.zip
+    $packageFiles += Get-ChildItem -Path $hstwb.Paths.PackagesPath -filter *.zip
 
 
     # get install packages defined in settings packages section
     $packageFileNames = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
     {
-        $packageFileNames += $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
+        $packageFileNames += $hstwb.Settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
     }
 
 
-    $packageNames = @{}
     $packageDetails = @{}
     $packageDependencies = @()
 
@@ -220,7 +219,7 @@ function FindPackagesToInstall()
         # write warning and skip, if package file doesn't exist
         if (!$packageFile)
         {
-            Fail ("Package '$packageFileName' doesn't exist in packages directory '$packagesPath'")
+            Fail $hstwb ("Package '$packageFileName' doesn't exist in packages directory '$packagesPath'")
         }
 
 
@@ -230,7 +229,7 @@ function FindPackagesToInstall()
         # return, if harddrives uae text doesn't exist
         if (!$packageIniText)
         {
-            Fail ("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file")
+            Fail $hstwb("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file")
         }
 
 
@@ -241,7 +240,7 @@ function FindPackagesToInstall()
         # fail, if package name doesn't exist
         if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
         {
-            Fail ("Package '$packageFileName' doesn't contain name in package.ini file")
+            Fail $hstwb ("Package '$packageFileName' doesn't contain name in package.ini file")
         }
 
 
@@ -297,16 +296,16 @@ function FindPackagesToInstall()
 
 
 # build assign hstwb installer script lines
-function BuildAssignHstwbInstallerScriptLines($createDirectories)
+function BuildAssignHstwbInstallerScriptLines($hstwb, $createDirectories)
 {
-    $globalAssigns = $assigns.Get_Item('Global')
+    $globalAssigns = $hstwb.Assigns.Get_Item('Global')
 
     $assignHstwbInstallerScriptLines = @()
 
     foreach ($assignName in $globalAssigns.keys)
     {
         # skip, if assign name is 'HstWBInstallerDir' and installer mode is build package installation
-        if ($assignName -match 'HstWBInstallerDir' -and $settings.Installer.Mode -eq "BuildPackageInstallation")
+        if ($assignName -match 'HstWBInstallerDir' -and $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
             continue
         }
@@ -410,16 +409,16 @@ function BuildRemoveAssignScriptLines($assignId, $assignName, $assignPath)
 
 
 # build install package script lines
-function BuildInstallPackageScriptLines($packageNames)
+function BuildInstallPackageScriptLines($hstwb, $packageNames)
 {
-    $globalAssigns = $assigns.Get_Item('Global')
+    $globalAssigns = $hstwb.Assigns.Get_Item('Global')
 
     $installPackageScripts = @()
  
     foreach ($packageName in $packageNames)
     {
         # get package
-        $package = $packages.Get_Item($packageName.ToLower())
+        $package = $hstwb.Packages.Get_Item($packageName.ToLower())
 
         # package name
         $name = ($package.Package.Name + " v" + $package.Package.Version)
@@ -440,9 +439,9 @@ function BuildInstallPackageScriptLines($packageNames)
         }
 
         # package assigns
-        if ($assigns.ContainsKey($package.Package.Name))
+        if ($hstwb.Assigns.ContainsKey($package.Package.Name))
         {
-            $packageAssigns = $assigns.Get_Item($package.Package.Name)
+            $packageAssigns = $hstwb.Assigns.Get_Item($package.Package.Name)
         }
         else
         {
@@ -459,7 +458,7 @@ function BuildInstallPackageScriptLines($packageNames)
             # fail, if package assign name doesn't exist in either global or package assigns
             if (!$matchingGlobalAssignName -and !$matchingPackageAssignName)
             {
-                Fail ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$assignName' in either global or package assigns!")
+                Fail $hstwb ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$assignName' in either global or package assigns!")
             }
 
             # skip, if package assign name is global
@@ -477,9 +476,9 @@ function BuildInstallPackageScriptLines($packageNames)
             $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignPath
 
             # append ini file set for package assignm, if installer mode is build self install or build package installation
-            if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
+            if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
             {
-                $installPackageLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+                $installPackageLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
             }
 
             # append remove package assign
@@ -515,14 +514,14 @@ function BuildInstallPackageScriptLines($packageNames)
 
 
 # build reset assigns script lines
-function BuildResetAssignsScriptLines()
+function BuildResetAssignsScriptLines($hstwb)
 {
     $resetAssignsScriptLines = @()
 
     # reset assigns settings and get existing assign value, if present in prefs assigns ini file
-    foreach ($assignSectionName in $assigns.keys)
+    foreach ($assignSectionName in $hstwb.Assigns.keys)
     {
-        $sectionAssigns = $assigns[$assignSectionName]
+        $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
         foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
         {
@@ -532,7 +531,7 @@ function BuildResetAssignsScriptLines()
             $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
             $resetAssignsScriptLines += '; Get assign path from ini'
             $resetAssignsScriptLines += 'set assignpath ""'
-            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGESDIR:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGESDIR:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
             $resetAssignsScriptLines += ''
             $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
             $resetAssignsScriptLines += 'IF NOT "$assignpath" eq ""'
@@ -550,14 +549,14 @@ function BuildResetAssignsScriptLines()
 
 
 # build default assigns script lines
-function BuildDefaultAssignsScriptLines()
+function BuildDefaultAssignsScriptLines($hstwb)
 {
     $defaultAssignsScriptLines = @()
 
     # default assigns settings
-    foreach ($assignSectionName in $assigns.keys)
+    foreach ($assignSectionName in $hstwb.Assigns.keys)
     {
-        $sectionAssigns = $assigns[$assignSectionName]
+        $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
         foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
         {
@@ -576,13 +575,13 @@ function BuildDefaultAssignsScriptLines()
 
 
 # build install packages script lines
-function BuildInstallPackagesScriptLines($installPackages)
+function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 {
     $installPackagesScriptLines = @()
     $installPackagesScriptLines += ""
 
     # append skip reset settings or install packages depending on installer mode
-    if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
+    if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
         $installPackagesScriptLines += "SKIP reset"
     }
@@ -630,7 +629,7 @@ function BuildInstallPackagesScriptLines($installPackages)
 
 
     # globl assigns
-    $globalAssigns = $assigns.Get_Item('Global')
+    $globalAssigns = $hstwb.Assigns.Get_Item('Global')
 
 
     # build global package assigns
@@ -644,9 +643,9 @@ function BuildInstallPackagesScriptLines($installPackages)
         $addGlobalAssignScriptLines += BuildAddAssignScriptLines $assignId $assignName.ToUpper() $assignPath
 
         # append ini file set for global assign, if installer mode is build self install or build package installation
-        if ($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation")
+        if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $addGlobalAssignScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $envArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+            $addGlobalAssignScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assignpath"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
         }
         
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignPath
@@ -655,9 +654,9 @@ function BuildInstallPackagesScriptLines($installPackages)
 
     # build install package script lines
     $installPackageScripts = @()
-    $installPackageScripts += BuildInstallPackageScriptLines ($installPackages | ForEach-Object { $_.PackageFileName })
+    $installPackageScripts += BuildInstallPackageScriptLines $hstwb ($installPackages | ForEach-Object { $_.PackageFileName })
 
-    if (($settings.Installer.Mode -eq "BuildSelfInstall" -or $settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
+    if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
         # get install package name padding
         $installPackageNamesPadding = ($installPackages | ForEach-Object { $_.FullName } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
@@ -679,7 +678,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         }
 
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += BuildResetAssignsScriptLines
+        $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP installpackagesmenu'
         $installPackagesScriptLines += ''
@@ -690,7 +689,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += '; -------------'
         $installPackagesScriptLines += 'LAB resetassigns'
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += BuildResetAssignsScriptLines
+        $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP editassignsmenu'
 
@@ -700,7 +699,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += '; ---------------'
         $installPackagesScriptLines += 'LAB defaultassigns'
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += BuildDefaultAssignsScriptLines
+        $installPackagesScriptLines += BuildDefaultAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP editassignsmenu'
 
@@ -729,7 +728,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
 
-        if ($settings.Installer.Mode -eq "BuildPackageInstallation")
+        if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
             $installPackagesScriptLines += "echo ""Quit"" >>T:installpackagesmenu"
         }
@@ -771,7 +770,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "  ENDIF"
         $installPackagesScriptLines += "ENDIF"
 
-        if ($settings.Installer.Mode -eq "BuildPackageInstallation")
+        if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
@@ -841,7 +840,7 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "echo """" NOLINE >T:editassignsmenu"
 
         $assignSectionNames = @('Global')
-        $assignSectionNames += $assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
+        $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
 
 
         $editAssignsMenuOption = 0
@@ -856,7 +855,7 @@ function BuildInstallPackagesScriptLines($installPackages)
             $editAssignsMenuOption += 1
 
             # get section assigns
-            $sectionAssigns = $assigns[$assignSectionName]
+            $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
             foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
             {
@@ -948,20 +947,20 @@ function BuildInstallPackagesScriptLines($installPackages)
         $installPackagesScriptLines += "echo ""--------------------"""
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += '; Create env-archive directory, if it doesn''t exist and ini file set for package assign'
-        $installPackagesScriptLines += 'IF NOT EXISTS "{0}"' -f $envArcDir
-        $installPackagesScriptLines += '  makepath "{0}"' -f $envArcDir
+        $installPackagesScriptLines += 'IF NOT EXISTS "{0}"' -f $hstwb.Paths.EnvArcDir
+        $installPackagesScriptLines += '  makepath "{0}"' -f $hstwb.Paths.EnvArcDir
         $installPackagesScriptLines += 'ENDIF'
 
 
         # get assign section names
         $assignSectionNames = @('Global')
-        $assignSectionNames += $assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
+        $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
 
         # build validate assigns
         foreach($assignSectionName in $assignSectionNames)
         {
             # get section assigns
-            $sectionAssigns = $assigns[$assignSectionName]
+            $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
             foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
             {
@@ -1001,7 +1000,7 @@ function BuildInstallPackagesScriptLines($installPackages)
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("; Install package '{0}', if it's selected" -f $installPackageScript.Name)
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Id)
-            $installPackagesScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $envArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
+            $installPackagesScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1053,23 +1052,23 @@ function BuildInstallPackagesScriptLines($installPackages)
 
 
 # build winuae image harddrives config text
-function BuildFsUaeHarddrivesConfigText()
+function BuildFsUaeHarddrivesConfigText($hstwb)
 {
     # winuae image harddrives config file
-    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($settings.Image.ImageDir, "harddrives.uae")
+    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($hstwb.Settings.Image.ImageDir, "harddrives.uae")
 
     # fail, if winuae image harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
     {
-        Fail ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
     }
 
     # read winuae image harddrives config text
     $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
 
     # replace imagedir placeholders
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $settings.Image.ImageDir)
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $hstwb.Settings.Image.ImageDir)
     $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('\\', '\').Replace('\', '/')
     $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
 
@@ -1089,10 +1088,10 @@ function BuildFsUaeHarddrivesConfigText()
 
 
 # build fs-uae self install harddrives config text
-function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir, $os39Dir)
+function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir)
 {
     # build fs-uae image harddrives config
-    $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText
+    $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb
 
     # get harddrive index of last hard drive config from fs-uae image harddrives config
     $harddriveIndex = 0
@@ -1103,7 +1102,7 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir,
     # fail, if fs-uae self install harddrives config file doesn't exist
     if (!(Test-Path -Path $fsUaeSelfInstallHarddrivesConfigFile))
     {
-        Fail ("Error: Self install harddrives config file '" + $fsUaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Self install harddrives config file '" + $fsUaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
     }
 
     # read fs-uae self install harddrives config file
@@ -1124,23 +1123,23 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir,
 
 
 # build winuae image harddrives config text
-function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
+function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 {
     # winuae image harddrives config file
-    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($settings.Image.ImageDir, "harddrives.uae")
+    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($hstwb.Settings.Image.ImageDir, "harddrives.uae")
 
     # fail, if winuae image harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
     {
-        Fail ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
     }
 
     # read winuae image harddrives config text
     $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
 
     # replace imagedir placeholders
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $settings.Image.ImageDir)
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $settings.Image.ImageDir.Replace('\', '\\'))
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir)
+    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $hstwb.Settings.Image.ImageDir.Replace('\', '\\'))
     $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
 
     if ($disableBootableHarddrives)
@@ -1153,10 +1152,10 @@ function BuildWinuaeImageHarddrivesConfigText($disableBootableHarddrives)
 
 
 # build winuae install harddrives config text
-function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39Dir, $boot)
+function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $boot)
 {
     # build winuae image harddrives config
-    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $boot
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $boot
 
     # get uaehf index of last uaehf config from winuae image harddrives config
     $uaehfIndex = 0
@@ -1175,7 +1174,7 @@ function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39
     # fail, if winuae install harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeInstallHarddrivesConfigFile))
     {
-        Fail ("Error: Install harddrives config file '" + $winuaeInstallHarddrivesConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Install harddrives config file '" + $winuaeInstallHarddrivesConfigFile + "' doesn't exist!")
     }
 
     # read winuae install harddrives config file
@@ -1197,10 +1196,10 @@ function BuildWinuaeInstallHarddrivesConfigText($installDir, $packagesDir, $os39
 
 
 # build winuae self install harddrives config text
-function BuildWinuaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir, $os39Dir)
+function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir)
 {
     # build winuae image harddrives config
-    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
 
     # get uaehf index of last uaehf config from winuae image harddrives config
     $uaehfIndex = 0
@@ -1211,7 +1210,7 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir
     # fail, if winuae self install harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeSelfInstallHarddrivesConfigFile))
     {
-        Fail ("Error: Self install harddrives config file '" + $winuaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Self install harddrives config file '" + $winuaeSelfInstallHarddrivesConfigFile + "' doesn't exist!")
     }
 
     # read winuae self install harddrives config file
@@ -1233,10 +1232,10 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($workbenchDir, $kickstartDir
 
 
 # build winuae run harddrives config text
-function BuildWinuaeRunHarddrivesConfigText
+function BuildWinuaeRunHarddrivesConfigText($hstwb)
 {
     # build winuae image harddrives config
-    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
 
     # get uaehf index of last uaehf config from winuae image harddrives config
     $uaehfIndex = 0
@@ -1247,7 +1246,7 @@ function BuildWinuaeRunHarddrivesConfigText
     # fail, if winuae run harddrives config file doesn't exist
     if (!(Test-Path -Path $winuaeRunHarddrivesConfigFile))
     {
-        Fail ("Error: Run harddrives config file '" + $winuaeRunHarddrivesConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Run harddrives config file '" + $winuaeRunHarddrivesConfigFile + "' doesn't exist!")
     }
 
     # read winuae run harddrives config file
@@ -1263,22 +1262,22 @@ function BuildWinuaeRunHarddrivesConfigText
 
 
 # run test
-function RunTest
+function RunTest($hstwb)
 {
     # build winuae image harddrives config text
-    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $false
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
 
     # read winuae test config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath "hstwb-installer.uae"
     $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # replace winuae test config placeholders
-    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeImageHarddrivesConfigText)
 
     # write winuae test config file to temp dir
-    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
@@ -1291,15 +1290,15 @@ function RunTest
     $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
-    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+    if ((StartProcess $hstwb.Settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        Fail $hstwb ("Failed to run '" + $hstwb.Settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
     }
 }
 
 
 # run install
-function RunInstall()
+function RunInstall($hstwb)
 {
     # print preparing install message
     Write-Host ""
@@ -1307,15 +1306,15 @@ function RunInstall()
 
 
     # copy amiga install dir
-    $amigaInstallDir = Join-Path $amigaPath -ChildPath "install"
-    Copy-Item -Path $amigaInstallDir $tempPath -recurse -force
+    $amigaInstallDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "install"
+    Copy-Item -Path $amigaInstallDir $hstwb.Paths.TempPath -recurse -force
 
 
     # set temp install and packages dir
-    $tempInstallDir = Join-Path $tempPath -ChildPath "install"
+    $tempInstallDir = Join-Path $hstwb.Paths.TempPath -ChildPath "install"
     $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
     $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
-    $tempPackagesDir = Join-Path $tempPath -ChildPath "packages"
+    $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
 
     # create temp workbench path
     if(!(test-path -path $tempWorkbenchDir))
@@ -1337,29 +1336,29 @@ function RunInstall()
 
 
     # copy large harddisk to install directory
-    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
+    $largeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
     Copy-Item -Path "$largeHarddiskDir\*" $tempInstallDir -recurse -force
-    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk"
+    $largeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk"
     Copy-Item -Path "$largeHarddiskDir\*" $tempInstallDir -recurse -force
 
     # copy amiga shared dir
-    $amigaSharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    $amigaSharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
 
     # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
+    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
     Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
 
     # copy kickstart to install directory
-    $amigaKickstartDir = [System.IO.Path]::Combine($amigaPath, "kickstart")
+    $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
     Copy-Item -Path "$amigaKickstartDir\*" $tempInstallDir -recurse -force
 
     # copy generic to install directory
-    $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
+    $amigaGenericDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" $tempInstallDir -recurse -force
     
     # copy amiga packages dir
-    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
 
@@ -1377,7 +1376,7 @@ function RunInstall()
 
 
     # prepare install workbench
-    if ($settings.Workbench.InstallWorkbench -eq 'Yes' -and $workbenchAdfSetHashes.Count -gt 0)
+    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and $hstwb.WorkbenchAdfSetHashes.Count -gt 0)
     {
         # create install workbench prefs file
         $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
@@ -1386,12 +1385,12 @@ function RunInstall()
 
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $workbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
+        $hstwb.WorkbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
     }
 
 
     # prepare install kickstart
-    if ($settings.Kickstart.InstallKickstart -eq 'Yes' -and $kickstartRomSetHashes.Count -gt 0)
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and $hstwb.KickstartRomSetHashes.Count -gt 0)
     {
         # create install kickstart prefs file
         $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
@@ -1400,11 +1399,11 @@ function RunInstall()
 
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $kickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
+        $hstwb.KickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
 
 
         # get first kickstart rom hash
-        $installKickstartRomHash = $kickstartRomSetHashes | Select-Object -First 1
+        $installKickstartRomHash = $hstwb.KickstartRomSetHashes | Select-Object -First 1
 
 
         # kickstart rom key
@@ -1420,11 +1419,11 @@ function RunInstall()
 
 
     # find packages to install
-    $installPackages = FindPackagesToInstall
+    $installPackages = FindPackagesToInstall $hstwb
 
 
     # build assign hstwb installers script lines
-    $assignHstwbInstallerScriptLines = BuildAssignHstwbInstallerScriptLines $true
+    $assignHstwbInstallerScriptLines = BuildAssignHstwbInstallerScriptLines $hstwb $true
 
     # write assign hstwb installer to install dir
     $userAssignFile = [System.IO.Path]::Combine($tempInstallDir, "S\Assign-HstWB-Installer")
@@ -1472,7 +1471,7 @@ function RunInstall()
         $installPackagesScriptLines += "; Clear screen"
         $installPackagesScriptLines += "echo ""*ec"""
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += BuildInstallPackagesScriptLines $installPackages
+        $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
         $installPackagesScriptLines += "echo """""
         $installPackagesScriptLines += "echo ""Package installation is complete."""
         $installPackagesScriptLines += "echo """""
@@ -1487,7 +1486,7 @@ function RunInstall()
 
     $installBoingBags = $false
 
-    if ($settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $settings.AmigaOS39.AmigaOS39IsoFile)
+    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
     {
         # create install amiga os 3.9 prefs file
         $installAmigaOs39File = Join-Path $prefsDir -ChildPath 'Install-AmigaOS3.9'
@@ -1495,13 +1494,13 @@ function RunInstall()
 
 
         # get amiga os 3.9 directory and filename
-        $amigaOs39IsoDir = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Parent
-        $amigaOs39IsoFileName = Split-Path $settings.AmigaOS39.AmigaOS39IsoFile -Leaf
+        $amigaOs39IsoDir = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Parent
+        $amigaOs39IsoFileName = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Leaf
 
 
         $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
 
-        if ((Test-Path $boingBag1File) -and $settings.AmigaOS39.InstallBoingBags -eq 'Yes')
+        if ((Test-Path $boingBag1File) -and $hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
         {
             $installBoingBags = $true
             $installBoingBagsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-BoingBags'
@@ -1509,7 +1508,7 @@ function RunInstall()
         }
 
         # copy amiga os 3.9 dir
-        $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")
+        $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
         Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
 
 
@@ -1530,7 +1529,7 @@ function RunInstall()
 
         #
         $os39Dir = $amigaOs39IsoDir
-        $isoFile = $settings.AmigaOS39.AmigaOS39IsoFile
+        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
     }
     else
     {
@@ -1540,23 +1539,23 @@ function RunInstall()
 
 
     # build winuae install harddrives config with boot
-    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $os39Dir $true
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $true
 
 
     # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
     $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
 
     # replace winuae hstwb installer config placeholders
-    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
-    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $hstwb.Paths.WorkbenchAdfFile)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$ISOFILE]', $isoFile)
 
 
     # write winuae hstwb installer config file to temp install dir
-    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
@@ -1564,41 +1563,41 @@ function RunInstall()
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae run harddrives config with boot
-    $winuaeRunHarddrivesConfigText = BuildWinuaeRunHarddrivesConfigText
+    $winuaeRunHarddrivesConfigText = BuildWinuaeRunHarddrivesConfigText $hstwb
 
     # replace hstwb installer uae winuae configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$HARDDRIVES]', $winuaeRunHarddrivesConfigText)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
 
     # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.winuae.uae"
+    $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
 
     
     # read fs-uae hstwb installer config file
-    $hstwbInstallerFsUaeConfigFile = [System.IO.Path]::Combine($fsUaePath, "hstwb-installer.fs-uae")
+    $hstwbInstallerFsUaeConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
     $hstwbInstallerFsUaeConfigText = [System.IO.File]::ReadAllText($hstwbInstallerFsUaeConfigFile)
 
     # build fs-uae install harddrives config
-    $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText
+    $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb
     
     # replace hstwb installer fs-uae configuration placeholders
-    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
     $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
     $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
     $hstwbInstallerFsUaeConfigText = $hstwbInstallerFsUaeConfigText.Replace('[$ISOFILE]', '')
     
     # write hstwb installer fs-uae configuration file to image dir
-    $hstwbInstallerFsUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
+    $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $hstwbInstallerFsUaeConfigText)
     
 
     # copy install uae config to image dir
-    $installUaeConfigDir = [System.IO.Path]::Combine($scriptsPath, "install_uae-config")
-    Copy-Item -Path "$installUaeConfigDir\*" $settings.Image.ImageDir -recurse -force
+    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.ScriptsPath, "install_uae-config")
+    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
     
 
     # write hstwb installer packages ini file
@@ -1609,9 +1608,9 @@ function RunInstall()
     # build hstwb installer assigns ini
     $hstwbInstallerAssignsIni = @{}
 
-    foreach ($assignSectionName in $assigns.keys)
+    foreach ($assignSectionName in $hstwb.Assigns.keys)
     {
-        $sectionAssigns = $assigns[$assignSectionName]
+        $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
         foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
         {
@@ -1648,9 +1647,9 @@ function RunInstall()
     $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # exit, if winuae fails
-    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+    if ((StartProcess $hstwb.Settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        Fail $hstwb ("Failed to run '" + $hstwb.Settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
     }
 
 
@@ -1658,7 +1657,7 @@ function RunInstall()
     $installCompletePrefsFile = Join-Path $prefsDir -ChildPath 'Install-Complete'
     if (!(Test-Path -path $installCompletePrefsFile))
     {
-        Fail "Installation failed"
+        Fail $hstwb "Installation failed"
     }
 
     
@@ -1670,16 +1669,16 @@ function RunInstall()
 
 
         # build winuae install harddrives config with boot
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $os39Dir $false
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $false
 
 
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
 
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$ISOFILE]', $isoFile)
@@ -1690,16 +1689,16 @@ function RunInstall()
 
 
         # exit, if winuae fails
-        if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+        if ((StartProcess $hstwb.Settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
         {
-            Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+            Fail $hstwb ("Failed to run '" + $hstwb.Settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
         }
     }
 }
 
 
 # run build self install
-function RunBuildSelfInstall()
+function RunBuildSelfInstall($hstwb)
 {
     # print preparing self install message
     Write-Host ""
@@ -1707,7 +1706,7 @@ function RunBuildSelfInstall()
 
 
     # create temp install path
-    $tempInstallDir = [System.IO.Path]::Combine($tempPath, "install")
+    $tempInstallDir = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "install")
     if(!(test-path -path $tempInstallDir))
     {
         mkdir $tempInstallDir | Out-Null
@@ -1721,7 +1720,7 @@ function RunBuildSelfInstall()
     }
 
     # create temp packages path
-    $tempPackagesDir = [System.IO.Path]::Combine($tempPath, "packages")
+    $tempPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "packages")
     if(!(test-path -path $tempPackagesDir))
     {
         mkdir $tempPackagesDir | Out-Null
@@ -1740,18 +1739,18 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$licensesPath\*" $tempLicensesDir -recurse -force
     
     # copy self install to install directory
-    $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($amigaPath, "selfinstall")
+    $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "selfinstall")
     Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
 
     # copy generic to install directory
-    $amigaGenericDir = [System.IO.Path]::Combine($amigaPath, "generic")
+    $amigaGenericDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy large harddisk
-    $installLargeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
+    $installLargeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
     Copy-Item -Path "$installLargeHarddiskDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$installLargeHarddiskDir\*" "$tempInstallDir\Boot-SelfInstall" -recurse -force
-    $largeHarddiskDir = Join-Path $amigaPath -ChildPath "largeharddisk"
+    $largeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk"
     Copy-Item -Path "$largeHarddiskDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
     # copy large harddisk to self install directory
@@ -1763,24 +1762,24 @@ function RunBuildSelfInstall()
     Copy-Item -Path "$largeHarddiskDir\*" $selfInstallLargeHarddiskDir -recurse -force
 
     # copy shared to install directory
-    $sharedDir = [System.IO.Path]::Combine($amigaPath, "shared")
+    $sharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy amiga os 3.9 to install directory
-    $amigaOs39Dir = [System.IO.Path]::Combine($amigaPath, "amigaos3.9")
+    $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
     Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
 
     # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($amigaPath, "workbench")
+    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
     Copy-Item -Path "$amigaWorkbenchDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
     # copy kickstart to install directory
-    $amigaKickstartDir = [System.IO.Path]::Combine($amigaPath, "kickstart")
+    $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
     Copy-Item -Path "$amigaKickstartDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy amiga packages dir
-    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
   
 
@@ -1791,7 +1790,7 @@ function RunBuildSelfInstall()
 
     # build assign hstwb installers script lines
     $assignHstwbInstallerScriptLines = @()
-    $assignHstwbInstallerScriptLines += BuildAssignHstwbInstallerScriptLines $true
+    $assignHstwbInstallerScriptLines += BuildAssignHstwbInstallerScriptLines $hstwb $true
 
 
     # write assign hstwb installer script for building self install
@@ -1807,7 +1806,7 @@ function RunBuildSelfInstall()
 
 
     # find packages to install
-    $installPackages = FindPackagesToInstall
+    $installPackages = FindPackagesToInstall $hstwb
 
 
     # extract packages and write install packages script, if there's packages to install
@@ -1843,7 +1842,7 @@ function RunBuildSelfInstall()
     $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
     $installPackagesScriptLines += ";"
     $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
-    $installPackagesScriptLines += BuildInstallPackagesScriptLines $installPackages
+    $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
     $installPackagesScriptLines += "echo """""
     $installPackagesScriptLines += "echo ""Package installation is complete."""
     $installPackagesScriptLines += "echo """""
@@ -1855,11 +1854,11 @@ function RunBuildSelfInstall()
     WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
-    $globalAssigns = $assigns.Get_Item('Global')
+    $globalAssigns = $hstwb.Assigns.Get_Item('Global')
 
     if (!$globalAssigns)
     {
-        Fail ("Failed to run install. Global assigns doesn't exist!")
+        Fail $hstwb ("Failed to run install. Global assigns doesn't exist!")
     }
 
     $removeHstwbInstallerScriptLines = @()
@@ -1884,7 +1883,7 @@ function RunBuildSelfInstall()
 
     if (!$hstwbInstallDirAssignName)
     {
-        Fail ("Failed to run install. Global assigns doesn't containassign for 'HstWBInstallerDir' exist!")
+        Fail $hstwb ("Failed to run install. Global assigns doesn't containassign for 'HstWBInstallerDir' exist!")
     }
 
     $hstwbInstallDir = $globalAssigns.Get_Item($hstwbInstallDirAssignName)
@@ -1906,78 +1905,79 @@ function RunBuildSelfInstall()
 
 
     # build winuae install harddrives config
-    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $tempInstallDir $tempPackagesDir $tempInstallDir $true
+    $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempInstallDir $true
 
 
     # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($winuaePath, "hstwb-installer.uae")
+    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
     $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
 
     # replace winuae hstwb installer config placeholders
-    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
-    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $workbenchAdfHash.File)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
+    $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', $hstwb.Paths.WorkbenchAdfFile)
     $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $winuaeInstallHarddrivesConfigText)
 
 
     # write winuae hstwb installer config file to temp install dir
-    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($tempPath, "hstwb-installer.uae")
+    $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
     [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
 
     # hstwb uae run workbench dir
     $workbenchDir = ''
-    if ($settings.Workbench.WorkbenchAdfPath -and (Test-Path -Path $settings.Workbench.WorkbenchAdfPath))
+    if ($hstwb.Settings.Workbench.WorkbenchAdfPath -and (Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfPath))
     {
-        $workbenchDir = $settings.Workbench.WorkbenchAdfPath
+        $workbenchDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
     }
     
     # hstwb uae kickstart dir
     $kickstartDir = ''
-    if ($settings.Kickstart.KickstartRomPath -and (Test-Path -Path $settings.Kickstart.KickstartRomPath))
+    if ($hstwb.Settings.Kickstart.KickstartRomPath -and (Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomPath))
     {
-        $kickstartDir = $settings.Kickstart.KickstartRomPath
+        $kickstartDir = $hstwb.Settings.Kickstart.KickstartRomPath
     }
 
     # write hstwb installer uae winuae configuration file to image dir
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $workbenchDir $kickstartDir ''
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir ''
+
 
     # replace hstwb installer uae winuae configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WORKBENCHADFFILE]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$ISOFILE]', '')
     
     # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
+    $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
 
 
     # read fs-uae hstwb installer config file
-    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($fsUaePath, "hstwb-installer.fs-uae")
+    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $workbenchDir $kickstartDir $settings.Image.ImageDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $hstwb.Settings.Image.ImageDir
     
     # replace hstwb installer fs-uae configuration placeholders
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $kickstartRomHash.File)
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KICKSTARTROMFILE]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WORKBENCHADFFILE]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$HARDDRIVES]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ISOFILE]', '')
     
     # write hstwb installer fs-uae configuration file to image dir
-    $hstwbInstallerFsUaeConfigFile = Join-Path $settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
+    $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
 
     # copy install uae config to image dir
-    $installUaeConfigDir = [System.IO.Path]::Combine($scriptsPath, "install_uae-config")
-    Copy-Item -Path "$installUaeConfigDir\*" $settings.Image.ImageDir -recurse -force
+    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.ScriptsPath, "install_uae-config")
+    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
 
 
     # print preparing installation done message
@@ -1993,9 +1993,9 @@ function RunBuildSelfInstall()
     $winuaeArgs = "-f ""$tempWinuaeHstwbInstallerConfigFile"""
 
     # fail, if winuae returns error
-    if ((StartProcess $settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
+    if ((StartProcess $hstwb.Settings.Winuae.WinuaePath $winuaeArgs $directory) -ne 0)
     {
-        Fail ("Failed to run '" + $settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
+        Fail $hstwb ("Failed to run '" + $hstwb.Settings.Winuae.WinuaePath + "' with arguments '$winuaeArgs'")
     }
 
 
@@ -2003,12 +2003,12 @@ function RunBuildSelfInstall()
     $installCompletePrefsFile = Join-Path $prefsDir -ChildPath 'Install-Complete'
     if (!(Test-Path -path $installCompletePrefsFile))
     {
-        Fail "WinUAE installation failed"
+        Fail $hstwb "WinUAE installation failed"
     }
 }
 
 # run build package installation
-function RunBuildPackageInstallation()
+function RunBuildPackageInstallation($hstwb)
 {
     $outputPackageInstallationPath = FolderBrowserDialog "Select new directory for package installation" ${Env:USERPROFILE} $true
 
@@ -2046,7 +2046,7 @@ function RunBuildPackageInstallation()
 
 
     # find packages to install
-    $installPackages = FindPackagesToInstall | Sort-Object -Property 'Name'
+    $installPackages = FindPackagesToInstall $hstwb | Sort-Object -Property 'Name'
 
 
     # extract packages and write install packages script, if there's packages to install
@@ -2088,7 +2088,7 @@ function RunBuildPackageInstallation()
     $packageInstallationScriptLines += "  copy >NIL: ""ReqTools.prefs"" ""ENV:"""
     $packageInstallationScriptLines += "ENDIF"
     $packageInstallationScriptLines += ""
-    $packageInstallationScriptLines += BuildInstallPackagesScriptLines $installPackages
+    $packageInstallationScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Remove assigns for package installation"
     $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$Packages"" REMOVE"
@@ -2109,22 +2109,24 @@ function RunBuildPackageInstallation()
 
 
     # copy amiga package installation files
-    $amigaPackageInstallationDir = [System.IO.Path]::Combine($amigaPath, "packageinstallation")
+    $amigaPackageInstallationDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packageinstallation")
     Copy-Item -Path "$amigaPackageInstallationDir\*" $outputPackageInstallationPath -recurse -force
 
 
     # copy amiga packages dir
-    $amigaPackagesDir = [System.IO.Path]::Combine($amigaPath, "packages")
+    $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $outputPackageInstallationPath -recurse -force
+
+    read-host
 }
 
 
 # fail
-function Fail($message)
+function Fail($hstwb, $message)
 {
-    if(test-path -path $tempPath)
+    if(test-path -path $hstwb.Paths.TempPath)
     {
-        Remove-Item -Recurse -Force $tempPath
+        Remove-Item -Recurse -Force $hstwb.Paths.TempPath
     }
 
     Write-Error $message
@@ -2136,7 +2138,6 @@ function Fail($message)
 
 
 # resolve paths
-$hstwbInstallerVersion = HstwbInstallerVersion
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
 $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
@@ -2148,66 +2149,81 @@ $scriptsPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
-$settingsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-settings.ini")
-$assignsFile = [System.IO.Path]::Combine($settingsDir, "hstwb-installer-assigns.ini")
+$settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
+$assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-$envArcDir = 'SYSTEMDIR:Prefs/Env-Archive'
+$hstwb = @{
+    'Version' = HstwbInstallerVersion;
+    'Paths' = @{
+        'KickstartRomHashesFile' = $kickstartRomHashesFile;
+        'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+        'AmigaPath' = $amigaPath;
+        'WinuaePath' = $winuaePath;
+        'FsUaePath' = $fsUaePath;
+        'LicensesPath' = $licensesPath;
+        'PackagesPath' = $packagesPath;
+        'SettingsFile' = $settingsFile;
+        'ScriptsPath' = $scriptsPath;
+        'TempPath' = $tempPath;
+        'AssignsFile' = $assignsFile;
+        'SettingsDir' = $settingsDir;
+        'EnvArcDir' = 'SYSTEMDIR:Prefs/Env-Archive'
+    };
+    'Images' = ReadImages $imagesPath;
+    'Packages' = ReadPackages $packagesPath;
+    'Settings' = ReadIniFile $settingsFile;
+    'Assigns' = ReadIniFile $assignsFile
+}
 
 
 # fail, if settings file doesn't exist
 if (!(test-path -path $settingsFile))
 {
-    Fail ("Error: Settings file '$settingsFile' doesn't exist!")
+    Fail $hstwb ("Error: Settings file '$settingsFile' doesn't exist!")
 }
 
 
 # fail, if assigns file doesn't exist
 if (!(test-path -path $assignsFile))
 {
-    Fail ("Error: Assigns file '$assignsFile' doesn't exist!")
+    Fail $hstwb ("Error: Assigns file '$assignsFile' doesn't exist!")
 }
 
 
-# read packages, settings and assigns files
-$packages = ReadPackages $packagesPath
-$settings = ReadIniFile $settingsFile
-$assigns = ReadIniFile $assignsFile
-
-
 # set default installer mode, if not present
-if (!$settings.Installer -or !$settings.Installer.Mode)
+if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
 {
-    $settings.Installer = @{}
-    $settings.Installer.Mode = "Install"
+    $hstwb.Settings.Installer = @{}
+    $hstwb.Settings.Installer.Mode = "Install"
 }
 
 
 # print title and settings 
-$versionPadding = new-object System.String('-', ($hstwbInstallerVersion.Length + 2))
+$versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
 Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-Write-Host ("HstWB Installer Run v{0}" -f $hstwbInstallerVersion) -foregroundcolor "Yellow"
+Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
 Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
 Write-Host ""
-PrintSettings
+PrintSettings $hstwb
 Write-Host ""
 
 
 # validate settings
-if (!(ValidateSettings $settings))
+if (!(ValidateSettings $hstwb.Settings))
 {
-    Fail "Validate settings failed"
+    Fail $hstwb "Validate settings failed"
 }
 
 
 # validate assigns
-if (!(ValidateAssigns $assigns))
+if (!(ValidateAssigns $hstwb.Assigns))
 {
-    Fail "Validate assigns failed"
+    Fail $hstwb "Validate assigns failed"
 }
 
 
 # find workbench adf set hashes 
-$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $settings $workbenchAdfHashesFile
+$workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
 
 # find workbench 3.1 workbench disk
 $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
@@ -2215,8 +2231,13 @@ $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workben
 # fail, if workbench adf hash doesn't exist
 if (!$workbenchAdfHash)
 {
-    Fail ("Workbench set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
+    Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
 }
+
+
+# set workbench adf set hashes workbench adf file
+$hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
+$hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
 
 
 # print workbench adf hash file
@@ -2224,7 +2245,7 @@ Write-Host ("Using Workbench 3.1 Workbench Disk adf: '" + $workbenchAdfHash.File
 
 
 # find kickstart rom set hashes
-$kickstartRomSetHashes = FindKickstartRomSetHashes $settings $kickstartRomHashesFile
+$kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
 
 
 # find kickstart 3.1 a1200 rom
@@ -2234,8 +2255,13 @@ $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kicksta
 # fail, if kickstart rom hash doesn't exist
 if (!$kickstartRomHash)
 {
-    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+    Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
 }
+
+
+# set kickstart rom set hashes kickstart rom file
+$hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
+$hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
 
 
 # print kickstart rom hash file
@@ -2248,29 +2274,29 @@ $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryN
 # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
 if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
 {
-    Fail ("Kickstart set '" + $settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+    Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
 }
 
 
 # create temp path
-if(!(test-path -path $tempPath))
+if(!(test-path -path $hstwb.Paths.TempPath))
 {
-	mkdir $tempPath | Out-Null
+	mkdir $hstwb.Paths.TempPath | Out-Null
 }
 
 
 # installer mode
-switch ($settings.Installer.Mode)
+switch ($hstwb.Settings.Installer.Mode)
 {
-    "Test" { RunTest }
-    "Install" { RunInstall }
-    "BuildSelfInstall" { RunBuildSelfInstall }
-    "BuildPackageInstallation" { RunBuildPackageInstallation }
+    "Test" { RunTest $hstwb }
+    "Install" { RunInstall $hstwb }
+    "BuildSelfInstall" { RunBuildSelfInstall $hstwb }
+    "BuildPackageInstallation" { RunBuildPackageInstallation $hstwb }
 }
 
 
 # remove temp path
-Remove-Item -Recurse -Force $tempPath
+Remove-Item -Recurse -Force $hstwb.Paths.TempPath
 
 
 # print done message 
