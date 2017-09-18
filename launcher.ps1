@@ -55,12 +55,12 @@ function Setup($setupFile, $settingsDir)
 
 function Settings($settingsFile)
 {
-    Start-Process "Notepad.exe" "$settingsFile" -Wait
+    Start-Process "Notepad.exe" "$settingsFile" -Wait -WindowStyle Maximized
 }
 
 function Assigns($assignsFile)
 {
-    Start-Process "Notepad.exe" "$assignsFile" -Wait
+    Start-Process "Notepad.exe" "$assignsFile" -Wait -WindowStyle Maximized
 }
 
 function ShowReadme()
@@ -75,6 +75,12 @@ function ShowReadme()
     {
         Start-Process "https://github.com/henrikstengaard/hstwb-installer#hstwb-installer"
     }
+}
+
+function ShowSupportFiles()
+{
+    $supportDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('Support')
+    Start-Process $supportDir
 }
 
 function ShowWebsite()
@@ -208,6 +214,10 @@ function ExtraMenu($hstwb)
     do
     {
         $option = GuiMenu "Extra" @('Support Files', 'Back')
+        switch ($option)
+        {
+            'Support Files' { ShowSupportFiles }
+        }
     } while ($option -ne $null -and $option -ne 'Back')    
 }
 
