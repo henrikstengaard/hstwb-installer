@@ -1,1 +1,1 @@
-powershell -ExecutionPolicy Bypass -File launcher.ps1
+powershell -ExecutionPolicy Bypass -nologo -Noninteractive -File launcher.ps1
