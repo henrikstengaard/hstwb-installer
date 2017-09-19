@@ -122,6 +122,7 @@ function GuiMenu($title, $options)
     $form.Icon = New-Object System.Drawing.Icon ($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('hstwb_installer.ico'))
     $form.ClientSize = New-Object System.Drawing.Size ($width, (100 + ($options.Count * 70)))
     $form.BackColor = $blueColor
+    $form.Text = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
     
     $captionLabel = New-Object System.Windows.Forms.Label
     $captionLabel.AutoSize = $false

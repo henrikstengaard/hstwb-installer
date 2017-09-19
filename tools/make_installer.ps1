@@ -4,7 +4,7 @@
 # A powershell script to make a msi installer for HstWB Installer.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-16
+# Date:   2017-09-19
 
 # Requirements:
 # - Pandoc
@@ -157,7 +157,7 @@ Write-Host "Copying packages component directory..."
 
 $packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
 $packageFiles = @()
-$packageFiles += Get-ChildItem $packagesPath\* -Include BetterWB*.zip, HstWB*.zip, ClassicWB*.zip, EAB.WHDLoad.Demos.AGA.Menu*.zip, EAB.WHDLoad.Demos.OCS.Menu*.zip, EAB.WHDLoad.Games.AGA.Menu*.zip, EAB.WHDLoad.Games.OCS.Menu*.zip
+$packageFiles += Get-ChildItem $packagesPath\* -Include *.zip
 
 $outputPackagesPath = Join-Path $outputDir -ChildPath 'Packages'
 mkdir -Path $outputPackagesPath | Out-Null
@@ -214,7 +214,7 @@ foreach($packageFile in $packageFiles)
 
 Write-Host "Copying component directories..."
 
-$components = @("Amiga", "Images", "Kickstart", "Licenses", "Modules", "Readme", "Support", "Winuae", "Workbench" )
+$components = @("Amiga", "Fonts", "Fs-Uae", "Images", "Kickstart", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae", "Workbench" )
 
 foreach($component in $components)
 {
@@ -240,7 +240,7 @@ $components += "Packages"
 $wixToolsetHeatArgsComponents = @()
 
 # build heat args for each component
-$components | ForEach-Object { $wixToolsetHeatArgsComponents += ("dir ""{0}"" -o ""{0}.wxs"" -var var.{1}Dir -dr {1}ComponentDir -cg {1}ComponentGroup -sfrag -gg -g1" -f (Join-Path -Path $outputDir -ChildPath $_), $_) }
+$components | ForEach-Object { $wixToolsetHeatArgsComponents += ("dir ""{0}"" -o ""{0}.wxs"" -var var.{1}Dir -dr {1}ComponentDir -cg {1}ComponentGroup -sfrag -gg -g1" -f (Join-Path -Path $outputDir -ChildPath $_), $_.Replace('-', '')) }
 
 # run heat with args for each component
 $wixToolsetHeatArgsComponents | ForEach-Object { StartProcess $wixToolsetHeatFile $_ $outputDir }
@@ -254,6 +254,7 @@ Write-Host "Done."
 Write-Host "Copying HstWB Installer wix files..."
 
 Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\hstwb_installer.ico') -Recurse -Destination $outputDir
 
 # Update year in license rtf file
 $licenseRtfFile = Join-Path $outputDir -ChildPath 'license.rtf'
@@ -268,7 +269,7 @@ Write-Host "Done."
 
 Write-Host "Compiling wxs files..."
 
-$wixToolsetCandleArgs = ('-dVersion="' + ($hstwbInstallerVersion -replace '-[^\-]+$', '') + '" -dAmigaDir="Amiga" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
+$wixToolsetCandleArgs = ('-dVersion="' + ($hstwbInstallerVersion -replace '-[^\-]+$', '') + '" -dAmigaDir="Amiga" -dFontsDir="Fonts" -dFsUaeDir="Fs-Uae" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dScriptsDir="Scripts" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
 StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
 
 Write-Host "Done."
