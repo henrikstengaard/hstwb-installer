@@ -90,7 +90,7 @@ $wixToolsetHeatFile = Join-Path $wixToolsetDir -ChildPath 'heat.exe'
 $wixToolsetCandleFile = Join-Path $wixToolsetDir -ChildPath 'candle.exe'
 $wixToolsetLightFile = Join-Path $wixToolsetDir -ChildPath 'light.exe'
 $rootDir = Resolve-Path '..'
-$outputDir = Join-Path $rootDir -ChildPath 'output'
+$outputDir = Join-Path $rootDir -ChildPath '.output'
 
 
 # fail, if pandoc file doesn't exist
@@ -254,12 +254,20 @@ Write-Host "Done."
 Write-Host "Copying HstWB Installer wix files..."
 
 Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\launcher.*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\setup.*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\run.*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\LICENSE.txt') -Recurse -Destination $outputDir
 Copy-Item -Path (Resolve-Path '..\hstwb_installer.ico') -Recurse -Destination $outputDir
 
-# Update year in license rtf file
+# Update year in license files
 $licenseRtfFile = Join-Path $outputDir -ChildPath 'license.rtf'
 $licenseRtfText = [System.IO.File]::ReadAllText($licenseRtfFile) -replace 'Copyright \(c\) \d+', ("Copyright (c) {0}" -f [System.DateTime]::Now.Year)
 [System.IO.File]::WriteAllText($licenseRtfFile, $licenseRtfText)
+
+$licenseTxtFile = Join-Path $outputDir -ChildPath 'LICENSE.txt'
+$licenseTxtText = [System.IO.File]::ReadAllText($licenseTxtFile) -replace 'Copyright \(c\) \d+', ("Copyright (c) {0}" -f [System.DateTime]::Now.Year)
+[System.IO.File]::WriteAllText($licenseTxtFile, $licenseTxtText)
 
 Write-Host "Done."
 

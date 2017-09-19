@@ -8,4 +8,4 @@ hstwb-installer*.zip
 *.log
 !hstwb-installer.wxs
 /packages/
-output/
+.output/

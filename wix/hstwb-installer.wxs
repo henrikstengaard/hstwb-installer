@@ -43,15 +43,15 @@
       <Directory Id="WinuaeComponentDir"/>
       <Directory Id="WorkbenchComponentDir"/>
       <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
-        <File Id="launcher.cmd" Source="..\launcher.cmd"/>
-        <File Id="launcher.ps1" Source="..\launcher.ps1"/>
-        <File Id="run.cmd" Source="..\run.cmd"/>
-        <File Id="run.ps1" Source="..\run.ps1"/>
-        <File Id="setup.cmd" Source="..\setup.cmd"/>
-        <File Id="setup.ps1" Source="..\setup.ps1"/>
+        <File Id="launcher.cmd" Source="launcher.cmd"/>
+        <File Id="launcher.ps1" Source="launcher.ps1"/>
+        <File Id="run.cmd" Source="run.cmd"/>
+        <File Id="run.ps1" Source="run.ps1"/>
+        <File Id="setup.cmd" Source="setup.cmd"/>
+        <File Id="setup.ps1" Source="setup.ps1"/>
         <File Id="SilentCMD.exe" Source="SilentCMD.exe"/>
         <File Id="SilentCMD.exe.config" Source="SilentCMD.exe.config"/>
-        <File Id="license.txt" Source="..\LICENSE.txt"/>
+        <File Id="license.txt" Source="LICENSE.txt"/>
         <File Id="hstwb_installer.ico" Source="hstwb_installer.ico"/>
       </Component>
     </DirectoryRef>
