@@ -110,7 +110,8 @@ function GuiMenu($title, $options)
 
     $blueColor = [System.Drawing.Color]::FromArgb(0, 85, 170)
 
-    $width = 300;
+    $width = 350;
+    $height = 100 + ($options.Count * 70)
 
     $form = New-Object System.Windows.Forms.Form
     $form.StartPosition = "CenterScreen"
@@ -120,15 +121,24 @@ function GuiMenu($title, $options)
     $form.WindowState = "Normal"
     $form.SizeGripStyle = "Hide"
     $form.Icon = New-Object System.Drawing.Icon ($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('hstwb_installer.ico'))
-    $form.ClientSize = New-Object System.Drawing.Size ($width, (100 + ($options.Count * 70)))
+    $form.ClientSize = New-Object System.Drawing.Size ($width, $height)
     $form.BackColor = $blueColor
     $form.Text = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
-    
+    $form.Add_Paint({
+        $graphics = $form.createGraphics()
+        $blackBrush = new-object Drawing.SolidBrush 'Black'
+        $rectangle = new-object Drawing.Rectangle 0, 0, $width, $height
+        $graphics.FillRectangle($blackBrush, $rectangle)
+        $blueBrush = new-object Drawing.SolidBrush $blueColor
+        $rectangle = new-object Drawing.Rectangle 2, 2, ($width - 4), ($height - 4)
+        $graphics.FillRectangle($blueBrush, $rectangle)
+    })
+
     $captionLabel = New-Object System.Windows.Forms.Label
     $captionLabel.AutoSize = $false
     $captionLabel.TextAlign = 'MiddleCenter'
-    $captionLabel.Size = New-Object System.Drawing.Size ($width, 30)
-    $captionLabel.Location = New-Object System.Drawing.Point(0, 0)
+    $captionLabel.Size = New-Object System.Drawing.Size ($width - 4), 30
+    $captionLabel.Location = New-Object System.Drawing.Point(2, 2)
     $captionLabel.Text = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
     $captionLabel.Font = $buttonFont
     $captionLabel.ForeColor = $blueColor
@@ -139,9 +149,9 @@ function GuiMenu($title, $options)
     $titleLabel = New-Object System.Windows.Forms.Label
     $titleLabel.AutoSize = $false
     $titleLabel.TextAlign = 'MiddleCenter'
-    $titleLabel.Location = New-Object System.Drawing.Point(0, 40)
+    $titleLabel.Location = New-Object System.Drawing.Point(2, 40)
     $titleLabel.Text = $title
-    $titleLabel.Size = New-Object System.Drawing.Size ($width, 50)
+    $titleLabel.Size = New-Object System.Drawing.Size ($width - 4), 50
     $titleLabel.Font = $buttonFont
     $titleLabel.ForeColor = "White"
     $titleLabel.Anchor = "Left", "Top", "Right"
