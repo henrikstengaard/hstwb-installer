@@ -72,6 +72,7 @@ function DefaultSettings($settings)
     $settings.Winuae = @{}
     $settings.Packages = @{}
     $settings.Installer = @{}
+    $settings.Emulator = @{}
 
     $settings.Workbench.InstallWorkbench = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
@@ -99,12 +100,33 @@ function DefaultSettings($settings)
         }
     }
 
-    # use winuae in program files x86, if present
-    $winuaePath = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
-    if (test-path -path $winuaePath)
+    $settings.Emulator.EmulatorFile = DefaultEmulatorFile
+}
+
+function DefaultEmulatorFile()
+{
+    # return winuae 64-bit, if it exists in program files
+    $winuaeX64Path = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
+    if (test-path -path $winuaeX64Path)
     {
-        $settings.Winuae.WinuaePath = $winuaePath
+        return $winuaeX64Path
     }
+
+    # return winuae 32-bit, if it exists in program files x86
+    $winuaeX86Path = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
+    if (test-path -path $winuaeX86Path)
+    {
+        return $winuaeX86Path
+    }
+
+    # return fs-uae, if it exists in user's local app data
+    $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
+    if (test-path -path $fsuaeFile)
+    {
+        return $fsuaeFile
+    }
+    
+    return $null
 }
 
 
@@ -364,7 +386,7 @@ function ValidateSettings($settings)
 
 
     # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Workbench.WorkbenchAdfPath -or !(test-path -path $settings.Workbench.WorkbenchAdfPath))
+    if (!$settings.Workbench.WorkbenchAdfPath -or ($settings.Workbench.WorkbenchAdfPath -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfPath)))
     {
         Write-Host "Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
@@ -388,7 +410,7 @@ function ValidateSettings($settings)
 
 
     # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Kickstart.KickstartRomPath -or !(test-path -path $settings.Kickstart.KickstartRomPath))
+    if (!$settings.Kickstart.KickstartRomPath -or ($settings.Kickstart.KickstartRomPath -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomPath)))
     {
         Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
@@ -403,10 +425,10 @@ function ValidateSettings($settings)
     }
 
 
-    # fail, if WinuaePath parameter doesn't exist in settings file or file doesn't exist
-    if (!$settings.Winuae.WinuaePath -or !(test-path -path $settings.Winuae.WinuaePath))
+    # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
+    if (!$settings.Emulator.EmulatorFile -or ($settings.Emulator.EmulatorFile -match '^.+$' -and !(test-path -path $settings.Emulator.EmulatorFile)))
     {
-        Write-Host "Error: WinuaePath parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
+        Write-Host "Error: EmulatorFile parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
         return $false
     }
     

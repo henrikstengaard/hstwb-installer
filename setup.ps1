@@ -117,7 +117,7 @@ function MainMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure WinUAE", "Configure Installer", "Run Installer", "Reset", "Exit") 
+        $choice = Menu $hstwb "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure Emulator", "Configure Installer", "Run Installer", "Reset", "Exit") 
         switch ($choice)
         {
             "Select Image" { SelectImageMenu $hstwb }
@@ -125,7 +125,7 @@ function MainMenu($hstwb)
             "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu $hstwb }
             "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
             "Configure Packages" { ConfigurePackagesMenu $hstwb }
-            "Configure WinUAE" { ConfigureWinuaeMenu $hstwb }
+            "Configure Emulator" { ConfigureEmulatorMenu $hstwb }
             "Configure Installer" { ConfigureInstaller $hstwb }
             "Run Installer" { RunInstaller $hstwb }
             "Reset" { Reset $hstwb }
@@ -705,30 +705,74 @@ function ConfigurePackagesMenu($hstwb)
 }
 
 
-# configure winuae menu
-function ConfigureWinuaeMenu($hstwb)
+# configure emulator menu
+function ConfigureEmulatorMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure WinUAE Menu" @("Change WinUAE Path", "Back") 
+        $choice = Menu $hstwb 'Configure Emulator Menu' @('Select Emulator Menu', 'Back')
         switch ($choice)
         {
-            "Change WinUAE Path" { ChangeWinuaePath $hstwb }
+            'Select Emulator Menu' { SelectEmulatorMenu $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
 
-# change winuae path
-function ChangeWinuaePath($hstwb)
+# select emulator menu
+function SelectEmulatorMenu()
 {
-    $path = if (!$hstwb.Settings.Winuae.WinuaePath) { ${Env:ProgramFiles(x86)} } else { [System.IO.Path]::GetDirectoryName($hstwb.Settings.Winuae.WinuaePath) }
-    $newPath = OpenFileDialog "Select WinUAE.exe file" $path "Exe Files|*.exe|All Files|*.*"
-
-    if ($newPath -and $newPath -ne '')
+    $emulators = @{}
+    
+    $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
+    if (test-path -path $fsuaeFile)
     {
-        $hstwb.Settings.Winuae.WinuaePath = $newPath
+        $version = (get-item $fsuaeFile).VersionInfo.FileVersion
+        $emulators.Set_Item(('FS-UAE {0} ({1})' -f $version, $fsuaeFile), $fsuaeFile)
+    }
+
+    $winuaeX64File = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
+    if (test-path -path $winuaeX64File)
+    {
+        $version = (get-item $winuaeX64File).VersionInfo.FileVersion
+        $emulators.Set_Item(('WinUAE {0} 64-bit ({1})' -f $version, $winuaeX64File), $winuaeX64File)
+    }
+    
+    $winuaeX86File = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
+    if (test-path -path $winuaeX86File)
+    {
+        $version = (get-item $winuaeX86File).VersionInfo.FileVersion
+        $emulators.Set_Item(('WinUAE {0} 32-bit ({1})' -f $version, $winuaeX86File), $winuaeX86File)
+    }
+    
+    $options = @()
+    $options += $emulators.keys
+    $options += 'Custom, select emulator .exe file'
+    
+    $choice = Menu $hstwb "Select Emulator Menu" $options 
+
+    if ($choice -eq 'Custom, select emulator .exe file')
+    {
+        SelectEmulatorExeFile $hstwb
+    }
+    else
+    {
+        $hstwb.Settings.Emulator.EmulatorFile = $emulators[$choice]
+        Save $hstwb
+    }
+}
+
+
+# select emulator exe file
+function SelectEmulatorExeFile($hstwb)
+{
+    $path = if (!$hstwb.Settings.Emulator.EmulatorFile) { ${Env:ProgramFiles(x86)} } else { [System.IO.Path]::GetDirectoryName($hstwb.Settings.Emulator.EmulatorFile) }
+    $emulatorFile = OpenFileDialog "Select emulator .exe file" $path "Exe Files|*.exe|All Files|*.*"
+
+    if ($emulatorFile -and $emulatorFile -ne '')
+    {
+        $hstwb.Settings.Emulator.EmulatorFile = $emulatorFile
         Save $hstwb
     }
 }
@@ -772,11 +816,6 @@ function RunInstaller($hstwb)
     Write-Host ""
     & $hstwb.Paths.RunFile -settingsDir $hstwb.Paths.SettingsDir
     Write-Host ""
-    if ($LastExitCode -ne 0)
-    {
-        Write-Host "Press enter to continue"
-        Read-Host
-    }
 }
 
 
@@ -899,7 +938,20 @@ try
         $hstwb.Settings.Image.ImageDir = ''
     }
     
-    
+
+    # set default emulator, if not present
+    if (!$hstwb.Settings.Emulator -or !$hstwb.Settings.Emulator.EmulatorFile)
+    {
+        $hstwb.Settings.Emulator = @{}
+        $hstwb.Settings.Emulator.EmulatorFile = DefaultEmulatorFile
+        $hstwb.SettingsWinUAE
+    }
+
+    if ($hstwb.Settings.WinUAE)
+    {
+        $hstwb.Settings.Remove('WinUAE')
+    }
+
     
     # update packages
     UpdatePackages $hstwb.Packages $hstwb.Settings
