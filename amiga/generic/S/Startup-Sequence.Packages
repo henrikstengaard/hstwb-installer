@@ -154,9 +154,9 @@ echo ""
 IF $uae EQ 1 VAL
   echo "UAE will quit in 10 seconds..."
   wait 10
-  UAEquit
+  UAEquit >NIL:
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  Reboot
+  Reboot >NIL:
 ENDIF
