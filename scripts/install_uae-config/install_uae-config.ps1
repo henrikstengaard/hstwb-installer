@@ -156,8 +156,9 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
         }
     }
 
-    # write winuae config file
-    Set-Content -Path $winuaeConfigFile -Value $winuaeConfigLines -Encoding UTF8
+    # write winuae config file without byte order mark
+    $utf8Encoding = New-Object System.Text.UTF8Encoding $False
+    [System.IO.File]::WriteAllLines($winuaeConfigFile, $winuaeConfigLines, $utf8Encoding)
 }
 
 
@@ -242,10 +243,9 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
         $fsuaeConfigLines += "floppy_image_{0} = {1}" -f $i, $adfFiles[$i].FullName.Replace('\', '/')
     }
 
-    # write fs-uae config file
+    # write fs-uae config file without byte order mark
     $utf8Encoding = New-Object System.Text.UTF8Encoding $False
     [System.IO.File]::WriteAllLines($fsuaeConfigFile, $fsuaeConfigLines, $utf8Encoding)
-    #Set-Content -Path $fsuaeConfigFile -Value $fsuaeConfigLines -Encoding UTF8
 }
 
 
