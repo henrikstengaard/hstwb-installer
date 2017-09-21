@@ -362,11 +362,11 @@ function ConfigureWorkbenchMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Path", "Select Workbench Adf Set", "Back") 
+        $choice = Menu $hstwb "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Dir", "Select Workbench Adf Set", "Back") 
         switch ($choice)
         {
             "Switch Install Workbench" { SwitchInstallWorkbench $hstwb }
-            "Change Workbench Adf Path" { ChangeWorkbenchAdfPath $hstwb }
+            "Change Workbench Adf Dir" { ChangeWorkbenchAdfDir $hstwb }
             "Select Workbench Adf Set" { SelectWorkbenchAdfSet $hstwb }
         }
     }
@@ -389,8 +389,8 @@ function SwitchInstallWorkbench($hstwb)
 }
 
 
-# change workbench adf path
-function ChangeWorkbenchAdfPath($hstwb)
+# change workbench adf dir
+function ChangeWorkbenchAdfDir($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
@@ -402,12 +402,12 @@ function ChangeWorkbenchAdfPath($hstwb)
         $defaultWorkbenchAdfPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfPath) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfPath }
+    $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfDir) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfDir }
     $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfPath = $newPath
+        $hstwb.Settings.Workbench.WorkbenchAdfDir = $newPath
         Save $hstwb
     }
 }
@@ -422,11 +422,11 @@ function SelectWorkbenchAdfSet($hstwb)
     $workbenchNamePadding = ($workbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfPath
+    FindMatchingFileHashes $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
 
 
     # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfPath
+    FindMatchingWorkbenchAdfs $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
 
 
     # get workbench rom sets
@@ -533,11 +533,11 @@ function ConfigureKickstartMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Path", "Select Kickstart Rom Set", "Back") 
+        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Dir", "Select Kickstart Rom Set", "Back") 
         switch ($choice)
         {
             "Switch Install Kickstart" { SwitchInstallKickstart $hstwb }
-            "Change Kickstart Rom Path" { ChangeKickstartRomPath $hstwb }
+            "Change Kickstart Rom Dir" { ChangeKickstartRomDir $hstwb }
             "Select Kickstart Rom Set" { SelectKickstartRomSet $hstwb }
         }
     }
@@ -560,8 +560,8 @@ function SwitchInstallKickstart($hstwb)
 }
 
 
-# change kickstart rom path
-function ChangeKickstartRomPath($hstwb)
+# change kickstart rom dir
+function ChangeKickstartRomDir($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
@@ -573,12 +573,12 @@ function ChangeKickstartRomPath($hstwb)
         $defaultKickstartRomPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$hstwb.Settings.Kickstart.KickstartRomPath) { $defaultKickstartRomPath } else { $hstwb.Settings.Kickstart.KickstartRomPath }
+    $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomPath } else { $hstwb.Settings.Kickstart.KickstartRomDir }
     $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
-        $hstwb.Settings.Kickstart.KickstartRomPath = $newPath
+        $hstwb.Settings.Kickstart.KickstartRomDir = $newPath
         Save $hstwb
     }
 }
@@ -593,7 +593,7 @@ function SelectKickstartRomSet($hstwb)
     $kickstartNamePadding = ($kickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $kickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomPath
+    FindMatchingFileHashes $kickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
 
     # get kickstart rom sets
     $kickstartRomSets = $kickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
@@ -899,66 +899,16 @@ try
     {
         $hstwb.Assigns = ReadIniFile $hstwb.Paths.AssignsFile
     }
-    
-    # create defailt assigns, if assigns is empty or doesn't contain global assigns
-    if ($hstwb.Assigns.Keys.Count -eq 0 -or !$hstwb.Assigns.ContainsKey('Global'))
-    {
-        DefaultAssigns $hstwb.Assigns
-    }
-    
-    
-    # set default installer mode, if not present
-    if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
-    {
-        $hstwb.Settings.Installer = @{}
-        $hstwb.Settings.Installer.Mode = "Install"
-    }
-    
-    
-    # create packages section in settings, if it doesn't exist
-    if (!($hstwb.Settings.Packages))
-    {
-        $hstwb.Settings.Packages = @{}
-        $hstwb.Settings.Packages.InstallPackages = ''
-    }
-    
-    
-    # create amiga os 3.9 section in settings, if it doesn't exist
-    if (!($hstwb.Settings.AmigaOS39))
-    {
-        $hstwb.Settings.AmigaOS39 = @{}
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
-    }
-    
-    
-    # set default image dir, if image dir doesn't exist
-    if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
-    {
-        $hstwb.Settings.Image.ImageDir = ''
-    }
-    
 
-    # set default emulator, if not present
-    if (!$hstwb.Settings.Emulator -or !$hstwb.Settings.Emulator.EmulatorFile)
-    {
-        $hstwb.Settings.Emulator = @{}
-        $hstwb.Settings.Emulator.EmulatorFile = DefaultEmulatorFile
-        $hstwb.SettingsWinUAE
-    }
 
-    if ($hstwb.Settings.WinUAE)
-    {
-        $hstwb.Settings.Remove('WinUAE')
-    }
-
-    
-    # update packages
-    UpdatePackages $hstwb.Packages $hstwb.Settings
+    # upgrade settings and assigns
+    UpgradeSettings $hstwb
+    UpgradeAssigns $hstwb
     
     
-    # update assigns
-    UpdateAssigns $hstwb.Packages $hstwb.Settings $hstwb.Assigns
+    # update packages and assigns
+    UpdatePackages $hstwb
+    UpdateAssigns $hstwb
     
     
     # save settings and assigns

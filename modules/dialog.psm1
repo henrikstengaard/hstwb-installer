@@ -21,8 +21,8 @@ function PrintSettings($hstwb)
     Write-Host "Workbench"
     Write-Host "  Install Workbench     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Workbench.InstallWorkbench + "'")
-    Write-Host "  Workbench Adf Path    : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfPath + "'")
+    Write-Host "  Workbench Adf Dir     : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfDir + "'")
     Write-Host "  Workbench Adf Set     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "'")
     Write-Host "Amiga OS 3.9"
@@ -35,8 +35,8 @@ function PrintSettings($hstwb)
     Write-Host "Kickstart"
     Write-Host "  Install Kickstart     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Kickstart.InstallKickstart + "'")
-    Write-Host "  Kickstart Rom Path    : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomPath + "'")
+    Write-Host "  Kickstart Rom Dir     : " -NoNewline -foregroundcolor "Gray"
+    Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomDir + "'")
     Write-Host "  Kickstart Rom Set     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomSet + "'")
     Write-Host "Packages"

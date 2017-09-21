@@ -403,11 +403,11 @@ function FindWorkbenchAdfSetHashes($settings, $workbenchAdfHashesFile)
 
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfDir
 
 
     # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfPath
+    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfDir
 
 
     # get workbench adf set hashes
@@ -433,7 +433,7 @@ function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
 
 
     # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomPath
+    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomDir
 
 
     # get kickstart rom set hashes

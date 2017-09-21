@@ -21,7 +21,7 @@ win32.kbledmode=0
 ; common
 use_gui=no
 use_debugger=false
-kickstart_rom_file=[$KICKSTARTROMFILE]
+kickstart_rom_file=[$KickstartRomFile]
 kickstart_rom_file_id=
 kickstart_ext_rom_file=
 flash_file=
@@ -29,13 +29,13 @@ cart_file=
 rtc_file=
 kickshifter=false
 floppy_volume=33
-floppy0=[$WORKBENCHADFFILE]
+floppy0=[$WorkbenchAdfFile]
 floppy1=
 floppy2=
 floppy2type=0
 floppy3=
 floppy3type=0
-cdimage0=[$ISOFILE]
+cdimage0=[$IsoFile]
 nr_floppies=4
 floppy_speed=800
 cd_speed=100
@@ -160,7 +160,7 @@ toccata=false
 es1370_pci=false
 fm801_pci=false
 kbd_lang=us
-[$HARDDRIVES]
+[$Harddrives]
 input.config=0
 input.joymouse_speed_analog=20
 input.joymouse_speed_digital=10

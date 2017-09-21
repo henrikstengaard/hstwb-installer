@@ -304,25 +304,25 @@ Before HstWB Installer runs it prepares the files it needs in a temp directory.
 For any installer mode HstWB Installer uses WinUAE configuration file "hstwb-installer.uae" in "winuae" directory.
 It contains following placeholders used to configure Kickstart rom, DF0: floppy and harddrives:
 
-- [$KICKSTARTROMFILE]: Replaced with path to A1200 Kickstart 3.1 rom file identified in configured kickstart path.
-- [$WORKBENCHADFFILE]: Replaced with path to Workbench 3.1 Workbench disk file identified in configured workbench path. This is only used for "Install" and "Build Self Install" installer modes.
-- [$HARDDRIVES]: Replaced with harddrives.uae from image directory. For "Install" and "Build Self Install" installer modes directories INSTALLDIR: and PACKAGESDIR: are added containing install scripts, tools and package files to install.  
+- [$KickstartRomFile]: Replaced with path to A1200 Kickstart 3.1 rom file identified in configured kickstart path.
+- [$WorkbenchAdfFile]: Replaced with path to Workbench 3.1 Workbench disk file identified in configured workbench path. This is only used for "Install" and "Build Self Install" installer modes.
+- [$Harddrives]: Replaced with harddrives.uae from image directory. For "Install" and "Build Self Install" installer modes directories INSTALLDIR: and PACKAGESDIR: are added containing install scripts, tools and package files to install.  
 
-[$KICKSTARTROMFILE] placeholder example before and after being replaced:
+[$KickstartRomFile] placeholder example before and after being replaced:
 ###
-    kickstart_rom_file=[$KICKSTARTROMFILE]
+    kickstart_rom_file=[$KickstartRomFile]
     ...
     kickstart_rom_file=c:\Users\Public\Documents\Amiga Files\Shared\rom\amiga-os-310-a1200.rom
 
-[$WORKBENCHADFFILE] placeholder example before and after being replaced:
+[$WorkbenchAdfFile] placeholder example before and after being replaced:
 ###
-    floppy0=[$WORKBENCHADFFILE]
+    floppy0=[$WorkbenchAdfFile]
     ...
     floppy0=c:\Users\Public\Documents\Amiga Files\Shared\adf\amiga-os-310-workbench.adf
 
-[$HARDDRIVES] placeholder example before and after being replaced:
+[$Harddrives] placeholder example before and after being replaced:
 ###
-    [$HARDDRIVES]
+    [$Harddrives]
     ...
     hardfile2=rw,DH0:C:\Temp\4GB\4gb.hdf,0,0,0,512,-128,,uae
     uaehf0=hdf,rw,DH0:"C:\\Temp\\4GB\\4gb.hdf",0,0,0,512,-128,,uae

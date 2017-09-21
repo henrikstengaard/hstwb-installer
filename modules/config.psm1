@@ -88,14 +88,14 @@ function DefaultSettings($settings)
         $workbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
         if (test-path -path $workbenchAdfPath)
         {
-            $settings.Workbench.WorkbenchAdfPath = $workbenchAdfPath
+            $settings.Workbench.WorkbenchAdfDir = $workbenchAdfPath
             $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
         }
 
         $kickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
         if (test-path -path $kickstartRomPath)
         {
-            $settings.Kickstart.KickstartRomPath = $kickstartRomPath
+            $settings.Kickstart.KickstartRomDir = $kickstartRomPath
             $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
         }
     }
@@ -135,6 +135,79 @@ function DefaultAssigns($assigns)
 {
     $defaultHstwbInstallerAssigns = @{ 'SystemDir' = 'DH0:'; 'HstWBInstallerDir' = 'DH1:HstWBInstaller' }
     $assigns.Set_Item('Global', $defaultHstwbInstallerAssigns)
+}
+
+
+# upgrade settings
+function UpgradeSettings($hstwb)
+{
+    # set default installer mode, if not present
+    if (!$hstwb.Settings.Installer -or !$hstwb.Settings.Installer.Mode)
+    {
+        $hstwb.Settings.Installer = @{}
+        $hstwb.Settings.Installer.Mode = "Install"
+    }
+    
+    
+    # create packages section in settings, if it doesn't exist
+    if (!($hstwb.Settings.Packages))
+    {
+        $hstwb.Settings.Packages = @{}
+        $hstwb.Settings.Packages.InstallPackages = ''
+    }
+    
+    
+    # create amiga os 3.9 section in settings, if it doesn't exist
+    if (!($hstwb.Settings.AmigaOS39))
+    {
+        $hstwb.Settings.AmigaOS39 = @{}
+        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
+        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
+    }
+    
+    
+    # set default image dir, if image dir doesn't exist
+    if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
+    {
+        $hstwb.Settings.Image.ImageDir = ''
+    }
+    
+
+    # set default emulator, if not present
+    if (!$hstwb.Settings.Emulator -or !$hstwb.Settings.Emulator.EmulatorFile)
+    {
+        $hstwb.Settings.Emulator = @{}
+        $hstwb.Settings.Emulator.EmulatorFile = DefaultEmulatorFile
+        $hstwb.SettingsWinUAE
+    }
+
+    if ($hstwb.Settings.WinUAE)
+    {
+        $hstwb.Settings.Remove('WinUAE')
+    }
+
+    if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
+    {
+        $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
+        $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
+    }
+
+    if ($hstwb.Settings.Kickstart.KickstartRomPath)
+    {
+        $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
+        $hstwb.Settings.Workbench.Remove('KickstartRomPath')
+    }
+}
+
+
+# upgrade assigns
+function UpgradeAssigns($hstwb)
+{
+    # create defailt assigns, if assigns is empty or doesn't contain global assigns
+    if ($hstwb.Assigns.Keys.Count -eq 0 -or !$hstwb.Assigns.ContainsKey('Global'))
+    {
+        DefaultAssigns $hstwb.Assigns
+    }
 }
 
 
@@ -228,34 +301,34 @@ function ReadPackages($packagesPath)
 
 
 # update packages
-function UpdatePackages($packages, $settings)
+function UpdatePackages($hstwb)
 {
     # get install packages defined in settings packages section
     $packageFileNames = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
     {
-        $packageFileNames += $settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
+        $packageFileNames += $hstwb.Settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
     }
 
     # get packages that exist in packages path
     $existingPackages = New-Object System.Collections.ArrayList
 
     # remove packages, if they don't exist
-    $packageFileNames | ForEach-Object { if ($packages.ContainsKey($_)) { [void]$existingPackages.Add($_) } }
+    $packageFileNames | ForEach-Object { if ($hstwb.Packages.ContainsKey($_)) { [void]$existingPackages.Add($_) } }
 
     # update install packages with packages that exist
-    $settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
+    $hstwb.Settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
 }
 
 
 # update assigns
-function UpdateAssigns($packages, $settings, $assigns)
+function UpdateAssigns($hstwb)
 {  
     # get install packages defined in settings packages section
     $packageFileNames = @()
-    if ($settings.Packages.InstallPackages -and $settings.Packages.InstallPackages -ne '')
+    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
     {
-        $packageFileNames += $settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+        $packageFileNames += $hstwb.Settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
     }
 
     $packageNames = @()
@@ -266,12 +339,12 @@ function UpdateAssigns($packages, $settings, $assigns)
         $packageFileName = $packageFileName.ToLower()
 
 
-        if (!$packages.ContainsKey($packageFileName))
+        if (!$hstwb.Packages.ContainsKey($packageFileName))
         {
             continue
         }
 
-        $package = $packages.Get_Item($packageFileName)
+        $package = $hstwb.Packages.Get_Item($packageFileName)
 
         $packageNames += $package.Package.Name
 
@@ -281,9 +354,9 @@ function UpdateAssigns($packages, $settings, $assigns)
         }
 
         # add new package assigns, if package exists. otherwise add all package assigns
-        if ($assigns.ContainsKey($package.Package.Name))
+        if ($hstwb.Assigns.ContainsKey($package.Package.Name))
         {
-            $packageAssigns = $assigns.Get_Item($package.Package.Name)
+            $packageAssigns = $hstwb.Assigns.Get_Item($package.Package.Name)
 
             foreach ($key in ($package.DefaultAssigns.keys | Sort-Object))
             {
@@ -295,17 +368,17 @@ function UpdateAssigns($packages, $settings, $assigns)
         }
         else
         {
-            $assigns.Set_Item($package.Package.Name, $package.DefaultAssigns) 
+            $hstwb.Assigns.Set_Item($package.Package.Name, $package.DefaultAssigns) 
         }
     }
 
     # remove assigns for packages, that aren't going to be installed
-    $assignSectionNames = $assigns.keys | Where-Object { $_ -notmatch 'Global' }
+    $assignSectionNames = $hstwb.Assigns.keys | Where-Object { $_ -notmatch 'Global' }
     foreach ($assignSectionName in $assignSectionNames)
     {
         if (!$packageNames.Contains($assignSectionName))
         {
-            $assigns.Remove($assignSectionName)
+            $hstwb.Assigns.Remove($assignSectionName)
         }
     }
 }
@@ -386,7 +459,7 @@ function ValidateSettings($settings)
 
 
     # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Workbench.WorkbenchAdfPath -or ($settings.Workbench.WorkbenchAdfPath -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfPath)))
+    if (!$settings.Workbench.WorkbenchAdfDir -or ($settings.Workbench.WorkbenchAdfDir -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfDir)))
     {
         Write-Host "Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
@@ -410,7 +483,7 @@ function ValidateSettings($settings)
 
 
     # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Kickstart.KickstartRomPath -or ($settings.Kickstart.KickstartRomPath -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomPath)))
+    if (!$settings.Kickstart.KickstartRomDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
     {
         Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
