@@ -1,39 +1,59 @@
-.KEY inifile/a,sectionname/a,parametername/a
+.KEY inifile/a,sectionname/k,parametername/k
 .BRA {
 .KET }
 
 ; Ini File Get Script
-; ---------------------------
+; -------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-05-17
+; Date: 2017-09-21
 ;
 ; This script gets a parameter from a section within an ini file.
+
+; Create empty section names, if section name is not defined
+IF "{sectionname}" EQ ""
+  echo "" NOLINE >T:_inifilesectionnames
+ENDIF
+
+; Create empty parameter names, if parameter name is not defined
+IF "{parametername}" EQ ""
+  echo "" NOLINE >T:_inifileparameternames
+ENDIF
 
 ; End, if ini file doesn't exist
 IF NOT EXISTS "{inifile}"
   SKIP end
 ENDIF
 
-; Initialize variables
-set inifilelinescount `wc -l <"{inifile}"`
-set inifilelinenumber 1
+; Copy ini file to temp
+Copy >NIL: "{inifile}" T:_inifile
+
+; Set ini file section to false
 set inifilesection 0
 
-; Iterate through ini file lines
-LAB start
-IF NOT $inifilelinenumber gt $inifilelinescount VAL
-  ; Get line number from ini file
-  echo "$inifilelinenumber" >T:_inifilelinenumber
-  set inifilelineregexp `sed "s/\(.\)*$/\1q;d/" T:_inifilelinenumber`
-  sed "$inifilelineregexp" "{inifile}" >T:_inifileline
+; Get next line from ini file
+LAB nextline
+set inifileline ""
+set inifileline "`FirstLine T:_inifile DELETE`"
 
-  IF $inifilesection eq 1 val
-    ; End, if line contains next section
-    search T:_inifileline "[" >NIL:
-    IF NOT WARN  
-      SKIP end
-    ENDIF
+; Goto end, if line is empty
+IF "$inifileline" EQ ""
+  SKIP end
+ENDIF
 
+echo "$inifileline" >T:_inifileline
+
+IF $inifilesection eq 1 val
+  ; End, if line contains next section
+  search T:_inifileline "[" >NIL:
+  IF NOT WARN  
+    SKIP end
+  ENDIF
+
+  IF "{parametername}" EQ ""
+    ; Replace equal with newline and add 1st line with parameter name to parameter names
+    rep T:_inifileline "=" "*N"
+    sed "1q;d" T:_inifileline >>T:_inifileparameternames
+  ELSE
     ; End, if line contains parameter
     search T:_inifileline "{parametername}=" >NIL:
     IF NOT WARN
@@ -43,22 +63,44 @@ IF NOT $inifilelinenumber gt $inifilelinescount VAL
       SKIP end
     ENDIF
   ENDIF
+ENDIF
 
+; Add section name to section names, if section name is not defined
+IF "{sectionname}" EQ ""
+  search T:_inifileline "[" >NIL:
+  IF NOT WARN  
+    echo "$inifileline" >>T:_inifilesectionnames
+  ENDIF
+ELSE
   ; Set ini file section true, if line contains section name
   search T:_inifileline "[{sectionname}]" >NIL:
   IF NOT WARN  
     set inifilesection 1
   ENDIF
-
-  set inifilelinenumber `eval $inifilelinenumber + 1`
-  SKIP BACK start
 ENDIF
+
+SKIP BACK nextline
 
 
 ; End
 LAB end
 
+; Print section names, if section name is not defined
+IF "{sectionname}" EQ ""
+  sed "s/^\[//" T:_inifilesectionnames >T:_inifilesectionnames2
+  sed "s/\]$//" T:_inifilesectionnames2
+ELSE
+  ; Print section names, if section name is defined and parameter name is not
+  IF "{parametername}" EQ ""
+    sed "s/^\[//" T:_inifileparameternames >T:_inifileparameternames2
+    sed "s/\]$//" T:_inifileparameternames2
+  ENDIF
+ENDIF
+
 ; Delete temp files, if they exist
+IF EXISTS T:_inifile
+  delete >NIL: T:_inifile
+ENDIF
 IF EXISTS T:_inifilelinenumber
   delete >NIL: T:_inifilelinenumber
 ENDIF
@@ -67,4 +109,10 @@ IF EXISTS T:_inifileline
 ENDIF
 IF EXISTS T:_newinifile
   delete >NIL: T:_newinifile
+ENDIF
+IF EXISTS T:_inifilesectionnames
+  delete >NIL: T:_inifilesectionnames#?
+ENDIF
+IF EXISTS T:_inifileparameternames
+  delete >NIL: T:_inifileparameternames#?
 ENDIF
