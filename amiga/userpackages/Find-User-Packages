@@ -5,7 +5,7 @@
 ; Find User Packages
 ; ------------------
 ;
-; Date: 2017-09-23
+; Date: 2017-09-25
 ; Author: Henrik Noerfjand Stengaard
 
 ; Create empty user packages file
@@ -20,32 +20,23 @@ ENDIF
 ; List directories in USERPACKAGESDIR:
 Dr "USERPACKAGESDIR:" -DO -[\f] >T:_userpackages1
 sed "s/\/$//" T:_userpackages1 >T:_userpackages2
+frsort <T:_userpackages2 >T:_userpackages3
 
 ; Get next user package from user packages
 LAB next
 set userpackage ""
-set userpackage "`FirstLine T:_userpackages2 DELETE`"
+set userpackage "`FirstLine T:_userpackages3 DELETE`"
 
 ; Goto end, if userpackage is empty
 IF "$userpackage" EQ ""
   SKIP end
 ENDIF
 
-set userpackagevalid 0
-
-; Set user package valid true, if user package dir contains a _installdir assign file
+; Add user package to user packages file, if user package dir contains a _installdir assign file
 IF EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
-  set userpackagevalid 1
-ENDIF
-
-; Set user package valid true, if user package dir contains a _install script file
-IF EXISTS "USERPACKAGESDIR:$userpackage/_install"
-  set userpackagevalid 1
-ENDIF
-
-; Add user package to user packages file, if user package is valid
-IF $userpackagevalid EQ 1 VAL
   echo "$userpackage" >>"{userpackagesfile}"
+ELSE
+  echo "User package '$userpackage' doesn't contain '_installdir' assign file, skipped!"
 ENDIF
 
 SKIP BACK next
