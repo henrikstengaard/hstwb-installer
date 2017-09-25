@@ -531,7 +531,7 @@ function BuildResetAssignsScriptLines($hstwb)
             $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
             $resetAssignsScriptLines += '; Get assign path from ini'
             $resetAssignsScriptLines += 'set assignpath ""'
-            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGESDIR:IniFileGet "{0}/{1}" sectionname "{2}" parametername "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += 'set assignpath "`execute PACKAGESDIR:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
             $resetAssignsScriptLines += ''
             $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
             $resetAssignsScriptLines += 'IF NOT "$assignpath" eq ""'
