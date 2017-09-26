@@ -5,7 +5,7 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-09-24
+; Date: 2017-09-26
 ; Author: Henrik Noerfjand Stengaard
 
 set menuindex 1
@@ -302,7 +302,7 @@ set menuoption `eval $menuindex + 3`
 echo "" >>"{installuserpackages}"
 echo "; Skip user packages option" >>"{installuserpackages}"
 echo "IF *"*$userpackagesmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
-echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to skip user packages installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
+echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to skip user package installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
 echo "  IF *"*$confirm*" EQ *"1*"" >>"{installuserpackages}"
 echo "    SKIP end" >>"{installuserpackages}"
 echo "  ENDIF" >>"{installuserpackages}"

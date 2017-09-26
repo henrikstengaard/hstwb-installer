@@ -5,8 +5,11 @@
 ; Find User Packages
 ; ------------------
 ;
-; Date: 2017-09-25
+; Date: 2017-09-26
 ; Author: Henrik Noerfjand Stengaard
+
+echo ""
+echo "Finding user packages in USERPACKAGESDIR:"
 
 ; Create empty user packages file
 echo "" NOLINE >"{userpackagesfile}"
@@ -32,18 +35,32 @@ IF "$userpackage" EQ ""
   SKIP end
 ENDIF
 
-; Add user package to user packages file, if user package dir contains a _installdir assign file
-IF EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
-  echo "$userpackage" >>"{userpackagesfile}"
-ELSE
-  echo "User package '$userpackage' doesn't contain '_installdir' assign file, skipped!"
+; Goto next, if user package dir doesn't contain a _installdir assign file
+IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
+  echo "*e[1mWARNING: User package '$userpackage' doesn't contain '_installdir' assign file, skipped!*e[22m"
+  SKIP BACK next
 ENDIF
+
+; Goto next, if user package dir is empty
+Dr "USERPACKAGESDIR:$userpackage" -O -[\f] >T:_userpackagesfiles
+Set userpackagesfiles `wc -l <T:_userpackagesfiles`
+Delete >NIL: T:_userpackagesfiles
+IF $userpackagesfiles EQ 1 VAL
+  echo "*e[1mWARNING: User package '$userpackage' is empty, skipped!*e[22m"
+  SKIP BACK next
+ENDIF
+
+; Print user package and add user package to user packages file
+echo "$userpackage"
+echo "$userpackage" >>"{userpackagesfile}"
 
 SKIP BACK next
 
 
 ; End
 LAB end
+
+echo "Done"
 
 ; Delete temp files, if they exist
 IF EXISTS T:_userpackages
