@@ -1,7 +1,7 @@
 ; Remove Self Install
 ; -------------------
 ;
-; Date: 2017-09-03
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -11,6 +11,9 @@ IF EXISTS "SYS:C/AssPlus"
 ENDIF
 IF EXISTS "SYS:C/DiskInDrive"
   Delete >NIL: "SYS:C/DiskInDrive"
+ENDIF
+IF EXISTS "SYS:C/FirstLine"
+  Delete >NIL: "SYS:C/FirstLine"
 ENDIF
 IF EXISTS "SYS:C/FSearch"
   Delete >NIL: "SYS:C/FSearch"

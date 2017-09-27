@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-09-05
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -15,8 +15,11 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 
 ; Welcome message
 cls 
+echo "*e[32m" NOLINE
 echo "HstWB Installer"
+echo "*e[0m*e[1m" NOLINE
 echo "---------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "Welcome to HstWB Installer, an installer which automates"
 echo "installation of Amiga OS 3.9, Workbench 3.1, Kickstart roms"
@@ -26,20 +29,23 @@ echo "As Amiga OS 3.9, Workbench 3.1 and Kickstart roms are still"
 echo "under license and sold commercially, these are not"
 echo "included and must be provided during installation process."
 echo ""
-echo "Amiga OS 3.9 can be bought from either http://www.vesalia.de"
-echo "or http://www.amigakit.com/."
-echo ""
 echo "Cloanto Amiga Forever Plus Edition contains both"
 echo "Workbench 3.1 and Kickstart roms and can be bought from"
 echo "https://www.amigaforever.com."
+echo ""
+echo "Amiga OS 3.9 can be bought from either http://www.vesalia.de"
+echo "or http://www.amigakit.com/."
 echo ""
 ask "Press ENTER to continue"
 
 
 ; Workbench message
 cls 
+echo "*e[32m" NOLINE
 echo "Workbench 3.1"
+echo "*e[0m*e[1m" NOLINE
 echo "-------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "Workbench 3.1 system files are required for the"
 echo "installation process and these will be loaded from"
@@ -82,8 +88,11 @@ failat 21
 
 ; Autodetect workbench 3.1 adf message
 cls 
+echo "*e[32m" NOLINE
 echo "Autodetect Workbench 3.1 adf"
+echo "*e[0m*e[1m" NOLINE
 echo "----------------------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "Finding Workbench 3.1 adf in WORKBENCHDIR:..."
 
@@ -163,7 +172,7 @@ LAB workbenckdiskfallback
 ; Print workbench disk floppy device fallback message
 echo "Done"
 echo ""
-echo "Workbench 3.1 adf doesn't exist in WORKBENCHDIR:."
+echo "*e[1mWorkbench 3.1 adf doesn't exist in WORKBENCHDIR:.*e[22m"
 echo ""
 echo "Workbench adf files in WORKBENCHDIR: can be changed"
 echo "and a reset will restart autodetect Workbench 3.1"
@@ -183,7 +192,7 @@ LAB extractworkbenchadf
 echo "Done"
 echo ""
 echo "Detected Workbench 3.1 adf file:"
-echo "$adffile"
+echo "*e[32m$adffile*e[0m"
 echo ""
 echo "Workbench adf files in WORKBENCHDIR: can be changed"
 echo "and a reset will restart autodetect Workbench 3.1"
@@ -214,6 +223,7 @@ SYS:Temp/Workbench/C/AddBuffers >NIL: DF0: 200
 resident SYS:Temp/Workbench/C/Assign PURE
 resident SYS:Temp/Workbench/C/Copy PURE
 resident SYS:Temp/Workbench/C/Delete PURE
+resident SYS:Temp/Workbench/C/Eval PURE
 resident SYS:Temp/Workbench/C/Execute PURE
 resident SYS:Temp/Workbench/C/Rename PURE
 resident SYS:Temp/Workbench/C/MakeDir PURE
@@ -242,8 +252,11 @@ LAB detectworkbenchdisk
 
 ; Print autodetect workbench 3.1 disk message
 cls 
+echo "*e[32m" NOLINE
 echo "Autodetect Workbench 3.1 disk"
+echo "*e[0m*e[1m" NOLINE
 echo "-----------------------------"
+echo "*e[0m" NOLINE
 
 LAB insertworkbenchdisk
 echo ""
@@ -331,6 +344,7 @@ $floppydevice:C/AddBuffers >NIL: DF0: 200
 resident $floppydevice:C/Assign PURE
 resident $floppydevice:C/Copy PURE
 resident $floppydevice:C/Delete PURE
+resident $floppydevice:C/Eval PURE
 resident $floppydevice:C/Execute PURE
 resident $floppydevice:C/Rename PURE
 resident $floppydevice:C/MakeDir PURE
@@ -413,8 +427,11 @@ ENDIF
 
 ; Print eject disk message
 cls
+echo "*e[32m" NOLINE
 echo "Eject disk"
+echo "*e[0m*e[1m" NOLINE
 echo "----------"
+echo "*e[22m" NOLINE
 echo ""
 echo "A system reboot is required for installation process"
 echo "to continue and floppy disk must be ejected."

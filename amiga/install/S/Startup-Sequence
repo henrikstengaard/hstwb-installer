@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-08-10
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -15,8 +15,11 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 
 ; Startup message
 cls 
+echo "*e[32m" NOLINE
 echo "HstWB Installer"
+echo "*e[0m*e[1m" NOLINE
 echo "---------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running install..."
 
@@ -28,6 +31,7 @@ DF0:C/AddBuffers >NIL: DF0: 200
 resident DF0:C/Assign PURE
 resident DF0:C/Copy PURE
 resident DF0:C/Delete PURE
+resident DF0:C/Eval PURE
 resident DF0:C/Execute PURE
 resident DF0:C/Rename PURE
 resident DF0:C/MakeDir PURE
@@ -39,7 +43,6 @@ resident DF0:C/Mount PURE
 resident DF0:C/Type PURE
 resident DF0:C/Version PURE
 resident DF0:C/RequestChoice PURE
-resident DF0:C/Eval PURE
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
@@ -72,11 +75,15 @@ IF EXISTS INSTALLDIR:HstWB-Installer.Assigns.ini
 ENDIF
 
 
-; Run Install-Start
+; Run prepare install
+execute "INSTALLDIR:S/Prepare-Install"
+
+
+; Run install start
 execute "INSTALLDIR:S/Install-Start"
 
 
-; Run Install-Complete
+; Run install complete
 execute "INSTALLDIR:S/Install-Complete"
 
 SKIP end

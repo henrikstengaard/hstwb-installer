@@ -1,7 +1,7 @@
 ; Install Start
 ; -------------
 ;
-; Date: 2017-08-09
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to start installation of Large Harddisk, Workbench, Amiga OS 3.9, Kickstarts and packages.
@@ -12,28 +12,32 @@ IF EXISTS "INSTALLDIR:Install-LargeHarddisk"
   copy >NIL: "INSTALLDIR:Install-LargeHarddisk/" TO "SYSTEMDIR:" ALL
 ENDIF
 
-
 ; Install Workbench, if prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
   execute "INSTALLDIR:S/Install-Workbench"
 ENDIF
-
 
 ; Install Amiga OS 3.9, if prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Install-AmigaOS3.9"
   execute "INSTALLDIR:S/Install-AmigaOS3.9"
 ENDIF
 
-
 ; Install Kickstart, if prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
   execute "INSTALLDIR:S/Install-Kickstart"
 ENDIF
 
-
-; Install Packages, if install boing bags prefs doesn't exist and install packages prefs exists
+; Install packages and user packages, if install boing bags prefs doesn't exist
 IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  ; Run install packages, if install packages prefs exists
   IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    cls 
     execute INSTALLDIR:S/Install-Packages
+  ENDIF
+
+  ; Run install user packages, if install user packages prefs exists
+  IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+    cls 
+    execute INSTALLDIR:S/Install-User-Packages
   ENDIF
 ENDIF

@@ -7,3 +7,7 @@ hard_drive_[$PackagesHarddriveIndex]_priority = -128
 hard_drive_[$Os39HarddriveIndex] = [$Os39Dir]
 hard_drive_[$Os39HarddriveIndex]_label = OS39DIR
 hard_drive_[$Os39HarddriveIndex]_priority = -128
+hard_drive_[$UserPackagesHarddriveIndex] = [$UserPackagesDir]
+hard_drive_[$UserPackagesHarddriveIndex]_label = USERPACKAGESDIR
+hard_drive_[$UserPackagesHarddriveIndex]_read_only = 1
+hard_drive_[$UserPackagesHarddriveIndex]_priority = -128

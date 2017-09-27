@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-09-18
+# Date:   2017-09-27
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -732,6 +732,10 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         {
             $installPackagesScriptLines += "echo ""Quit"" >>T:installpackagesmenu"
         }
+        else
+        {
+            $installPackagesScriptLines += "echo ""Skip packages"" >>T:installpackagesmenu"
+        }
 
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += "set installpackagesmenu """""
@@ -764,17 +768,26 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
-        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Install selected packages?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to install selected packages?"" ""Yes|No""``"
         $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
         $installPackagesScriptLines += "    SKIP installpackages"
         $installPackagesScriptLines += "  ENDIF"
         $installPackagesScriptLines += "ENDIF"
 
+        $installPackagesScriptLines += ""
         if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
-            $installPackagesScriptLines += "  quit"
+            $installPackagesScriptLines += "  end"
+            $installPackagesScriptLines += "ENDIF"
+        }
+        else
+        {
+            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
+            $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to skip package installation?"" ""Yes|No""``"
+            $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
+            $installPackagesScriptLines += "    SKIP end"
+            $installPackagesScriptLines += "  ENDIF"
             $installPackagesScriptLines += "ENDIF"
         }
 
@@ -1105,7 +1118,7 @@ function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 
 
 # build fs-uae install harddrives config text
-function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $boot)
+function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $boot
@@ -1134,12 +1147,14 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
     $fsUaeHarddrivesConfigText = [System.IO.File]::ReadAllText($fsUaeHarddrivesConfigFile)
     
     # replace winuae install harddrives placeholders
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallDir]', $installDir)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallDir]', $installDir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallHarddriveIndex]', [int]$harddriveIndex + 1)
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesHarddriveIndex]', [int]$harddriveIndex + 2)
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Trim()
     
     # return winuae image and install harddrives config
@@ -1148,7 +1163,7 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
 
 
 # build fs-uae self install harddrives config text
-function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir)
+function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
@@ -1175,6 +1190,8 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kicks
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartHarddriveIndex]', [int]$harddriveIndex + 2)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Trim()
 
     # return fs-uae image and self install harddrives config
@@ -1212,7 +1229,7 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
 
 
 # build winuae install harddrives config text
-function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $boot)
+function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $boot
@@ -1247,7 +1264,9 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
 
     # return winuae image and install harddrives config
@@ -1256,7 +1275,7 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
 
 
 # build winuae self install harddrives config text
-function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir)
+function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
@@ -1283,7 +1302,9 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kick
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartUaehfIndex]', [int]$uaehfIndex + 2)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Trim()
 
     # return winuae image and self install harddrives config
@@ -1455,6 +1476,10 @@ function RunInstall($hstwb)
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
 
+    # copy amiga user packages dir
+    $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
+    Copy-Item -Path "$amigaUserPackagesDir\*" $tempInstallDir -recurse -force
+
 
     # create prefs directory
     $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
@@ -1570,12 +1595,33 @@ function RunInstall($hstwb)
         $installPackagesScriptLines += "echo ""Package installation is complete."""
         $installPackagesScriptLines += "echo """""
         $installPackagesScriptLines += "ask ""Press ENTER to continue"""
-
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "; End"
+        $installPackagesScriptLines += "LAB end"
+        
 
         # write install packages script
         $installPackagesFile = [System.IO.Path]::Combine($tempInstallDir, "S\Install-Packages")
         WriteAmigaTextLines $installPackagesFile $installPackagesScriptLines 
     }
+
+
+    $userPackages = @()
+    $userPackages += 'EAB WHDLoad Games'
+    $userPackages += ''
+    $userPackagesDir = 'c:\Work\First Realize\userpackages\_test'
+
+    if ($userPackages.Count -gt 0)
+    {
+        # create install user packages prefs file
+        $installUserPackagesFile = Join-Path $prefsDir -ChildPath 'Install-User-Packages'
+        Set-Content $installUserPackagesFile -Value ""
+
+        # write user packages prefs file
+        $userPackagesFile = Join-Path $prefsDir -ChildPath 'User-Packages'
+        WriteAmigaTextLines $userPackagesFile $userPackages 
+    }
+
 
 
     $installBoingBags = $false
@@ -1704,7 +1750,7 @@ function RunInstall($hstwb)
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
 
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -1727,7 +1773,7 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
     
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -1786,7 +1832,7 @@ function RunInstall($hstwb)
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $false
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
         
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -1809,7 +1855,7 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config with boot
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $false
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
         
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -1931,6 +1977,10 @@ function RunBuildSelfInstall($hstwb)
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
+
+    # copy amiga user packages dir
+    $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
+    Copy-Item -Path "$amigaUserPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
   
 
     # create self install prefs file
@@ -1981,27 +2031,29 @@ function RunBuildSelfInstall($hstwb)
 
             [System.IO.Compression.ZipFile]::ExtractToDirectory($installPackage.PackageFile, $packageDir)
         }
+
+        # build install package script lines
+        $installPackagesScriptLines = @()
+        $installPackagesScriptLines += "; Install Packages Script"
+        $installPackagesScriptLines += "; -----------------------"
+        $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
+        $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
+        $installPackagesScriptLines += ";"
+        $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
+        $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
+        $installPackagesScriptLines += "echo """""
+        $installPackagesScriptLines += "echo ""Package installation is complete."""
+        $installPackagesScriptLines += "echo """""
+        $installPackagesScriptLines += "ask ""Press ENTER to continue"""
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += "; End"
+        $installPackagesScriptLines += "LAB end"
+
+
+        # write install packages script
+        $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Install-Packages")
+        WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
     }
-
-
-    # build install package script lines
-    $installPackagesScriptLines = @()
-    $installPackagesScriptLines += "; Install Packages Script"
-    $installPackagesScriptLines += "; -----------------------"
-    $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
-    $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy.MM.dd"))
-    $installPackagesScriptLines += ";"
-    $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
-    $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
-    $installPackagesScriptLines += "echo """""
-    $installPackagesScriptLines += "echo ""Package installation is complete."""
-    $installPackagesScriptLines += "echo """""
-    $installPackagesScriptLines += "ask ""Press ENTER to continue"""
-
-
-    # write install packages script
-    $installPackagesScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Install-Packages")
-    WriteAmigaTextLines $installPackagesScriptFile $installPackagesScriptLines 
 
 
     $globalAssigns = $hstwb.Assigns.Get_Item('Global')
@@ -2077,7 +2129,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir ''
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir '' ''
 
 
     # replace hstwb installer uae winuae configuration placeholders
@@ -2097,7 +2149,7 @@ function RunBuildSelfInstall($hstwb)
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $hstwb.Settings.Image.ImageDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $hstwb.Settings.Image.ImageDir ''
     
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
@@ -2287,6 +2339,9 @@ function RunBuildPackageInstallation($hstwb)
     $packageInstallationScriptLines += "echo ""Package installation is complete."""
     $packageInstallationScriptLines += "echo """""
     $packageInstallationScriptLines += "ask ""Press ENTER to continue"""
+    $packageInstallationScriptLines += ""
+    $packageInstallationScriptLines += "; End"
+    $packageInstallationScriptLines += "LAB end"
 
 
     # write install packages script

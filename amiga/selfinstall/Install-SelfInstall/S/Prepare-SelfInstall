@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-08-15
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -16,47 +16,64 @@ IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
   Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench"
 ENDIF
 
-
 ; Delete install amiga os 3.9 prefs, if it exists
 IF EXISTS "INSTALLDIR:Prefs/Install-AmigaOS3.9"
   Delete >NIL: "INSTALLDIR:Prefs/Install-AmigaOS3.9"
 ENDIF
-
 
 ; Delete install kickstart prefs, if it exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
   Delete >NIL: "INSTALLDIR:Prefs/Install-Kickstart"
 ENDIF
 
-
 ; Delete install boing bags prefs, if it exists
 IF EXISTS "INSTALLDIR:Prefs/Install-BoingBags"
   Delete >NIL: "INSTALLDIR:Prefs/Install-BoingBags"
 ENDIF
 
+; Delete install user packages prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-User-Packages"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-User-Packages"
+ENDIF
 
+; Delete user packages prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/User-Packages"
+  Delete >NIL: "INSTALLDIR:Prefs/User-Packages"
+ENDIF
+
+; Delete install user packages, if it exists
+IF EXISTS "INSTALLDIR:S/Install-User-Packages"
+  Delete >NIL: "INSTALLDIR:S/Install-User-Packages"
+ENDIF
+
+
+echo "*e[32m" NOLINE
 echo "Device Names Overview"
+echo "*e[0m*e[1m" NOLINE
 echo "---------------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "Using UAE emulator HstWB-Installer can detect and use"
 echo "following device names for installation of Amiga OS 3.9,"
-echo "Workbench 3.1 and Kickstart roms:"
+echo "Workbench 3.1, Kickstart roms and user packages:"
 echo "- CD0: CD drive with Amiga OS 3.9 CD-Rom."
 echo "- OS39DIR: Directory with Amiga 3.9 iso and boing bag files."
 echo "  Note: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device)."
 echo "- WORKBENCHDIR: Directory with Workbench 3.1 adf files."
 echo "- KICKSTARTDIR: Directory with Kickstart rom files."
+echo "- USERPACKAGESDIR: Directory with user packages."
 echo ""
 ask "Press ENTER to continue"
 
 
 ; Clear screen
 cls 
-
-
+echo "*e[32m" NOLINE
 echo "Device Names Status"
+echo "*e[0m*e[1m" NOLINE
 echo "-------------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "HstWB-Installer has detected device names with"
 echo "following status:"
@@ -195,7 +212,7 @@ IF $installworkbench EQ 1 VAL
   IF $workbench EQ 1 VAL
     echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
   ELSE
-    echo "- WORKBENCHDIR: Not present! Install Workbench 3.1 from 
+    echo "- WORKBENCHDIR: Not present! Install Workbench 3.1 from"
     echo "  disks."
   ENDIF 
 ELSE
@@ -225,10 +242,35 @@ ENDIF
 IF $kickstart EQ 1 VAL
   ; Create install kickstart prefs
   echo "" >INSTALLDIR:Prefs/Install-Kickstart
-
   echo "- KICKSTARTDIR: Present! Install Kickstart rom files."
 ELSE
   echo "- KICKSTARTDIR: Not present! Skip Kickstart rom installation."
+ENDIF
+
+
+; Check if USERPACKAGESDIR: and set userpackages
+set userpackages "0"
+Assign >NIL: EXISTS USERPACKAGESDIR:
+IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set userpackages to 1, if device USERPACKAGESDIR: is mapped to a directory
+  DiskInDrive >NIL: USERPACKAGESDIR:
+  IF NOT WARN
+    set userpackages "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Print user packges dir status and create install user packages prefs, if USERPACKAGESDIR: exists
+IF $userpackages EQ 1 VAL
+  echo "- USERPACKAGESDIR: Present! Install user packages."
+ELSE
+  echo "- USERPACKAGESDIR: Not present! Skip user package installation."
 ENDIF
 
 
@@ -280,10 +322,72 @@ IF $installos39 EQ 1 VAL
   ENDIF
 ENDIF
 
+echo ""
+IF $userpackages EQ 0 VAL
+  echo "Continue will show self install ready."
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP selfinstallready
+ENDIF
+
+echo "Continue will show user package status."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Print user packages status
+cls 
+echo "*e[32m" NOLINE
+echo "User Packages Status"
+echo "*e[0m*e[1m" NOLINE
+echo "--------------------"
+echo "*e[0m" NOLINE
+
+; Run find user packages
+Execute INSTALLDIR:S/Find-User-Packages INSTALLDIR:Prefs/User-Packages
+
+; Check if user packages prefs contains any user packages
+set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
+IF $userpackagescount GT 0 VAL
+  ; Create install user packages prefs
+  echo "" >INSTALLDIR:Prefs/Install-User-Packages
+
+  ; Run prepare user packages
+  Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
+  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages
+  Delete >NIL: T:User-Packages
+ELSE
+  echo ""
+  echo "*e[1mNo user packages found, skipping user package installation!*e[22m"
+ENDIF
 
 echo ""
+echo "Continue will show self install ready."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Self install ready
+; ------------------
+LAB selfinstallready
+cls 
+echo "*e[32m" NOLINE
+echo "Self Install Ready"
+echo "*e[0m*e[1m" NOLINE
+echo "------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Self install is ready to start installation process."
+echo ""
 echo "This is last chance to adjust device names, files used"
-echo "during installation. It's still possible to apply changes"
-echo "to device names and reset before starting self install."
+echo "during installation before starting self install."
+echo ""
+echo "Adjust device names, directories and files now and reset"
+echo "to detect changes."
+echo ""
+echo "When self install has started, it's no longer possible to"
+echo "reset installation process."
+echo ""
+echo "Continue will start self install."
 echo ""
 ask "Press ENTER to continue"

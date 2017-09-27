@@ -5,7 +5,7 @@
 ; Find User Packages
 ; ------------------
 ;
-; Date: 2017-09-26
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 
 echo ""
@@ -37,7 +37,7 @@ ENDIF
 
 ; Goto next, if user package dir doesn't contain a _installdir assign file
 IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
-  echo "*e[1mWARNING: User package '$userpackage' doesn't contain '_installdir' assign file, skipped!*e[22m"
+  echo "*e[1m$userpackage doesn't contain '_installdir' assign file, skipped!*e[22m"
   SKIP BACK next
 ENDIF
 
@@ -46,12 +46,12 @@ Dr "USERPACKAGESDIR:$userpackage" -O -[\f] >T:_userpackagesfiles
 Set userpackagesfiles `wc -l <T:_userpackagesfiles`
 Delete >NIL: T:_userpackagesfiles
 IF $userpackagesfiles EQ 1 VAL
-  echo "*e[1mWARNING: User package '$userpackage' is empty, skipped!*e[22m"
+  echo "*e[1m$userpackage is empty, skipped!*e[22m"
   SKIP BACK next
 ENDIF
 
 ; Print user package and add user package to user packages file
-echo "$userpackage"
+echo "*e[32m$userpackage*e[0m"
 echo "$userpackage" >>"{userpackagesfile}"
 
 SKIP BACK next

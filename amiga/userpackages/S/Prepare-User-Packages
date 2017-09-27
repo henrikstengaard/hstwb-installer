@@ -1,37 +1,62 @@
-.KEY userpackages/a,installuserpackages/a
+.KEY userpackages/a,installuserpackages/a,nomenus/s
 .BRA {
 .KET }
 
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-09-26
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
+
+; Fail, if user packages file doesn't exist
+IF NOT EXISTS "{userpackages}"
+  echo "Error: User packages file '{userpackages}' doesn't exist!"
+  quit 20
+ENDIF
+
+; Get user packages count
+set userpackagescount `wc -l <"{userpackages}"`
+
+echo ""
+echo "Preparing $userpackagescount user package(s)..."
 
 set menuindex 1
 
-echo "; Install User Packages" >"{installuserpackages}"
+echo ".KEY validate/s" >"{installuserpackages}"
+echo ".BRA <" >>"{installuserpackages}"
+echo ".KET >" >>"{installuserpackages}"
+echo "" >>"{installuserpackages}"
+echo "; Install User Packages" >>"{installuserpackages}"
 echo "; ---------------------" >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
-;echo "; Date: ?" >>"{installuserpackages}"
+echo "; Date: " NOLINE >>"{installuserpackages}"
+fdate "%Y-%m-%d" >>"{installuserpackages}"
 echo "; Author: Henrik Noerfjand Stengaard" >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
-echo "SKIP main" >>"{installuserpackages}"
-echo "" >>"{installuserpackages}"
-IF NOT EXISTS "PACKAGESDIR:SelectAssignDir"
-  echo "Error: Select assign dir file 'PACKAGESDIR:SelectAssignDir' doesn't exist!"
-  quit 20
-ENDIF  
-type "PACKAGESDIR:SelectAssignDir" >>"{installuserpackages}"
-echo "" >>"{installuserpackages}"
-echo "" >>"{installuserpackages}"
-echo "; Main" >>"{installuserpackages}"
-echo "LAB main" >>"{installuserpackages}"
-echo "" >>"{installuserpackages}"
-echo "; Copy reqtools prefs to env, if it doesn't exist" >>"{installuserpackages}"
-echo "IF NOT EXISTS *"ENV:ReqTools.prefs*"" >>"{installuserpackages}"
-echo "  copy >NIL: *"ReqTools.prefs*" *"ENV:*"" >>"{installuserpackages}"
+echo "IF NOT *"<validate>*" EQ *"*"" >>"{installuserpackages}"
+echo "  echo *"*"" >>"{installuserpackages}"
+echo "  echo *"Validating assigns for user packages...*"" >>"{installuserpackages}"
 echo "ENDIF" >>"{installuserpackages}"
+
+IF "{nomenus}" EQ ""
+  echo "" >>"{installuserpackages}"
+  echo "SKIP main" >>"{installuserpackages}"
+  echo "" >>"{installuserpackages}"
+  IF NOT EXISTS "PACKAGESDIR:SelectAssignDir"
+    echo "Error: Select assign dir file 'PACKAGESDIR:SelectAssignDir' doesn't exist!"
+    quit 20
+  ENDIF  
+  type "PACKAGESDIR:SelectAssignDir" >>"{installuserpackages}"
+  echo "" >>"{installuserpackages}"
+  echo "" >>"{installuserpackages}"
+  echo "; Main" >>"{installuserpackages}"
+  echo "LAB main" >>"{installuserpackages}"
+  ;echo "" >>"{installuserpackages}"
+  ;echo "; Copy reqtools prefs to env, if it doesn't exist" >>"{installuserpackages}"
+  ;echo "IF NOT EXISTS *"ENV:ReqTools.prefs*"" >>"{installuserpackages}"
+  ;echo "  copy >NIL: *"ReqTools.prefs*" *"ENV:*"" >>"{installuserpackages}"
+  ;echo "ENDIF" >>"{installuserpackages}"
+ENDIF
 
 ; Create empty partial files for menus
 echo "" NOLINE >T:_userpackagesmenu
@@ -42,6 +67,7 @@ echo "" NOLINE >T:_resetassigns
 echo "" NOLINE >T:_defaultassigns
 echo "" NOLINE >T:_validateassigns
 echo "" NOLINE >T:_installuserpackages
+echo "" NOLINE >T:_deletetemp
 
 ; Get next user package from user packages file
 LAB nextuserpackage
@@ -50,7 +76,11 @@ set userpackage "`FirstLine "{userpackages}" DELETE`"
 
 ; Goto end, if userpackage is empty
 IF "$userpackage" EQ ""
-  SKIP buildoptions
+  IF "{nomenus}" EQ ""
+    SKIP userpackagesmenu
+  ELSE
+    SKIP installuserpackages
+  ENDIF
 ENDIF
 
 ; Make package id
@@ -59,10 +89,15 @@ set packageid "`md5sum2 <T:_packageid`"
 
 ; Build user packages reset
 echo "" >>"{installuserpackages}"
-echo "; User packages menu reset '$userpackage'" >>"{installuserpackages}"
-echo "IF EXISTS *"T:$packageid*"" >>"{installuserpackages}"
-echo "  delete >NIL: *"T:$packageid*"" >>"{installuserpackages}"
-echo "ENDIF" >>"{installuserpackages}"
+IF "{nomenus}" EQ ""
+  echo "; User packages menu reset '$userpackage'" >>"{installuserpackages}"
+  echo "IF EXISTS *"T:$packageid*"" >>"{installuserpackages}"
+  echo "  delete >NIL: *"T:$packageid*"" >>"{installuserpackages}"
+  echo "ENDIF" >>"{installuserpackages}"
+ELSE
+  echo "; User packages menu select '$userpackage'" >>"{installuserpackages}"
+  echo "echo *"*" NOLINE >*"T:$packageid*"" >>"{installuserpackages}"
+ENDIF
 
 ; Build user packages menu
 echo "" >>T:_userpackagesmenu
@@ -137,16 +172,13 @@ echo "  IF EXISTS *"USERPACKAGESDIR:$userpackage/_installdir*"" >>T:_resetassign
 echo "    set installdir *"*`type *"USERPACKAGESDIR:$userpackage/_installdir*"*`*"" >>T:_resetassigns
 echo "  ENDIF" >>T:_resetassigns
 echo "ENDIF" >>T:_resetassigns
-echo "echo *"*$installdir*" >T:_installdir" >>T:_resetassigns
-echo "rep T:_installdir *":*" *"**N*"" >>T:_resetassigns
-echo "set devicename *"*`sed *"1q;d*" T:_installdir*`*"" >>T:_resetassigns
+echo "echo *"*$installdir*" >T:_installdir1" >>T:_resetassigns
+echo "rep T:_installdir1 *":*" *"**N*"" >>T:_resetassigns
+echo "sed *"1q;d*" T:_installdir1 >T:_installdir2" >>T:_resetassigns
+echo "set devicename *"*`type T:_installdir2*`*"" >>T:_resetassigns
 echo "Assign >NIL: EXISTS *"*$devicename:*"" >>T:_resetassigns
 echo "IF WARN" >>T:_resetassigns
 echo "  set installdir *"*"" >>T:_resetassigns
-echo "ELSE" >>T:_resetassigns
-echo "  IF NOT EXISTS *"*$installdir*"" >>T:_resetassigns
-echo "    set installdir *"*"" >>T:_resetassigns
-echo "  ENDIF" >>T:_resetassigns
 echo "ENDIF" >>T:_resetassigns
 echo "echo *"*$installdir*" NOLINE >*"T:$assignid*"" >>T:_resetassigns
 
@@ -157,16 +189,13 @@ echo "set installdir *"*"" >>T:_defaultassigns
 echo "IF EXISTS *"USERPACKAGESDIR:$userpackage/_installdir*"" >>T:_defaultassigns
 echo "  set installdir *"*`type *"USERPACKAGESDIR:$userpackage/_installdir*"*`*"" >>T:_defaultassigns
 echo "ENDIF" >>T:_defaultassigns
-echo "echo *"*$installdir*" >T:_installdir" >>T:_defaultassigns
-echo "rep T:_installdir *":*" *"**N*"" >>T:_defaultassigns
-echo "set devicename *"*`sed *"1q;d*" T:_installdir*`*"" >>T:_defaultassigns
+echo "echo *"*$installdir*" >T:_installdir1" >>T:_defaultassigns
+echo "rep T:_installdir1 *":*" *"**N*"" >>T:_defaultassigns
+echo "sed *"1q;d*" T:_installdir1 >T:_installdir2" >>T:_defaultassigns
+echo "set devicename *"*`type T:_installdir2*`*"" >>T:_defaultassigns
 echo "Assign >NIL: EXISTS *"*$devicename:*"" >>T:_defaultassigns
 echo "IF WARN" >>T:_defaultassigns
 echo "  set installdir *"*"" >>T:_defaultassigns
-echo "ELSE" >>T:_defaultassigns
-echo "  IF NOT EXISTS *"*$installdir*"" >>T:_defaultassigns
-echo "    set installdir *"*"" >>T:_defaultassigns
-echo "  ENDIF" >>T:_defaultassigns
 echo "ENDIF" >>T:_defaultassigns
 echo "echo *"*$installdir*" NOLINE >*"T:$assignid*"" >>T:_defaultassigns
 
@@ -183,16 +212,13 @@ echo "  REQUESTCHOICE >NIL: *"Error*" *"Installdir is not defined**Nfor user pac
 echo "  SKIP BACK userpackagesmenu" >>T:_validateassigns
 echo "ENDIF" >>T:_validateassigns
 echo "; Get device name from installdir by replacing colon with newline and get 1st line with device name" >>T:_validateassigns
-echo "echo *"*$installdir*" >T:_installdir" >>T:_validateassigns
-echo "rep T:_installdir *":*" *"**N*"" >>T:_validateassigns
-echo "set devicename *"*`sed *"1q;d*" T:_installdir*`*"" >>T:_validateassigns
+echo "echo *"*$installdir*" >T:_installdir1" >>T:_resetassigns
+echo "rep T:_installdir1 *":*" *"**N*"" >>T:_resetassigns
+echo "sed *"1q;d*" T:_installdir1 >T:_installdir2" >>T:_resetassigns
+echo "set devicename *"*`type T:_installdir2*`*"" >>T:_resetassigns
 echo "Assign >NIL: EXISTS *"*$devicename:*"" >>T:_validateassigns
 echo "IF WARN" >>T:_validateassigns
 echo "  REQUESTCHOICE  >NIL: *"Error*" *"Device name '*$devicename:' in Installdir '*$installdir' doesn't exist**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
-echo "  SKIP BACK userpackagesmenu" >>T:_validateassigns
-echo "ENDIF" >>T:_validateassigns
-echo "IF NOT EXISTS *"*$installdir*"" >>T:_validateassigns
-echo "  REQUESTCHOICE  >NIL: *"Error*" *"Installdir '*$installdir' doesn't exist**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
 echo "  SKIP BACK userpackagesmenu" >>T:_validateassigns
 echo "ENDIF" >>T:_validateassigns
 
@@ -225,14 +251,22 @@ echo "  Assign USERPACKAGEDIR: *"USERPACKAGESDIR:$userpackage*" REMOVE" >>T:_ins
 echo "  echo *"Done*"" >>T:_installuserpackages
 echo "ENDIF" >>T:_installuserpackages
 
+; Build delete temp
+echo "IF EXISTS *"T:$packageid*"" >>T:_deletetemp
+echo "  delete >NIL: *"T:$packageid*"" >>T:_deletetemp
+echo "ENDIF" >>T:_deletetemp
+echo "IF EXISTS *"T:$assignid*"" >>T:_deletetemp
+echo "  delete >NIL: *"T:$assignid*"" >>T:_deletetemp
+echo "ENDIF" >>T:_deletetemp
+
 set menuindex `eval $menuindex + 1`
 
 SKIP BACK nextuserpackage
 
 
-; Build user packages options
-; ---------------------------
-LAB buildoptions
+; User packages menu
+; ------------------
+LAB userpackagesmenu
 
 type T:_resetassigns >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
@@ -243,7 +277,6 @@ echo "; Reset assigns" >>"{installuserpackages}"
 echo "LAB resetassigns" >>"{installuserpackages}"
 
 type T:_resetassigns >>"{installuserpackages}"
-Delete >NIL: T:_resetassigns
 
 echo "" >>"{installuserpackages}"
 echo "SKIP editassignsmenu" >>"{installuserpackages}"
@@ -255,7 +288,6 @@ echo "; Default assigns" >>"{installuserpackages}"
 echo "LAB defaultassigns" >>"{installuserpackages}"
 
 type T:_defaultassigns >>"{installuserpackages}"
-Delete >NIL: T:_defaultassigns
 
 echo "" >>"{installuserpackages}"
 echo "SKIP editassignsmenu" >>"{installuserpackages}"
@@ -267,7 +299,6 @@ echo "" >>"{installuserpackages}"
 echo "echo *"*" NOLINE >T:userpackagesmenu" >>"{installuserpackages}"
 
 type T:_userpackagesmenu >>"{installuserpackages}"
-Delete >NIL: T:_userpackagesmenu
 
 echo "echo *"========================================*" >>T:userpackagesmenu" >>"{installuserpackages}"
 echo "echo *"Edit assigns*" >>T:userpackagesmenu" >>"{installuserpackages}"
@@ -279,7 +310,6 @@ echo "set userpackagesmenu *"*`ReqList CLONERT I=T:userpackagesmenu H=*"Select u
 echo "Delete >NIL: T:userpackagesmenu" >>"{installuserpackages}"
 
 type T:_userpackagesoptions >>"{installuserpackages}"
-Delete >NIL: T:_userpackagesoptions
 
 set menuoption `eval $menuindex + 1`
 echo "" >>"{installuserpackages}"
@@ -321,7 +351,6 @@ echo "" >>"{installuserpackages}"
 echo "echo *"*" NOLINE >T:editassignsmenu" >>"{installuserpackages}"
 
 type T:_editassignsmenu >>"{installuserpackages}"
-Delete >NIL: T:_editassignsmenu
 
 echo "echo *"========================================*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "echo *"Reset assigns*" >>T:editassignsmenu" >>"{installuserpackages}"
@@ -333,7 +362,6 @@ echo "set editassignsmenu *"*`ReqList CLONERT I=T:editassignsmenu H=*"Edit assig
 echo "Delete >NIL: T:editassignsmenu" >>"{installuserpackages}"
 
 type T:_editassignsoptions >>"{installuserpackages}"
-Delete >NIL: T:_editassignsoptions
 
 set menuoption `eval ($menuindex * 2)`
 echo "" >>"{installuserpackages}"
@@ -359,6 +387,7 @@ set menuoption `eval ($menuindex * 2) + 2`
 echo "" >>"{installuserpackages}"
 echo "; Back option" >>"{installuserpackages}"
 echo "IF *"*$editassignsmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
+echo "  echo *"Done*"" >>"{installuserpackages}"
 echo "  SKIP BACK userpackagesmenu" >>"{installuserpackages}"
 echo "ENDIF" >>"{installuserpackages}"
 
@@ -368,21 +397,32 @@ echo "SKIP BACK editassignsmenu" >>"{installuserpackages}"
 
 ; Install user packages
 ; ---------------------
+LAB installuserpackages
+
+IF NOT "{nomenus}" EQ ""
+  type T:_defaultassigns >>"{installuserpackages}"
+ENDIF
 
 echo "" >>"{installuserpackages}"
 echo "; Install user packages" >>"{installuserpackages}"
 echo "LAB installuserpackages" >>"{installuserpackages}"
 
 type T:_validateassigns >>"{installuserpackages}"
-Delete >NIL: T:_validateassigns
 
 echo "" >>"{installuserpackages}"
-echo "echo *"**ec*" NOLINE" >>"{installuserpackages}"
+echo "IF NOT *"<validate>*" EQ *"*"" >>"{installuserpackages}"
+echo "  echo *"Done*"" >>"{installuserpackages}"
+echo "  SKIP end" >>"{installuserpackages}"
+echo "ENDIF" >>"{installuserpackages}"
+
+echo "" >>"{installuserpackages}"
+echo "echo *"**ec**e[32m*" NOLINE" >>"{installuserpackages}"
 echo "echo *"User Package Installation*"" >>"{installuserpackages}"
+echo "echo *"**e[0m**e[1m*" NOLINE" >>"{installuserpackages}"
 echo "echo *"-------------------------*"" >>"{installuserpackages}"
+echo "echo *"**e[0m*" NOLINE" >>"{installuserpackages}"
 
 type T:_installuserpackages >>"{installuserpackages}"
-Delete >NIL: T:_installuserpackages
 
 echo "echo *"*"" >>"{installuserpackages}"
 echo "echo *"User package installation is complete.*"" >>"{installuserpackages}"
@@ -391,3 +431,42 @@ echo "ask *"Press ENTER to continue*"" >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
 echo "; End" >>"{installuserpackages}"
 echo "LAB end" >>"{installuserpackages}"
+echo "" >>"{installuserpackages}"
+echo "; Delete temp files" >>"{installuserpackages}"
+
+type T:_deletetemp >>"{installuserpackages}"
+
+echo "Done"
+
+
+; End
+LAB end
+
+; Delete temp files
+IF EXISTS T:_userpackagesmenu
+  Delete >NIL: T:_userpackagesmenu
+ENDIF
+IF EXISTS T:_userpackagesoptions
+  Delete >NIL: T:_userpackagesoptions
+ENDIF
+IF EXISTS T:_editassignsmenu
+  Delete >NIL: T:_editassignsmenu
+ENDIF
+IF EXISTS T:_editassignsoptions
+  Delete >NIL: T:_editassignsoptions
+ENDIF
+IF EXISTS T:_resetassigns
+  Delete >NIL: T:_resetassigns
+ENDIF
+IF EXISTS T:_defaultassigns
+  Delete >NIL: T:_defaultassigns
+ENDIF
+IF EXISTS T:_validateassigns
+  Delete >NIL: T:_validateassigns
+ENDIF
+IF EXISTS T:_installuserpackages
+  Delete >NIL: T:_installuserpackages
+ENDIF
+IF EXISTS T:_deletetemp
+  Delete >NIL: T:_deletetemp
+ENDIF

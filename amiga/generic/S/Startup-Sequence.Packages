@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2017-08-15
+; Date: 2017-09-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -89,9 +89,18 @@ resident INSTALLDIR:C/UAEquit PURE
 resident INSTALLDIR:C/MakePath PURE 
 
 
-; Run Install-Packages
+; Run install packages
 cls
-execute INSTALLDIR:S/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  execute INSTALLDIR:S/Install-Packages
+ENDIF
+
+
+; Run install user packages
+cls
+IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+  Execute INSTALLDIR:S/Install-User-Packages
+ENDIF
 
 
 ; Replace startup-sequence with workbench startup-sequence

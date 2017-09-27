@@ -4,4 +4,6 @@ filesystem2=rw,PACKAGESDIR:PACKAGESDIR:[$PackagesDir],-128
 uaehf[$PackagesUaehfIndex]=dir,rw,PACKAGESDIR:PACKAGESDIR:[$PackagesDir],-128
 filesystem2=rw,OS39DIR:OS39DIR:[$Os39Dir],-128
 uaehf[$Os39UaehfIndex]=dir,rw,OS39DIR:OS39DIR:[$Os39Dir],-128
+filesystem2=ro,USERPACKAGESDIR:USERPACKAGESDIR:[$UserPackagesDir],-128
+uaehf[$UserPackagesUaehfIndex]=dir,ro,USERPACKAGESDIR:USERPACKAGESDIR:[$UserPackagesDir],-128
 uaehf[$Cd0UaehfIndex]=cd0,ro,:,0,0,0,2048,0,,ide0,ATA1
