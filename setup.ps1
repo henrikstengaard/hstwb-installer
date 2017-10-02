@@ -721,33 +721,14 @@ function ConfigureEmulatorMenu($hstwb)
 
 
 # select emulator menu
-function SelectEmulatorMenu()
+function SelectEmulatorMenu($hstwb)
 {
-    $emulators = @{}
-    
-    $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
-    if (test-path -path $fsuaeFile)
-    {
-        $version = (get-item $fsuaeFile).VersionInfo.FileVersion
-        $emulators.Set_Item(('FS-UAE {0} ({1})' -f $version, $fsuaeFile), $fsuaeFile)
-    }
 
-    $winuaeX64File = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
-    if (test-path -path $winuaeX64File)
-    {
-        $version = (get-item $winuaeX64File).VersionInfo.FileVersion
-        $emulators.Set_Item(('WinUAE {0} 64-bit ({1})' -f $version, $winuaeX64File), $winuaeX64File)
-    }
-    
-    $winuaeX86File = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
-    if (test-path -path $winuaeX86File)
-    {
-        $version = (get-item $winuaeX86File).VersionInfo.FileVersion
-        $emulators.Set_Item(('WinUAE {0} 32-bit ({1})' -f $version, $winuaeX86File), $winuaeX86File)
-    }
+    $emulators = @{}
+    $hstwb.Emulators | ForEach-Object { $emulators.Set_Item(('{0} ({1})' -f $_.Name,$_.File), $_.File ) }
     
     $options = @()
-    $options += $emulators.keys
+    $options += $emulators.Keys
     $options += 'Custom, select emulator .exe file'
     
     $choice = Menu $hstwb "Select Emulator Menu" $options 
@@ -872,7 +853,8 @@ try
         'Images' = ReadImages $imagesPath;
         'Packages' = ReadPackages $packagesPath;
         'Settings' = @{};
-        'Assigns' = @{}
+        'Assigns' = @{};
+        'Emulators' = FindEmulators
     }
     
     

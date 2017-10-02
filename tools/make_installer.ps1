@@ -13,6 +13,9 @@
 # Pandoc is used to build html version of github markdown readme and can be downloaded here http://pandoc.org/installing.html.
 # WiX Toolset is used to build a msi installer and can be downloaded here http://wixtoolset.org/releases/.
 
+# Running msi installer with logging:
+# msiexec /i hstwb-installer.1.0.0.msi /L*V "install.log"
+
 
 Import-Module (Resolve-Path('..\modules\version.psm1')) -Force
 Import-Module (Resolve-Path('..\modules\config.psm1')) -Force
@@ -121,7 +124,7 @@ mkdir -Path $outputDir | Out-Null
 # Build readme files
 # ------------------
 
-Write-Host "Building readme html from github markdown..."
+Write-Host "Building readme html from github markdown..." -ForegroundColor 'Yellow'
 
 $readmeDir = Join-Path $outputDir -ChildPath 'Readme'
 mkdir -Path $readmeDir | Out-Null
@@ -148,12 +151,12 @@ $readmeHtml = $readmeHtml -replace '<style[^<>]+>(.*?)</style>', "<style type=""
 $screenshotsDir = Join-Path -Path $rootDir -ChildPath 'Screenshots'
 Copy-Item $screenshotsDir -Destination $hstwbInstallerReadmeDir -Recurse
 
-Write-Host "Done."
+Write-Host "Done." -ForegroundColor 'Green'
 
 # Copy packages component directory
 # ---------------------------------
 
-Write-Host "Copying packages component directory..."
+Write-Host "Copying packages component directory..." -ForegroundColor 'Yellow'
 
 $packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
 $packageFiles = @()
@@ -163,7 +166,7 @@ $outputPackagesPath = Join-Path $outputDir -ChildPath 'Packages'
 mkdir -Path $outputPackagesPath | Out-Null
 $packageFiles | ForEach-Object { Copy-Item -Path $_.FullName -Destination $outputPackagesPath }
 
-Write-Host "Done."
+Write-Host "Done." -ForegroundColor 'Green'
 
 
 # Copy packages readme and screenshots
@@ -212,7 +215,7 @@ foreach($packageFile in $packageFiles)
 # Copy other component directories
 # --------------------------------
 
-Write-Host "Copying component directories..."
+Write-Host "Copying component directories..." -ForegroundColor 'Yellow'
 
 $components = @("Amiga", "Fonts", "Fs-Uae", "Images", "Kickstart", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae", "Workbench" )
 
@@ -228,32 +231,33 @@ foreach($component in $components)
 	Copy-Item -Path $componentDir -Recurse -Destination $outputDir
 }
 
-Write-Host "Done."
+Write-Host "Done." -ForegroundColor 'Green'
 
 # Harvest component directories to build wxs using wix toolset heat
 # -----------------------------------------------------------------
 
-Write-Host "Building wxs components from directories..."
+Write-Host "Building wxs components from directories..." -ForegroundColor 'Yellow'
 
 $components += "Packages"
 
 $wixToolsetHeatArgsComponents = @()
 
 # build heat args for each component
-$components | ForEach-Object { $wixToolsetHeatArgsComponents += ("dir ""{0}"" -o ""{0}.wxs"" -var var.{1}Dir -dr {1}ComponentDir -cg {1}ComponentGroup -sfrag -gg -g1" -f (Join-Path -Path $outputDir -ChildPath $_), $_.Replace('-', '')) }
+$components | ForEach-Object { $wixToolsetHeatArgsComponents += ("dir ""{0}"" -o ""{0}.wxs"" -sreg -var var.{1}Dir -dr {1}ComponentDir -cg {1}ComponentGroup -sfrag -gg -g1" -f (Join-Path -Path $outputDir -ChildPath $_), $_.Replace('-', '')) }
 
 # run heat with args for each component
 $wixToolsetHeatArgsComponents | ForEach-Object { StartProcess $wixToolsetHeatFile $_ $outputDir }
 
-Write-Host "Done."
+Write-Host "Done." -ForegroundColor 'Green'
 
 
 # Copy hstwb installer wix files
 # ------------------------------
 
-Write-Host "Copying HstWB Installer wix files..."
+Write-Host "Copying HstWB Installer wix files..." -ForegroundColor 'Yellow'
 
 Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $outputDir
+Copy-Item -Path (Resolve-Path '..\install.*') -Recurse -Destination $outputDir
 Copy-Item -Path (Resolve-Path '..\launcher.*') -Recurse -Destination $outputDir
 Copy-Item -Path (Resolve-Path '..\setup.*') -Recurse -Destination $outputDir
 Copy-Item -Path (Resolve-Path '..\run.*') -Recurse -Destination $outputDir
@@ -269,26 +273,45 @@ $licenseTxtFile = Join-Path $outputDir -ChildPath 'LICENSE.txt'
 $licenseTxtText = [System.IO.File]::ReadAllText($licenseTxtFile) -replace 'Copyright \(c\) \d+', ("Copyright (c) {0}" -f [System.DateTime]::Now.Year)
 [System.IO.File]::WriteAllText($licenseTxtFile, $licenseTxtText)
 
-Write-Host "Done."
+Write-Host "Done." -ForegroundColor 'Green'
 
 
 # Compile wxs using wix toolset candle
 # ------------------------------------
 
-Write-Host "Compiling wxs files..."
+Write-Host "Compiling wxs files..." -ForegroundColor 'Yellow'
 
 $wixToolsetCandleArgs = ('-dVersion="' + ($hstwbInstallerVersion -replace '-[^\-]+$', '') + '" -dAmigaDir="Amiga" -dFontsDir="Fonts" -dFsUaeDir="Fs-Uae" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dScriptsDir="Scripts" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
-StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
+#StartProcess $wixToolsetCandleFile $wixToolsetCandleArgs $outputDir
+$candleProcess = Start-Process $wixToolsetCandleFile -ArgumentList $wixToolsetCandleArgs -WorkingDirectory $outputDir -Wait -NoNewWindow -PassThru
 
-Write-Host "Done."
+if ($candleProcess.ExitCode -eq 0)
+{
+	Write-Host "Done." -ForegroundColor 'Green'
+}
+else
+{
+	Write-Host ("Error: WiX Candle failed with exit code {0}!" -f $candleProcess.ExitCode) -ForegroundColor 'Red'
+	exit 1
+}
+
 
 
 # Link wixobj using wix toolset light
 # -----------------------------------
 
-Write-Host "Linking wixobj files..."
+Write-Host "Linking wixobj files..." -ForegroundColor 'Yellow'
 
-$wixToolsetLightArgs = "-o ""hstwb-installer.{0}.msi"" -ext WixUIExtension ""*.wixobj""" -f ($hstwbInstallerVersion.ToLower())
-StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
+$wixToolsetLightArgs = "-o ""hstwb-installer.{0}.msi"" -ext WixUIExtension -ext WixUtilExtension ""*.wixobj""" -f ($hstwbInstallerVersion.ToLower())
+#StartProcess $wixToolsetLightFile $wixToolsetLightArgs $outputDir
+$lightProcess = Start-Process $wixToolsetLightFile -ArgumentList $wixToolsetLightArgs -WorkingDirectory $outputDir -Wait -NoNewWindow -PassThru
 
-Write-Host "Done."
+if ($lightProcess.ExitCode -eq 0)
+{
+	Write-Host "Done." -ForegroundColor 'Green'
+}
+else
+{
+	Write-Host ("Error: WiX Light failed with exit code {0}!" -f $candleProcess.ExitCode) -ForegroundColor 'Red'
+	exit
+}

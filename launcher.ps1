@@ -41,16 +41,14 @@ function ConfirmDialog($title, $message)
     return $false
 }
 
-function Run($runFile, $settingsDir)
+function Run($runFile)
 {
-    $runArgs = "-ExecutionPolicy Bypass -File ""$runFile"" -settingsDir ""$settingsDir"""
-    Start-Process "powershell.exe" "$runArgs" -Wait -WindowStyle Maximized
+    Start-Process $runFile -Wait -WindowStyle Maximized
 }
 
-function Setup($setupFile, $settingsDir)
+function Setup($setupFile)
 {
-    $setupArgs = "-ExecutionPolicy Bypass -File ""$setupFile"" -settingsDir ""$settingsDir"""
-    Start-Process "powershell.exe" "$setupArgs" -Wait -WindowStyle Maximized
+    Start-Process $setupFile -Wait -WindowStyle Maximized
 }
 
 function Settings($settingsFile)
@@ -103,10 +101,7 @@ function GuiMenu($title, $options)
     $hash = [hashtable]::Synchronized(@{}) 
     $hash.option = $null
     
-    $pfc = New-Object System.Drawing.Text.PrivateFontCollection
-    $pfc.AddFontFile($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('fonts\TopazPlus_a1200_v1.0.ttf'))
-
-    $buttonFont = New-Object System.Drawing.Font($pfc.Families[0],14)
+    $buttonFont = New-Object System.Drawing.Font('TopazPlus a600a1200a4000',14)
 
     $blueColor = [System.Drawing.Color]::FromArgb(0, 85, 170)
 
@@ -198,7 +193,7 @@ function LauncherMenu($hstwb)
         $option = GuiMenu "Launcher" @('Setup', 'Advanced', 'Extra', 'Help', 'Exit')
         switch ($option)
         {
-            "Setup" { Setup $hstwb.Paths.SetupFile $hstwb.Paths.SettingsDir }
+            "Setup" { Setup $hstwb.Paths.SetupFile }
             "Advanced" { AdvancedMenu $hstwb }
             "Extra" { ExtraMenu $hstwb }
             "Help" { HelpMenu $hstwb }
@@ -213,7 +208,7 @@ function AdvancedMenu($hstwb)
         $option = GuiMenu "Advanced" @('Run', 'Settings', 'Assigns', 'Back')
         switch ($option)
         {
-            "Run" { Run $hstwb.Paths.RunFile $hstwb.Paths.SettingsDir }
+            "Run" { Run $hstwb.Paths.RunFile }
             "Settings" { Settings $hstwb.Paths.SettingsFile }
             "Assigns" { Assigns $hstwb.Paths.AssignsFile }
         }
@@ -252,8 +247,8 @@ if (!$settingsDir)
     $settingsDir = Join-Path $env:LOCALAPPDATA -ChildPath 'HstWB Installer'
 }
 
-$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('run.ps1')
-$setupFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('setup.ps1')
+$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('run.lnk')
+$setupFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('setup.lnk')
 $settingsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-settings.ini'
 $assignsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-assigns.ini'
 $host.ui.RawUI.WindowTitle = "HstWB Installer v{0}" -f (HstwbInstallerVersion)

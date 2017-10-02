@@ -71,23 +71,23 @@ function PrintSettings($hstwb)
 
     Write-Host "Emulator"
     Write-Host "  Emulator File         : " -NoNewline -foregroundcolor "Gray"
-    if (Test-Path -Path $hstwb.Settings.Emulator.EmulatorFile)
+
+    if ($hstwb.Settings.Emulator.EmulatorFile -and (Test-Path -Path $hstwb.Settings.Emulator.EmulatorFile))
     {
-        $version = (get-item $hstwb.Settings.Emulator.EmulatorFile).VersionInfo.FileVersion
-        $emulator = Split-Path $hstwb.Settings.Emulator.EmulatorFile -Leaf
+        $emulatorName = DetectEmulatorName $hstwb.Settings.Emulator.EmulatorFile
 
-        switch ($emulator.ToLower())
+        if ($emulatorName)
         {
-            "fs-uae.exe" { $emulator = "FS-UAE {0}" -f $version }
-            "winuae.exe" { $emulator = 'WinUAE {0} 32-bit' -f $version }
-            "winuae64.exe" { $emulator = 'WinUAE {0} 64-bit' -f $version }
+            Write-Host ("'{0} ({1})'" -f $emulator, $hstwb.Settings.Emulator.EmulatorFile)
         }
-
-        Write-Host ("'{0} ({1})'" -f $emulator, $hstwb.Settings.Emulator.EmulatorFile)
+        else
+        {
+            Write-Host ("'{0}'" -f $emulator, $hstwb.Settings.Emulator.EmulatorFile)
+        }
     }
     else
     {
-        Write-Host ("'{0}'" -f $hstwb.Settings.Emulator.EmulatorFile)
+        Write-Host "''"
     }
     
     Write-Host "Installer"

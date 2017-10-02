@@ -103,30 +103,114 @@ function DefaultSettings($settings)
     $settings.Emulator.EmulatorFile = DefaultEmulatorFile
 }
 
-function DefaultEmulatorFile()
+function IsFsuae64bit($fsuaeFile)
 {
-    # return winuae 64-bit, if it exists in program files
-    $winuaeX64Path = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
-    if (test-path -path $winuaeX64Path)
+    $fsuaeBytes = [System.IO.File]::ReadAllBytes($fsuaeFile)
+    $x64PatternBytes = [System.Text.Encoding]::UTF8.GetBytes("windows-x86-64")
+    
+    for ($i = 0; $i -lt $fsuaeBytes.Count; $i++)
     {
-        return $winuaeX64Path
+        if ($fsuaeBytes[$i] -ne $x64PatternBytes[0])
+        {
+            continue
+        }
+
+        $hasX64Pattern = $true
+
+        for ($j = 0; $j -lt $x64PatternBytes.Count; $j++)
+        {
+            if ($i + $j -ge $fsuaeBytes.Count)
+            {
+                return $false
+            }
+
+            if ($fsuaeBytes[$i + $j] -ne $x64PatternBytes[$j])
+            {
+                $hasX64Pattern = $false
+            }
+        }
+
+        if ($hasX64Pattern)
+        {
+            return $true
+        }
     }
 
-    # return winuae 32-bit, if it exists in program files x86
-    $winuaeX86Path = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
-    if (test-path -path $winuaeX86Path)
+    return $false
+}
+
+function DetectEmulatorName($emulatorFile)
+{
+    if (!$emulatorFile -or !(Test-Path -Path $emulatorFile))
     {
-        return $winuaeX86Path
+        return $null
     }
 
-    # return fs-uae, if it exists in user's local app data
+    $version = (get-item $emulatorFile).VersionInfo.FileVersion
+
+    if ($emulatorFile -match 'winuae64.exe$')
+    {
+        return 'WinUAE {0} 64-bit' -f $version
+    }
+    elseif ($emulatorFile -match 'winuae.exe$')
+    {
+        return 'WinUAE {0} 32-bit' -f $version
+    }
+    elseif ($emulatorFile -match 'fs-uae.exe$')
+    {
+        # if (IsFsuae64bit $emulatorFile)
+        # {
+        #     $platform = '64-bit'
+        # }
+        # else
+        # {
+        #     $platform = '32-bit'
+        # }
+        # return 'FS-UAE {0} {1}' -f $version, $platform
+        return 'FS-UAE {0}' -f $version
+    }
+
+    return $null
+}
+
+function FindEmulators()
+{
+    $emulators = @()
+    
+    $winuaeX64File = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
+    if (test-path -path $winuaeX64File)
+    {
+        $version = (get-item $winuaeX64File).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $winuaeX64File); 'File' = $winuaeX64File }
+    }
+    
+    $winuaeX86File = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
+    if (test-path -path $winuaeX86File)
+    {
+        $version = (get-item $winuaeX86File).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $winuaeX86File); 'File' = $winuaeX86File }
+    }    
+
     $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
     if (test-path -path $fsuaeFile)
     {
-        return $fsuaeFile
+        $version = (get-item $fsuaeFile).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $fsuaeFile); 'File' = $fsuaeFile }
     }
-    
-    return $null
+
+    return $emulators
+}
+
+function DefaultEmulatorFile()
+{
+    $defaultEmulator = FindEmulators | Select-Object -First 1
+
+    if (!$defaultEmulator)
+    {
+        return $null
+    }
+
+    return $defaultEmulator.File
 }
 
 
@@ -148,14 +232,12 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.Installer.Mode = "Install"
     }
     
-    
     # create packages section in settings, if it doesn't exist
     if (!($hstwb.Settings.Packages))
     {
         $hstwb.Settings.Packages = @{}
         $hstwb.Settings.Packages.InstallPackages = ''
     }
-    
     
     # create amiga os 3.9 section in settings, if it doesn't exist
     if (!($hstwb.Settings.AmigaOS39))
@@ -165,33 +247,34 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
     }
     
-    
     # set default image dir, if image dir doesn't exist
     if ($hstwb.Settings.Image.ImageDir -match '^.+$' -and !(test-path -path $hstwb.Settings.Image.ImageDir))
     {
         $hstwb.Settings.Image.ImageDir = ''
     }
-    
 
-    # set default emulator, if not present
+    # add emulator settings, if not present
     if (!$hstwb.Settings.Emulator -or !$hstwb.Settings.Emulator.EmulatorFile)
     {
         $hstwb.Settings.Emulator = @{}
         $hstwb.Settings.Emulator.EmulatorFile = DefaultEmulatorFile
-        $hstwb.SettingsWinUAE
     }
 
-    if ($hstwb.Settings.WinUAE)
+    # upgrade winuae to emulator settings
+    if ($hstwb.Settings.Winuae -and $hstwb.Settings.Winuae.WinuaePath)
     {
+        $hstwb.Settings.Emulator.EmulatorFile = $hstwb.Settings.Winuae.WinuaePath
         $hstwb.Settings.Remove('WinUAE')
     }
 
+    # upgrade workbench adf path to workbench adf dir
     if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
     {
         $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
         $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
     }
 
+    # upgrade kickstart rom path to kickstart rom dir
     if ($hstwb.Settings.Kickstart.KickstartRomPath)
     {
         $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
@@ -449,14 +532,12 @@ function ValidateSettings($settings)
         return $false
     }
 
-
     # fail, if InstallWorkbench parameter doesn't exist in settings file or is not valid
     if (!$settings.Workbench.InstallWorkbench -or $settings.Workbench.InstallWorkbench -notmatch '(Yes|No)')
     {
         Write-Host "Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
     }
-
 
     # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
     if (!$settings.Workbench.WorkbenchAdfDir -or ($settings.Workbench.WorkbenchAdfDir -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfDir)))
@@ -465,14 +546,12 @@ function ValidateSettings($settings)
         return $false
     }
 
-
     # fail, if WorkbenchAdfSet parameter doesn't exist settings file or it's not defined
     if (!$settings.Workbench.WorkbenchAdfSet -or $settings.Workbench.WorkbenchAdfSet -eq '')
     {
         Write-Host "Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
         return $false
     }
-
 
     # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
     if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
@@ -481,14 +560,12 @@ function ValidateSettings($settings)
         return $false
     }
 
-
     # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
     if (!$settings.Kickstart.KickstartRomDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
     {
         Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
     }
-
 
     # fail, if KickstartRomSet parameter doesn't exist in settings file or it's not defined
     if (!$settings.Kickstart.KickstartRomSet -or $settings.Kickstart.KickstartRomSet -eq '')
@@ -497,22 +574,12 @@ function ValidateSettings($settings)
         return $false
     }
 
-
-    # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
-    if (!$settings.Emulator.EmulatorFile -or ($settings.Emulator.EmulatorFile -match '^.+$' -and !(test-path -path $settings.Emulator.EmulatorFile)))
-    {
-        Write-Host "Error: EmulatorFile parameter doesn't exist in settings file or file doesn't exist!" -ForegroundColor "Red"
-        return $false
-    }
-    
-
     # fail, if Mode parameter doesn't exist in settings file or is not valid
     if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
     }
-
 
     return $true
 }

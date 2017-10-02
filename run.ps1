@@ -1401,7 +1401,7 @@ function RunTest($hstwb)
 
     # print starting emulator message
     Write-Host ""
-    Write-Host ("Starting emulator '{0}' to test image..." -f $hstwb.Settings.Emulator.EmulatorFile)
+    Write-Host ("Starting emulator '{0}' to test image..." -f $hstwb.Emulator)
 
     # fail, if emulator doesn't return error code 0
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
@@ -1803,7 +1803,7 @@ function RunInstall($hstwb)
 
     # print start emulator message
     Write-Host ""
-    Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Settings.Emulator.EmulatorFile)
+    Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Emulator)
     
     # fail, if emulator doesn't return error code 0
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
@@ -1882,7 +1882,7 @@ function RunInstall($hstwb)
     
     # print start emulator message
     Write-Host ""
-    Write-Host ("Starting emulator '{0}' to run install boing bags..." -f $hstwb.Settings.Emulator.EmulatorFile)
+    Write-Host ("Starting emulator '{0}' to run install boing bags..." -f $hstwb.Emulator)
 
     # fail, if emulator doesn't return error code 0
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
@@ -2226,7 +2226,7 @@ function RunBuildSelfInstall($hstwb)
 
     # print starting emulator message
     Write-Host ""
-    Write-Host ("Starting emulator '{0}' to build self install image..." -f $hstwb.Settings.Emulator.EmulatorFile)
+    Write-Host ("Starting emulator '{0}' to build self install image..." -f $hstwb.Emulator)
 
 
     # fail, if emulator doesn't return error code 0
@@ -2362,6 +2362,14 @@ function RunBuildPackageInstallation($hstwb)
 }
 
 
+# save
+function Save($hstwb)
+{
+    WriteIniFile $hstwb.Paths.SettingsFile $hstwb.Settings
+    WriteIniFile $hstwb.Paths.AssignsFile $hstwb.Assigns
+}
+
+
 # fail
 function Fail($hstwb, $message)
 {
@@ -2395,6 +2403,7 @@ $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
 $host.ui.RawUI.WindowTitle = "HstWB Installer Run v{0}" -f (HstwbInstallerVersion)
 
+
 try
 {
     $hstwb = @{
@@ -2419,7 +2428,6 @@ try
         'Settings' = ReadIniFile $settingsFile;
         'Assigns' = ReadIniFile $assignsFile
     }
-
 
     # fail, if settings file doesn't exist
     if (!(test-path -path $settingsFile))
@@ -2448,6 +2456,26 @@ try
     # save settings and assigns
     Save $hstwb
 
+
+    # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
+    if (!$hstwb.Settings.Emulator.EmulatorFile -or ($hstwb.Settings.Emulator.EmulatorFile -match '^.+$' -and !(test-path -path $hstwb.Settings.Emulator.EmulatorFile)))
+    {
+        Fail $hstwb "Error: EmulatorFile parameter doesn't exist in settings file or file doesn't exist!"
+    }
+
+    
+    # emulator name
+    $emulatorName = DetectEmulatorName $hstwb.Settings.Emulator.EmulatorFile
+    
+    # fail, if emulator file is not supported
+    if (!$emulatorName)
+    {
+        Fail $hstwb "Error: Emulator file '{0}' is not supported!"
+    }
+
+    # set emulator to emulator name and file
+    $hstwb.Emulator = "{0} ({1})" -f $emulatorName, $hstwb.Settings.Emulator.EmulatorFile
+    
 
     # print title and settings 
     $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
@@ -2560,7 +2588,10 @@ try
 catch
 {
     # remove temp path
-    Remove-Item -Recurse -Force $hstwb.Paths.TempPath
+    if (Test-Path -Path $hstwb.Paths.TempPath)
+    {
+        Remove-Item -Recurse -Force $hstwb.Paths.TempPath
+    }
 
     $errorFormatingString = "{0} : {1}`n{2}`n" +
     "    + CategoryInfo          : {3}`n" +
