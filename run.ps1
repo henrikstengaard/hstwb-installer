@@ -1605,14 +1605,22 @@ function RunInstall($hstwb)
         WriteAmigaTextLines $installPackagesFile $installPackagesScriptLines 
     }
 
-
+    # get user packages
     $userPackages = @()
-    $userPackages += 'EAB WHDLoad Games'
-    $userPackages += ''
-    $userPackagesDir = 'c:\Work\First Realize\userpackages\_test'
+    if ($hstwb.Settings.UserPackages.InstallUserPackages -and $hstwb.Settings.UserPackages.InstallUserPackages -ne '')
+    {
+        $userPackages += $hstwb.Settings.UserPackages.InstallUserPackages -split ',' | Where-Object { $_ }
+    }
 
+    # set user packages dir
+    $userPackagesDir = $hstwb.Settings.UserPackages.UserPackagesDir
+
+    # create instal user packages prefs file and user packages, if user packages are selected
     if ($userPackages.Count -gt 0)
     {
+        # add empty line
+        $userPackages += ''
+
         # create install user packages prefs file
         $installUserPackagesFile = Join-Path $prefsDir -ChildPath 'Install-User-Packages'
         Set-Content $installUserPackagesFile -Value ""
@@ -1621,7 +1629,6 @@ function RunInstall($hstwb)
         $userPackagesFile = Join-Path $prefsDir -ChildPath 'User-Packages'
         WriteAmigaTextLines $userPackagesFile $userPackages 
     }
-
 
 
     $installBoingBags = $false
@@ -1651,23 +1658,25 @@ function RunInstall($hstwb)
         $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
         Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
 
-
-        $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
-        $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
-
-        $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
-        $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
-
-
         #
         $os39Dir = $amigaOs39IsoDir
         $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
     }
     else
     {
+        $amigaOs39IsoFileName = ''
         $os39Dir = $tempInstallDir
         $isoFile = ''
     }
+
+
+    # read mountlist
+    $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
+    $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
+
+    # update and write mountlist
+    $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
+    $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
 
 
     # write hstwb installer packages ini file
@@ -2406,6 +2415,20 @@ $host.ui.RawUI.WindowTitle = "HstWB Installer Run v{0}" -f (HstwbInstallerVersio
 
 try
 {
+    # fail, if settings file doesn't exist
+    if (!(test-path -path $settingsFile))
+    {
+        Fail $hstwb ("Error: Settings file '$settingsFile' doesn't exist!")
+    }
+
+
+    # fail, if assigns file doesn't exist
+    if (!(test-path -path $assignsFile))
+    {
+        Fail $hstwb ("Error: Assigns file '$assignsFile' doesn't exist!")
+    }
+
+
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
@@ -2429,20 +2452,7 @@ try
         'Assigns' = ReadIniFile $assignsFile
     }
 
-    # fail, if settings file doesn't exist
-    if (!(test-path -path $settingsFile))
-    {
-        Fail $hstwb ("Error: Settings file '$settingsFile' doesn't exist!")
-    }
-
-
-    # fail, if assigns file doesn't exist
-    if (!(test-path -path $assignsFile))
-    {
-        Fail $hstwb ("Error: Assigns file '$assignsFile' doesn't exist!")
-    }
-
-
+    
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
@@ -2455,6 +2465,10 @@ try
     
     # save settings and assigns
     Save $hstwb
+
+
+    # detect user packages
+    $hstwb.UserPackages = DetectUserPackages $hstwb
 
 
     # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist

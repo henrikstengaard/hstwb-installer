@@ -41,15 +41,6 @@ IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
   SKIP BACK next
 ENDIF
 
-; Goto next, if user package dir is empty
-Dr "USERPACKAGESDIR:$userpackage" -O -[\f] >T:_userpackagesfiles
-Set userpackagesfiles `wc -l <T:_userpackagesfiles`
-Delete >NIL: T:_userpackagesfiles
-IF $userpackagesfiles EQ 1 VAL
-  echo "*e[1m$userpackage is empty, skipped!*e[22m"
-  SKIP BACK next
-ENDIF
-
 ; Print user package and add user package to user packages file
 echo "*e[32m$userpackage*e[0m"
 echo "$userpackage" >>"{userpackagesfile}"

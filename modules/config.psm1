@@ -73,7 +73,8 @@ function DefaultSettings($settings)
     $settings.Packages = @{}
     $settings.Installer = @{}
     $settings.Emulator = @{}
-
+    $settings.UserPackages = @{}
+    
     $settings.Workbench.InstallWorkbench = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
     $settings.Packages.InstallPackages = ''
@@ -101,6 +102,9 @@ function DefaultSettings($settings)
     }
 
     $settings.Emulator.EmulatorFile = DefaultEmulatorFile
+
+    $settings.UserPackages.UserPackagesDir = ''
+    $settings.UserPackages.InstallUserPackages = ''
 }
 
 function IsFsuae64bit($fsuaeFile)
@@ -380,6 +384,39 @@ function ReadPackages($packagesPath)
     }
 
     return $packages
+}
+
+
+function DetectUserPackages($hstwb)
+{
+    $userPackages = @{}
+
+    if (!$hstwb.Settings.UserPackages.UserPackagesDir -or !(Test-Path -Path $hstwb.Settings.UserPackages.UserPackagesDir))
+    {
+        return $userPackages
+    }
+
+    # get user packages dirs
+    $userPackageDirs += Get-ChildItem -Path $hstwb.Settings.UserPackages.UserPackagesDir | Where-Object { $_.PSIsContainer }
+
+    foreach($userPackageDir in $userPackageDirs)
+    {
+        # skip, if user package doesn't contain '_installdir' assign file
+        if (!(Test-Path -Path (Join-Path $userPackageDir.FullName -ChildPath '_installdir')))
+        {
+            continue
+        }
+
+        $userPackage = @{ 'Name' = $userPackageDir.Name }
+        
+        # get user package dir name
+        $userPackageDirName = $userPackageDir.Name.ToLower()
+                
+        # add user package
+        $userPackages.Set_Item($userPackageDirName, $userPackage)
+    }
+
+    return $userPackages
 }
 
 

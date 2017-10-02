@@ -46,28 +46,50 @@ function PrintSettings($hstwb)
 
     if ($packageFileNames.Count -gt 0)
     {
-        for ($i = 0; $i -lt $packageFileNames.Count;$i++)
+        Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
+
+        $packageNames = @()
+
+        foreach ($packageFileName in $packageFileNames)
         {
-            if ($i -eq 0)
-            {
-                Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
-            }
-            else
-            {
-                Write-Host "                          " -NoNewline
-            }
-
-            $packageFileName = $packageFileNames[$i]
             $package = $hstwb.Packages.Get_Item($packageFileName)
-
-            Write-Host ("'" + $package.Package.Name + " v" + $package.Package.Version + "'")
+            $packageNames += "{0} v{1}" -f $package.Package.Name, $package.Package.Version
         }
+
+        Write-Host ("'" + ($packageNames -Join ', ') + "'")
     }
     else
     {
         Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
         Write-Host "None" -foregroundcolor "Yellow"
     }
+
+    Write-Host "User Packages"
+    Write-Host "  User Packages Dir     : " -NoNewline -foregroundcolor "Gray"
+
+    if ($hstwb.Settings.UserPackages.UserPackagesDir -and (Test-Path -Path $hstwb.Settings.UserPackages.UserPackagesDir))
+    {
+        Write-Host ("'{0}'" -f $hstwb.Settings.UserPackages.UserPackagesDir)
+    }
+    else
+    {
+        Write-Host "''"
+    }
+
+    $userPackageDirNames = @()
+    $userPackageDirNames += $hstwb.Settings.UserPackages.InstallUserPackages -split ',' | Where-Object { $_ }
+
+    if ($userPackageDirNames.Count -gt 0)
+    {
+        Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
+        Write-Host ("'" + ($userPackageDirNames -Join ', ') + "'")
+    }
+    else
+    {
+        Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
+        Write-Host "None" -foregroundcolor "Yellow"
+    }
+    
 
     Write-Host "Emulator"
     Write-Host "  Emulator File         : " -NoNewline -foregroundcolor "Gray"
@@ -78,11 +100,11 @@ function PrintSettings($hstwb)
 
         if ($emulatorName)
         {
-            Write-Host ("'{0} ({1})'" -f $emulator, $hstwb.Settings.Emulator.EmulatorFile)
+            Write-Host ("'{0} ({1})'" -f $emulatorName, $hstwb.Settings.Emulator.EmulatorFile)
         }
         else
         {
-            Write-Host ("'{0}'" -f $emulator, $hstwb.Settings.Emulator.EmulatorFile)
+            Write-Host ("'{0}'" -f $hstwb.Settings.Emulator.EmulatorFile)
         }
     }
     else

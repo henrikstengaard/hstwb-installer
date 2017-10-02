@@ -117,30 +117,31 @@ function MainMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Main Menu" @("Select Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure Emulator", "Configure Installer", "Run Installer", "Reset", "Exit") 
+        $choice = Menu $hstwb "Main Menu" @("Configure Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure User Packages", "Configure Emulator", "Configure Installer", "Run Installer", "Reset Settings", "Exit")
         switch ($choice)
         {
-            "Select Image" { SelectImageMenu $hstwb }
+            "Configure Image" { ConfigureImageMenu $hstwb }
             "Configure Workbench" { ConfigureWorkbenchMenu $hstwb }
             "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu $hstwb }
             "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
             "Configure Packages" { ConfigurePackagesMenu $hstwb }
+            "Configure User Packages" { ConfigureUserPackagesMenu $hstwb }
             "Configure Emulator" { ConfigureEmulatorMenu $hstwb }
             "Configure Installer" { ConfigureInstaller $hstwb }
             "Run Installer" { RunInstaller $hstwb }
-            "Reset" { Reset $hstwb }
+            "Reset Settings" { ResetSettings $hstwb }
         }
     }
     until ($choice -eq 'Exit')
 }
 
 
-# select image menu
-function SelectImageMenu($hstwb)
+# configure image menu
+function ConfigureImageMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Select Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
+        $choice = Menu $hstwb "Configure Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
         switch ($choice)
         {
             "Existing Image Directory" { ExistingImageDirectory $hstwb }
@@ -631,8 +632,23 @@ function SelectKickstartRomSet($hstwb)
 }
 
 
-# configure packages menu
+# configure user packages menu
 function ConfigurePackagesMenu($hstwb)
+{
+    do
+    {
+        $choice = Menu $hstwb "Configure Packages Menu" @("Select Packages Menu", "Back") 
+        switch ($choice)
+        {
+            "Select Packages Menu" { SelectPackagesMenu $hstwb }
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+
+# select packages menu
+function SelectPackagesMenu($hstwb)
 {
     # build old install packages index
     $oldInstallPackages = @{}
@@ -665,7 +681,7 @@ function ConfigurePackagesMenu($hstwb)
         $packageOptions += $availablePackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $_) } else { ("+ " + $_) } }
         $packageOptions += "Back"
 
-        $choice = Menu $hstwb "Configure Packages Menu" $packageOptions
+        $choice = Menu $hstwb "Select Packages Menu" $packageOptions
 
         if ($choice -ne 'Back')
         {
@@ -698,6 +714,103 @@ function ConfigurePackagesMenu($hstwb)
             $newInstallPackages = @()
             $newInstallPackages += $installPackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { $installPackages.Get_Item($_) }
             $hstwb.Settings.Packages.InstallPackages = $newInstallPackages -join ','
+            Save $hstwb
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+
+# configure user packages menu
+function ConfigureUserPackagesMenu($hstwb)
+{
+    do
+    {
+        $choice = Menu $hstwb "Configure User Packages Menu" @("Change User Packages Dir", "Select User Packages Menu", "Back") 
+        switch ($choice)
+        {
+            "Change User Packages Dir" { ChangeUserPackagesDir $hstwb }
+            "Select User Packages Menu" { SelectUserPackagesMenu $hstwb }
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+
+# change user packages dir
+function ChangeUserPackagesDir($hstwb)
+{
+    $path = if (!$hstwb.Settings.UserPackages.UserPackagesDir) { ${Env:USERPROFILE} } else { $hstwb.Settings.UserPackages.UserPackagesDir }
+    $newPath = FolderBrowserDialog "Select User Packages Directory" $path $false
+
+    if ($newPath -and $newPath -ne '')
+    {
+        $hstwb.Settings.UserPackages.UserPackagesDir = $newPath
+        $hstwb.Settings.UserPackages.InstallUserPackages = ''
+        Save $hstwb
+
+        $hstwb.UserPackages = DetectUserPackages $hstwb
+    }
+}
+
+
+# select user packages menu
+function SelectUserPackagesMenu($hstwb)
+{
+    # build old install user packages index
+    $oldInstallUserPackages = @{}
+    if ($hstwb.Settings.UserPackages.InstallUserPackages -and $hstwb.Settings.UserPackages.InstallUserPackages -ne '')
+    {
+        $hstwb.Settings.UserPackages.InstallUserPackages.ToLower() -split ',' | Where-Object { $_ } | ForEach-Object { $oldInstallUserPackages.Set_Item($_, $true) }
+    }
+
+    # build available and install user packages indexes
+    $availableUserPackages = @{}
+    $installUserPackages = @{}
+
+    foreach ($userPackageDirName in $hstwb.UserPackages.keys)
+    {
+        $userPackage = $hstwb.UserPackages.Get_Item($userPackageDirName)
+
+        $availableUserPackages.Set_Item($userPackage.Name, $userPackage.Name)
+        
+        if ($oldInstallUserPackages.ContainsKey($userPackageDirName))
+        {
+            $installUserPackages.Set_Item($userPackage.Name, $userPackage.Name)
+        }
+    }
+    
+
+    do
+    {
+        # build user package options
+        $userPackageOptions = @()
+        $userPackageOptions += $availableUserPackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { if ($installUserPackages.ContainsKey($_)) { ("- " + $_) } else { ("+ " + $_) } }
+        $userPackageOptions += "Back"
+
+        $choice = Menu $hstwb "Select User Packages Menu" $userPackageOptions
+
+        if ($choice -ne 'Back')
+        {
+            $userPackageName = $choice -replace '^(\+|\-) ', ''
+
+            # get user package
+            $userPackage = $hstwb.Packages.Get_Item($availableUserPackages.Get_Item($userPackageName))
+
+            # remove user package, if user package exists in install userpackages. otherwise, add user package to install user packages
+            if ($installUserPackages.ContainsKey($userPackageName))
+            {
+                $installUserPackages.Remove($userPackageName)
+            }
+            else
+            {
+                $installUserPackages.Set_Item($userPackageName, $availableUserPackages.Get_Item($userPackageName))
+            }
+            
+            # build and set new install user packages
+            $newInstallUserPackages = @()
+            $newInstallUserPackages += $installUserPackages.keys | Sort-Object @{expression={$_};Ascending=$true} | ForEach-Object { $installUserPackages.Get_Item($_) }
+            $hstwb.Settings.UserPackages.InstallUserPackages = $newInstallUserPackages -join ','
             Save $hstwb
         }
     }
@@ -808,8 +921,8 @@ function Save($hstwb)
 }
 
 
-# reset
-function Reset($hstwb)
+# reset settings
+function ResetSettings($hstwb)
 {
     $confirm = ConfirmDialog "Reset" "Do you really want to reset settings?"
     if (!$confirm)
@@ -838,6 +951,37 @@ $host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVers
 
 try
 {
+    # create settings dir, if it doesn't exist
+    if(!(test-path -path $settingsDir))
+    {
+        mkdir $settingsDir | Out-Null
+    }
+    
+    
+    # create default settings, if settings file doesn't exist
+    if (test-path -path $settingsFile)
+    {
+        $settings = ReadIniFile $settingsFile
+    }
+    else
+    {
+        $settings = @{}
+        DefaultSettings $settings
+    }
+    
+    
+    # read assigns, if assigns file exist
+    if (test-path -path $assignsFile)
+    {
+        $assigns = ReadIniFile $assignsFile
+    }
+    else
+    {
+        $assigns = @{}
+    }
+
+
+    # hstwb
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
@@ -852,34 +996,8 @@ try
         };
         'Images' = ReadImages $imagesPath;
         'Packages' = ReadPackages $packagesPath;
-        'Settings' = @{};
-        'Assigns' = @{};
-        'Emulators' = FindEmulators
-    }
-    
-    
-    # create settings dir, if it doesn't exist
-    if(!(test-path -path $hstwb.Paths.SettingsDir))
-    {
-        mkdir $hstwb.Paths.SettingsDir | Out-Null
-    }
-    
-    
-    # create default settings, if settings file doesn't exist
-    if (test-path -path $hstwb.Paths.SettingsFile)
-    {
-        $hstwb.Settings = ReadIniFile $hstwb.Paths.SettingsFile
-    }
-    else
-    {
-        DefaultSettings $hstwb.Settings
-    }
-    
-    
-    # read assigns, if assigns file exist
-    if (test-path -path $hstwb.Paths.AssignsFile)
-    {
-        $hstwb.Assigns = ReadIniFile $hstwb.Paths.AssignsFile
+        'Settings' = $settings;
+        'Assigns' = $assigns
     }
 
 
@@ -895,6 +1013,11 @@ try
     
     # save settings and assigns
     Save $hstwb
+
+    
+    # detect user packages
+    $hstwb.UserPackages = DetectUserPackages $hstwb
+    $hstwb.Emulators = FindEmulators
     
     
     # validate settings
