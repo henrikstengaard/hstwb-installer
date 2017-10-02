@@ -161,7 +161,7 @@ function EnterChoice($prompt, $options)
     do
     {
         Write-Host ("{0}: " -f $prompt) -NoNewline -foregroundcolor "Cyan"
-        $choice = [int32](Read-Host)
+        $choice = (Read-Host) -as [int]
     }
     until ($choice -ne '' -and $choice -ge 1 -and $choice -le $options.Count)
 
