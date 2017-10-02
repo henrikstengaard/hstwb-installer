@@ -441,6 +441,27 @@ function UpdatePackages($hstwb)
 }
 
 
+# update user packages
+function UpdateUserPackages($hstwb)
+{
+    # get install user packages
+    $userPackageDirNames = @()
+    if ($hstwb.Settings.UserPackages.InstallUserPackages -and $hstwb.Settings.UserPackages.InstallUserPackages -ne '')
+    {
+        $userPackageDirNames += $hstwb.Settings.UserPackages.InstallUserPackages -split ',' | Where-Object { $_ }
+    }
+
+    # get user packages that exist in user packages dir
+    $existingUserPackages = New-Object System.Collections.ArrayList
+
+    # remove user packages, if they don't exist
+    $userPackageDirNames | ForEach-Object { if ($hstwb.UserPackages.ContainsKey($_)) { [void]$existingUserPackages.Add($_) } }
+
+    # update install user packages with user packages that exist
+    $hstwb.Settings.UserPackages.InstallUserPackages = [string]::Join(',', $existingUserPackages.ToArray())
+}
+
+
 # update assigns
 function UpdateAssigns($hstwb)
 {  

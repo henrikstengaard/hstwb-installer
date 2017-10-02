@@ -1006,19 +1006,20 @@ try
     UpgradeAssigns $hstwb
     
     
-    # update packages and assigns
+    # detect user packages
+    $hstwb.UserPackages = DetectUserPackages $hstwb
+    $hstwb.Emulators = FindEmulators
+    
+    
+    # update packages, user packages and assigns
     UpdatePackages $hstwb
+    UpdateUserPackages $hstwb
     UpdateAssigns $hstwb
     
     
     # save settings and assigns
     Save $hstwb
 
-    
-    # detect user packages
-    $hstwb.UserPackages = DetectUserPackages $hstwb
-    $hstwb.Emulators = FindEmulators
-    
     
     # validate settings
     if (!(ValidateSettings $hstwb.Settings))

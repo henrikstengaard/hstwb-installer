@@ -2458,17 +2458,18 @@ try
     UpgradeAssigns $hstwb
     
     
+    # detect user packages
+    $hstwb.UserPackages = DetectUserPackages $hstwb
+    
+    
     # update packages and assigns
     UpdatePackages $hstwb
+    UpdateUserPackages $hstwb
     UpdateAssigns $hstwb
     
     
     # save settings and assigns
     Save $hstwb
-
-
-    # detect user packages
-    $hstwb.UserPackages = DetectUserPackages $hstwb
 
 
     # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
