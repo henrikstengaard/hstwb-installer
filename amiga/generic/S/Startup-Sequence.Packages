@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -127,8 +127,11 @@ ENDIF
 
 ; Package installation complete
 cls
+echo "*e[32m" NOLINE
 echo "Package Installation Complete"
+echo "*e[0m*e[1m" NOLINE
 echo "-----------------------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer has completed package"
 echo "installation and system is now ready for use."

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-09-27
+# Date:   2017-10-03
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -427,7 +427,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
         $installPackageLines = @()
         $installPackageLines += ("; Install package "+ $name)
         $installPackageLines += "echo """""
-        $installPackageLines += ("echo ""Package '" + $name + "'""")
+        $installPackageLines += ("echo ""*e[1mPackage '" + $name + "'*e[0m""")
 
         $removePackageAssignLines = @()
 
@@ -505,7 +505,8 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             $installPackageLines += $removePackageAssignLines
         }
 
-
+        $installPackageLines += "echo ""Done"""
+        
         $installPackageScripts += @{ "Id" = [guid]::NewGuid().ToString().Replace('-',''); "Name" = $name; "Lines" = $installPackageLines; "PackageName" = $packageName; "Package" = $package.Package }
     }
 
@@ -955,9 +956,12 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "; ----------------"
         $installPackagesScriptLines += "LAB installpackages"
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "echo ""*ec"""
+        $installPackagesScriptLines += "echo ""*ec"" NOLINE"
+        $installPackagesScriptLines += "echo ""*e[32m"" NOLINE"
         $installPackagesScriptLines += "echo ""Package Installation"""
+        $installPackagesScriptLines += "echo ""*e[0m*e[1m"" NOLINE"
         $installPackagesScriptLines += "echo ""--------------------"""
+        $installPackagesScriptLines += "echo ""*e[0m"" NOLINE"
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += '; Create env-archive directory, if it doesn''t exist and ini file set for package assign'
         $installPackagesScriptLines += 'IF NOT EXISTS "{0}"' -f $hstwb.Paths.EnvArcDir
@@ -1034,9 +1038,12 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "; ----------------"
         $installPackagesScriptLines += "LAB installpackages"
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "echo ""*ec"""
+        $installPackagesScriptLines += "echo ""*ec"" NOLINE"
+        $installPackagesScriptLines += "echo ""*e[32m"" NOLINE"
         $installPackagesScriptLines += "echo ""Package Installation"""
+        $installPackagesScriptLines += "echo ""*e[0m*e[1m"" NOLINE"
         $installPackagesScriptLines += "echo ""--------------------"""
+        $installPackagesScriptLines += "echo ""*e[0m"" NOLINE"
 
 
         # append add global assign script lines

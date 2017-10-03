@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-03
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Boing Bags.
@@ -12,8 +12,11 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 
 
 cls
+echo "*e[32m" NOLINE
 echo "Amiga OS 3.9 Boing Bags installation"
+echo "*e[0m*e[1m" NOLINE
 echo "------------------------------------"
+echo "*e[0m" NOLINE
 
 
 ; Goto end, if version.library is not version 45 (Amiga OS 3.9)

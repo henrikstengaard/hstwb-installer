@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
@@ -11,17 +11,20 @@
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
-; Clear screen
-cls
-
-
 ; Print self install or install complete message
+cls
 IF EXISTS INSTALLDIR:Prefs/Self-Install
+  echo "*e[32m" NOLINE
   echo "Self Install complete"
+  echo "*e[0m*e[1m" NOLINE
   echo "---------------------"
+  echo "*e[0m" NOLINE
 ELSE
+  echo "*e[32m" NOLINE
   echo "Install complete"
+  echo "*e[0m*e[1m" NOLINE
   echo "----------------"
+  echo "*e[0m" NOLINE
 ENDIF
 echo ""
 

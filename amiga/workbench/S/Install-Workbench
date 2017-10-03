@@ -1,14 +1,17 @@
 ; Install Workbench
 ; -----------------
 ;
-; Date: 2017-09-03
+; Date: 2017-10-03
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; Print workbench installation message
 cls
+echo "*e[32m" NOLINE
 echo "Workbench Installation"
+echo "*e[0m*e[1m" NOLINE
 echo "----------------------"
+echo "*e[0m" NOLINE
 
 
 ; Create workbench directory, if it doesn't exist

@@ -1,17 +1,17 @@
 ; Patch Installation Script
 ; -------------------------
 ;
-; Date: 2017-01-13
+; Date: 2017-10-03
 ; Author: Henrik Noerfjand Stengaard
 
 
-; Clear screen
-cls
-
-
 ; Patch Installation
+cls
+echo "*e[32m" NOLINE
 echo "Patch Installation"
+echo "*e[0m*e[1m" NOLINE
 echo "------------------"
+echo "*e[0m" NOLINE
 echo ""
 echo "This will patch installation, if device name PATCHDIR is"
 echo "added in WinUAE. Currently it check if Workbench.library"
