@@ -1,0 +1,113 @@
+IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip"
+  echo "Extracting Battlestorm_v1.2_2008..."
+  MakePath >NIL: "$INSTALLDIR/B"
+  unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip" -d "$INSTALLDIR/B"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip"
+  echo "Extracting Battlestorm_v1.2_CDTV..."
+  MakePath >NIL: "$INSTALLDIR/B"
+  unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip" -d "$INSTALLDIR/B"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1.lha"
+  echo "Extracting DinoWars_v1.1..."
+  MakePath >NIL: "$INSTALLDIR/D"
+  lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1.lha" "$INSTALLDIR/D/"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1_De.lha"
+  echo "Extracting DinoWars_v1.1_De..."
+  MakePath >NIL: "$INSTALLDIR/D"
+  lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1_De.lha" "$INSTALLDIR/D/"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha"
+  echo "Extracting EmeraldMines_v1.0_CD..."
+  MakePath >NIL: "$INSTALLDIR/E"
+  lha -q -m1 x "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha" "$INSTALLDIR/E/"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/F"
+IF EXISTS "USERPACKAGEDIR:FastLane_v1.0.lha"
+  echo "Extracting FastLane_v1.0..."
+  lha -q -m1 x "USERPACKAGEDIR:FastLane_v1.0.lha" "$INSTALLDIR/F/"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:FlipFlop_v1.0.zip"
+  echo "Extracting FlipFlop_v1.0..."
+  unzip -qq -o -x "USERPACKAGEDIR:FlipFlop_v1.0.zip" -d "$INSTALLDIR/F"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha"
+  echo "Extracting FussballTotal_v1.1_De_2135..."
+  lha -q -m1 x "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha" "$INSTALLDIR/F/"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/H"
+IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_1MB_1114.zip"
+  echo "Extracting HiredGuns_v1.0_1MB_1114..."
+  unzip -qq -o -x "USERPACKAGEDIR:HiredGuns_v1.0_1MB_1114.zip" -d "$INSTALLDIR/H"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip"
+  echo "Extracting HiredGuns_v1.0_512KB_1114..."
+  unzip -qq -o -x "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip" -d "$INSTALLDIR/H"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha"
+  echo "Extracting HoleInOne&DataDisks_v1.1..."
+  lha -q -m1 x "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha" "$INSTALLDIR/H/"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:HoleInOne_v1.1.lha"
+  echo "Extracting HoleInOne_v1.1..."
+  lha -q -m1 x "USERPACKAGEDIR:HoleInOne_v1.1.lha" "$INSTALLDIR/H/"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/M"
+IF EXISTS "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha"
+  echo "Extracting MightAndMagic3_v1.2_De..."
+  lha -q -m1 x "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha" "$INSTALLDIR/M/"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/O"
+IF EXISTS "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip"
+  echo "Extracting OsWALDOfTheIceFloes_v1.0..."
+  unzip -qq -o -x "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip" -d "$INSTALLDIR/O"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/P"
+IF EXISTS "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha"
+  echo "Extracting PizzaConnection_v1.0_De..."
+  lha -q -m1 x "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha" "$INSTALLDIR/P/"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/S"
+IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_2585.zip"
+  echo "Extracting SimLife_v1.0_2585..."
+  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_2585.zip" -d "$INSTALLDIR/S"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_AGA_0889.zip"
+  echo "Extracting SimLife_v1.0_AGA_0889..."
+  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_AGA_0889.zip" -d "$INSTALLDIR/S"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_De_0576.zip"
+  echo "Extracting SimLife_v1.0_De_0576..."
+  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_De_0576.zip" -d "$INSTALLDIR/S"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip"
+  echo "Extracting SkateOfTheArt_v1.0..."
+  unzip -qq -o -x "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip" -d "$INSTALLDIR/S"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Sorefist_v1.0.zip"
+  echo "Extracting Sorefist_v1.0..."
+  unzip -qq -o -x "USERPACKAGEDIR:Sorefist_v1.0.zip" -d "$INSTALLDIR/S"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/T"
+IF EXISTS "USERPACKAGEDIR:Transworld_v1.0_De_2837.lha"
+  echo "Extracting Transworld_v1.0_De_2837..."
+  lha -q -m1 x "USERPACKAGEDIR:Transworld_v1.0_De_2837.lha" "$INSTALLDIR/T/"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2.zip"
+  echo "Extracting TrivialPursuit_v1.2..."
+  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2.zip" -d "$INSTALLDIR/T"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2_De_0595.zip"
+  echo "Extracting TrivialPursuit_v1.2_De_0595..."
+  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2_De_0595.zip" -d "$INSTALLDIR/T"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip"
+  echo "Extracting TrivialPursuit_v1.2_Fr_2147..."
+  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip" -d "$INSTALLDIR/T"
+ENDIF
+MakePath >NIL: "$INSTALLDIR/W"
+IF EXISTS "USERPACKAGEDIR:WPotrzasku_v1.0_Pl.zip"
+  echo "Extracting WPotrzasku_v1.0_Pl..."
+  unzip -qq -o -x "USERPACKAGEDIR:WPotrzasku_v1.0_Pl.zip" -d "$INSTALLDIR/W"
+ENDIF
