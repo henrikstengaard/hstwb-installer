@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-08-18
+# Date:   2017-10-09
 #
 # A powershell script to patch HstWB Installer UAE config files with A1200 Kickstart 3.1 rom file and changes harddrive paths to current directory.
 
@@ -43,7 +43,7 @@ function FindA1200Kickstart31RomFile($kickstartDir)
 
 
 # patch winuae config file
-function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir)
+function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # find A1200 kickstart 3.1 rom file
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
@@ -71,42 +71,54 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
         }
 
         # update self install directories
-        if ($line -match '^(filesystem2|uaehf\d+)=' -and $line -match '(WORKBENCHDIR|KICKSTARTDIR|OS39DIR):')
+        if ($line -match '^(filesystem2|uaehf\d+)=' -and $line -match '(WORKBENCHDIR|KICKSTARTDIR|OS39DIR|USERPACKAGESDIR):')
         {
-            # update workbench filesystem2
+            # update workbenchdir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'WORKBENCHDIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$workbenchDir"
             }
 
-            # update workbench uaehf
+            # update workbenchdir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'WORKBENCHDIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$workbenchDir"
             }
             
-            # update kickstart filesystem2
+            # update kickstartdir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'KICKSTARTDIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$kickstartDir"
             }
 
-            # update kickstart uaehf
+            # update kickstartdir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'KICKSTARTDIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$kickstartDir"
             }
             
-            # update os39 filesystem2
+            # update os39dir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'OS39DIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^:]*:[^:]*:)[^,]*', "`$1$os39Dir"
             }
 
-            # update os39 uaehf
+            # update os39dir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'OS39DIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$os39Dir"
+            }
+            
+            # update userpackagesdir filesystem2
+            if ($line -match '^filesystem2=' -and $line -match 'USERPACKAGESDIR:')
+            {
+                $line = $line -replace '^(filesystem2=[^,]*,[^:]*:[^:]*:)[^,]*', "`$1$userPackagesDir"
+            }
+
+            # update userpackagesdir uaehf
+            if ($line -match '^uaehf\d+=' -and $line -match 'USERPACKAGESDIR:')
+            {
+                $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$userPackagesDir"
             }
         }
         else
@@ -163,7 +175,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
 
 
 # patch fs-uae config file
-function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir)
+function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # find A1200 kickstart 3.1 rom file
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
@@ -213,6 +225,10 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
                 {
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $os39Dir.Replace('\', '/'))
                 }
+                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'USERPACKAGESDIR')
+                {
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $userPackagesDir.Replace('\', '/'))
+                }
             }
             else
             {
@@ -257,7 +273,7 @@ $currentDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromP
 $workbenchDir = Join-Path $currentDir -ChildPath "Workbench"
 $kickstartDir = Join-Path $currentDir -ChildPath "Kickstart"
 $os39Dir = Join-Path $currentDir -ChildPath "OS39"
-
+$userPackagesDir = Join-Path $currentDir -ChildPath "UserPackages"
 
 # use cloanto amiga forever data directory for self install directories, if present
 $amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
@@ -278,7 +294,7 @@ if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
 
 
 # create workbench, kickstart and os39 directories, if they don't exist
-foreach ($dir in @($workbenchDir, $kickstartDir, $os39Dir))
+foreach ($dir in @($workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir))
 {
     if (!(Test-Path -Path $dir))
     {
@@ -297,7 +313,7 @@ if (Test-Path -Path $winuaeConfigFile)
     # patch winuae config file
     Write-Output ("Patching WinUAE configuration '{0}'" -f $winuaeConfigFile)
     Write-Output ""
-    PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir
+    PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
 
     # get winuae directory from public directory
@@ -333,7 +349,7 @@ if (Test-Path -Path $fsuaeConfigFile)
     # patch fs-uae config file
     Write-Output ("Patching FS-UAE configuration '{0}'" -f $fsuaeConfigFile)
     Write-Output ""
-    PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir
+    PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
 
     # get fs-uae directory from public directory
