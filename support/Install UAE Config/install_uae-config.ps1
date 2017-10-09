@@ -293,7 +293,7 @@ if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
 }
 
 
-# create workbench, kickstart and os39 directories, if they don't exist
+# create workbench, kickstart, os39 and userpackages directories, if they don't exist
 foreach ($dir in @($workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir))
 {
     if (!(Test-Path -Path $dir))
