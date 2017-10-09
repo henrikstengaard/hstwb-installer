@@ -240,7 +240,11 @@ function UpgradeSettings($hstwb)
     if (!($hstwb.Settings.Packages))
     {
         $hstwb.Settings.Packages = @{}
-        $hstwb.Settings.Packages.InstallPackages = ''
+    }
+
+    if (!($hstwb.Settings.UserPackages))
+    {
+        $hstwb.Settings.UserPackages = @{}
     }
     
     # create amiga os 3.9 section in settings, if it doesn't exist
@@ -284,6 +288,24 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
         $hstwb.Settings.Workbench.Remove('KickstartRomPath')
     }
+
+    # upgrade install packages
+    if ($hstwb.Settings.Packages.InstallPackages)
+    {
+        $installPackageNames = @()
+        if ($hstwb.Settings.Packages.InstallPackages -ne '')
+        {
+            $installPackageNames += $hstwb.Settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
+        }        
+
+        # add install packages in packages
+        for($i = 0; $i -lt $installPackageNames.Count; $i++)
+        {
+            $hstwb.Settings.Packages.Set_Item(("InstallPackage{0}" -f ($i + 1)), $installPackageNames[$i])
+        }
+
+        $hstwb.Settings.Packages.Remove('InstallPackages')
+    }    
 }
 
 
@@ -376,11 +398,46 @@ function ReadPackages($packagesPath)
             exit 1
         }
 
-        # get package filename
-        $packageFileName = $packageFile.Name.ToLower() -replace '\.zip$'
+        # add package file and fullname
+        $packageIni.PackageId = CalculateMd5FromText $packageIni.Package.Name.ToLower()
+        $packageIni.PackageFile = $packageFile.FullName
+        $packageIni.PackageDirName = $packageFile.Name.ToLower() -replace '\.zip$'
+        $packageIni.PackageFullName = "{0} v{1}" -f $packageIni.Package.Name, $packageIni.Package.Version
 
-        # add package ini to packages
-        $packages.Set_Item($packageFileName, $packageIni)
+        # parse package dependencies
+        $packageDependencies = @()
+        foreach($dependencyKey in ($packageIni.Package.Keys | Where-Object { $_ -match 'Dependency\d+' }))
+        {
+            $packageDependencies += $packageIni.Package.Get_Item($dependencyKey)
+        }
+            
+        $packageIni.PackageDependencies = $packageDependencies
+        
+
+        $packageName = $packageIni.Package.Name.ToLower()
+        $packageVersion = $packageIni.Package.Version
+
+        # get or create package
+        if ($packages.ContainsKey($packageName))
+        {
+            $package = $packages.Get_Item($packageName)
+        }
+        else
+        {
+            $package = @{ 'Latest' = $null; 'Versions' = @{} }
+        }
+
+        # update latest, if latest is null or package version is greater than latest
+        if (!$package.Latest -or [version]$packageVersion -gt [version]$package.Latest.Package.Version)
+        {
+            $package.Latest = $packageIni
+        }
+
+        # add package to versions
+        $package.Versions.Set_Item($packageVersion, $packageIni)
+
+        # add package to packages
+        $packages.Set_Item($packageName, $package)
     }
 
     return $packages
@@ -423,69 +480,75 @@ function DetectUserPackages($hstwb)
 # update packages
 function UpdatePackages($hstwb)
 {
-    # get install packages defined in settings packages section
-    $packageFileNames = @()
-    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
+    # get and remove install packages
+    $installPackageNames = @()
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
     {
-        $packageFileNames += $hstwb.Settings.Packages.InstallPackages.ToLower() -split ',' | Where-Object { $_ }
+        $installPackageNames += $hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower())
+        $hstwb.Settings.Packages.Remove($installPackageKey)
     }
 
-    # get packages that exist in packages path
-    $existingPackages = New-Object System.Collections.ArrayList
+    # add install packages for packages that exist
+    $installPackageIndex = 0;
+    foreach($installPackageName in $installPackageNames)
+    {
+        if (!$hstwb.Packages.ContainsKey($installPackageName))
+        {
+            continue
+        }
 
-    # remove packages, if they don't exist
-    $packageFileNames | ForEach-Object { if ($hstwb.Packages.ContainsKey($_)) { [void]$existingPackages.Add($_) } }
-
-    # update install packages with packages that exist
-    $hstwb.Settings.Packages.InstallPackages = [string]::Join(',', $existingPackages.ToArray())
+        $installPackageIndex++
+        $hstwb.Settings.Packages.Set_Item(("InstallPackage{0}" -f $installPackageIndex), $installPackageName)
+    }
 }
 
 
 # update user packages
 function UpdateUserPackages($hstwb)
 {
-    # get install user packages
-    $userPackageDirNames = @()
-    if ($hstwb.Settings.UserPackages.InstallUserPackages -and $hstwb.Settings.UserPackages.InstallUserPackages -ne '')
+    # get and remove install user packages
+    $installUserPackageNames = @()
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
     {
-        $userPackageDirNames += $hstwb.Settings.UserPackages.InstallUserPackages -split ',' | Where-Object { $_ }
+        $installUserPackageNames += $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
+        $hstwb.Settings.UserPackages.Remove($installUserPackageKey)
     }
 
-    # get user packages that exist in user packages dir
-    $existingUserPackages = New-Object System.Collections.ArrayList
+    # add install packages for packages that exist
+    $installUserPackageIndex = 0;
+    foreach($installUserPackageName in $installUserPackageNames)
+    {
+        if (!$hstwb.UserPackages.ContainsKey($installUserPackageName))
+        {
+            continue
+        }
 
-    # remove user packages, if they don't exist
-    $userPackageDirNames | ForEach-Object { if ($hstwb.UserPackages.ContainsKey($_)) { [void]$existingUserPackages.Add($_) } }
-
-    # update install user packages with user packages that exist
-    $hstwb.Settings.UserPackages.InstallUserPackages = [string]::Join(',', $existingUserPackages.ToArray())
+        $installUserPackageIndex++
+        $hstwb.Settings.UserPackages.Set_Item(("InstallUserPackage{0}" -f $installUserPackageIndex), $installUserPackageName)
+    }
 }
 
 
 # update assigns
 function UpdateAssigns($hstwb)
 {  
-    # get install packages defined in settings packages section
-    $packageFileNames = @()
-    if ($hstwb.Settings.Packages.InstallPackages -and $hstwb.Settings.Packages.InstallPackages -ne '')
+    # get install packages
+    $installPackageNames = @()
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
     {
-        $packageFileNames += $hstwb.Settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
+        $installPackageNames += $hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower())
     }
-
-    $packageNames = @()
-
+    
     # 
-    foreach ($packageFileName in $packageFileNames)
+    $packageNames = @()
+    foreach ($installPackageName in $installPackageNames)
     {
-        $packageFileName = $packageFileName.ToLower()
-
-
-        if (!$hstwb.Packages.ContainsKey($packageFileName))
+        if (!$hstwb.Packages.ContainsKey($installPackageName))
         {
             continue
         }
 
-        $package = $hstwb.Packages.Get_Item($packageFileName)
+        $package = $hstwb.Packages.Get_Item($installPackageName).Latest
 
         $packageNames += $package.Package.Name
 
@@ -513,13 +576,18 @@ function UpdateAssigns($hstwb)
         }
     }
 
-    # remove assigns for packages, that aren't going to be installed
-    $assignSectionNames = $hstwb.Assigns.keys | Where-Object { $_ -notmatch 'Global' }
-    foreach ($assignSectionName in $assignSectionNames)
+
+    # remove assigns for packages, that doesn't exist in 
+    $assignKeys = @()
+    $assignKeys += $hstwb.Assigns.Keys | Where-Object { $_ -notmatch 'Global' }
+
+    foreach($assignKey in $assignKeys)
     {
-        if (!$packageNames.Contains($assignSectionName))
+        $packageKey = $packageNames | Where-Object { $_ -like ('*{0}*' -f $assignKey) } | Select-Object -First 1
+
+        if (!$packageKey)
         {
-            $hstwb.Assigns.Remove($assignSectionName)
+            $hstwb.Assigns.Remove($assignKey)
         }
     }
 }

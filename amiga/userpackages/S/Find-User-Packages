@@ -5,11 +5,11 @@
 ; Find User Packages
 ; ------------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 
 echo ""
-echo "Finding user packages in USERPACKAGESDIR:"
+echo "*e[1mFinding user packages in USERPACKAGESDIR:*e[0m"
 
 ; Create empty user packages file
 echo "" NOLINE >"{userpackagesfile}"
@@ -42,7 +42,7 @@ IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
 ENDIF
 
 ; Print user package and add user package to user packages file
-echo "*e[32m$userpackage*e[0m"
+echo "$userpackage"
 echo "$userpackage" >>"{userpackagesfile}"
 
 SKIP BACK next

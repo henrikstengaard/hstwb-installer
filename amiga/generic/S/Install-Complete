@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2017-10-03
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
@@ -30,6 +30,7 @@ echo ""
 
 
 IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  set installcomplete "0"
   IF EXISTS INSTALLDIR:Prefs/UAE
     echo "HstWB Installer has completed installation and will"
     echo "quit and restart UAE to start installation of"
@@ -40,8 +41,22 @@ IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
     echo "Boing Bags in Amiga OS 3.9 during WBStartup."
   ENDIF
 ELSE
-  echo "HstWB Installer has completed installation and system is"
-  echo "now ready for use."
+  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    ; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
+    Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+    Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+
+    IF EXISTS INSTALLDIR:Prefs/UAE
+      echo "HstWB Installer has completed installation and will"
+      echo "quit and restart UAE to start package installation."
+    ELSE
+      echo "HstWB Installer has completed installation and will"
+      echo "reboot system to start package installation."
+    ENDIF
+  ELSE
+    echo "HstWB Installer has completed installation and system is"
+    echo "now ready for use."
+  ENDIF
 ENDIF
 echo ""
 

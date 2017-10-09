@@ -41,26 +41,31 @@ function PrintSettings($hstwb)
     Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomSet + "'")
     Write-Host "Packages"
 
-    $packageFileNames = @()
-    $packageFileNames += $hstwb.Settings.Packages.InstallPackages -split ',' | Where-Object { $_ }
-
-    if ($packageFileNames.Count -gt 0)
+    # get install packages
+    $installPackageNames = @{}
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
     {
-        Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
+        $installPackageNames.Set_Item($hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower()), $true)
+    }
 
-        $packageNames = @()
+    $packageNames = @()
+    $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
+    
+    Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
+    if ($installPackageNames.Count -gt 0)
+    {
+        $installPackages = @()
 
-        foreach ($packageFileName in $packageFileNames)
+        foreach ($packageName in ($packageNames | Where-Object { $installPackageNames.ContainsKey($_) }))
         {
-            $package = $hstwb.Packages.Get_Item($packageFileName)
-            $packageNames += "{0} v{1}" -f $package.Package.Name, $package.Package.Version
+            $package = $hstwb.Packages.Get_Item($packageName).Latest
+            $installPackages += $package.PackageFullName
         }
 
-        Write-Host ("'" + ($packageNames -Join ', ') + "'")
+        Write-Host ("'" + ($installPackages -Join ', ') + "'")
     }
     else
     {
-        Write-Host "  Install Packages      : " -NoNewline -foregroundcolor "Gray"
         Write-Host "None" -foregroundcolor "Yellow"
     }
 
@@ -76,17 +81,22 @@ function PrintSettings($hstwb)
         Write-Host "''"
     }
 
-    $userPackageDirNames = @()
-    $userPackageDirNames += $hstwb.Settings.UserPackages.InstallUserPackages -split ',' | Where-Object { $_ }
-
-    if ($userPackageDirNames.Count -gt 0)
+    # get install user packages
+    $installUserPackageNames = @()
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
     {
-        Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
-        Write-Host ("'" + ($userPackageDirNames -Join ', ') + "'")
+        $userPackageName = $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
+        $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+        $installUserPackageNames += $userPackage.Name
+    }
+    
+    Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
+    if ($installUserPackageNames.Count -gt 0)
+    {
+        Write-Host ("'" + (($installUserPackageNames | Sort-Object) -Join ', ') + "'")
     }
     else
     {
-        Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
         Write-Host "None" -foregroundcolor "Yellow"
     }
     

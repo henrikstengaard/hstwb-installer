@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -94,7 +94,7 @@ echo "*e[0m*e[1m" NOLINE
 echo "----------------------------"
 echo "*e[0m" NOLINE
 echo ""
-echo "Finding Workbench 3.1 adf in WORKBENCHDIR:..."
+echo "*e[1mFinding Workbench 3.1 adf in WORKBENCHDIR:...*e[0m"
 
 ; Add assigns from S:AssignList
 AssPlus >NIL:
@@ -172,7 +172,7 @@ LAB workbenckdiskfallback
 ; Print workbench disk floppy device fallback message
 echo "Done"
 echo ""
-echo "*e[1mWorkbench 3.1 adf doesn't exist in WORKBENCHDIR:.*e[22m"
+echo "*e[1mWorkbench 3.1 adf doesn't exist in WORKBENCHDIR:.*e[0m"
 echo ""
 echo "Workbench adf files in WORKBENCHDIR: can be changed"
 echo "and a reset will restart autodetect Workbench 3.1"
@@ -192,7 +192,7 @@ LAB extractworkbenchadf
 echo "Done"
 echo ""
 echo "Detected Workbench 3.1 adf file:"
-echo "*e[32m$adffile*e[0m"
+echo "*e[1m$adffile*e[0m"
 echo ""
 echo "Workbench adf files in WORKBENCHDIR: can be changed"
 echo "and a reset will restart autodetect Workbench 3.1"

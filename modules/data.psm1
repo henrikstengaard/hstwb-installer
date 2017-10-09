@@ -449,3 +449,56 @@ function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
 
     return $kickstartRomSetHashes
 }
+
+
+# sort packages to install
+function SortPackageNames($hstwb)
+{
+    $packages = @()
+
+    foreach ($packageName in $hstwb.Packages.Keys)
+    {
+        $package = $hstwb.Packages.Get_Item($packageName).Latest
+        
+        # get package priority, if it exists. otherwise use default priority 9999
+        $priority = if ($package.Package.Priority) { [Int32]$package.Package.Priority } else { 9999 }
+
+        $packages += @{ 'Name'= $package.Package.Name; 'Dependencies' = $package.PackageDependencies; 'Priority' = $priority }
+    }
+
+    $packageNamesSorted = @()
+
+    # topologically sort packages, if any packages are present
+    if ($packages.Count -gt 0)
+    {
+        # sort packages by priority and name
+        $packagesSorted = @()
+        $packagesSorted += $packages | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true}
+
+        # topologically sort packages and add package names sorted
+        TopologicalSort $packagesSorted | ForEach-Object { $packageNamesSorted += $_ }
+    }
+
+    return $packageNamesSorted
+}
+
+
+# get all package dependencies
+function GetDependencyPackageNames($hstwb, $package)
+{
+    $dependencyPackageNames = @()
+
+    foreach ($dependencyPackageName in $package.PackageDependencies)
+    {
+        if (!$hstwb.Packages.ContainsKey($dependencyPackageName))
+        {
+            continue
+        }
+
+        $dependencyPackage = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
+        $dependencyPackageNames += GetDependencyPackageNames $hstwb $dependencyPackage
+        $dependencyPackageNames += $dependencyPackageName
+    }
+
+    return $dependencyPackageNames
+}
