@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-09-27
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -58,7 +58,7 @@ resident INSTALLDIR:C/MakePath PURE
 
 
 echo ""
-echo "Building self install:"
+echo "*e[1mBuilding self install*e[0m"
 echo "Copying boot scripts and tools..."
 copy >NIL: "INSTALLDIR:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
 IF NOT EXISTS "SYSTEMDIR:Prefs/Env-Archive"

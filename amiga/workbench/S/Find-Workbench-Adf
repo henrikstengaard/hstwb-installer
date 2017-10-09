@@ -1,13 +1,13 @@
 ; Find Workbench Adf
 ; ------------------
 ;
-; Date: 2017-09-03
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; Find Workbench adf files
 echo ""
-echo "Finding Workbench adf files in WORKBENCHDIR:"
+echo "*e[1mFinding Workbench adf files in WORKBENCHDIR:*e[0m"
 fsearch WORKBENCHDIR:#?.adf >T:workbench-adf-files1
 sed "s/^\(.\)/execute *"INSTALLDIR:S\/Copy-Workbench-Adf*" *"\1/" T:workbench-adf-files1 >T:workbench-adf-files2
 sed "s/\(.\)$/\1*" *"INSTALLDIR:Workbench\/*"/" T:workbench-adf-files2 >T:workbench-adf-files3

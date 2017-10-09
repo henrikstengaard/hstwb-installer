@@ -1,12 +1,12 @@
 ; Install Workbench Adf
 ; ---------------------
 ;
-; Date: 2017-08-29
+; Date: 2017-10-09
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; Print install workbench 3.1 from adf message
-echo "Installing Workbench 3.1 from adf:"
+echo "*e[1mInstalling Workbench 3.1 from adf*e[0m"
 
 
 ; Install Workbench 3.1 Workbench adf
