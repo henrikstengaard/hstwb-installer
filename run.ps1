@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-09
+# Date:   2017-10-13
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -320,9 +320,10 @@ function BuildAddAssignScriptLines($assignId, $assignName, $assignDir)
     $addAssignScriptLines += "IF NOT EXISTS ""`$assigndir"""
     $addAssignScriptLines += "  MakePath ""`$assigndir"""
     $addAssignScriptLines += "ENDIF"
+    $addAssignScriptLines += ("echo ""Add assign '`$assigndir' = '{0}'"" >>SYS:HstWB-Installer.log" -f $assignName)
     $addAssignScriptLines += ("SetEnv {0} ""`$assigndir""" -f $assignName)
     $addAssignScriptLines += ("Assign {0}: ""`$assigndir""" -f $assignName)
-
+    
     return $addAssignScriptLines
 }
 
@@ -333,6 +334,7 @@ function BuildRemoveAssignScriptLines($assignId, $assignName, $assignDir)
     $removeAssignScriptLines = @()
     $removeAssignScriptLines += ("; Remove assign and unset variable for assign '{0}'" -f $assignName)
     $removeAssignScriptLines += BuildAssignDirScriptLines $assignId $assignDir
+    $removeAssignScriptLines += ("echo ""Remove assign '`$assigndir' = '{0}'"" >>SYS:HstWB-Installer.log" -f $assignName)
     $removeAssignScriptLines += ("Assign {0}: ""`$assigndir"" REMOVE" -f $assignName)
     $removeAssignScriptLines += ("IF EXISTS ""ENV:{0}""" -f $assignName)
     $removeAssignScriptLines += ("  delete >NIL: ""ENV:{0}""" -f $assignName)
@@ -423,6 +425,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
         $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}""" -f $package.PackageDirName)
         $installPackageLines += ""
         $installPackageLines += "; Execute package install script"
+        $installPackageLines += ("echo ""Running package '{0}' install script"" >>SYS:HstWB-Installer.log" -f $package.PackageDirName)
         $installPackageLines += "execute ""PACKAGEDIR:Install"""
         $installPackageLines += ""
         $installPackageLines += "; Remove package dir assign"
@@ -928,6 +931,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += ''
     $installPackagesScriptLines += "IF ""{validate}"" EQ """""
     $installPackagesScriptLines += "  IF `$assignsvalid EQ 0 VAL"
+    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:HstWB-Installer.log" -f $assignName)
     $installPackagesScriptLines += "    echo ""*e[1mError: Validate assigns failed!*e[0m"""
     $installPackagesScriptLines += "    echo """""
     $installPackagesScriptLines += "    ask ""Press ENTER to continue"""
@@ -938,6 +942,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += "    echo ""Done"""
     $installPackagesScriptLines += "    SKIP end"
     $installPackagesScriptLines += "  ELSE"
+    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:HstWB-Installer.log" -f $assignName)
     $installPackagesScriptLines += "    echo ""*e[1mError: Validate assigns failed!*e[0m"""
     $installPackagesScriptLines += "    quit 20"
     $installPackagesScriptLines += "  ENDIF"
@@ -1366,6 +1371,11 @@ function RunInstall($hstwb)
     }
 
 
+    # temp and image hstwb installer log files
+    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.log'
+    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'HstWB-Installer.log'
+    
+
     # copy large harddisk to install directory
     $largeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
     Copy-Item -Path "$largeHarddiskDir\*" $tempInstallDir -recurse -force
@@ -1740,8 +1750,16 @@ function RunInstall($hstwb)
     Write-Host ""
     Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Emulator)
     
-    # fail, if emulator doesn't return error code 0
+    # start emulator to run install
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
+
+    # append temp hstwb installer log file to image hstwb installer log file
+    if (Test-Path -Path $tempHstwbInstallerLogFile)
+    {
+        Get-Content $tempHstwbInstallerLogFile | Add-Content -Path $imageHstwbInstallerLogFile
+    }
+
+    # fail, if emulator doesn't return error code 0
     if ($emulatorProcess -and $emulatorProcess.ExitCode -ne 0)
     {
         Fail $hstwb ("Failed to run '" + $hstwb.Settings.Emulator.EmulatorFile + "' with arguments '$emulatorArgs'")
@@ -1817,18 +1835,32 @@ function RunInstall($hstwb)
     
     # print start emulator message
     Write-Host ""
-
+    $task = ""
     if ($installBoingBagsReboot)
     {
-        Write-Host ("Starting emulator '{0}' to run install boing bags..." -f $hstwb.Emulator)        
+        $task = "boing bags"
     }
-    else
+    if ($installPackagesReboot)
     {
-        Write-Host ("Starting emulator '{0}' to run install packages..." -f $hstwb.Emulator)        
+        if ($task.Length -gt 0)
+        {
+            $task += " and "
+        }
+        $task += "packages"
+    }
+
+    Write-Host ("Starting emulator '{0}' to run install {1}..." -f $hstwb.Emulator, $task)        
+    
+    # start emulator to run install boing bags, packages
+    $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
+
+    # append temp hstwb installer log file to image hstwb installer log file
+    if (Test-Path -Path $tempHstwbInstallerLogFile)
+    {
+        Get-Content $tempHstwbInstallerLogFile | Add-Content -Path $imageHstwbInstallerLogFile
     }
 
     # fail, if emulator doesn't return error code 0
-    $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
     if ($emulatorProcess -and $emulatorProcess.ExitCode -ne 0)
     {
         Fail $hstwb ("Failed to run '" + $hstwb.Settings.Emulator.EmulatorFile + "' with arguments '$emulatorArgs'")
@@ -1872,6 +1904,11 @@ function RunBuildSelfInstall($hstwb)
     {
         mkdir $prefsDir | Out-Null
     }
+
+
+    # temp and image hstwb installer log files
+    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.log'
+    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'HstWB-Installer.log'
 
 
     # copy licenses dir
@@ -2188,8 +2225,16 @@ function RunBuildSelfInstall($hstwb)
     Write-Host ("Starting emulator '{0}' to build self install image..." -f $hstwb.Emulator)
 
 
-    # fail, if emulator doesn't return error code 0
+    # start emulator to run build self install
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
+
+    # append temp hstwb installer log file to image hstwb installer log file
+    if (Test-Path -Path $tempHstwbInstallerLogFile)
+    {
+        Get-Content $tempHstwbInstallerLogFile | Add-Content -Path $imageHstwbInstallerLogFile
+    }
+
+    # fail, if emulator doesn't return error code 0
     if ($emulatorProcess -and $emulatorProcess.ExitCode -ne 0)
     {
         Fail $hstwb ("Failed to run '" + $hstwb.Settings.Emulator.EmulatorFile + "' with arguments '$emulatorArgs'")

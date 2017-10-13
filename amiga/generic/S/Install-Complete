@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2017-10-09
+; Date: 2017-10-13
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to complete installation by rebooting system or quiting UAE.
@@ -42,7 +42,10 @@ IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
   ENDIF
 ELSE
   IF EXISTS INSTALLDIR:Prefs/Install-Packages
-    ; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
+    ; Copy assign hstwb installer for installing boing bags
+    Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
+
+    ; Replace workbench startup-sequence with packages startup-sequence
     Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
     Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 
@@ -68,13 +71,24 @@ IF EXISTS INSTALLDIR:Prefs/UAE
 ENDIF
 
 
-; Run install cleanup, if self install exists prefs, install boing bags, install packages and install user packages prefs doesn't exist
-IF EXISTS INSTALLDIR:Prefs/Self-Install
-  IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
-    IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
-      IF NOT EXISTS INSTALLDIR:Prefs/Install-User-Packages
-        execute INSTALLDIR:S/Install-Cleanup
+; Copy hstwb installer log til install dir, if it exists
+IF EXISTS SYS:HstWB-Installer.log
+  Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
+ENDIF
+
+
+; Replace startup sequence and run install cleanup, if install boing bags, install packages and install user packages prefs doesn't exist
+IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+    IF NOT EXISTS INSTALLDIR:Prefs/Install-User-Packages
+      ; Replace startup-sequence with workbench startup-sequence, if it exists
+      IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
+        Copy >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench SYSTEMDIR:S/Startup-Sequence
+        Delete >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench
       ENDIF
+
+      ; Run install cleanup      
+      execute INSTALLDIR:S/Install-Cleanup
     ENDIF
   ENDIF
 ENDIF

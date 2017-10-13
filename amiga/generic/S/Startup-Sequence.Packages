@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2017-10-03
+; Date: 2017-10-13
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -51,9 +51,6 @@ SetEnv TZ MST7
 ; Data types required for multiview and update screenmode
 C:AddDataTypes REFRESH QUIET
 
-; TODO: Causes intuition attempted to reset workbench screen errors, when installing ClassicWB packages
-; TODO: Find way of getting max colors for workbench for screenshots in readme
-;C:IPrefs
 
 ; Paths
 Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
@@ -72,6 +69,26 @@ ENDIF
 
 ; Run Assign-HstWB-Installer
 execute S:Assign-HstWB-Installer
+
+
+; Replace startup-sequence with workbench startup-sequence, if it exists
+IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
+  Copy >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench SYSTEMDIR:S/Startup-Sequence
+  Delete >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench
+ENDIF
+
+
+; TODO: Causes intuition attempted to reset workbench screen errors, when installing ClassicWB packages
+; TODO: Find way of getting max colors for workbench for screenshots in readme
+;IF EXISTS INSTALLDIR:Prefs/Self-Install
+;  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
+;    Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
+;  ENDIF
+;  Copy >NIL: INSTALLDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
+;  C:IPrefs
+;  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
+;  Delete >NIL:SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
+;ENDIF
 
 
 ; Add assigns to installdir
@@ -139,6 +156,13 @@ echo ""
 
 ; Run install cleanup
 execute INSTALLDIR:S/Install-Cleanup
+
+
+; Copy hstwb installer log til install dir, if it exists
+IF EXISTS SYS:HstWB-Installer.log
+  Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
+ENDIF
+
 
 echo "Please wait 10 seconds before restarting to allow file"
 echo "system to write changes to disk. Continue will reboot"
