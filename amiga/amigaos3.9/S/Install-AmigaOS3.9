@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-10-10
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -244,7 +244,7 @@ Copy >NIL: INSTALLDIR:Install-AmigaOS3.9/Prefs/Env-Archive/Sys/screenmode.prefs 
 
 ; Copy install amiga os 3.9 to systemdir and update startup sequence to load patch scsi.device, if install boing bags prefs exist
 IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
-  ; Copy install amiga os 3.9 for installing boing bags
+  ; Copy assign hstwb installer and install amiga os 3.9 for installing boing bags
   Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
   Copy >NIL: INSTALLDIR:Install-AmigaOS3.9 SYSTEMDIR: ALL
 
