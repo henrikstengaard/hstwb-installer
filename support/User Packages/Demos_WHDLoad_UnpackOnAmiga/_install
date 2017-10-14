@@ -1,0 +1,16 @@
+; EAB WHDLoad Pack Install Script
+; -------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-10-14
+
+; 'Demos_WHDLoad_UnpackOnAmiga' install script
+
+; Install 'MusicBox_v1.0_Exodus.lha'
+IF EXISTS "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha"
+  echo "Extracting 'MusicBox_v1.0_Exodus.lha'..."
+  IF NOT EXISTS "$INSTALLDIR/M"
+    MakePath >NIL: "$INSTALLDIR/M"
+  ENDIF
+  lha -q -m1 x "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha" "$INSTALLDIR/M/"
+ENDIF
