@@ -52,8 +52,10 @@ foreach($userPackageItem in ($userPackageItems | Sort-Object @{expression={$_.Na
         $installScriptLines += "    MakePath >NIL: ""`$INSTALLDIR/{0}""" -f $userPackageItem.Name
         $installScriptLines += "  ENDIF"
         $installScriptLines += "  Copy >NIL: ""USERPACKAGEDIR:{0}"" ""`$INSTALLDIR/{0}"" ALL" -f $userPackageItem.Name
-        $installScriptLines += "  IF EXISTS ""USERPACKAGEDIR:{0}.info""" -f $userPackageItem.Name
-        $installScriptLines += "    Copy >NIL: ""USERPACKAGEDIR:{0}.info"" ""`$INSTALLDIR""" -f $userPackageItem.Name
+        $installScriptLines += "  IF NOT EXISTS ""`$INSTALLDIR:{0}.info""" -f $userPackageItem.Name
+        $installScriptLines += "    IF EXISTS ""USERPACKAGEDIR:{0}.info""" -f $userPackageItem.Name
+        $installScriptLines += "      Copy >NIL: ""USERPACKAGEDIR:{0}.info"" ""`$INSTALLDIR""" -f $userPackageItem.Name
+        $installScriptLines += "    ENDIF"
         $installScriptLines += "  ENDIF"
     }
     elseif ($userPackageItem.Name -match '\.(lha|zip)$')
