@@ -681,25 +681,53 @@ function SelectPackagesMenu($hstwb)
     do
     {
         # build package options
-        $packageOptions = @()
+        $packageOptions = @('Select all', 'Unselect all')
         $packageOptions += $packageNames | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $packageNamesMap.Get_Item($_)) } else { ("+ " + $packageNamesMap.Get_Item($_)) } }
         $packageOptions += "Back"
 
         $choice = Menu $hstwb "Select Packages Menu" $packageOptions
 
-        if ($choice -ne 'Back')
+        $addPackageNames = @()
+        $removePackageNames = @()
+        
+        if ($choice -eq 'Select all')
+        {
+            $addPackageNames += $hstwb.Packages.Keys
+        }
+        elseif ($choice -eq 'Unselect all')
+        {
+            $removePackageNames += $installPackages.Keys
+        }
+        elseif ($choice -ne 'Back')
         {
             $packageNameFormatted = $choice -replace '^(\+|\-) ', ''
             $packageName = $packageNamesFormattedMap.Get_Item($packageNameFormatted)
 
-            # get package
-            $package = $hstwb.Packages.Get_Item($packageName).Latest
-
-            # remove package and assigns, if package exists in install packages. otherwise, add package to install packages and package default assigns
             if ($installPackages.ContainsKey($packageName))
             {
-                $installPackages.Remove($packageName)
+                $removePackageNames += $packageName
+            }
+            else
+            {
+                $addPackageNames += $packageName
+            }         
+        }
 
+        
+        if ($removePackageNames.Count -gt 0)
+        {
+            foreach($packageName in $removePackageNames)
+            {
+                if (!$installPackages.ContainsKey($packageName))
+                {
+                    continue
+                }
+
+                # get package
+                $package = $hstwb.Packages.Get_Item($packageName).Latest
+            
+                $installPackages.Remove($packageName)
+                
                 $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Package.Name) } | Select-Object -First 1
 
                 if ($packageAssignsKey)
@@ -707,10 +735,23 @@ function SelectPackagesMenu($hstwb)
                     $hstwb.Assigns.Remove($packageAssignsKey)
                 }
             }
-            else
-            {
-                $selectedPackageNames = @()
+        }
 
+
+        if ($addPackageNames.Count -gt 0)
+        {
+            foreach($packageName in $addPackageNames)
+            {
+                if ($installPackages.ContainsKey($packageName))
+                {
+                    continue
+                }
+
+                # get package
+                $package = $hstwb.Packages.Get_Item($packageName).Latest
+
+                $selectedPackageNames = @()
+                
                 if ($package.PackageDependencies.Count -gt 0)
                 {
                     $selectedPackageNames += GetDependencyPackageNames $hstwb $package
@@ -720,6 +761,11 @@ function SelectPackagesMenu($hstwb)
 
                 foreach($selectedPackageName in $selectedPackageNames)
                 {
+                    if ($installPackages.ContainsKey($selectedPackageName))
+                    {
+                        continue
+                    }
+
                     $installPackages.Set_Item($selectedPackageName, $true)
 
                     # get selected package
@@ -731,7 +777,10 @@ function SelectPackagesMenu($hstwb)
                     }
                 }
             }
-            
+        }
+
+        if ($addPackageNames.Count -gt 0 -or $removePackageNames -gt 0)
+        {
             # remove install packages from packages
             foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
             {
@@ -748,7 +797,7 @@ function SelectPackagesMenu($hstwb)
                 $hstwb.Settings.Packages.Set_Item(("InstallPackage{0}" -f ($i + 1)), $newInstallPackages[$i])
             }
 
-            Save $hstwb
+            Save $hstwb            
         }
     }
     until ($choice -eq 'Back')
@@ -820,30 +869,68 @@ function SelectUserPackagesMenu($hstwb)
     do
     {
         # build user package options
-        $userPackageOptions = @()
+        $userPackageOptions = @('Select all', 'Unselect all')
         $userPackageOptions += $userPackageNames | ForEach-Object { if ($installUserPackages.ContainsKey($_)) { ("- " + $userPackageNamesMap.Get_Item($_)) } else { ("+ " + $userPackageNamesMap.Get_Item($_)) } }
         $userPackageOptions += "Back"
 
         $choice = Menu $hstwb "Select User Packages Menu" $userPackageOptions
 
-        if ($choice -ne 'Back')
+
+        $addUserPackageNames = @()
+        $removeUserPackageNames = @()
+        
+        if ($choice -eq 'Select all')
+        {
+            $addUserPackageNames += $hstwb.UserPackages.Keys
+        }
+        elseif ($choice -eq 'Unselect all')
+        {
+            $removeUserPackageNames += $installUserPackages.Keys
+        }
+        elseif ($choice -ne 'Back')
         {
             $userPackageNameFormatted = $choice -replace '^(\+|\-) ', ''
             $userPackageName = $userPackageNamesFormattedMap.Get_Item($userPackageNameFormatted)
-            
-            # get user package
-            $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
-            
+
             # remove user package, if user package exists in install userpackages. otherwise, add user package to install user packages
             if ($installUserPackages.ContainsKey($userPackageName))
             {
-                $installUserPackages.Remove($userPackageName)
+                $removeUserPackageNames += $userPackageName
             }
             else
             {
+                $addUserPackageNames += $userPackageName
+            }
+        }
+
+        if ($addUserPackageNames.Count -gt 0)
+        {
+            foreach($userPackageName in $addUserPackageNames)
+            {
+                if ($installUserPackages.ContainsKey($userPackageName))
+                {
+                    continue
+                }
+    
                 $installUserPackages.Set_Item($userPackageName, $true)
             }
+        }
 
+        if ($removeUserPackageNames.Count -gt 0)
+        {
+            foreach($userPackageName in $removeUserPackageNames)
+            {
+                if (!$installUserPackages.ContainsKey($userPackageName))
+                {
+                    continue
+                }
+    
+                $installUserPackages.Remove($userPackageName)
+            }
+        }
+
+        if ($addUserPackageNames.Count -gt 0 -or $removeUserPackageNames -gt 0)
+        {
             # remove install user packages from user packages
             foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
             {
@@ -862,6 +949,43 @@ function SelectUserPackagesMenu($hstwb)
             
             Save $hstwb
         }
+
+        # if ($choice -ne 'Back')
+        # {
+        #     $userPackageNameFormatted = $choice -replace '^(\+|\-) ', ''
+        #     $userPackageName = $userPackageNamesFormattedMap.Get_Item($userPackageNameFormatted)
+            
+        #     # get user package
+        #     $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+            
+        #     # remove user package, if user package exists in install userpackages. otherwise, add user package to install user packages
+        #     if ($installUserPackages.ContainsKey($userPackageName))
+        #     {
+        #         $installUserPackages.Remove($userPackageName)
+        #     }
+        #     else
+        #     {
+        #         $installUserPackages.Set_Item($userPackageName, $true)
+        #     }
+
+        #     # remove install user packages from user packages
+        #     foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
+        #     {
+        #         $hstwb.Settings.UserPackages.Remove($installUserPackageKey)
+        #     }
+            
+        #     # build and set new install user packages
+        #     $newInstallUserPackages = @()
+        #     $newInstallUserPackages += $installUserPackages.keys | ForEach-Object { $userPackageNamesMap.Get_Item($_) } | Sort-Object @{expression={$_};Ascending=$true}
+
+        #     # add install user packages to user packages
+        #     for($i = 0; $i -lt $newInstallUserPackages.Count; $i++)
+        #     {
+        #         $hstwb.Settings.UserPackages.Set_Item(("InstallUserPackage{0}" -f ($i + 1)), $newInstallUserPackages[$i])
+        #     }
+            
+        #     Save $hstwb
+        # }
     }
     until ($choice -eq 'Back')
 }
