@@ -93,10 +93,10 @@ function DefaultSettings($settings)
             $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
         }
 
-        $kickstartRomPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
-        if (test-path -path $kickstartRomPath)
+        $kickstartRomDir = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
+        if (test-path -path $kickstartRomDir)
         {
-            $settings.Kickstart.KickstartRomDir = $kickstartRomPath
+            $settings.Kickstart.KickstartRomDir = $kickstartRomDir
             $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
         }
     }
@@ -286,7 +286,7 @@ function UpgradeSettings($hstwb)
     if ($hstwb.Settings.Kickstart.KickstartRomPath)
     {
         $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
-        $hstwb.Settings.Workbench.Remove('KickstartRomPath')
+        $hstwb.Settings.Kickstart.Remove('KickstartRomPath')
     }
 
     # upgrade install packages
