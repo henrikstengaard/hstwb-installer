@@ -337,8 +337,7 @@ function ReadImages($imagesPath)
         # skip, if image ini text doesn't exist
         if (!$imageIniText)
         {
-            Write-Error ("Image file '" + $imageFile.FullName + "' doesn't contain image.ini file!")
-            exit 1
+            throw ("Image file '" + $imageFile.FullName + "' doesn't contain image.ini file!")
         }
 
         # read image ini text
@@ -369,8 +368,7 @@ function ReadPackages($packagesPath)
         # skip, if package ini text doesn't exist
         if (!$packageIniText)
         {
-            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't contain package.ini file!")
-            exit 1
+            throw ("Package file '" + $packageFile.FullName + "' doesn't contain package.ini file!")
         }
 
         # read package ini text
@@ -379,23 +377,19 @@ function ReadPackages($packagesPath)
         # fail, if package ini doesn't contain package section
         if (!$packageIni.Package)
         {
-            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have package section in package.ini!")
-            exit 1
-            
+            throw ("Package file '" + $packageFile.FullName + "' doesn't have package section in package.ini!")
         }
 
         # fail, if package ini doesn't have a valid name
         if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
         {
-            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have a valid name in package.ini!")
-            exit 1
+            throw ("Package file '" + $packageFile.FullName + "' doesn't have a valid name in package.ini!")
         }
 
         # fail, if package ini doesn't have a valid version
         if (!$packageIni.Package.Version -or $packageIni.Package.Version -notmatch '^\d+\.\d+\.\d+$' )
         {
-            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't have a valid version in package section!")
-            exit 1
+            throw ("Package file '" + $packageFile.FullName + "' doesn't have a valid version in package section!")
         }
 
         # add package file and fullname

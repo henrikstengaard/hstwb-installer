@@ -567,14 +567,14 @@ function ChangeKickstartRomDir($hstwb)
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $defaultKickstartRomPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\rom"
+        $defaultKickstartRomDir = Join-Path $amigaForeverDataPath -ChildPath "Shared\rom"
     }
     else
     {
-        $defaultKickstartRomPath = ${Env:USERPROFILE}
+        $defaultKickstartRomDir = ${Env:USERPROFILE}
     }
 
-    $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomPath } else { $hstwb.Settings.Kickstart.KickstartRomDir }
+    $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomDir } else { $hstwb.Settings.Kickstart.KickstartRomDir }
     $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
 
     if ($newPath -and $newPath -ne '')
@@ -705,6 +705,7 @@ function SelectPackagesMenu($hstwb)
 
             if ($installPackages.ContainsKey($packageName))
             {
+                # show warning, if package name is present in dependencies for any install package
                 $removePackageNames += $packageName
             }
             else
@@ -1197,16 +1198,14 @@ try
     # validate settings
     if (!(ValidateSettings $hstwb.Settings))
     {
-        Write-Error "Validate settings failed"
-        exit 1
+        throw "Validate settings failed"
     }
     
     
     # validate assigns
     if (!(ValidateAssigns $hstwb.Assigns))
     {
-        Write-Error "Validate assigns failed"
-        exit 1
+        throw "Validate assigns failed"
     }
     
     
@@ -1229,7 +1228,7 @@ catch
     $logFile = Join-Path $settingsDir -ChildPath "hstwb_installer.log"
     Add-Content $logFile ("{0} | ERROR | {1}" -f (Get-Date -Format s), $message) -Encoding UTF8
     Write-Host ""
-    Write-Error "HstWB Installer Run Failed: $message"
+    Write-Error "HstWB Installer Run Failed! $message"
     Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
