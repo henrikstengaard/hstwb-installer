@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-09
+# Date:   2017-10-25
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -664,7 +664,8 @@ function SelectPackagesMenu($hstwb)
     $packageNamesFormattedMap = @{}
     $packageNamesMap = @{}
     $installPackagesMap = @{}
-    
+    $dependencyPackageNamesIndex = @{}
+
     foreach ($packageName in $packageNames)
     {
         $package = $hstwb.Packages.Get_Item($packageName).Latest
@@ -676,6 +677,22 @@ function SelectPackagesMenu($hstwb)
         $packageNamesFormattedMap.Set_Item($packageNameFormatted, $packageName)
         $packageNamesMap.Set_Item($packageName, $packageNameFormatted)
         $installPackagesMap.Set_Item($packageName, $package.Package.Name)
+
+        foreach($dependencyPackageName in $package.PackageDependencies)
+        {
+            if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+            {
+                $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+            }
+            else
+            {
+                $dependencyPackageNames = @()
+            }
+
+            $dependencyPackageNames += $package.Package.Name
+
+            $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
+        }
     }
 
     do
@@ -703,10 +720,32 @@ function SelectPackagesMenu($hstwb)
             $packageNameFormatted = $choice -replace '^(\+|\-) ', ''
             $packageName = $packageNamesFormattedMap.Get_Item($packageNameFormatted)
 
+            # unselect package, if it's already selected. otherwise unselect package
             if ($installPackages.ContainsKey($packageName))
             {
-                # show warning, if package name is present in dependencies for any install package
-                $removePackageNames += $packageName
+                $unselectPackage = $true
+
+                # show package dependency warning, if package has dependencies
+                if ($dependencyPackageNamesIndex.ContainsKey($packageName))
+                {
+                    # get package
+                    $package = $hstwb.Packages.Get_Item($packageName).Latest
+
+                    # list selected package names that has dependencies to package
+                    $dependencyPackageNames = @()
+                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
+
+                    # show package dependency warning
+                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and unselecting it may cause issues when installing packages.`r`n`r`nDo you really want to unselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
+                    {
+                        $unselectPackage = $false
+                    }
+                }
+
+                if ($unselectPackage)
+                {
+                    $removePackageNames += $packageName
+                }
             }
             else
             {
@@ -950,43 +989,6 @@ function SelectUserPackagesMenu($hstwb)
             
             Save $hstwb
         }
-
-        # if ($choice -ne 'Back')
-        # {
-        #     $userPackageNameFormatted = $choice -replace '^(\+|\-) ', ''
-        #     $userPackageName = $userPackageNamesFormattedMap.Get_Item($userPackageNameFormatted)
-            
-        #     # get user package
-        #     $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
-            
-        #     # remove user package, if user package exists in install userpackages. otherwise, add user package to install user packages
-        #     if ($installUserPackages.ContainsKey($userPackageName))
-        #     {
-        #         $installUserPackages.Remove($userPackageName)
-        #     }
-        #     else
-        #     {
-        #         $installUserPackages.Set_Item($userPackageName, $true)
-        #     }
-
-        #     # remove install user packages from user packages
-        #     foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
-        #     {
-        #         $hstwb.Settings.UserPackages.Remove($installUserPackageKey)
-        #     }
-            
-        #     # build and set new install user packages
-        #     $newInstallUserPackages = @()
-        #     $newInstallUserPackages += $installUserPackages.keys | ForEach-Object { $userPackageNamesMap.Get_Item($_) } | Sort-Object @{expression={$_};Ascending=$true}
-
-        #     # add install user packages to user packages
-        #     for($i = 0; $i -lt $newInstallUserPackages.Count; $i++)
-        #     {
-        #         $hstwb.Settings.UserPackages.Set_Item(("InstallUserPackage{0}" -f ($i + 1)), $newInstallUserPackages[$i])
-        #     }
-            
-        #     Save $hstwb
-        # }
     }
     until ($choice -eq 'Back')
 }
