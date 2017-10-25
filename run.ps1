@@ -1541,7 +1541,7 @@ function RunInstall($hstwb)
 
     # get user packages
     $installUserPackageNames = @()
-    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Sort-Object | Where-Object { $_ -match 'InstallUserPackage\d+' }))
     {
         $userPackageName = $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
         $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
