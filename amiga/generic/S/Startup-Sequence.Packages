@@ -154,15 +154,13 @@ echo "HstWB Installer has completed package"
 echo "installation and system is now ready for use."
 echo ""
 
-; Run install cleanup
-execute INSTALLDIR:S/Install-Cleanup
-
-
 ; Copy hstwb installer log til install dir, if it exists
 IF EXISTS SYS:HstWB-Installer.log
   Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
 ENDIF
 
+; Run install cleanup
+execute INSTALLDIR:S/Install-Cleanup
 
 echo "Please wait 10 seconds before restarting to allow file"
 echo "system to write changes to disk. Continue will reboot"
