@@ -511,8 +511,8 @@ IF EXISTS T:_deletetemp
   Delete >NIL: T:_deletetemp
 ENDIF
 IF EXISTS T:_selectalluserpackages
-  Delete >NIL: >T:_selectalluserpackages
+  Delete >NIL: T:_selectalluserpackages
 ENDIF
 IF EXISTS T:_deselectalluserpackages
-  Delete >NIL: >T:_deselectalluserpackages
+  Delete >NIL: T:_deselectalluserpackages
 ENDIF
