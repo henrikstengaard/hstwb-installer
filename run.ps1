@@ -578,9 +578,9 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
         $resetPackagesScriptLines = @()
         $selectAllPackagesScriptLines = @()
-        $unselectAllPackagesScriptLines = @()
+        $deselectAllPackagesScriptLines = @()
 
-        # build reset, select all and unselect all packages
+        # build reset, select all and deselect all packages
         foreach ($installPackageScript in $installPackageScripts)
         {
             $resetPackagesScriptLines += ''
@@ -595,11 +595,11 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $selectAllPackagesScriptLines += ("  echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.PackageId)
             $selectAllPackagesScriptLines += "ENDIF"
 
-            $unselectAllPackagesScriptLines += ''
-            $unselectAllPackagesScriptLines += ("; Unselect package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $unselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $unselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $unselectAllPackagesScriptLines += "ENDIF"
+            $deselectAllPackagesScriptLines += ''
+            $deselectAllPackagesScriptLines += ("; Deselect package '{0}'" -f $installPackageScript.Package.PackageFullName)
+            $deselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $deselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $deselectAllPackagesScriptLines += "ENDIF"
         }
 
         # add reset packages and assigns script lines
@@ -644,13 +644,13 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP installpackagesmenu'
 
-        # add unselect all packages script lines
+        # add deselect all packages script lines
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Unselect all packages'
+        $installPackagesScriptLines += '; Deselect all packages'
         $installPackagesScriptLines += '; ---------------------'
-        $installPackagesScriptLines += 'LAB unselectallpackages'
-        $installPackagesScriptLines += $unselectAllPackagesScriptLines
+        $installPackagesScriptLines += 'LAB deselectallpackages'
+        $installPackagesScriptLines += $deselectAllPackagesScriptLines
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP installpackagesmenu'
 
@@ -678,7 +678,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # add install package option and show install packages menu
         $installPackagesScriptLines += "echo ""========================================"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Select all packages"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Unselect all packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Deselect all packages"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
@@ -705,7 +705,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("; Install package menu '{0}' option" -f $package.PackageFullName)
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += "  ; Unselect package, if it's selected. Otherwise select package"
+            $installPackagesScriptLines += "  ; deselect package, if it's selected. Otherwise select package"
             $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
 
             $packageName = $installPackageScript.Package.Package.Name.ToLower()
@@ -738,17 +738,17 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
                 }
 
                 # add script lines to show package dependency warning, if selected packages has dependencies to it
-                $installPackagesScriptLines += "    set unselectpackage ""1"""
+                $installPackagesScriptLines += "    set deselectpackage ""1"""
                 $installPackagesScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
-                $installPackagesScriptLines += ("      set unselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and unselecting it*Nmay cause issues when installing packages.*N*NAre you sure you want to unselect*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
+                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and deselecting it*Nmay cause issues when installing packages.*N*NAre you sure you want to deselect*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
                 $installPackagesScriptLines += "    ENDIF"
-                $installPackagesScriptLines += "    IF `$unselectpackage EQ 1 VAL"
+                $installPackagesScriptLines += "    IF `$deselectpackage EQ 1 VAL"
                 $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
                 $installPackagesScriptLines += "    ENDIF"
             }
             else
             {
-                # unselect package, if no other packages has dependencies to it
+                # deselect package, if no other packages has dependencies to it
                 $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
             }
 
@@ -777,7 +777,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 3) + """")
-        $installPackagesScriptLines += "  SKIP BACK unselectallpackages"
+        $installPackagesScriptLines += "  SKIP BACK deselectallpackages"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")

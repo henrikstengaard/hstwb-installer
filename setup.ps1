@@ -698,7 +698,7 @@ function SelectPackagesMenu($hstwb)
     do
     {
         # build package options
-        $packageOptions = @('Select all', 'Unselect all')
+        $packageOptions = @('Select all', 'Deselect all')
         $packageOptions += $packageNames | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $packageNamesMap.Get_Item($_)) } else { ("+ " + $packageNamesMap.Get_Item($_)) } }
         $packageOptions += "Back"
 
@@ -711,7 +711,7 @@ function SelectPackagesMenu($hstwb)
         {
             $addPackageNames += $hstwb.Packages.Keys
         }
-        elseif ($choice -eq 'Unselect all')
+        elseif ($choice -eq 'Deselect all')
         {
             $removePackageNames += $installPackages.Keys
         }
@@ -720,10 +720,10 @@ function SelectPackagesMenu($hstwb)
             $packageNameFormatted = $choice -replace '^(\+|\-) ', ''
             $packageName = $packageNamesFormattedMap.Get_Item($packageNameFormatted)
 
-            # unselect package, if it's already selected. otherwise unselect package
+            # deselect package, if it's already selected. otherwise deselect package
             if ($installPackages.ContainsKey($packageName))
             {
-                $unselectPackage = $true
+                $deselectPackage = $true
 
                 # show package dependency warning, if package has dependencies
                 if ($dependencyPackageNamesIndex.ContainsKey($packageName))
@@ -736,13 +736,13 @@ function SelectPackagesMenu($hstwb)
                     $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
 
                     # show package dependency warning
-                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and unselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to unselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
+                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
                     {
-                        $unselectPackage = $false
+                        $deselectPackage = $false
                     }
                 }
 
-                if ($unselectPackage)
+                if ($deselectPackage)
                 {
                     $removePackageNames += $packageName
                 }
@@ -909,7 +909,7 @@ function SelectUserPackagesMenu($hstwb)
     do
     {
         # build user package options
-        $userPackageOptions = @('Select all', 'Unselect all')
+        $userPackageOptions = @('Select all', 'Deselect all')
         $userPackageOptions += $userPackageNames | ForEach-Object { if ($installUserPackages.ContainsKey($_)) { ("- " + $userPackageNamesMap.Get_Item($_)) } else { ("+ " + $userPackageNamesMap.Get_Item($_)) } }
         $userPackageOptions += "Back"
 
@@ -923,7 +923,7 @@ function SelectUserPackagesMenu($hstwb)
         {
             $addUserPackageNames += $hstwb.UserPackages.Keys
         }
-        elseif ($choice -eq 'Unselect all')
+        elseif ($choice -eq 'Deselect all')
         {
             $removeUserPackageNames += $installUserPackages.Keys
         }
