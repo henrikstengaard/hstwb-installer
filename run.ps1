@@ -518,7 +518,8 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     # append skip reset settings or install packages depending on installer mode
     if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
-        $installPackagesScriptLines += "SKIP reset"
+        $installPackagesScriptLines += "SKIP resetpackages"
+        $installPackagesScriptLines += ""
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\SelectAssignDir")
     }
@@ -552,50 +553,110 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
     if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
-        # reset
-        $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Reset'
-        $installPackagesScriptLines += '; -----'
-        $installPackagesScriptLines += 'LAB reset'
+        $dependencyPackageNamesIndex = @{}
 
-        # reset packages
-        foreach ($installPackageScript in $installPackageScripts)
+        foreach ($packageName in $hstwb.Packages.Keys)
         {
-            $installPackagesScriptLines += ''
-            $installPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += "ENDIF"
+            $package = $hstwb.Packages.Get_Item($packageName).Latest
+    
+            foreach($dependencyPackageName in $package.PackageDependencies)
+            {
+                if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+                {
+                    $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+                }
+                else
+                {
+                    $dependencyPackageNames = @()
+                }
+
+                $dependencyPackageNames += $packageName
+
+                $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
+            }
         }
 
+        $resetPackagesScriptLines = @()
+        $selectAllPackagesScriptLines = @()
+        $unselectAllPackagesScriptLines = @()
+
+        # build reset, select all and unselect all packages
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $resetPackagesScriptLines += ''
+            $resetPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.PackageFullName)
+            $resetPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $resetPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $resetPackagesScriptLines += "ENDIF"
+
+            $selectAllPackagesScriptLines += ''
+            $selectAllPackagesScriptLines += ("; Select package '{0}'" -f $installPackageScript.Package.PackageFullName)
+            $selectAllPackagesScriptLines += ("IF NOT EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $selectAllPackagesScriptLines += ("  echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $selectAllPackagesScriptLines += "ENDIF"
+
+            $unselectAllPackagesScriptLines += ''
+            $unselectAllPackagesScriptLines += ("; Unselect package '{0}'" -f $installPackageScript.Package.PackageFullName)
+            $unselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $unselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $unselectAllPackagesScriptLines += "ENDIF"
+        }
+
+        # add reset packages and assigns script lines
         $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Reset packages'
+        $installPackagesScriptLines += '; --------------'
+        $installPackagesScriptLines += 'LAB resetpackages'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += $resetPackagesScriptLines
         $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP installpackagesmenu'
-        $installPackagesScriptLines += ''
 
         # reset assigns
+        $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += '; Reset assigns'
         $installPackagesScriptLines += '; -------------'
         $installPackagesScriptLines += 'LAB resetassigns'
-        $installPackagesScriptLines += ''
         $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP editassignsmenu'
 
         # default assigns
         $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
         $installPackagesScriptLines += '; Default assigns'
         $installPackagesScriptLines += '; ---------------'
         $installPackagesScriptLines += 'LAB defaultassigns'
-        $installPackagesScriptLines += ''
         $installPackagesScriptLines += BuildDefaultAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'SKIP editassignsmenu'
 
+        # add select all packages script lines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Select all packages'
+        $installPackagesScriptLines += '; -------------------'
+        $installPackagesScriptLines += 'LAB selectallpackages'
+        $installPackagesScriptLines += $selectAllPackagesScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP installpackagesmenu'
+
+        # add unselect all packages script lines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Unselect all packages'
+        $installPackagesScriptLines += '; ---------------------'
+        $installPackagesScriptLines += 'LAB unselectallpackages'
+        $installPackagesScriptLines += $unselectAllPackagesScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP installpackagesmenu'
+
         # install packages menu label
-        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
         $installPackagesScriptLines += "; Install packages menu"
         $installPackagesScriptLines += "; ---------------------"
         $installPackagesScriptLines += "LAB installpackagesmenu"
@@ -616,6 +677,8 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
         # add install package option and show install packages menu
         $installPackagesScriptLines += "echo ""========================================"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Select all packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Unselect all packages"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
@@ -640,9 +703,55 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackageScript = $installPackageScripts[$i]
 
             $installPackagesScriptLines += ""
+            $installPackagesScriptLines += ("; Install package menu '{0}' option" -f $package.PackageFullName)
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
+            $installPackagesScriptLines += "  ; Unselect package, if it's selected. Otherwise select package"
             $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+
+            $packageName = $installPackageScript.Package.Package.Name.ToLower()
+
+            # show package dependency warning, if package has dependencies
+            if ($dependencyPackageNamesIndex.ContainsKey($packageName))
+            {
+                $installPackagesScriptLines += "    set showdependencywarning ""0"""
+                $installPackagesScriptLines += "    set dependencypackagenames """""
+                
+                # list selected package names that has dependencies to package
+                $dependencyPackageNames = @()
+                $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
+
+                foreach($dependencyPackageName in $dependencyPackageNames)
+                {
+                    $package = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
+
+                    # add script lines to set show dependency warning, if dependency package is selected
+                    $installPackagesScriptLines += ("    ; Set show dependency warning, if package '{0}' is selected" -f $package.PackageFullName)
+                    $installPackagesScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.PackageId)
+                    $installPackagesScriptLines += "      set showdependencywarning ""1"""
+                    $installPackagesScriptLines += "      IF ""`$dependencypackagenames"" EQ """""
+                    $installPackagesScriptLines += ("        set dependencypackagenames ""{0}""" -f $package.Package.Name)
+                    $installPackagesScriptLines += "      ELSE"
+                    $installPackagesScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $package.Package.Name)
+                    $installPackagesScriptLines += "      ENDIF"
+                    $installPackagesScriptLines += "    ENDIF"
+                    
+                }
+
+                # add script lines to show package dependency warning, if selected packages has dependencies to it
+                $installPackagesScriptLines += "    set unselectpackage ""1"""
+                $installPackagesScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
+                $installPackagesScriptLines += ("      set unselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and unselecting it*Nmay cause issues when installing packages.*N*NAre you sure you want to unselect*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
+                $installPackagesScriptLines += "    ENDIF"
+                $installPackagesScriptLines += "    IF `$unselectpackage EQ 1 VAL"
+                $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+                $installPackagesScriptLines += "    ENDIF"
+            }
+            else
+            {
+                # unselect package, if no other packages has dependencies to it
+                $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            }
+
             $installPackagesScriptLines += "  ELSE"
 
             $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package
@@ -664,14 +773,22 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # install packages option and skip back to install packages menu 
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
-        $installPackagesScriptLines += "  SKIP viewreadmemenu"
+        $installPackagesScriptLines += "  SKIP BACK selectallpackages"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 3) + """")
-        $installPackagesScriptLines += "  SKIP editassignsmenu"
+        $installPackagesScriptLines += "  SKIP BACK unselectallpackages"
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
+        $installPackagesScriptLines += "  SKIP viewreadmemenu"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
+        $installPackagesScriptLines += "  SKIP editassignsmenu"
+        $installPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 6) + """")
         $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to install selected packages?"" ""Yes|No""``"
         $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
         $installPackagesScriptLines += "    SKIP installpackages"
@@ -681,13 +798,13 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += ""
         if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
-            $installPackagesScriptLines += "  end"
+            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 7) + """")
+            $installPackagesScriptLines += "  SKIP end"
             $installPackagesScriptLines += "ENDIF"
         }
         else
         {
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
+            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 7) + """")
             $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to skip package installation?"" ""Yes|No""``"
             $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
             $installPackagesScriptLines += "    SKIP end"

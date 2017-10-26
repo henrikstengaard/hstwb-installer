@@ -689,7 +689,7 @@ function SelectPackagesMenu($hstwb)
                 $dependencyPackageNames = @()
             }
 
-            $dependencyPackageNames += $package.Package.Name
+            $dependencyPackageNames += $packageName
 
             $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
         }
@@ -736,7 +736,7 @@ function SelectPackagesMenu($hstwb)
                     $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
 
                     # show package dependency warning
-                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and unselecting it may cause issues when installing packages.`r`n`r`nDo you really want to unselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
+                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and unselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to unselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
                     {
                         $unselectPackage = $false
                     }
@@ -1100,7 +1100,7 @@ function Save($hstwb)
 # reset settings
 function ResetSettings($hstwb)
 {
-    $confirm = ConfirmDialog "Reset" "Do you really want to reset settings?"
+    $confirm = ConfirmDialog "Reset" "Are you sure you want to reset settings?"
     if (!$confirm)
     {
         return
