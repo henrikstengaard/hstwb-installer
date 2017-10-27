@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-10-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -51,7 +51,8 @@ execute S:Assign-HstWB-Installer
 
 
 ; Load commands resident 
-resident INSTALLDIR:C/Reboot PURE 
+resident INSTALLDIR:C/Reboot PURE
+resident INSTALLDIR:C/TotalReset PURE
 resident INSTALLDIR:C/UnZip PURE 
 resident INSTALLDIR:C/UAEquit PURE 
 resident INSTALLDIR:C/MakePath PURE 
