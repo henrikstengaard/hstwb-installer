@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-13
+# Date:   2017-10-27
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1684,10 +1684,13 @@ function RunInstall($hstwb)
     }
 
 
+    $installAmigaOs39Reboot = $false
     $installBoingBagsReboot = $false
-
+    
     if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
     {
+        $installAmigaOs39Reboot = $true
+
         # create install amiga os 3.9 prefs file
         $installAmigaOs39File = Join-Path $prefsDir -ChildPath 'Install-AmigaOS3.9'
         Set-Content $installAmigaOs39File -Value ""
@@ -1891,7 +1894,7 @@ function RunInstall($hstwb)
     }
 
     
-    if (!$installPackagesReboot -and !$installBoingBagsReboot)
+    if (!$installPackagesReboot -and !$installAmigaOs39Reboot)
     {
         return
     }
@@ -1953,17 +1956,25 @@ function RunInstall($hstwb)
     # print start emulator message
     Write-Host ""
     $task = ""
+    if ($installAmigaOs39Reboot)
+    {
+        $task = "Amiga OS 3.9"
+    }
     if ($installBoingBagsReboot)
     {
-        $task = "boing bags"
+        if ($task.Length -gt 0)
+        {
+            $task += ", "
+        }
+        $task += "Boing Bags"
     }
     if ($installPackagesReboot)
     {
         if ($task.Length -gt 0)
         {
-            $task += " and "
+            $task += ", "
         }
-        $task += "packages"
+        $task += "Packages"
     }
 
     Write-Host ("Starting emulator '{0}' to run install {1}..." -f $hstwb.Emulator, $task)        
