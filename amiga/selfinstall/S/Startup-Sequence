@@ -77,9 +77,6 @@ ENDIF
 ; Copy self install scripts and tools
 echo "Copying self install scripts and tools..."
 copy >NIL: "INSTALLDIR:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
-MakePath >NIL: "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9"
-copy >NIL: "INSTALLDIR:Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/Install-AmigaOS3.9/" ALL
-copy >NIL: "INSTALLDIR:S/Install-AmigaOS3.9" TO "HSTWBINSTALLERDIR:Install/S" ALL
 
 
 ; Create packages directory, if it doesn't exist
@@ -111,6 +108,13 @@ echo "" >INSTALLDIR:Prefs/Install-Complete
 echo "Done"
 echo ""
 echo "Installation is now complete."
+echo ""
+echo "Please let the system wait 10 seconds before continuing"
+echo "to allow file system to write changes to disk." 
+echo ""
+echo "Continue will quit UAE in 10 seconds."
+echo ""
+ask "Press ENTER to continue"
 echo ""
 
 
