@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-10-27
+; Date: 2017-10-30
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -24,20 +24,86 @@ echo ""
 echo "HstWB Installer is now running build self install."
 
 
-; Set stack, failat and load basic commands resident 
+; Set stack
 stack 16384
+
+; Set failat to 255 for DiskInDrive to fail silently
+failat 255
+
+set amigaos39 "1"
+
+; Goto load system files, if CD0: is not present
+DiskInDrive >NIL: CD0:
+IF WARN
+  ; Set failat to 21
+  failat 21
+  set amigaos39 "0"
+  SKIP loadsystemfiles
+ENDIF
+
+; Goto load system files, if AmigaOS3.9: is not present
+DiskInDrive >NIL: AmigaOS3.9:
+IF WARN
+  ; Set failat to 21
+  failat 21
+  set amigaos39 "0"
+  SKIP loadsystemfiles
+ENDIF
+
+; Set failat to 21
 failat 21
-DF0:C/AddBuffers >NIL: DF0: 200
-resident DF0:C/Assign PURE
-resident DF0:C/Copy PURE
-resident DF0:C/Delete PURE
-resident DF0:C/Execute PURE
-resident DF0:C/MakeDir PURE
-resident DF0:C/Protect PURE
-resident DF0:C/Search PURE 
-resident DF0:C/Wait PURE 
-MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
+
+; Goto load system files, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
+  set amigaos39 "0"
+ENDIF
+
+
+; Load system files
+; -----------------
+LAB loadsystemfiles
+
+; Load basic commands resident
+echo ""
+IF "$amigaos39" EQ 1 VAL
+  echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom...*e[0m"
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Assign" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Copy" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Delete" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Eval" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Execute" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Rename" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/MakeDir" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Protect" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Search" PURE 
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Wait" PURE 
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Which" PURE 
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Mount" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Type" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/RequestChoice" PURE
+ELSE
+  echo "*e[1mLoading Workbench system files from Workbench 3.1 disk...*e[0m"
+  "DF0:C/AddBuffers" >NIL: DF0: 200
+  resident "DF0:C/Assign" PURE
+  resident "DF0:C/Copy" PURE
+  resident "DF0:C/Delete" PURE
+  resident "DF0:C/Eval" PURE
+  resident "DF0:C/Execute" PURE
+  resident "DF0:C/Rename" PURE
+  resident "DF0:C/MakeDir" PURE
+  resident "DF0:C/Protect" PURE
+  resident "DF0:C/Search" PURE 
+  resident "DF0:C/Wait" PURE 
+  resident "DF0:C/Which" PURE 
+  resident "DF0:C/Mount" PURE
+  resident "DF0:C/Type" PURE
+  resident "DF0:C/RequestChoice" PURE
+ENDIF
+echo "Done"
+
+MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
+Assign T: RAM:
 SetEnv TZ MST7
 
 

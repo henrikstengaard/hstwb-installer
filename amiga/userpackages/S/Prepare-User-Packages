@@ -5,7 +5,7 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-10-30
 ; Author: Henrik Noerfjand Stengaard
 
 ; Fail, if user packages file doesn't exist
@@ -17,7 +17,7 @@ ENDIF
 ; Get user packages count
 set userpackagescount `wc -l <"{userpackages}"`
 
-echo "Preparing $userpackagescount user package(s) for installation..."
+echo "*e[1mPreparing $userpackagescount user package(s) for installation...*e[0m"
 
 set menuindex 1
 
@@ -33,7 +33,7 @@ fdate "%Y-%m-%d" >>"{installuserpackages}"
 echo "; Author: Henrik Noerfjand Stengaard" >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
 echo "IF NOT *"<validate>*" EQ *"*"" >>"{installuserpackages}"
-echo "  echo *"Validating assigns for user packages...*"" >>"{installuserpackages}"
+echo "  echo *"**e[1mValidating assigns for user packages...**e[0m*"" >>"{installuserpackages}"
 echo "ENDIF" >>"{installuserpackages}"
 
 IF "{nomenus}" EQ ""

@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-10-27
+; Date: 2017-10-30
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -42,21 +42,24 @@ ask "Press ENTER to continue"
 ; Workbench message
 cls 
 echo "*e[32m" NOLINE
-echo "Workbench 3.1"
+echo "Workbench system files"
 echo "*e[0m*e[1m" NOLINE
-echo "-------------"
+echo "----------------------"
 echo "*e[0m" NOLINE
 echo ""
-echo "Workbench 3.1 system files are required for the"
-echo "installation process and these will be loaded from"
-echo "Workbench 3.1 disk."
+echo "Workbench system files are required for the"
+echo "installation process and will load these from"
+echo "either Amiga OS 3.9 CD, Workbench 3.1 adf or disk:"
+echo "1. CD0: CD drive with Amiga OS 3.9 CD-Rom."
+echo "2. WORKBENCHDIR: Directory with Workbench 3.1 adf file."
+echo "3. FD0:, FD1:, FD2:, FD3: Workbench 3.1 disk inserted in"
+echo "   any floppy device."
 echo ""
-echo "Workbench 3.1 disk adf file will now be autodetected and"
-echo "used from WORKBENCHDIR:, if it's present."
+echo "Loading Workbench system files can be restarted,"
+echo "if Amiga OS 3.9 CD-rom or Workbench 3.1 adf file was not"
+echo "detected."
 echo ""
-echo "If WORKBENCHDIR: is not present, it will fallback to"
-echo "use floppy devices and autodetect first floppy device"
-echo "with Workbench 3.1 disk inserted."
+echo "Continue will start loading Workbench system files."
 echo ""
 ask "Press ENTER to continue"
 
@@ -69,15 +72,70 @@ stack 16384
 Set floppydevice ""
 
 
+; Load Workbench system files
+cls 
+echo "*e[32m" NOLINE
+echo "Load Workbench system files"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom"
+echo "in CD0:...*e[0m"
+
 ; Set failat to 255 for DiskInDrive to fail silently
 failat 255
 
+; Goto find workbench adf, if CD0: is not present
+DiskInDrive >NIL: CD0:
+IF WARN
+  ; Set failat to 21
+  failat 21
+  echo "CD0: device is not present!"
+  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  SKIP findworkbenchadf
+ENDIF
+
+; Goto find workbench adf, if AmigaOS3.9: is not present
+DiskInDrive >NIL: AmigaOS3.9:
+IF WARN
+  ; Set failat to 21
+  failat 21
+  echo "AmigaOS3.9: device is not present!"
+  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  SKIP findworkbenchadf
+ENDIF
+
+; Set failat to 21
+failat 21
+
+; Goto find workbench adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
+  echo "Amiga OS 3.9 CD-Rom is not valid!"
+  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  SKIP findworkbenchadf
+ENDIF
+
+; Goto install system files
+set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT"
+SKIP loadsystemfiles
+
+
+; Find workbench adf
+; ------------------
+LAB findworkbenchadf
+
+echo ""
+echo "*e[1mLoading Workbench system files from Workbench 3.1 adf file"
+echo "in WORKBENCHDIR:...*e[0m"
 
 ; Goto detect workbench disk, if WORKBENCHDIR: is not mapped
 DiskInDrive >NIL: WORKBENCHDIR:
 IF WARN
   ; Set failat to 21
   failat 21
+  echo "WORKBENCHDIR: device is not present!"
+  echo "Skip Workbench system files from Workbench 3.1 adf file."
   SKIP detectworkbenchdisk
 ENDIF
 
@@ -85,16 +143,6 @@ ENDIF
 ; Set failat to 21
 failat 21
 
-
-; Autodetect workbench 3.1 adf message
-cls 
-echo "*e[32m" NOLINE
-echo "Autodetect Workbench 3.1 adf"
-echo "*e[0m*e[1m" NOLINE
-echo "----------------------------"
-echo "*e[0m" NOLINE
-echo ""
-echo "*e[1mFinding Workbench 3.1 adf in WORKBENCHDIR:...*e[0m"
 
 ; Add assigns from S:AssignList
 AssPlus >NIL:
@@ -107,9 +155,11 @@ LAB nextadffile
 set adffile ""
 set adffile `FirstLine RAM:_adffiles DELETE`
 
-; Goto workbench disk fallback, if no valid workbench adf was detected
+; Goto workbench disk, if no valid workbench adf was detected
 IF "$adffile" EQ ""
-  SKIP workbenckdiskfallback
+  echo "Workbench 3.1 adf file not present!"
+  echo "Skip Workbench system files from Workbench 3.1 adf file."
+  SKIP detectworkbenchdisk
 ENDIF
 
 ; Goto next adf file, if file size is not 901120 bytes
@@ -161,102 +211,37 @@ IF NOT $RC EQ 0 VAL
   SKIP BACK nextadffile
 ENDIF
 
-; Workbench 3.1 adf detected, goto extract workbench adf
-SKIP extractworkbenchadf
-
-
-; Workbench disk fallback
-; -----------------------
-LAB workbenckdiskfallback
-
-; Print workbench disk floppy device fallback message
-echo "Done"
-echo ""
-echo "*e[1mWorkbench 3.1 adf doesn't exist in WORKBENCHDIR:.*e[0m"
-echo ""
-echo "Workbench adf files in WORKBENCHDIR: can be changed"
-echo "and a reset will restart autodetect Workbench 3.1"
-echo "adf files in WORKBENCHDIR:."
-echo ""
-echo "Otherwise installation will continue and fallback to"
-echo "autodetect Workbench 3.1 disk in any floppy device."
-echo ""
-ask "Press ENTER to continue"
-SKIP detectworkbenchdisk
-
 
 ; Extract workbench adf
 ; ---------------------
 LAB extractworkbenchadf
 
-echo "Done"
-echo ""
-echo "Detected Workbench 3.1 adf file:"
-echo "*e[1m$adffile*e[0m"
-echo ""
-echo "Workbench adf files in WORKBENCHDIR: can be changed"
-echo "and a reset will restart autodetect Workbench 3.1"
-echo "adf files in WORKBENCHDIR:, if the detected"
-echo "Workbench 3.1 adf file isn't correct."
-echo ""
-echo "Otherwise installation will continue extracting"
-echo "Workbench 3.1 system files from adf file"
-echo "to a temp directory and use them for self install."
-echo ""
-ask "Press ENTER to continue"
-echo ""
-echo "Preparing Workbench system files..."
-
+echo "$adffile"
 
 ; Create temp workbench directory, if it doesn't exist
 IF NOT EXISTS "SYS:Temp/Workbench"
   MakePath >NIL: "SYS:Temp/Workbench"
 ENDIF
 
-
 ; Extract files from workbench 3.1 adf
 xadUnFile >NIL: "$adffile" "SYS:Temp/Workbench" DIMG OVERWRITE
 
-
-; Add buffers, load commands resident and setup shell
-SYS:Temp/Workbench/C/AddBuffers >NIL: DF0: 200
-resident SYS:Temp/Workbench/C/Assign PURE
-resident SYS:Temp/Workbench/C/Copy PURE
-resident SYS:Temp/Workbench/C/Delete PURE
-resident SYS:Temp/Workbench/C/Eval PURE
-resident SYS:Temp/Workbench/C/Execute PURE
-resident SYS:Temp/Workbench/C/Rename PURE
-resident SYS:Temp/Workbench/C/MakeDir PURE
-resident SYS:Temp/Workbench/C/Protect PURE
-resident SYS:Temp/Workbench/C/Search PURE 
-resident SYS:Temp/Workbench/C/Wait PURE 
-resident SYS:Temp/Workbench/C/Which PURE 
-resident SYS:Temp/Workbench/C/Mount PURE
-resident SYS:Temp/Workbench/C/Type PURE
-resident SYS:Temp/Workbench/C/RequestChoice PURE
-MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
-Copy ENVARC:~(#?.info) ENV: ALL QUIET
-SetEnv TZ MST7
-
-
-; Print prepare workbench system files done message
-echo "Done"
-echo ""
-ask "Press ENTER to continue"
-SKIP selfinstallstart
+; Goto install system files
+set systemfilesdir "SYS:Temp/Workbench"
+SKIP loadsystemfiles
 
 
 ; Detect workbench disk
 ; ----------------------
 LAB detectworkbenchdisk
 
-; Print autodetect workbench 3.1 disk message
-cls 
-echo "*e[32m" NOLINE
-echo "Autodetect Workbench 3.1 disk"
-echo "*e[0m*e[1m" NOLINE
-echo "-----------------------------"
-echo "*e[0m" NOLINE
+echo ""
+echo "Load Workbench system files can be restarted now,"
+echo "if Amiga OS 3.9 CD-rom or Workbench 3.1 adf file was not"
+echo "detected to retry with changed CD-Rom or adf files."
+echo ""
+echo "Otherwise Load Workbench system files will now detect"
+echo "Workbench 3.1 disk inserted in any floppy device."
 
 LAB insertworkbenchdisk
 echo ""
@@ -335,29 +320,56 @@ ENDIF
 echo "Detected Workbench 3.1 disk in floppy device $floppydevice:"
 echo ""
 ask "Press ENTER to continue"
+echo ""
+echo "*e[1mLoading Workbench system files from Workbench 3.1 disk...*e[0m"
 
 
-; Set stack, failat and load basic commands resident 
-stack 16384
-failat 21
-$floppydevice:C/AddBuffers >NIL: DF0: 200
-resident $floppydevice:C/Assign PURE
-resident $floppydevice:C/Copy PURE
-resident $floppydevice:C/Delete PURE
-resident $floppydevice:C/Eval PURE
-resident $floppydevice:C/Execute PURE
-resident $floppydevice:C/Rename PURE
-resident $floppydevice:C/MakeDir PURE
-resident $floppydevice:C/Protect PURE
-resident $floppydevice:C/Search PURE 
-resident $floppydevice:C/Wait PURE 
-resident $floppydevice:C/Which PURE 
-resident $floppydevice:C/Mount PURE
-resident $floppydevice:C/Type PURE
-resident $floppydevice:C/RequestChoice PURE
+; Load system files
+; -----------------
+LAB loadsystemfiles
+
+; Load basic commands resident
+IF "$floppydevice" EQ ""
+  resident "$systemfilesdir/C/Assign" PURE
+  resident "$systemfilesdir/C/Copy" PURE
+  resident "$systemfilesdir/C/Delete" PURE
+  resident "$systemfilesdir/C/Eval" PURE
+  resident "$systemfilesdir/C/Execute" PURE
+  resident "$systemfilesdir/C/Rename" PURE
+  resident "$systemfilesdir/C/MakeDir" PURE
+  resident "$systemfilesdir/C/Protect" PURE
+  resident "$systemfilesdir/C/Search" PURE 
+  resident "$systemfilesdir/C/Wait" PURE 
+  resident "$systemfilesdir/C/Which" PURE 
+  resident "$systemfilesdir/C/Mount" PURE
+  resident "$systemfilesdir/C/Type" PURE
+  resident "$systemfilesdir/C/RequestChoice" PURE
+ELSE
+  "$floppydevice:C/AddBuffers" >NIL: $floppydevice: 200
+  resident "$floppydevice:C/Assign" PURE
+  resident "$floppydevice:C/Copy" PURE
+  resident "$floppydevice:C/Delete" PURE
+  resident "$floppydevice:C/Eval" PURE
+  resident "$floppydevice:C/Execute" PURE
+  resident "$floppydevice:C/Rename" PURE
+  resident "$floppydevice:C/MakeDir" PURE
+  resident "$floppydevice:C/Protect" PURE
+  resident "$floppydevice:C/Search" PURE 
+  resident "$floppydevice:C/Wait" PURE 
+  resident "$floppydevice:C/Which" PURE 
+  resident "$floppydevice:C/Mount" PURE
+  resident "$floppydevice:C/Type" PURE
+  resident "$floppydevice:C/RequestChoice" PURE
+ENDIF
+
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
-Copy ENVARC:~(#?.info) ENV: ALL QUIET
+Assign ENV: RAM:Env
+Assign T: RAM:
 SetEnv TZ MST7
+
+echo "Done"
+echo ""
+ask "Press ENTER to continue"
 
 
 ; Self install start

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-27
+# Date:   2017-10-30
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -989,7 +989,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += '    MakePath "{0}"' -f $hstwb.Paths.EnvArcDir
     $installPackagesScriptLines += '  ENDIF'
     $installPackagesScriptLines += "ELSE"
-    $installPackagesScriptLines += "  echo ""Validating assigns for packages..."""
+    $installPackagesScriptLines += "  echo ""*e[1mValidating assigns for packages...*e[0m"""
     $installPackagesScriptLines += "ENDIF"
     $installPackagesScriptLines += ''
     $installPackagesScriptLines += '; Validate assigns'
@@ -2292,6 +2292,14 @@ function RunBuildSelfInstall($hstwb)
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
 
+    # set amiga os 3.9 iso file
+    $isoFile = ''
+    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+    {
+        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
+    }
+
+
     #
     $emulatorArgs = ''
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
@@ -2307,7 +2315,7 @@ function RunBuildSelfInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2330,7 +2338,7 @@ function RunBuildSelfInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
         
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -2644,32 +2652,10 @@ try
     }
 
 
-    # find workbench adf set hashes 
-    $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
-
-    # find workbench 3.1 workbench disk
-    $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-
-    # fail, if workbench adf hash doesn't exist
-    if (!$workbenchAdfHash)
-    {
-        Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
-    }
-
-
-    # set workbench adf set hashes workbench adf file
-    $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
-    $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
-
-
-    # print workbench adf hash file
-    Write-Host ("Using Workbench 3.1 Workbench Disk adf: '" + $workbenchAdfHash.File + "'")
-
-
     # find kickstart rom set hashes
     $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
-
-
+    
+    
     # find kickstart 3.1 a1200 rom
     $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
 
@@ -2697,6 +2683,61 @@ try
     if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
     {
         Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+    }
+
+
+    $amigaOS39Iso = $false
+    $workbench31Adf = $false
+    
+    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -match 'Yes')
+    {
+        if ($hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -and (Test-Path -Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile))
+        {
+            $amigaOS39Iso = $true
+            Write-Host ("Using Amiga OS 3.9 iso file for loading Workbench system files: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+        }
+        else
+        {
+            Fail $hstwb ("Amiga OS 3.9 iso file '{0}' doesn't exist!" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+        }
+    }
+
+    # find and set workbench adf set hashes, if installing workbench
+    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
+    {
+        # find workbench adf set hashes 
+        $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
+    
+        # find workbench 3.1 workbench disk
+        $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+        
+        if ($workbenchAdfHash)
+        {
+            $workbench31Adf = $true
+
+            # set workbench adf set hashes workbench adf file
+            $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
+            $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
+
+            # print workbench adf hash file
+            Write-Host ("Using Workbench 3.1 Workbench Disk adf file for loading Workbench system files: '" + $workbenchAdfHash.File + "'")
+        }
+        else
+        {
+            Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
+        }
+    }
+    else
+    {
+        $hstwb.WorkbenchAdfSetHashes = @()
+        $hstwb.Paths.WorkbenchAdfFile = ''
+    }
+
+
+    # fail, if neither amiga os 3.9 iso file or workbench 3.1 adf file is present
+    if (!$amigaOS39Iso -and !$workbench31Adf)
+    {
+        Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
     }
 
 
