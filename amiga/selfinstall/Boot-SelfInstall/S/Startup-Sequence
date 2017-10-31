@@ -91,8 +91,7 @@ DiskInDrive >NIL: CD0:
 IF WARN
   ; Set failat to 21
   failat 21
-  echo "CD0: device is not present!"
-  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  echo "CD0: device is not present! Skip Amiga OS 3.9 CD-Rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -101,8 +100,7 @@ DiskInDrive >NIL: AmigaOS3.9:
 IF WARN
   ; Set failat to 21
   failat 21
-  echo "AmigaOS3.9: device is not present!"
-  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  echo "AmigaOS3.9: device is not present! Skip Amiga OS 3.9 CD-Rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -111,8 +109,7 @@ failat 21
 
 ; Goto find workbench adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
 IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
-  echo "Amiga OS 3.9 CD-Rom is not valid!"
-  echo "Skip loading Workbench system files from Amiga OS 3.9 CD-Rom."
+  echo "Amiga OS 3.9 CD-Rom is not valid! Skip Amiga OS 3.9 CD-Rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -134,8 +131,8 @@ DiskInDrive >NIL: WORKBENCHDIR:
 IF WARN
   ; Set failat to 21
   failat 21
-  echo "WORKBENCHDIR: device is not present!"
-  echo "Skip Workbench system files from Workbench 3.1 adf file."
+  echo "WORKBENCHDIR: device is not present! Skip Workbench 3.1"
+  echo "adf file."
   SKIP detectworkbenchdisk
 ENDIF
 
@@ -157,8 +154,8 @@ set adffile `FirstLine RAM:_adffiles DELETE`
 
 ; Goto workbench disk, if no valid workbench adf was detected
 IF "$adffile" EQ ""
-  echo "Workbench 3.1 adf file not present!"
-  echo "Skip Workbench system files from Workbench 3.1 adf file."
+  echo "Workbench 3.1 adf file not present! Skip Workbench 3.1"
+  echo "adf file."
   SKIP detectworkbenchdisk
 ENDIF
 
@@ -236,11 +233,11 @@ SKIP loadsystemfiles
 LAB detectworkbenchdisk
 
 echo ""
-echo "Load Workbench system files can be restarted now,"
-echo "if Amiga OS 3.9 CD-rom or Workbench 3.1 adf file was not"
-echo "detected to retry with changed CD-Rom or adf files."
+echo "Workbench system files could not be loaded from Amiga OS 3.9"
+echo "CD-rom or Workbench 3.1 adf file. Restart with changed CD-Rom"
+echo "or adf files to retry Load Workbench system files."
 echo ""
-echo "Otherwise Load Workbench system files will now detect"
+echo "Otherwise Workbench system files will now be loaded from"
 echo "Workbench 3.1 disk inserted in any floppy device."
 
 LAB insertworkbenchdisk
