@@ -1,11 +1,9 @@
 ; Install Kickstart
 ; -----------------
 ;
-; Date: 2017-10-03
+; Date: 2017-10-31
 ; Author: Henrik Noerfjand Stengaard
 
-
-; Clear screen
 
 ; Kickstart installation
 cls
