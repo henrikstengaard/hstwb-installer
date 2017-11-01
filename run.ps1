@@ -2251,6 +2251,14 @@ function RunBuildSelfInstall($hstwb)
         mkdir $imageUserPackagesDir | Out-Null
     }
     Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
+
+    
+    # create os39 directory in image directory
+    $imageOs39Dir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "OS39"
+    if (!(Test-Path -Path $imageOs39Dir))
+    {
+        mkdir $imageOs39Dir | Out-Null
+    }
     
 
     # read winuae hstwb installer config file
@@ -2258,7 +2266,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $hstwb.Settings.Image.ImageDir $imageUserPackagesDir
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
 
 
     # replace hstwb installer uae winuae configuration placeholders
@@ -2278,7 +2286,7 @@ function RunBuildSelfInstall($hstwb)
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $hstwb.Settings.Image.ImageDir $imageUserPackagesDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
     
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
