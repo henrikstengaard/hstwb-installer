@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-30
+# Date:   2017-11-01
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2608,24 +2608,33 @@ try
     Save $hstwb
 
 
-    # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
-    if (!$hstwb.Settings.Emulator.EmulatorFile -or ($hstwb.Settings.Emulator.EmulatorFile -match '^.+$' -and !(test-path -path $hstwb.Settings.Emulator.EmulatorFile)))
+    # set and validate emulator, is install mode is test, install or build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {
-        Fail $hstwb "Error: EmulatorFile parameter doesn't exist in settings file or file doesn't exist!"
-    }
+        # fail, if EmulatorFile parameter doesn't exist in settings file or file doesn't exist
+        if (!$hstwb.Settings.Emulator.EmulatorFile -or ($hstwb.Settings.Emulator.EmulatorFile -match '^.+$' -and !(test-path -path $hstwb.Settings.Emulator.EmulatorFile)))
+        {
+            Fail $hstwb "Error: EmulatorFile parameter doesn't exist in settings file or file doesn't exist!"
+        }
 
-    
-    # emulator name
-    $emulatorName = DetectEmulatorName $hstwb.Settings.Emulator.EmulatorFile
-    
-    # fail, if emulator file is not supported
-    if (!$emulatorName)
+        
+        # emulator name
+        $emulatorName = DetectEmulatorName $hstwb.Settings.Emulator.EmulatorFile
+        
+        # fail, if emulator file is not supported
+        if (!$emulatorName)
+        {
+            Fail $hstwb "Error: Emulator file '{0}' is not supported!"
+        }
+
+        # set emulator to emulator name and file
+        $hstwb.Emulator = "{0} ({1})" -f $emulatorName, $hstwb.Settings.Emulator.EmulatorFile
+    }
+    else
     {
-        Fail $hstwb "Error: Emulator file '{0}' is not supported!"
+        # set emulator
+        $hstwb.Emulator = ''
     }
-
-    # set emulator to emulator name and file
-    $hstwb.Emulator = "{0} ({1})" -f $emulatorName, $hstwb.Settings.Emulator.EmulatorFile
     
 
     # print title and settings 
@@ -2652,92 +2661,95 @@ try
     }
 
 
-    # find kickstart rom set hashes
-    $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
-    
-    
-    # find kickstart 3.1 a1200 rom
-    $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
-
-
-    # fail, if kickstart rom hash doesn't exist
-    if (!$kickstartRomHash)
+    # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {
-        Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
-    }
-
-
-    # set kickstart rom set hashes kickstart rom file
-    $hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
-    $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
-
-
-    # print kickstart rom hash file
-    Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
-
-
-    # kickstart rom key
-    $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
-
-    # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
-    if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
-    {
-        Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
-    }
-
-
-    $amigaOS39Iso = $false
-    $workbench31Adf = $false
-    
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -match 'Yes')
-    {
-        if ($hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -and (Test-Path -Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile))
-        {
-            $amigaOS39Iso = $true
-            Write-Host ("Using Amiga OS 3.9 iso file for loading Workbench system files: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-        }
-        else
-        {
-            Fail $hstwb ("Amiga OS 3.9 iso file '{0}' doesn't exist!" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-        }
-    }
-
-    # find and set workbench adf set hashes, if installing workbench
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
-    {
-        # find workbench adf set hashes 
-        $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
-    
-        # find workbench 3.1 workbench disk
-        $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+        # find kickstart rom set hashes
+        $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
         
-        if ($workbenchAdfHash)
+        
+        # find kickstart 3.1 a1200 rom
+        $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+
+
+        # fail, if kickstart rom hash doesn't exist
+        if (!$kickstartRomHash)
         {
-            $workbench31Adf = $true
+            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+        }
 
-            # set workbench adf set hashes workbench adf file
-            $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
-            $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
 
-            # print workbench adf hash file
-            Write-Host ("Using Workbench 3.1 Workbench Disk adf file for loading Workbench system files: '" + $workbenchAdfHash.File + "'")
+        # set kickstart rom set hashes kickstart rom file
+        $hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
+        $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
+
+
+        # print kickstart rom hash file
+        Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
+
+
+        # kickstart rom key
+        $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
+
+        # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
+        if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
+        {
+            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+        }
+
+
+        $amigaOS39Iso = $false
+        $workbench31Adf = $false
+        
+        if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -match 'Yes')
+        {
+            if ($hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -and (Test-Path -Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile))
+            {
+                $amigaOS39Iso = $true
+                Write-Host ("Using Amiga OS 3.9 iso file for loading Workbench system files: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+            }
+            else
+            {
+                Fail $hstwb ("Amiga OS 3.9 iso file '{0}' doesn't exist!" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+            }
+        }
+
+        # find and set workbench adf set hashes, if installing workbench
+        if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
+        {
+            # find workbench adf set hashes 
+            $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
+        
+            # find workbench 3.1 workbench disk
+            $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+            
+            if ($workbenchAdfHash)
+            {
+                $workbench31Adf = $true
+
+                # set workbench adf set hashes workbench adf file
+                $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
+                $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
+
+                # print workbench adf hash file
+                Write-Host ("Using Workbench 3.1 Workbench Disk adf file for loading Workbench system files: '" + $workbenchAdfHash.File + "'")
+            }
+            else
+            {
+                Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
+            }
         }
         else
         {
-            Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
+            $hstwb.WorkbenchAdfSetHashes = @()
+            $hstwb.Paths.WorkbenchAdfFile = ''
         }
-    }
-    else
-    {
-        $hstwb.WorkbenchAdfSetHashes = @()
-        $hstwb.Paths.WorkbenchAdfFile = ''
-    }
 
-
-    # fail, if neither amiga os 3.9 iso file or workbench 3.1 adf file is present
-    if (!$amigaOS39Iso -and !$workbench31Adf)
-    {
-        Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
+        # fail, if neither amiga os 3.9 iso file or workbench 3.1 adf file is present
+        if (!$amigaOS39Iso -and !$workbench31Adf)
+        {
+            Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
+        }
     }
 
 
