@@ -2,9 +2,17 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-09
+# Date:   2017-11-01
 #
-# A powershell script to patch HstWB Installer UAE config files with A1200 Kickstart 3.1 rom file and changes harddrive paths to current directory.
+# A powershell script to install UAE config for HstWB images by patching hard drive
+# directories to current directory and installing Workbench 3.1 adf and
+# Kickstart rom files from Cloanto Amiga Forever, if installed.
+
+
+Param(
+	[Parameter(Mandatory=$false)]
+	[switch]$patchOnly
+)
 
 
 # calculate md5 hash from file
@@ -39,6 +47,128 @@ function FindA1200Kickstart31RomFile($kickstartDir)
     }
 
     return $null
+}
+
+
+# is valid workbench adf file
+function IsValidWorkbenchAdfFile($workbenchAdfFile)
+{
+    $md5Hash = CalculateMd5FromFile $workbenchAdfFile
+    
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Extras Disk
+    if ($md5Hash -eq 'c1c673eba985e9ab0888c5762cfa3d8f')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Fonts Disk
+    if ($md5Hash -eq '6fae8b94bde75497021a044bdbf51abc')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Install Disk
+    if ($md5Hash -eq 'd6aa4537586bf3f2687f30f8d3099c99')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Locale Disk
+    if ($md5Hash -eq 'b53c9ff336e168643b10c4a9cfff4276')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Storage Disk
+    if ($md5Hash -eq '4fa1401aeb814d3ed138f93c54a5caef')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Workbench Disk
+    if ($md5Hash -eq '590c42a69675d6970df350e200fe25dc')
+    {
+        return $true
+    }
+
+    return $false
+}
+
+
+# install workbench adf files
+function InstallWorkbenchAdfFiles($workbenchDir, $outputWorkbenchDir)
+{
+    $workbenchFiles = @()
+    $workbenchFiles += Get-ChildItem $workbenchDir
+    
+    foreach($workbenchFile in $workbenchFiles)
+    {
+        if (IsValidWorkbenchAdfFile $workbenchFile.FullName)
+        {
+            Copy-Item -Path $workbenchFile.FullName -Destination $outputWorkbenchDir
+        }
+    }
+}
+
+
+# is valid kickstart rom file
+function IsValidKickstartRomFile($kickstartRomFile)
+{
+    # return true, if filename matches Cloanto Amiga Forever rom.key
+    if ($kickstartRomFile -match '[\\/]rom.key$')
+    {
+        return $true
+    }
+
+    $md5Hash = CalculateMd5FromFile $kickstartRomFile
+    
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Kickstart 1.2 (33.180) (A500) Rom
+    if ($md5Hash -eq 'c56ca2a3c644d53e780a7e4dbdc6b699')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Kickstart 1.3 (34.5) (A500) Rom
+    if ($md5Hash -eq '89160c06ef4f17094382fc09841557a6')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Kickstart 3.1 (40.063) (A600) Rom
+    if ($md5Hash -eq 'c3e114cd3b513dc0377a4f5d149e2dd9')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Kickstart 3.1 (40.068) (A1200) rom
+    if ($md5Hash -eq 'dc3f5e4698936da34186d596c53681ab')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 2016 Kickstart 3.1 (40.068) (A4000) Rom
+    if ($md5Hash -eq '8b54c2c5786e9d856ce820476505367d')
+    {
+        return $true
+    }
+
+    return $false
+}
+
+
+# install kickstart rom files
+function InstallKickstartRomFiles($kickstartDir, $outputKickstartDir)
+{
+    $kickstartFiles = @()
+    $kickstartFiles += Get-ChildItem $kickstartDir
+    
+    foreach($kickstartFile in $kickstartFiles)
+    {
+        if (IsValidKickstartRomFile $kickstartFile.FullName)
+        {
+            Copy-Item -Path $kickstartFile.FullName -Destination $outputKickstartDir
+        }
+    }
 }
 
 
@@ -268,107 +398,178 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
 # get current directory
 $currentDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.')
 
-
-# default self install directories
+# self install directories
 $workbenchDir = Join-Path $currentDir -ChildPath "Workbench"
 $kickstartDir = Join-Path $currentDir -ChildPath "Kickstart"
 $os39Dir = Join-Path $currentDir -ChildPath "OS39"
 $userPackagesDir = Join-Path $currentDir -ChildPath "UserPackages"
 
-# use cloanto amiga forever data directory for self install directories, if present
-$amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
-if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
+
+# read winuae and fs-uae config files
+$uaeConfigLines = @()
+
+# add winuae config lines, if winuae config file exists
+$winuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.uae"
+if (Test-Path -Path $winuaeConfigFile)
 {
+    $uaeConfigLines += Get-Content $winuaeConfigFile
+
+}
+
+# add fs-uae config lines, if fs-uae config file exists
+$fsuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.fs-uae"
+if (Test-Path -Path $fsuaeConfigFile)
+{
+    $uaeConfigLines += Get-Content $fsuaeConfigFile
+
+}
+
+# self install directories
+$selfInstallDirs = @()
+
+# check, if workbenchdir is present in uae config files
+$workbenchDirPresent = $false
+if (($uaeConfigLines | Where-Object { $_ -match 'WORKBENCHDIR' }).Count -gt 0)
+{
+    $workbenchDirPresent = $true
+    $selfInstallDirs += $workbenchDir
+}
+
+# check, if workbenchdir is present in uae config files
+$kickstartDirPresent = $false
+if (($uaeConfigLines | Where-Object { $_ -match 'KICKSTARTDIR' }).Count -gt 0)
+{
+    $kickstartDirPresent = $true
+    $selfInstallDirs += $kickstartDir
+}
+
+# check, if workbenchdir is present in uae config files
+$os39DirPresent = $false
+if (($uaeConfigLines | Where-Object { $_ -match 'OS39DIR' }).Count -gt 0)
+{
+    $os39DirPresent = $true
+    $selfInstallDirs += $os39Dir
+}
+
+# check, if workbenchdir is present in uae config files
+$userPackagesDirPresent = $false
+if (($uaeConfigLines | Where-Object { $_ -match 'USERPACKAGESDIR' }).Count -gt 0)
+{
+    $userPackagesDirPresent = $true
+    $selfInstallDirs += $userPackagesDir
+}
+
+# create self install directories, if they don't exist
+foreach ($selfInstallDir in $selfInstallDirs)
+{
+    if (!(Test-Path -Path $selfInstallDir))
+    {
+        mkdir $selfInstallDir | Out-Null
+    }
+}
+
+
+# write install uae config header
+Write-Output "------------------"
+Write-Output "Install UAE Config"
+Write-Output "------------------"
+Write-Output "Author: Henrik Noerfjand Stengaard"
+Write-Output "Date: 2017-11-01"
+Write-Output ""
+Write-Output "Hard drives and directories in UAE config files will"
+Write-Output "now be updated to use the following directories:"
+Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)
+
+# write workbenchdir, if it's present
+if ($workbenchDirPresent)
+{
+    Write-Output ("WORKBENCHDIR    : '{0}'" -f $workbenchDir)
+}
+
+# write kickstartdir, if it's present
+if ($kickstartDirPresent)
+{
+    Write-Output ("KICKSTARTDIR    : '{0}'" -f $kickstartDir)
+}
+
+# write os39dir, if it's present
+if ($os39DirPresent)
+{
+    Write-Output ("OS39DIR         : '{0}'" -f $os39Dir)
+}
+
+# write userpackagesdir, if it's present
+if ($userPackagesDirPresent)
+{
+    Write-Output ("USERPACKAGESDIR : '{0}'" -f $userPackagesDir)
+}
+
+
+# install workbench 3.1 adf and kickstart rom files from cloanto amiga forever data directory, if present and patch only is not set
+$amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
+if (!$patchOnly -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
+{
+    Write-Output ""
+    Write-Output ("Installing Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever data directory '{0}'" -f $amigaForeverDataDir)
+    
     $sharedAdfDir = [System.IO.Path]::Combine($amigaForeverDataDir, "Shared\adf")
     if (Test-Path -path $sharedAdfDir)
     {
-        $workbenchDir = $sharedAdfDir
+        Write-Output ("- Workbench 3.1 adf files from '{0}'..." -f $sharedAdfDir)
+        InstallWorkbenchAdfFiles $sharedAdfDir $workbenchDir
     }
-
+    
     $sharedRomDir = [System.IO.Path]::Combine($amigaForeverDataDir, "Shared\rom")
     if (Test-Path -Path $sharedRomDir)
     {
-        $kickstartDir = $sharedRomDir
+        Write-Output ("- Kickstart rom files from '{0}'..." -f $sharedRomDir)
+        InstallKickstartRomFiles $sharedRomDir $kickstartDir
     }
+    Write-Output "Done"
 }
-
-
-# create workbench, kickstart, os39 and userpackages directories, if they don't exist
-foreach ($dir in @($workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir))
-{
-    if (!(Test-Path -Path $dir))
-    {
-        mkdir $dir | Out-Null
-    }
-}
-
-
-# winuae config file
-$winuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.uae"
 
 
 # patch and install winuae config file, if it exists
 if (Test-Path -Path $winuaeConfigFile)
 {
     # patch winuae config file
-    Write-Output ("Patching WinUAE configuration '{0}'" -f $winuaeConfigFile)
     Write-Output ""
+    Write-Output ("WinUAE configuration file '{0}'" -f $winuaeConfigFile)
+    Write-Output "- Patching hard drive directories..."
     PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
-
-
+    
     # get winuae directory from public directory
     $winuaeConfigDir = Get-ChildItem -Path ${Env:PUBLIC} -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'Amiga Files\\WinUAE\\Configurations$' } | Select-Object -First 1
 
-    # prompt for install winuae configuration, if winuae configuration directory exists
-    if ($winuaeConfigDir)
+    # install winuae config file, if winuae config directory exists and patch only is not set
+    if (!$patchOnly -and $winuaeConfigDir)
     {
-        Write-Output ("Detected WinUAE configurations directory '{0}'" -f $winuaeConfigDir.FullName)
-        Write-Output ""
-        
-        # copy winuae configuration file to winuae config dir, if confirmed install winuae configuration
-        if ((Read-Host -Prompt "Install WinUAE configuration? [Y/N]") -match '^y')
-        {
-            Copy-Item $winuaeConfigFile -Destination $winuaeConfigDir.FullName -Force
-        }
+        Write-Output ("- Installing in WinUAE configuration directory '{0}'..." -f $winuaeConfigDir.FullName)
+        Copy-Item $winuaeConfigFile -Destination $winuaeConfigDir.FullName -Force
     }
-    else
-    {
-        Write-Output ("WinUAE configurations directory doesn't exist in '{0}'" -f ${Env:PUBLIC})
-    }
-    Write-Output ""
+
+    Write-Output "Done"
 }
-
-
-# fs-uae config file
-$fsuaeConfigFile = Join-Path $currentDir -ChildPath "hstwb-installer.fs-uae"
-
 
 # patch and install fs-uae config file, if it exists
 if (Test-Path -Path $fsuaeConfigFile)
 {
-    # patch fs-uae config file
-    Write-Output ("Patching FS-UAE configuration '{0}'" -f $fsuaeConfigFile)
     Write-Output ""
+    Write-Output ("FS-UAE configuration file '{0}'" -f $fsuaeConfigFile)
+    
+    # patch fs-uae config file
+    Write-Output "- Patching hard drive directories..."
     PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
-
 
     # get fs-uae directory from public directory
     $fsuaeConfigDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | Select-Object -First 1
     
-    # prompt for install fs-uae configuration, if winuae configuration directory exists
-    if ($fsuaeConfigDir)
+    # install fs-uae config file, if fs-uae config directory exists and patch only is not set
+    if (!$patchOnly -and $fsuaeConfigDir)
     {
-        Write-Output ("Detected FS-UAE configurations directory '{0}'" -f $fsuaeConfigDir.FullName)
-        Write-Output ""
-        
-        # copy fs-uae configuration file to fs-uae config dir, if confirmed install fs-uae configuration
-        if ((Read-Host -Prompt "Install FS-UAE configuration? [Y/N]") -match '^y')
-        {
-            Copy-Item $fsuaeConfigFile -Destination $fsuaeConfigDir.FullName -Force
-        }
+        Write-Output ("- Installing in FS-UAE configuration directory '{0}'..." -f $fsuaeConfigDir.FullName)
+        Copy-Item $fsuaeConfigFile -Destination $fsuaeConfigDir.FullName -Force
     }
-    else
-    {
-        Write-Output ("FS-UAE configurations directory doesn't exist in '{0}'" -f ([System.Environment]::GetFolderPath("MyDocuments")))
-    }
+
+    Write-Output "Done"
 }
