@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-01
+# Date:   2017-11-02
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -307,23 +307,29 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
 # patch fs-uae config file
 function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
-    # find A1200 kickstart 3.1 rom file
+    # find A1200 kickstart 3.1 rom file in kickstart dir
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
     
-    # read fs-uae config file
+    # read fs-uae config file and skip lines, that contains floppy_image
     $fsuaeConfigLines = @()
     $fsuaeConfigLines += Get-Content $fsuaeConfigFile | Where-Object { $_ -notmatch '^floppy_image_\d+' }
 
-    # get self install harddrives
-    $selfInstallHarddrives = @{}
-    $fsuaeConfigLines | ForEach-Object { $_ | Select-String -Pattern '^(hard_drive_\d+)_label\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $selfInstallHarddrives.Set_Item($_.Groups[1].Value.Trim(), $_.Groups[2].Value.Trim()) } }
+    # add hard drive labels
+    $harddriveLabels = @{}
+    $fsuaeConfigLines | ForEach-Object { $_ | Select-String -Pattern '^(hard_drive_\d+)_label\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddriveLabels.Set_Item($_.Groups[1].Value.Trim(), $_.Groups[2].Value.Trim()) } }
 
     # patch fs-uae config lines
     for ($i = 0; $i -lt $fsuaeConfigLines.Count; $i++)
     {
         $line = $fsuaeConfigLines[$i]
 
-        # update kickstart file
+        # patch logs dir
+        if ($line -match '^logs_dir\s*=')
+        {
+            $line = "logs_dir = {0}" -f $currentDir.Replace('\', '/')
+        }
+
+        # patch kickstart file
         if ($line -match '^kickstart_file\s*=')
         {
             if ($a1200Kickstart31RomFile)
@@ -336,35 +342,40 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
             }
         }
         
-        # update hard_drive parameters
+        # patch hard drives
         if ($line -match '^hard_drive_\d+\s*=')
         {
+            # get hard drive index
             $harddriveIndex = $line | Select-String -Pattern '^(hard_drive_\d+)\s*=' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
 
-            if ($harddriveIndex -and $selfInstallHarddrives.ContainsKey($harddriveIndex))
+            # get hard drive path
+            $harddrivePath = $line | Select-String -Pattern '^hard_drive_\d+\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+                                
+            # patch hard drive, if hard drive index exists 
+            if ($harddriveIndex -and $harddrivePath -and $harddriveLabels.ContainsKey($harddriveIndex))
             {
-                if ($selfInstallHarddrives[$harddriveIndex] -match 'WORKBENCHDIR')
+                # patch workbenchdir hard drive
+                if ($harddriveLabels[$harddriveIndex] -match 'WORKBENCHDIR')
                 {
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $workbenchDir.Replace('\', '/'))
                 }
-                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'KICKSTARTDIR')
+                # patch kickstartdir hard drive
+                elseif ($harddriveLabels[$harddriveIndex] -match 'KICKSTARTDIR')
                 {
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $kickstartDir.Replace('\', '/'))
                 }
-                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'OS39DIR')
+                # patch os39dir hard drive
+                elseif ($harddriveLabels[$harddriveIndex] -match 'OS39DIR')
                 {
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $os39Dir.Replace('\', '/'))
                 }
-                elseif ($selfInstallHarddrives[$harddriveIndex] -match 'USERPACKAGESDIR')
+                # patch userpackagesdir hard drive
+                elseif ($harddriveLabels[$harddriveIndex] -match 'USERPACKAGESDIR')
                 {
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $userPackagesDir.Replace('\', '/'))
                 }
-            }
-            else
-            {
-                $harddrivePath = $line | Select-String -Pattern '^hard_drive_\d+\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
-
-                if ($harddrivePath)
+                # patch hard drive
+                else
                 {
                     $harddrivePath = Join-Path $currentDir -ChildPath (Split-Path $harddrivePath -Leaf)
                     $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
@@ -398,12 +409,6 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
 # get current directory
 $currentDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.')
 
-# self install directories
-$workbenchDir = Join-Path $currentDir -ChildPath "Workbench"
-$kickstartDir = Join-Path $currentDir -ChildPath "Kickstart"
-$os39Dir = Join-Path $currentDir -ChildPath "OS39"
-$userPackagesDir = Join-Path $currentDir -ChildPath "UserPackages"
-
 
 # read winuae and fs-uae config files
 $uaeConfigLines = @()
@@ -424,10 +429,15 @@ if (Test-Path -Path $fsuaeConfigFile)
 
 }
 
+
 # self install directories
+$workbenchDir = Join-Path $currentDir -ChildPath "Workbench"
+$kickstartDir = Join-Path $currentDir -ChildPath "Kickstart"
+$os39Dir = Join-Path $currentDir -ChildPath "OS39"
+$userPackagesDir = Join-Path $currentDir -ChildPath "UserPackages"
 $selfInstallDirs = @()
 
-# check, if workbenchdir is present in uae config files
+# check, if workbenchdir exists in uae config files
 $workbenchDirPresent = $false
 if (($uaeConfigLines | Where-Object { $_ -match 'WORKBENCHDIR' }).Count -gt 0)
 {
@@ -435,7 +445,7 @@ if (($uaeConfigLines | Where-Object { $_ -match 'WORKBENCHDIR' }).Count -gt 0)
     $selfInstallDirs += $workbenchDir
 }
 
-# check, if workbenchdir is present in uae config files
+# check, if workbenchdir exists in uae config files
 $kickstartDirPresent = $false
 if (($uaeConfigLines | Where-Object { $_ -match 'KICKSTARTDIR' }).Count -gt 0)
 {
@@ -443,7 +453,7 @@ if (($uaeConfigLines | Where-Object { $_ -match 'KICKSTARTDIR' }).Count -gt 0)
     $selfInstallDirs += $kickstartDir
 }
 
-# check, if workbenchdir is present in uae config files
+# check, if workbenchdir exists in uae config files
 $os39DirPresent = $false
 if (($uaeConfigLines | Where-Object { $_ -match 'OS39DIR' }).Count -gt 0)
 {
@@ -451,7 +461,7 @@ if (($uaeConfigLines | Where-Object { $_ -match 'OS39DIR' }).Count -gt 0)
     $selfInstallDirs += $os39Dir
 }
 
-# check, if workbenchdir is present in uae config files
+# check, if workbenchdir exists in uae config files
 $userPackagesDirPresent = $false
 if (($uaeConfigLines | Where-Object { $_ -match 'USERPACKAGESDIR' }).Count -gt 0)
 {
@@ -469,15 +479,14 @@ foreach ($selfInstallDir in $selfInstallDirs)
 }
 
 
-# write install uae config header
+# write install uae config title
 Write-Output "------------------"
 Write-Output "Install UAE Config"
 Write-Output "------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2017-11-01"
+Write-Output "Date: 2017-11-02"
 Write-Output ""
-Write-Output "Hard drives and directories in UAE config files will"
-Write-Output "now be updated to use the following directories:"
+Write-Output "Patch hard drives to use the following directories:"
 Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)
 
 # write workbenchdir, if it's present
@@ -535,7 +544,7 @@ if (Test-Path -Path $winuaeConfigFile)
     # patch winuae config file
     Write-Output ""
     Write-Output ("WinUAE configuration file '{0}'" -f $winuaeConfigFile)
-    Write-Output "- Patching hard drive directories..."
+    Write-Output "- Patching hard drive directories and kickstart rom..."
     PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
     
     # get winuae directory from public directory
@@ -558,7 +567,7 @@ if (Test-Path -Path $fsuaeConfigFile)
     Write-Output ("FS-UAE configuration file '{0}'" -f $fsuaeConfigFile)
     
     # patch fs-uae config file
-    Write-Output "- Patching hard drive directories..."
+    Write-Output "- Patching hard drive directories, kickstart rom and workbench adf files as swappable floppies..."
     PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
     # get fs-uae directory from public directory
