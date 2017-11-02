@@ -28,6 +28,10 @@ def calculate_md5_from_file(fname):
 def find_a1200_kickstart31_rom_file(kickstart_dir):
     """Find A1200 Kickstart31 Rom File"""
 
+    # return none, if kickstart dir doesn't exist
+    if not os.path.exists(kickstart_dir):
+        return None
+
     # get rom files from kickstart dir
     rom_files = [os.path.join(kickstart_dir, _f) for _f in os.listdir(kickstart_dir) \
         if os.path.isfile(os.path.join(kickstart_dir, _f))]
@@ -210,10 +214,11 @@ if USERPACKAGES_DIR_PRESENT:
 
 
 # patch and install fs-uae config file, if it exists
-if FSUAE_CONFIG_FILE:
+if os.path.isfile(FSUAE_CONFIG_FILE):
     print ''
     print 'FS-UAE configuration file "{0}"'.format(FSUAE_CONFIG_FILE)
-    print '- Patching hard drive directories, kickstart rom and workbench adf files as swappable floppies...'
+    print '- Patching hard drive directories, kickstart rom and workbench ' + \
+        ' adf files as swappable floppies...'
     patch_fsuae_config_file(
         FSUAE_CONFIG_FILE, CURRENT_DIR, WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DIR)
     print 'Done'
