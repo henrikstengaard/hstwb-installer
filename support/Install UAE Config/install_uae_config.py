@@ -53,6 +53,24 @@ def find_a1200_kickstart31_rom_file(kickstart_dir):
 
     return None
 
+# find amiga os 3.9 iso file
+def find_amiga_os_39_iso_file(os39_dir):
+    """Find Amiga OS 3.9 iso file"""
+
+    # return none, if os39 dir doesn't exist
+    if not os.path.exists(os39_dir):
+        return None
+
+    # get amiga os 3.9 iso files from os39 directory
+    amiga_os_39_iso_files = [os.path.join(os39_dir, _f) for _f in os.listdir(os39_dir) \
+        if os.path.isfile(os.path.join(os39_dir, _f)) and re.search(r'amigaos3\.9\.iso$', _f)]
+
+    # return none, if amiga os 3.9 iso files exist doesn't exist
+    if len(amiga_os_39_iso_files) == 0:
+        return None
+
+    return amiga_os_39_iso_files[0]
+
 # find fsuae config dir
 def find_fsuae_config_dir():
     """Find FSUAE Config Dir"""
@@ -75,6 +93,9 @@ def patch_fsuae_config_file( \
     # find A1200 kickstart 3.1 rom file in kickstart dir
     a1200_kickstart31_rom_file = find_a1200_kickstart31_rom_file(kickstart_dir)
 
+    # find amiga os 3.9 iso file in os39 dir
+    amiga_os_39_iso_file = find_amiga_os_39_iso_file(os39_dir)
+
     # read fs-uae config file
     hard_drive_labels = {}
     fsuae_config_lines = []
@@ -94,6 +115,13 @@ def patch_fsuae_config_file( \
     # patch fs-uae config lines
     for i in range(0, len(fsuae_config_lines)):
         line = fsuae_config_lines[i]
+
+        # patch cdrom drive 0
+        if re.search(r'^cdrom_drive_0\s*=', line):
+            if amiga_os_39_iso_file:
+                line = 'cdrom_drive_0 = {0}\n'.format(amiga_os_39_iso_file.replace('\\', '/'))
+            else:
+                line = 'cdrom_drive_0 = \n'
 
         # patch logs dir
         if re.search(r'^logs_dir\s*=', line):
@@ -156,7 +184,7 @@ def patch_fsuae_config_file( \
             'floppy_image_{0} = {1}\n'.format(i, adf_files[i].replace('\\', '/')))
 
     # write fs-uae config file without byte order mark
-    with open(fsuae_config_file + ".new", 'w') as _f:
+    with open(fsuae_config_file, 'w') as _f:
         _f.writelines(fsuae_config_lines)
 
 # get patch only argument
@@ -237,8 +265,8 @@ if USERPACKAGES_DIR_PRESENT:
 if os.path.isfile(FSUAE_CONFIG_FILE):
     print ''
     print 'FS-UAE configuration file "{0}"'.format(FSUAE_CONFIG_FILE)
-    print '- Patching hard drive directories, kickstart rom and workbench ' + \
-        ' adf files as swappable floppies...'
+    print '- Patching hard drive directories, kickstart rom file, ' \
+        'Amiga OS 3.9 iso file and add Workbench adf files as swappable floppies...'
 
     # patch fs-uae config file
     patch_fsuae_config_file(

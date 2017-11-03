@@ -26,6 +26,13 @@ function CalculateMd5FromFile($file)
 # find a1200 kickstart 3.1 rom file
 function FindA1200Kickstart31RomFile($kickstartDir)
 {
+    # return null, if kickstart dir doesn't exist
+    if (!(Test-Path -Path $kickstartDir))
+    {
+        return $null
+    }
+
+    # get kickstart files
     $kickstartFiles = @()
     $kickstartFiles += Get-ChildItem $kickstartDir
     
@@ -49,6 +56,27 @@ function FindA1200Kickstart31RomFile($kickstartDir)
     return $null
 }
 
+# find amiga os 3.9 iso file
+function FindAmigaOs39IsoFile($os39Dir)
+{
+    # return null, if os39 dir doesn't exist
+    if (!(Test-Path -Path $os39Dir))
+    {
+        return $null
+    }
+
+    # get amiga os 3.9 iso file
+    $amigaOs39IsoFiles = @()
+    $amigaOs39IsoFiles += Get-ChildItem $os39Dir | Where-Object { $_.Name -match '^amigaos3\.9\.iso$' }
+
+    # return null, if amiga os 3.9 iso file doesn't exist
+    if ($amigaOs39IsoFiles.Count -eq 0)
+    {
+        return $null
+    }
+
+    return $amigaOs39IsoFiles[0].FullName
+}
 
 # is valid workbench adf file
 function IsValidWorkbenchAdfFile($workbenchAdfFile)
@@ -178,6 +206,9 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
     # find A1200 kickstart 3.1 rom file
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
     
+    # find amiga os 3.9 iso file in os39 dir
+    $amigaOs39IsoFile = FindAmigaOs39IsoFile $os39Dir
+
     # read winuae config file
     $winuaeConfigLines = @()
     $winuaeConfigLines += Get-Content $winuaeConfigFile
@@ -187,7 +218,20 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
     {
         $line = $winuaeConfigLines[$i]
 
-        # update kickstart rom file
+        # patch cd image 0
+        if ($line -match '^cdimage0=')
+        {
+            if ($amigaOs39IsoFile)
+            {
+                $line = "cdimage0={0}" -f $amigaOs39IsoFile
+            }
+            else
+            {
+                $line = 'cdimage0='
+            }
+        }
+        
+        # patch kickstart rom file
         if ($line -match '^kickstart_rom_file=')
         {
             if ($a1200Kickstart31RomFile)
@@ -200,52 +244,52 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
             }
         }
 
-        # update self install directories
+        # patch hard drives
         if ($line -match '^(filesystem2|uaehf\d+)=' -and $line -match '(WORKBENCHDIR|KICKSTARTDIR|OS39DIR|USERPACKAGESDIR):')
         {
-            # update workbenchdir filesystem2
+            # patch workbenchdir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'WORKBENCHDIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$workbenchDir"
             }
 
-            # update workbenchdir uaehf
+            # patch workbenchdir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'WORKBENCHDIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$workbenchDir"
             }
             
-            # update kickstartdir filesystem2
+            # patch kickstartdir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'KICKSTARTDIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$kickstartDir"
             }
 
-            # update kickstartdir uaehf
+            # patch kickstartdir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'KICKSTARTDIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$kickstartDir"
             }
             
-            # update os39dir filesystem2
+            # patch os39dir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'OS39DIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^:]*:[^:]*:)[^,]*', "`$1$os39Dir"
             }
 
-            # update os39dir uaehf
+            # patch os39dir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'OS39DIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$os39Dir"
             }
             
-            # update userpackagesdir filesystem2
+            # patch userpackagesdir filesystem2
             if ($line -match '^filesystem2=' -and $line -match 'USERPACKAGESDIR:')
             {
                 $line = $line -replace '^(filesystem2=[^,]*,[^:]*:[^:]*:)[^,]*', "`$1$userPackagesDir"
             }
 
-            # update userpackagesdir uaehf
+            # patch userpackagesdir uaehf
             if ($line -match '^uaehf\d+=' -and $line -match 'USERPACKAGESDIR:')
             {
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$userPackagesDir"
@@ -253,7 +297,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
         }
         else
         {
-            # update hardfile2 to current directory
+            # patch hardfile2 to current directory
             if ($line -match '^hardfile2=')
             {
                 $hardfileFile = $line | Select-String -Pattern '^hardfile2=[^,]*,[^:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
@@ -265,7 +309,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
                 }
             }
 
-            # update uaehf to current directory
+            # patch uaehf to current directory
             if ($line -match '^uaehf\d+=hdf')
             {
                 $uaehfFile = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
@@ -277,7 +321,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
                 }
             }
             
-            # update filesystem2 to current directory
+            # patch filesystem2 to current directory
             if ($line -match '^filesystem2=')
             {
                 $filesystemDir = $line | Select-String -Pattern '^filesystem2=[^,]*,[^,:]*:[^:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
@@ -310,6 +354,9 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
     # find A1200 kickstart 3.1 rom file in kickstart dir
     $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
     
+    # find amiga os 3.9 iso file in os39 dir
+    $amigaOs39IsoFile = FindAmigaOs39IsoFile $os39Dir
+
     # read fs-uae config file and skip lines, that contains floppy_image
     $fsuaeConfigLines = @()
     $fsuaeConfigLines += Get-Content $fsuaeConfigFile | Where-Object { $_ -notmatch '^floppy_image_\d+' }
@@ -323,6 +370,19 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
     {
         $line = $fsuaeConfigLines[$i]
 
+        # patch cdrom drive 0
+        if ($line -match '^cdrom_drive_0\s*=')
+        {
+            if ($amigaOs39IsoFile)
+            {
+                $line = "cdrom_drive_0 = {0}" -f $amigaOs39IsoFile.Replace('\', '/')
+            }
+            else
+            {
+                $line = 'cdrom_drive_0 ='
+            }
+        }
+        
         # patch logs dir
         if ($line -match '^logs_dir\s*=')
         {
@@ -484,7 +544,7 @@ Write-Output "------------------"
 Write-Output "Install UAE Config"
 Write-Output "------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2017-11-02"
+Write-Output "Date: 2017-11-03"
 Write-Output ""
 Write-Output "Patch hard drives to use the following directories:"
 Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)
@@ -542,7 +602,7 @@ if (Test-Path -Path $winuaeConfigFile)
 {
     # patch winuae config file
     Write-Output ("WinUAE configuration file '{0}'" -f $winuaeConfigFile)
-    Write-Output "- Patching hard drive directories and kickstart rom..."
+    Write-Output "- Patching hard drive directories, kickstart rom file and Amiga OS 3.9 iso file..."
     PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
     
     # get winuae directory from public directory
@@ -569,7 +629,7 @@ if (Test-Path -Path $fsuaeConfigFile)
     Write-Output ("FS-UAE configuration file '{0}'" -f $fsuaeConfigFile)
     
     # patch fs-uae config file
-    Write-Output "- Patching hard drive directories, kickstart rom and workbench adf files as swappable floppies..."
+    Write-Output "- Patching hard drive directories, kickstart rom file, Amiga OS 3.9 iso file and add Workbench adf files as swappable floppies..."
     PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
     # get fs-uae config directory from my documents directory
