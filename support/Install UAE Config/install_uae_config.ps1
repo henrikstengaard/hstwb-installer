@@ -559,6 +559,10 @@ if (Test-Path -Path $winuaeConfigFile)
 
     Write-Output "Done"
 }
+else
+{
+    Write-Output ("WinUAE configuration file '{0}' doesn't exist!" -f $winuaeConfigFile)
+}
 
 # patch and install fs-uae config file, if it exists
 if (Test-Path -Path $fsuaeConfigFile)
@@ -570,7 +574,7 @@ if (Test-Path -Path $fsuaeConfigFile)
     Write-Output "- Patching hard drive directories, kickstart rom and workbench adf files as swappable floppies..."
     PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
-    # get fs-uae directory from public directory
+    # get fs-uae config directory from my documents directory
     $fsuaeConfigDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | Select-Object -First 1
     
     # install fs-uae config file, if fs-uae config directory exists and patch only is not set
@@ -581,4 +585,8 @@ if (Test-Path -Path $fsuaeConfigFile)
     }
 
     Write-Output "Done"
+}
+else
+{
+    Write-Output ("FS-UAE configuration file '{0}' doesn't exist!" -f $fsuaeConfigFile)
 }

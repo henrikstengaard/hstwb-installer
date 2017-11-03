@@ -255,3 +255,6 @@ if os.path.isfile(FSUAE_CONFIG_FILE):
         shutil.copyfile(FSUAE_CONFIG_FILE, INSTALL_FSUAE_CONFIG_FILE)
 
     print 'Done'
+else:
+    print 'FS-UAE configuration file "{0}" doesn''t exist!'.format(FSUAE_CONFIG_FILE)
+    
