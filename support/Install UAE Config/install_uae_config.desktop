@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=true
+Icon=
+Name=Install UAE Config
+Exec=bash -c 'cd "$(dirname "$1")" && ./install_uae_config.sh' dummy %k
+Categories=Utility;
