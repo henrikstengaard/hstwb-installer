@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=true
+Icon=
+Name=Install UAE Config Patch Only
+Exec=bash -c 'cd "$(dirname "$1")" && python install_uae_config.py --patch-only; read -r -p "Press any key to continue..." key' dummy %k
+Categories=Utility;

@@ -3,5 +3,5 @@ Type=Application
 Terminal=true
 Icon=
 Name=Install UAE Config
-Exec=bash -c 'cd "$(dirname "$1")" && ./install_uae_config.sh' dummy %k
+Exec=bash -c 'cd "$(dirname "$1")" && python install_uae_config.py; read -r -p "Press any key to continue..." key' dummy %k
 Categories=Utility;
