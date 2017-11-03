@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-02
+# Date:   2017-11-03
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -513,7 +513,6 @@ if ($userPackagesDirPresent)
     Write-Output ("USERPACKAGESDIR : '{0}'" -f $userPackagesDir)
 }
 
-
 # install workbench 3.1 adf and kickstart rom files from cloanto amiga forever data directory, if present and patch only is not set
 $amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
 if (!$patchOnly -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
@@ -537,12 +536,11 @@ if (!$patchOnly -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDat
     Write-Output "Done"
 }
 
-
 # patch and install winuae config file, if it exists
+Write-Output ""
 if (Test-Path -Path $winuaeConfigFile)
 {
     # patch winuae config file
-    Write-Output ""
     Write-Output ("WinUAE configuration file '{0}'" -f $winuaeConfigFile)
     Write-Output "- Patching hard drive directories and kickstart rom..."
     PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
