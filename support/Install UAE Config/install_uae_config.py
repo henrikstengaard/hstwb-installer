@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-02
+# Date:   2017-11-03
 #
 # A python script to install UAE config for HstWB images by patching
 # hard drive directories to current directory, use A1200 Kickstart 3.1
@@ -14,6 +14,8 @@
 import os
 import hashlib
 import re
+import shutil
+import sys
 
 # calculate md5 from file
 def calculate_md5_from_file(fname):
@@ -48,6 +50,20 @@ def find_a1200_kickstart31_rom_file(kickstart_dir):
         # Custom Kickstart 3.1 (40.068) (A1200) rom
         if md5_hash == '646773759326fbac3b2311fd8c8793ee':
             return rom_file
+
+    return None
+
+# find fsuae config dir
+def find_fsuae_config_dir():
+    """Find FSUAE Config Dir"""
+    user_home_dir = os.path.expanduser('~')
+    directories = [os.path.join(user_home_dir, _f) for _f in os.listdir(user_home_dir) \
+        if os.path.isdir(os.path.join(user_home_dir, _f))]
+
+    for directory in directories:
+        fsuae_config_dir = os.path.join(directory, os.path.join('FS-UAE', 'Configurations'))
+        if os.path.isdir(fsuae_config_dir):
+            return fsuae_config_dir
 
     return None
 
@@ -86,7 +102,8 @@ def patch_fsuae_config_file( \
         # patch kickstart file
         if re.search(r'^kickstart_file\s*=', line):
             if a1200_kickstart31_rom_file:
-                line = 'kickstart_file = {0}\n'.format(a1200_kickstart31_rom_file.replace('\\', '/'))
+                line = 'kickstart_file = {0}\n'.format(
+                    a1200_kickstart31_rom_file.replace('\\', '/'))
             else:
                 line = 'kickstart_file = \n'
 
@@ -135,12 +152,15 @@ def patch_fsuae_config_file( \
 
     # add adf files to fs-uae config lines as swappable floppies
     for i in range(0, len(adf_files)):
-        fsuae_config_lines.append('floppy_image_{0} = {1}\n'.format(i, adf_files[i].replace('\\', '/')))
+        fsuae_config_lines.append(
+            'floppy_image_{0} = {1}\n'.format(i, adf_files[i].replace('\\', '/')))
 
     # write fs-uae config file without byte order mark
     with open(fsuae_config_file + ".new", 'w') as _f:
         _f.writelines(fsuae_config_lines)
 
+# get patch only argument
+PATCH_ONLY = len(sys.argv) >= 2 and re.search(r'--patch-only', sys.argv[1])
 
 # get current directory
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -191,7 +211,7 @@ print '------------------'
 print 'Install UAE Config'
 print '------------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2017-11-02'
+print 'Date: 2017-11-03'
 print ''
 print 'Patch hard drives to use the following directories:'
 print 'IMAGEDIR        : "{0}"'.format(CURRENT_DIR)
@@ -219,6 +239,19 @@ if os.path.isfile(FSUAE_CONFIG_FILE):
     print 'FS-UAE configuration file "{0}"'.format(FSUAE_CONFIG_FILE)
     print '- Patching hard drive directories, kickstart rom and workbench ' + \
         ' adf files as swappable floppies...'
+
+    # patch fs-uae config file
     patch_fsuae_config_file(
         FSUAE_CONFIG_FILE, CURRENT_DIR, WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DIR)
+
+    # get fs-uae config directory
+    FSUAE_CONFIG_DIR = find_fsuae_config_dir()
+
+    # install fs-uae config file, if fs-uae config directory exists and patch only is not set
+    if not PATCH_ONLY and FSUAE_CONFIG_DIR:
+        print '- Installing in FS-UAE configuration directory "{0}"...'.format(FSUAE_CONFIG_DIR)
+        INSTALL_FSUAE_CONFIG_FILE = os.path.join(
+            FSUAE_CONFIG_DIR, os.path.basename(FSUAE_CONFIG_FILE))
+        shutil.copyfile(FSUAE_CONFIG_FILE, INSTALL_FSUAE_CONFIG_FILE)
+
     print 'Done'
