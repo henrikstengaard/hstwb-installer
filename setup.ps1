@@ -404,11 +404,32 @@ function ChangeWorkbenchAdfDir($hstwb)
     }
 
     $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfDir) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfDir }
-    $newPath = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
+    $newWorkbenchAdfDir = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
 
-    if ($newPath -and $newPath -ne '')
+    if ($newWorkbenchAdfDir -and $newWorkbenchAdfDir -ne '')
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = $newPath
+        # find files with hashes matching workbench adf hashes
+        FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $newWorkbenchAdfDir
+    
+        # find files with disk names matching workbench adf hashes
+        FindMatchingWorkbenchAdfs $hstwb.WorkbenchAdfHashes $newWorkbenchAdfDir
+    
+        # get workbench rom sets
+        $workbenchAdfSets = $hstwb.WorkbenchAdfHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+    
+        # count matching workbench adf hashes for each set
+        $workbenchAdfSetCount = @{}
+        foreach($workbenchAdfSet in $workbenchAdfSets)
+        {
+            $workbenchAdfSetCount.Set_Item($workbenchAdfSet, ($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }).Count)
+        }
+
+        # get new workbench adf set, which has highest number of matching workbench adf hashes
+        $newWorkbenchAdfSet = $workbenchAdfSets | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
+
+        # save new workbench adf set and dir
+        $hstwb.Settings.Workbench.WorkbenchAdfSet = $newWorkbenchAdfSet
+        $hstwb.Settings.Workbench.WorkbenchAdfDir = $newWorkbenchAdfDir
         Save $hstwb
     }
 }
@@ -417,21 +438,17 @@ function ChangeWorkbenchAdfDir($hstwb)
 # select workbench adf set
 function SelectWorkbenchAdfSet($hstwb)
 {
-    # read workbench adf hashes
-    $workbenchAdfHashes = @()
-    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $hstwb.Paths.WorkbenchAdfHashesFile)
-    $workbenchNamePadding = ($workbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    # get workbench name padding
+    $workbenchNamePadding = ($hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
-
+    FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
 
     # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $workbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
-
+    FindMatchingWorkbenchAdfs $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
 
     # get workbench rom sets
-    $workbenchAdfSets = $workbenchAdfHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
+    $workbenchAdfSets = $hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
 
     foreach($workbenchAdfSet in $workbenchAdfSets)
     {
@@ -439,7 +456,7 @@ function SelectWorkbenchAdfSet($hstwb)
         Write-Host $workbenchAdfSet
 
         # get workbench adf set hashes
-        $workbenchAdfSetHashes = $workbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
+        $workbenchAdfSetHashes = $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
         
         foreach($workbenchAdfSetHash in $workbenchAdfSetHashes)
         {
@@ -575,11 +592,29 @@ function ChangeKickstartRomDir($hstwb)
     }
 
     $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomDir } else { $hstwb.Settings.Kickstart.KickstartRomDir }
-    $newPath = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
+    $newKickstartRomDir = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
 
-    if ($newPath -and $newPath -ne '')
+    if ($newKickstartRomDir -and $newKickstartRomDir -ne '')
     {
-        $hstwb.Settings.Kickstart.KickstartRomDir = $newPath
+        # find files with hashes matching kickstart rom hashes
+        FindMatchingFileHashes $hstwb.KickstartRomHashes $newKickstartRomDir
+    
+        # get kickstart rom sets
+        $kickstartRomSets = $hstwb.KickstartRomHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+            
+        # count matching kickstart rom hashes for each set
+        $kickstartRomSetCount = @{}
+        foreach($kickstartRomSet in $kickstartRomSets)
+        {
+            $kickstartRomSetCount.Set_Item($kickstartRomSet, ($hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet -and $_.File }).Count)
+        }
+
+        # get new kickstart rom set, which has highest number of matching kickstart rom hashes
+        $newKickstartRomSet = $kickstartRomSets | Sort-Object @{expression={$kickstartRomSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
+        
+        # save new kickstart rom set and dir
+        $hstwb.Settings.Kickstart.KickstartRomSet = $newKickstartRomSet
+        $hstwb.Settings.Kickstart.KickstartRomDir = $newKickstartRomDir
         Save $hstwb
     }
 }
@@ -588,16 +623,14 @@ function ChangeKickstartRomDir($hstwb)
 # select kickstart rom path
 function SelectKickstartRomSet($hstwb)
 {
-    # read kickstart rom hashes
-    $kickstartRomHashes = @()
-    $kickstartRomHashes += (Import-Csv -Delimiter ';' $hstwb.Paths.KickstartRomHashesFile)
-    $kickstartNamePadding = ($kickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    # get kickstart name padding
+    $kickstartNamePadding = ($hstwb.KickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
     # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $kickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
+    FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
 
     # get kickstart rom sets
-    $kickstartRomSets = $kickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
+    $kickstartRomSets = $hstwb.KickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
 
     foreach($kickstartRomSet in $kickstartRomSets)
     {
@@ -605,7 +638,7 @@ function SelectKickstartRomSet($hstwb)
         Write-Host $kickstartRomSet
 
         # get kickstart rom set hashes
-        $kickstartRomSetHashes = $kickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
+        $kickstartRomSetHashes = $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
         
         foreach($kickstartRomSetHash in $kickstartRomSetHashes)
         {
@@ -1176,41 +1209,46 @@ try
         'Assigns' = $assigns
     }
 
+    # read kickstart rom hashes
+    if (Test-Path -Path $kickstartRomHashesFile)
+    {
+        $kickstartRomHashes = @()
+        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
+        $hstwb.KickstartRomHashes = $kickstartRomHashes
+    }
+    else
+    {
+        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
+    }
+
+    # read workbench adf hashes
+    if (Test-Path -Path $workbenchAdfHashesFile)
+    {
+        $workbenchAdfHashes = @()
+        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
+        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
+    }
+    else
+    {
+        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
+    }
 
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
-    
-    
+        
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     $hstwb.Emulators = FindEmulators
-    
     
     # update packages, user packages and assigns
     UpdatePackages $hstwb
     UpdateUserPackages $hstwb
     UpdateAssigns $hstwb
     
-    
     # save settings and assigns
     Save $hstwb
 
-    
-    # validate settings
-    if (!(ValidateSettings $hstwb.Settings))
-    {
-        throw "Validate settings failed"
-    }
-    
-    
-    # validate assigns
-    if (!(ValidateAssigns $hstwb.Assigns))
-    {
-        throw "Validate assigns failed"
-    }
-    
-    
     # show main menu
     MainMenu $hstwb
 }

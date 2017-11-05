@@ -330,10 +330,13 @@ function FindMatchingFileHashes($hashes, $path)
     # find files with matching hashes
     foreach($hash in $hashes)
     {
+        $file = $null
         if ($fileHashesIndex.ContainsKey($hash.Md5Hash))
         {
-            $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value ($fileHashesIndex.Get_Item($hash.Md5Hash)) -Force
+            $file = $fileHashesIndex.Get_Item($hash.Md5Hash)
         }
+
+        $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value $file -Force
     }
 }
 
@@ -380,16 +383,18 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 
 
     # find files with matching disk names
-    foreach($hash in ($hashes | Where { $_.DiskName -ne '' -and !$_.File }))
+    foreach($hash in ($hashes | Where-Object { $_.DiskName -ne '' -and !$_.File }))
     {
-        $workbenchAdfFile = $validWorkbenchAdfFiles | Where { $_.DiskName -eq $hash.DiskName } | Select-Object -First 1
+        $matchingWorkbenchAdfFile = $validWorkbenchAdfFiles | Where-Object { $_.DiskName -eq $hash.DiskName } | Select-Object -First 1
 
-        if (!$workbenchAdfFile)
+        $workbenchAdfFile = $null 
+
+        if ($matchingWorkbenchAdfFile)
         {
-            continue
+            $workbenchAdfFile = $matchingWorkbenchAdfFile.File
         }
 
-        $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value $workbenchAdfFile.File -Force
+        $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value $workbenchAdfFile -Force
     }
 }
 
