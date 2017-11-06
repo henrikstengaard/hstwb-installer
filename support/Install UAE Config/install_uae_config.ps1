@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-03
+# Date:   2017-11-06
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -18,8 +18,15 @@ Param(
 # calculate md5 hash from file
 function CalculateMd5FromFile($file)
 {
-	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-	return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
+    try
+    {
+        $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+        return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
+    }
+    catch 
+    {
+        return ''
+    }
 }
 
 
@@ -544,7 +551,7 @@ Write-Output "------------------"
 Write-Output "Install UAE Config"
 Write-Output "------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2017-11-03"
+Write-Output "Date: 2017-11-06"
 Write-Output ""
 Write-Output "Patch hard drives to use the following directories:"
 Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)
