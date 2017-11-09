@@ -2417,14 +2417,11 @@ function RunBuildPackageInstallation($hstwb)
         }
     }
 
-    # delete package installation directory, if it exists
-    if (Test-Path $outputPackageInstallationPath)
+    # create package installation directory, if it doesn't exists
+    if (!(Test-Path -Path $outputPackageInstallationPath))
     {
-        Remove-Item -Path $outputPackageInstallationPath -Recurse -Force
+        mkdir $outputPackageInstallationPath | Out-Null
     }
-
-    # create package installation directory
-    mkdir $outputPackageInstallationPath | Out-Null
 
     # print building package installation message
     Write-Host ""
@@ -2503,7 +2500,7 @@ function RunBuildPackageInstallation($hstwb)
 
 
     # write install packages script
-    $installPackagesScriptFile = [System.IO.Path]::Combine($outputPackageInstallationPath, "Package Installation")
+    $installPackagesScriptFile = [System.IO.Path]::Combine($outputPackageInstallationPath, "Package-Installation")
     WriteAmigaTextLines $installPackagesScriptFile $packageInstallationScriptLines 
 
 
