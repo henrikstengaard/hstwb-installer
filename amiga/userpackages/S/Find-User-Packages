@@ -5,7 +5,7 @@
 ; Find User Packages
 ; ------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-11-09
 ; Author: Henrik Noerfjand Stengaard
 
 echo ""
@@ -37,7 +37,6 @@ ENDIF
 
 ; Goto next, if user package dir doesn't contain a _installdir assign file
 IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
-  echo "*e[1m$userpackage doesn't contain '_installdir' assign file, skipped!*e[22m"
   SKIP BACK next
 ENDIF
 

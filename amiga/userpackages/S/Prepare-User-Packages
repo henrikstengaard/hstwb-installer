@@ -5,8 +5,22 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-10-30
+; Date: 2017-11-09
 ; Author: Henrik Noerfjand Stengaard
+
+; Fail, if USERPACKAGESDIR: assign doesn't exist
+Assign >NIL: EXISTS USERPACKAGESDIR:
+IF WARN
+  echo "Error: Assign USERPACKAGESDIR: doesn't exist!"
+  quit 20
+ENDIF
+
+; Fail, if INSTALLDIR: assign doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF WARN
+  echo "Error: Assign INSTALLDIR: doesn't exist!"
+  quit 20
+ENDIF
 
 ; Fail, if user packages file doesn't exist
 IF NOT EXISTS "{userpackages}"
@@ -40,11 +54,14 @@ IF "{nomenus}" EQ ""
   echo "" >>"{installuserpackages}"
   echo "SKIP main" >>"{installuserpackages}"
   echo "" >>"{installuserpackages}"
-  IF NOT EXISTS "PACKAGESDIR:SelectAssignDir"
-    echo "Error: Select assign dir file 'PACKAGESDIR:SelectAssignDir' doesn't exist!"
+
+  ; Fail, if select assign dir file doesn't exist
+  IF NOT EXISTS "INSTALLDIR:S/SelectAssignDir"
+    echo "Error: Select assign dir file 'INSTALLDIR:S/SelectAssignDir' doesn't exist!"
     quit 20
-  ENDIF  
-  type "PACKAGESDIR:SelectAssignDir" >>"{installuserpackages}"
+  ENDIF
+
+  type "INSTALLDIR:S/SelectAssignDir" >>"{installuserpackages}"
   echo "" >>"{installuserpackages}"
   echo "" >>"{installuserpackages}"
   echo "; Main" >>"{installuserpackages}"
@@ -177,7 +194,7 @@ echo "ENDIF" >>T:_editassignsoptions
 echo "" >>T:_resetassigns
 echo "; Reset assigns '$userpackage' " >>T:_resetassigns
 echo "set installdir *"*"" >>T:_resetassigns
-echo "set installdir *"*`Execute PACKAGESDIR:IniFileGet *"SYS:Prefs/Env-Archive/HstWB-Installer.Assigns.ini*" *"$userpackage*" *"InstallDir*"*`*"" >>T:_resetassigns
+echo "set installdir *"*`Execute INSTALLDIR:S/IniFileGet *"SYS:Prefs/Env-Archive/HstWB-Installer.Assigns.ini*" *"$userpackage*" *"InstallDir*"*`*"" >>T:_resetassigns
 echo "" >>T:_resetassigns
 echo "IF *"*$installdir*" EQ *"*"" >>T:_resetassigns
 echo "  IF EXISTS *"USERPACKAGESDIR:$userpackage/_installdir*"" >>T:_resetassigns
@@ -213,25 +230,27 @@ echo "echo *"*$installdir*" NOLINE >*"T:$assignid*"" >>T:_defaultassigns
 
 ; Build validate assigns
 echo "" >>T:_validateassigns
-echo "; Validate assigns '$userpackage' " >>T:_validateassigns
-echo "IF NOT EXISTS *"T:$assignid*"" >>T:_validateassigns
-echo "  echo *"Error: Assign file 'T:$assignid' doesn't exist!*"" >>T:_validateassigns
-echo "  quit 20" >>T:_validateassigns
-echo "ENDIF" >>T:_validateassigns
-echo "set installdir *"*`type *"T:$assignid*"*`*"" >>T:_validateassigns
-echo "IF *"*$installdir*" EQ *"*"" >>T:_validateassigns
-echo "  REQUESTCHOICE >NIL: *"Error*" *"Installdir is not defined**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
-echo "  SKIP BACK userpackagesmenu" >>T:_validateassigns
-echo "ENDIF" >>T:_validateassigns
-echo "; Get device name from installdir by replacing colon with newline and get 1st line with device name" >>T:_validateassigns
-echo "echo *"*$installdir*" >T:_installdir1" >>T:_resetassigns
-echo "rep T:_installdir1 *":*" *"**N*"" >>T:_resetassigns
-echo "sed *"1q;d*" T:_installdir1 >T:_installdir2" >>T:_resetassigns
-echo "set devicename *"*`type T:_installdir2*`*"" >>T:_resetassigns
-echo "Assign >NIL: EXISTS *"*$devicename:*"" >>T:_validateassigns
-echo "IF WARN" >>T:_validateassigns
-echo "  REQUESTCHOICE  >NIL: *"Error*" *"Device name '*$devicename:' in Installdir '*$installdir' doesn't exist**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
-echo "  SKIP BACK userpackagesmenu" >>T:_validateassigns
+echo "; Validate assigns '$userpackage'" >>T:_validateassigns
+echo "IF EXISTS *"T:$packageid*"" >>T:_validateassigns
+echo "  IF NOT EXISTS *"T:$assignid*"" >>T:_validateassigns
+echo "    echo *"Error: Assign file 'T:$assignid' doesn't exist!*"" >>T:_validateassigns
+echo "    quit 20" >>T:_validateassigns
+echo "  ENDIF" >>T:_validateassigns
+echo "  set installdir *"*`type *"T:$assignid*"*`*"" >>T:_validateassigns
+echo "  IF *"*$installdir*" EQ *"*"" >>T:_validateassigns
+echo "    REQUESTCHOICE >NIL: *"Error*" *"Installdir is not defined**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
+echo "    SKIP BACK userpackagesmenu" >>T:_validateassigns
+echo "  ENDIF" >>T:_validateassigns
+echo "  ; Get device name from installdir by replacing colon with newline and get 1st line with device name" >>T:_validateassigns
+echo "  echo *"*$installdir*" >T:_installdir1" >>T:_validateassigns
+echo "  rep T:_installdir1 *":*" *"**N*"" >>T:_validateassigns
+echo "  sed *"1q;d*" T:_installdir1 >T:_installdir2" >>T:_validateassigns
+echo "  set devicename *"*`type T:_installdir2*`*"" >>T:_validateassigns
+echo "  Assign >NIL: EXISTS *"*$devicename:*"" >>T:_validateassigns
+echo "  IF WARN" >>T:_validateassigns
+echo "    REQUESTCHOICE  >NIL: *"Error*" *"Device name '*$devicename:' in Installdir '*$installdir' doesn't exist**Nfor user package '$userpackage'!*" *"OK*"" >>T:_validateassigns
+echo "    SKIP BACK userpackagesmenu" >>T:_validateassigns
+echo "  ENDIF" >>T:_validateassigns
 echo "ENDIF" >>T:_validateassigns
 
 ; Build install user packages
@@ -244,9 +263,9 @@ echo "  IF NOT EXISTS *"T:$assignid*"" >>T:_installuserpackages
 echo "    echo *"Error: Assign file 'T:$assignid' doesn't exist!*"" >>T:_installuserpackages
 echo "    quit 20" >>T:_installuserpackages
 echo "  ENDIF" >>T:_installuserpackages
-echo "  set installdir *"*`type *"T:$assignid*"*`*"" >>T:_installuserpackages
+echo "  SetEnv installdir *"*`type *"T:$assignid*"*`*"" >>T:_installuserpackages
 echo "  MakePath *"SYS:Prefs*/Env-Archive*"" >>T:_installuserpackages
-echo "  Execute PACKAGESDIR:IniFileSet *"SYS:Prefs/Env-Archive/HstWB-Installer.Assigns.ini*" *"$userpackage*" *"InstallDir*" *"*$installdir*"" >>T:_installuserpackages
+echo "  Execute INSTALLDIR:S/IniFileSet *"SYS:Prefs/Env-Archive/HstWB-Installer.Assigns.ini*" *"$userpackage*" *"InstallDir*" *"*$installdir*"" >>T:_installuserpackages
 echo "  MakePath *"*$installdir*"" >>T:_installuserpackages
 echo "  Assign USERPACKAGEDIR: *"USERPACKAGESDIR:$userpackage*"" >>T:_installuserpackages
 echo "  IF EXISTS *"USERPACKAGESDIR:$userpackage*/_install*"" >>T:_installuserpackages
@@ -427,7 +446,6 @@ set menuoption `eval ($menuindex * 2) + 2`
 echo "" >>"{installuserpackages}"
 echo "; Back option" >>"{installuserpackages}"
 echo "IF *"*$editassignsmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
-echo "  echo *"Done*"" >>"{installuserpackages}"
 echo "  SKIP BACK userpackagesmenu" >>"{installuserpackages}"
 echo "ENDIF" >>"{installuserpackages}"
 

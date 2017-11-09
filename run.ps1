@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-01
+# Date:   2017-11-09
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -411,7 +411,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             # append ini file set for package assignm, if installer mode is build self install or build package installation
             if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
             {
-                $installPackageLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+                $installPackageLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
             }
 
             # append remove package assign
@@ -466,7 +466,7 @@ function BuildResetAssignsScriptLines($hstwb)
             $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
             $resetAssignsScriptLines += '; Get assign path from ini'
             $resetAssignsScriptLines += 'set assigndir ""'
-            $resetAssignsScriptLines += 'set assigndir "`execute PACKAGESDIR:IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += 'set assigndir "`execute INSTALLDIR:S/IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
             $resetAssignsScriptLines += ''
             $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
             $resetAssignsScriptLines += 'IF NOT "$assigndir" eq ""'
@@ -521,7 +521,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "SKIP resetpackages"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ""
-        $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\SelectAssignDir")
+        $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\S\SelectAssignDir")
     }
     
     # globl assigns
@@ -540,7 +540,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # append ini file set for global assign, if installer mode is build self install or build package installation
         if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $addGlobalAssignScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+            $addGlobalAssignScriptLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
         }
         
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignDir
@@ -1081,7 +1081,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
         {
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += 'execute PACKAGESDIR:IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Package.Name, 'Version', $installPackageScript.Package.Package.Version
+            $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Package.Name, 'Version', $installPackageScript.Package.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1517,7 +1517,7 @@ function RunInstall($hstwb)
     
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
-    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
+    Copy-Item -Path "$amigaPackagesDir\*" $tempInstallDir -recurse -force
 
     # copy amiga user packages dir
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
@@ -2084,12 +2084,12 @@ function RunBuildSelfInstall($hstwb)
     
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
-    Copy-Item -Path "$amigaPackagesDir\*" $tempPackagesDir -recurse -force
+    Copy-Item -Path "$amigaPackagesDir\*" $tempInstallDir -recurse -force
 
     # copy amiga user packages dir
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
     Copy-Item -Path "$amigaUserPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
-  
+
 
     # create self install prefs file
     $uaePrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
@@ -2470,8 +2470,10 @@ function RunBuildPackageInstallation($hstwb)
     $packageInstallationScriptLines += "; An package installation script generated by HstWB Installer to install selected packages."
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Add assigns and set environment variables for package installation"
-    $packageInstallationScriptLines += "SetEnv Packages ""``CD``"""
-    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$Packages"""
+    $packageInstallationScriptLines += "SetEnv packagesdir ""``CD``"""
+    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$packagesdir"""
+    $packageInstallationScriptLines += "Assign INSTALLDIR: ""`$packagesdir"""
+    $packageInstallationScriptLines += "Assign C: ""INSTALLDIR:C"" ADD"
     $packageInstallationScriptLines += 'Assign SYSTEMDIR: SYS:'
     $packageInstallationScriptLines += "SetEnv TZ MST7"
     $packageInstallationScriptLines += ""
@@ -2483,7 +2485,9 @@ function RunBuildPackageInstallation($hstwb)
     $packageInstallationScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
     $packageInstallationScriptLines += ""
     $packageInstallationScriptLines += "; Remove assigns for package installation"
-    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$Packages"" REMOVE"
+    $packageInstallationScriptLines += "Assign PACKAGESDIR: ""`$packagesdir"" REMOVE"
+    $packageInstallationScriptLines += "Assign C: ""INSTALLDIR:C"" REMOVE"
+    $packageInstallationScriptLines += "Assign INSTALLDIR: ""`$packagesdir"" REMOVE"
     $packageInstallationScriptLines += "Assign >NIL: EXISTS ""SYSTEMDIR:"""
     $packageInstallationScriptLines += "IF NOT WARN"
     $packageInstallationScriptLines += "  Assign SYSTEMDIR: SYS: REMOVE"
