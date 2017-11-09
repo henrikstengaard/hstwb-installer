@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-06
+# Date:   2017-11-09
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -459,7 +459,10 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
 
     # get adf files from workbench dir
     $adfFiles = @()
-    $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf -File
+    if (Test-Path -Path $workbenchDir)
+    {
+        $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf -File
+    }
 
     # add adf files to fs-uae config lines as swappable floppies
     for ($i = 0; $i -lt $adfFiles.Count; $i++)
@@ -551,7 +554,7 @@ Write-Output "------------------"
 Write-Output "Install UAE Config"
 Write-Output "------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2017-11-06"
+Write-Output "Date: 2017-11-09"
 Write-Output ""
 Write-Output "Patch hard drives to use the following directories:"
 Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)

@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-03
+# Date:   2017-11-09
 #
 # A python script to install UAE config for HstWB images by patching
 # hard drive directories to current directory, use A1200 Kickstart 3.1
@@ -175,8 +175,10 @@ def patch_fsuae_config_file( \
             fsuae_config_lines[i] = line
 
     # get adf files from workbench dir
-    adf_files = [os.path.join(workbench_dir, _f) for _f in os.listdir(workbench_dir) \
-        if os.path.isfile(os.path.join(workbench_dir, _f)) and _f.endswith(".adf")]
+    adf_files = []
+    if os.path.isdir(workbench_dir):
+        adf_files.extend([os.path.join(workbench_dir, _f) for _f in os.listdir(workbench_dir) \
+            if os.path.isfile(os.path.join(workbench_dir, _f)) and _f.endswith(".adf")])
 
     # add adf files to fs-uae config lines as swappable floppies
     for i in range(0, len(adf_files)):
@@ -239,7 +241,7 @@ print '------------------'
 print 'Install UAE Config'
 print '------------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2017-11-03'
+print 'Date: 2017-11-09'
 print ''
 print 'Patch hard drives to use the following directories:'
 print 'IMAGEDIR        : "{0}"'.format(CURRENT_DIR)
