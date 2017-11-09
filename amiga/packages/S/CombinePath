@@ -1,0 +1,28 @@
+.KEY path/a,childpath/a
+.BRA {
+.KET }
+
+; Combine Path Script
+; -------------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-04-04
+;
+; A script to combine a path and a child path taking care of stripping and adding slashes, if needed. 
+
+; Write path to combined path
+echo "{path}" >"T:_combinedpath1"
+
+; Strip tailing slash from path
+sed "s/\/$//" "T:_combinedpath1" >"T:_combinedpath2"
+
+; Append slash, if combined path doesn't end with :
+sed "s/\([^:]\)$/\1\//" "T:_combinedpath2" >"T:_combinedpath3"
+
+; Output combined path
+echo "`type "T:_combinedpath3"`{childpath}" >"T:_combinedpath4"
+
+; Strip tailing slash from child path
+sed "s/\/$//" "T:_combinedpath4"
+
+; Delete temp combined path files
+delete >NIL: T:_combinedpath#?
