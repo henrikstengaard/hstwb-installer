@@ -36,7 +36,7 @@ def find_a1200_kickstart31_rom_file(kickstart_dir):
 
     # get rom files from kickstart dir
     rom_files = [os.path.join(kickstart_dir, _f) for _f in os.listdir(kickstart_dir) \
-        if os.path.isfile(os.path.join(kickstart_dir, _f))]
+        if os.path.isfile(os.path.join(kickstart_dir, _f)) and _f.endswith(".rom")]
 
     for rom_file in rom_files:
         md5_hash = calculate_md5_from_file(rom_file)
@@ -87,11 +87,14 @@ def find_fsuae_config_dir():
 
 # patch fs-uae config file
 def patch_fsuae_config_file( \
-    fsuae_config_file, current_dir, workbench_dir, kickstart_dir, os39_dir, userpackages_dir):
+    fsuae_config_file, \
+    a1200_kickstart_rom_file, \
+    current_dir, \
+    workbench_dir, \
+    kickstart_dir, \
+    os39_dir, \
+    userpackages_dir):
     """Patch FSUAE Config File"""
-
-    # find A1200 kickstart 3.1 rom file in kickstart dir
-    a1200_kickstart31_rom_file = find_a1200_kickstart31_rom_file(kickstart_dir)
 
     # find amiga os 3.9 iso file in os39 dir
     amiga_os_39_iso_file = find_amiga_os_39_iso_file(os39_dir)
@@ -129,9 +132,9 @@ def patch_fsuae_config_file( \
 
         # patch kickstart file
         if re.search(r'^kickstart_file\s*=', line):
-            if a1200_kickstart31_rom_file:
+            if a1200_kickstart_rom_file:
                 line = 'kickstart_file = {0}\n'.format(
-                    a1200_kickstart31_rom_file.replace('\\', '/'))
+                    a1200_kickstart_rom_file.replace('\\', '/'))
             else:
                 line = 'kickstart_file = \n'
 
@@ -262,6 +265,15 @@ if OS39_DIR_PRESENT:
 if USERPACKAGES_DIR_PRESENT:
     print 'USERPACKAGESDIR : "{0}"'.format(USERPACKAGES_DIR)
 
+# set a1200 kickstart rom dir to kickstart dir, if it exists.
+# otherwise set a1200 kickstart rom dir to current dir
+if KICKSTART_DIR_PRESENT:
+    A1200_KICKSTART_ROM_DIR = KICKSTART_DIR
+else:
+    A1200_KICKSTART_ROM_DIR = CURRENT_DIR
+
+# get a1200 kickstart 3.1 rom from a1200 kickstart rom dir
+A1200_KICKSTART_ROM_FILE = find_a1200_kickstart31_rom_file(A1200_KICKSTART_ROM_DIR)
 
 # patch and install fs-uae config file, if it exists
 if os.path.isfile(FSUAE_CONFIG_FILE):
@@ -272,7 +284,13 @@ if os.path.isfile(FSUAE_CONFIG_FILE):
 
     # patch fs-uae config file
     patch_fsuae_config_file(
-        FSUAE_CONFIG_FILE, CURRENT_DIR, WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DIR)
+        FSUAE_CONFIG_FILE, \
+        A1200_KICKSTART_ROM_FILE, \
+        CURRENT_DIR, \
+        WORKBENCH_DIR, \
+        KICKSTART_DIR, \
+        OS39_DIR, \
+        USERPACKAGES_DIR)
 
     # get fs-uae config directory
     FSUAE_CONFIG_DIR = find_fsuae_config_dir()

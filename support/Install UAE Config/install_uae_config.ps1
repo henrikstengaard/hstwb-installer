@@ -41,7 +41,7 @@ function FindA1200Kickstart31RomFile($kickstartDir)
 
     # get kickstart files
     $kickstartFiles = @()
-    $kickstartFiles += Get-ChildItem $kickstartDir
+    $kickstartFiles += Get-ChildItem $kickstartDir -Filter *.rom -File
     
     foreach($kickstartFile in $kickstartFiles)
     {
@@ -134,7 +134,7 @@ function IsValidWorkbenchAdfFile($workbenchAdfFile)
 function InstallWorkbenchAdfFiles($workbenchDir, $outputWorkbenchDir)
 {
     $workbenchFiles = @()
-    $workbenchFiles += Get-ChildItem $workbenchDir
+    $workbenchFiles += Get-ChildItem $workbenchDir -Filter *.adf -File
     
     foreach($workbenchFile in $workbenchFiles)
     {
@@ -208,11 +208,8 @@ function InstallKickstartRomFiles($kickstartDir, $outputKickstartDir)
 
 
 # patch winuae config file
-function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function PatchWinuaeConfigFile($winuaeConfigFile, $a1200KickstartRomFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
-    # find A1200 kickstart 3.1 rom file
-    $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
-    
     # find amiga os 3.9 iso file in os39 dir
     $amigaOs39IsoFile = FindAmigaOs39IsoFile $os39Dir
 
@@ -241,9 +238,9 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
         # patch kickstart rom file
         if ($line -match '^kickstart_rom_file=')
         {
-            if ($a1200Kickstart31RomFile)
+            if ($a1200KickstartRomFile)
             {
-                $line = "kickstart_rom_file={0}" -f $a1200Kickstart31RomFile
+                $line = "kickstart_rom_file={0}" -f $a1200KickstartRomFile
             }
             else
             {
@@ -356,11 +353,8 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $workbenchDir, $kickstartDir, 
 
 
 # patch fs-uae config file
-function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
-    # find A1200 kickstart 3.1 rom file in kickstart dir
-    $a1200Kickstart31RomFile = FindA1200Kickstart31RomFile $kickstartDir
-    
     # find amiga os 3.9 iso file in os39 dir
     $amigaOs39IsoFile = FindAmigaOs39IsoFile $os39Dir
 
@@ -399,9 +393,9 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $workbenchDir, $kickstartDir, $o
         # patch kickstart file
         if ($line -match '^kickstart_file\s*=')
         {
-            if ($a1200Kickstart31RomFile)
+            if ($a1200KickstartRomFile)
             {
-                $line = "kickstart_file = {0}" -f $a1200Kickstart31RomFile.Replace('\', '/')
+                $line = "kickstart_file = {0}" -f $a1200KickstartRomFile.Replace('\', '/')
             }
             else
             {
@@ -584,27 +578,53 @@ if ($userPackagesDirPresent)
 }
 
 # install workbench 3.1 adf and kickstart rom files from cloanto amiga forever data directory, if present and patch only is not set
+$a1200KickstartRomDir = $null
 $amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
-if (!$patchOnly -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
+if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
 {
-    Write-Output ""
-    Write-Output ("Installing Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever data directory '{0}'" -f $amigaForeverDataDir)
-    
     $sharedAdfDir = [System.IO.Path]::Combine($amigaForeverDataDir, "Shared\adf")
-    if (Test-Path -path $sharedAdfDir)
-    {
-        Write-Output ("- Workbench 3.1 adf files from '{0}'..." -f $sharedAdfDir)
-        InstallWorkbenchAdfFiles $sharedAdfDir $workbenchDir
-    }
-    
     $sharedRomDir = [System.IO.Path]::Combine($amigaForeverDataDir, "Shared\rom")
+
+    # set a1200 kickstart rom dir to cloanto amiga forever data directory, if shared rom directory exists
     if (Test-Path -Path $sharedRomDir)
     {
-        Write-Output ("- Kickstart rom files from '{0}'..." -f $sharedRomDir)
-        InstallKickstartRomFiles $sharedRomDir $kickstartDir
+        $a1200KickstartRomDir = $sharedRomDir
     }
-    Write-Output "Done"
+
+    # install workbench adf and kickstart rom files, if not patch only and workbench dir or kickstart dir exists
+    if (!$patchOnly -and ($workbenchDirPresent -or $kickstartDirPresent))
+    {
+        Write-Output ""
+        Write-Output ("Installing Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever data directory '{0}'" -f $amigaForeverDataDir)
+    
+        if ($workbenchDirPresent -and (Test-Path -path $sharedAdfDir))
+        {
+            Write-Output ("- Workbench 3.1 adf files from '{0}'..." -f $sharedAdfDir)
+            InstallWorkbenchAdfFiles $sharedAdfDir $workbenchDir
+        }
+        
+        if ($kickstartDirPresent -and (Test-Path -Path $sharedRomDir))
+        {
+            Write-Output ("- Kickstart rom files from '{0}'..." -f $sharedRomDir)
+            InstallKickstartRomFiles $sharedRomDir $kickstartDir
+        }
+
+        Write-Output "Done"
+    }
 }
+elseif ($kickstartDirPresent)
+{
+    # set a1200 kickstart rom dir to kickstart dir, if it exists
+    $a1200KickstartRomDir = $kickstartDir
+}
+else
+{
+    # set a1200 kickstart rom dir to current dir
+    $a1200KickstartRomDir = $currentDir
+}
+
+# get a1200 kickstart 3.1 rom from a1200 kickstart rom dir
+$a1200KickstartRomFile = FindA1200Kickstart31RomFile $a1200KickstartRomDir
 
 # patch and install winuae config file, if it exists
 Write-Output ""
@@ -613,7 +633,7 @@ if (Test-Path -Path $winuaeConfigFile)
     # patch winuae config file
     Write-Output ("WinUAE configuration file '{0}'" -f $winuaeConfigFile)
     Write-Output "- Patching hard drive directories, kickstart rom file and Amiga OS 3.9 iso file..."
-    PatchWinuaeConfigFile $winuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
+    PatchWinuaeConfigFile $winuaeConfigFile $a1200KickstartRomFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
     
     # get winuae directory from public directory
     $winuaeConfigDir = Get-ChildItem -Path ${Env:PUBLIC} -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'Amiga Files\\WinUAE\\Configurations$' } | Select-Object -First 1
@@ -640,7 +660,7 @@ if (Test-Path -Path $fsuaeConfigFile)
     
     # patch fs-uae config file
     Write-Output "- Patching hard drive directories, kickstart rom file, Amiga OS 3.9 iso file and add Workbench adf files as swappable floppies..."
-    PatchFsuaeConfigFile $fsuaeConfigFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
+    PatchFsuaeConfigFile $fsuaeConfigFile $a1200KickstartRomFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
     # get fs-uae config directory from my documents directory
     $fsuaeConfigDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | Select-Object -First 1
