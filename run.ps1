@@ -1034,7 +1034,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackagesScriptLines += "ENDIF"
             $installPackagesScriptLines += "; Get device name from assigndir by replacing colon with newline and get 1st line with device name"
             $installPackagesScriptLines += "echo ""`$assigndir"" >T:_assigndir1"
-            $installPackagesScriptLines += "rep T:_assigndir1 "":"" """""
+            $installPackagesScriptLines += "rep T:_assigndir1 "":"" ""*N"""
             $installPackagesScriptLines += "sed ""1q;d"" T:_assigndir1 >T:_assigndir2"
             $installPackagesScriptLines += "set devicename ""``type T:_assigndir2``"""
             $installPackagesScriptLines += "Assign >NIL: EXISTS ""`$devicename:"""
