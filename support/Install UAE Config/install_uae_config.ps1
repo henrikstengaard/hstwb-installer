@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-09
+# Date:   2017-11-12
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -314,7 +314,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $a1200KickstartRomFile, $workb
             }
 
             # patch uaehf to current directory
-            if ($line -match '^uaehf\d+=hdf')
+            if ($line -match '^uaehf\d+=')
             {
                 $uaehfFile = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
                 
@@ -332,7 +332,7 @@ function PatchWinuaeConfigFile($winuaeConfigFile, $a1200KickstartRomFile, $workb
 
                 if ($filesystemDir)
                 {
-                    $filesystemDir = Join-Path $currentDir -Path (Split-Path $filesystemDir -Leaf)
+                    $filesystemDir = Join-Path $currentDir -ChildPath (Split-Path $filesystemDir -Leaf)
                     $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$filesystemDir"
                 }
             }
@@ -548,7 +548,7 @@ Write-Output "------------------"
 Write-Output "Install UAE Config"
 Write-Output "------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2017-11-09"
+Write-Output "Date: 2017-11-12"
 Write-Output ""
 Write-Output "Patch hard drives to use the following directories:"
 Write-Output ("IMAGEDIR        : '{0}'" -f $currentDir)
