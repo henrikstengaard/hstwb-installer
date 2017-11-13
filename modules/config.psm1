@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-05-05
+# Date:   2017-11-13
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -646,7 +646,7 @@ function ValidateAssigns($assigns)
 function ValidateSettings($settings)
 {
     # fail, if ImageDir directory doesn't exist for installer modes other than 'BuildPackageInstallation'
-    if ($settings.Installer.Mode -notmatch 'BuildPackageInstallation' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
+    if ($settings.Installer.Mode -notmatch '(BuildPackageInstallation|BuildUserPackageInstallation)' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
         Write-Host "Error: ImageDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
@@ -695,7 +695,7 @@ function ValidateSettings($settings)
     }
 
     # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|Test)')
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|BuildUserPackageInstallation|Test)')
     {
         Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false

@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-09-18
+# Date:   2017-11-13
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -130,6 +130,7 @@ function PrintSettings($hstwb)
         "Install" { Write-Host "'Install'" }
         "BuildSelfInstall" { Write-Host "'Build Self Install'" }
         "BuildPackageInstallation" { Write-Host "'Build Package Installation'" }
+        "BuildUserPackageInstallation" { Write-Host "'Build User Package Installation'" }
     }
 }
 

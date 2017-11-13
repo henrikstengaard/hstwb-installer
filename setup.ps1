@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-25
+# Date:   2017-11-13
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1099,7 +1099,7 @@ function ConfigureInstaller($hstwb)
 # change installer mode
 function ChangeInstallerMode($hstwb)
 {
-    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Test") 
+    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Build User Package Installation", "Test")
 
     switch ($choice)
     {
@@ -1107,6 +1107,7 @@ function ChangeInstallerMode($hstwb)
         "Install" { $hstwb.Settings.Installer.Mode = "Install" }
         "Build Self Install" { $hstwb.Settings.Installer.Mode = "BuildSelfInstall" }
         "Build Package Installation" { $hstwb.Settings.Installer.Mode = "BuildPackageInstallation" }
+        "Build User Package Installation" { $hstwb.Settings.Installer.Mode = "BuildUserPackageInstallation" }
     }
 
     Save $hstwb

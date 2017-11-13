@@ -1,7 +1,7 @@
 ; User Package Installation
 ; -------------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-11-09
+; Date: 2017-11-13
 ;
 ; An AmigaDOS script to find, prepare and install selected user packages.
 
@@ -21,14 +21,21 @@ ENDIF
 ; Run find user packages
 Execute INSTALLDIR:S/Find-User-Packages T:User-Packages
 
-; Run prepare user packages
-echo ""
-Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages T:Install-User-Packages
-Delete >NIL: T:User-Packages
+; Check if user packages contains any user packages
+set userpackagescount `wc -l <T:User-Packages`
+IF $userpackagescount GT 0 VAL
+  ; Run prepare user packages
+  echo ""
+  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages T:Install-User-Packages
+  Delete >NIL: T:User-Packages
 
-; Run install user packages
-Execute T:Install-User-Packages
-Delete >NIL: T:Install-User-Packages
+  ; Run install user packages
+  Execute T:Install-User-Packages
+  Delete >NIL: T:Install-User-Packages
+ELSE
+  echo ""
+  echo "*e[1mNo user packages found!*e[22m"
+ENDIF
 
 ; Remove assigns for user package installation
 Assign USERPACKAGESDIR: "$userpackagesdir" REMOVE

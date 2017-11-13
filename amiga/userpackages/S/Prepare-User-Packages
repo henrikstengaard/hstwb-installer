@@ -1,11 +1,11 @@
-.KEY userpackages/a,installuserpackages/a,nomenus/s
+.KEY userpackages/a,installuserpackages/a,nomenus/s,install/s
 .BRA {
 .KET }
 
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-11-09
+; Date: 2017-11-13
 ; Author: Henrik Noerfjand Stengaard
 
 ; Fail, if USERPACKAGESDIR: assign doesn't exist
@@ -348,7 +348,13 @@ echo "echo *"Select all user packages*" >>T:userpackagesmenu" >>"{installuserpac
 echo "echo *"Deselect all user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
 echo "echo *"Edit assigns*" >>T:userpackagesmenu" >>"{installuserpackages}"
 echo "echo *"Install user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
-echo "echo *"Skip user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+
+IF "{install}" EQ ""
+  echo "echo *"Quit*" >>T:userpackagesmenu" >>"{installuserpackages}"
+ELSE
+  echo "echo *"Skip user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+ENDIF
+
 echo "" >>"{installuserpackages}"
 echo "set userpackagesmenu *"*"" >>"{installuserpackages}"
 echo "set userpackagesmenu *"*`ReqList CLONERT I=T:userpackagesmenu H=*"Select user packages to install*" PAGE=18*`*"" >>"{installuserpackages}"
@@ -391,10 +397,16 @@ set menuoption `eval $menuindex + 5`
 echo "" >>"{installuserpackages}"
 echo "; Skip user packages option" >>"{installuserpackages}"
 echo "IF *"*$userpackagesmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
-echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to skip user package installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
-echo "  IF *"*$confirm*" EQ *"1*"" >>"{installuserpackages}"
-echo "    SKIP end" >>"{installuserpackages}"
-echo "  ENDIF" >>"{installuserpackages}"
+
+IF "{install}" EQ ""
+  echo "  SKIP end" >>"{installuserpackages}"
+ELSE
+  echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to skip user package installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
+  echo "  IF *"*$confirm*" EQ *"1*"" >>"{installuserpackages}"
+  echo "    SKIP end" >>"{installuserpackages}"
+  echo "  ENDIF" >>"{installuserpackages}"
+ENDIF
+
 echo "ENDIF" >>"{installuserpackages}"
 
 echo "" >>"{installuserpackages}"

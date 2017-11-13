@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-09
+# Date:   2017-11-13
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2084,7 +2084,7 @@ function RunBuildSelfInstall($hstwb)
     
     # copy amiga packages dir
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
-    Copy-Item -Path "$amigaPackagesDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$amigaPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
     # copy amiga user packages dir
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
@@ -2515,6 +2515,54 @@ function RunBuildPackageInstallation($hstwb)
 }
 
 
+# run build user package installation
+function RunBuildUserPackageInstallation($hstwb)
+{
+    $outputUserPackageInstallationPath = FolderBrowserDialog "Select new directory for user package installation" ${Env:USERPROFILE} $true
+    
+    # return, if user package installation directory is null
+    if ($outputUserPackageInstallationPath -eq $null)
+    {
+        Write-Host ""
+        Write-Host "Cancelled, no user package installation directory selected!" -ForegroundColor Yellow
+        return
+    }
+
+    # show confirm overwrite dialog, if user package installation directory is not empty
+    if ((Get-ChildItem -Path $outputUserPackageInstallationPath -Recurse).Count -gt 0)
+    {
+        if (!(ConfirmDialog "Overwrite files" ("User package installation directory '" + $outputUserPackageInstallationPath + "' is not empty.`r`n`r`nDo you want to overwrite files?")))
+        {
+            Write-Host ""
+            Write-Host "Cancelled, user package installation directory is not empty!" -ForegroundColor Yellow
+            return
+        }
+    }
+
+    # create user package installation directory, if it doesn't exists
+    if (!(Test-Path -Path $outputUserPackageInstallationPath))
+    {
+        mkdir $outputUserPackageInstallationPath | Out-Null
+    }
+
+    # print building user package installation message
+    Write-Host ""
+    Write-Host "Building user package installation to '$outputUserPackageInstallationPath'..."    
+    
+    # copy amiga packages
+    $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
+    Copy-Item -Path "$amigaPackagesDir\*" $outputUserPackageInstallationPath -recurse -force
+    
+    # copy amiga user packages
+    $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
+    Copy-Item -Path "$amigaUserPackagesDir\*" $outputUserPackageInstallationPath -recurse -force
+
+    # copy amiga user package installation
+    $amigaUserPackageInstallationDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackageinstallation")
+    Copy-Item -Path "$amigaUserPackageInstallationDir\*" $outputUserPackageInstallationPath -recurse -force
+}
+
+
 # save
 function Save($hstwb)
 {
@@ -2776,6 +2824,7 @@ try
         "Install" { RunInstall $hstwb }
         "BuildSelfInstall" { RunBuildSelfInstall $hstwb }
         "BuildPackageInstallation" { RunBuildPackageInstallation $hstwb }
+        "BuildUserPackageInstallation" { RunBuildUserPackageInstallation $hstwb }
     }
 
 

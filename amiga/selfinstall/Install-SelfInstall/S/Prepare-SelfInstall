@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-11-13
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -355,7 +355,7 @@ IF $userpackagescount GT 0 VAL
   ; Run prepare user packages
   echo ""
   Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
-  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages
+  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages INSTALL
   Delete >NIL: T:User-Packages
 ELSE
   echo ""
