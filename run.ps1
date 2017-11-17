@@ -2407,7 +2407,7 @@ function RunBuildPackageInstallation($hstwb)
     }
 
     # show confirm overwrite dialog, if package installation directory is not empty
-    if ((Get-ChildItem -Path $outputPackageInstallationPath -Recurse).Count -gt 0)
+    if ((Get-ChildItem -Path $outputPackageInstallationPath).Count -gt 0)
     {
         if (!(ConfirmDialog "Overwrite files" ("Package installation directory '" + $outputPackageInstallationPath + "' is not empty.`r`n`r`nDo you want to overwrite files?")))
         {
@@ -2529,7 +2529,7 @@ function RunBuildUserPackageInstallation($hstwb)
     }
 
     # show confirm overwrite dialog, if user package installation directory is not empty
-    if ((Get-ChildItem -Path $outputUserPackageInstallationPath -Recurse).Count -gt 0)
+    if ((Get-ChildItem -Path $outputUserPackageInstallationPath).Count -gt 0)
     {
         if (!(ConfirmDialog "Overwrite files" ("User package installation directory '" + $outputUserPackageInstallationPath + "' is not empty.`r`n`r`nDo you want to overwrite files?")))
         {
