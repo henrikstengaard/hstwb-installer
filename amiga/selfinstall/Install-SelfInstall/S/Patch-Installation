@@ -1,7 +1,7 @@
 ; Patch Installation Script
 ; -------------------------
 ;
-; Date: 2017-10-03
+; Date: 2017-11-18
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -14,14 +14,30 @@ echo "------------------"
 echo "*e[0m" NOLINE
 echo ""
 echo "This will patch installation, if device name PATCHDIR is"
-echo "added in WinUAE. Currently it check if Workbench.library"
-echo "and copies it to SYS:Libs to support installation on"
-echo "A4000T systems."
+echo "added in WinUAE. Currently it checks if Workbench.library"
+echo "exist and copies it to SYS:Libs to support installation on"
+echo "A4000T systems and Amiga's with Amiga Forever Kickstart 3.X."
 echo ""
 
 
-Assign >NIL: EXISTS PATCHDIR:
+; Set fail at 255 for DiskInDrive to fail silently
+failat 255
+
+
+; Set patchinstall to 1, if device PATCHDIR: is mapped to a directory
+set patchinstall "0"
+DiskInDrive >NIL: PATCHDIR:
 IF NOT WARN
+  set patchinstall "1"
+ENDIF
+
+
+; Set fail at 21
+failat 21
+
+
+Assign >NIL: EXISTS PATCHDIR:
+IF $patchinstall EQ 1 VAL
   echo "PATCHDIR: Present! Patching installation."
 ELSE
   echo "PATCHDIR: Not present! Skip patch installation."
