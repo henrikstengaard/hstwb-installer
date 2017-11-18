@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-07-21
+# Date:   2017-11-18
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -453,6 +453,25 @@ function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
 
 
     return $kickstartRomSetHashes
+}
+
+
+# find workbench adfs
+function FindWorkbenchAdfs($hstwb)
+{
+    # find files with hashes matching workbench adf hashes
+    FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
+    
+    # find files with disk names matching workbench adf hashes
+    FindMatchingWorkbenchAdfs $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
+}
+
+
+# find kickstart roms
+function FindKickstartRoms($hstwb)
+{
+    # find files with hashes matching kickstart rom hashes
+    FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
 }
 
 

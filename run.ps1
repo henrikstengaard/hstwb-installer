@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-13
+# Date:   2017-11-18
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2694,16 +2694,6 @@ try
     }
     
 
-    # print title and settings 
-    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
-    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-    Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
-    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-    Write-Host ""
-    PrintSettings $hstwb
-    Write-Host ""
-
-
     # validate settings
     if (!(ValidateSettings $hstwb.Settings))
     {
@@ -2718,16 +2708,21 @@ try
     }
 
 
+    # find and set kickstart rom set hashes
+    $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
+    $hstwb.KickstartRomHashes = $kickstartRomSetHashes
+
+
+    # find and set workbench adf set hashes 
+    $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
+    $hstwb.WorkbenchAdfHashes = $workbenchAdfSetHashes
+                
+
     # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {
-        # find kickstart rom set hashes
-        $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
-        
-        
         # find kickstart 3.1 a1200 rom
         $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
-
 
         # fail, if kickstart rom hash doesn't exist
         if (!$kickstartRomHash)
@@ -2735,15 +2730,11 @@ try
             Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
         }
 
-
-        # set kickstart rom set hashes kickstart rom file
-        $hstwb.KickstartRomSetHashes = $kickstartRomSetHashes
+        # set kickstart rom file
         $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
-
 
         # print kickstart rom hash file
         Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
-
 
         # kickstart rom key
         $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
@@ -2774,18 +2765,14 @@ try
         # find and set workbench adf set hashes, if installing workbench
         if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
         {
-            # find workbench adf set hashes 
-            $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
-        
-            # find workbench 3.1 workbench disk
+                # find workbench 3.1 workbench disk
             $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
             
             if ($workbenchAdfHash)
             {
                 $workbench31Adf = $true
 
-                # set workbench adf set hashes workbench adf file
-                $hstwb.WorkbenchAdfSetHashes = $workbenchAdfSetHashes
+                # set workbench adf file
                 $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
 
                 # print workbench adf hash file
@@ -2798,7 +2785,6 @@ try
         }
         else
         {
-            $hstwb.WorkbenchAdfSetHashes = @()
             $hstwb.Paths.WorkbenchAdfFile = ''
         }
 
@@ -2808,6 +2794,16 @@ try
             Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
         }
     }
+
+
+    # print title and settings
+    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ""
+    PrintSettings $hstwb
+    Write-Host ""
 
 
     # create temp path

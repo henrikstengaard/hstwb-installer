@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-13
+# Date:   2017-11-18
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -10,6 +10,30 @@
 # print settings
 function PrintSettings($hstwb)
 {
+    # get workbench adf set complete, hashes and files
+    $workbenchAdfSetComplete = $false
+    $workbenchAdfSetHashes = @() 
+    $workbenchAdfSetFiles = @()
+    if ($hstwb.Settings.Workbench.WorkbenchAdfSet -notmatch '^$')
+    {
+        $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
+        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
+
+        $workbenchAdfSetComplete = ($workbenchAdfSetFiles.Count -eq $workbenchAdfSetHashes.Count)
+    }
+
+    # get kickstart rom set complete, hashes and files
+    $kickstartRomSetComplete = $false
+    $kickstartRomSetHashes = @() 
+    $kickstartRomSetFiles = @()
+    if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+    {
+        $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
+        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
+
+        $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
+    }
+
     Write-Host "Settings"
     Write-Host "  Settings File         : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Paths.SettingsFile + "'")
@@ -24,7 +48,23 @@ function PrintSettings($hstwb)
     Write-Host "  Workbench Adf Dir     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfDir + "'")
     Write-Host "  Workbench Adf Set     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "'")
+
+    if ($hstwb.Settings.Workbench.WorkbenchAdfSet -notmatch '^$')
+    {
+        if ($workbenchAdfSetComplete)
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Workbench.WorkbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Green"
+        }
+        else
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Workbench.WorkbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Yellow"
+        }
+    }
+    else
+    {
+        Write-Host "''"
+    }
+
     Write-Host "Amiga OS 3.9"
     Write-Host "  Install Amiga OS 3.9  : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.AmigaOS39.InstallAmigaOS39 + "'")
@@ -38,7 +78,23 @@ function PrintSettings($hstwb)
     Write-Host "  Kickstart Rom Dir     : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomDir + "'")
     Write-Host "  Kickstart Rom Set     : " -NoNewline -foregroundcolor "Gray"
-    Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomSet + "'")
+
+    if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+    {
+        if ($kickstartRomSetComplete)
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Green"
+        }
+        else
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Yellow"
+        }
+    }
+    else
+    {
+        Write-Host "''"
+    }
+    
     Write-Host "Packages"
 
     # get install packages
