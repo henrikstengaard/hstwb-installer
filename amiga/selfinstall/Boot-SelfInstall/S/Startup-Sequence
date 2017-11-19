@@ -1,12 +1,18 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-11-13
+; Date: 2017-11-18
 ; Author: Henrik Noerfjand Stengaard
 
 
-; Load patched scsi.device v43.45
-LoadModule DEVS:scsi.device
+; Load patched scsi.device v43.45, if it exists
+IF EXISTS DEVS:scsi.device
+  ; Load scsi.device, if current loaded scsi.device is less than v43.45
+  Version >NIL: "scsi.device" 43 45
+  IF WARN
+    LoadModule DEVS:scsi.device
+  ENDIF
+ENDIF
 
 
 ; Add alias
@@ -341,6 +347,7 @@ IF "$floppydevice" EQ ""
   resident "$systemfilesdir/C/Mount" PURE
   resident "$systemfilesdir/C/Type" PURE
   resident "$systemfilesdir/C/RequestChoice" PURE
+  resident "$systemfilesdir/C/Version" PURE
 ELSE
   "$floppydevice:C/AddBuffers" >NIL: $floppydevice: 200
   resident "$floppydevice:C/Assign" PURE
@@ -357,6 +364,7 @@ ELSE
   resident "$floppydevice:C/Mount" PURE
   resident "$floppydevice:C/Type" PURE
   resident "$floppydevice:C/RequestChoice" PURE
+  resident "$floppydevice:C/Version" PURE
 ENDIF
 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys

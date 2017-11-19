@@ -2718,6 +2718,16 @@ try
     $hstwb.WorkbenchAdfHashes = $workbenchAdfSetHashes
                 
 
+    # print title and settings
+    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
+    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
+    Write-Host ""
+    PrintSettings $hstwb
+    Write-Host ""
+    
+    
     # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {
@@ -2794,16 +2804,6 @@ try
             Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
         }
     }
-
-
-    # print title and settings
-    $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
-    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-    Write-Host ("HstWB Installer Run v{0}" -f $hstwb.Version) -foregroundcolor "Yellow"
-    Write-Host ("-------------------{0}" -f $versionPadding) -foregroundcolor "Yellow"
-    Write-Host ""
-    PrintSettings $hstwb
-    Write-Host ""
 
 
     # create temp path
