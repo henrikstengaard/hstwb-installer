@@ -2,7 +2,7 @@
 # -------------------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-10-14
+# Date:   2017-11-22
 #
 # A powershell script to build EAB WHDLoad Pack install script, that copies directories and extracts .lha and .zip files.
 
@@ -27,7 +27,7 @@ $userPackageDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathF
 
 # get user package items
 $userPackageItems = @()
-$userPackageItems += Get-ChildItem -Path $userPackageDir | Where-Object { $_.PSIsContainer -or $_.Name -match '\.(lha|zip)$' }
+$userPackageItems += Get-ChildItem -Path $userPackageDir | Where-Object { $_.Name -notmatch '^(_install|_installdir)$' }
 
 # install script lines
 $installScriptLines = @()
@@ -45,18 +45,14 @@ foreach($userPackageItem in ($userPackageItems | Sort-Object @{expression={$_.Na
     $installScriptLines += ''
     $installScriptLines += "; Install '{0}'" -f $userPackageItem.Name
     $installScriptLines += "IF EXISTS ""USERPACKAGEDIR:{0}""" -f $userPackageItem.Name
-    if (Test-Path -Path $userPackageItem.FullName -PathType container)
+    if ($userPackageItem.PSIsContainer)
     {
+        $installScriptLines += "  set itemdir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $userPackageItem.Name
         $installScriptLines += "  echo ""Copying '{0}'...""" -f $userPackageItem.Name
-        $installScriptLines += "  IF NOT EXISTS ""`$INSTALLDIR/{0}""" -f $userPackageItem.Name
-        $installScriptLines += "    MakePath >NIL: ""`$INSTALLDIR/{0}""" -f $userPackageItem.Name
+        $installScriptLines += "  IF NOT EXISTS ""`$itemdir""" -f $userPackageItem.Name
+        $installScriptLines += "    MakePath >NIL: ""`$itemdir""" -f $userPackageItem.Name
         $installScriptLines += "  ENDIF"
-        $installScriptLines += "  Copy >NIL: ""USERPACKAGEDIR:{0}"" ""`$INSTALLDIR/{0}"" ALL" -f $userPackageItem.Name
-        $installScriptLines += "  IF NOT EXISTS ""`$INSTALLDIR:{0}.info""" -f $userPackageItem.Name
-        $installScriptLines += "    IF EXISTS ""USERPACKAGEDIR:{0}.info""" -f $userPackageItem.Name
-        $installScriptLines += "      Copy >NIL: ""USERPACKAGEDIR:{0}.info"" ""`$INSTALLDIR""" -f $userPackageItem.Name
-        $installScriptLines += "    ENDIF"
-        $installScriptLines += "  ENDIF"
+        $installScriptLines += "  Copy >NIL: ""USERPACKAGEDIR:{0}"" ""`$itemdir"" ALL" -f $userPackageItem.Name
     }
     elseif ($userPackageItem.Name -match '\.(lha|zip)$')
     {
@@ -69,19 +65,24 @@ foreach($userPackageItem in ($userPackageItems | Sort-Object @{expression={$_.Na
             $indexName = $userPackageItem.Name.Substring(0, 1)
         }
 
+        $installScriptLines += "  set itemdir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $indexName
         $installScriptLines += "  echo ""Extracting '{0}'...""" -f $userPackageItem.Name
-        $installScriptLines += "  IF NOT EXISTS ""`$INSTALLDIR/{0}""" -f $indexName
-        $installScriptLines += "    MakePath >NIL: ""`$INSTALLDIR/{0}""" -f $indexName
+        $installScriptLines += "  IF NOT EXISTS ""`$itemdir""" -f $indexName
+        $installScriptLines += "    MakePath >NIL: ""`$itemdir""" -f $indexName
         $installScriptLines += "  ENDIF"
 
         if ($userPackageItem.Name -match '\.lha$')
         {
-            $installScriptLines += "  lha -q -m1 x ""USERPACKAGEDIR:{0}"" ""`$INSTALLDIR/{1}/""" -f $userPackageItem.Name, $indexName
+            $installScriptLines += "  lha -q -m1 x ""USERPACKAGEDIR:{0}"" ""`$itemdir/""" -f $userPackageItem.Name, $indexName
         }
         elseif ($userPackageItem.Name -match '\.zip$')
         {
-            $installScriptLines += "  unzip -qq -o -x ""USERPACKAGEDIR:{0}"" -d ""`$INSTALLDIR/{1}""" -f $userPackageItem.Name, $indexName
+            $installScriptLines += "  unzip -qq -o -x ""USERPACKAGEDIR:{0}"" -d ""`$itemdir""" -f $userPackageItem.Name, $indexName
         }
+    }
+    else
+    {
+        $installScriptLines += "  Copy >NIL: ""USERPACKAGEDIR:{0}"" ""`$INSTALLDIR""" -f $userPackageItem.Name
     }
     $installScriptLines += "ENDIF"
 }
