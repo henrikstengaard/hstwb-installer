@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-18
+# Date:   2017-11-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1538,7 +1538,7 @@ function RunInstall($hstwb)
 
 
     # prepare install workbench
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and $hstwb.WorkbenchAdfSetHashes.Count -gt 0)
+    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and $hstwb.WorkbenchAdfHashes.Count -gt 0)
     {
         # create install workbench prefs file
         $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
@@ -1547,12 +1547,12 @@ function RunInstall($hstwb)
 
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $hstwb.WorkbenchAdfSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
+        $hstwb.WorkbenchAdfHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
     }
 
 
     # prepare install kickstart
-    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and $hstwb.KickstartRomSetHashes.Count -gt 0)
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and $hstwb.KickstartRomHashes.Count -gt 0)
     {
         # create install kickstart prefs file
         $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
@@ -1561,11 +1561,11 @@ function RunInstall($hstwb)
 
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $hstwb.KickstartRomSetHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
+        $hstwb.KickstartRomHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
 
 
         # get first kickstart rom hash
-        $installKickstartRomHash = $hstwb.KickstartRomSetHashes | Select-Object -First 1
+        $installKickstartRomHash = $hstwb.KickstartRomHashes | Select-Object -First 1
 
 
         # kickstart rom key
@@ -2732,7 +2732,7 @@ try
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {
         # find kickstart 3.1 a1200 rom
-        $kickstartRomHash = $kickstartRomSetHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+        $kickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
 
         # fail, if kickstart rom hash doesn't exist
         if (!$kickstartRomHash)
@@ -2776,7 +2776,7 @@ try
         if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
         {
                 # find workbench 3.1 workbench disk
-            $workbenchAdfHash = $workbenchAdfSetHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+            $workbenchAdfHash = $hstwb.WorkbenchAdfHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
             
             if ($workbenchAdfHash)
             {
