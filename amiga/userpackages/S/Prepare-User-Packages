@@ -66,11 +66,6 @@ IF "{nomenus}" EQ ""
   echo "" >>"{installuserpackages}"
   echo "; Main" >>"{installuserpackages}"
   echo "LAB main" >>"{installuserpackages}"
-  ;echo "" >>"{installuserpackages}"
-  ;echo "; Copy reqtools prefs to env, if it doesn't exist" >>"{installuserpackages}"
-  ;echo "IF NOT EXISTS *"ENV:ReqTools.prefs*"" >>"{installuserpackages}"
-  ;echo "  copy >NIL: *"ReqTools.prefs*" *"ENV:*"" >>"{installuserpackages}"
-  ;echo "ENDIF" >>"{installuserpackages}"
 ENDIF
 
 ; Create empty partial files for menus
