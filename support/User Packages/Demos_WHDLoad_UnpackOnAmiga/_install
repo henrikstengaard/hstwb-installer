@@ -2,15 +2,16 @@
 ; -------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-10-14
+; Date: 2017-11-23
 
 ; 'Demos_WHDLoad_UnpackOnAmiga' install script
 
 ; Install 'MusicBox_v1.0_Exodus.lha'
 IF EXISTS "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha"
+  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
   echo "Extracting 'MusicBox_v1.0_Exodus.lha'..."
-  IF NOT EXISTS "$INSTALLDIR/M"
-    MakePath >NIL: "$INSTALLDIR/M"
+  IF NOT EXISTS "$itemdir"
+    MakePath >NIL: "$itemdir"
   ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha" "$INSTALLDIR/M/"
+  lha -q -m1 x "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha" "$itemdir/"
 ENDIF
