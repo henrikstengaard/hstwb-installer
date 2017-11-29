@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-11-13
+; Date: 2017-11-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -270,7 +270,8 @@ ENDIF
 IF $userpackages EQ 1 VAL
   echo "- USERPACKAGESDIR: Present! Install user packages."
 ELSE
-  echo "- USERPACKAGESDIR: Not present! Skip user package installation."
+  echo "- USERPACKAGESDIR: Not present! Skip user package"
+  echo "  installation."
 ENDIF
 
 
