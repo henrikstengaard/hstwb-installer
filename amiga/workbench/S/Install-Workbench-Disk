@@ -170,7 +170,10 @@ copy $floppydevice:HDTools/HDToolBox.info SYSTEMDIR:Tools CLONE
 copy $floppydevice:HDTools/S/BRUtab SYSTEMDIR:S CLONE
 copy $floppydevice:HDTools/S/HDBackup.config SYSTEMDIR:S CLONE 
 copy $floppydevice:L/FastFileSystem SYSTEMDIR:L CLONE 
-copy $floppydevice:Libs/68040.library SYSTEMDIR:Libs CLONE 
+copy $floppydevice:Libs/68040.library SYSTEMDIR:Libs CLONE
+IF EXISTS "$floppydevice:Libs/workbench.library"
+  Copy >NIL: "$floppydevice:Libs/workbench.library" SYSTEMDIR:Libs CLONE 
+ENDIF
 copy $floppydevice:Update/Disk.info SYSTEMDIR: CLONE 
 echo "Done"
 

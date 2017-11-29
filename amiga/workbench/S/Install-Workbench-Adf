@@ -62,6 +62,9 @@ Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/S/HDBackup.config" SYSTEMD
 Copy >NIL: "SYSTEMDIR:Temp/workbench31install/L/FastFileSystem" SYSTEMDIR:L CLONE 
 
 Copy >NIL: "SYSTEMDIR:Temp/workbench31install/Libs/68040.library" SYSTEMDIR:Libs CLONE 
+IF EXISTS "SYSTEMDIR:Temp/workbench31install/Libs/workbench.library"
+  Copy >NIL: "SYSTEMDIR:Temp/workbench31install/Libs/workbench.library" SYSTEMDIR:Libs CLONE 
+ENDIF
 Copy >NIL: "SYSTEMDIR:Temp/workbench31install/Update/Disk.info" SYSTEMDIR: CLONE 
 Delete >NIL: "SYSTEMDIR:Temp/workbench31install" ALL
 
