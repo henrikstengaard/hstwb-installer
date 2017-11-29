@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-11-18
+; Date: 2017-11-29
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -17,6 +17,20 @@ ENDIF
 
 ; Add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
+; Set stack
+stack 16384
+
+; Add assigns from S:AssignList
+AssPlus >NIL:
+
+
+; Fail, if exec.library is less than v40
+Version exec.library 40 >NIL:
+IF WARN
+  echo "*e[1mError: HstWB Installer requires minimum Kickstart 3.1 rom.*e[0m"
+  quit
+ENDIF
 
 
 ; Welcome message
@@ -68,10 +82,6 @@ echo ""
 echo "Continue will start loading Workbench system files."
 echo ""
 ask "Press ENTER to continue"
-
-
-; Set stack
-stack 16384
 
 
 ; Set floppydevice empty
@@ -146,9 +156,6 @@ ENDIF
 ; Set failat to 21
 failat 21
 
-
-; Add assigns from S:AssignList
-AssPlus >NIL:
 
 ; Find adf files in WORKBENCHDIR:
 FSearch >RAM:_adffiles "WORKBENCHDIR:" PAT="#?.adf"
