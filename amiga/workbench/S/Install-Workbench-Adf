@@ -1,7 +1,7 @@
 ; Install Workbench Adf
 ; ---------------------
 ;
-; Date: 2017-10-09
+; Date: 2017-11-29
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -47,6 +47,7 @@ Delete >NIL: "SYSTEMDIR:Temp/workbench31fonts" ALL
 echo "Copying Workbench 3.1 Install files..."
 MakePath >NIL: "SYSTEMDIR:Temp/workbench31install"
 xadUnFile >NIL: "INSTALLDIR:Workbench/workbench31install.adf" "SYSTEMDIR:Temp/workbench31install" DIMG OVERWRITE
+resident "SYSTEMDIR:Temp/workbench31install/C/IconPos" PURE
 MakePath >NIL: "SYSTEMDIR:Tools"
 Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/BRU" SYSTEMDIR:Tools CLONE
 Copy >NIL: "SYSTEMDIR:Temp/workbench31install/HDTools/HDBackup" SYSTEMDIR:Tools CLONE
@@ -79,6 +80,33 @@ Copy >NIL: "SYSTEMDIR:Temp/workbench31storage/Monitors/PAL.info" "SYSTEMDIR:Devs
 Copy >NIL: "SYSTEMDIR:Temp/workbench31storage/Printers.info" "SYSTEMDIR:Storage.info" CLONE 
 Delete >NIL: "SYSTEMDIR:Temp/workbench31storage" ALL
 
+
+; Clean up
+echo "Cleaning up..."
+IconPos >NIL: "SYSTEMDIR:Prefs"     12 20
+IconPos >NIL: "SYSTEMDIR:Prefs/Printer"  160 48
+
+IconPos >NIL: "SYSTEMDIR:Utilities" 98 4
+IconPos >NIL: "SYSTEMDIR:Utilities/Clock" 91 11
+IconPos >NIL: "SYSTEMDIR:Utilities/MultiView" 7 4
+
+IconPos >NIL: "SYSTEMDIR:Tools"                           98 38
+IconPos >NIL: "SYSTEMDIR:Tools/IconEdit"                 111 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Blanker"        8 84
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/ClickToFront"  99 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/CrossDOS"      99 44
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Exchange"       8  4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/FKey"          99 84
+
+IconPos >NIL: "SYSTEMDIR:System"    184 4
+IconPos >NIL: "SYSTEMDIR:WBStartup" 184 38
+IconPos >NIL: "SYSTEMDIR:Devs"      270 4
+IconPos >NIL: "SYSTEMDIR:Storage"   270 38 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Monitors"   10 106 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Printers"   10 140 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Expansion" 356 20
+IconPos >NIL: "SYSTEMDIR:Disk"      DXPOS 28 DYPOS 29 DWIDTH 452 DHEIGHT 93
+ 
 
 echo "Done"
 
