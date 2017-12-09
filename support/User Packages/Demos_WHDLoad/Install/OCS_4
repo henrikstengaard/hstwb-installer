@@ -1,0 +1,25 @@
+; Copy 'XPose' entry directory
+IF EXISTS "USERPACKAGEDIR:X\XPose.info"
+  Copy >NIL: "USERPACKAGEDIR:X\XPose.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:X\XPose"
+  Copy >NIL: "USERPACKAGEDIR:X\XPose" "$indexdir" ALL
+ENDIF
+
+; Create 'Z' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z.info"
+  Copy >NIL: "USERPACKAGEDIR:Z.info" "$indexdir"
+ENDIF
+echo "Installing 'Z'..."
+
+; Copy 'ZillionDreams' entry directory
+IF EXISTS "USERPACKAGEDIR:Z\ZillionDreams.info"
+  Copy >NIL: "USERPACKAGEDIR:Z\ZillionDreams.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z\ZillionDreams"
+  Copy >NIL: "USERPACKAGEDIR:Z\ZillionDreams" "$indexdir" ALL
+ENDIF

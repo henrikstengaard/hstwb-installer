@@ -1,257 +1,35 @@
-; EAB WHDLoad Pack Install Script
-; -------------------------------
+; Games WHDLoad UnpackOnAmiga Install Script
+; ------------------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-11-23
+; Date: 2017-12-08
+;
+; An AmigaDOS script to install Games WHDLoad UnpackOnAmiga sets from EAB WHDLoad Packs.
 
-; 'Games_WHDLoad_UnpackOnAmiga' install script
 
-; Install 'Battlestorm_v1.2_2008.zip'
-IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
-  echo "Extracting 'Battlestorm_v1.2_2008.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip" -d "$itemdir"
+set installset `RequestChoice "Games WHDLoad UnpackOnAmiga Set" "Select Games WHDLoad UnpackOnAmiga set to install." "All|AGA|OCS|AGA 4GB|OCS 4GB|Skip"`
+
+IF $installset EQ 1 VAL
+  echo "All"
+  execute USERPACKAGEDIR:Install/AGA
 ENDIF
 
-; Install 'Battlestorm_v1.2_CDTV.zip'
-IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
-  echo "Extracting 'Battlestorm_v1.2_CDTV.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip" -d "$itemdir"
+IF $installset EQ 2 VAL
+  echo "AGA"
+  execute USERPACKAGEDIR:Install/AGA
 ENDIF
 
-; Install 'DinoWars_v1.1.lha'
-IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
-  echo "Extracting 'DinoWars_v1.1.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1.lha" "$itemdir/"
+IF $installset EQ 3 VAL
+  echo "OCS"
+  execute USERPACKAGEDIR:Install/OCS
 ENDIF
 
-; Install 'DinoWars_v1.1_De.lha'
-IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1_De.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
-  echo "Extracting 'DinoWars_v1.1_De.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1_De.lha" "$itemdir/"
+IF $installset EQ 4 VAL
+  echo "AGA 4GB"
+  execute USERPACKAGEDIR:Install/AGA_4GB
 ENDIF
 
-; Install 'EmeraldMines_v1.0_CD.lha'
-IF EXISTS "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "E"`"
-  echo "Extracting 'EmeraldMines_v1.0_CD.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha" "$itemdir/"
-ENDIF
-
-; Install 'FastLane_v1.0.lha'
-IF EXISTS "USERPACKAGEDIR:FastLane_v1.0.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
-  echo "Extracting 'FastLane_v1.0.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:FastLane_v1.0.lha" "$itemdir/"
-ENDIF
-
-; Install 'FlipFlop_v1.0.zip'
-IF EXISTS "USERPACKAGEDIR:FlipFlop_v1.0.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
-  echo "Extracting 'FlipFlop_v1.0.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:FlipFlop_v1.0.zip" -d "$itemdir"
-ENDIF
-
-; Install 'FussballTotal_v1.1_De_2135.lha'
-IF EXISTS "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
-  echo "Extracting 'FussballTotal_v1.1_De_2135.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha" "$itemdir/"
-ENDIF
-
-; Install 'HiredGuns_v1.0_1MB_1114.zip'
-IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_1MB_1114.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
-  echo "Extracting 'HiredGuns_v1.0_1MB_1114.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:HiredGuns_v1.0_1MB_1114.zip" -d "$itemdir"
-ENDIF
-
-; Install 'HiredGuns_v1.0_512KB_1114.zip'
-IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
-  echo "Extracting 'HiredGuns_v1.0_512KB_1114.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip" -d "$itemdir"
-ENDIF
-
-; Install 'HoleInOne&DataDisks_v1.1.lha'
-IF EXISTS "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
-  echo "Extracting 'HoleInOne&DataDisks_v1.1.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha" "$itemdir/"
-ENDIF
-
-; Install 'HoleInOne_v1.1.lha'
-IF EXISTS "USERPACKAGEDIR:HoleInOne_v1.1.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
-  echo "Extracting 'HoleInOne_v1.1.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:HoleInOne_v1.1.lha" "$itemdir/"
-ENDIF
-
-; Install 'MightAndMagic3_v1.2_De.lha'
-IF EXISTS "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
-  echo "Extracting 'MightAndMagic3_v1.2_De.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha" "$itemdir/"
-ENDIF
-
-; Install 'OsWALDOfTheIceFloes_v1.0.zip'
-IF EXISTS "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
-  echo "Extracting 'OsWALDOfTheIceFloes_v1.0.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip" -d "$itemdir"
-ENDIF
-
-; Install 'PizzaConnection_v1.0_De.lha'
-IF EXISTS "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
-  echo "Extracting 'PizzaConnection_v1.0_De.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha" "$itemdir/"
-ENDIF
-
-; Install 'SimLife_v1.0_2585.zip'
-IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_2585.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
-  echo "Extracting 'SimLife_v1.0_2585.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_2585.zip" -d "$itemdir"
-ENDIF
-
-; Install 'SimLife_v1.0_AGA_0889.zip'
-IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_AGA_0889.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
-  echo "Extracting 'SimLife_v1.0_AGA_0889.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_AGA_0889.zip" -d "$itemdir"
-ENDIF
-
-; Install 'SimLife_v1.0_De_0576.zip'
-IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_De_0576.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
-  echo "Extracting 'SimLife_v1.0_De_0576.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_De_0576.zip" -d "$itemdir"
-ENDIF
-
-; Install 'SkateOfTheArt_v1.0.zip'
-IF EXISTS "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
-  echo "Extracting 'SkateOfTheArt_v1.0.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip" -d "$itemdir"
-ENDIF
-
-; Install 'Sorefist_v1.0.zip'
-IF EXISTS "USERPACKAGEDIR:Sorefist_v1.0.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
-  echo "Extracting 'Sorefist_v1.0.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:Sorefist_v1.0.zip" -d "$itemdir"
-ENDIF
-
-; Install 'Transworld_v1.0_De_2837.lha'
-IF EXISTS "USERPACKAGEDIR:Transworld_v1.0_De_2837.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
-  echo "Extracting 'Transworld_v1.0_De_2837.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:Transworld_v1.0_De_2837.lha" "$itemdir/"
-ENDIF
-
-; Install 'TrivialPursuit_v1.2.zip'
-IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
-  echo "Extracting 'TrivialPursuit_v1.2.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2.zip" -d "$itemdir"
-ENDIF
-
-; Install 'TrivialPursuit_v1.2_De_0595.zip'
-IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2_De_0595.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
-  echo "Extracting 'TrivialPursuit_v1.2_De_0595.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2_De_0595.zip" -d "$itemdir"
-ENDIF
-
-; Install 'TrivialPursuit_v1.2_Fr_2147.zip'
-IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
-  echo "Extracting 'TrivialPursuit_v1.2_Fr_2147.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip" -d "$itemdir"
-ENDIF
-
-; Install 'WPotrzasku_v1.0_Pl.zip'
-IF EXISTS "USERPACKAGEDIR:WPotrzasku_v1.0_Pl.zip"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W"`"
-  echo "Extracting 'WPotrzasku_v1.0_Pl.zip'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  unzip -qq -o -x "USERPACKAGEDIR:WPotrzasku_v1.0_Pl.zip" -d "$itemdir"
+IF $installset EQ 5 VAL
+  echo "OCS 4GB"
+  execute USERPACKAGEDIR:Install/OCS_4GB
 ENDIF

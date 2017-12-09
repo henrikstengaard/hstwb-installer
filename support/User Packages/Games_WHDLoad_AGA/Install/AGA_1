@@ -1,0 +1,2007 @@
+; Create '0-9' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "0-9"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:0-9.info"
+  Copy >NIL: "USERPACKAGEDIR:0-9.info" "$indexdir"
+ENDIF
+echo "Installing '0-9'..."
+
+; Copy '1869AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:0-9\1869AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:0-9\1869AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:0-9\1869AGA"
+  Copy >NIL: "USERPACKAGEDIR:0-9\1869AGA" "$indexdir" ALL
+ENDIF
+
+; Copy '1869AGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:0-9\1869AGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:0-9\1869AGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:0-9\1869AGADe"
+  Copy >NIL: "USERPACKAGEDIR:0-9\1869AGADe" "$indexdir" ALL
+ENDIF
+
+; Create 'A' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A.info"
+  Copy >NIL: "USERPACKAGEDIR:A.info" "$indexdir"
+ENDIF
+echo "Installing 'A'..."
+
+; Copy 'AceBallAGAPl' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AceBallAGAPl.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AceBallAGAPl.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AceBallAGAPl"
+  Copy >NIL: "USERPACKAGEDIR:A\AceBallAGAPl" "$indexdir" ALL
+ENDIF
+
+; Copy 'ACSYSDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\ACSYSDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\ACSYSDemoAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\ACSYSDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\ACSYSDemoAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AladdinAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AladdinAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AladdinAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AladdinAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AladdinAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlfabetSmierciAGAPl' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlfabetSmierciAGAPl.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfabetSmierciAGAPl.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlfabetSmierciAGAPl"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfabetSmierciAGAPl" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlfredChickenAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlfredChickenAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfredChickenAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlfredChickenAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfredChickenAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlfredChickenCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlfredChickenCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfredChickenCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlfredChickenCD32"
+  Copy >NIL: "USERPACKAGEDIR:A\AlfredChickenCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed2AGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3D2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3D2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3D2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3D2AGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3D2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DCD32"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DDemoLatestAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoLatestAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoLatestAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoLatestAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoLatestAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DDemoPlayAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoPlayAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoPlayAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoPlayAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoPlayAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DDemoRollAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoRollAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoRollAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DDemoRollAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DDemoRollAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DNoMusicAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DNoMusicAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DNoMusicAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DNoMusicAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DNoMusicAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreed3DNoMusicCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DNoMusicCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DNoMusicCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreed3DNoMusicCD32"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreed3DNoMusicCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreedTA11AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTA11AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTA11AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTA11AGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTA11AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreedTAAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTAAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTAAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTAAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTAAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'AlienBreedTACD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTACD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTACD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AlienBreedTACD32"
+  Copy >NIL: "USERPACKAGEDIR:A\AlienBreedTACD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'AllNewWorldOfLemmingsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\AllNewWorldOfLemmingsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\AllNewWorldOfLemmingsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\AllNewWorldOfLemmingsAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\AllNewWorldOfLemmingsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ArabianNightsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\ArabianNightsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\ArabianNightsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\ArabianNightsCD32"
+  Copy >NIL: "USERPACKAGEDIR:A\ArabianNightsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'ArcadePoolAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\ArcadePoolAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadePoolAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\ArcadePoolAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadePoolAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ArcadePoolCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:A\ArcadePoolCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadePoolCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\ArcadePoolCD32"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadePoolCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'ArcadeSnookerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:A\ArcadeSnookerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadeSnookerAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:A\ArcadeSnookerAGA"
+  Copy >NIL: "USERPACKAGEDIR:A\ArcadeSnookerAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'B' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B.info"
+  Copy >NIL: "USERPACKAGEDIR:B.info" "$indexdir"
+ENDIF
+echo "Installing 'B'..."
+
+; Copy 'BansheeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BansheeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BansheeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BansheeAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BansheeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BansheeCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BansheeCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BansheeCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BansheeCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BansheeCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BaseJumpersCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BaseJumpersCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BaseJumpersCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BaseJumpersCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BaseJumpersCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BasketIslandDemo1AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BasketIslandDemo1AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BasketIslandDemo1AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BasketIslandDemo1AGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BasketIslandDemo1AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BasketIslandDemo2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BasketIslandDemo2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BasketIslandDemo2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BasketIslandDemo2AGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BasketIslandDemo2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BattleChessCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BattleChessCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BattleChessCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BattleChessCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BattleChessCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BattletoadsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BattletoadsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BattletoadsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BattletoadsCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BattletoadsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BeneathAStlSkyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BeneathAStlSkyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BeneathAStlSkyCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BeneathAStlSkyCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BeneathAStlSkyCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BeneathAStlSkyCD32NoVoice' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BeneathAStlSkyCD32NoVoice.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BeneathAStlSkyCD32NoVoice.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BeneathAStlSkyCD32NoVoice"
+  Copy >NIL: "USERPACKAGEDIR:B\BeneathAStlSkyCD32NoVoice" "$indexdir" ALL
+ENDIF
+
+; Copy 'BenefactorCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BenefactorCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BenefactorCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BenefactorCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BenefactorCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BiingAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BiingAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BiingAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BiingAGADe"
+  Copy >NIL: "USERPACKAGEDIR:B\BiingAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'BlackViperAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BlackViperAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BlackViperAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BlackViperCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BlackViperCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BlackViperCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BlackViperCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BlackViperCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BlackViperCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BlackViperCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BloodnetAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BloodnetAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BloodnetAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BloodnetAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BloodnetAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BodyBlowsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BodyBlowsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BodyBlowsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BodyBlowsAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BodyBlowsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BodyBlowsGalacticAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BodyBlowsGalacticAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BodyBlowsGalacticAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BodyBlowsGalacticAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BodyBlowsGalacticAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BombPacCD32AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BombPacCD32AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BombPacCD32AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BombPacCD32AGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BombPacCD32AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BombPacCD32AGAAminet' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BombPacCD32AGAAminet.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BombPacCD32AGAAminet.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BombPacCD32AGAAminet"
+  Copy >NIL: "USERPACKAGEDIR:B\BombPacCD32AGAAminet" "$indexdir" ALL
+ENDIF
+
+; Copy 'BreathlessAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BreathlessAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BreathlessAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BreathlessAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BreathlessAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BreathlessAGA060' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BreathlessAGA060.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BreathlessAGA060.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BreathlessAGA060"
+  Copy >NIL: "USERPACKAGEDIR:B\BreathlessAGA060" "$indexdir" ALL
+ENDIF
+
+; Copy 'BrianTheLionAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BrianTheLionAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BrianTheLionAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BrianTheLionAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BrianTheLionAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BrutalFootballAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BrutalFootballAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalFootballAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BrutalFootballAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalFootballAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BrutalFootballCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BrutalFootballCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalFootballCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BrutalFootballCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalFootballCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BrutalPawsOfFuryCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BrutalPawsOfFuryCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalPawsOfFuryCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BrutalPawsOfFuryCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BrutalPawsOfFuryCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BubbaNStixCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BubbaNStixCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BubbaNStixCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BubbaNStixCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BubbaNStixCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'Bubble&SqueakAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\Bubble&SqueakAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\Bubble&SqueakAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\Bubble&SqueakAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\Bubble&SqueakAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Bubble&SqueakCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\Bubble&SqueakCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\Bubble&SqueakCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\Bubble&SqueakCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\Bubble&SqueakCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BumpNBurnCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BumpNBurnCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BumpNBurnCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BumpNBurnCD32"
+  Copy >NIL: "USERPACKAGEDIR:B\BumpNBurnCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'BurningRubberAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BurningRubberAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BurningRubberAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BurningRubberAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BurningRubberAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BurnoutAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BurnoutAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BurnoutAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BurnoutAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BurnoutAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BurntimeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BurntimeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BurntimeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BurntimeAGA"
+  Copy >NIL: "USERPACKAGEDIR:B\BurntimeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'BurntimeAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:B\BurntimeAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:B\BurntimeAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B\BurntimeAGADe"
+  Copy >NIL: "USERPACKAGEDIR:B\BurntimeAGADe" "$indexdir" ALL
+ENDIF
+
+; Create 'C' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C.info"
+  Copy >NIL: "USERPACKAGEDIR:C.info" "$indexdir"
+ENDIF
+echo "Installing 'C'..."
+
+; Copy 'CannonFodderCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CannonFodderCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CannonFodderCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CannonFodderCD32"
+  Copy >NIL: "USERPACKAGEDIR:C\CannonFodderCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'CapitalPunishmentAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CapitalPunishmentAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CapitalPunishmentAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CapitalPunishmentAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\CapitalPunishmentAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'CapitalPunishmentAGACD' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CapitalPunishmentAGACD.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CapitalPunishmentAGACD.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CapitalPunishmentAGACD"
+  Copy >NIL: "USERPACKAGEDIR:C\CapitalPunishmentAGACD" "$indexdir" ALL
+ENDIF
+
+; Copy 'Castles2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\Castles2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\Castles2CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\Castles2CD32"
+  Copy >NIL: "USERPACKAGEDIR:C\Castles2CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'CedricCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CedricCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CedricCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CedricCD32"
+  Copy >NIL: "USERPACKAGEDIR:C\CedricCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'CedricCD32Fast' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CedricCD32Fast.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CedricCD32Fast.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CedricCD32Fast"
+  Copy >NIL: "USERPACKAGEDIR:C\CedricCD32Fast" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChaosEngine2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngine2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngine2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngine2AGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngine2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChaosEngineAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngineAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngineAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngineAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngineAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChaosEngineCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngineCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngineCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChaosEngineCD32"
+  Copy >NIL: "USERPACKAGEDIR:C\ChaosEngineCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'CharlieJCoolAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CharlieJCoolAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CharlieJCoolAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CharlieJCoolAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\CharlieJCoolAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChristophKolumbusAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChristophKolumbusAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChristophKolumbusAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChristophKolumbusAGADe"
+  Copy >NIL: "USERPACKAGEDIR:C\ChristophKolumbusAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChuckRock2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChuckRock2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChuckRock2CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChuckRock2CD32"
+  Copy >NIL: "USERPACKAGEDIR:C\ChuckRock2CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'ChuckRockCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ChuckRockCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ChuckRockCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ChuckRockCD32"
+  Copy >NIL: "USERPACKAGEDIR:C\ChuckRockCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'CivilizationAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'CivilizationAGACD' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGACD.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGACD.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGACD"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGACD" "$indexdir" ALL
+ENDIF
+
+; Copy 'CivilizationAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CivilizationAGADe"
+  Copy >NIL: "USERPACKAGEDIR:C\CivilizationAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'ClockwiserAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ClockwiserAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ClockwiserAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ClockwiserAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ClockwiserAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ClockwiserCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ClockwiserCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ClockwiserCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ClockwiserCD32"
+  Copy >NIL: "USERPACKAGEDIR:C\ClockwiserCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'ClouDeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ClouDeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ClouDeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ClouDeAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ClouDeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ClouDeAGA&Profidisk' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ClouDeAGA&Profidisk.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ClouDeAGA&Profidisk.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ClouDeAGA&Profidisk"
+  Copy >NIL: "USERPACKAGEDIR:C\ClouDeAGA&Profidisk" "$indexdir" ALL
+ENDIF
+
+; Copy 'ClueAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ClueAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ClueAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ClueAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ClueAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'CoalaAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\CoalaAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\CoalaAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\CoalaAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\CoalaAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ColonizationAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:C\ColonizationAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:C\ColonizationAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C\ColonizationAGA"
+  Copy >NIL: "USERPACKAGEDIR:C\ColonizationAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'D' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D.info"
+  Copy >NIL: "USERPACKAGEDIR:D.info" "$indexdir"
+ENDIF
+echo "Installing 'D'..."
+
+; Copy 'DangerousStreetsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DangerousStreetsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DangerousStreetsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DangerousStreetsAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DangerousStreetsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DarkSeedCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DarkSeedCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DarkSeedCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DarkSeedCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DarkSeedCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DeathMaskAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DeathMaskAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DeathMaskAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DeathMaskAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DeathMaskAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DeconstructionAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DeconstructionAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DeconstructionAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DeconstructionAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DeconstructionAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DefenderOfTheCrown2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DefenderOfTheCrown2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DefenderOfTheCrown2CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DefenderOfTheCrown2CD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DefenderOfTheCrown2CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DefenseurCouronne2CD32Fr' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DefenseurCouronne2CD32Fr.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DefenseurCouronne2CD32Fr.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DefenseurCouronne2CD32Fr"
+  Copy >NIL: "USERPACKAGEDIR:D\DefenseurCouronne2CD32Fr" "$indexdir" ALL
+ENDIF
+
+; Copy 'DefensorDeLaCorona2CD32Es' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DefensorDeLaCorona2CD32Es.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DefensorDeLaCorona2CD32Es.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DefensorDeLaCorona2CD32Es"
+  Copy >NIL: "USERPACKAGEDIR:D\DefensorDeLaCorona2CD32Es" "$indexdir" ALL
+ENDIF
+
+; Copy 'DeluxeGalagaAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DeluxeGalagaAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DeluxeGalagaAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DeluxeGalagaAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DeluxeGalagaAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DeluxePacmanAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DeluxePacmanAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DeluxePacmanAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DeluxePacmanAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DeluxePacmanAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DennisAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DennisAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DennisAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DennisAGADesktopDynamite' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DennisAGADesktopDynamite.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisAGADesktopDynamite.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DennisAGADesktopDynamite"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisAGADesktopDynamite" "$indexdir" ALL
+ENDIF
+
+; Copy 'DennisCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DennisCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DennisCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DennisCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DetroitAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DetroitAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DetroitAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DetroitAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DetroitAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DetroitAGAFr' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DetroitAGAFr.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DetroitAGAFr.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DetroitAGAFr"
+  Copy >NIL: "USERPACKAGEDIR:D\DetroitAGAFr" "$indexdir" ALL
+ENDIF
+
+; Copy 'DGenerationAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DGenerationAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DGenerationAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DGenerationAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DGenerationAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DGenerationCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DGenerationCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DGenerationCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DGenerationCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DGenerationCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DifensoreCorona2CD32It' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DifensoreCorona2CD32It.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DifensoreCorona2CD32It.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DifensoreCorona2CD32It"
+  Copy >NIL: "USERPACKAGEDIR:D\DifensoreCorona2CD32It" "$indexdir" ALL
+ENDIF
+
+; Copy 'DiggersAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DiggersAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DiggersAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DiggersAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DiggersAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DiggersCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DiggersCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DiggersCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DiggersCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DiggersCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DisposableHeroCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DisposableHeroCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DisposableHeroCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DisposableHeroCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DisposableHeroCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DonkTheSamuraiDuckAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DonkTheSamuraiDuckAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DonkTheSamuraiDuckAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DonkTheSamuraiDuckAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DonkTheSamuraiDuckAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DragonstoneCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DragonstoneCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DragonstoneCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DragonstoneCD32"
+  Copy >NIL: "USERPACKAGEDIR:D\DragonstoneCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'DragonTilesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DragonTilesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DragonTilesAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DragonTilesAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DragonTilesAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DreamWebAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DreamWebAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DreamWebAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DreamWebAGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DreamWebAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'DreamWebAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DreamWebAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DreamWebAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DreamWebAGADe"
+  Copy >NIL: "USERPACKAGEDIR:D\DreamWebAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'DungeonMaster2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:D\DungeonMaster2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:D\DungeonMaster2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D\DungeonMaster2AGA"
+  Copy >NIL: "USERPACKAGEDIR:D\DungeonMaster2AGA" "$indexdir" ALL
+ENDIF
+
+; Create 'E' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "E"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:E.info"
+  Copy >NIL: "USERPACKAGEDIR:E.info" "$indexdir"
+ENDIF
+echo "Installing 'E'..."
+
+; Copy 'ExtractorsPreviewCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:E\ExtractorsPreviewCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:E\ExtractorsPreviewCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:E\ExtractorsPreviewCD32"
+  Copy >NIL: "USERPACKAGEDIR:E\ExtractorsPreviewCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'F' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F.info"
+  Copy >NIL: "USERPACKAGEDIR:F.info" "$indexdir"
+ENDIF
+echo "Installing 'F'..."
+
+; Copy 'FantasyFlyerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FantasyFlyerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FantasyFlyerAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FantasyFlyerAGA"
+  Copy >NIL: "USERPACKAGEDIR:F\FantasyFlyerAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'FatmanCapedConsumerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FatmanCapedConsumerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FatmanCapedConsumerAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FatmanCapedConsumerAGA"
+  Copy >NIL: "USERPACKAGEDIR:F\FatmanCapedConsumerAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'FearsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FearsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FearsAGA"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'FearsAGACensored' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FearsAGACensored.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsAGACensored.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FearsAGACensored"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsAGACensored" "$indexdir" ALL
+ENDIF
+
+; Copy 'FearsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FearsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FearsCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FearsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FightinSpiritAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FightinSpiritAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FightinSpiritAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FightinSpiritAGA"
+  Copy >NIL: "USERPACKAGEDIR:F\FightinSpiritAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'FightinSpiritCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FightinSpiritCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FightinSpiritCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FightinSpiritCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FightinSpiritCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'Fire&IceCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\Fire&IceCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\Fire&IceCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\Fire&IceCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\Fire&IceCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FireForceCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FireForceCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FireForceCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FireForceCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FireForceCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FlinkCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FlinkCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FlinkCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FlinkCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FlinkCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FlyHarderCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FlyHarderCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FlyHarderCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FlyHarderCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FlyHarderCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FootballGloryAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FootballGloryAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FootballGloryAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FootballGloryAGA"
+  Copy >NIL: "USERPACKAGEDIR:F\FootballGloryAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'FrontierCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FrontierCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FrontierCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FrontierCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FrontierCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'FuryOfTheFurriesCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:F\FuryOfTheFurriesCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:F\FuryOfTheFurriesCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F\FuryOfTheFurriesCD32"
+  Copy >NIL: "USERPACKAGEDIR:F\FuryOfTheFurriesCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'G' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G.info"
+  Copy >NIL: "USERPACKAGEDIR:G.info" "$indexdir"
+ENDIF
+echo "Installing 'G'..."
+
+; Copy 'GloomAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:G\GloomAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:G\GloomAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G\GloomAGA"
+  Copy >NIL: "USERPACKAGEDIR:G\GloomAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'GloomCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:G\GloomCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:G\GloomCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G\GloomCD32"
+  Copy >NIL: "USERPACKAGEDIR:G\GloomCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'GuardianCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:G\GuardianCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:G\GuardianCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G\GuardianCD32"
+  Copy >NIL: "USERPACKAGEDIR:G\GuardianCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'Gunship2000AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:G\Gunship2000AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:G\Gunship2000AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G\Gunship2000AGA"
+  Copy >NIL: "USERPACKAGEDIR:G\Gunship2000AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Gunship2000CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:G\Gunship2000CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:G\Gunship2000CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G\Gunship2000CD32"
+  Copy >NIL: "USERPACKAGEDIR:G\Gunship2000CD32" "$indexdir" ALL
+ENDIF
+
+; Create 'H' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H.info"
+  Copy >NIL: "USERPACKAGEDIR:H.info" "$indexdir"
+ENDIF
+echo "Installing 'H'..."
+
+; Copy 'Heimdall2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:H\Heimdall2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:H\Heimdall2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H\Heimdall2AGA"
+  Copy >NIL: "USERPACKAGEDIR:H\Heimdall2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Heimdall2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:H\Heimdall2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:H\Heimdall2CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H\Heimdall2CD32"
+  Copy >NIL: "USERPACKAGEDIR:H\Heimdall2CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'HighSeasTraderAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:H\HighSeasTraderAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:H\HighSeasTraderAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H\HighSeasTraderAGA"
+  Copy >NIL: "USERPACKAGEDIR:H\HighSeasTraderAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Humans3AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:H\Humans3AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:H\Humans3AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H\Humans3AGA"
+  Copy >NIL: "USERPACKAGEDIR:H\Humans3AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'HumansCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:H\HumansCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:H\HumansCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H\HumansCD32"
+  Copy >NIL: "USERPACKAGEDIR:H\HumansCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'I' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "I"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I.info"
+  Copy >NIL: "USERPACKAGEDIR:I.info" "$indexdir"
+ENDIF
+echo "Installing 'I'..."
+
+; Copy 'ImpossibleMission2025AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:I\ImpossibleMission2025AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:I\ImpossibleMission2025AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I\ImpossibleMission2025AGA"
+  Copy >NIL: "USERPACKAGEDIR:I\ImpossibleMission2025AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'InternationalKarate+CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:I\InternationalKarate+CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:I\InternationalKarate+CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I\InternationalKarate+CD32"
+  Copy >NIL: "USERPACKAGEDIR:I\InternationalKarate+CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ishar2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:I\Ishar2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:I\Ishar2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I\Ishar2AGA"
+  Copy >NIL: "USERPACKAGEDIR:I\Ishar2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ishar3AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:I\Ishar3AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:I\Ishar3AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I\Ishar3AGA"
+  Copy >NIL: "USERPACKAGEDIR:I\Ishar3AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'IsharAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:I\IsharAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:I\IsharAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:I\IsharAGA"
+  Copy >NIL: "USERPACKAGEDIR:I\IsharAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'J' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "J"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J.info"
+  Copy >NIL: "USERPACKAGEDIR:J.info" "$indexdir"
+ENDIF
+echo "Installing 'J'..."
+
+; Copy 'JamesPond2' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2CD32\data.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2CD32\data.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2CD32\data"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2CD32\data" "$indexdir" ALL
+ENDIF
+
+; Copy 'JamesPond2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2AGA"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'JamesPond2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JamesPond2CD32"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond2CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'JamesPond3AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JamesPond3AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond3AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JamesPond3AGA"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond3AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'JamesPond3CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JamesPond3CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond3CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JamesPond3CD32"
+  Copy >NIL: "USERPACKAGEDIR:J\JamesPond3CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'JetstrikeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JetstrikeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JetstrikeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JetstrikeAGA"
+  Copy >NIL: "USERPACKAGEDIR:J\JetstrikeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'JetstrikeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JetstrikeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JetstrikeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JetstrikeAGA"
+  Copy >NIL: "USERPACKAGEDIR:J\JetstrikeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'JungleStrikeCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JungleStrikeCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JungleStrikeCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JungleStrikeCD32"
+  Copy >NIL: "USERPACKAGEDIR:J\JungleStrikeCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'JurassicParkAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:J\JurassicParkAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:J\JurassicParkAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:J\JurassicParkAGA"
+  Copy >NIL: "USERPACKAGEDIR:J\JurassicParkAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'K' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "K"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:K.info"
+  Copy >NIL: "USERPACKAGEDIR:K.info" "$indexdir"
+ENDIF
+echo "Installing 'K'..."
+
+; Copy 'KickOff3EC_AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:K\KickOff3EC_AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:K\KickOff3EC_AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:K\KickOff3EC_AGA"
+  Copy >NIL: "USERPACKAGEDIR:K\KickOff3EC_AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'KidChaosCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:K\KidChaosCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:K\KidChaosCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:K\KidChaosCD32"
+  Copy >NIL: "USERPACKAGEDIR:K\KidChaosCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'KingpinCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:K\KingpinCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:K\KingpinCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:K\KingpinCD32"
+  Copy >NIL: "USERPACKAGEDIR:K\KingpinCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'L' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L.info"
+  Copy >NIL: "USERPACKAGEDIR:L.info" "$indexdir"
+ENDIF
+echo "Installing 'L'..."
+
+; Copy 'LastNinja3CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LastNinja3CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LastNinja3CD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LastNinja3CD32"
+  Copy >NIL: "USERPACKAGEDIR:L\LastNinja3CD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'LeadingLapMPVAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LeadingLapMPVAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LeadingLapMPVAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LeadingLapMPVAGA"
+  Copy >NIL: "USERPACKAGEDIR:L\LeadingLapMPVAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'LeadingLapMPVAGACUAmiga' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LeadingLapMPVAGACUAmiga.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LeadingLapMPVAGACUAmiga.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LeadingLapMPVAGACUAmiga"
+  Copy >NIL: "USERPACKAGEDIR:L\LeadingLapMPVAGACUAmiga" "$indexdir" ALL
+ENDIF
+
+; Copy 'LegendsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LegendsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LegendsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LegendsAGA"
+  Copy >NIL: "USERPACKAGEDIR:L\LegendsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'LegendsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LegendsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LegendsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LegendsCD32"
+  Copy >NIL: "USERPACKAGEDIR:L\LegendsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'LionKingAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LionKingAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LionKingAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LionKingAGA"
+  Copy >NIL: "USERPACKAGEDIR:L\LionKingAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGA"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGADe"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGADeFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGADeFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGADeFast.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGADeFast"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGADeFast" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFast.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFast"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFast" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFr' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFr.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFr.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFr"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFr" "$indexdir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFrFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFrFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFrFast.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LordsOfTheRealmAGAFrFast"
+  Copy >NIL: "USERPACKAGEDIR:L\LordsOfTheRealmAGAFrFast" "$indexdir" ALL
+ENDIF
+
+; Copy 'LostVikingsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LostVikingsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LostVikingsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LostVikingsCD32"
+  Copy >NIL: "USERPACKAGEDIR:L\LostVikingsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'LotusCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LotusCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LotusCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LotusCD32"
+  Copy >NIL: "USERPACKAGEDIR:L\LotusCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'LunarCCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L\LunarCCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L\LunarCCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L\LunarCCD32"
+  Copy >NIL: "USERPACKAGEDIR:L\LunarCCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'M' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M.info"
+  Copy >NIL: "USERPACKAGEDIR:M.info" "$indexdir"
+ENDIF
+echo "Installing 'M'..."
+
+; Copy 'MarvinsMarvellousAdvAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MarvinsMarvellousAdvAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MarvinsMarvellousAdvAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MarvinsMarvellousAdvAGA"
+  Copy >NIL: "USERPACKAGEDIR:M\MarvinsMarvellousAdvAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'MarvinsMarvellousAdvCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MarvinsMarvellousAdvCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MarvinsMarvellousAdvCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MarvinsMarvellousAdvCD32"
+  Copy >NIL: "USERPACKAGEDIR:M\MarvinsMarvellousAdvCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'MeanArenasCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MeanArenasCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MeanArenasCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MeanArenasCD32"
+  Copy >NIL: "USERPACKAGEDIR:M\MeanArenasCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'MegaBallAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MegaBallAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MegaBallAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MegaBallAGA"
+  Copy >NIL: "USERPACKAGEDIR:M\MegaBallAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'MinskiesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MinskiesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MinskiesAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MinskiesAGA"
+  Copy >NIL: "USERPACKAGEDIR:M\MinskiesAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'MorphAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MorphAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MorphAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MorphAGA"
+  Copy >NIL: "USERPACKAGEDIR:M\MorphAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'MorphCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MorphCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MorphCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MorphCD32"
+  Copy >NIL: "USERPACKAGEDIR:M\MorphCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'MortonStrikesBackAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MortonStrikesBackAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MortonStrikesBackAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MortonStrikesBackAGA"
+  Copy >NIL: "USERPACKAGEDIR:M\MortonStrikesBackAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'MythHistoryInMakingCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M\MythHistoryInMakingCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M\MythHistoryInMakingCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M\MythHistoryInMakingCD32"
+  Copy >NIL: "USERPACKAGEDIR:M\MythHistoryInMakingCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'N' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N.info"
+  Copy >NIL: "USERPACKAGEDIR:N.info" "$indexdir"
+ENDIF
+echo "Installing 'N'..."
+
+; Copy 'NaughtyOnesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:N\NaughtyOnesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:N\NaughtyOnesAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N\NaughtyOnesAGA"
+  Copy >NIL: "USERPACKAGEDIR:N\NaughtyOnesAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'NaughtyOnesCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N\NaughtyOnesCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N\NaughtyOnesCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N\NaughtyOnesCD32"
+  Copy >NIL: "USERPACKAGEDIR:N\NaughtyOnesCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'NickFaldosChampGolfCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N\NickFaldosChampGolfCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N\NickFaldosChampGolfCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N\NickFaldosChampGolfCD32"
+  Copy >NIL: "USERPACKAGEDIR:N\NickFaldosChampGolfCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'NigelMansellsWrldChmpAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:N\NigelMansellsWrldChmpAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:N\NigelMansellsWrldChmpAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N\NigelMansellsWrldChmpAGA"
+  Copy >NIL: "USERPACKAGEDIR:N\NigelMansellsWrldChmpAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'NigelMansellsWrldChmpCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N\NigelMansellsWrldChmpCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N\NigelMansellsWrldChmpCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N\NigelMansellsWrldChmpCD32"
+  Copy >NIL: "USERPACKAGEDIR:N\NigelMansellsWrldChmpCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'O' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O.info"
+  Copy >NIL: "USERPACKAGEDIR:O.info" "$indexdir"
+ENDIF
+echo "Installing 'O'..."
+
+; Copy 'OgAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O\OgAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O\OgAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O\OgAGA"
+  Copy >NIL: "USERPACKAGEDIR:O\OgAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'OscarAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O\OscarAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O\OscarAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O\OscarAGA"
+  Copy >NIL: "USERPACKAGEDIR:O\OscarAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'OscarCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:O\OscarCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:O\OscarCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O\OscarCD32"
+  Copy >NIL: "USERPACKAGEDIR:O\OscarCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'OverkillAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O\OverkillAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O\OverkillAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O\OverkillAGA"
+  Copy >NIL: "USERPACKAGEDIR:O\OverkillAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'P' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P.info"
+  Copy >NIL: "USERPACKAGEDIR:P.info" "$indexdir"
+ENDIF
+echo "Installing 'P'..."
+
+; Copy 'PenthouseHotNumsDlxAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PenthouseHotNumsDlxAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PenthouseHotNumsDlxAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PenthouseHotNumsDlxAGADe"
+  Copy >NIL: "USERPACKAGEDIR:P\PenthouseHotNumsDlxAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'PGAEuropeanTourAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PGAEuropeanTourAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PGAEuropeanTourAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PGAEuropeanTourAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PGAEuropeanTourAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PGAEuropeanTourCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PGAEuropeanTourCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PGAEuropeanTourCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PGAEuropeanTourCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PGAEuropeanTourCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PierreIsOutToLunchAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PierreIsOutToLunchAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PierreIsOutToLunchAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PierreIsOutToLunchAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PierreIsOutToLunchAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PierreIsOutToLunchCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PierreIsOutToLunchCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PierreIsOutToLunchCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PierreIsOutToLunchCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PierreIsOutToLunchCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGAChip' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGAChip.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGAChip.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGAChip"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGAChip" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGANTSC' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGANTSC.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGANTSC.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGANTSC"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGANTSC" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGANTSCChip' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGANTSCChip.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGANTSCChip.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesAGANTSCChip"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesAGANTSCChip" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesCD32Chip' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesCD32Chip.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesCD32Chip.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballFntsiesCD32Chip"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballFntsiesCD32Chip" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsAGADemo' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsAGADemo.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsAGADemo.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsAGADemo"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsAGADemo" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballIllusionsCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballIllusionsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PinballPreludeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PinballPreludeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballPreludeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PinballPreludeAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PinballPreludeAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PiratesGoldCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PiratesGoldCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PiratesGoldCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PiratesGoldCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PiratesGoldCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PlayerManager2ExtraAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PlayerManager2ExtraAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PlayerManager2ExtraAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PlayerManager2ExtraAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PlayerManager2ExtraAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PremiereCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PremiereCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PremiereCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PremiereCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PremiereCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PremierManager3AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PremierManager3AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PremierManager3AGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PremierManager3AGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PremierManager3AGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PrimalRageAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PrimalRageAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PrimalRageAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PrimalRageAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PrimalRageAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ProjectXSECD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\ProjectXSECD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\ProjectXSECD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\ProjectXSECD32"
+  Copy >NIL: "USERPACKAGEDIR:P\ProjectXSECD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PulsatorDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PulsatorDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PulsatorDemoAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PulsatorDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PulsatorDemoAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PuttyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PuttyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttyCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PuttyCD32"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttyCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'PuttySquadAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PuttySquadAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttySquadAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PuttySquadAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttySquadAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'PuttySquadDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P\PuttySquadDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttySquadDemoAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P\PuttySquadDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:P\PuttySquadDemoAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'Q' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q.info"
+  Copy >NIL: "USERPACKAGEDIR:Q.info" "$indexdir"
+ENDIF
+echo "Installing 'Q'..."
+
+; Copy 'QuikThunderRabbitAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Q\QuikThunderRabbitAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Q\QuikThunderRabbitAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q\QuikThunderRabbitAGA"
+  Copy >NIL: "USERPACKAGEDIR:Q\QuikThunderRabbitAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'QuikThunderRabbitCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:Q\QuikThunderRabbitCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:Q\QuikThunderRabbitCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q\QuikThunderRabbitCD32"
+  Copy >NIL: "USERPACKAGEDIR:Q\QuikThunderRabbitCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'QwakCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:Q\QwakCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:Q\QwakCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q\QwakCD32"
+  Copy >NIL: "USERPACKAGEDIR:Q\QwakCD32" "$indexdir" ALL
+ENDIF
+
+; Create 'R' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R.info"
+  Copy >NIL: "USERPACKAGEDIR:R.info" "$indexdir"
+ENDIF
+echo "Installing 'R'..."
+
+; Copy 'RallyChampionshipsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RallyChampionshipsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RallyChampionshipsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RallyChampionshipsAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RallyChampionshipsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ReunionAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\ReunionAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\ReunionAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\ReunionAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\ReunionAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'ReunionAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:R\ReunionAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:R\ReunionAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\ReunionAGADe"
+  Copy >NIL: "USERPACKAGEDIR:R\ReunionAGADe" "$indexdir" ALL
+ENDIF
+
+; Copy 'RiseOfTheRobotsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RiseOfTheRobotsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RiseOfTheRobotsAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RiseOfTheRobotsAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RiseOfTheRobotsAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'RiseOfTheRobotsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RiseOfTheRobotsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RiseOfTheRobotsCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RiseOfTheRobotsCD32"
+  Copy >NIL: "USERPACKAGEDIR:R\RiseOfTheRobotsCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'RoadkillAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RoadkillAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RoadkillAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'RoadkillCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RoadkillCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RoadkillCD32"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'RoadkillCD32NoIntro' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RoadkillCD32NoIntro.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillCD32NoIntro.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RoadkillCD32NoIntro"
+  Copy >NIL: "USERPACKAGEDIR:R\RoadkillCD32NoIntro" "$indexdir" ALL
+ENDIF
+
+; Copy 'RobinsonsRequiemAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RobinsonsRequiemAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RobinsonsRequiemAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RobinsonsRequiemAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RobinsonsRequiemAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'RoketzAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RoketzAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RoketzAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RoketzAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RoketzAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'RuesselsheimDeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R\RuesselsheimDeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R\RuesselsheimDeAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R\RuesselsheimDeAGA"
+  Copy >NIL: "USERPACKAGEDIR:R\RuesselsheimDeAGA" "$indexdir" ALL
+ENDIF
+
+; Create 'S' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S.info"
+  Copy >NIL: "USERPACKAGEDIR:S.info" "$indexdir"
+ENDIF
+echo "Installing 'S'..."
+
+; Copy 'SabreTeamAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S\SabreTeamAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S\SabreTeamAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S\SabreTeamAGA"
+  Copy >NIL: "USERPACKAGEDIR:S\SabreTeamAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'SabreTeamCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S\SabreTeamCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S\SabreTeamCD32.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S\SabreTeamCD32"
+  Copy >NIL: "USERPACKAGEDIR:S\SabreTeamCD32" "$indexdir" ALL
+ENDIF
+
+; Copy 'SecondSamuraiAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S\SecondSamuraiAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S\SecondSamuraiAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S\SecondSamuraiAGA"
+  Copy >NIL: "USERPACKAGEDIR:S\SecondSamuraiAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'Seek&DestroyAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S\Seek&DestroyAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S\Seek&DestroyAGA.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S\Seek&DestroyAGA"
+  Copy >NIL: "USERPACKAGEDIR:S\Seek&DestroyAGA" "$indexdir" ALL
+ENDIF
+
+; Copy 'SeelenturmAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:S\SeelenturmAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:S\SeelenturmAGADe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S\SeelenturmAGADe"
+  Copy >NIL: "USERPACKAGEDIR:S\SeelenturmAGADe" "$indexdir" ALL
+ENDIF

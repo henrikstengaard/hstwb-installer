@@ -1,0 +1,2005 @@
+; Copy 'ThunderCats' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ThunderCats.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderCats.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ThunderCats"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderCats" "$indexdir" ALL
+ENDIF
+
+; Copy 'ThunderHawkAH73M' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ThunderHawkAH73M.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderHawkAH73M.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ThunderHawkAH73M"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderHawkAH73M" "$indexdir" ALL
+ENDIF
+
+; Copy 'ThunderJaws' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ThunderJaws.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderJaws.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ThunderJaws"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderJaws" "$indexdir" ALL
+ENDIF
+
+; Copy 'ThunderStrike' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ThunderStrike.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderStrike.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ThunderStrike"
+  Copy >NIL: "USERPACKAGEDIR:T\ThunderStrike" "$indexdir" ALL
+ENDIF
+
+; Copy 'TieBreak' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TieBreak.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TieBreak.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TieBreak"
+  Copy >NIL: "USERPACKAGEDIR:T\TieBreak" "$indexdir" ALL
+ENDIF
+
+; Copy 'TigerRoad' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TigerRoad.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TigerRoad.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TigerRoad"
+  Copy >NIL: "USERPACKAGEDIR:T\TigerRoad" "$indexdir" ALL
+ENDIF
+
+; Copy 'Time' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Time.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Time.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Time"
+  Copy >NIL: "USERPACKAGEDIR:T\Time" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeAndMagik' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeAndMagik.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeAndMagik.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeAndMagik"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeAndMagik" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeBandit' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeBandit.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeBandit.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeBandit"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeBandit" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeLock' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeLock.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeLock.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeLock"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeLock" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeMachine' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeMachine.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeMachine.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeMachine"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeMachine" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRace' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRace.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRace.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRace"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRace" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners01' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners01.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners01.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners01"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners01" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners02' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners02.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners02.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners02"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners02" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners03' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners03.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners03.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners03"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners03" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners04' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners04.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners04.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners04"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners04" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners05' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners05.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners05.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners05"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners05" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners06' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners06.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners06.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners06"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners06" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners07' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners07.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners07.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners07"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners07" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners08' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners08.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners08.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners08"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners08" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners09' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners09.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners09.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners09"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners09" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners10' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners10.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners10.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners10"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners10" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners11' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners11.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners11.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners11"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners11" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners12' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners12.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners12.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners12"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners12" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners13' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners13.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners13.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners13"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners13" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners14' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners14.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners14.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners14"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners14" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners15' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners15.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners15.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners15"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners15" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners16' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners16.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners16.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners16"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners16" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners17' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners17.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners17.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners17"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners17" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners18' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners18.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners18.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners18"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners18" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners19' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners19.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners19.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners19"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners19" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners20' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners20.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners20.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners20"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners20" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners21' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners21.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners21.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners21"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners21" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners22' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners22.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners22.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners22"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners22" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners23' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners23.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners23.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners23"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners23" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners24' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners24.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners24.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners24"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners24" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners25' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners25.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners25.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners25"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners25" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners26' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners26.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners26.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners26"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners26" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners27' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners27.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners27.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners27"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners27" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners28' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners28.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners28.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners28"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners28" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners29' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners29.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners29.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners29"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners29" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunners30' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners30.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners30.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunners30"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunners30" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeRunnersSeries' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeRunnersSeries.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunnersSeries.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeRunnersSeries"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeRunnersSeries" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeScanner' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeScanner.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeScanner.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeScanner"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeScanner" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimesOfLore' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimesOfLore.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimesOfLore.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimesOfLore"
+  Copy >NIL: "USERPACKAGEDIR:T\TimesOfLore" "$indexdir" ALL
+ENDIF
+
+; Copy 'TimeSoldier' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TimeSoldier.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeSoldier.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TimeSoldier"
+  Copy >NIL: "USERPACKAGEDIR:T\TimeSoldier" "$indexdir" ALL
+ENDIF
+
+; Copy 'TintinOnTheMoonImage' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TintinOnTheMoonImage.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TintinOnTheMoonImage.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TintinOnTheMoonImage"
+  Copy >NIL: "USERPACKAGEDIR:T\TintinOnTheMoonImage" "$indexdir" ALL
+ENDIF
+
+; Copy 'TinToyAdventure' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TinToyAdventure.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TinToyAdventure.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TinToyAdventure"
+  Copy >NIL: "USERPACKAGEDIR:T\TinToyAdventure" "$indexdir" ALL
+ENDIF
+
+; Copy 'TinySkweeks' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TinySkweeks.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TinySkweeks.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TinySkweeks"
+  Copy >NIL: "USERPACKAGEDIR:T\TinySkweeks" "$indexdir" ALL
+ENDIF
+
+; Copy 'TinyTroops' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TinyTroops.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TinyTroops.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TinyTroops"
+  Copy >NIL: "USERPACKAGEDIR:T\TinyTroops" "$indexdir" ALL
+ENDIF
+
+; Copy 'TipOff' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TipOff.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TipOff.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TipOff"
+  Copy >NIL: "USERPACKAGEDIR:T\TipOff" "$indexdir" ALL
+ENDIF
+
+; Copy 'Titan' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Titan.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Titan.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Titan"
+  Copy >NIL: "USERPACKAGEDIR:T\Titan" "$indexdir" ALL
+ENDIF
+
+; Copy 'TitanicBlinky' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TitanicBlinky.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TitanicBlinky.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TitanicBlinky"
+  Copy >NIL: "USERPACKAGEDIR:T\TitanicBlinky" "$indexdir" ALL
+ENDIF
+
+; Copy 'TitusTheFox' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TitusTheFox.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TitusTheFox.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TitusTheFox"
+  Copy >NIL: "USERPACKAGEDIR:T\TitusTheFox" "$indexdir" ALL
+ENDIF
+
+; Copy 'Toki' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Toki.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Toki.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Toki"
+  Copy >NIL: "USERPACKAGEDIR:T\Toki" "$indexdir" ALL
+ENDIF
+
+; Copy 'TomAndTheGhost' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TomAndTheGhost.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TomAndTheGhost.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TomAndTheGhost"
+  Copy >NIL: "USERPACKAGEDIR:T\TomAndTheGhost" "$indexdir" ALL
+ENDIF
+
+; Copy 'TomLandryFootball' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TomLandryFootball.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TomLandryFootball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TomLandryFootball"
+  Copy >NIL: "USERPACKAGEDIR:T\TomLandryFootball" "$indexdir" ALL
+ENDIF
+
+; Copy 'TomLandryFootballDeluxe' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TomLandryFootballDeluxe.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TomLandryFootballDeluxe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TomLandryFootballDeluxe"
+  Copy >NIL: "USERPACKAGEDIR:T\TomLandryFootballDeluxe" "$indexdir" ALL
+ENDIF
+
+; Copy 'TommyGun' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TommyGun.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TommyGun.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TommyGun"
+  Copy >NIL: "USERPACKAGEDIR:T\TommyGun" "$indexdir" ALL
+ENDIF
+
+; Copy 'Toobin' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Toobin.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Toobin.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Toobin"
+  Copy >NIL: "USERPACKAGEDIR:T\Toobin" "$indexdir" ALL
+ENDIF
+
+; Copy 'TopBanana' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TopBanana.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TopBanana.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TopBanana"
+  Copy >NIL: "USERPACKAGEDIR:T\TopBanana" "$indexdir" ALL
+ENDIF
+
+; Copy 'TopCat' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TopCat.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TopCat.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TopCat"
+  Copy >NIL: "USERPACKAGEDIR:T\TopCat" "$indexdir" ALL
+ENDIF
+
+; Copy 'TopGear2' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TopGear2.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TopGear2.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TopGear2"
+  Copy >NIL: "USERPACKAGEDIR:T\TopGear2" "$indexdir" ALL
+ENDIF
+
+; Copy 'TopSecret' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TopSecret.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TopSecret.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TopSecret"
+  Copy >NIL: "USERPACKAGEDIR:T\TopSecret" "$indexdir" ALL
+ENDIF
+
+; Copy 'Tornado' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Tornado.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Tornado.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Tornado"
+  Copy >NIL: "USERPACKAGEDIR:T\Tornado" "$indexdir" ALL
+ENDIF
+
+; Copy 'TornadoGroundAttack' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TornadoGroundAttack.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TornadoGroundAttack.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TornadoGroundAttack"
+  Copy >NIL: "USERPACKAGEDIR:T\TornadoGroundAttack" "$indexdir" ALL
+ENDIF
+
+; Copy 'TorvakTheWarrior' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TorvakTheWarrior.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TorvakTheWarrior.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TorvakTheWarrior"
+  Copy >NIL: "USERPACKAGEDIR:T\TorvakTheWarrior" "$indexdir" ALL
+ENDIF
+
+; Copy 'TotalEclipse' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TotalEclipse.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalEclipse.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TotalEclipse"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalEclipse" "$indexdir" ALL
+ENDIF
+
+; Copy 'TotalFootball' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TotalFootball.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalFootball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TotalFootball"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalFootball" "$indexdir" ALL
+ENDIF
+
+; Copy 'TotalRecallImage' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TotalRecallImage.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalRecallImage.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TotalRecallImage"
+  Copy >NIL: "USERPACKAGEDIR:T\TotalRecallImage" "$indexdir" ALL
+ENDIF
+
+; Copy 'TournamentGolf' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TournamentGolf.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TournamentGolf.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TournamentGolf"
+  Copy >NIL: "USERPACKAGEDIR:T\TournamentGolf" "$indexdir" ALL
+ENDIF
+
+; Copy 'TowerOfBabel' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TowerOfBabel.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TowerOfBabel.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TowerOfBabel"
+  Copy >NIL: "USERPACKAGEDIR:T\TowerOfBabel" "$indexdir" ALL
+ENDIF
+
+; Copy 'TowerToppler' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TowerToppler.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TowerToppler.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TowerToppler"
+  Copy >NIL: "USERPACKAGEDIR:T\TowerToppler" "$indexdir" ALL
+ENDIF
+
+; Copy 'ToyotaCelicaGTRally' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ToyotaCelicaGTRally.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ToyotaCelicaGTRally.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ToyotaCelicaGTRally"
+  Copy >NIL: "USERPACKAGEDIR:T\ToyotaCelicaGTRally" "$indexdir" ALL
+ENDIF
+
+; Copy 'ToyottesImage' entry directory
+IF EXISTS "USERPACKAGEDIR:T\ToyottesImage.info"
+  Copy >NIL: "USERPACKAGEDIR:T\ToyottesImage.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\ToyottesImage"
+  Copy >NIL: "USERPACKAGEDIR:T\ToyottesImage" "$indexdir" ALL
+ENDIF
+
+; Copy 'TRacer' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TRacer.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TRacer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TRacer"
+  Copy >NIL: "USERPACKAGEDIR:T\TRacer" "$indexdir" ALL
+ENDIF
+
+; Copy 'Tracker' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Tracker.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Tracker.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Tracker"
+  Copy >NIL: "USERPACKAGEDIR:T\Tracker" "$indexdir" ALL
+ENDIF
+
+; Copy 'Traders' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Traders.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Traders.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Traders"
+  Copy >NIL: "USERPACKAGEDIR:T\Traders" "$indexdir" ALL
+ENDIF
+
+; Copy 'TrainedAssassin' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TrainedAssassin.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TrainedAssassin.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TrainedAssassin"
+  Copy >NIL: "USERPACKAGEDIR:T\TrainedAssassin" "$indexdir" ALL
+ENDIF
+
+; Copy 'Transarctica' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Transarctica.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Transarctica.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Transarctica"
+  Copy >NIL: "USERPACKAGEDIR:T\Transarctica" "$indexdir" ALL
+ENDIF
+
+; Copy 'Transplant' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Transplant.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Transplant.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Transplant"
+  Copy >NIL: "USERPACKAGEDIR:T\Transplant" "$indexdir" ALL
+ENDIF
+
+; Copy 'TrapsNTreasures' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TrapsNTreasures.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TrapsNTreasures.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TrapsNTreasures"
+  Copy >NIL: "USERPACKAGEDIR:T\TrapsNTreasures" "$indexdir" ALL
+ENDIF
+
+; Copy 'TreasureIslandDizzy' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TreasureIslandDizzy.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasureIslandDizzy.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TreasureIslandDizzy"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasureIslandDizzy" "$indexdir" ALL
+ENDIF
+
+; Copy 'TreasuresOfSavageFrontier' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TreasuresOfSavageFrontier.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasuresOfSavageFrontier.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TreasuresOfSavageFrontier"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasuresOfSavageFrontier" "$indexdir" ALL
+ENDIF
+
+; Copy 'TreasureTrap' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TreasureTrap.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasureTrap.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TreasureTrap"
+  Copy >NIL: "USERPACKAGEDIR:T\TreasureTrap" "$indexdir" ALL
+ENDIF
+
+; Copy 'TrexWarrior' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TrexWarrior.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TrexWarrior.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TrexWarrior"
+  Copy >NIL: "USERPACKAGEDIR:T\TrexWarrior" "$indexdir" ALL
+ENDIF
+
+; Copy 'TrianGO' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TrianGO.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TrianGO.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TrianGO"
+  Copy >NIL: "USERPACKAGEDIR:T\TrianGO" "$indexdir" ALL
+ENDIF
+
+; Copy 'TripleX' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TripleX.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TripleX.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TripleX"
+  Copy >NIL: "USERPACKAGEDIR:T\TripleX" "$indexdir" ALL
+ENDIF
+
+; Copy 'TrivialPursuitNewBegin' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TrivialPursuitNewBegin.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TrivialPursuitNewBegin.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TrivialPursuitNewBegin"
+  Copy >NIL: "USERPACKAGEDIR:T\TrivialPursuitNewBegin" "$indexdir" ALL
+ENDIF
+
+; Copy 'Troddlers' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Troddlers.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Troddlers.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Troddlers"
+  Copy >NIL: "USERPACKAGEDIR:T\Troddlers" "$indexdir" ALL
+ENDIF
+
+; Copy 'Trog' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Trog.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Trog.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Trog"
+  Copy >NIL: "USERPACKAGEDIR:T\Trog" "$indexdir" ALL
+ENDIF
+
+; Copy 'Trolls' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Trolls.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Trolls.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Trolls"
+  Copy >NIL: "USERPACKAGEDIR:T\Trolls" "$indexdir" ALL
+ENDIF
+
+; Copy 'TubularWorldsECS' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TubularWorldsECS.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TubularWorldsECS.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TubularWorldsECS"
+  Copy >NIL: "USERPACKAGEDIR:T\TubularWorldsECS" "$indexdir" ALL
+ENDIF
+
+; Copy 'Turbo' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Turbo.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Turbo.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Turbo"
+  Copy >NIL: "USERPACKAGEDIR:T\Turbo" "$indexdir" ALL
+ENDIF
+
+; Copy 'TurboCup' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TurboCup.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboCup.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TurboCup"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboCup" "$indexdir" ALL
+ENDIF
+
+; Copy 'TurboOutRun' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TurboOutRun.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboOutRun.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TurboOutRun"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboOutRun" "$indexdir" ALL
+ENDIF
+
+; Copy 'TurboTraxArcane' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TurboTraxArcane.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboTraxArcane.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TurboTraxArcane"
+  Copy >NIL: "USERPACKAGEDIR:T\TurboTraxArcane" "$indexdir" ALL
+ENDIF
+
+; Copy 'TurnNBurn' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TurnNBurn.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TurnNBurn.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TurnNBurn"
+  Copy >NIL: "USERPACKAGEDIR:T\TurnNBurn" "$indexdir" ALL
+ENDIF
+
+; Copy 'Turrican' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Turrican.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Turrican"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican" "$indexdir" ALL
+ENDIF
+
+; Copy 'Turrican2' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Turrican2.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican2.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Turrican2"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican2" "$indexdir" ALL
+ENDIF
+
+; Copy 'Turrican3' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Turrican3.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican3.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Turrican3"
+  Copy >NIL: "USERPACKAGEDIR:T\Turrican3" "$indexdir" ALL
+ENDIF
+
+; Copy 'Tusker' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Tusker.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Tusker.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Tusker"
+  Copy >NIL: "USERPACKAGEDIR:T\Tusker" "$indexdir" ALL
+ENDIF
+
+; Copy 'TVSportsBaseball' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBaseball.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBaseball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBaseball"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBaseball" "$indexdir" ALL
+ENDIF
+
+; Copy 'TVSportsBasketball' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBasketball.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBasketball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBasketball"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBasketball" "$indexdir" ALL
+ENDIF
+
+; Copy 'TVSportsBoxing' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBoxing.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBoxing.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TVSportsBoxing"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsBoxing" "$indexdir" ALL
+ENDIF
+
+; Copy 'TVSportsFootball' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TVSportsFootball.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsFootball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TVSportsFootball"
+  Copy >NIL: "USERPACKAGEDIR:T\TVSportsFootball" "$indexdir" ALL
+ENDIF
+
+; Copy 'Twintris' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Twintris.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Twintris.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Twintris"
+  Copy >NIL: "USERPACKAGEDIR:T\Twintris" "$indexdir" ALL
+ENDIF
+
+; Copy 'TwinTurbos' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TwinTurbos.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TwinTurbos.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TwinTurbos"
+  Copy >NIL: "USERPACKAGEDIR:T\TwinTurbos" "$indexdir" ALL
+ENDIF
+
+; Copy 'TwinWorld' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TwinWorld.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TwinWorld.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TwinWorld"
+  Copy >NIL: "USERPACKAGEDIR:T\TwinWorld" "$indexdir" ALL
+ENDIF
+
+; Copy 'Twylyte' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Twylyte.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Twylyte.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Twylyte"
+  Copy >NIL: "USERPACKAGEDIR:T\Twylyte" "$indexdir" ALL
+ENDIF
+
+; Copy 'Typhoon' entry directory
+IF EXISTS "USERPACKAGEDIR:T\Typhoon.info"
+  Copy >NIL: "USERPACKAGEDIR:T\Typhoon.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\Typhoon"
+  Copy >NIL: "USERPACKAGEDIR:T\Typhoon" "$indexdir" ALL
+ENDIF
+
+; Copy 'TyphoonThompson' entry directory
+IF EXISTS "USERPACKAGEDIR:T\TyphoonThompson.info"
+  Copy >NIL: "USERPACKAGEDIR:T\TyphoonThompson.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T\TyphoonThompson"
+  Copy >NIL: "USERPACKAGEDIR:T\TyphoonThompson" "$indexdir" ALL
+ENDIF
+
+; Create 'U' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U.info"
+  Copy >NIL: "USERPACKAGEDIR:U.info" "$indexdir"
+ENDIF
+echo "Installing 'U'..."
+
+; Copy 'Ugh' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Ugh.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Ugh.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Ugh"
+  Copy >NIL: "USERPACKAGEDIR:U\Ugh" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ultima3' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Ultima3.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima3.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Ultima3"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima3" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ultima4' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Ultima4.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima4.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Ultima4"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima4" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ultima5' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Ultima5.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima5.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Ultima5"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima5" "$indexdir" ALL
+ENDIF
+
+; Copy 'Ultima6' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Ultima6.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima6.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Ultima6"
+  Copy >NIL: "USERPACKAGEDIR:U\Ultima6" "$indexdir" ALL
+ENDIF
+
+; Copy 'UltimateGolf' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UltimateGolf.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimateGolf.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UltimateGolf"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimateGolf" "$indexdir" ALL
+ENDIF
+
+; Copy 'UltimatePinballQuest' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UltimatePinballQuest.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimatePinballQuest.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UltimatePinballQuest"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimatePinballQuest" "$indexdir" ALL
+ENDIF
+
+; Copy 'UltimateRide' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UltimateRide.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimateRide.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UltimateRide"
+  Copy >NIL: "USERPACKAGEDIR:U\UltimateRide" "$indexdir" ALL
+ENDIF
+
+; Copy 'UMS2NationsAtWar' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UMS2NationsAtWar.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UMS2NationsAtWar.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UMS2NationsAtWar"
+  Copy >NIL: "USERPACKAGEDIR:U\UMS2NationsAtWar" "$indexdir" ALL
+ENDIF
+
+; Copy 'UnderPressure' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UnderPressure.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UnderPressure.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UnderPressure"
+  Copy >NIL: "USERPACKAGEDIR:U\UnderPressure" "$indexdir" ALL
+ENDIF
+
+; Copy 'Uninvited' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Uninvited.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Uninvited.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Uninvited"
+  Copy >NIL: "USERPACKAGEDIR:U\Uninvited" "$indexdir" ALL
+ENDIF
+
+; Copy 'UniversalMilitarySim' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UniversalMilitarySim.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalMilitarySim.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UniversalMilitarySim"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalMilitarySim" "$indexdir" ALL
+ENDIF
+
+; Copy 'UniversalMonsters' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UniversalMonsters.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalMonsters.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UniversalMonsters"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalMonsters" "$indexdir" ALL
+ENDIF
+
+; Copy 'UniversalWarrior' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UniversalWarrior.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalWarrior.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UniversalWarrior"
+  Copy >NIL: "USERPACKAGEDIR:U\UniversalWarrior" "$indexdir" ALL
+ENDIF
+
+; Copy 'Universe' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Universe.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Universe.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Universe"
+  Copy >NIL: "USERPACKAGEDIR:U\Universe" "$indexdir" ALL
+ENDIF
+
+; Copy 'Universe3' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Universe3.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Universe3.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Universe3"
+  Copy >NIL: "USERPACKAGEDIR:U\Universe3" "$indexdir" ALL
+ENDIF
+
+; Copy 'Unreal' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Unreal.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Unreal.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Unreal"
+  Copy >NIL: "USERPACKAGEDIR:U\Unreal" "$indexdir" ALL
+ENDIF
+
+; Copy 'UnsensibleSoccer' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UnsensibleSoccer.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UnsensibleSoccer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UnsensibleSoccer"
+  Copy >NIL: "USERPACKAGEDIR:U\UnsensibleSoccer" "$indexdir" ALL
+ENDIF
+
+; Copy 'UNSquadron' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UNSquadron.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UNSquadron.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UNSquadron"
+  Copy >NIL: "USERPACKAGEDIR:U\UNSquadron" "$indexdir" ALL
+ENDIF
+
+; Copy 'Untouchables' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Untouchables.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Untouchables.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Untouchables"
+  Copy >NIL: "USERPACKAGEDIR:U\Untouchables" "$indexdir" ALL
+ENDIF
+
+; Copy 'UpScope' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UpScope.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UpScope.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UpScope"
+  Copy >NIL: "USERPACKAGEDIR:U\UpScope" "$indexdir" ALL
+ENDIF
+
+; Copy 'UpScopeArcadia' entry directory
+IF EXISTS "USERPACKAGEDIR:U\UpScopeArcadia.info"
+  Copy >NIL: "USERPACKAGEDIR:U\UpScopeArcadia.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\UpScopeArcadia"
+  Copy >NIL: "USERPACKAGEDIR:U\UpScopeArcadia" "$indexdir" ALL
+ENDIF
+
+; Copy 'Uridium21MB' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Uridium21MB.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Uridium21MB.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Uridium21MB"
+  Copy >NIL: "USERPACKAGEDIR:U\Uridium21MB" "$indexdir" ALL
+ENDIF
+
+; Copy 'USSJohnYoung' entry directory
+IF EXISTS "USERPACKAGEDIR:U\USSJohnYoung.info"
+  Copy >NIL: "USERPACKAGEDIR:U\USSJohnYoung.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\USSJohnYoung"
+  Copy >NIL: "USERPACKAGEDIR:U\USSJohnYoung" "$indexdir" ALL
+ENDIF
+
+; Copy 'Utopia' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Utopia.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Utopia.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Utopia"
+  Copy >NIL: "USERPACKAGEDIR:U\Utopia" "$indexdir" ALL
+ENDIF
+
+; Copy 'Utopia&NewWorlds' entry directory
+IF EXISTS "USERPACKAGEDIR:U\Utopia&NewWorlds.info"
+  Copy >NIL: "USERPACKAGEDIR:U\Utopia&NewWorlds.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U\Utopia&NewWorlds"
+  Copy >NIL: "USERPACKAGEDIR:U\Utopia&NewWorlds" "$indexdir" ALL
+ENDIF
+
+; Create 'V' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V.info"
+  Copy >NIL: "USERPACKAGEDIR:V.info" "$indexdir"
+ENDIF
+echo "Installing 'V'..."
+
+; Copy 'Vader' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vader.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vader.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vader"
+  Copy >NIL: "USERPACKAGEDIR:V\Vader" "$indexdir" ALL
+ENDIF
+
+; Copy 'ValhallaBeforeTheWar' entry directory
+IF EXISTS "USERPACKAGEDIR:V\ValhallaBeforeTheWar.info"
+  Copy >NIL: "USERPACKAGEDIR:V\ValhallaBeforeTheWar.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\ValhallaBeforeTheWar"
+  Copy >NIL: "USERPACKAGEDIR:V\ValhallaBeforeTheWar" "$indexdir" ALL
+ENDIF
+
+; Copy 'ValhallaLordOfInfinity' entry directory
+IF EXISTS "USERPACKAGEDIR:V\ValhallaLordOfInfinity.info"
+  Copy >NIL: "USERPACKAGEDIR:V\ValhallaLordOfInfinity.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\ValhallaLordOfInfinity"
+  Copy >NIL: "USERPACKAGEDIR:V\ValhallaLordOfInfinity" "$indexdir" ALL
+ENDIF
+
+; Copy 'VampiresEmpire' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VampiresEmpire.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VampiresEmpire.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VampiresEmpire"
+  Copy >NIL: "USERPACKAGEDIR:V\VampiresEmpire" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vaxine' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vaxine.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vaxine.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vaxine"
+  Copy >NIL: "USERPACKAGEDIR:V\Vaxine" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vectorball' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vectorball.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vectorball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vectorball"
+  Copy >NIL: "USERPACKAGEDIR:V\Vectorball" "$indexdir" ALL
+ENDIF
+
+; Copy 'VegasGambler' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VegasGambler.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VegasGambler.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VegasGambler"
+  Copy >NIL: "USERPACKAGEDIR:V\VegasGambler" "$indexdir" ALL
+ENDIF
+
+; Copy 'VenomWing' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VenomWing.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VenomWing.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VenomWing"
+  Copy >NIL: "USERPACKAGEDIR:V\VenomWing" "$indexdir" ALL
+ENDIF
+
+; Copy 'VenusTheFlytrap' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VenusTheFlytrap.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VenusTheFlytrap.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VenusTheFlytrap"
+  Copy >NIL: "USERPACKAGEDIR:V\VenusTheFlytrap" "$indexdir" ALL
+ENDIF
+
+; Copy 'VictoryRoad' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VictoryRoad.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VictoryRoad.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VictoryRoad"
+  Copy >NIL: "USERPACKAGEDIR:V\VictoryRoad" "$indexdir" ALL
+ENDIF
+
+; Copy 'VideoKid' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VideoKid.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VideoKid.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VideoKid"
+  Copy >NIL: "USERPACKAGEDIR:V\VideoKid" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vigilante' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vigilante.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vigilante.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vigilante"
+  Copy >NIL: "USERPACKAGEDIR:V\Vigilante" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vindicators' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vindicators.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vindicators.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vindicators"
+  Copy >NIL: "USERPACKAGEDIR:V\Vindicators" "$indexdir" ALL
+ENDIF
+
+; Copy 'Violator' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Violator.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Violator.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Violator"
+  Copy >NIL: "USERPACKAGEDIR:V\Violator" "$indexdir" ALL
+ENDIF
+
+; Copy 'Virocop' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Virocop.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Virocop.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Virocop"
+  Copy >NIL: "USERPACKAGEDIR:V\Virocop" "$indexdir" ALL
+ENDIF
+
+; Copy 'Virus' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Virus.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Virus.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Virus"
+  Copy >NIL: "USERPACKAGEDIR:V\Virus" "$indexdir" ALL
+ENDIF
+
+; Copy 'VitalLight' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VitalLight.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VitalLight.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VitalLight"
+  Copy >NIL: "USERPACKAGEDIR:V\VitalLight" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vixen' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vixen.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vixen.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vixen"
+  Copy >NIL: "USERPACKAGEDIR:V\Vixen" "$indexdir" ALL
+ENDIF
+
+; Copy 'Viz' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Viz.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Viz.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Viz"
+  Copy >NIL: "USERPACKAGEDIR:V\Viz" "$indexdir" ALL
+ENDIF
+
+; Copy 'Volfied' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Volfied.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Volfied.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Volfied"
+  Copy >NIL: "USERPACKAGEDIR:V\Volfied" "$indexdir" ALL
+ENDIF
+
+; Copy 'VoodooNightmare' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VoodooNightmare.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VoodooNightmare.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VoodooNightmare"
+  Copy >NIL: "USERPACKAGEDIR:V\VoodooNightmare" "$indexdir" ALL
+ENDIF
+
+; Copy 'Voyager' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Voyager.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Voyager.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Voyager"
+  Copy >NIL: "USERPACKAGEDIR:V\Voyager" "$indexdir" ALL
+ENDIF
+
+; Copy 'VoyagesOfDiscovery' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VoyagesOfDiscovery.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VoyagesOfDiscovery.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VoyagesOfDiscovery"
+  Copy >NIL: "USERPACKAGEDIR:V\VoyagesOfDiscovery" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vroom' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vroom.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vroom.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vroom"
+  Copy >NIL: "USERPACKAGEDIR:V\Vroom" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vroom&DataDisk' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vroom&DataDisk.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vroom&DataDisk.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vroom&DataDisk"
+  Copy >NIL: "USERPACKAGEDIR:V\Vroom&DataDisk" "$indexdir" ALL
+ENDIF
+
+; Copy 'VroomMultiPlayer' entry directory
+IF EXISTS "USERPACKAGEDIR:V\VroomMultiPlayer.info"
+  Copy >NIL: "USERPACKAGEDIR:V\VroomMultiPlayer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\VroomMultiPlayer"
+  Copy >NIL: "USERPACKAGEDIR:V\VroomMultiPlayer" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vyper' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vyper.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vyper.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vyper"
+  Copy >NIL: "USERPACKAGEDIR:V\Vyper" "$indexdir" ALL
+ENDIF
+
+; Copy 'Vyrus' entry directory
+IF EXISTS "USERPACKAGEDIR:V\Vyrus.info"
+  Copy >NIL: "USERPACKAGEDIR:V\Vyrus.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V\Vyrus"
+  Copy >NIL: "USERPACKAGEDIR:V\Vyrus" "$indexdir" ALL
+ENDIF
+
+; Create 'W' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W.info"
+  Copy >NIL: "USERPACKAGEDIR:W.info" "$indexdir"
+ENDIF
+echo "Installing 'W'..."
+
+; Copy 'WackyDarts' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WackyDarts.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WackyDarts.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WackyDarts"
+  Copy >NIL: "USERPACKAGEDIR:W\WackyDarts" "$indexdir" ALL
+ENDIF
+
+; Copy 'WackyRaces' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WackyRaces.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WackyRaces.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WackyRaces"
+  Copy >NIL: "USERPACKAGEDIR:W\WackyRaces" "$indexdir" ALL
+ENDIF
+
+; Copy 'WalkerDecrunched' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WalkerDecrunched.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WalkerDecrunched.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WalkerDecrunched"
+  Copy >NIL: "USERPACKAGEDIR:W\WalkerDecrunched" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wall' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wall.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wall.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wall"
+  Copy >NIL: "USERPACKAGEDIR:W\Wall" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wanderer3D' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wanderer3D.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wanderer3D.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wanderer3D"
+  Copy >NIL: "USERPACKAGEDIR:W\Wanderer3D" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wanted' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wanted.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wanted.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wanted"
+  Copy >NIL: "USERPACKAGEDIR:W\Wanted" "$indexdir" ALL
+ENDIF
+
+; Copy 'Warhead' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Warhead.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Warhead.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Warhead"
+  Copy >NIL: "USERPACKAGEDIR:W\Warhead" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarInMiddleEarth' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarInMiddleEarth.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarInMiddleEarth.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarInMiddleEarth"
+  Copy >NIL: "USERPACKAGEDIR:W\WarInMiddleEarth" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarInTheGulf' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarInTheGulf.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarInTheGulf.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarInTheGulf"
+  Copy >NIL: "USERPACKAGEDIR:W\WarInTheGulf" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarlocksQuest' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarlocksQuest.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarlocksQuest.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarlocksQuest"
+  Copy >NIL: "USERPACKAGEDIR:W\WarlocksQuest" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarlockTheAvenger' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarlockTheAvenger.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarlockTheAvenger.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarlockTheAvenger"
+  Copy >NIL: "USERPACKAGEDIR:W\WarlockTheAvenger" "$indexdir" ALL
+ENDIF
+
+; Copy 'Warlords' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Warlords.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Warlords.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Warlords"
+  Copy >NIL: "USERPACKAGEDIR:W\Warlords" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarMachine' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarMachine.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarMachine.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarMachine"
+  Copy >NIL: "USERPACKAGEDIR:W\WarMachine" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarmUp' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarmUp.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarmUp.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarmUp"
+  Copy >NIL: "USERPACKAGEDIR:W\WarmUp" "$indexdir" ALL
+ENDIF
+
+; Copy 'Warp' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Warp.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Warp.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Warp"
+  Copy >NIL: "USERPACKAGEDIR:W\Warp" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarZoneCore' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarZoneCore.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneCore.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarZoneCore"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneCore" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarZoneCoreDesign' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarZoneCoreDesign.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneCoreDesign.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarZoneCoreDesign"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneCoreDesign" "$indexdir" ALL
+ENDIF
+
+; Copy 'WarZoneParadox' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WarZoneParadox.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneParadox.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WarZoneParadox"
+  Copy >NIL: "USERPACKAGEDIR:W\WarZoneParadox" "$indexdir" ALL
+ENDIF
+
+; Copy 'Waterloo' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Waterloo.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Waterloo.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Waterloo"
+  Copy >NIL: "USERPACKAGEDIR:W\Waterloo" "$indexdir" ALL
+ENDIF
+
+; Copy 'Waxworks' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Waxworks.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Waxworks.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Waxworks"
+  Copy >NIL: "USERPACKAGEDIR:W\Waxworks" "$indexdir" ALL
+ENDIF
+
+; Copy 'WayneGretzkyHockey' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WayneGretzkyHockey.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WayneGretzkyHockey.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WayneGretzkyHockey"
+  Copy >NIL: "USERPACKAGEDIR:W\WayneGretzkyHockey" "$indexdir" ALL
+ENDIF
+
+; Copy 'WayneGretzkyHockey2' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WayneGretzkyHockey2.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WayneGretzkyHockey2.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WayneGretzkyHockey2"
+  Copy >NIL: "USERPACKAGEDIR:W\WayneGretzkyHockey2" "$indexdir" ALL
+ENDIF
+
+; Copy 'WayOfTheLittleDragon' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WayOfTheLittleDragon.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WayOfTheLittleDragon.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WayOfTheLittleDragon"
+  Copy >NIL: "USERPACKAGEDIR:W\WayOfTheLittleDragon" "$indexdir" ALL
+ENDIF
+
+; Copy 'WayOfTheLittleDragonAStar' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WayOfTheLittleDragonAStar.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WayOfTheLittleDragonAStar.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WayOfTheLittleDragonAStar"
+  Copy >NIL: "USERPACKAGEDIR:W\WayOfTheLittleDragonAStar" "$indexdir" ALL
+ENDIF
+
+; Copy 'WCLeaderBoard' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WCLeaderBoard.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WCLeaderBoard.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WCLeaderBoard"
+  Copy >NIL: "USERPACKAGEDIR:W\WCLeaderBoard" "$indexdir" ALL
+ENDIF
+
+; Copy 'WCLeaderBoard&DataDisks' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WCLeaderBoard&DataDisks.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WCLeaderBoard&DataDisks.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WCLeaderBoard&DataDisks"
+  Copy >NIL: "USERPACKAGEDIR:W\WCLeaderBoard&DataDisks" "$indexdir" ALL
+ENDIF
+
+; Copy 'WebOfTerror' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WebOfTerror.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WebOfTerror.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WebOfTerror"
+  Copy >NIL: "USERPACKAGEDIR:W\WebOfTerror" "$indexdir" ALL
+ENDIF
+
+; Copy 'WeenTheProphecy' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WeenTheProphecy.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WeenTheProphecy.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WeenTheProphecy"
+  Copy >NIL: "USERPACKAGEDIR:W\WeenTheProphecy" "$indexdir" ALL
+ENDIF
+
+; Copy 'WeirdDreams' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WeirdDreams.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WeirdDreams.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WeirdDreams"
+  Copy >NIL: "USERPACKAGEDIR:W\WeirdDreams" "$indexdir" ALL
+ENDIF
+
+; Copy 'Welltris' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Welltris.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Welltris.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Welltris"
+  Copy >NIL: "USERPACKAGEDIR:W\Welltris" "$indexdir" ALL
+ENDIF
+
+; Copy 'WembleyIntSoccer' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WembleyIntSoccer.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WembleyIntSoccer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WembleyIntSoccer"
+  Copy >NIL: "USERPACKAGEDIR:W\WembleyIntSoccer" "$indexdir" ALL
+ENDIF
+
+; Copy 'WembleyRugbyLeague' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WembleyRugbyLeague.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WembleyRugbyLeague.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WembleyRugbyLeague"
+  Copy >NIL: "USERPACKAGEDIR:W\WembleyRugbyLeague" "$indexdir" ALL
+ENDIF
+
+; Copy 'WesternGames' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WesternGames.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WesternGames.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WesternGames"
+  Copy >NIL: "USERPACKAGEDIR:W\WesternGames" "$indexdir" ALL
+ENDIF
+
+; Copy 'WestPhaser' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WestPhaser.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WestPhaser.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WestPhaser"
+  Copy >NIL: "USERPACKAGEDIR:W\WestPhaser" "$indexdir" ALL
+ENDIF
+
+; Copy 'WhereTimeStoodStill' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WhereTimeStoodStill.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WhereTimeStoodStill.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WhereTimeStoodStill"
+  Copy >NIL: "USERPACKAGEDIR:W\WhereTimeStoodStill" "$indexdir" ALL
+ENDIF
+
+; Copy 'Whirligig' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Whirligig.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Whirligig.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Whirligig"
+  Copy >NIL: "USERPACKAGEDIR:W\Whirligig" "$indexdir" ALL
+ENDIF
+
+; Copy 'WhiteDeath' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WhiteDeath.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WhiteDeath.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WhiteDeath"
+  Copy >NIL: "USERPACKAGEDIR:W\WhiteDeath" "$indexdir" ALL
+ENDIF
+
+; Copy 'Whizz' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Whizz.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Whizz.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Whizz"
+  Copy >NIL: "USERPACKAGEDIR:W\Whizz" "$indexdir" ALL
+ENDIF
+
+; Copy 'WhoFramedRogerRabbit' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WhoFramedRogerRabbit.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WhoFramedRogerRabbit.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WhoFramedRogerRabbit"
+  Copy >NIL: "USERPACKAGEDIR:W\WhoFramedRogerRabbit" "$indexdir" ALL
+ENDIF
+
+; Copy 'WibbleWorldGiddy' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WibbleWorldGiddy.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WibbleWorldGiddy.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WibbleWorldGiddy"
+  Copy >NIL: "USERPACKAGEDIR:W\WibbleWorldGiddy" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wicked' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wicked.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wicked.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wicked"
+  Copy >NIL: "USERPACKAGEDIR:W\Wicked" "$indexdir" ALL
+ENDIF
+
+; Copy 'WIEuropeIsCarmenSandiego' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WIEuropeIsCarmenSandiego.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WIEuropeIsCarmenSandiego.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WIEuropeIsCarmenSandiego"
+  Copy >NIL: "USERPACKAGEDIR:W\WIEuropeIsCarmenSandiego" "$indexdir" ALL
+ENDIF
+
+; Copy 'WildCupSoccer' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WildCupSoccer.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WildCupSoccer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WildCupSoccer"
+  Copy >NIL: "USERPACKAGEDIR:W\WildCupSoccer" "$indexdir" ALL
+ENDIF
+
+; Copy 'WildStreets' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WildStreets.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WildStreets.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WildStreets"
+  Copy >NIL: "USERPACKAGEDIR:W\WildStreets" "$indexdir" ALL
+ENDIF
+
+; Copy 'WildWestWorld' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WildWestWorld.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WildWestWorld.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WildWestWorld"
+  Copy >NIL: "USERPACKAGEDIR:W\WildWestWorld" "$indexdir" ALL
+ENDIF
+
+; Copy 'WildWheels' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WildWheels.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WildWheels.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WildWheels"
+  Copy >NIL: "USERPACKAGEDIR:W\WildWheels" "$indexdir" ALL
+ENDIF
+
+; Copy 'WindowWizardImage' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WindowWizardImage.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WindowWizardImage.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WindowWizardImage"
+  Copy >NIL: "USERPACKAGEDIR:W\WindowWizardImage" "$indexdir" ALL
+ENDIF
+
+; Copy 'WindSurfWilly' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WindSurfWilly.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WindSurfWilly.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WindSurfWilly"
+  Copy >NIL: "USERPACKAGEDIR:W\WindSurfWilly" "$indexdir" ALL
+ENDIF
+
+; Copy 'Windwalker' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Windwalker.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Windwalker.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Windwalker"
+  Copy >NIL: "USERPACKAGEDIR:W\Windwalker" "$indexdir" ALL
+ENDIF
+
+; Copy 'WingCommander' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WingCommander.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WingCommander.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WingCommander"
+  Copy >NIL: "USERPACKAGEDIR:W\WingCommander" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wings' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wings.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wings.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wings"
+  Copy >NIL: "USERPACKAGEDIR:W\Wings" "$indexdir" ALL
+ENDIF
+
+; Copy 'WingsOfDeath' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WingsOfDeath.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WingsOfDeath.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WingsOfDeath"
+  Copy >NIL: "USERPACKAGEDIR:W\WingsOfDeath" "$indexdir" ALL
+ENDIF
+
+; Copy 'WingsOfFury' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WingsOfFury.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WingsOfFury.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WingsOfFury"
+  Copy >NIL: "USERPACKAGEDIR:W\WingsOfFury" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinnieThePooh' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinnieThePooh.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinnieThePooh.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinnieThePooh"
+  Copy >NIL: "USERPACKAGEDIR:W\WinnieThePooh" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinningPost' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinningPost.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinningPost.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinningPost"
+  Copy >NIL: "USERPACKAGEDIR:W\WinningPost" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterCamp' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterCamp.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterCamp.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterCamp"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterCamp" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterChallenge' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterChallenge.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterChallenge.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterChallenge"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterChallenge" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterGames' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterGames.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterGames.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterGames"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterGames" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterOlympiad88' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterOlympiad88.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterOlympiad88.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterOlympiad88"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterOlympiad88" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterOlympics' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterOlympics.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterOlympics.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterOlympics"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterOlympics" "$indexdir" ALL
+ENDIF
+
+; Copy 'WinterSupersports92' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WinterSupersports92.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterSupersports92.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WinterSupersports92"
+  Copy >NIL: "USERPACKAGEDIR:W\WinterSupersports92" "$indexdir" ALL
+ENDIF
+
+; Copy 'Winzer' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Winzer.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Winzer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Winzer"
+  Copy >NIL: "USERPACKAGEDIR:W\Winzer" "$indexdir" ALL
+ENDIF
+
+; Copy 'WITUSAIsCarmenSandiego' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WITUSAIsCarmenSandiego.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WITUSAIsCarmenSandiego.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WITUSAIsCarmenSandiego"
+  Copy >NIL: "USERPACKAGEDIR:W\WITUSAIsCarmenSandiego" "$indexdir" ALL
+ENDIF
+
+; Copy 'WITWIsCarmenSandiego' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WITWIsCarmenSandiego.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WITWIsCarmenSandiego.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WITWIsCarmenSandiego"
+  Copy >NIL: "USERPACKAGEDIR:W\WITWIsCarmenSandiego" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wizardry6BaneCosmicForg' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wizardry6BaneCosmicForg.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizardry6BaneCosmicForg.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wizardry6BaneCosmicForg"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizardry6BaneCosmicForg" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wizball' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wizball.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizball.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wizball"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizball" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wizkid' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wizkid.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizkid.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wizkid"
+  Copy >NIL: "USERPACKAGEDIR:W\Wizkid" "$indexdir" ALL
+ENDIF
+
+; Copy 'WizNLiz' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WizNLiz.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WizNLiz.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WizNLiz"
+  Copy >NIL: "USERPACKAGEDIR:W\WizNLiz" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wolfchild' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wolfchild.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wolfchild.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wolfchild"
+  Copy >NIL: "USERPACKAGEDIR:W\Wolfchild" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wolfpack' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wolfpack.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wolfpack.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wolfpack"
+  Copy >NIL: "USERPACKAGEDIR:W\Wolfpack" "$indexdir" ALL
+ENDIF
+
+; Copy 'WonderboyInMonsterland' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WonderboyInMonsterland.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WonderboyInMonsterland.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WonderboyInMonsterland"
+  Copy >NIL: "USERPACKAGEDIR:W\WonderboyInMonsterland" "$indexdir" ALL
+ENDIF
+
+; Copy 'WonderDog' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WonderDog.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WonderDog.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WonderDog"
+  Copy >NIL: "USERPACKAGEDIR:W\WonderDog" "$indexdir" ALL
+ENDIF
+
+; Copy 'Wonderland' entry directory
+IF EXISTS "USERPACKAGEDIR:W\Wonderland.info"
+  Copy >NIL: "USERPACKAGEDIR:W\Wonderland.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\Wonderland"
+  Copy >NIL: "USERPACKAGEDIR:W\Wonderland" "$indexdir" ALL
+ENDIF
+
+; Copy 'WoodysWorld' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WoodysWorld.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WoodysWorld.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WoodysWorld"
+  Copy >NIL: "USERPACKAGEDIR:W\WoodysWorld" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldChampBoxingManager' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldChampBoxingManager.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldChampBoxingManager.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldChampBoxingManager"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldChampBoxingManager" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldChampionshipSoccer' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldChampionshipSoccer.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldChampionshipSoccer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldChampionshipSoccer"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldChampionshipSoccer" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldCircuit' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldCircuit.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldCircuit.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldCircuit"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldCircuit" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldClassRugby' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldClassRugby5Nations' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby5Nations.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby5Nations.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby5Nations"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby5Nations" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldClassRugby95' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby95.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby95.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldClassRugby95"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassRugby95" "$indexdir" ALL
+ENDIF
+
+; Copy 'WorldClassSoccer' entry directory
+IF EXISTS "USERPACKAGEDIR:W\WorldClassSoccer.info"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassSoccer.info" "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W\WorldClassSoccer"
+  Copy >NIL: "USERPACKAGEDIR:W\WorldClassSoccer" "$indexdir" ALL
+ENDIF

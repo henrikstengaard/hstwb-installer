@@ -1,17 +1,25 @@
-; EAB WHDLoad Pack Install Script
-; -------------------------------
+; Demos WHDLoad UnpackOnAmiga Install Script
+; --------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-11-23
+; Date: 2017-12-08
+;
+; An AmigaDOS script to install Demos WHDLoad UnpackOnAmiga sets from EAB WHDLoad Packs.
 
-; 'Demos_WHDLoad_UnpackOnAmiga' install script
 
-; Install 'MusicBox_v1.0_Exodus.lha'
-IF EXISTS "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha"
-  set itemdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
-  echo "Extracting 'MusicBox_v1.0_Exodus.lha'..."
-  IF NOT EXISTS "$itemdir"
-    MakePath >NIL: "$itemdir"
-  ENDIF
-  lha -q -m1 x "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha" "$itemdir/"
+set installset `RequestChoice "Demos WHDLoad UnpackOnAmiga Set" "Select Demos WHDLoad UnpackOnAmiga set to install." "All|AGA|OCS|Skip"`
+
+IF $installset EQ 1 VAL
+  echo "All"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 2 VAL
+  echo "AGA"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 3 VAL
+  echo "OCS"
+  execute USERPACKAGEDIR:Install/OCS
 ENDIF
