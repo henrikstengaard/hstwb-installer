@@ -1,0 +1,23 @@
+; Copy 'Zool2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Z/Zool2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Z/Zool2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z/Zool2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z/Zool2AGA"
+  Copy >NIL: "USERPACKAGEDIR:Z/Zool2AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ZoolAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Z/ZoolAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Z/ZoolAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z/ZoolAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z/ZoolAGA"
+  Copy >NIL: "USERPACKAGEDIR:Z/ZoolAGA" "$entrydir" ALL
+ENDIF

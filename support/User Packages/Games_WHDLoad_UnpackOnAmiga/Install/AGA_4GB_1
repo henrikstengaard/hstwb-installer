@@ -4,7 +4,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:B.info"
-  Copy >NIL: "USERPACKAGEDIR:B.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:B.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'B'..."
 
@@ -19,7 +19,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:D.info"
-  Copy >NIL: "USERPACKAGEDIR:D.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:D.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'D'..."
 
@@ -34,7 +34,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:F.info"
-  Copy >NIL: "USERPACKAGEDIR:F.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:F.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'F'..."
 
@@ -54,7 +54,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:H.info"
-  Copy >NIL: "USERPACKAGEDIR:H.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'H'..."
 
@@ -79,7 +79,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:O.info"
-  Copy >NIL: "USERPACKAGEDIR:O.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'O'..."
 
@@ -94,7 +94,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:S.info"
-  Copy >NIL: "USERPACKAGEDIR:S.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'S'..."
 
@@ -119,7 +119,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:T.info"
-  Copy >NIL: "USERPACKAGEDIR:T.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:T.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'T'..."
 

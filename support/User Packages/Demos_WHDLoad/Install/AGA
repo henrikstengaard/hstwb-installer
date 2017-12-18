@@ -2,7 +2,7 @@
 ; -------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-12-08
+; Date: 2017-12-18
 
 ; An AmigaDOS script to install WHDLoads from EAB WHDLoad Packs.
 
@@ -10,3 +10,4 @@ execute USERPACKAGEDIR:Install/AGA_1
 execute USERPACKAGEDIR:Install/AGA_2
 execute USERPACKAGEDIR:Install/AGA_3
 execute USERPACKAGEDIR:Install/AGA_4
+execute USERPACKAGEDIR:Install/AGA_5

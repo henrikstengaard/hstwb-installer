@@ -4,7 +4,7 @@ IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:M.info"
-  Copy >NIL: "USERPACKAGEDIR:M.info" "$indexdir"
+  Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
 ENDIF
 echo "Installing 'M'..."
 
