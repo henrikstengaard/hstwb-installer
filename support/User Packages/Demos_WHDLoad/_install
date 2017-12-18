@@ -2,7 +2,7 @@
 ; --------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-12-08
+; Date: 2017-12-17
 ;
 ; An AmigaDOS script to install Demos WHDLoad sets from EAB WHDLoad Packs.
 
@@ -10,16 +10,16 @@
 set installset `RequestChoice "Demos WHDLoad Set" "Select Demos WHDLoad set to install." "All|AGA|OCS|Skip"`
 
 IF $installset EQ 1 VAL
-  echo "All"
+  echo "Install All"
   execute USERPACKAGEDIR:Install/AGA
 ENDIF
 
 IF $installset EQ 2 VAL
-  echo "AGA"
+  echo "Install AGA"
   execute USERPACKAGEDIR:Install/AGA
 ENDIF
 
 IF $installset EQ 3 VAL
-  echo "OCS"
+  echo "Install OCS"
   execute USERPACKAGEDIR:Install/OCS
 ENDIF
