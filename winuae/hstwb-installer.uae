@@ -12,7 +12,7 @@ win32.floppy_path=./
 win32.hardfile_path=./
 ; host-specific
 win32.map_cd_drives=true
-win32.map_removable_drives=true
+win32.map_removable_drives=false
 win32.midiin_device=-1
 win32.soundcard=0
 win32.soundcardname=Primary Sound Driver
