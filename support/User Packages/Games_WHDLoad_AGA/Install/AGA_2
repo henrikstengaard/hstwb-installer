@@ -1,0 +1,2001 @@
+; Copy 'LordsOfTheRealmAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LordsOfTheRealmAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGADe"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGADeFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGADeFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGADeFast.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LordsOfTheRealmAGADeFast"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGADeFast"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGADeFast" "$entrydir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFast.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LordsOfTheRealmAGAFast"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFast"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFast" "$entrydir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFr' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFr.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFr.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LordsOfTheRealmAGAFr"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFr"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFr" "$entrydir" ALL
+ENDIF
+
+; Copy 'LordsOfTheRealmAGAFrFast' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFrFast.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFrFast.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LordsOfTheRealmAGAFrFast"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LordsOfTheRealmAGAFrFast"
+  Copy >NIL: "USERPACKAGEDIR:L/LordsOfTheRealmAGAFrFast" "$entrydir" ALL
+ENDIF
+
+; Copy 'LostVikingsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LostVikingsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LostVikingsCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LostVikingsCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LostVikingsCD32"
+  Copy >NIL: "USERPACKAGEDIR:L/LostVikingsCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'LotusCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LotusCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LotusCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LotusCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LotusCD32"
+  Copy >NIL: "USERPACKAGEDIR:L/LotusCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'LunarCCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:L/LunarCCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:L/LunarCCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/LunarCCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:L/LunarCCD32"
+  Copy >NIL: "USERPACKAGEDIR:L/LunarCCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'M' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M.info"
+  Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'M'..."
+
+; Copy 'MarvinsMarvellousAdvAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MarvinsMarvellousAdvAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MarvinsMarvellousAdvAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MarvinsMarvellousAdvAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MarvinsMarvellousAdvAGA"
+  Copy >NIL: "USERPACKAGEDIR:M/MarvinsMarvellousAdvAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'MarvinsMarvellousAdvCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MarvinsMarvellousAdvCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MarvinsMarvellousAdvCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MarvinsMarvellousAdvCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MarvinsMarvellousAdvCD32"
+  Copy >NIL: "USERPACKAGEDIR:M/MarvinsMarvellousAdvCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'MeanArenasCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MeanArenasCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MeanArenasCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MeanArenasCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MeanArenasCD32"
+  Copy >NIL: "USERPACKAGEDIR:M/MeanArenasCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'MegaBallAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MegaBallAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MegaBallAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MegaBallAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MegaBallAGA"
+  Copy >NIL: "USERPACKAGEDIR:M/MegaBallAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'MinskiesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MinskiesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MinskiesAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MinskiesAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MinskiesAGA"
+  Copy >NIL: "USERPACKAGEDIR:M/MinskiesAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'MorphAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MorphAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MorphAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MorphAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MorphAGA"
+  Copy >NIL: "USERPACKAGEDIR:M/MorphAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'MorphCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MorphCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MorphCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MorphCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MorphCD32"
+  Copy >NIL: "USERPACKAGEDIR:M/MorphCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'MortonStrikesBackAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MortonStrikesBackAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MortonStrikesBackAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MortonStrikesBackAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MortonStrikesBackAGA"
+  Copy >NIL: "USERPACKAGEDIR:M/MortonStrikesBackAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'MythHistoryInMakingCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:M/MythHistoryInMakingCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:M/MythHistoryInMakingCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M/MythHistoryInMakingCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:M/MythHistoryInMakingCD32"
+  Copy >NIL: "USERPACKAGEDIR:M/MythHistoryInMakingCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'N' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N.info"
+  Copy >NIL: "USERPACKAGEDIR:N.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'N'..."
+
+; Copy 'NaughtyOnesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:N/NaughtyOnesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:N/NaughtyOnesAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N/NaughtyOnesAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N/NaughtyOnesAGA"
+  Copy >NIL: "USERPACKAGEDIR:N/NaughtyOnesAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'NaughtyOnesCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N/NaughtyOnesCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N/NaughtyOnesCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N/NaughtyOnesCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N/NaughtyOnesCD32"
+  Copy >NIL: "USERPACKAGEDIR:N/NaughtyOnesCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'NickFaldosChampGolfCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N/NickFaldosChampGolfCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N/NickFaldosChampGolfCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N/NickFaldosChampGolfCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N/NickFaldosChampGolfCD32"
+  Copy >NIL: "USERPACKAGEDIR:N/NickFaldosChampGolfCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'NigelMansellsWrldChmpAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:N/NigelMansellsWrldChmpAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:N/NigelMansellsWrldChmpAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N/NigelMansellsWrldChmpAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N/NigelMansellsWrldChmpAGA"
+  Copy >NIL: "USERPACKAGEDIR:N/NigelMansellsWrldChmpAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'NigelMansellsWrldChmpCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:N/NigelMansellsWrldChmpCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:N/NigelMansellsWrldChmpCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N/NigelMansellsWrldChmpCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:N/NigelMansellsWrldChmpCD32"
+  Copy >NIL: "USERPACKAGEDIR:N/NigelMansellsWrldChmpCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'O' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O.info"
+  Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'O'..."
+
+; Copy 'OgAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O/OgAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O/OgAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O/OgAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O/OgAGA"
+  Copy >NIL: "USERPACKAGEDIR:O/OgAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'OscarAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O/OscarAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O/OscarAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O/OscarAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O/OscarAGA"
+  Copy >NIL: "USERPACKAGEDIR:O/OscarAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'OscarCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:O/OscarCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:O/OscarCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O/OscarCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O/OscarCD32"
+  Copy >NIL: "USERPACKAGEDIR:O/OscarCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'OverkillAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:O/OverkillAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:O/OverkillAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O/OverkillAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O/OverkillAGA"
+  Copy >NIL: "USERPACKAGEDIR:O/OverkillAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'P' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P.info"
+  Copy >NIL: "USERPACKAGEDIR:P.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'P'..."
+
+; Copy 'PenthouseHotNumsDlxAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PenthouseHotNumsDlxAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PenthouseHotNumsDlxAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PenthouseHotNumsDlxAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PenthouseHotNumsDlxAGADe"
+  Copy >NIL: "USERPACKAGEDIR:P/PenthouseHotNumsDlxAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'PGAEuropeanTourAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PGAEuropeanTourAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PGAEuropeanTourAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PGAEuropeanTourAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PGAEuropeanTourAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PGAEuropeanTourAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PGAEuropeanTourCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PGAEuropeanTourCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PGAEuropeanTourCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PGAEuropeanTourCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PGAEuropeanTourCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PGAEuropeanTourCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PierreIsOutToLunchAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PierreIsOutToLunchAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PierreIsOutToLunchAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PierreIsOutToLunchAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PierreIsOutToLunchAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PierreIsOutToLunchAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PierreIsOutToLunchCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PierreIsOutToLunchCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PierreIsOutToLunchCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PierreIsOutToLunchCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PierreIsOutToLunchCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PierreIsOutToLunchCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGAChip' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGAChip.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGAChip.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesAGAChip"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGAChip"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGAChip" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGANTSC' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGANTSC.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGANTSC.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesAGANTSC"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGANTSC"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGANTSC" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesAGANTSCChip' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGANTSCChip.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGANTSCChip.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesAGANTSCChip"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesAGANTSCChip"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesAGANTSCChip" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballFntsiesCD32Chip' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesCD32Chip.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesCD32Chip.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballFntsiesCD32Chip"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballFntsiesCD32Chip"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballFntsiesCD32Chip" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballIllusionsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsAGADemo' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsAGADemo.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsAGADemo.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballIllusionsAGADemo"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsAGADemo"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsAGADemo" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballIllusionsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballIllusionsCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballIllusionsCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballIllusionsCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PinballPreludeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PinballPreludeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballPreludeAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PinballPreludeAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PinballPreludeAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PinballPreludeAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PiratesGoldCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PiratesGoldCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PiratesGoldCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PiratesGoldCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PiratesGoldCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PiratesGoldCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PlayerManager2ExtraAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PlayerManager2ExtraAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PlayerManager2ExtraAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PlayerManager2ExtraAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PlayerManager2ExtraAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PlayerManager2ExtraAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PremiereCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PremiereCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PremiereCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PremiereCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PremiereCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PremiereCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PremierManager3AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PremierManager3AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PremierManager3AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PremierManager3AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PremierManager3AGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PremierManager3AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PrimalRageAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PrimalRageAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PrimalRageAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PrimalRageAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PrimalRageAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PrimalRageAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ProjectXSECD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/ProjectXSECD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/ProjectXSECD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/ProjectXSECD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/ProjectXSECD32"
+  Copy >NIL: "USERPACKAGEDIR:P/ProjectXSECD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PulsatorDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PulsatorDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PulsatorDemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PulsatorDemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PulsatorDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PulsatorDemoAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PuttyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PuttyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttyCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PuttyCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PuttyCD32"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttyCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'PuttySquadAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PuttySquadAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttySquadAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PuttySquadAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PuttySquadAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttySquadAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'PuttySquadDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:P/PuttySquadDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttySquadDemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PuttySquadDemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:P/PuttySquadDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:P/PuttySquadDemoAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'Q' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q.info"
+  Copy >NIL: "USERPACKAGEDIR:Q.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'Q'..."
+
+; Copy 'QuikThunderRabbitAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Q/QuikThunderRabbitAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Q/QuikThunderRabbitAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q/QuikThunderRabbitAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q/QuikThunderRabbitAGA"
+  Copy >NIL: "USERPACKAGEDIR:Q/QuikThunderRabbitAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'QuikThunderRabbitCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:Q/QuikThunderRabbitCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:Q/QuikThunderRabbitCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q/QuikThunderRabbitCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q/QuikThunderRabbitCD32"
+  Copy >NIL: "USERPACKAGEDIR:Q/QuikThunderRabbitCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'QwakCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:Q/QwakCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:Q/QwakCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q/QwakCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Q/QwakCD32"
+  Copy >NIL: "USERPACKAGEDIR:Q/QwakCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'R' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R.info"
+  Copy >NIL: "USERPACKAGEDIR:R.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'R'..."
+
+; Copy 'RallyChampionshipsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RallyChampionshipsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RallyChampionshipsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RallyChampionshipsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RallyChampionshipsAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RallyChampionshipsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ReunionAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/ReunionAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/ReunionAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/ReunionAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/ReunionAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/ReunionAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ReunionAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:R/ReunionAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:R/ReunionAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/ReunionAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/ReunionAGADe"
+  Copy >NIL: "USERPACKAGEDIR:R/ReunionAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'RiseOfTheRobotsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RiseOfTheRobotsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RiseOfTheRobotsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RiseOfTheRobotsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RiseOfTheRobotsAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RiseOfTheRobotsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'RiseOfTheRobotsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RiseOfTheRobotsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RiseOfTheRobotsCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RiseOfTheRobotsCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RiseOfTheRobotsCD32"
+  Copy >NIL: "USERPACKAGEDIR:R/RiseOfTheRobotsCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'RoadkillAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RoadkillAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RoadkillAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RoadkillAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'RoadkillCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RoadkillCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RoadkillCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RoadkillCD32"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'RoadkillCD32NoIntro' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RoadkillCD32NoIntro.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillCD32NoIntro.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RoadkillCD32NoIntro"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RoadkillCD32NoIntro"
+  Copy >NIL: "USERPACKAGEDIR:R/RoadkillCD32NoIntro" "$entrydir" ALL
+ENDIF
+
+; Copy 'RobinsonsRequiemAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RobinsonsRequiemAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RobinsonsRequiemAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RobinsonsRequiemAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RobinsonsRequiemAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RobinsonsRequiemAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'RoketzAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RoketzAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RoketzAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RoketzAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RoketzAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RoketzAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'RuesselsheimDeAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:R/RuesselsheimDeAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:R/RuesselsheimDeAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R/RuesselsheimDeAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:R/RuesselsheimDeAGA"
+  Copy >NIL: "USERPACKAGEDIR:R/RuesselsheimDeAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'S' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S.info"
+  Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'S'..."
+
+; Copy 'SabreTeamAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SabreTeamAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SabreTeamAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SabreTeamAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SabreTeamAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SabreTeamAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SabreTeamCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SabreTeamCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SabreTeamCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SabreTeamCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SabreTeamCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SabreTeamCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SecondSamuraiAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SecondSamuraiAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SecondSamuraiAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SecondSamuraiAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SecondSamuraiAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SecondSamuraiAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'Seek&DestroyAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/Seek&DestroyAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/Seek&DestroyAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Seek&DestroyAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/Seek&DestroyAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/Seek&DestroyAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SeelenturmAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SeelenturmAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SeelenturmAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SeelenturmAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SeelenturmAGADe"
+  Copy >NIL: "USERPACKAGEDIR:S/SeelenturmAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'SensibleSoccerIntlEdCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SensibleSoccerIntlEdCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SensibleSoccerIntlEdCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SensibleSoccerIntlEdCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SensibleSoccerIntlEdCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SensibleSoccerIntlEdCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'ShadowFighterAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/ShadowFighterAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/ShadowFighterAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/ShadowFighterAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/ShadowFighterAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/ShadowFighterAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ShadowFighterCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/ShadowFighterCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/ShadowFighterCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/ShadowFighterCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/ShadowFighterCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/ShadowFighterCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'ShaqFuAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/ShaqFuAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/ShaqFuAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/ShaqFuAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/ShaqFuAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/ShaqFuAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SimonTheSorcererAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SimonTheSorcererAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SimonTheSorcererAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SimonTheSorcererAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGADe"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'SimonTheSorcererAGAFr' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGAFr.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGAFr.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SimonTheSorcererAGAFr"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SimonTheSorcererAGAFr"
+  Copy >NIL: "USERPACKAGEDIR:S/SimonTheSorcererAGAFr" "$entrydir" ALL
+ENDIF
+
+; Copy 'SkeletonKrewAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SkeletonKrewAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SkeletonKrewAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SkeletonKrewAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SkeletonKrewAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SkeletonKrewAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SkeletonKrewCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SkeletonKrewCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SkeletonKrewCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SkeletonKrewCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SkeletonKrewCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SkeletonKrewCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SkidmarksAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SkidmarksAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SkidmarksAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SkidmarksAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SkidmarksAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SkidmarksAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SlamTiltAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SlamTiltAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SlamTiltAGA2MB' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltAGA2MB.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltAGA2MB.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SlamTiltAGA2MB"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltAGA2MB"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltAGA2MB" "$entrydir" ALL
+ENDIF
+
+; Copy 'SlamTiltDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltDemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SlamTiltDemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SlamTiltDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SlamTiltDemoAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SleepwalkerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SleepwalkerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SleepwalkerAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SleepwalkerAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SleepwalkerAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SleepwalkerAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SleepwalkerAGAComicRelief' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SleepwalkerAGAComicRelief.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SleepwalkerAGAComicRelief.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SleepwalkerAGAComicRelief"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SleepwalkerAGAComicRelief"
+  Copy >NIL: "USERPACKAGEDIR:S/SleepwalkerAGAComicRelief" "$entrydir" ALL
+ENDIF
+
+; Copy 'SoccerKidAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SoccerKidAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerKidAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SoccerKidAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SoccerKidAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerKidAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SoccerKidCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SoccerKidCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerKidCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SoccerKidCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SoccerKidCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerKidCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SoccerSuperstarsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SoccerSuperstarsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerSuperstarsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SoccerSuperstarsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SoccerSuperstarsAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SoccerSuperstarsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'Speedball2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/Speedball2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/Speedball2CD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Speedball2CD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/Speedball2CD32"
+  Copy >NIL: "USERPACKAGEDIR:S/Speedball2CD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SperisLegacyAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SperisLegacyAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SperisLegacyAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SperisLegacyAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SperisLegacyAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SperisLegacyAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SperisLegacyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SperisLegacyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SperisLegacyCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SperisLegacyCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SperisLegacyCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SperisLegacyCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'StarCrusaderAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StarCrusaderAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StarCrusaderAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StarCrusaderAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StarCrusaderAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/StarCrusaderAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'StarTrek25thAnnivAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StarTrek25thAnnivAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'StarTrek25thAnnivAGADe' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGADe.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGADe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StarTrek25thAnnivAGADe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGADe"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGADe" "$entrydir" ALL
+ENDIF
+
+; Copy 'StarTrek25thAnnivAGAFr' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGAFr.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGAFr.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StarTrek25thAnnivAGAFr"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StarTrek25thAnnivAGAFr"
+  Copy >NIL: "USERPACKAGEDIR:S/StarTrek25thAnnivAGAFr" "$entrydir" ALL
+ENDIF
+
+; Copy 'StreetRacerCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StreetRacerCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StreetRacerCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StreetRacerCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StreetRacerCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/StreetRacerCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'StripPotAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StripPotAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StripPotAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StripPotAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StripPotAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/StripPotAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'StripPotCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/StripPotCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/StripPotCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/StripPotCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/StripPotCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/StripPotCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'Subwar2050AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/Subwar2050AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/Subwar2050AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Subwar2050AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/Subwar2050AGA"
+  Copy >NIL: "USERPACKAGEDIR:S/Subwar2050AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'Subwar2050CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/Subwar2050CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/Subwar2050CD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Subwar2050CD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/Subwar2050CD32"
+  Copy >NIL: "USERPACKAGEDIR:S/Subwar2050CD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperfrogCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperfrogCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperfrogCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperfrogCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperfrogCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperfrogCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperfrogCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperfrogCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperfrogCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperfrogCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperfrogCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperfrogCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperLoopzAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperLoopzAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperLoopzAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperLoopzAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperLoopzAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperLoopzAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperMethaneBrosCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperMethaneBrosCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperMethaneBrosCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperMethaneBrosCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperMethaneBrosCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperMethaneBrosCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperPuttyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperPuttyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperPuttyCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperPuttyCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperPuttyCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperPuttyCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperSkidmarksCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperSkidmarksCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperSkidmarksCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperSkidmarksCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperSkidmarksCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperSkidmarksCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperStardustAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperStardustAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStardustAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperStardustAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperStardustAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStardustAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperStreetFighter2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperStreetFighter2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStreetFighter2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperStreetFighter2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperStreetFighter2AGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStreetFighter2AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuperStreetFighter2DXAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuperStreetFighter2DXAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStreetFighter2DXAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuperStreetFighter2DXAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuperStreetFighter2DXAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuperStreetFighter2DXAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuprStrtFtr2TrboAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuprStrtFtr2TrboAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuprStrtFtr2TrboAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuprStrtFtr2TrboAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuprStrtFtr2TrboCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuprStrtFtr2TrboCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SuprStrtFtr2TrboCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SuprStrtFtr2TrboCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SuprStrtFtr2TrboCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'SurfNinjasAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SurfNinjasAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SurfNinjasAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SurfNinjasAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SurfNinjasAGA"
+  Copy >NIL: "USERPACKAGEDIR:S/SurfNinjasAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'SyndicateCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SyndicateCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SyndicateCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SyndicateCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SyndicateCD32"
+  Copy >NIL: "USERPACKAGEDIR:S/SyndicateCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'T' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T.info"
+  Copy >NIL: "USERPACKAGEDIR:T.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'T'..."
+
+; Copy 'TellerFr' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TellerFr.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TellerFr.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TellerFr"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TellerFr"
+  Copy >NIL: "USERPACKAGEDIR:T/TellerFr" "$entrydir" ALL
+ENDIF
+
+; Copy 'ThemeParkAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/ThemeParkAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/ThemeParkAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/ThemeParkAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/ThemeParkAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/ThemeParkAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ThomasTankEngPinballAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/ThomasTankEngPinballAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/ThomasTankEngPinballAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/ThomasTankEngPinballAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/ThomasTankEngPinballAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/ThomasTankEngPinballAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'ThomasTankEngPinballCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:T/ThomasTankEngPinballCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:T/ThomasTankEngPinballCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/ThomasTankEngPinballCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/ThomasTankEngPinballCD32"
+  Copy >NIL: "USERPACKAGEDIR:T/ThomasTankEngPinballCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'TinToyAdventureAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TinToyAdventureAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TinToyAdventureAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TinToyAdventureAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TinToyAdventureAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TinToyAdventureAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TopGear2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TopGear2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TopGear2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TopGear2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TopGear2AGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TopGear2AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TopGear2CD32' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TopGear2CD32.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TopGear2CD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TopGear2CD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TopGear2CD32"
+  Copy >NIL: "USERPACKAGEDIR:T/TopGear2CD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'TornadoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TornadoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TornadoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TornadoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TornadoAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TornadoAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TotalCarnageAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TotalCarnageAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TotalCarnageAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TotalCarnageAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TotalCarnageAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TotalCarnageAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TowerOfSoulsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TowerOfSoulsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TowerOfSoulsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TowerOfSoulsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TowerOfSoulsAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TowerOfSoulsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TransarcticaAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TransarcticaAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TransarcticaAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TransarcticaAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TransarcticaAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TransarcticaAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TreasureIslandDizzyCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TreasureIslandDizzyCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TreasureIslandDizzyCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TreasureIslandDizzyCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TreasureIslandDizzyCD32"
+  Copy >NIL: "USERPACKAGEDIR:T/TreasureIslandDizzyCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'TrollsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TrollsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TrollsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TrollsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TrollsAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TrollsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TrollsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TrollsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TrollsCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TrollsCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TrollsCD32"
+  Copy >NIL: "USERPACKAGEDIR:T/TrollsCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'TubeWarriorsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TubeWarriorsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TubeWarriorsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TubeWarriorsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TubeWarriorsAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TubeWarriorsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TubularWorldsAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TubularWorldsAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TubularWorldsAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TubularWorldsAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TubularWorldsAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TubularWorldsAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TZer0DemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TZer0DemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TZer0DemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TZer0DemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TZer0DemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TZer0DemoAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'TZer0DemoNoMovieAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:T/TZer0DemoNoMovieAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:T/TZer0DemoNoMovieAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T/TZer0DemoNoMovieAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T/TZer0DemoNoMovieAGA"
+  Copy >NIL: "USERPACKAGEDIR:T/TZer0DemoNoMovieAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'U' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U.info"
+  Copy >NIL: "USERPACKAGEDIR:U.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'U'..."
+
+; Copy 'UFOEnemyUnknownAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:U/UFOEnemyUnknownAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:U/UFOEnemyUnknownAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U/UFOEnemyUnknownAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U/UFOEnemyUnknownAGA"
+  Copy >NIL: "USERPACKAGEDIR:U/UFOEnemyUnknownAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'UFOEnemyUnknownCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:U/UFOEnemyUnknownCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:U/UFOEnemyUnknownCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U/UFOEnemyUnknownCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U/UFOEnemyUnknownCD32"
+  Copy >NIL: "USERPACKAGEDIR:U/UFOEnemyUnknownCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'UltimateBodyBlowsCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:U/UltimateBodyBlowsCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:U/UltimateBodyBlowsCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U/UltimateBodyBlowsCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U/UltimateBodyBlowsCD32"
+  Copy >NIL: "USERPACKAGEDIR:U/UltimateBodyBlowsCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'UniverseCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:U/UniverseCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:U/UniverseCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U/UniverseCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:U/UniverseCD32"
+  Copy >NIL: "USERPACKAGEDIR:U/UniverseCD32" "$entrydir" ALL
+ENDIF
+
+; Create 'V' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V.info"
+  Copy >NIL: "USERPACKAGEDIR:V.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'V'..."
+
+; Copy 'VerteidigerKrone2CD32De' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VerteidigerKrone2CD32De.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VerteidigerKrone2CD32De.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VerteidigerKrone2CD32De"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VerteidigerKrone2CD32De"
+  Copy >NIL: "USERPACKAGEDIR:V/VerteidigerKrone2CD32De" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirocopAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirocopAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirocopAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirocopAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirocopAGA"
+  Copy >NIL: "USERPACKAGEDIR:V/VirocopAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirtualKarting2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirtualKarting2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2AGA"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirtualKarting2AGACD' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2AGACD.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2AGACD.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirtualKarting2AGACD"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2AGACD"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2AGACD" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirtualKarting2DemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2DemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2DemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirtualKarting2DemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirtualKarting2DemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKarting2DemoAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirtualKartingAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirtualKartingAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKartingAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirtualKartingAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirtualKartingAGA"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKartingAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'VirtualKartingDemoAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:V/VirtualKartingDemoAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKartingDemoAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V/VirtualKartingDemoAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:V/VirtualKartingDemoAGA"
+  Copy >NIL: "USERPACKAGEDIR:V/VirtualKartingDemoAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'W' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W.info"
+  Copy >NIL: "USERPACKAGEDIR:W.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'W'..."
+
+; Copy 'WatchtowerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WatchtowerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WatchtowerAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WatchtowerAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WatchtowerAGA"
+  Copy >NIL: "USERPACKAGEDIR:W/WatchtowerAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'WembleyIntSoccerAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WembleyIntSoccerAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WembleyIntSoccerAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WembleyIntSoccerAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WembleyIntSoccerAGA"
+  Copy >NIL: "USERPACKAGEDIR:W/WembleyIntSoccerAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'WhizzAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WhizzAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WhizzAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WhizzAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WhizzAGA"
+  Copy >NIL: "USERPACKAGEDIR:W/WhizzAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'WingCommanderCD32' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WingCommanderCD32.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WingCommanderCD32.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WingCommanderCD32"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WingCommanderCD32"
+  Copy >NIL: "USERPACKAGEDIR:W/WingCommanderCD32" "$entrydir" ALL
+ENDIF
+
+; Copy 'WormsCD321MB' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WormsCD321MB.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsCD321MB.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WormsCD321MB"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WormsCD321MB"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsCD321MB" "$entrydir" ALL
+ENDIF
+
+; Copy 'WormsCD322MB' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WormsCD322MB.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsCD322MB.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WormsCD322MB"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WormsCD322MB"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsCD322MB" "$entrydir" ALL
+ENDIF
+
+; Copy 'WormsDirectorsCutAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WormsDirectorsCutAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsDirectorsCutAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WormsDirectorsCutAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:W/WormsDirectorsCutAGA"
+  Copy >NIL: "USERPACKAGEDIR:W/WormsDirectorsCutAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'X' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "X"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:X.info"
+  Copy >NIL: "USERPACKAGEDIR:X.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'X'..."
+
+; Copy 'XP8AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:X/XP8AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:X/XP8AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "X/XP8AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:X/XP8AGA"
+  Copy >NIL: "USERPACKAGEDIR:X/XP8AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'XTremeRacing&DataDisksAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:X/XTremeRacing&DataDisksAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:X/XTremeRacing&DataDisksAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "X/XTremeRacing&DataDisksAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:X/XTremeRacing&DataDisksAGA"
+  Copy >NIL: "USERPACKAGEDIR:X/XTremeRacing&DataDisksAGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'XTremeRacingAGA' entry directory
+IF EXISTS "USERPACKAGEDIR:X/XTremeRacingAGA.info"
+  Copy >NIL: "USERPACKAGEDIR:X/XTremeRacingAGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "X/XTremeRacingAGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:X/XTremeRacingAGA"
+  Copy >NIL: "USERPACKAGEDIR:X/XTremeRacingAGA" "$entrydir" ALL
+ENDIF
+
+; Create 'Z' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z.info"
+  Copy >NIL: "USERPACKAGEDIR:Z.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'Z'..."
+
+; Copy 'ZombieApocalypse2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Z/ZombieApocalypse2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Z/ZombieApocalypse2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z/ZombieApocalypse2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z/ZombieApocalypse2AGA"
+  Copy >NIL: "USERPACKAGEDIR:Z/ZombieApocalypse2AGA" "$entrydir" ALL
+ENDIF
+
+; Copy 'Zool2AGA' entry directory
+IF EXISTS "USERPACKAGEDIR:Z/Zool2AGA.info"
+  Copy >NIL: "USERPACKAGEDIR:Z/Zool2AGA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Z/Zool2AGA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:Z/Zool2AGA"
+  Copy >NIL: "USERPACKAGEDIR:Z/Zool2AGA" "$entrydir" ALL
+ENDIF

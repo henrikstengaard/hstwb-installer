@@ -1,0 +1,25 @@
+; Demos WHDLoad UnpackOnAmiga Install Script
+; --------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-12-18
+;
+; An AmigaDOS script to install Demos WHDLoad UnpackOnAmiga sets from EAB WHDLoad Packs.
+
+
+set installset `RequestChoice "Demos WHDLoad UnpackOnAmiga Set" "Select Demos WHDLoad UnpackOnAmiga set to install." "All|AGA|OCS|Skip"`
+
+IF $installset EQ 1 VAL
+  echo "Selected All"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 2 VAL
+  echo "Selected AGA"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 3 VAL
+  echo "Selected OCS"
+  execute USERPACKAGEDIR:Install/OCS
+ENDIF

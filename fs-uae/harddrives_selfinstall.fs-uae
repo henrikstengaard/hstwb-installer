@@ -1,0 +1,11 @@
+hard_drive_[$WorkbenchHarddriveIndex] = [$WorkbenchDir]
+hard_drive_[$WorkbenchHarddriveIndex]_label = WORKBENCHDIR
+hard_drive_[$WorkbenchHarddriveIndex]_read_only = 1
+hard_drive_[$KickstartHarddriveIndex] = [$KickstartDir]
+hard_drive_[$KickstartHarddriveIndex]_label = KICKSTARTDIR
+hard_drive_[$KickstartHarddriveIndex]_read_only = 1
+hard_drive_[$Os39HarddriveIndex] = [$Os39Dir]
+hard_drive_[$Os39HarddriveIndex]_label = OS39DIR
+hard_drive_[$UserPackagesHarddriveIndex] = [$UserPackagesDir]
+hard_drive_[$UserPackagesHarddriveIndex]_label = USERPACKAGESDIR
+hard_drive_[$UserPackagesHarddriveIndex]_read_only = 1

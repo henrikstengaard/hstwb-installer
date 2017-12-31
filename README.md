@@ -304,32 +304,32 @@ Before HstWB Installer runs it prepares the files it needs in a temp directory.
 For any installer mode HstWB Installer uses WinUAE configuration file "hstwb-installer.uae" in "winuae" directory.
 It contains following placeholders used to configure Kickstart rom, DF0: floppy and harddrives:
 
-- [$KICKSTARTROMFILE]: Replaced with path to A1200 Kickstart 3.1 rom file identified in configured kickstart path.
-- [$WORKBENCHADFFILE]: Replaced with path to Workbench 3.1 Workbench disk file identified in configured workbench path. This is only used for "Install" and "Build Self Install" installer modes.
-- [$HARDDRIVES]: Replaced with harddrives.uae from image directory. For "Install" and "Build Self Install" installer modes directories INSTALL: and PACKAGES: are added containing install scripts, tools and package files to install.  
+- [$KickstartRomFile]: Replaced with path to A1200 Kickstart 3.1 rom file identified in configured kickstart path.
+- [$WorkbenchAdfFile]: Replaced with path to Workbench 3.1 Workbench disk file identified in configured workbench path. This is only used for "Install" and "Build Self Install" installer modes.
+- [$Harddrives]: Replaced with harddrives.uae from image directory. For "Install" and "Build Self Install" installer modes directories INSTALLDIR: and PACKAGESDIR: are added containing install scripts, tools and package files to install.  
 
-[$KICKSTARTROMFILE] placeholder example before and after being replaced:
+[$KickstartRomFile] placeholder example before and after being replaced:
 ###
-    kickstart_rom_file=[$KICKSTARTROMFILE]
+    kickstart_rom_file=[$KickstartRomFile]
     ...
     kickstart_rom_file=c:\Users\Public\Documents\Amiga Files\Shared\rom\amiga-os-310-a1200.rom
 
-[$WORKBENCHADFFILE] placeholder example before and after being replaced:
+[$WorkbenchAdfFile] placeholder example before and after being replaced:
 ###
-    floppy0=[$WORKBENCHADFFILE]
+    floppy0=[$WorkbenchAdfFile]
     ...
     floppy0=c:\Users\Public\Documents\Amiga Files\Shared\adf\amiga-os-310-workbench.adf
 
-[$HARDDRIVES] placeholder example before and after being replaced:
+[$Harddrives] placeholder example before and after being replaced:
 ###
-    [$HARDDRIVES]
+    [$Harddrives]
     ...
     hardfile2=rw,DH0:C:\Temp\4GB\4gb.hdf,0,0,0,512,-128,,uae
     uaehf0=hdf,rw,DH0:"C:\\Temp\\4GB\\4gb.hdf",0,0,0,512,-128,,uae
-    filesystem2=rw,INSTALL:Install:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
-    uaehf1=dir,rw,INSTALL:Install:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
-    filesystem2=rw,PACKAGES:Packages:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
-    uaehf2=dir,rw,PACKAGES:Packages:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
+    filesystem2=rw,INSTALLDIR:INSTALLDIR:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
+    uaehf1=dir,rw,INSTALLDIR:INSTALLDIR:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\install,6
+    filesystem2=rw,PACKAGESDIR:PACKAGESDIR:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
+    uaehf2=dir,rw,PACKAGESDIR:PACKAGESDIR:C:\Users\hst\AppData\Local\Temp\HstWB-Installer_vbb21ubf.ayx\packages,-128
 
 The temp directory will contain WinUAE configuration, startup sequence scripts, tools and extracted packages to install depending on the configuration. 
 When HstWB Installer is done the temp directory is deleted.
@@ -345,11 +345,11 @@ Install mode can install Workbench, Kickstart roms and configured packages to an
 
 Running HstWB Installer in install mode does the following in WinUAE:
 
-- Boots from temp install directory added as INSTALL: harddrive.
+- Boots from temp install directory added as INSTALLDIR: harddrive.
 - Loads commands resident from DF0: required for installation process.
-- Installs Workbench 3.1 to SYSTEMDIR: from adf files in INSTALL:, if configured to install Workbench.
-- Installs Kickstart roms to SYSTEMDIR:Devs/Kickstarts from rom files in INSTALL:, if configured to install Kickstart.
-- Installs packages from temp packages directory added as PACKAGES: harddrive. For each package, required assigns is set before installing a package and removed when package is installed.
+- Installs Workbench 3.1 to SYSTEMDIR: from adf files in INSTALLDIR:, if configured to install Workbench.
+- Installs Kickstart roms to SYSTEMDIR:Devs/Kickstarts from rom files in INSTALLDIR:, if configured to install Kickstart.
+- Installs packages from temp packages directory added as PACKAGESDIR: harddrive. For each package, required assigns is set before installing a package and removed when package is installed.
 
 When HstWB Installer is done, the image is ready to run in an emulator or on a real Amiga.
 
@@ -360,11 +360,11 @@ A self install image is independent from HstWB Installer and can be run in an em
 
 Running HstWB Installer in build self install mode does the following:
 
-- Boots from temp install directory added as INSTALL: harddrive.
+- Boots from temp install directory added as INSTALLDIR: harddrive.
 - Loads commands resident from DF0: required for installation process.
 - Copy self install scripts and tools to SYSTEMDIR:.
-- Copy system files to HSTWBINSTALLER: from temp install directory added as INSTALL: harddrive.
-- Copy package files to HSTWBINSTALLER:Packages from temp packages directory added as PACKAGES: harddrive.
+- Copy system files to HSTWBINSTALLER: from temp install directory added as INSTALLDIR: harddrive.
+- Copy package files to HSTWBINSTALLER:Packages from temp packages directory added as PACKAGESDIR: harddrive.
 
 When HstWB Installer is done, the image is ready for self install in an emulator or on a real Amiga.
 

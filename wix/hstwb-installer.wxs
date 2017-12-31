@@ -1,15 +1,31 @@
 <?xml version="1.0"?>
 <Wix 
-  xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  xmlns="http://schemas.microsoft.com/wix/2006/wi"
+  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   <Product Id="*" UpgradeCode="b38231ed-9ea6-41fd-8cc3-2893dea5dfce" Name="HstWB Installer" Version="$(var.Version)" Manufacturer="Henrik Noerfjand Stengaard" Language="1033">
     <Package InstallerVersion="300" Compressed="yes" Comments="Windows Installer Package"/>
     <Media Id="1" Cabinet="hstwbinstaller.cab" EmbedCab="yes"/>
-    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <Icon Id="hstwb_installer.ico" SourceFile="hstwb_installer.ico"/>
     <Upgrade Id="b38231ed-9ea6-41fd-8cc3-2893dea5dfce">
       <UpgradeVersion Minimum="1.0.0" IncludeMinimum="yes" OnlyDetect="no" Maximum="$(var.Version)" IncludeMaximum="no" Property="PREVIOUSFOUND" />
     </Upgrade>
-    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
+    <Property Id="POWERSHELLEXE">
+      <RegistrySearch Id="POWERSHELLEXE"
+                      Type="raw"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell"
+                      Name="Path" />
+    </Property>
+    <Condition Message="This application requires Windows PowerShell.">
+      <![CDATA[Installed OR POWERSHELLEXE]]>
+    </Condition>
     <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="FontsFolder"> 
+        <Component Id="InstallFonts" Guid="fc7793a6-1f3b-4306-bc4c-b8b3f1d03932"> 
+          <File Id="TopazPlus_a1200_v1.0.ttf" Source="fonts\TopazPlus_a1200_v1.0.ttf" TrueType="yes" /> 
+        </Component> 
+      </Directory>    
       <Directory Id="LocalAppDataFolder">
         <Directory Id="ApplicationDataDirectory" Name="HstWB Installer"/></Directory>
       <Directory Id="ProgramMenuFolder">
@@ -20,31 +36,36 @@
     </Directory>
     <DirectoryRef Id="INSTALLDIR">
       <Directory Id="AmigaComponentDir"/>
+      <Directory Id="FontsComponentDir"/>
+      <Directory Id="FsUaeComponentDir"/>
       <Directory Id="ImagesComponentDir"/>
       <Directory Id="KickstartComponentDir"/>
       <Directory Id="LicensesComponentDir"/>
       <Directory Id="ModulesComponentDir"/>
       <Directory Id="PackagesComponentDir"/>
       <Directory Id="ReadmeComponentDir"/>
+      <Directory Id="ScriptsComponentDir"/>
       <Directory Id="SupportComponentDir"/>
       <Directory Id="WinuaeComponentDir"/>
       <Directory Id="WorkbenchComponentDir"/>
       <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
-        <File Id="hstwbinstallerrun.cmd" Source="..\hstwb-installer-run.cmd"/>
-        <File Id="hstwbinstallerrun.ps1" Source="..\hstwb-installer-run.ps1"/>
-        <File Id="hstwbinstallersetup.cmd" Source="..\hstwb-installer-setup.cmd"/>
-        <File Id="hstwbinstallersetup.ps1" Source="..\hstwb-installer-setup.ps1"/>
-        <File Id="license.txt" Source="..\LICENSE.txt"/>
+        <File Id="install.ps1" Source="install.ps1"/>
+        <File Id="launcher.cmd" Source="launcher.cmd"/>
+        <File Id="launcher.lnk" Source="launcher.lnk"/>
+        <File Id="launcher.ps1" Source="launcher.ps1"/>
+        <File Id="run.cmd" Source="run.cmd"/>
+        <File Id="run.lnk" Source="run.lnk"/>
+        <File Id="run.ps1" Source="run.ps1"/>
+        <File Id="setup.cmd" Source="setup.cmd"/>
+        <File Id="setup.lnk" Source="setup.lnk"/>
+        <File Id="setup.ps1" Source="setup.ps1"/>
+        <File Id="license.txt" Source="LICENSE.txt"/>
+        <File Id="hstwb_installer.ico" Source="hstwb_installer.ico"/>
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="ApplicationStartMenuDirectory">
       <Component Id="ApplicationShortcuts" Guid="2d653bc1-71ac-42af-ae4d-69795f4dd428">
-        <Shortcut Id="ApplicationReadmeShortcut" Name="HstWB Installer Readme" Target="[SystemFolder]cmd.exe" Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Readme&quot;&quot;" WorkingDirectory="INSTALLDIR" Icon="icon.ico" />
-        <Shortcut Id="ApplicationSettingsShortcut" Name="HstWB Installer Settings" Target="[ApplicationDataDirectory]hstwb-installer-settings.ini" WorkingDirectory="ApplicationDataDirectory" Icon="icon.ico" />
-        <Shortcut Id="ApplicationAssignsShortcut" Name="HstWB Installer Assigns" Target="[ApplicationDataDirectory]hstwb-installer-assigns.ini" WorkingDirectory="ApplicationDataDirectory" Icon="icon.ico" />
-        <Shortcut Id="ApplicationRunShortcut" Name="HstWB Installer Run" Target="[SystemFolder]cmd.exe" WorkingDirectory="INSTALLDIR" Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-run.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;" Icon="icon.ico" />
-        <Shortcut Id="ApplicationSetupShortcut" Name="HstWB Installer Setup" Target="[SystemFolder]cmd.exe" WorkingDirectory="INSTALLDIR" Arguments="/c &quot;start /max powershell.exe -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir &quot;%LOCALAPPDATA%\HstWB Installer&quot;&quot;" Icon="icon.ico" />
-        <Shortcut Id="ApplicationSupportShortcut" Name="HstWB Installer Support" Target="[SystemFolder]cmd.exe" Arguments="/c &quot;start explorer &quot;[INSTALLDIR]Support&quot;&quot;" WorkingDirectory="INSTALLDIR" Icon="icon.ico" />
+        <Shortcut Id="ApplicationLauncherShortcut" Name="HstWB Installer" WorkingDirectory="INSTALLDIR" Target="[INSTALLDIR]launcher.cmd" Icon="hstwb_installer.ico" Show="minimized" />
         <Shortcut Id="ApplicationUninstallShortcut" Name="Uninstall HstWB Installer" Directory="ApplicationStartMenuDirectory" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]"/>
         <RemoveFolder Id="RemoveApplicationDataDirectory" Directory="ApplicationDataDirectory" On="uninstall"/>
         <RemoveFolder Id="RemoveApplicationStartMenuDirectory" Directory="ApplicationStartMenuDirectory" On="uninstall"/>
@@ -52,13 +73,17 @@
       </Component>
     </DirectoryRef>
     <Feature Id="MainApplication" Title="Main Application" Level="1" Display="expand" ConfigurableDirectory='INSTALLDIR' TypicalDefault="install">
+      <ComponentRef Id="InstallFonts"/>
       <ComponentRef Id="ApplicationFiles"/>
       <ComponentRef Id="ApplicationShortcuts"/>
       <ComponentGroupRef Id="AmigaComponentGroup"/>
+      <ComponentGroupRef Id="FontsComponentGroup"/>
+      <ComponentGroupRef Id="FsUaeComponentGroup"/>
       <ComponentGroupRef Id="KickstartComponentGroup"/>
       <ComponentGroupRef Id="LicensesComponentGroup"/>
       <ComponentGroupRef Id="ModulesComponentGroup"/>
       <ComponentGroupRef Id="ReadmeComponentGroup"/>
+      <ComponentGroupRef Id="ScriptsComponentGroup"/>
       <ComponentGroupRef Id="SupportComponentGroup"/>
       <ComponentGroupRef Id="WinuaeComponentGroup"/>
       <ComponentGroupRef Id="WorkbenchComponentGroup"/>
@@ -74,8 +99,25 @@
     <!-- 493 X 58 -->
     <!--WixVariable Id="WixUIDialogBmp" Value="bmp" /-->
     <!-- 493 X 312 -->
-    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="hstwb_installer.ico" />
     <Property Id="WixAppFolder" Value="WixPerUserFolder" />
     <UIRef Id="WixUI_Mondo" />
+
+    <CustomAction Id="SetPSCmd" 
+      Property="PSCmd" 
+      Value="&quot;[POWERSHELLEXE]&quot; -NoProfile -NonInteractive -InputFormat None -ExecutionPolicy Bypass -Command &quot;cd '[INSTALLDIR]'; &amp; '.\install.ps1'; exit $$($Error.Count)&quot;"
+      Execute="immediate" 
+      Return="check"/> 
+    <CustomAction Id="PSCmd" 
+      BinaryKey="WixCA" 
+      DllEntry="WixQuietExec" 
+      Execute="deferred" 
+      Return="check"
+      Impersonate="no"/> 
+
+    <InstallExecuteSequence>
+      <Custom Action="SetPSCmd" Before="InstallFinalize">NOT REMOVE</Custom>
+      <Custom Action="PSCmd" After="SetPSCmd">NOT REMOVE</Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>

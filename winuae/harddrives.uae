@@ -1,4 +1,0 @@
-filesystem2=rw,INSTALL:Install:[$InstallDir],6
-uaehf[$InstallUaehfIndex]=dir,rw,INSTALL:Install:[$InstallDir],6
-filesystem2=rw,PACKAGES:Packages:[$PackagesDir],-128
-uaehf[$PackagesUaehfIndex]=dir,rw,PACKAGES:Packages:[$PackagesDir],-128

@@ -1,0 +1,9 @@
+; Start Install Boing Bags Script
+; -------------------------------
+;
+; Date: 2017-07-07
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to start a new shell executing install boing bags to prevent wait warning, when initiated from wbstartup.
+
+NEWSHELL "CON://640/200/Install Boing Bags//" FROM S:Install-BoingBags

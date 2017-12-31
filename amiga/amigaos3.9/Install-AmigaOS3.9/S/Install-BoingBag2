@@ -1,0 +1,69 @@
+; Install Boing Bag 2
+; -------------------
+;
+; Date: 2017-10-09
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to automate installation of Boing Bag 2.
+
+
+; Install Boing Bag 2
+; -------------------
+
+echo ""
+echo "*e[1mInstalling Boing Bag 2*e[0m"
+
+
+; Extract boing bag 2
+echo "Extracting..."
+INSTALLDIR:C/lha -m1 x "OS39DIR:BoingBag39-2.lha" SYS:T/BoingBags/ >NIL:
+echo "Installing..."
+
+
+; Run boing bag 2 updater
+SYS:T/BoingBags/BoingBag3.9-2/C/Updater SYS:T/BoingBags/BoingBag3.9-2/AmigaOS-Update "SYS:"
+
+
+; Run xad updater, if xadmaster.library version is less than 10
+Version >NIL: "SYS:Libs/xadmaster.library" 10 FILE
+IF WARN
+  SYS:T/BoingBags/BoingBag3.9-2/C/Updater SYS:T/BoingBags/BoingBag3.9-2/XAD-Update "SYS:"
+ENDIF
+
+
+; Install Boing Bag 2 AmigaOS ROM Update, if it exists
+IF EXISTS "SYS:Devs/AmigaOS ROM Update.BB39-2"
+  SET bakname "AmigaOS ROM Update.old"
+
+  IF EXISTS "SYS:Devs/$bakname"
+    SET bakname "AmigaOS ROM Update.old2"
+  ENDIF
+
+  IF EXISTS "SYS:Devs/$bakname"
+    SET bakname "AmigaOS ROM Update.old3"
+  ENDIF
+
+  IF EXISTS "SYS:Devs/$bakname"
+    SET bakname "AmigaOS ROM Update.old4"
+  ENDIF
+
+  IF EXISTS "SYS:Devs/AmigaOS ROM Update"
+    Copy >NIL: "SYS:Devs/AmigaOS ROM Update" "SYS:Devs/$bakname"
+  ENDIF
+
+  IF EXISTS "SYS:Devs/AmigaOS ROM Update.BB39-2"
+    Copy >NIL: "SYS:Devs/AmigaOS ROM Update.BB39-2" "SYS:Devs/AmigaOS ROM Update"
+  ENDIF
+ENDIF 
+
+
+; Fix installer
+Copy >NIL: "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:C"
+Copy >NIL: "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:Utilities"
+
+echo "Done"
+
+
+; End
+; ---
+LAB end

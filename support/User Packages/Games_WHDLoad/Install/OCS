@@ -1,0 +1,27 @@
+; EAB WHDLoad Pack Install Script
+; -------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-12-18
+
+; An AmigaDOS script to install WHDLoads from EAB WHDLoad Packs.
+
+execute USERPACKAGEDIR:Install/OCS_1
+execute USERPACKAGEDIR:Install/OCS_2
+execute USERPACKAGEDIR:Install/OCS_3
+execute USERPACKAGEDIR:Install/OCS_4
+execute USERPACKAGEDIR:Install/OCS_5
+execute USERPACKAGEDIR:Install/OCS_6
+execute USERPACKAGEDIR:Install/OCS_7
+execute USERPACKAGEDIR:Install/OCS_8
+execute USERPACKAGEDIR:Install/OCS_9
+execute USERPACKAGEDIR:Install/OCS_10
+execute USERPACKAGEDIR:Install/OCS_11
+execute USERPACKAGEDIR:Install/OCS_12
+execute USERPACKAGEDIR:Install/OCS_13
+execute USERPACKAGEDIR:Install/OCS_14
+execute USERPACKAGEDIR:Install/OCS_15
+execute USERPACKAGEDIR:Install/OCS_16
+execute USERPACKAGEDIR:Install/OCS_17
+execute USERPACKAGEDIR:Install/OCS_18
+execute USERPACKAGEDIR:Install/OCS_19

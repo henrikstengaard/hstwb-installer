@@ -1,0 +1,99 @@
+.KEY inifile/a,sectionname/a,parametername/a,parametervalue/a
+.BRA {
+.KET }
+
+; Ini File Set Script
+; -------------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-09-21
+;
+; This script sets or adds a parameter to a section within an ini file.
+
+; Add, if ini file doesn't exist
+IF NOT EXISTS "{inifile}"
+  SKIP add
+ENDIF
+
+; Add, if section doesn't exist
+search "{inifile}" "[{sectionname}]" >NIL:
+IF WARN  
+  SKIP add
+ENDIF
+
+; Copy ini file to temp
+Copy >NIL: "{inifile}" T:_inifile
+
+; Set ini file section to false
+set inifilesection 0
+
+; Get next line from ini file
+LAB nextline
+set inifileline ""
+set inifileline "`FirstLine T:_inifile DELETE`"
+
+; Goto end, if line is empty
+IF "$inifileline" EQ ""
+  SKIP updateinifile
+ENDIF
+
+echo "$inifileline" >T:_inifileline
+
+IF $inifilesection eq 1 val
+  ; Set ini file section false, if line contains section to skip line in new ini file
+  search T:_inifileline "[" >NIL:
+  IF NOT WARN  
+    set inifilesection 0
+  ENDIF
+
+  ; Set ini file parameter true, if line contains parameter to skip line in new ini file
+  search T:_inifileline "{parametername}=" >NIL:
+  IF NOT WARN
+    set inifileparameter 1
+  ENDIF
+ENDIF
+
+; Copy line to new ini file, if not line contains parameter
+IF NOT $inifileparameter eq 1 VAL
+  type T:_inifileline >>T:_newinifile
+ELSE
+  set inifileparameter 0
+ENDIF
+
+; Set ini file section true, if line contains section name
+search T:_inifileline "[{sectionname}]" >NIL:
+IF NOT WARN
+  set inifilesection 1
+  echo "{parametername}={parametervalue}" >>T:_newinifile
+ENDIF
+
+SKIP BACK nextline
+
+
+; Update ini file
+LAB updateinifile
+
+; Update ini file with new ini file
+copy >NIL: T:_newinifile "{inifile}"
+
+SKIP end
+
+
+; Add section and parameter
+LAB add
+echo "[{sectionname}]" >>{inifile}
+echo "{parametername}={parametervalue}" >>{inifile}
+
+
+; End
+LAB end
+
+; Delete temp files, if they exist
+IF EXISTS T:_inifilelinenumber
+  delete >NIL: T:_inifilelinenumber
+ENDIF
+IF EXISTS T:_inifileline
+  delete >NIL: T:_inifileline
+ENDIF
+IF EXISTS T:_newinifile
+  delete >NIL: T:_newinifile
+ENDIF

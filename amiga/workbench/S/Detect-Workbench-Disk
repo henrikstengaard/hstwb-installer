@@ -1,0 +1,87 @@
+; Detect Workbench Disk
+; ---------------------
+;
+; Date: 2017-09-03
+; Author: Henrik Noerfjand Stengaard
+
+
+; Insert workbench disk
+; ---------------------
+LAB insertworkbenchdisk
+
+echo ""
+echo "Please insert Workbench 3.1 Workbench disk in any"
+echo "floppy device."
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+
+; Using fail at 255 for DiskInDrive to fail silently
+failat 255
+
+; Check if disk is present in DF0:
+DiskInDrive >NIL: DF0:
+IF NOT WARN
+  set floppydevice "DF0"
+  SKIP checkworkbenchdisk
+ENDIF
+
+; Check if disk is present in DF1:
+DiskInDrive >NIL: DF1:
+IF NOT WARN
+  set floppydevice "DF1"
+  SKIP checkworkbenchdisk
+ENDIF
+
+; Check if disk is present in DF2:
+DiskInDrive >NIL: DF2:
+IF NOT WARN
+  set floppydevice "DF2"
+  SKIP checkworkbenchdisk
+ENDIF
+
+; Check if disk is present in DF3:, if not go back to insert workbench disk
+DiskInDrive >NIL: DF3:
+IF NOT WARN
+  set floppydevice "DF3"
+ELSE
+  echo "No disk is inserted in any floppy device!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+
+
+; Check Workbench 3.1 Workbench disk is present in DF0, if not go back to insert workbench disk
+LAB checkworkbenchdisk
+failat 21
+
+IF NOT EXISTS $floppydevice:C/Which
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:C/Assign
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:Libs/datatypes.library
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/CLI
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/Shell.info
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF 
+
+
+; Detected floppy device message
+echo "Detected Workbench disk in floppy device $floppydevice:"
+echo ""
+ask "Press ENTER to continue"

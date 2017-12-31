@@ -1,0 +1,25 @@
+; Games WHDLoad AGA Install Script
+; --------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-12-18
+;
+; An AmigaDOS script to install Games WHDLoad AGA sets from EAB WHDLoad Packs.
+
+
+set installset `RequestChoice "Games WHDLoad AGA Set" "Select Games WHDLoad AGA set to install." "All|AGA|AGA 4GB|Skip"`
+
+IF $installset EQ 1 VAL
+  echo "Selected All"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 2 VAL
+  echo "Selected AGA"
+  execute USERPACKAGEDIR:Install/AGA
+ENDIF
+
+IF $installset EQ 3 VAL
+  echo "Selected AGA 4GB"
+  execute USERPACKAGEDIR:Install/AGA_4GB
+ENDIF

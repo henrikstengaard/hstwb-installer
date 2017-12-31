@@ -1,1 +1,0 @@
-powershell -ExecutionPolicy Bypass -File hstwb-installer-setup.ps1 -settingsDir "%LOCALAPPDATA%\HstWB Installer"

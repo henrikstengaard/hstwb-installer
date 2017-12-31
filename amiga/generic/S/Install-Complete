@@ -1,0 +1,115 @@
+; Install Complete
+; ----------------
+;
+; Date: 2017-10-27
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to complete Workbench and Kickstart roms installation by rebooting system or quiting UAE.
+
+
+; Create install complete prefs
+echo "" >INSTALLDIR:Prefs/Install-Complete
+
+
+; Workbench and Kickstart roms installation complete
+cls
+echo "*e[32m" NOLINE
+echo "Workbench and Kickstart roms installation complete"
+echo "*e[0m*e[1m" NOLINE
+echo "--------------------------------------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+
+; Set uae to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
+
+
+; Status message
+IF EXISTS INSTALLDIR:Prefs/Install-AmigaOS3.9
+  IF $uae EQ 1 VAL
+    echo "HstWB Installer has completed Workbench and Kickstart roms"
+    echo "installation and will quit and restart UAE to start"
+    echo "installation of Amiga OS 3.9 using Emergency Boot."
+  ELSE
+    echo "HstWB Installer has completed Workbench and Kickstart roms"
+    echo "installation and will reboot system to start"
+    echo "installation of Amiga OS 3.9 using Emergency Boot."
+  ENDIF
+ELSE
+  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    ; Copy assign hstwb installer for installing boing bags
+    Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
+
+    ; Replace workbench startup-sequence with packages startup-sequence
+    Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+    Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+
+    IF $uae EQ 1 VAL
+      echo "HstWB Installer has completed Workbench and Kickstart roms"
+      echo "installation and will quit and restart UAE to"
+      echo "start package installation."
+    ELSE
+      echo "HstWB Installer has completed Workbench and Kickstart roms"
+      echo "installation and will reboot system to"
+      echo "start package installation."
+    ENDIF
+  ELSE
+    echo "HstWB Installer has completed Workbench and Kickstart roms"
+    echo "installation and system is now ready for use."
+  ENDIF
+ENDIF
+echo ""
+
+
+; Copy hstwb installer log til install dir, if it exists
+IF EXISTS SYS:HstWB-Installer.log
+  Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
+ENDIF
+
+
+; Replace startup sequence and run install cleanup, if install boing bags, install packages and install user packages prefs doesn't exist
+IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
+  IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+    IF NOT EXISTS INSTALLDIR:Prefs/Install-User-Packages
+      ; Replace startup-sequence with workbench startup-sequence, if it exists
+      IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
+        Copy >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench SYSTEMDIR:S/Startup-Sequence
+        Delete >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench
+      ENDIF
+
+      ; Run install cleanup      
+      execute INSTALLDIR:S/Install-Cleanup
+    ENDIF
+  ENDIF
+ENDIF
+
+
+echo "Please let the system wait 10 seconds before continuing"
+echo "to allow file system to write changes to disk." 
+echo ""
+
+; Quit UAE or reboot message
+IF $uae EQ 1 VAL
+  echo "Continue will quit UAE in 10 seconds."
+ELSE
+  echo "Continue will reboot system in 10 seconds."
+ENDIF
+
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+; Quit UAE, if UAE is used. Otherwise reboot
+IF $uae EQ 1 VAL
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  UAEquit >NIL:
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  Reboot >NIL:
+ENDIF

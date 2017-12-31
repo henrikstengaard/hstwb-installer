@@ -1,3 +1,5 @@
+; WinUAE configuration build by HstWB Installer
+
 config_description=
 config_hardware=true
 config_host=true
@@ -9,6 +11,8 @@ win32.rom_path=./
 win32.floppy_path=./
 win32.hardfile_path=./
 ; host-specific
+win32.map_cd_drives=true
+win32.map_removable_drives=false
 win32.midiin_device=-1
 win32.soundcard=0
 win32.soundcardname=Primary Sound Driver
@@ -17,7 +21,7 @@ win32.kbledmode=0
 ; common
 use_gui=no
 use_debugger=false
-kickstart_rom_file=[$KICKSTARTROMFILE]
+kickstart_rom_file=[$KickstartRomFile]
 kickstart_rom_file_id=
 kickstart_ext_rom_file=
 flash_file=
@@ -25,12 +29,13 @@ cart_file=
 rtc_file=
 kickshifter=false
 floppy_volume=33
-floppy0=[$WORKBENCHADFFILE]
+floppy0=[$WorkbenchAdfFile]
 floppy1=
 floppy2=
 floppy2type=0
 floppy3=
 floppy3type=0
+cdimage0=[$IsoFile]
 nr_floppies=4
 floppy_speed=800
 cd_speed=100
@@ -117,7 +122,7 @@ immediate_blits=false
 ntsc=false
 genlock=false
 chipset=aga
-chipset_refreshrate=50.080128
+chipset_refreshrate=49.920410
 collision_level=full
 chipset_compatible=A1200
 rtc=MSM6242B
@@ -131,7 +136,7 @@ mbresmem_size=0
 z3mem_size=0
 z3mem_start=0x40000000
 bogomem_size=0
-gfxcard_size=0
+gfxcard_size=32
 gfxcard_type=ZorroIII
 gfxcard_hardware_vblank=false
 gfxcard_hardware_sprite=true
@@ -145,7 +150,7 @@ cpu_compatible=true
 cpu_24bit_addressing=false
 cpu_cycle_exact=false
 cpu_memory_cycle_exact=false
-blitter_cycle_exact=true
+blitter_cycle_exact=false
 cycle_exact=false
 fpu_strict=false
 rtg_nocustom=true
@@ -155,7 +160,7 @@ toccata=false
 es1370_pci=false
 fm801_pci=false
 kbd_lang=us
-[$HARDDRIVES]
+[$Harddrives]
 input.config=0
 input.joymouse_speed_analog=20
 input.joymouse_speed_digital=10

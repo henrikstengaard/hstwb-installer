@@ -1,0 +1,395 @@
+; Prepare Self Install
+; --------------------
+;
+; Date: 2017-11-29
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
+
+
+; Clear screen
+cls 
+
+
+; Delete install workbench prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench"
+ENDIF
+
+; Delete install amiga os 3.9 prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-AmigaOS3.9"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-AmigaOS3.9"
+ENDIF
+
+; Delete install kickstart prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-Kickstart"
+ENDIF
+
+; Delete install boing bags prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-BoingBags"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-BoingBags"
+ENDIF
+
+; Delete install user packages prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Install-User-Packages"
+  Delete >NIL: "INSTALLDIR:Prefs/Install-User-Packages"
+ENDIF
+
+; Delete user packages prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/User-Packages"
+  Delete >NIL: "INSTALLDIR:Prefs/User-Packages"
+ENDIF
+
+; Delete install user packages, if it exists
+IF EXISTS "INSTALLDIR:S/Install-User-Packages"
+  Delete >NIL: "INSTALLDIR:S/Install-User-Packages"
+ENDIF
+
+
+echo "*e[32m" NOLINE
+echo "Device Names Overview"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Using UAE emulator HstWB-Installer can detect and use"
+echo "following device names for installation of Amiga OS 3.9,"
+echo "Workbench 3.1, Kickstart roms and user packages:"
+echo "- CD0: CD drive with Amiga OS 3.9 CD-Rom."
+echo "- OS39DIR: Directory with Amiga 3.9 iso and boing bag files."
+echo "  Note: Directory must be read/write, if installing Amiga"
+echo "  OS 3.9 from iso (required by filedisk.device)."
+echo "- WORKBENCHDIR: Directory with Workbench 3.1 adf files."
+echo "- KICKSTARTDIR: Directory with Kickstart rom files."
+echo "- USERPACKAGESDIR: Directory with user packages."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Clear screen
+cls 
+echo "*e[32m" NOLINE
+echo "Device Names Status"
+echo "*e[0m*e[1m" NOLINE
+echo "-------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "HstWB-Installer has detected device names with"
+echo "following status:"
+
+
+; Set installso39 to 1
+set installos39 "1"
+
+
+; Set fail at 255 for DiskInDrive to fail silently
+failat 255
+
+
+; Set installos39 to 0, if device CD0: doesn't contain a cd-rom
+DiskInDrive >NIL: CD0:
+IF WARN
+  set installos39 "0"
+ENDIF
+
+
+; Set fail at 21
+failat 21
+
+
+; Check if CD0: and AmigaOS3.9: device names exists and set installos39
+IF $installos39 EQ 1 VAL
+  Assign >NIL: EXISTS AmigaOS3.9:
+  IF WARN
+    set installos39 "0"
+  ENDIF
+ENDIF
+
+
+; Print cd drive status depending on installos39
+IF $installos39 EQ 1 VAL
+  echo "- CD0: Present! Install Amiga OS 3.9 from CD drive."
+ELSE
+  echo "- CD0: Not present! Skip Amiga OS 3.9 installation"
+  echo "  from CD drive."
+ENDIF
+
+
+; Set os39dir to 1, if device name OS39DIR: exists
+set os39dir "0"
+Assign >NIL: EXISTS OS39DIR:
+IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set os39dir to 1, if device OS39DIR: is mapped to a directory
+  DiskInDrive >NIL: OS39DIR:
+  IF NOT WARN
+    set os39dir "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Check for amiga os 3.9 iso and boing bags, if OS39DIR: device name exists
+set amigaos39isofile ""
+set installboingbags "0"
+IF $os39dir EQ 1 VAL
+  ; Find and sort boing bag files
+  fsearch "OS39DIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
+  frsort <T:_boingbagfiles1 >T:_boingbagfiles
+
+  ; Set install boing bags
+  set installboingbags `wc -l <T:_boingbagfiles` 
+
+  ; Find amiga os 3.9 iso, if not installing amiga os 3.9 from cd-drive
+  IF $installos39 EQ 0 VAL
+    ; Find amiga os 3.9 iso files
+    echo "" NOLINE >T:_amigaos39isofiles
+    fsearch "OS39DIR:" PAT amigaos39.iso >>T:_amigaos39isofiles
+    fsearch "OS39DIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
+
+    ; Get first amiga os 3.9 iso file
+    sed "1q;d" T:_amigaos39isofiles >T:_amigaos39isofile
+    set amigaos39isofile "`type T:_amigaos39isofile`"
+    IF NOT "$amigaos39isofile" EQ ""
+      set installos39 "1"
+    ENDIF
+  ENDIF
+
+  ; Print os39dir installation status
+  IF $installos39 EQ 1 VAL
+    IF NOT $installboingbags EQ 0 VAL
+      echo "- OS39DIR: Present! Install Amiga OS 3.9 from iso and"
+      echo "  apply Boing Bag updates."
+    ELSE
+      echo "- OS39DIR: Present! Install Amiga OS 3.9 from iso."
+    ENDIF
+  ELSE
+    echo "- OS39DIR: Present! Skip Amiga OS 3.9 installation"
+    echo "  from iso, Amiga OS 3.9 iso doesn't exist."
+  ENDIF
+ELSE
+  echo "- OS39DIR: Not present! Skip Amiga OS 3.9 installation"
+  echo "  from iso and Boing Bag updates."
+ENDIF
+
+
+; Confirm install workbench 3.1, if installing amiga os 3.9
+IF $installos39 EQ 1 VAL
+  ; Install Workbench 3.1
+  set installworkbench `RequestChoice "Install Workbench 3.1" "Do you want to install Workbench 3.1*Nbefore installing Amiga OS 3.9?" "Yes|No"`
+ELSE
+  set installworkbench "1"
+ENDIF
+
+; Check workbench, if installing workbench
+IF $installworkbench EQ 1 VAL
+  ; Create install workbench prefs
+  echo "" >INSTALLDIR:Prefs/Install-Workbench
+
+  ; Check if WORKBENCHDIR: and set workbench
+  set workbench "0"
+  Assign >NIL: EXISTS WORKBENCHDIR:
+  IF NOT WARN
+    ; Set fail at 255 for DiskInDrive to fail silently
+    failat 255
+
+    ; Set workbench to 1, if device WORKBENCHDIR: is mapped to a directory
+    DiskInDrive >NIL: WORKBENCHDIR:
+    IF NOT WARN
+      set workbench "1"
+    ENDIF
+
+    ; Set fail at 21
+    failat 21
+  ENDIF
+
+  ; Print workbench status
+  IF $workbench EQ 1 VAL
+    echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
+  ELSE
+    echo "- WORKBENCHDIR: Not present! Install Workbench 3.1 from"
+    echo "  disks."
+  ENDIF 
+ELSE
+  echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation."
+ENDIF
+
+
+; Check if KICKSTARTDIR: and set kickstart
+set kickstart "0"
+Assign >NIL: EXISTS KICKSTARTDIR:
+IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set workbench to 1, if device KICKSTARTDIR: is mapped to a directory
+  DiskInDrive >NIL: KICKSTARTDIR:
+  IF NOT WARN
+    set kickstart "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Print kickstart status and create install kickstart prefs, if KICKSTARTDIR: exists
+IF $kickstart EQ 1 VAL
+  ; Create install kickstart prefs
+  echo "" >INSTALLDIR:Prefs/Install-Kickstart
+  echo "- KICKSTARTDIR: Present! Install Kickstart rom files."
+ELSE
+  echo "- KICKSTARTDIR: Not present! Skip Kickstart rom installation."
+ENDIF
+
+
+; Check if USERPACKAGESDIR: and set userpackages
+set userpackages "0"
+Assign >NIL: EXISTS USERPACKAGESDIR:
+IF NOT WARN
+  ; Set fail at 255 for DiskInDrive to fail silently
+  failat 255
+
+  ; Set userpackages to 1, if device USERPACKAGESDIR: is mapped to a directory
+  DiskInDrive >NIL: USERPACKAGESDIR:
+  IF NOT WARN
+    set userpackages "1"
+  ENDIF
+
+  ; Set fail at 21
+  failat 21
+ENDIF
+
+
+; Print user packges dir status and create install user packages prefs, if USERPACKAGESDIR: exists
+IF $userpackages EQ 1 VAL
+  echo "- USERPACKAGESDIR: Present! Install user packages."
+ELSE
+  echo "- USERPACKAGESDIR: Not present! Skip user package"
+  echo "  installation."
+ENDIF
+
+
+; Create backup of mountlist, if it doesn't exist. Otherwise overwrite mountlist with backup.
+IF NOT EXISTS INSTALLDIR:Devs/Mountlist.bak
+  Copy >NIL: INSTALLDIR:Devs/Mountlist INSTALLDIR:Devs/Mountlist.bak
+ELSE
+  Copy >NIL: INSTALLDIR:Devs/Mountlist.bak INSTALLDIR:Devs/Mountlist
+ENDIF
+
+
+; Replace os39isofilename placeholder in mountlist 
+IF NOT "$amigaos39isofile" EQ ""
+  rep INSTALLDIR:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" "$amigaos39isofile"
+ELSE
+  rep INSTALLDIR:Devs/Mountlist "OS39DIR:[*$OS39IsoFileName]" ""
+ENDIF
+
+
+; Install amiga os 3.9, if installos39 is 1
+IF $installos39 EQ 1 VAL 
+  ; Create install amiga os 3.9 prefs, if installos39 is 1
+  echo "" >INSTALLDIR:Prefs/Install-AmigaOS3.9
+
+  ; Print amiga os 3.9 iso file, if present
+  IF NOT "$amigaos39isofile" EQ ""
+    echo ""
+    echo "Using Amiga OS 3.9 iso file:"
+    echo "$amigaos39isofile"
+  ENDIF
+
+  ; Examine if boing bag files exists
+  IF EXISTS T:_boingbagfiles
+    set boingbagfilescount `wc -l <T:_boingbagfiles`
+
+    ; Install boing bags, if one or more boing bag files exists
+    echo ""
+    IF $boingbagfilescount gt 0 VAL
+      ; Create install boing bags prefs
+      echo "" >INSTALLDIR:Prefs/Install-BoingBags
+
+      ; Print boing bag files
+      echo "Using Boing Bag file(s):"
+      type T:_boingbagfiles
+    ELSE
+      echo "Boing Bag file(s) doesn't exist. Skip Boing Bags"
+      echo "installation."
+    ENDIF
+  ENDIF
+ENDIF
+
+echo ""
+IF $userpackages EQ 0 VAL
+  echo "Continue will show self install ready."
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP selfinstallready
+ENDIF
+
+echo "Continue will show user package status."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Print user packages status
+cls 
+echo "*e[32m" NOLINE
+echo "User Packages Status"
+echo "*e[0m*e[1m" NOLINE
+echo "--------------------"
+echo "*e[0m" NOLINE
+
+; Run find user packages
+Execute INSTALLDIR:S/Find-User-Packages INSTALLDIR:Prefs/User-Packages
+
+; Check if user packages prefs contains any user packages
+set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
+IF $userpackagescount GT 0 VAL
+  ; Create install user packages prefs
+  echo "" >INSTALLDIR:Prefs/Install-User-Packages
+
+  ; Run prepare user packages
+  echo ""
+  Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
+  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages INSTALL
+  Delete >NIL: T:User-Packages
+ELSE
+  echo ""
+  echo "*e[1mNo user packages found, skipping user package installation!*e[22m"
+ENDIF
+
+echo ""
+echo "Continue will show self install ready."
+echo ""
+ask "Press ENTER to continue"
+
+
+; Self install ready
+; ------------------
+LAB selfinstallready
+cls 
+echo "*e[32m" NOLINE
+echo "Self Install Ready"
+echo "*e[0m*e[1m" NOLINE
+echo "------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Self install is ready to start installation process."
+echo ""
+echo "This is last chance to adjust device names, files used"
+echo "during installation before starting self install."
+echo ""
+echo "Adjust device names, directories and files now and reset"
+echo "to detect changes."
+echo ""
+echo "When self install has started, it's no longer possible to"
+echo "reset installation process."
+echo ""
+echo "Continue will start self install."
+echo ""
+ask "Press ENTER to continue"

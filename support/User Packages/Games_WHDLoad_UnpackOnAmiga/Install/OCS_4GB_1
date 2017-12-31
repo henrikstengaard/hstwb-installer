@@ -1,0 +1,129 @@
+; Create 'B' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B.info"
+  Copy >NIL: "USERPACKAGEDIR:B.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'B'..."
+
+; Extract 'Battlestorm' entry archive
+IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip" -d "$indexdir"
+ENDIF
+
+; Create 'D' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D.info"
+  Copy >NIL: "USERPACKAGEDIR:D.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'D'..."
+
+; Extract 'DinoWars' entry archive
+IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1.lha"
+  lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1.lha" "$indexdir/"
+ENDIF
+
+; Create 'F' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:F.info"
+  Copy >NIL: "USERPACKAGEDIR:F.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'F'..."
+
+; Extract 'FastLane' entry archive
+IF EXISTS "USERPACKAGEDIR:FastLane_v1.0.lha"
+  lha -q -m1 x "USERPACKAGEDIR:FastLane_v1.0.lha" "$indexdir/"
+ENDIF
+
+; Extract 'FlipFlop' entry archive
+IF EXISTS "USERPACKAGEDIR:FlipFlop_v1.0.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:FlipFlop_v1.0.zip" -d "$indexdir"
+ENDIF
+
+; Create 'H' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H.info"
+  Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'H'..."
+
+; Extract 'HiredGuns512KB' entry archive
+IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:HiredGuns_v1.0_512KB_1114.zip" -d "$indexdir"
+ENDIF
+
+; Extract 'HoleInOne' entry archive
+IF EXISTS "USERPACKAGEDIR:HoleInOne_v1.1.lha"
+  lha -q -m1 x "USERPACKAGEDIR:HoleInOne_v1.1.lha" "$indexdir/"
+ENDIF
+
+; Extract 'HoleInOne&DataDisks' entry archive
+IF EXISTS "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha"
+  lha -q -m1 x "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha" "$indexdir/"
+ENDIF
+
+; Create 'O' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:O.info"
+  Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'O'..."
+
+; Extract 'OsWALDOfTheIceFloes' entry archive
+IF EXISTS "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip" -d "$indexdir"
+ENDIF
+
+; Create 'S' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S.info"
+  Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'S'..."
+
+; Extract 'SimLife' entry archive
+IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_2585.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:SimLife_v1.0_2585.zip" -d "$indexdir"
+ENDIF
+
+; Extract 'SkateOfTheArt' entry archive
+IF EXISTS "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:SkateOfTheArt_v1.0.zip" -d "$indexdir"
+ENDIF
+
+; Extract 'Sorefist' entry archive
+IF EXISTS "USERPACKAGEDIR:Sorefist_v1.0.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:Sorefist_v1.0.zip" -d "$indexdir"
+ENDIF
+
+; Create 'T' index directory
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:T.info"
+  Copy >NIL: "USERPACKAGEDIR:T.info" "$INSTALLDIR"
+ENDIF
+echo "Installing 'T'..."
+
+; Extract 'TrivialPursuit' entry archive
+IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2.zip"
+  unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2.zip" -d "$indexdir"
+ENDIF

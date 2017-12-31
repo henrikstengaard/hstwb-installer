@@ -1,0 +1,77 @@
+; Patch Installation Script
+; -------------------------
+;
+; Date: 2017-11-18
+; Author: Henrik Noerfjand Stengaard
+
+
+; Patch Installation
+cls
+echo "*e[32m" NOLINE
+echo "Patch Installation"
+echo "*e[0m*e[1m" NOLINE
+echo "------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "This will patch installation, if device name PATCHDIR is"
+echo "added in WinUAE. Currently it checks if Workbench.library"
+echo "exist and copies it to SYS:Libs to support installation on"
+echo "A4000T systems and Amiga's with Amiga Forever Kickstart 3.X."
+echo ""
+
+
+; Set fail at 255 for DiskInDrive to fail silently
+failat 255
+
+
+; Set patchinstall to 1, if device PATCHDIR: is mapped to a directory
+set patchinstall "0"
+DiskInDrive >NIL: PATCHDIR:
+IF NOT WARN
+  set patchinstall "1"
+ENDIF
+
+
+; Set fail at 21
+failat 21
+
+
+Assign >NIL: EXISTS PATCHDIR:
+IF $patchinstall EQ 1 VAL
+  echo "PATCHDIR: Present! Patching installation."
+ELSE
+  echo "PATCHDIR: Not present! Skip patch installation."
+  SKIP end
+ENDIF
+
+
+; Copy workbench library, if doesn't exists in patch directory
+IF EXISTS "PATCHDIR:workbench.library"
+  IF NOT EXISTS "SYS:Libs"
+    makedir >NIL: "SYS:Libs"
+  ENDIF
+  copy >NIL: "PATCHDIR:workbench.library" "SYS:Libs"
+  echo "Copied Workbench.library to SYS:Libs!"
+ELSE
+  echo "Workbench.library doesn't exist in PATCHDIR:, skipping!"
+ENDIF
+
+
+; Patch installation complete
+echo ""
+echo "Done."
+echo ""
+echo "Installation patching is complete and is ready to use on"
+echo "an Amiga system requiring these patches."
+echo ""
+echo "Please wait 10 seconds before stopping UAE to allow file"
+echo "system to write changes to disk. Continue will reboot"
+echo "the system in 10 seconds."
+echo ""
+echo "Otherwise continue installation."
+
+
+; End
+LAB end
+echo ""
+ask "Press ENTER to continue"
