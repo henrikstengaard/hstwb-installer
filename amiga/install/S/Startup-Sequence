@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-11-18
+; Date: 2018-01-14
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -71,7 +71,7 @@ LAB loadsystemfiles
 ; Load basic commands resident
 echo ""
 IF "$amigaos39" EQ 1 VAL
-  echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom...*e[0m"
+  echo "*e[1mLoading Workbench system files from Amiga OS 3.9 cd-rom...*e[0m"
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Assign" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Copy" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Delete" PURE

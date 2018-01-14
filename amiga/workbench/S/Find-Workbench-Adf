@@ -1,7 +1,7 @@
 ; Find Workbench Adf
 ; ------------------
 ;
-; Date: 2017-11-23
+; Date: 2018-01-14
 ; Author: Henrik Noerfjand Stengaard
 
 ; Find Workbench adf files
@@ -14,7 +14,7 @@ fsearch WORKBENCHDIR:#?.adf >T:_workbenchadffiles
 ; Get next adf file
 LAB nextadffile
 set adffile ""
-set adffile "`FirstLine T:_workbenchadffiles DELETE`"
+set adffile `Execute INSTALLDIR:S/FirstLine T:_workbenchadffiles`
 
 ; Goto end, if adffile is empty
 IF "$adffile" EQ ""

@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2017-11-29
+; Date: 2018-01-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -56,7 +56,7 @@ echo ""
 echo "Using UAE emulator HstWB-Installer can detect and use"
 echo "following device names for installation of Amiga OS 3.9,"
 echo "Workbench 3.1, Kickstart roms and user packages:"
-echo "- CD0: CD drive with Amiga OS 3.9 CD-Rom."
+echo "- CD0: CD drive with Amiga OS 3.9 cd-rom."
 echo "- OS39DIR: Directory with Amiga 3.9 iso and boing bag files."
 echo "  Note: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device)."

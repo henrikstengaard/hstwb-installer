@@ -1,7 +1,7 @@
 ; Find Kickstart Rom
 ; ------------------
 ;
-; Date: 2017-11-23
+; Date: 2018-01-14
 ; Author: Henrik Noerfjand Stengaard
 
 ; Find Kickstart rom files
@@ -15,7 +15,7 @@ fsearch KICKSTARTDIR:#?.key >>T:_kickstartromfiles
 ; Get next rom file
 LAB nextromfile
 set romfile ""
-set romfile "`FirstLine T:_kickstartromfiles DELETE`"
+set romfile `Execute INSTALLDIR:S/FirstLine "T:_kickstartromfiles"`
 
 ; Goto end, if romfile is empty
 IF "$romfile" EQ ""
@@ -135,6 +135,8 @@ SKIP BACK nextromfile
 ; -------------
 LAB copyromfile
 
+; Escase characters ( ) [ ] ~ | # ? % `
+; http://www.amiga.org/forums/archive/index.php/t-23790.html
 echo "$romfile" NOLINE >T:_kickstartromfile
 rep T:_kickstartromfile "(" "'("
 rep T:_kickstartromfile ")" "')"

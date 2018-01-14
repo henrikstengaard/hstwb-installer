@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2017-11-29
+; Date: 2018-01-14
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -70,13 +70,13 @@ echo ""
 echo "Workbench system files are required for the"
 echo "installation process and will load these from"
 echo "either Amiga OS 3.9 CD, Workbench 3.1 adf or disk:"
-echo "1. CD0: CD drive with Amiga OS 3.9 CD-Rom."
+echo "1. CD0: CD drive with Amiga OS 3.9 cd-rom."
 echo "2. WORKBENCHDIR: Directory with Workbench 3.1 adf file."
 echo "3. FD0:, FD1:, FD2:, FD3: Workbench 3.1 disk inserted in"
 echo "   any floppy device."
 echo ""
 echo "Loading Workbench system files can be restarted,"
-echo "if Amiga OS 3.9 CD-rom or Workbench 3.1 adf file was not"
+echo "if Amiga OS 3.9 cd-rom or Workbench 3.1 adf file was not"
 echo "detected."
 echo ""
 echo "Continue will start loading Workbench system files."
@@ -96,7 +96,7 @@ echo "*e[0m*e[1m" NOLINE
 echo "---------------------------"
 echo "*e[0m" NOLINE
 echo ""
-echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom"
+echo "*e[1mLoading Workbench system files from Amiga OS 3.9 cd-rom"
 echo "in CD0:...*e[0m"
 
 ; Set failat to 255 for DiskInDrive to fail silently
@@ -107,7 +107,7 @@ DiskInDrive >NIL: CD0:
 IF WARN
   ; Set failat to 21
   failat 21
-  echo "CD0: device is not present! Skip Amiga OS 3.9 CD-Rom."
+  echo "CD0: device is not present! Skip Amiga OS 3.9 cd-rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -116,7 +116,7 @@ DiskInDrive >NIL: AmigaOS3.9:
 IF WARN
   ; Set failat to 21
   failat 21
-  echo "AmigaOS3.9: device is not present! Skip Amiga OS 3.9 CD-Rom."
+  echo "AmigaOS3.9: device is not present! Skip Amiga OS 3.9 cd-rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -125,7 +125,7 @@ failat 21
 
 ; Goto find workbench adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
 IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
-  echo "Amiga OS 3.9 CD-Rom is not valid! Skip Amiga OS 3.9 CD-Rom."
+  echo "Amiga OS 3.9 cd-rom is not valid! Skip Amiga OS 3.9 cd-rom."
   SKIP findworkbenchadf
 ENDIF
 
@@ -162,8 +162,14 @@ FSearch >RAM:_adffiles "WORKBENCHDIR:" PAT="#?.adf"
 
 ; Get next adf file
 LAB nextadffile
+
+; Get next adf file from adf files
 set adffile ""
-set adffile `FirstLine RAM:_adffiles DELETE`
+set adffile `sed "1q;d" "RAM:_adffiles"`
+
+; Delete adf file from adf files
+sed "1d" "RAM:_adffiles" >"RAM:_adffiles2"
+Copy >NIL: "RAM:_adffiles2" "RAM:_adffiles"
 
 ; Goto workbench disk, if no valid workbench adf was detected
 IF "$adffile" EQ ""
@@ -247,7 +253,7 @@ LAB detectworkbenchdisk
 
 echo ""
 echo "Workbench system files could not be loaded from Amiga OS 3.9"
-echo "CD-rom or Workbench 3.1 adf file. Restart with changed CD-Rom"
+echo "cd-rom or Workbench 3.1 adf file. Restart with changed cd-rom"
 echo "or adf files to retry Load Workbench system files."
 echo ""
 echo "Otherwise Workbench system files will now be loaded from"

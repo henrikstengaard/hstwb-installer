@@ -1,0 +1,30 @@
+.KEY file/a
+.BRA {
+.KET }
+
+; First Line Script
+; -----------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2018-01-14
+;
+; Gets, deletes and print first line from a file. 
+
+; End, if file doesn't exist
+IF NOT EXISTS "{file}"
+  SKIP end
+ENDIF
+
+; Get first line
+set line ""
+set line `sed "1q;d" "{file}"`
+
+; Delete first line
+sed "1d" "{file}" >T:_firstline
+Copy >NIL: T:_firstline "{file}"
+Delete >NIL: T:_firstline
+
+; Print line
+echo "$line"
+
+; End
+LAB end

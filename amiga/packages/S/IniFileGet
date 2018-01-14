@@ -5,7 +5,7 @@
 ; Ini File Get Script
 ; -------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-09-22
+; Date: 2018-01-14
 ;
 ; This script gets a parameter from a section within an ini file.
 
@@ -23,7 +23,7 @@ set inifilesection 0
 ; Get next line from ini file
 LAB nextline
 set inifileline ""
-set inifileline "`FirstLine T:_inifile DELETE`"
+set inifileline `Execute INSTALLDIR:S/FirstLine T:_inifile`
 
 ; Goto end, if line is empty
 IF "$inifileline" EQ ""
