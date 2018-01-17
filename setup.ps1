@@ -1043,13 +1043,15 @@ function ConfigureEmulatorMenu($hstwb)
 # select emulator menu
 function SelectEmulatorMenu($hstwb)
 {
-
     $emulators = @{}
     $hstwb.Emulators | ForEach-Object { $emulators.Set_Item(('{0} ({1})' -f $_.Name,$_.File), $_.File ) }
     
+    $toNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
+    
     $options = @()
-    $options += $emulators.Keys
+    $options += $emulators.Keys | Sort-Object $toNatural
     $options += 'Custom, select emulator .exe file'
+    $options += 'Back'
     
     $choice = Menu $hstwb "Select Emulator Menu" $options 
 
@@ -1057,7 +1059,7 @@ function SelectEmulatorMenu($hstwb)
     {
         SelectEmulatorExeFile $hstwb
     }
-    else
+    elseif ($choice -ne 'Back')
     {
         $hstwb.Settings.Emulator.EmulatorFile = $emulators[$choice]
         Save $hstwb

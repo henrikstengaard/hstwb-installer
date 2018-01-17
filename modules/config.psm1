@@ -193,8 +193,22 @@ function FindEmulators()
     {
         $version = (get-item $winuaeX86File).VersionInfo.FileVersion
         $emulators += @{ 'Name' = (DetectEmulatorName $winuaeX86File); 'File' = $winuaeX86File }
-    }    
+    }
 
+    $cloantoWinuaeX64File = "${Env:ProgramFiles}\Cloanto\Amiga Forever\WinUAE\winuae64.exe"
+    if (test-path -path $cloantoWinuaeX64File)
+    {
+        $version = (get-item $cloantoWinuaeX64File).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $cloantoWinuaeX64File); 'File' = $cloantoWinuaeX64File }
+    }
+    
+    $cloantoWinuaeX86File = "${Env:ProgramFiles(x86)}\Cloanto\Amiga Forever\WinUAE\winuae.exe"
+    if (test-path -path $cloantoWinuaeX86File)
+    {
+        $version = (get-item $cloantoWinuaeX86File).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $cloantoWinuaeX86File); 'File' = $cloantoWinuaeX86File }
+    }
+    
     $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
     if (test-path -path $fsuaeFile)
     {
