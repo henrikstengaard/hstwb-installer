@@ -84,7 +84,7 @@ echo "" NOLINE >T:_deselectalluserpackages
 ; Get next user package from user packages file
 LAB nextuserpackage
 set userpackage ""
-set userpackage "`FirstLine "{userpackages}" DELETE`"
+set userpackage `Execute INSTALLDIR:S/FirstLine "{userpackages}"`
 
 ; Goto end, if userpackage is empty
 IF "$userpackage" EQ ""
