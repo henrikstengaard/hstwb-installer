@@ -447,13 +447,24 @@ function SelectWorkbenchAdfSet($hstwb)
 
     foreach($workbenchAdfSet in $workbenchAdfSets)
     {
-        Write-Host ""
-        Write-Host $workbenchAdfSet
-
         # get workbench adf set hashes
         $workbenchAdfSetHashes = @()
         $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
+
+        $workbenchAdfSetFiles = @()
+        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
+        $workbenchAdfSetComplete = ($workbenchAdfSetFiles.Count -eq $workbenchAdfSetHashes.Count)
         
+        Write-Host ""
+        if ($workbenchAdfSetComplete)
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Green"
+        }
+        else
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Yellow"
+        }
+
         foreach($workbenchAdfSetHash in $workbenchAdfSetHashes)
         {
             Write-Host (("  {0,-" + $workbenchNamePadding + "} : ") -f $workbenchAdfSetHash.Name) -NoNewline -foregroundcolor "Gray"
@@ -632,12 +643,23 @@ function SelectKickstartRomSet($hstwb)
 
     foreach($kickstartRomSet in $kickstartRomSets)
     {
-        Write-Host ""
-        Write-Host $kickstartRomSet
-
         # get kickstart rom set hashes
         $kickstartRomSetHashes = $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
         
+        $kickstartRomSetFiles = @()
+        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
+        $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
+
+        Write-Host ""
+        if ($kickstartRomSetComplete)
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Green"
+        }
+        else
+        {
+            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Yellow"
+        }
+
         foreach($kickstartRomSetHash in $kickstartRomSetHashes)
         {
             Write-Host (("  {0,-" + $kickstartNamePadding + "} : ") -f $kickstartRomSetHash.Name) -NoNewline -foregroundcolor "Gray"
