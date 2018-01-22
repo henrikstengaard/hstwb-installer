@@ -694,7 +694,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += "set installpackagesmenu """""
-        $installPackagesScriptLines += "set installpackagesmenu ""``ReqList CLONERT I=T:installpackagesmenu H=""Select packages to install"" PAGE=18``"""
+        $installPackagesScriptLines += "set installpackagesmenu ""``RequestList TITLE=""Select packages to install"" LISTFILE=""T:installpackagesmenu"" WIDTH=640 LINES=24``"""
         $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
 
         # switch package options
@@ -836,7 +836,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "echo ""Back"" >>T:viewreadmemenu"
 
         $installPackagesScriptLines += "set viewreadmemenu """""
-        $installPackagesScriptLines += "set viewreadmemenu ""``ReqList CLONERT I=T:viewreadmemenu H=""View Readme"" PAGE=18``"""
+        $installPackagesScriptLines += "set viewreadmemenu ""``RequestList TITLE=""View Readme"" LISTFILE=""T:viewreadmemenu"" WIDTH=640 LINES=24``"""
         $installPackagesScriptLines += "delete >NIL: T:viewreadmemenu"
 
         # switch package options
@@ -940,7 +940,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
 
         $installPackagesScriptLines += "set editassignsmenu """""
-        $installPackagesScriptLines += "set editassignsmenu ""``ReqList CLONERT I=T:editassignsmenu H=""Edit assigns"" PAGE=18``"""
+        $installPackagesScriptLines += "set editassignsmenu ""``RequestList TITLE=""Edit assigns"" LISTFILE=""T:editassignsmenu"" WIDTH=640 LINES=24``"""
         $installPackagesScriptLines += "delete >NIL: T:editassignsmenu"
 
         # add edit assigns menu options script lines

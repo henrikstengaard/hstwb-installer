@@ -352,7 +352,7 @@ ENDIF
 
 echo "" >>"{installuserpackages}"
 echo "set userpackagesmenu *"*"" >>"{installuserpackages}"
-echo "set userpackagesmenu *"*`ReqList CLONERT I=T:userpackagesmenu H=*"Select user packages to install*" PAGE=18*`*"" >>"{installuserpackages}"
+echo "set userpackagesmenu *"*`RequestList TITLE=*"Select user packages to install*" LISTFILE=*"T:userpackagesmenu*" WIDTH=640 LINES=24*`*"" >>"{installuserpackages}"
 echo "Delete >NIL: T:userpackagesmenu" >>"{installuserpackages}"
 
 type T:_userpackagesoptions >>"{installuserpackages}"
@@ -424,7 +424,7 @@ echo "echo *"Default assigns*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "echo *"Back*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "" >>"{installuserpackages}"
 echo "set editassignsmenu *"*"" >>"{installuserpackages}"
-echo "set editassignsmenu *"*`ReqList CLONERT I=T:editassignsmenu H=*"Edit assigns*" PAGE=18*`*"" >>"{installuserpackages}"
+echo "set editassignsmenu *"*`RequestList TITLE=*"Edit assigns*" LISTFILE=*"T:editassignsmenu*" WIDTH=640 LINES=24*`*"" >>"{installuserpackages}"
 echo "Delete >NIL: T:editassignsmenu" >>"{installuserpackages}"
 
 type T:_editassignsoptions >>"{installuserpackages}"
