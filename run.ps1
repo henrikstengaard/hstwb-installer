@@ -1084,6 +1084,15 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Package.Name, 'Version', $installPackageScript.Package.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
+
+            if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall")
+            {
+                $installPackagesScriptLines += ("; Remove package '{0}' install files" -f $installPackageScript.Package.PackageFullName)
+                $installPackagesScriptLines += "echo """""
+                $installPackagesScriptLines += ("echo ""*e[1mRemoving package '{0}' install files...*e[0m""" -f $installPackageScript.Package.PackageFullName)
+                $installPackagesScriptLines += ("Delete >NIL: ""PACKAGESDIR:{0}"" ALL" -f $installPackageScript.Package.PackageDirName)            
+                $installPackagesScriptLines += "echo ""Done"""
+            }
         }
         else
         {
