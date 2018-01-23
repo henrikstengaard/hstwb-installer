@@ -5,7 +5,7 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2017-11-23
+; Date: 2018-01-23
 ; Author: Henrik Noerfjand Stengaard
 
 ; Fail, if USERPACKAGESDIR: assign doesn't exist
@@ -80,6 +80,7 @@ echo "" NOLINE >T:_installuserpackages
 echo "" NOLINE >T:_deletetemp
 echo "" NOLINE >T:_selectalluserpackages
 echo "" NOLINE >T:_deselectalluserpackages
+echo "" NOLINE >T:_selecteduserpackages
 
 ; Get next user package from user packages file
 LAB nextuserpackage
@@ -123,15 +124,20 @@ echo "IF EXISTS *"T:$packageid*"" >>T:_deselectalluserpackages
 echo "  delete >NIL: *"T:$packageid*"" >>T:_deselectalluserpackages
 echo "ENDIF" >>T:_deselectalluserpackages
 
+; Build selected user packages
+echo "IF EXISTS *"T:$packageid*"" >>T:_selecteduserpackages
+echo "  set selecteduserpackages *"*`eval *$selecteduserpackages + 1*`*"" >>T:_selecteduserpackages
+echo "ENDIF" >>T:_selecteduserpackages
+
 ; Build user packages menu
 echo "" >>T:_userpackagesmenu
 echo "; User packages menu '$userpackage' menu" >>T:_userpackagesmenu
-echo "echo *"$userpackage : *" NOLINE >>T:userpackagesmenu" >>T:_userpackagesmenu
 echo "IF EXISTS *"T:$packageid*"" >>T:_userpackagesmenu
-echo "  echo *"YES*" >>T:userpackagesmenu" >>T:_userpackagesmenu
+echo "  echo *"Install*" NOLINE >>T:userpackagesmenu" >>T:_userpackagesmenu
 echo "ELSE" >>T:_userpackagesmenu
-echo "  echo *"NO *" >>T:userpackagesmenu" >>T:_userpackagesmenu
+echo "  echo *"Skip   *" NOLINE >>T:userpackagesmenu" >>T:_userpackagesmenu
 echo "ENDIF" >>T:_userpackagesmenu
+echo "echo *" : $userpackage*" >>T:userpackagesmenu" >>T:_userpackagesmenu
 
 ; Build user packages options
 echo "" >>T:_userpackagesoptions
@@ -338,21 +344,21 @@ echo "echo *"*" NOLINE >T:userpackagesmenu" >>"{installuserpackages}"
 
 type T:_userpackagesmenu >>"{installuserpackages}"
 
-echo "echo *"========================================*" >>T:userpackagesmenu" >>"{installuserpackages}"
-echo "echo *"Select all user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
-echo "echo *"Deselect all user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+echo "echo *"============================================================*" >>T:userpackagesmenu" >>"{installuserpackages}"
+echo "echo *"Install all user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+echo "echo *"Skip all user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
 echo "echo *"Edit assigns*" >>T:userpackagesmenu" >>"{installuserpackages}"
-echo "echo *"Install user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+echo "echo *"Start user package installation*" >>T:userpackagesmenu" >>"{installuserpackages}"
 
 IF "{install}" EQ ""
   echo "echo *"Quit*" >>T:userpackagesmenu" >>"{installuserpackages}"
 ELSE
-  echo "echo *"Skip user packages*" >>T:userpackagesmenu" >>"{installuserpackages}"
+  echo "echo *"Skip user package installation*" >>T:userpackagesmenu" >>"{installuserpackages}"
 ENDIF
 
 echo "" >>"{installuserpackages}"
 echo "set userpackagesmenu *"*"" >>"{installuserpackages}"
-echo "set userpackagesmenu *"*`RequestList TITLE=*"Select user packages to install*" LISTFILE=*"T:userpackagesmenu*" WIDTH=640 LINES=24*`*"" >>"{installuserpackages}"
+echo "set userpackagesmenu *"*`RequestList TITLE=*"User package installation*" LISTFILE=*"T:userpackagesmenu*" WIDTH=640 LINES=24*`*"" >>"{installuserpackages}"
 echo "Delete >NIL: T:userpackagesmenu" >>"{installuserpackages}"
 
 type T:_userpackagesoptions >>"{installuserpackages}"
@@ -382,7 +388,11 @@ set menuoption `eval $menuindex + 4`
 echo "" >>"{installuserpackages}"
 echo "; Install user packages option" >>"{installuserpackages}"
 echo "IF *"*$userpackagesmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
-echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to install selected user packages?*" *"Yes|No*"*`" >>"{installuserpackages}"
+echo "  set selecteduserpackages 0" >>"{installuserpackages}"
+
+type T:_selecteduserpackages >>"{installuserpackages}"
+
+echo "  set confirm *`RequestChoice *"Start user package installation*" *"Do you want to install *$selecteduserpackages user package(s)?*" *"Yes|No*"*`" >>"{installuserpackages}"
 echo "  IF *"*$confirm*" EQ *"1*"" >>"{installuserpackages}"
 echo "    SKIP installuserpackages" >>"{installuserpackages}"
 echo "  ENDIF" >>"{installuserpackages}"
@@ -396,7 +406,7 @@ echo "IF *"*$userpackagesmenu*" eq *"$menuoption*"" >>"{installuserpackages}"
 IF "{install}" EQ ""
   echo "  SKIP end" >>"{installuserpackages}"
 ELSE
-  echo "  set confirm *`RequestChoice *"Confirm*" *"Do you want to skip user package installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
+  echo "  set confirm *`RequestChoice *"Skip user package installation*" *"Do you want to skip user package installation?*" *"Yes|No*"*`" >>"{installuserpackages}"
   echo "  IF *"*$confirm*" EQ *"1*"" >>"{installuserpackages}"
   echo "    SKIP end" >>"{installuserpackages}"
   echo "  ENDIF" >>"{installuserpackages}"
@@ -418,7 +428,7 @@ echo "echo *"*" NOLINE >T:editassignsmenu" >>"{installuserpackages}"
 
 type T:_editassignsmenu >>"{installuserpackages}"
 
-echo "echo *"========================================*" >>T:editassignsmenu" >>"{installuserpackages}"
+echo "echo *"============================================================*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "echo *"Reset assigns*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "echo *"Default assigns*" >>T:editassignsmenu" >>"{installuserpackages}"
 echo "echo *"Back*" >>T:editassignsmenu" >>"{installuserpackages}"
@@ -540,4 +550,7 @@ IF EXISTS T:_selectalluserpackages
 ENDIF
 IF EXISTS T:_deselectalluserpackages
   Delete >NIL: T:_deselectalluserpackages
+ENDIF
+IF EXISTS T:_selecteduserpackages
+  Delete >NIL: T:_selecteduserpackages
 ENDIF

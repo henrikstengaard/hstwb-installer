@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-23
+# Date:   2018-01-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -666,22 +666,22 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # add package options to menu
         foreach ($installPackageScript in $installPackageScripts)
         {
-            $hasDependenciesIndicator = if ($installPackageScript.Package.PackageDependencies.Count -gt 0) { ' (**)' } else { '' }
-            $installPackagesScriptLines += ("echo ""{0}{1} : "" NOLINE >>T:installpackagesmenu" -f $installPackageScript.Package.PackageFullName, $hasDependenciesIndicator)
             $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += "  echo ""YES"" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "  echo ""Install"" NOLINE >>T:installpackagesmenu"
             $installPackagesScriptLines += "ELSE"
-            $installPackagesScriptLines += "  echo ""NO "" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "  echo ""Skip   "" NOLINE >>T:installpackagesmenu"
             $installPackagesScriptLines += "ENDIF"
+            $hasDependenciesIndicator = if ($installPackageScript.Package.PackageDependencies.Count -gt 0) { ' (**)' } else { '' }
+            $installPackagesScriptLines += ("echo "" : {0}{1}"" >>T:installpackagesmenu" -f $installPackageScript.Package.PackageFullName, $hasDependenciesIndicator)
         }
 
         # add install package option and show install packages menu
-        $installPackagesScriptLines += "echo ""========================================"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Select all packages"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Deselect all packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""============================================================"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Install all packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Skip all packages"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
         $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Install packages"" >>T:installpackagesmenu"
+        $installPackagesScriptLines += "echo ""Start package installation"" >>T:installpackagesmenu"
 
         if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
@@ -689,12 +689,12 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         }
         else
         {
-            $installPackagesScriptLines += "echo ""Skip packages"" >>T:installpackagesmenu"
+            $installPackagesScriptLines += "echo ""Skip package installation"" >>T:installpackagesmenu"
         }
 
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += "set installpackagesmenu """""
-        $installPackagesScriptLines += "set installpackagesmenu ""``RequestList TITLE=""Select packages to install"" LISTFILE=""T:installpackagesmenu"" WIDTH=640 LINES=24``"""
+        $installPackagesScriptLines += "set installpackagesmenu ""``RequestList TITLE=""Package installation"" LISTFILE=""T:installpackagesmenu"" WIDTH=640 LINES=24``"""
         $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
 
         # switch package options
@@ -740,7 +740,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
                 # add script lines to show package dependency warning, if selected packages has dependencies to it
                 $installPackagesScriptLines += "    set deselectpackage ""1"""
                 $installPackagesScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
-                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and deselecting it*Nmay cause issues when installing packages.*N*NAre you sure you want to deselect*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
+                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
                 $installPackagesScriptLines += "    ENDIF"
                 $installPackagesScriptLines += "    IF `$deselectpackage EQ 1 VAL"
                 $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
@@ -789,7 +789,14 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "ENDIF"
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 6) + """")
-        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to install selected packages?"" ""Yes|No""``"
+        $installPackagesScriptLines += "  set selectedpackagescount 0"
+        foreach ($installPackageScript in $installPackageScripts)
+        {
+            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $installPackagesScriptLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
+            $installPackagesScriptLines += "  ENDIF"
+        }
+        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Start package installation"" ""Do you want to install `$selectedpackagescount package(s)?"" ""Yes|No""``"
         $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
         $installPackagesScriptLines += "    SKIP installpackages"
         $installPackagesScriptLines += "  ENDIF"
@@ -805,7 +812,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         else
         {
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 7) + """")
-            $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Do you want to skip package installation?"" ""Yes|No""``"
+            $installPackagesScriptLines += "  set confirm ``RequestChoice ""Skip package installation"" ""Do you want to skip package installation?"" ""Yes|No""``"
             $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
             $installPackagesScriptLines += "    SKIP end"
             $installPackagesScriptLines += "  ENDIF"
@@ -832,7 +839,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         }
 
         # add back option to view readme menu
-        $installPackagesScriptLines += "echo ""========================================"" >>T:viewreadmemenu"
+        $installPackagesScriptLines += "echo ""============================================================"" >>T:viewreadmemenu"
         $installPackagesScriptLines += "echo ""Back"" >>T:viewreadmemenu"
 
         $installPackagesScriptLines += "set viewreadmemenu """""
@@ -934,7 +941,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         }
 
         # add back option to view readme menu
-        $installPackagesScriptLines += "echo ""========================================"" >>T:editassignsmenu"
+        $installPackagesScriptLines += "echo ""============================================================"" >>T:editassignsmenu"
         $installPackagesScriptLines += "echo ""Reset assigns"" >>T:editassignsmenu"
         $installPackagesScriptLines += "echo ""Default assigns"" >>T:editassignsmenu"
         $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
