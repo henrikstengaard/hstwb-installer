@@ -2,9 +2,15 @@
 # ------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-24
+# Date:   2018-01-25
 #
 # A powershell script to calculate drive geometry for manual configuration using HDToolBox
+#
+# Calculate drive geometry for a drive of size 15200000000 bytes, a partition of size 500MB and a partition that expands to available cylinders:
+# .\calculate_drive_geometry.ps1 -driveSize '15200000000' -partitions '500MB','+'
+#
+# Calculate drive geometry for a drive of size 20 gb, a partition of size 500MB and 2 partitions that expands to available cylinders:
+# .\calculate_drive_geometry.ps1 -driveSize '20GB' -partitions '500MB','+','+'
 
 Param(
 	[Parameter(Mandatory=$true, Position=0)]
@@ -57,7 +63,7 @@ $driveBlocks = [math]::Floor($driveBytes / $sectorSize)
 # calculate blocks per cylinder, cylinders and total blocks
 $blocksPerCylinder = $heads * $blocksPerTrack
 $driveCylinders = [math]::Floor($driveBytes / ($heads * $blocksPerTrack * $sectorSize))
-$totalBlocks = $cylinders * $heads * $blocksPerTrack
+$totalBlocks = $driveCylinders * $heads * $blocksPerTrack
 
 # show drive geometry
 Write-Host "Drive Geometry" -ForegroundColor 'Yellow'
@@ -71,11 +77,10 @@ Write-Host ("Blocks per cylinder:   {0}" -f $blocksPerCylinder)
 Write-Host ("Total blocks:          {0}" -f $totalBlocks)
 
 
-$expandableBytes = $driveBytes
-
+$expandableCylinders = $driveCylinders - 1
 $partitions = @()
 
-
+# calculate bytes and cylinders per partition and expandable cylinders
 for($i = 0; $i -lt $partitionSizes.Count; $i++)
 {
 	$partitionSize = $partitionSizes[$i]
@@ -91,24 +96,29 @@ for($i = 0; $i -lt $partitionSizes.Count; $i++)
 	{
 		$bytes = ConvertToBytes $partitionSize
 		$cylinders = [math]::Floor($bytes / ($heads * $blocksPerTrack * $sectorSize))
-		$expandableBytes -= $bytes
+		$expandableCylinders -= $cylinders
 	}
 
 	$partitions += @{ 'Expandable' = $expandable; 'Bytes' = $bytes; 'Cylinders' = $cylinders }
 }
 
-$startCylinders = 2
+# calculate expandable partition cylinders
 $expandablePartitions = @()
 $expandablePartitions += $partitions | Where-Object { $_.Expandable }
 if ($expandablePartitions.Count -gt 0)
 {
-	$expandablePartitionBytes = [math]::Floor($expandableBytes / $expandablePartitions.Count)
+	$expandablePartitionCylinders = [math]::Floor($expandableCylinders / $expandablePartitions.Count)
 }
 else
 {
-	$expandablePartitionBytes = $expandableBytes
+	$expandablePartitionCylinders = $expandableCylinders
 }
 
+# calculate expandable partition bytes
+$expandablePartitionBytes = $expandablePartitionCylinders * $heads * $blocksPerTrack * $sectorSize
+
+# show partitions geometry
+$startCylinder = 2
 for($i = 0; $i -lt $partitions.Count; $i++)
 {
 	$partition = $partitions[$i]
@@ -116,7 +126,7 @@ for($i = 0; $i -lt $partitions.Count; $i++)
 	if ($partition.Expandable)
 	{
 		$bytes = $expandablePartitionBytes
-		$cylinders = [math]::Floor($bytes / ($heads * $blocksPerTrack * $sectorSize))
+		$cylinders = $expandablePartitionCylinders
 	}
 	else
 	{
@@ -124,20 +134,23 @@ for($i = 0; $i -lt $partitions.Count; $i++)
 		$cylinders = $partition.Cylinders
 	}
 
-	$endCylinders = $startCylinders + $cylinders - 1
+	# calculate end cylinder
+	$endCylinder = $startCylinder + $cylinders - 1
 
-	if ($endCylinders -ge $driveCylinders)
+	# adjust cylinders and bytes, if end cylinder is larger than drive cylinders
+	if ($endCylinder -ge $driveCylinders)
 	{
-		$endCylinders = $driveCylinders - 1
-		$cylinders = $endCylinders - $startCylinders
+		$endCylinder = $driveCylinders - 1
+		$cylinders = $endCylinder - $startCylinder
+		$bytes = $cylinders * $heads * $blocksPerTrack * $sectorSize
 	}
 
 	Write-Host ""
 	Write-Host ("Partition {0}" -f ($i + 1)) -ForegroundColor 'Yellow'
 	Write-Host ("Partition Size:        {0} ({1} bytes)" -f (FormatBytes $bytes), $bytes)
-	Write-Host ("Start Cylinder:        {0}" -f $startCylinders)
-	Write-Host ("End Cylinders:         {0}" -f $endCylinders)
+	Write-Host ("Start Cylinder:        {0}" -f $startCylinder)
+	Write-Host ("End Cylinder:          {0}" -f $endCylinder)
 	Write-Host ("Total Cylinders:       {0}" -f $cylinders)
 
-	$startCylinders += $cylinders
+	$startCylinder += $cylinders
 }
