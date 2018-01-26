@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-18
+# Date:   2018-01-26
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -418,26 +418,8 @@ function ChangeWorkbenchAdfDir($hstwb)
         # set new workbench adf dir
         $hstwb.Settings.Workbench.WorkbenchAdfDir = $newWorkbenchAdfDir
 
-        # find workbench adfs
-        FindWorkbenchAdfs $hstwb
-    
-        # get workbench rom sets
-        $workbenchAdfSets = $hstwb.WorkbenchAdfHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
-    
-        # count matching workbench adf hashes for each set
-        $workbenchAdfSetCount = @{}
-        foreach($workbenchAdfSet in $workbenchAdfSets)
-        {
-            $workbenchAdfSetFiles = @()
-            $workbenchAdfSetFiles += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }
-            $workbenchAdfSetCount.Set_Item($workbenchAdfSet, $workbenchAdfSetFiles.Count)
-        }
-
-        # get new workbench adf set, which has highest number of matching workbench adf hashes
-        $newWorkbenchAdfSet = $workbenchAdfSets | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
-
         # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = $newWorkbenchAdfSet
+        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
         Save $hstwb
     }
 }
@@ -613,27 +595,8 @@ function ChangeKickstartRomDir($hstwb)
         # set new kickstart rom dir
         $hstwb.Settings.Kickstart.KickstartRomDir = $newKickstartRomDir
         
-        # find kickstart roms
-        FindKickstartRoms $hstwb
-    
-        # get kickstart rom sets
-        $kickstartRomSets = @()
-        $kickstartRomSets += $hstwb.KickstartRomHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
-            
-        # count matching kickstart rom hashes for each set
-        $kickstartRomSetCount = @{}
-        foreach($kickstartRomSet in $kickstartRomSets)
-        {
-            $kickstartRomSetFiles = @()
-            $kickstartRomSetFiles += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet -and $_.File }
-            $kickstartRomSetCount.Set_Item($kickstartRomSet, $kickstartRomSetFiles.Count)
-        }
-
-        # get new kickstart rom set, which has highest number of matching kickstart rom hashes
-        $newKickstartRomSet = $kickstartRomSets | Sort-Object @{expression={$kickstartRomSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
-        
         # set new kickstart rom set and save
-        $hstwb.Settings.Kickstart.KickstartRomSet = $newKickstartRomSet
+        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
         Save $hstwb
     }
 }
@@ -1285,6 +1248,20 @@ try
     UpdatePackages $hstwb
     UpdateUserPackages $hstwb
     UpdateAssigns $hstwb
+
+    # find best matching kickstart rom set, if kickstart rom set doesn't exist
+    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    {
+        # set new kickstart rom set and save
+        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+    }
+
+    # find best matching workbench adf set, if workbench adf set doesn't exist
+    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    {
+        # set new workbench adf set and save
+        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+    }
     
     # save settings and assigns
     Save $hstwb

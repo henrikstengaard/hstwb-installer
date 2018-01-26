@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-23
+# Date:   2018-01-26
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1554,47 +1554,42 @@ function RunInstall($hstwb)
 
 
     # prepare install workbench
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and $hstwb.WorkbenchAdfHashes.Count -gt 0)
+    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and ($hstwb.WorkbenchAdfHashes | Where-Object { $_.File }).Count -gt 0)
     {
         # create install workbench prefs file
         $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
         Set-Content $installWorkbenchFile -Value ""
         
-
         # copy workbench adf set files to temp install dir
         Write-Host "Copying Workbench adf files to temp install dir"
-        $hstwb.WorkbenchAdfHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempWorkbenchDir -ChildPath $_.Filename), $true) }
+        $hstwb.WorkbenchAdfHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempWorkbenchDir -ChildPath $_.Filename) -Force }
     }
 
 
     # prepare install kickstart
-    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and $hstwb.KickstartRomHashes.Count -gt 0)
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and ($hstwb.KickstartRomHashes | Where-Object { $_.File }).Count -gt 0 )
     {
         # create install kickstart prefs file
         $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
         Set-Content $installKickstartFile -Value ""
         
-
         # copy kickstart rom set files to temp install dir
         Write-Host "Copying Kickstart rom files to temp install dir"
-        $hstwb.KickstartRomHashes | Where-Object { $_.File } | ForEach-Object { [System.IO.File]::Copy($_.File, (Join-Path $tempKickstartDir -ChildPath $_.Filename), $true) }
 
+        $hstwb.KickstartRomHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempKickstartDir -ChildPath $_.Filename) -Force }
 
         # get first kickstart rom hash
-        $installKickstartRomHash = $hstwb.KickstartRomHashes | Select-Object -First 1
-
+        $installKickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.File } | Select-Object -First 1
 
         # kickstart rom key
-        $installKickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($installKickstartRomHash.File), "rom.key")
-
+        $installKickstartRomKeyFile = Join-Path (Split-Path $installKickstartRomHash.File -Parent) -ChildPath "rom.key"
 
         # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
         if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
         {
-            Copy-Item -Path $installKickstartRomKeyFile -Destination ([System.IO.Path]::Combine($tempKickstartDir, "rom.key"))
+            Copy-Item -Literalpath $installKickstartRomKeyFile -Destination (Join-Path -Path $tempKickstartDir -ChildPath "rom.key") -Force
         }
     }
-
 
     # find packages to install
     $installPackages = FindPackagesToInstall $hstwb
@@ -2661,25 +2656,64 @@ try
         'Assigns' = ReadIniFile $assignsFile
     }
 
+    # read kickstart rom hashes
+    if (Test-Path -Path $kickstartRomHashesFile)
+    {
+        $kickstartRomHashes = @()
+        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
+        $hstwb.KickstartRomHashes = $kickstartRomHashes
+    }
+    else
+    {
+        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
+    }
 
+    # read workbench adf hashes
+    if (Test-Path -Path $workbenchAdfHashesFile)
+    {
+        $workbenchAdfHashes = @()
+        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
+        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
+    }
+    else
+    {
+        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
+    }
+    
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
     
-    
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     
-    
+    # find workbench adfs
+    FindWorkbenchAdfs $hstwb
+
+    # find kickstart roms
+    FindKickstartRoms $hstwb
+        
     # update packages and assigns
     UpdatePackages $hstwb
     UpdateUserPackages $hstwb
     UpdateAssigns $hstwb
-    
+        
+    # find best matching kickstart rom set, if kickstart rom set doesn't exist
+    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    {
+        # set new kickstart rom set and save
+        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+    }
+
+    # find best matching workbench adf set, if workbench adf set doesn't exist
+    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    {
+        # set new workbench adf set and save
+        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+    }
     
     # save settings and assigns
     Save $hstwb
-
 
     # set and validate emulator, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
@@ -2709,13 +2743,11 @@ try
         $hstwb.Emulator = ''
     }
     
-
     # validate settings
     if (!(ValidateSettings $hstwb.Settings))
     {
         Fail $hstwb "Validate settings failed"
     }
-
 
     # validate assigns
     if (!(ValidateAssigns $hstwb.Assigns))
@@ -2723,16 +2755,27 @@ try
         Fail $hstwb "Validate assigns failed"
     }
 
-
-    # find and set kickstart rom set hashes
-    $kickstartRomSetHashes = FindKickstartRomSetHashes $hstwb.Settings $hstwb.Paths.KickstartRomHashesFile
+    # change kickstart rom hashes to kickstart rom set hashes
+    $kickstartRomSetHashes = @()
+    $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
     $hstwb.KickstartRomHashes = $kickstartRomSetHashes
-
-
-    # find and set workbench adf set hashes 
-    $workbenchAdfSetHashes = FindWorkbenchAdfSetHashes $hstwb.Settings $hstwb.Paths.WorkbenchAdfHashesFile
+    
+    # change workbench adf hashes to workbench adf set hashes
+    $workbenchAdfSetHashes = @()
+    $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
     $hstwb.WorkbenchAdfHashes = $workbenchAdfSetHashes
-                
+
+    # fail, if kickstart rom hashes is empty 
+    if ($hstwb.KickstartRomHashes.Count -eq 0)
+    {
+        Fail ("Kickstart rom set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't exist!")
+    }
+    
+    # fail, if workbench adf hashes is empty 
+    if ($hstwb.WorkbenchAdfHashes.Count -eq 0)
+    {
+        Fail ("Workbench adf set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
+    }
 
     # print title and settings
     $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
@@ -2742,8 +2785,7 @@ try
     Write-Host ""
     PrintSettings $hstwb
     Write-Host ""
-    
-    
+        
     # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
     {

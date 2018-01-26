@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-18
+# Date:   2018-01-26
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -399,63 +399,6 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 }
 
 
-# find workbench adf set hashes
-function FindWorkbenchAdfSetHashes($settings, $workbenchAdfHashesFile)
-{
-    # read workbench adf hashes
-    $workbenchAdfHashes = @()
-    $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-
-
-    # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $workbenchAdfHashes $settings.Workbench.WorkbenchAdfDir
-
-
-    # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $workbenchAdfHashes $settings.Workbench.WorkbenchAdfDir
-
-
-    # get workbench adf set hashes
-    $workbenchAdfSetHashes = $workbenchAdfHashes | Where { $_.Set -eq $settings.Workbench.WorkbenchAdfSet }
-
-
-    # fail, if workbench adf set hashes is empty 
-    if ($workbenchAdfSetHashes.Count -eq 0)
-    {
-        Fail ("Workbench adf set '" + $settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
-    }
-    
-    return $workbenchAdfSetHashes
-}
-
-
-# find kickstart rom set hashes
-function FindKickstartRomSetHashes($settings, $kickstartRomHashesFile)
-{
-    # read kickstart rom hashes
-    $kickstartRomHashes = @()
-    $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-
-
-    # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $kickstartRomHashes $settings.Kickstart.KickstartRomDir
-
-
-    # get kickstart rom set hashes
-    $kickstartRomSetHashes = $kickstartRomHashes | Where { $_.Set -eq $settings.Kickstart.KickstartRomSet }
-
-
-    # fail, if kickstart rom set hashes is empty 
-    if ($kickstartRomSetHashes.Count -eq 0)
-    {
-        Fail ("Kickstart rom set '" + $settings.Kickstart.KickstartRomSet + "' doesn't exist!")
-    }
-
-
-    return $kickstartRomSetHashes
-}
-
-
 # find workbench adfs
 function FindWorkbenchAdfs($hstwb)
 {
@@ -472,6 +415,54 @@ function FindKickstartRoms($hstwb)
 {
     # find files with hashes matching kickstart rom hashes
     FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
+}
+
+
+# find best matching kickstart rom set
+function FindBestMatchingKickstartRomSet($hstwb)
+{
+    # find kickstart roms
+    FindKickstartRoms $hstwb
+
+    # get kickstart rom sets
+    $kickstartRomSets = @()
+    $kickstartRomSets += $hstwb.KickstartRomHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+        
+    # count matching kickstart rom hashes for each set
+    $kickstartRomSetCount = @{}
+    foreach($kickstartRomSet in $kickstartRomSets)
+    {
+        $kickstartRomSetFiles = @()
+        $kickstartRomSetFiles += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet -and $_.File }
+        $kickstartRomSetCount.Set_Item($kickstartRomSet, $kickstartRomSetFiles.Count)
+    }
+
+    # get new kickstart rom set, which has highest number of matching kickstart rom hashes
+    return $kickstartRomSets | Sort-Object @{expression={$kickstartRomSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1    
+}
+
+
+# find best matching workbench adf set
+function FindBestMatchingWorkbenchAdfSet($hstwb)
+{
+    # find workbench adfs
+    FindWorkbenchAdfs $hstwb
+
+    # get workbench rom sets
+    $workbenchAdfSets = @()
+    $workbenchAdfSets += $hstwb.WorkbenchAdfHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+
+    # count matching workbench adf hashes for each set
+    $workbenchAdfSetCount = @{}
+    foreach($workbenchAdfSet in $workbenchAdfSets)
+    {
+        $workbenchAdfSetFiles = @()
+        $workbenchAdfSetFiles += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }
+        $workbenchAdfSetCount.Set_Item($workbenchAdfSet, $workbenchAdfSetFiles.Count)
+    }
+
+    # get new workbench adf set, which has highest number of matching workbench adf hashes
+    return $workbenchAdfSets | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
 }
 
 
