@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-26
+# Date:   2018-01-29
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1396,6 +1396,32 @@ function BuildWinuaeRunHarddrivesConfigText($hstwb)
 }
 
 
+# show large harddrive warning
+function ShowLargeHarddriveWarning($hstwb)
+{
+    # build winuae image harddrives config
+    $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
+
+    # get hdf files from winuae image harddrives config text
+    $hdfFiles = @()
+    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^hardfile\d+=[^,]*,[^:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $hdfFiles += $_.Groups[1].Value.Trim() } }
+
+    # get first large harddrive
+    $largeHarddrive = $hdfFiles | Where-Object { (Test-Path -Path $_) -and (Get-Item $_).Length -gt 4000000000 } | Select-Object -First 1
+
+    # return, if no large harddrives are present
+    if (!$largeHarddrive)
+    {
+        return
+    }
+
+    # show warning
+    Write-Host ""
+    Write-Host "Warning: Image uses harddrive(s) larger than 4GB and might become corrupt depending on device and filesystem used." -ForegroundColor "Yellow"
+    Write-Host "Please use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem." -ForegroundColor "Yellow"
+}
+
+
 # run test
 function RunTest($hstwb)
 {
@@ -1451,6 +1477,10 @@ function RunTest($hstwb)
     {
         Fail $hstwb ("Emulator file '{0}' is not supported" -f $hstwb.Settings.Emulator.EmulatorFile)
     }
+
+
+    # show large harddrive warning
+    ShowLargeHarddriveWarning $hstwb
 
 
     # print starting emulator message
@@ -1876,6 +1906,10 @@ function RunInstall($hstwb)
     # print preparing installation done message
     Write-Host "Done."
     
+
+    # show large harddrive warning
+    ShowLargeHarddriveWarning $hstwb
+
 
     # print start emulator message
     Write-Host ""
@@ -2374,6 +2408,10 @@ function RunBuildSelfInstall($hstwb)
     # print preparing installation done message
     Write-Host "Done."
         
+
+    # show large harddrive warning
+    ShowLargeHarddriveWarning $hstwb
+
 
     # print starting emulator message
     Write-Host ""
