@@ -1417,8 +1417,8 @@ function ShowLargeHarddriveWarning($hstwb)
 
     # show warning
     Write-Host ""
-    Write-Host "Warning: Image uses harddrive(s) larger than 4GB and might become corrupt depending on device and filesystem used." -ForegroundColor "Yellow"
-    Write-Host "Please use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem." -ForegroundColor "Yellow"
+    Write-Host "Warning: Image uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used." -ForegroundColor "Yellow"
+    Write-Host "It's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem." -ForegroundColor "Yellow"
 }
 
 

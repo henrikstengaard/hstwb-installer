@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-26
+# Date:   2018-01-29
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -202,43 +202,6 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     # get image file
     $imageFile = $hstwb.Images.Get_Item($choice)
 
-    # default image dir
-    if ($hstwb.Settings.Image.ImageDir)
-    {
-        $defaultImageDir = $hstwb.Settings.Image.ImageDir
-    }
-    else
-    {
-        $defaultImageDir = ${Env:USERPROFILE}
-    }
-
-
-    # select new image directory
-    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
-
-    # return, if new image directory path is null
-    if ($newImageDirectoryPath -eq $null)
-    {
-        return
-    }
-
-
-    # return, if no write permission
-    try 
-    {
-        $tempFile = Join-Path $newImageDirectoryPath -ChildPath "__test__"
-        [System.IO.File]::OpenWrite($tempFile).Close()
-        Remove-Item -Path $tempFile -Force
-    }
-    catch
-    {
-        Write-Error ("Failed writing to new image directory '" + $newImageDirectoryPath + "'. No write permission!")
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
 
     # read harddrives uae text file from image file
     $harddrivesUaeText = ReadZipEntryTextFile $imageFile 'harddrives\.uae$'
@@ -277,6 +240,95 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         Read-Host
         return
     }
+
+
+    # check, if image has large harddrives
+    $largeHarddrivesPresent = $false
+    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
+    {
+        # get harddrive path
+        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
+        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
+        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
+        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
+
+        # get hdf filename
+        $hdfFileName = Split-Path $harddrivePath -Leaf
+
+        # open image file and get hdf zip entry matching hdf filename
+        $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
+        $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
+
+        # return, if image file doesn't contain hdf filename
+        if (!$hdfZipEntry)
+        {
+            $zip.Dispose()
+            Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
+            Write-Host ""
+            Write-Host "Press enter to continue"
+            return
+        }
+
+        # show large harddrive warning, if image has a hdf file larger than 4GB
+        if ($hdfZipEntry.Length -gt 4000000000)
+        {
+            $largeHarddrivesPresent = $true
+        }
+
+        # close image file
+        $zip.Dispose()
+    }
+
+
+    # show large harddrive warning, if image has large harddrives
+    if ($largeHarddrivesPresent)
+    {
+        $confirm = ConfirmDialog "Large harddrive" ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice)
+        if (!$confirm)
+        {
+            return
+        }
+    }
+
+
+    # default image dir
+    if ($hstwb.Settings.Image.ImageDir)
+    {
+        $defaultImageDir = $hstwb.Settings.Image.ImageDir
+    }
+    else
+    {
+        $defaultImageDir = ${Env:USERPROFILE}
+    }
+
+
+    # select new image directory
+    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
+
+    # return, if new image directory path is null
+    if ($newImageDirectoryPath -eq $null)
+    {
+        return
+    }
+
+
+    # return, if no write permission
+    try 
+    {
+        $tempFile = Join-Path $newImageDirectoryPath -ChildPath "__test__"
+        [System.IO.File]::OpenWrite($tempFile).Close()
+        Remove-Item -Path $tempFile -Force
+    }
+    catch
+    {
+        Write-Error ("Failed writing to new image directory '" + $newImageDirectoryPath + "'. No write permission!")
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
+
+
 
 
     # harddrives uae file
@@ -327,7 +379,8 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
                 {
                     $zip.Dispose()
                     Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
-                    Start-Sleep -s 2
+                    Write-Host ""
+                    Write-Host "Press enter to continue"
                     return
                 }
 
