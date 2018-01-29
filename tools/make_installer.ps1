@@ -84,10 +84,26 @@ function StartProcess($fileName, $arguments, $workingDirectory)
 	}
 }
 
+function ConvertMarkdownToHtml($pandocFile, $githubPandocFile, $markdownFile, $htmlFile)
+{
+	# build readme html from readme markdown using pandoc
+	$pandocArgs = "-f markdown_github -c ""$githubPandocFile"" -t html5 ""$markdownFile"" -o ""$htmlFile"""
+	StartProcess $pandocFile $pandocArgs (Split-Path $markdownFile -Parent)
+
+	# read github pandoc css and html
+	$githubPandocCss = [System.IO.File]::ReadAllText($githubPandocFile)
+	$html = [System.IO.File]::ReadAllText($htmlFile)
+
+	# embed github pandoc css and remove stylesheet link
+	$html = $html -replace '<style[^<>]+>(.*?)</style>', "<style type=""text/css"">`$1`r`n$githubPandocCss</style>" -replace '<link\s+rel="stylesheet"\s+href="github-pandoc.css">', ''
+	[System.IO.File]::WriteAllText($htmlFile, $html)
+}
+
 
 # paths
 $hstwbInstallerVersion = HstwbInstallerVersion
 $pandocFile = Join-Path $env:LOCALAPPDATA -ChildPath 'Pandoc\pandoc.exe'
+$githubPandocFile = Resolve-Path 'github-pandoc.css'
 $wixToolsetDir = Join-Path ${Env:ProgramFiles(x86)} -ChildPath '\WiX Toolset v3.10\bin'
 $wixToolsetHeatFile = Join-Path $wixToolsetDir -ChildPath 'heat.exe'
 $wixToolsetCandleFile = Join-Path $wixToolsetDir -ChildPath 'candle.exe'
@@ -124,6 +140,14 @@ mkdir -Path $outputDir | Out-Null
 # Build readme files
 # ------------------
 
+$readmeMarkdownLines = @()
+$readmeMarkdownLines += "# Readme"
+$readmeMarkdownLines += ""
+$readmeMarkdownLines += "This page gives an overview of readme for HstWB Installer and packages."
+$readmeMarkdownLines += ""
+$readmeMarkdownLines += "Readme for HstWB Installer:"
+$readmeMarkdownLines += "* [HstWB Installer](HstWB Installer/readme.html)"
+
 Write-Host "Building readme html from github markdown..." -ForegroundColor 'Yellow'
 
 $readmeDir = Join-Path $outputDir -ChildPath 'Readme'
@@ -133,19 +157,11 @@ $hstwbInstallerReadmeDir = Join-Path $readmeDir -ChildPath 'HstWB Installer'
 mkdir -Path $hstwbInstallerReadmeDir | Out-Null
 
 # build readme html from readme markdown using pandoc
-$readmeMarkdownFile = Resolve-Path '..\README.md'
-$readmeHtmlFile = Join-Path $hstwbInstallerReadmeDir -ChildPath 'README.html'
-$pandocArgs = "-f markdown_github -c ""github-pandoc.css"" -t html5 ""$readmeMarkdownFile"" -o ""$readmeHtmlFile"""
-StartProcess $pandocFile $pandocArgs $hstwbInstallerReadmeDir
+$hstwbInstallerReadmeMarkdownFile = Resolve-Path '..\README.md'
+$hstwbInstallerReadmeHtmlFile = Join-Path $hstwbInstallerReadmeDir -ChildPath 'README.html'
 
 # read github pandoc css and html
-$githubPandocFile = Resolve-Path 'github-pandoc.css'
-$githubPandocCss = [System.IO.File]::ReadAllText($githubPandocFile)
-$readmeHtml = [System.IO.File]::ReadAllText($readmeHtmlFile)
-
-# embed github pandoc css and remove stylesheet link
-$readmeHtml = $readmeHtml -replace '<style[^<>]+>(.*?)</style>', "<style type=""text/css"">`$1`r`n$githubPandocCss</style>" -replace '<link\s+rel="stylesheet"\s+href="github-pandoc.css">', ''
-[System.IO.File]::WriteAllText($readmeHtmlFile, $readmeHtml)
+ConvertMarkdownToHtml $pandocFile $githubPandocFile $hstwbInstallerReadmeMarkdownFile $hstwbInstallerReadmeHtmlFile
 
 # copy screenshots for readme
 $screenshotsDir = Join-Path -Path $rootDir -ChildPath 'Screenshots'
@@ -170,9 +186,15 @@ Write-Host "Done." -ForegroundColor 'Green'
 
 
 # Copy packages readme and screenshots
-
 $packagesReadmeDir = Join-Path $readmeDir -ChildPath 'Packages'
 mkdir -Path $packagesReadmeDir | Out-Null
+
+# add package readme line, if packages are present
+if ($packageFiles.Count -gt 0)
+{
+	$readmeMarkdownLines += ""
+	$readmeMarkdownLines += "Readme for package(s):"
+}
 
 foreach($packageFile in $packageFiles)
 {
@@ -209,7 +231,20 @@ foreach($packageFile in $packageFiles)
 
 	# extract readme and screenshot files from package
 	ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.(png|jpg))' $packageReadmeDir
+
+	# add package readme to readme markdown
+	$packageReadmeDirIndex = $packageReadmeDir.IndexOf($readmeDir) + $readmeDir.Length + 1
+	$packagesReadmeRelativeDir = $packageReadmeDir.Substring($packageReadmeDirIndex, $packageReadmeDir.Length - $packageReadmeDirIndex)
+	$readmeMarkdownLines += "* [{0}]({1}/README.html)" -f $packageName, $packagesReadmeRelativeDir.Replace("\", "/")
 }
+
+# write readme markdown file
+$readmeMarkdownFile = Join-Path $outputDir -ChildPath 'README.md'
+Set-Content -path $readmeMarkdownFile -Value $readmeMarkdownLines -Encoding UTF8
+
+# convert readme markdown file to html
+$readmeHtmlFile = Join-Path $readmeDir -ChildPath 'README.html'
+ConvertMarkdownToHtml $pandocFile $githubPandocFile $readmeMarkdownFile $readmeHtmlFile
 
 
 # Copy other component directories
