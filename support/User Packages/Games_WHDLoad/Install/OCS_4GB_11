@@ -10,7 +10,8 @@ IF EXISTS "USERPACKAGEDIR:R/RVFHonda"
   Copy >NIL: "USERPACKAGEDIR:R/RVFHonda" "$entrydir" ALL
 ENDIF
 
-; Create 'S' index directory
+; 'S' index directory
+echo "Installing 'S'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -18,7 +19,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:S.info"
   Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'S'..."
 
 ; Copy 'SabreTeam' entry directory
 IF EXISTS "USERPACKAGEDIR:S/SabreTeam.info"

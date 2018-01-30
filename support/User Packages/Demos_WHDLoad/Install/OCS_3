@@ -1846,7 +1846,8 @@ IF EXISTS "USERPACKAGEDIR:M/MyRoom"
   Copy >NIL: "USERPACKAGEDIR:M/MyRoom" "$entrydir" ALL
 ENDIF
 
-; Create 'N' index directory
+; 'N' index directory
+echo "Installing 'N'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1854,7 +1855,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:N.info"
   Copy >NIL: "USERPACKAGEDIR:N.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'N'..."
 
 ; Copy 'NegativeFX' entry directory
 IF EXISTS "USERPACKAGEDIR:N/NegativeFX.info"

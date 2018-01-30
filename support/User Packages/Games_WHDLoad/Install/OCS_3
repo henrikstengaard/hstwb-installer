@@ -1,51 +1,3 @@
-; Copy 'BomberBob' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BomberBob.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BomberBob.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BomberBob"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BomberBob"
-  Copy >NIL: "USERPACKAGEDIR:B/BomberBob" "$entrydir" ALL
-ENDIF
-
-; Copy 'BombFusion' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BombFusion.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BombFusion.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombFusion"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BombFusion"
-  Copy >NIL: "USERPACKAGEDIR:B/BombFusion" "$entrydir" ALL
-ENDIF
-
-; Copy 'BombJack' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BombJack.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BombJack.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombJack"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BombJack"
-  Copy >NIL: "USERPACKAGEDIR:B/BombJack" "$entrydir" ALL
-ENDIF
-
-; Copy 'Bombuzal' entry directory
-IF EXISTS "USERPACKAGEDIR:B/Bombuzal.info"
-  Copy >NIL: "USERPACKAGEDIR:B/Bombuzal.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/Bombuzal"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/Bombuzal"
-  Copy >NIL: "USERPACKAGEDIR:B/Bombuzal" "$entrydir" ALL
-ENDIF
-
 ; Copy 'BombX' entry directory
 IF EXISTS "USERPACKAGEDIR:B/BombX.info"
   Copy >NIL: "USERPACKAGEDIR:B/BombX.info" "$indexdir"
@@ -622,7 +574,8 @@ IF EXISTS "USERPACKAGEDIR:B/ButcherHill"
   Copy >NIL: "USERPACKAGEDIR:B/ButcherHill" "$entrydir" ALL
 ENDIF
 
-; Create 'C' index directory
+; 'C' index directory
+echo "Installing 'C'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -630,7 +583,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:C.info"
   Copy >NIL: "USERPACKAGEDIR:C.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'C'..."
 
 ; Copy 'Cabal' entry directory
 IF EXISTS "USERPACKAGEDIR:C/Cabal.info"
@@ -1998,4 +1950,52 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:C/Classic&BabyArcadia"
   Copy >NIL: "USERPACKAGEDIR:C/Classic&BabyArcadia" "$entrydir" ALL
+ENDIF
+
+; Copy 'ClassicBoardGames' entry directory
+IF EXISTS "USERPACKAGEDIR:C/ClassicBoardGames.info"
+  Copy >NIL: "USERPACKAGEDIR:C/ClassicBoardGames.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/ClassicBoardGames"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/ClassicBoardGames"
+  Copy >NIL: "USERPACKAGEDIR:C/ClassicBoardGames" "$entrydir" ALL
+ENDIF
+
+; Copy 'ClassicPucman' entry directory
+IF EXISTS "USERPACKAGEDIR:C/ClassicPucman.info"
+  Copy >NIL: "USERPACKAGEDIR:C/ClassicPucman.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/ClassicPucman"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/ClassicPucman"
+  Copy >NIL: "USERPACKAGEDIR:C/ClassicPucman" "$entrydir" ALL
+ENDIF
+
+; Copy 'Cliffhanger' entry directory
+IF EXISTS "USERPACKAGEDIR:C/Cliffhanger.info"
+  Copy >NIL: "USERPACKAGEDIR:C/Cliffhanger.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/Cliffhanger"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/Cliffhanger"
+  Copy >NIL: "USERPACKAGEDIR:C/Cliffhanger" "$entrydir" ALL
+ENDIF
+
+; Copy 'ClikClak' entry directory
+IF EXISTS "USERPACKAGEDIR:C/ClikClak.info"
+  Copy >NIL: "USERPACKAGEDIR:C/ClikClak.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/ClikClak"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/ClikClak"
+  Copy >NIL: "USERPACKAGEDIR:C/ClikClak" "$entrydir" ALL
 ENDIF

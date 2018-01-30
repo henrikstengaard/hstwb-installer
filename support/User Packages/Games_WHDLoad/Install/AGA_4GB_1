@@ -1,4 +1,5 @@
-; Create '0-9' index directory
+; '0-9' index directory
+echo "Installing '0-9'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "0-9"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -6,7 +7,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:0-9.info"
   Copy >NIL: "USERPACKAGEDIR:0-9.info" "$INSTALLDIR"
 ENDIF
-echo "Installing '0-9'..."
 
 ; Copy '1000ccTurbo' entry directory
 IF EXISTS "USERPACKAGEDIR:0-9/1000ccTurbo.info"
@@ -248,7 +248,8 @@ IF EXISTS "USERPACKAGEDIR:0-9/9Lives"
   Copy >NIL: "USERPACKAGEDIR:0-9/9Lives" "$entrydir" ALL
 ENDIF
 
-; Create 'A' index directory
+; 'A' index directory
+echo "Installing 'A'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -256,7 +257,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:A.info"
   Copy >NIL: "USERPACKAGEDIR:A.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'A'..."
 
 ; Copy 'A10TankKiller3Disk' entry directory
 IF EXISTS "USERPACKAGEDIR:A/A10TankKiller3Disk.info"
@@ -1111,27 +1111,27 @@ IF EXISTS "USERPACKAGEDIR:A/APBImage"
 ENDIF
 
 ; Copy 'ApidyaAudios' entry directory
-IF EXISTS "USERPACKAGEDIR:A/ApidyaAudios/data.info"
-  Copy >NIL: "USERPACKAGEDIR:A/ApidyaAudios/data.info" "$indexdir"
+IF EXISTS "USERPACKAGEDIR:A/ApidyaAudios.info"
+  Copy >NIL: "USERPACKAGEDIR:A/ApidyaAudios.info" "$indexdir"
 ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/ApidyaAudios/data"`"
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/ApidyaAudios"`"
 IF NOT EXISTS "$entrydir"
   MakePath >NIL: "$entrydir"
 ENDIF
-IF EXISTS "USERPACKAGEDIR:A/ApidyaAudios/data"
-  Copy >NIL: "USERPACKAGEDIR:A/ApidyaAudios/data" "$entrydir" ALL
+IF EXISTS "USERPACKAGEDIR:A/ApidyaAudios"
+  Copy >NIL: "USERPACKAGEDIR:A/ApidyaAudios" "$entrydir" ALL
 ENDIF
 
 ; Copy 'ApidyaKaiko' entry directory
-IF EXISTS "USERPACKAGEDIR:A/ApidyaKaiko/data.info"
-  Copy >NIL: "USERPACKAGEDIR:A/ApidyaKaiko/data.info" "$indexdir"
+IF EXISTS "USERPACKAGEDIR:A/ApidyaKaiko.info"
+  Copy >NIL: "USERPACKAGEDIR:A/ApidyaKaiko.info" "$indexdir"
 ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/ApidyaKaiko/data"`"
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/ApidyaKaiko"`"
 IF NOT EXISTS "$entrydir"
   MakePath >NIL: "$entrydir"
 ENDIF
-IF EXISTS "USERPACKAGEDIR:A/ApidyaKaiko/data"
-  Copy >NIL: "USERPACKAGEDIR:A/ApidyaKaiko/data" "$entrydir" ALL
+IF EXISTS "USERPACKAGEDIR:A/ApidyaKaiko"
+  Copy >NIL: "USERPACKAGEDIR:A/ApidyaKaiko" "$entrydir" ALL
 ENDIF
 
 ; Copy 'Apocalypse' entry directory
@@ -1758,7 +1758,8 @@ IF EXISTS "USERPACKAGEDIR:A/AztecChallenge"
   Copy >NIL: "USERPACKAGEDIR:A/AztecChallenge" "$entrydir" ALL
 ENDIF
 
-; Create 'B' index directory
+; 'B' index directory
+echo "Installing 'B'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1766,7 +1767,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:B.info"
   Copy >NIL: "USERPACKAGEDIR:B.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'B'..."
 
 ; Copy 'B17FlyingFortress' entry directory
 IF EXISTS "USERPACKAGEDIR:B/B17FlyingFortress.info"

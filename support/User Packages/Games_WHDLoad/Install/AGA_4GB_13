@@ -334,7 +334,8 @@ IF EXISTS "USERPACKAGEDIR:T/TyphoonThompson"
   Copy >NIL: "USERPACKAGEDIR:T/TyphoonThompson" "$entrydir" ALL
 ENDIF
 
-; Create 'U' index directory
+; 'U' index directory
+echo "Installing 'U'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "U"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -342,7 +343,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:U.info"
   Copy >NIL: "USERPACKAGEDIR:U.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'U'..."
 
 ; Copy 'Ugh' entry directory
 IF EXISTS "USERPACKAGEDIR:U/Ugh.info"
@@ -656,7 +656,8 @@ IF EXISTS "USERPACKAGEDIR:U/Utopia&NewWorlds"
   Copy >NIL: "USERPACKAGEDIR:U/Utopia&NewWorlds" "$entrydir" ALL
 ENDIF
 
-; Create 'V' index directory
+; 'V' index directory
+echo "Installing 'V'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "V"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -664,7 +665,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:V.info"
   Copy >NIL: "USERPACKAGEDIR:V.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'V'..."
 
 ; Copy 'Vader' entry directory
 IF EXISTS "USERPACKAGEDIR:V/Vader.info"
@@ -990,7 +990,8 @@ IF EXISTS "USERPACKAGEDIR:V/Vyrus"
   Copy >NIL: "USERPACKAGEDIR:V/Vyrus" "$entrydir" ALL
 ENDIF
 
-; Create 'W' index directory
+; 'W' index directory
+echo "Installing 'W'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -998,7 +999,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:W.info"
   Copy >NIL: "USERPACKAGEDIR:W.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'W'..."
 
 ; Copy 'WackyDarts' entry directory
 IF EXISTS "USERPACKAGEDIR:W/WackyDarts.info"
@@ -1024,16 +1024,16 @@ IF EXISTS "USERPACKAGEDIR:W/WackyRaces"
   Copy >NIL: "USERPACKAGEDIR:W/WackyRaces" "$entrydir" ALL
 ENDIF
 
-; Copy 'WalkerDecrunched' entry directory
-IF EXISTS "USERPACKAGEDIR:W/WalkerDecrunched.info"
-  Copy >NIL: "USERPACKAGEDIR:W/WalkerDecrunched.info" "$indexdir"
+; Copy 'WalkerCrunched' entry directory
+IF EXISTS "USERPACKAGEDIR:W/WalkerCrunched.info"
+  Copy >NIL: "USERPACKAGEDIR:W/WalkerCrunched.info" "$indexdir"
 ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WalkerDecrunched"`"
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W/WalkerCrunched"`"
 IF NOT EXISTS "$entrydir"
   MakePath >NIL: "$entrydir"
 ENDIF
-IF EXISTS "USERPACKAGEDIR:W/WalkerDecrunched"
-  Copy >NIL: "USERPACKAGEDIR:W/WalkerDecrunched" "$entrydir" ALL
+IF EXISTS "USERPACKAGEDIR:W/WalkerCrunched"
+  Copy >NIL: "USERPACKAGEDIR:W/WalkerCrunched" "$entrydir" ALL
 ENDIF
 
 ; Copy 'Wall' entry directory

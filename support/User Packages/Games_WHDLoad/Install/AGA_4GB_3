@@ -1750,7 +1750,8 @@ IF EXISTS "USERPACKAGEDIR:C/Cytron"
   Copy >NIL: "USERPACKAGEDIR:C/Cytron" "$entrydir" ALL
 ENDIF
 
-; Create 'D' index directory
+; 'D' index directory
+echo "Installing 'D'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1758,7 +1759,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:D.info"
   Copy >NIL: "USERPACKAGEDIR:D.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'D'..."
 
 ; Copy 'DalekAttack' entry directory
 IF EXISTS "USERPACKAGEDIR:D/DalekAttack.info"

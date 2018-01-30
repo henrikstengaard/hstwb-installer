@@ -58,7 +58,8 @@ IF EXISTS "USERPACKAGEDIR:M/MythHistoryInTheMaking"
   Copy >NIL: "USERPACKAGEDIR:M/MythHistoryInTheMaking" "$entrydir" ALL
 ENDIF
 
-; Create 'N' index directory
+; 'N' index directory
+echo "Installing 'N'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -66,7 +67,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:N.info"
   Copy >NIL: "USERPACKAGEDIR:N.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'N'..."
 
 ; Copy 'Nam19651975' entry directory
 IF EXISTS "USERPACKAGEDIR:N/Nam19651975.info"
@@ -644,7 +644,8 @@ IF EXISTS "USERPACKAGEDIR:N/Nucleus"
   Copy >NIL: "USERPACKAGEDIR:N/Nucleus" "$entrydir" ALL
 ENDIF
 
-; Create 'O' index directory
+; 'O' index directory
+echo "Installing 'O'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -652,7 +653,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:O.info"
   Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'O'..."
 
 ; Copy 'Oath' entry directory
 IF EXISTS "USERPACKAGEDIR:O/Oath.info"
@@ -1182,7 +1182,8 @@ IF EXISTS "USERPACKAGEDIR:O/Oxxonian"
   Copy >NIL: "USERPACKAGEDIR:O/Oxxonian" "$entrydir" ALL
 ENDIF
 
-; Create 'P' index directory
+; 'P' index directory
+echo "Installing 'P'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1190,7 +1191,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:P.info"
   Copy >NIL: "USERPACKAGEDIR:P.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'P'..."
 
 ; Copy 'P47Thunderbolt' entry directory
 IF EXISTS "USERPACKAGEDIR:P/P47Thunderbolt.info"

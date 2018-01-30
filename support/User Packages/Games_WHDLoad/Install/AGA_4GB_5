@@ -1294,7 +1294,8 @@ IF EXISTS "USERPACKAGEDIR:F/Fuzzball"
   Copy >NIL: "USERPACKAGEDIR:F/Fuzzball" "$entrydir" ALL
 ENDIF
 
-; Create 'G' index directory
+; 'G' index directory
+echo "Installing 'G'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1302,7 +1303,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:G.info"
   Copy >NIL: "USERPACKAGEDIR:G.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'G'..."
 
 ; Copy 'GadgetLostInTime' entry directory
 IF EXISTS "USERPACKAGEDIR:G/GadgetLostInTime.info"

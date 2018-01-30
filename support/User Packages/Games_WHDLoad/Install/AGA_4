@@ -1,51 +1,3 @@
-; Copy 'CivilizationDe' entry directory
-IF EXISTS "USERPACKAGEDIR:C/CivilizationDe.info"
-  Copy >NIL: "USERPACKAGEDIR:C/CivilizationDe.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CivilizationDe"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:C/CivilizationDe"
-  Copy >NIL: "USERPACKAGEDIR:C/CivilizationDe" "$entrydir" ALL
-ENDIF
-
-; Copy 'CJInTheUSA' entry directory
-IF EXISTS "USERPACKAGEDIR:C/CJInTheUSA.info"
-  Copy >NIL: "USERPACKAGEDIR:C/CJInTheUSA.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CJInTheUSA"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:C/CJInTheUSA"
-  Copy >NIL: "USERPACKAGEDIR:C/CJInTheUSA" "$entrydir" ALL
-ENDIF
-
-; Copy 'CJsElephantAntics' entry directory
-IF EXISTS "USERPACKAGEDIR:C/CJsElephantAntics.info"
-  Copy >NIL: "USERPACKAGEDIR:C/CJsElephantAntics.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CJsElephantAntics"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:C/CJsElephantAntics"
-  Copy >NIL: "USERPACKAGEDIR:C/CJsElephantAntics" "$entrydir" ALL
-ENDIF
-
-; Copy 'Classic&BabyArcadia' entry directory
-IF EXISTS "USERPACKAGEDIR:C/Classic&BabyArcadia.info"
-  Copy >NIL: "USERPACKAGEDIR:C/Classic&BabyArcadia.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/Classic&BabyArcadia"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:C/Classic&BabyArcadia"
-  Copy >NIL: "USERPACKAGEDIR:C/Classic&BabyArcadia" "$entrydir" ALL
-ENDIF
-
 ; Copy 'ClassicBoardGames' entry directory
 IF EXISTS "USERPACKAGEDIR:C/ClassicBoardGames.info"
   Copy >NIL: "USERPACKAGEDIR:C/ClassicBoardGames.info" "$indexdir"
@@ -1474,7 +1426,8 @@ IF EXISTS "USERPACKAGEDIR:C/Cytron"
   Copy >NIL: "USERPACKAGEDIR:C/Cytron" "$entrydir" ALL
 ENDIF
 
-; Create 'D' index directory
+; 'D' index directory
+echo "Installing 'D'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1482,7 +1435,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:D.info"
   Copy >NIL: "USERPACKAGEDIR:D.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'D'..."
 
 ; Copy 'DalekAttack' entry directory
 IF EXISTS "USERPACKAGEDIR:D/DalekAttack.info"
@@ -1998,4 +1950,52 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:D/DeepSpace"
   Copy >NIL: "USERPACKAGEDIR:D/DeepSpace" "$entrydir" ALL
+ENDIF
+
+; Copy 'Defender2' entry directory
+IF EXISTS "USERPACKAGEDIR:D/Defender2.info"
+  Copy >NIL: "USERPACKAGEDIR:D/Defender2.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D/Defender2"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D/Defender2"
+  Copy >NIL: "USERPACKAGEDIR:D/Defender2" "$entrydir" ALL
+ENDIF
+
+; Copy 'DefenderOfTheCrown' entry directory
+IF EXISTS "USERPACKAGEDIR:D/DefenderOfTheCrown.info"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderOfTheCrown.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D/DefenderOfTheCrown"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D/DefenderOfTheCrown"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderOfTheCrown" "$entrydir" ALL
+ENDIF
+
+; Copy 'DefenderOfTheCrownCDTV' entry directory
+IF EXISTS "USERPACKAGEDIR:D/DefenderOfTheCrownCDTV.info"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderOfTheCrownCDTV.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D/DefenderOfTheCrownCDTV"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D/DefenderOfTheCrownCDTV"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderOfTheCrownCDTV" "$entrydir" ALL
+ENDIF
+
+; Copy 'DefenderRatsoft' entry directory
+IF EXISTS "USERPACKAGEDIR:D/DefenderRatsoft.info"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderRatsoft.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D/DefenderRatsoft"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:D/DefenderRatsoft"
+  Copy >NIL: "USERPACKAGEDIR:D/DefenderRatsoft" "$entrydir" ALL
 ENDIF

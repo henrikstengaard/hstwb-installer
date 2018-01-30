@@ -1210,7 +1210,8 @@ IF EXISTS "USERPACKAGEDIR:S/Syndicate"
   Copy >NIL: "USERPACKAGEDIR:S/Syndicate" "$entrydir" ALL
 ENDIF
 
-; Create 'T' index directory
+; 'T' index directory
+echo "Installing 'T'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1218,7 +1219,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:T.info"
   Copy >NIL: "USERPACKAGEDIR:T.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'T'..."
 
 ; Copy 'TableHockeyArcadia' entry directory
 IF EXISTS "USERPACKAGEDIR:T/TableHockeyArcadia.info"

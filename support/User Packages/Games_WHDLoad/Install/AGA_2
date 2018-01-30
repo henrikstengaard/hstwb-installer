@@ -1,27 +1,3 @@
-; Copy 'AtominoDe' entry directory
-IF EXISTS "USERPACKAGEDIR:A/AtominoDe.info"
-  Copy >NIL: "USERPACKAGEDIR:A/AtominoDe.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/AtominoDe"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:A/AtominoDe"
-  Copy >NIL: "USERPACKAGEDIR:A/AtominoDe" "$entrydir" ALL
-ENDIF
-
-; Copy 'Atomix' entry directory
-IF EXISTS "USERPACKAGEDIR:A/Atomix.info"
-  Copy >NIL: "USERPACKAGEDIR:A/Atomix.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "A/Atomix"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:A/Atomix"
-  Copy >NIL: "USERPACKAGEDIR:A/Atomix" "$entrydir" ALL
-ENDIF
-
 ; Copy 'AtomSmasher' entry directory
 IF EXISTS "USERPACKAGEDIR:A/AtomSmasher.info"
   Copy >NIL: "USERPACKAGEDIR:A/AtomSmasher.info" "$indexdir"
@@ -310,7 +286,8 @@ IF EXISTS "USERPACKAGEDIR:A/AztecChallenge"
   Copy >NIL: "USERPACKAGEDIR:A/AztecChallenge" "$entrydir" ALL
 ENDIF
 
-; Create 'B' index directory
+; 'B' index directory
+echo "Installing 'B'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -318,7 +295,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:B.info"
   Copy >NIL: "USERPACKAGEDIR:B.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'B'..."
 
 ; Copy 'B17FlyingFortress' entry directory
 IF EXISTS "USERPACKAGEDIR:B/B17FlyingFortress.info"
@@ -750,18 +726,6 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:B/BartVsSpaceMutants1Disk"
   Copy >NIL: "USERPACKAGEDIR:B/BartVsSpaceMutants1Disk" "$entrydir" ALL
-ENDIF
-
-; Copy 'BartVsSpaceMutants2Disk' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BartVsSpaceMutants2Disk.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BartVsSpaceMutants2Disk.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BartVsSpaceMutants2Disk"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BartVsSpaceMutants2Disk"
-  Copy >NIL: "USERPACKAGEDIR:B/BartVsSpaceMutants2Disk" "$entrydir" ALL
 ENDIF
 
 ; Copy 'BartVsSpaceMutants2Disk' entry directory
@@ -1868,18 +1832,6 @@ IF EXISTS "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels"
   Copy >NIL: "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels" "$entrydir" ALL
 ENDIF
 
-; Copy 'Bloodwych&ExtendedLevels' entry directory
-IF EXISTS "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels.info"
-  Copy >NIL: "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/Bloodwych&ExtendedLevels"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels"
-  Copy >NIL: "USERPACKAGEDIR:B/Bloodwych&ExtendedLevels" "$entrydir" ALL
-ENDIF
-
 ; Copy 'BlueAngel69' entry directory
 IF EXISTS "USERPACKAGEDIR:B/BlueAngel69.info"
   Copy >NIL: "USERPACKAGEDIR:B/BlueAngel69.info" "$indexdir"
@@ -1998,4 +1950,52 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:B/BodyBlows"
   Copy >NIL: "USERPACKAGEDIR:B/BodyBlows" "$entrydir" ALL
+ENDIF
+
+; Copy 'BodyBlowsGalactic' entry directory
+IF EXISTS "USERPACKAGEDIR:B/BodyBlowsGalactic.info"
+  Copy >NIL: "USERPACKAGEDIR:B/BodyBlowsGalactic.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BodyBlowsGalactic"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B/BodyBlowsGalactic"
+  Copy >NIL: "USERPACKAGEDIR:B/BodyBlowsGalactic" "$entrydir" ALL
+ENDIF
+
+; Copy 'BomberBob' entry directory
+IF EXISTS "USERPACKAGEDIR:B/BomberBob.info"
+  Copy >NIL: "USERPACKAGEDIR:B/BomberBob.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BomberBob"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B/BomberBob"
+  Copy >NIL: "USERPACKAGEDIR:B/BomberBob" "$entrydir" ALL
+ENDIF
+
+; Copy 'BombFusion' entry directory
+IF EXISTS "USERPACKAGEDIR:B/BombFusion.info"
+  Copy >NIL: "USERPACKAGEDIR:B/BombFusion.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombFusion"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B/BombFusion"
+  Copy >NIL: "USERPACKAGEDIR:B/BombFusion" "$entrydir" ALL
+ENDIF
+
+; Copy 'BombJack' entry directory
+IF EXISTS "USERPACKAGEDIR:B/BombJack.info"
+  Copy >NIL: "USERPACKAGEDIR:B/BombJack.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombJack"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:B/BombJack"
+  Copy >NIL: "USERPACKAGEDIR:B/BombJack" "$entrydir" ALL
 ENDIF
