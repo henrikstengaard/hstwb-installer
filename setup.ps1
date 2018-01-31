@@ -1228,18 +1228,23 @@ function ConfigureInstaller($hstwb)
 # change installer mode
 function ChangeInstallerMode($hstwb)
 {
-    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Build User Package Installation", "Test")
+    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Build User Package Installation", "Test", "Back")
 
+    $installerMode = ''
     switch ($choice)
     {
-        "Test" { $hstwb.Settings.Installer.Mode = "Test" }
-        "Install" { $hstwb.Settings.Installer.Mode = "Install" }
-        "Build Self Install" { $hstwb.Settings.Installer.Mode = "BuildSelfInstall" }
-        "Build Package Installation" { $hstwb.Settings.Installer.Mode = "BuildPackageInstallation" }
-        "Build User Package Installation" { $hstwb.Settings.Installer.Mode = "BuildUserPackageInstallation" }
+        "Test" { $installerMode = "Test" }
+        "Install" { $installerMode = "Install" }
+        "Build Self Install" { $installerMode = "BuildSelfInstall" }
+        "Build Package Installation" { $installerMode = "BuildPackageInstallation" }
+        "Build User Package Installation" { $installerMode = "BuildUserPackageInstallation" }
     }
 
-    Save $hstwb
+    if ($choice -ne 'Back')
+    {
+        $hstwb.Settings.Installer.Mode = $installerMode
+        Save $hstwb
+    }
 }
 
 
