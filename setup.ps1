@@ -252,7 +252,7 @@ function ExistingImageDirectory($hstwb)
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog 'Large harddrive' ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice) 'Warning'
+        $confirm = ConfirmDialog 'Large harddrive' ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newPath) 'Warning'
         if (!$confirm)
         {
             return
