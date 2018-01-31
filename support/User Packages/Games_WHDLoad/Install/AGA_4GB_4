@@ -1246,7 +1246,8 @@ IF EXISTS "USERPACKAGEDIR:D/Dyter07"
   Copy >NIL: "USERPACKAGEDIR:D/Dyter07" "$entrydir" ALL
 ENDIF
 
-; Create 'E' index directory
+; 'E' index directory
+echo "Installing 'E'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "E"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1254,7 +1255,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:E.info"
   Copy >NIL: "USERPACKAGEDIR:E.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'E'..."
 
 ; Copy 'EaglesRider' entry directory
 IF EXISTS "USERPACKAGEDIR:E/EaglesRider.info"
@@ -1988,7 +1988,8 @@ IF EXISTS "USERPACKAGEDIR:E/EyeOfTheStorm"
   Copy >NIL: "USERPACKAGEDIR:E/EyeOfTheStorm" "$entrydir" ALL
 ENDIF
 
-; Create 'F' index directory
+; 'F' index directory
+echo "Installing 'F'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1996,7 +1997,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:F.info"
   Copy >NIL: "USERPACKAGEDIR:F.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'F'..."
 
 ; Copy 'F1' entry directory
 IF EXISTS "USERPACKAGEDIR:F/F1.info"

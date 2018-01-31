@@ -322,7 +322,8 @@ IF EXISTS "USERPACKAGEDIR:J/JupitersMasterdrive"
   Copy >NIL: "USERPACKAGEDIR:J/JupitersMasterdrive" "$entrydir" ALL
 ENDIF
 
-; Create 'K' index directory
+; 'K' index directory
+echo "Installing 'K'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "K"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -330,7 +331,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:K.info"
   Copy >NIL: "USERPACKAGEDIR:K.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'K'..."
 
 ; Copy 'K240' entry directory
 IF EXISTS "USERPACKAGEDIR:K/K240.info"
@@ -992,7 +992,8 @@ IF EXISTS "USERPACKAGEDIR:K/KwikSnax"
   Copy >NIL: "USERPACKAGEDIR:K/KwikSnax" "$entrydir" ALL
 ENDIF
 
-; Create 'L' index directory
+; 'L' index directory
+echo "Installing 'L'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1000,7 +1001,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:L.info"
   Copy >NIL: "USERPACKAGEDIR:L.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'L'..."
 
 ; Copy 'LabyrinthDk' entry directory
 IF EXISTS "USERPACKAGEDIR:L/LabyrinthDk.info"
@@ -1986,7 +1986,8 @@ IF EXISTS "USERPACKAGEDIR:L/Luxor"
   Copy >NIL: "USERPACKAGEDIR:L/Luxor" "$entrydir" ALL
 ENDIF
 
-; Create 'M' index directory
+; 'M' index directory
+echo "Installing 'M'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1994,7 +1995,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:M.info"
   Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'M'..."
 
 ; Copy 'M1TankPlatoon' entry directory
 IF EXISTS "USERPACKAGEDIR:M/M1TankPlatoon.info"

@@ -1570,7 +1570,8 @@ IF EXISTS "USERPACKAGEDIR:B/ButcherHill"
   Copy >NIL: "USERPACKAGEDIR:B/ButcherHill" "$entrydir" ALL
 ENDIF
 
-; Create 'C' index directory
+; 'C' index directory
+echo "Installing 'C'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1578,7 +1579,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:C.info"
   Copy >NIL: "USERPACKAGEDIR:C.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'C'..."
 
 ; Copy 'Cabal' entry directory
 IF EXISTS "USERPACKAGEDIR:C/Cabal.info"

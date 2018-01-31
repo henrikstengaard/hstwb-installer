@@ -1,51 +1,3 @@
-; Copy 'BodyBlowsGalactic' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BodyBlowsGalactic.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BodyBlowsGalactic.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BodyBlowsGalactic"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BodyBlowsGalactic"
-  Copy >NIL: "USERPACKAGEDIR:B/BodyBlowsGalactic" "$entrydir" ALL
-ENDIF
-
-; Copy 'BomberBob' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BomberBob.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BomberBob.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BomberBob"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BomberBob"
-  Copy >NIL: "USERPACKAGEDIR:B/BomberBob" "$entrydir" ALL
-ENDIF
-
-; Copy 'BombFusion' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BombFusion.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BombFusion.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombFusion"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BombFusion"
-  Copy >NIL: "USERPACKAGEDIR:B/BombFusion" "$entrydir" ALL
-ENDIF
-
-; Copy 'BombJack' entry directory
-IF EXISTS "USERPACKAGEDIR:B/BombJack.info"
-  Copy >NIL: "USERPACKAGEDIR:B/BombJack.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B/BombJack"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:B/BombJack"
-  Copy >NIL: "USERPACKAGEDIR:B/BombJack" "$entrydir" ALL
-ENDIF
-
 ; Copy 'Bombuzal' entry directory
 IF EXISTS "USERPACKAGEDIR:B/Bombuzal.info"
   Copy >NIL: "USERPACKAGEDIR:B/Bombuzal.info" "$indexdir"
@@ -670,7 +622,8 @@ IF EXISTS "USERPACKAGEDIR:B/ButcherHill"
   Copy >NIL: "USERPACKAGEDIR:B/ButcherHill" "$entrydir" ALL
 ENDIF
 
-; Create 'C' index directory
+; 'C' index directory
+echo "Installing 'C'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -678,7 +631,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:C.info"
   Copy >NIL: "USERPACKAGEDIR:C.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'C'..."
 
 ; Copy 'Cabal' entry directory
 IF EXISTS "USERPACKAGEDIR:C/Cabal.info"
@@ -1998,4 +1950,52 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:C/CivilizationCD"
   Copy >NIL: "USERPACKAGEDIR:C/CivilizationCD" "$entrydir" ALL
+ENDIF
+
+; Copy 'CivilizationDe' entry directory
+IF EXISTS "USERPACKAGEDIR:C/CivilizationDe.info"
+  Copy >NIL: "USERPACKAGEDIR:C/CivilizationDe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CivilizationDe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/CivilizationDe"
+  Copy >NIL: "USERPACKAGEDIR:C/CivilizationDe" "$entrydir" ALL
+ENDIF
+
+; Copy 'CJInTheUSA' entry directory
+IF EXISTS "USERPACKAGEDIR:C/CJInTheUSA.info"
+  Copy >NIL: "USERPACKAGEDIR:C/CJInTheUSA.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CJInTheUSA"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/CJInTheUSA"
+  Copy >NIL: "USERPACKAGEDIR:C/CJInTheUSA" "$entrydir" ALL
+ENDIF
+
+; Copy 'CJsElephantAntics' entry directory
+IF EXISTS "USERPACKAGEDIR:C/CJsElephantAntics.info"
+  Copy >NIL: "USERPACKAGEDIR:C/CJsElephantAntics.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/CJsElephantAntics"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/CJsElephantAntics"
+  Copy >NIL: "USERPACKAGEDIR:C/CJsElephantAntics" "$entrydir" ALL
+ENDIF
+
+; Copy 'Classic&BabyArcadia' entry directory
+IF EXISTS "USERPACKAGEDIR:C/Classic&BabyArcadia.info"
+  Copy >NIL: "USERPACKAGEDIR:C/Classic&BabyArcadia.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C/Classic&BabyArcadia"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:C/Classic&BabyArcadia"
+  Copy >NIL: "USERPACKAGEDIR:C/Classic&BabyArcadia" "$entrydir" ALL
 ENDIF

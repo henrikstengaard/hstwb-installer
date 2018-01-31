@@ -81,9 +81,9 @@ function FolderBrowserDialog($title, $directory, $showNewFolderButton)
 
 
 # confirm dialog
-function ConfirmDialog($title, $message)
+function ConfirmDialog($title, $message, $icon = 'Asterisk')
 {
-    $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::OKCancel)
+    $result = [System.Windows.Forms.MessageBox]::Show($message, $title, [System.Windows.Forms.MessageBoxButtons]::OKCancel, $icon)
 
     if($result -eq "OK")
     {
@@ -249,18 +249,17 @@ function ExistingImageDirectory($hstwb)
         }
     }
 
-
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog "Large harddrive" ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newPath)
+        $confirm = ConfirmDialog 'Large harddrive' ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice) 'Warning'
         if (!$confirm)
         {
             return
         }
     }
 
-    #
+    # save new image directory
     $hstwb.Settings.Image.ImageDir = $newPath
     Save $hstwb
 }
@@ -368,7 +367,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog "Large harddrive" ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice)
+        $confirm = ConfirmDialog 'Large harddrive' ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice) 'Warning'
         if (!$confirm)
         {
             return

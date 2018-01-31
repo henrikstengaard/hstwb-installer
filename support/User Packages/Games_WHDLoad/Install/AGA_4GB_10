@@ -106,7 +106,8 @@ IF EXISTS "USERPACKAGEDIR:P/Pyramax"
   Copy >NIL: "USERPACKAGEDIR:P/Pyramax" "$entrydir" ALL
 ENDIF
 
-; Create 'Q' index directory
+; 'Q' index directory
+echo "Installing 'Q'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -114,7 +115,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:Q.info"
   Copy >NIL: "USERPACKAGEDIR:Q.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'Q'..."
 
 ; Copy 'QBic' entry directory
 IF EXISTS "USERPACKAGEDIR:Q/QBic.info"
@@ -272,7 +272,8 @@ IF EXISTS "USERPACKAGEDIR:Q/Qwak"
   Copy >NIL: "USERPACKAGEDIR:Q/Qwak" "$entrydir" ALL
 ENDIF
 
-; Create 'R' index directory
+; 'R' index directory
+echo "Installing 'R'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -280,7 +281,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:R.info"
   Copy >NIL: "USERPACKAGEDIR:R.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'R'..."
 
 ; Copy 'RaceDrivin' entry directory
 IF EXISTS "USERPACKAGEDIR:R/RaceDrivin.info"
@@ -1350,7 +1350,8 @@ IF EXISTS "USERPACKAGEDIR:R/RVFHonda"
   Copy >NIL: "USERPACKAGEDIR:R/RVFHonda" "$entrydir" ALL
 ENDIF
 
-; Create 'S' index directory
+; 'S' index directory
+echo "Installing 'S'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1358,7 +1359,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:S.info"
   Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'S'..."
 
 ; Copy 'SafariGuns' entry directory
 IF EXISTS "USERPACKAGEDIR:S/SafariGuns.info"

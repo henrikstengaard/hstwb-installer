@@ -1,4 +1,5 @@
-; Create 'M' index directory
+; 'M' index directory
+echo "Installing 'M'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -6,7 +7,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:M.info"
   Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'M'..."
 
 ; Extract 'MusicBoxExodus' entry archive
 IF EXISTS "USERPACKAGEDIR:MusicBox_v1.0_Exodus.lha"

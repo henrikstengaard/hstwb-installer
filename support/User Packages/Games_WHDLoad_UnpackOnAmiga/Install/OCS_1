@@ -1,4 +1,5 @@
-; Create 'B' index directory
+; 'B' index directory
+echo "Installing 'B'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "B"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -6,7 +7,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:B.info"
   Copy >NIL: "USERPACKAGEDIR:B.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'B'..."
 
 ; Extract 'Battlestorm' entry archive
 IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_2008.zip"
@@ -18,7 +18,8 @@ IF EXISTS "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip"
   unzip -qq -o -x "USERPACKAGEDIR:Battlestorm_v1.2_CDTV.zip" -d "$indexdir"
 ENDIF
 
-; Create 'D' index directory
+; 'D' index directory
+echo "Installing 'D'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "D"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -26,7 +27,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:D.info"
   Copy >NIL: "USERPACKAGEDIR:D.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'D'..."
 
 ; Extract 'DinoWars' entry archive
 IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1.lha"
@@ -38,7 +38,8 @@ IF EXISTS "USERPACKAGEDIR:DinoWars_v1.1_De.lha"
   lha -q -m1 x "USERPACKAGEDIR:DinoWars_v1.1_De.lha" "$indexdir/"
 ENDIF
 
-; Create 'E' index directory
+; 'E' index directory
+echo "Installing 'E'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "E"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -46,14 +47,14 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:E.info"
   Copy >NIL: "USERPACKAGEDIR:E.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'E'..."
 
 ; Extract 'EmeraldMinesCD' entry archive
 IF EXISTS "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha"
   lha -q -m1 x "USERPACKAGEDIR:EmeraldMines_v1.0_CD.lha" "$indexdir/"
 ENDIF
 
-; Create 'F' index directory
+; 'F' index directory
+echo "Installing 'F'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -61,7 +62,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:F.info"
   Copy >NIL: "USERPACKAGEDIR:F.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'F'..."
 
 ; Extract 'FastLane' entry archive
 IF EXISTS "USERPACKAGEDIR:FastLane_v1.0.lha"
@@ -78,7 +78,8 @@ IF EXISTS "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha"
   lha -q -m1 x "USERPACKAGEDIR:FussballTotal_v1.1_De_2135.lha" "$indexdir/"
 ENDIF
 
-; Create 'H' index directory
+; 'H' index directory
+echo "Installing 'H'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -86,7 +87,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:H.info"
   Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'H'..."
 
 ; Extract 'HiredGuns1MB' entry archive
 IF EXISTS "USERPACKAGEDIR:HiredGuns_v1.0_1MB_1114.zip"
@@ -108,7 +108,8 @@ IF EXISTS "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha"
   lha -q -m1 x "USERPACKAGEDIR:HoleInOne&DataDisks_v1.1.lha" "$indexdir/"
 ENDIF
 
-; Create 'M' index directory
+; 'M' index directory
+echo "Installing 'M'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -116,14 +117,14 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:M.info"
   Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'M'..."
 
 ; Extract 'MightAndMagic3De' entry archive
 IF EXISTS "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha"
   lha -q -m1 x "USERPACKAGEDIR:MightAndMagic3_v1.2_De.lha" "$indexdir/"
 ENDIF
 
-; Create 'O' index directory
+; 'O' index directory
+echo "Installing 'O'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -131,14 +132,14 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:O.info"
   Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'O'..."
 
 ; Extract 'OsWALDOfTheIceFloes' entry archive
 IF EXISTS "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip"
   unzip -qq -o -x "USERPACKAGEDIR:OsWALDOfTheIceFloes_v1.0.zip" -d "$indexdir"
 ENDIF
 
-; Create 'P' index directory
+; 'P' index directory
+echo "Installing 'P'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -146,14 +147,14 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:P.info"
   Copy >NIL: "USERPACKAGEDIR:P.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'P'..."
 
 ; Extract 'PizzaConnectionDe' entry archive
 IF EXISTS "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha"
   lha -q -m1 x "USERPACKAGEDIR:PizzaConnection_v1.0_De.lha" "$indexdir/"
 ENDIF
 
-; Create 'S' index directory
+; 'S' index directory
+echo "Installing 'S'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -161,7 +162,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:S.info"
   Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'S'..."
 
 ; Extract 'SimLife' entry archive
 IF EXISTS "USERPACKAGEDIR:SimLife_v1.0_2585.zip"
@@ -183,7 +183,8 @@ IF EXISTS "USERPACKAGEDIR:Sorefist_v1.0.zip"
   unzip -qq -o -x "USERPACKAGEDIR:Sorefist_v1.0.zip" -d "$indexdir"
 ENDIF
 
-; Create 'T' index directory
+; 'T' index directory
+echo "Installing 'T'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "T"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -191,7 +192,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:T.info"
   Copy >NIL: "USERPACKAGEDIR:T.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'T'..."
 
 ; Extract 'TransworldDe' entry archive
 IF EXISTS "USERPACKAGEDIR:Transworld_v1.0_De_2837.lha"
@@ -213,7 +213,8 @@ IF EXISTS "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip"
   unzip -qq -o -x "USERPACKAGEDIR:TrivialPursuit_v1.2_Fr_2147.zip" -d "$indexdir"
 ENDIF
 
-; Create 'W' index directory
+; 'W' index directory
+echo "Installing 'W'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "W"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -221,7 +222,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:W.info"
   Copy >NIL: "USERPACKAGEDIR:W.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'W'..."
 
 ; Extract 'WPotrzaskuPl' entry archive
 IF EXISTS "USERPACKAGEDIR:WPotrzasku_v1.0_Pl.zip"

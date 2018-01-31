@@ -802,7 +802,8 @@ IF EXISTS "USERPACKAGEDIR:G/GuySpy"
   Copy >NIL: "USERPACKAGEDIR:G/GuySpy" "$entrydir" ALL
 ENDIF
 
-; Create 'H' index directory
+; 'H' index directory
+echo "Installing 'H'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -810,7 +811,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:H.info"
   Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'H'..."
 
 ; Copy 'Hacker' entry directory
 IF EXISTS "USERPACKAGEDIR:H/Hacker.info"
@@ -1688,7 +1688,8 @@ IF EXISTS "USERPACKAGEDIR:H/Hyperion"
   Copy >NIL: "USERPACKAGEDIR:H/Hyperion" "$entrydir" ALL
 ENDIF
 
-; Create 'I' index directory
+; 'I' index directory
+echo "Installing 'I'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "I"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1696,7 +1697,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:I.info"
   Copy >NIL: "USERPACKAGEDIR:I.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'I'..."
 
 ; Copy 'IanBothamsCricket' entry directory
 IF EXISTS "USERPACKAGEDIR:I/IanBothamsCricket.info"

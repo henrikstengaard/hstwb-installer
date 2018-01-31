@@ -526,7 +526,8 @@ IF EXISTS "USERPACKAGEDIR:L/Luxor"
   Copy >NIL: "USERPACKAGEDIR:L/Luxor" "$entrydir" ALL
 ENDIF
 
-; Create 'M' index directory
+; 'M' index directory
+echo "Installing 'M'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "M"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -534,7 +535,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:M.info"
   Copy >NIL: "USERPACKAGEDIR:M.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'M'..."
 
 ; Copy 'M1TankPlatoon' entry directory
 IF EXISTS "USERPACKAGEDIR:M/M1TankPlatoon.info"

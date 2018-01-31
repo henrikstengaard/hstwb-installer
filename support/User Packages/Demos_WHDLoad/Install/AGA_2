@@ -430,7 +430,8 @@ IF EXISTS "USERPACKAGEDIR:D/Dyspepsia"
   Copy >NIL: "USERPACKAGEDIR:D/Dyspepsia" "$entrydir" ALL
 ENDIF
 
-; Create 'E' index directory
+; 'E' index directory
+echo "Installing 'E'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "E"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -438,7 +439,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:E.info"
   Copy >NIL: "USERPACKAGEDIR:E.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'E'..."
 
 ; Copy 'EargasmTunes' entry directory
 IF EXISTS "USERPACKAGEDIR:E/EargasmTunes.info"
@@ -764,7 +764,8 @@ IF EXISTS "USERPACKAGEDIR:E/Extension"
   Copy >NIL: "USERPACKAGEDIR:E/Extension" "$entrydir" ALL
 ENDIF
 
-; Create 'F' index directory
+; 'F' index directory
+echo "Installing 'F'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -772,7 +773,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:F.info"
   Copy >NIL: "USERPACKAGEDIR:F.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'F'..."
 
 ; Copy 'FaceAnotherDay' entry directory
 IF EXISTS "USERPACKAGEDIR:F/FaceAnotherDay.info"
@@ -978,7 +978,8 @@ IF EXISTS "USERPACKAGEDIR:F/FutureSynthetix"
   Copy >NIL: "USERPACKAGEDIR:F/FutureSynthetix" "$entrydir" ALL
 ENDIF
 
-; Create 'G' index directory
+; 'G' index directory
+echo "Installing 'G'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -986,7 +987,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:G.info"
   Copy >NIL: "USERPACKAGEDIR:G.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'G'..."
 
 ; Copy 'GateToHell' entry directory
 IF EXISTS "USERPACKAGEDIR:G/GateToHell.info"
@@ -1204,7 +1204,8 @@ IF EXISTS "USERPACKAGEDIR:G/GuardianDragon2"
   Copy >NIL: "USERPACKAGEDIR:G/GuardianDragon2" "$entrydir" ALL
 ENDIF
 
-; Create 'H' index directory
+; 'H' index directory
+echo "Installing 'H'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1212,7 +1213,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:H.info"
   Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'H'..."
 
 ; Copy 'HailTheEngineer' entry directory
 IF EXISTS "USERPACKAGEDIR:H/HailTheEngineer.info"
@@ -1514,7 +1514,8 @@ IF EXISTS "USERPACKAGEDIR:H/HymnsFromTheBible3"
   Copy >NIL: "USERPACKAGEDIR:H/HymnsFromTheBible3" "$entrydir" ALL
 ENDIF
 
-; Create 'I' index directory
+; 'I' index directory
+echo "Installing 'I'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "I"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1522,7 +1523,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:I.info"
   Copy >NIL: "USERPACKAGEDIR:I.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'I'..."
 
 ; Copy 'Ice' entry directory
 IF EXISTS "USERPACKAGEDIR:I/Ice.info"
@@ -1752,7 +1752,8 @@ IF EXISTS "USERPACKAGEDIR:I/IveGotThePower"
   Copy >NIL: "USERPACKAGEDIR:I/IveGotThePower" "$entrydir" ALL
 ENDIF
 
-; Create 'J' index directory
+; 'J' index directory
+echo "Installing 'J'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "J"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1760,7 +1761,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:J.info"
   Copy >NIL: "USERPACKAGEDIR:J.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'J'..."
 
 ; Copy 'JehovaGoesHitech' entry directory
 IF EXISTS "USERPACKAGEDIR:J/JehovaGoesHitech.info"
@@ -1894,7 +1894,8 @@ IF EXISTS "USERPACKAGEDIR:J/Just4YourEars"
   Copy >NIL: "USERPACKAGEDIR:J/Just4YourEars" "$entrydir" ALL
 ENDIF
 
-; Create 'K' index directory
+; 'K' index directory
+echo "Installing 'K'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "K"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1902,7 +1903,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:K.info"
   Copy >NIL: "USERPACKAGEDIR:K.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'K'..."
 
 ; Copy 'Kakburk' entry directory
 IF EXISTS "USERPACKAGEDIR:K/Kakburk.info"
@@ -1988,7 +1988,8 @@ IF EXISTS "USERPACKAGEDIR:K/Kuglepoelen"
   Copy >NIL: "USERPACKAGEDIR:K/Kuglepoelen" "$entrydir" ALL
 ENDIF
 
-; Create 'L' index directory
+; 'L' index directory
+echo "Installing 'L'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1996,7 +1997,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:L.info"
   Copy >NIL: "USERPACKAGEDIR:L.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'L'..."
 
 ; Copy 'LastSun' entry directory
 IF EXISTS "USERPACKAGEDIR:L/LastSun.info"

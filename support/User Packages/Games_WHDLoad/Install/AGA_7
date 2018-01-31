@@ -1,111 +1,3 @@
-; Copy 'FlightSimulator2&Hawaiian' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FlightSimulator2&Hawaiian.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FlightSimulator2&Hawaiian.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FlightSimulator2&Hawaiian"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FlightSimulator2&Hawaiian"
-  Copy >NIL: "USERPACKAGEDIR:F/FlightSimulator2&Hawaiian" "$entrydir" ALL
-ENDIF
-
-; Copy 'FlimbosQuest' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FlimbosQuest.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FlimbosQuest.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FlimbosQuest"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FlimbosQuest"
-  Copy >NIL: "USERPACKAGEDIR:F/FlimbosQuest" "$entrydir" ALL
-ENDIF
-
-; Copy 'Flintstones' entry directory
-IF EXISTS "USERPACKAGEDIR:F/Flintstones.info"
-  Copy >NIL: "USERPACKAGEDIR:F/Flintstones.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/Flintstones"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/Flintstones"
-  Copy >NIL: "USERPACKAGEDIR:F/Flintstones" "$entrydir" ALL
-ENDIF
-
-; Copy 'Flipit&Magnose' entry directory
-IF EXISTS "USERPACKAGEDIR:F/Flipit&Magnose.info"
-  Copy >NIL: "USERPACKAGEDIR:F/Flipit&Magnose.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/Flipit&Magnose"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/Flipit&Magnose"
-  Copy >NIL: "USERPACKAGEDIR:F/Flipit&Magnose" "$entrydir" ALL
-ENDIF
-
-; Copy 'Flood' entry directory
-IF EXISTS "USERPACKAGEDIR:F/Flood.info"
-  Copy >NIL: "USERPACKAGEDIR:F/Flood.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/Flood"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/Flood"
-  Copy >NIL: "USERPACKAGEDIR:F/Flood" "$entrydir" ALL
-ENDIF
-
-; Copy 'Floor13' entry directory
-IF EXISTS "USERPACKAGEDIR:F/Floor13.info"
-  Copy >NIL: "USERPACKAGEDIR:F/Floor13.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/Floor13"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/Floor13"
-  Copy >NIL: "USERPACKAGEDIR:F/Floor13" "$entrydir" ALL
-ENDIF
-
-; Copy 'FluchtAusColditzDe' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FluchtAusColditzDe.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FluchtAusColditzDe.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FluchtAusColditzDe"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FluchtAusColditzDe"
-  Copy >NIL: "USERPACKAGEDIR:F/FluchtAusColditzDe" "$entrydir" ALL
-ENDIF
-
-; Copy 'FlyFighter' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FlyFighter.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FlyFighter.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FlyFighter"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FlyFighter"
-  Copy >NIL: "USERPACKAGEDIR:F/FlyFighter" "$entrydir" ALL
-ENDIF
-
-; Copy 'FlyFighter' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FlyFighter.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FlyFighter.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FlyFighter"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FlyFighter"
-  Copy >NIL: "USERPACKAGEDIR:F/FlyFighter" "$entrydir" ALL
-ENDIF
-
 ; Copy 'FlyHarder' entry directory
 IF EXISTS "USERPACKAGEDIR:F/FlyHarder.info"
   Copy >NIL: "USERPACKAGEDIR:F/FlyHarder.info" "$indexdir"
@@ -272,18 +164,6 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:F/FoundationsWaste"
   Copy >NIL: "USERPACKAGEDIR:F/FoundationsWaste" "$entrydir" ALL
-ENDIF
-
-; Copy 'FourCrystalsOfTrazere' entry directory
-IF EXISTS "USERPACKAGEDIR:F/FourCrystalsOfTrazere.info"
-  Copy >NIL: "USERPACKAGEDIR:F/FourCrystalsOfTrazere.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/FourCrystalsOfTrazere"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/FourCrystalsOfTrazere"
-  Copy >NIL: "USERPACKAGEDIR:F/FourCrystalsOfTrazere" "$entrydir" ALL
 ENDIF
 
 ; Copy 'FourCrystalsOfTrazere' entry directory
@@ -730,18 +610,6 @@ IF EXISTS "USERPACKAGEDIR:F/Fuzzball"
   Copy >NIL: "USERPACKAGEDIR:F/Fuzzball" "$entrydir" ALL
 ENDIF
 
-; Copy 'Fuzzball' entry directory
-IF EXISTS "USERPACKAGEDIR:F/Fuzzball.info"
-  Copy >NIL: "USERPACKAGEDIR:F/Fuzzball.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "F/Fuzzball"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:F/Fuzzball"
-  Copy >NIL: "USERPACKAGEDIR:F/Fuzzball" "$entrydir" ALL
-ENDIF
-
 ; Copy 'FuzzballNoIntro' entry directory
 IF EXISTS "USERPACKAGEDIR:F/FuzzballNoIntro.info"
   Copy >NIL: "USERPACKAGEDIR:F/FuzzballNoIntro.info" "$indexdir"
@@ -754,7 +622,8 @@ IF EXISTS "USERPACKAGEDIR:F/FuzzballNoIntro"
   Copy >NIL: "USERPACKAGEDIR:F/FuzzballNoIntro" "$entrydir" ALL
 ENDIF
 
-; Create 'G' index directory
+; 'G' index directory
+echo "Installing 'G'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -762,7 +631,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:G.info"
   Copy >NIL: "USERPACKAGEDIR:G.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'G'..."
 
 ; Copy 'GadgetLostInTime' entry directory
 IF EXISTS "USERPACKAGEDIR:G/GadgetLostInTime.info"
@@ -1616,18 +1484,6 @@ IF EXISTS "USERPACKAGEDIR:G/GoldenEagle"
   Copy >NIL: "USERPACKAGEDIR:G/GoldenEagle" "$entrydir" ALL
 ENDIF
 
-; Copy 'GoldenEagle' entry directory
-IF EXISTS "USERPACKAGEDIR:G/GoldenEagle.info"
-  Copy >NIL: "USERPACKAGEDIR:G/GoldenEagle.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/GoldenEagle"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:G/GoldenEagle"
-  Copy >NIL: "USERPACKAGEDIR:G/GoldenEagle" "$entrydir" ALL
-ENDIF
-
 ; Copy 'GoldenPath' entry directory
 IF EXISTS "USERPACKAGEDIR:G/GoldenPath.info"
   Copy >NIL: "USERPACKAGEDIR:G/GoldenPath.info" "$indexdir"
@@ -1998,4 +1854,158 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:G/GuldkornExpressenDk1MB"
   Copy >NIL: "USERPACKAGEDIR:G/GuldkornExpressenDk1MB" "$entrydir" ALL
+ENDIF
+
+; Copy 'GuldkornExpressenDk512KB' entry directory
+IF EXISTS "USERPACKAGEDIR:G/GuldkornExpressenDk512KB.info"
+  Copy >NIL: "USERPACKAGEDIR:G/GuldkornExpressenDk512KB.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/GuldkornExpressenDk512KB"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/GuldkornExpressenDk512KB"
+  Copy >NIL: "USERPACKAGEDIR:G/GuldkornExpressenDk512KB" "$entrydir" ALL
+ENDIF
+
+; Copy 'Gunboat' entry directory
+IF EXISTS "USERPACKAGEDIR:G/Gunboat.info"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunboat.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/Gunboat"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/Gunboat"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunboat" "$entrydir" ALL
+ENDIF
+
+; Copy 'Gunship' entry directory
+IF EXISTS "USERPACKAGEDIR:G/Gunship.info"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunship.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/Gunship"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/Gunship"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunship" "$entrydir" ALL
+ENDIF
+
+; Copy 'Gunship2000' entry directory
+IF EXISTS "USERPACKAGEDIR:G/Gunship2000.info"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunship2000.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/Gunship2000"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/Gunship2000"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunship2000" "$entrydir" ALL
+ENDIF
+
+; Copy 'Gunshoot' entry directory
+IF EXISTS "USERPACKAGEDIR:G/Gunshoot.info"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunshoot.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/Gunshoot"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/Gunshoot"
+  Copy >NIL: "USERPACKAGEDIR:G/Gunshoot" "$entrydir" ALL
+ENDIF
+
+; Copy 'GuySpy' entry directory
+IF EXISTS "USERPACKAGEDIR:G/GuySpy.info"
+  Copy >NIL: "USERPACKAGEDIR:G/GuySpy.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/GuySpy"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/GuySpy"
+  Copy >NIL: "USERPACKAGEDIR:G/GuySpy" "$entrydir" ALL
+ENDIF
+
+; Copy 'GuySpyCDTV' entry directory
+IF EXISTS "USERPACKAGEDIR:G/GuySpyCDTV.info"
+  Copy >NIL: "USERPACKAGEDIR:G/GuySpyCDTV.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "G/GuySpyCDTV"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:G/GuySpyCDTV"
+  Copy >NIL: "USERPACKAGEDIR:G/GuySpyCDTV" "$entrydir" ALL
+ENDIF
+
+; 'H' index directory
+echo "Installing 'H'..."
+set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H"`"
+IF NOT EXISTS "$indexdir"
+  MakePath >NIL: "$indexdir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H.info"
+  Copy >NIL: "USERPACKAGEDIR:H.info" "$INSTALLDIR"
+ENDIF
+
+; Copy 'Hacker' entry directory
+IF EXISTS "USERPACKAGEDIR:H/Hacker.info"
+  Copy >NIL: "USERPACKAGEDIR:H/Hacker.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H/Hacker"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H/Hacker"
+  Copy >NIL: "USERPACKAGEDIR:H/Hacker" "$entrydir" ALL
+ENDIF
+
+; Copy 'Hacker2' entry directory
+IF EXISTS "USERPACKAGEDIR:H/Hacker2.info"
+  Copy >NIL: "USERPACKAGEDIR:H/Hacker2.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H/Hacker2"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H/Hacker2"
+  Copy >NIL: "USERPACKAGEDIR:H/Hacker2" "$entrydir" ALL
+ENDIF
+
+; Copy 'HagarTheHorrible' entry directory
+IF EXISTS "USERPACKAGEDIR:H/HagarTheHorrible.info"
+  Copy >NIL: "USERPACKAGEDIR:H/HagarTheHorrible.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H/HagarTheHorrible"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H/HagarTheHorrible"
+  Copy >NIL: "USERPACKAGEDIR:H/HagarTheHorrible" "$entrydir" ALL
+ENDIF
+
+; Copy 'HagarTheHorribleDe' entry directory
+IF EXISTS "USERPACKAGEDIR:H/HagarTheHorribleDe.info"
+  Copy >NIL: "USERPACKAGEDIR:H/HagarTheHorribleDe.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H/HagarTheHorribleDe"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H/HagarTheHorribleDe"
+  Copy >NIL: "USERPACKAGEDIR:H/HagarTheHorribleDe" "$entrydir" ALL
+ENDIF
+
+; Copy 'HalleyProject' entry directory
+IF EXISTS "USERPACKAGEDIR:H/HalleyProject.info"
+  Copy >NIL: "USERPACKAGEDIR:H/HalleyProject.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "H/HalleyProject"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:H/HalleyProject"
+  Copy >NIL: "USERPACKAGEDIR:H/HalleyProject" "$entrydir" ALL
 ENDIF

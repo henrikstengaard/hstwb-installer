@@ -298,7 +298,8 @@ IF EXISTS "USERPACKAGEDIR:M/MyRoom"
   Copy >NIL: "USERPACKAGEDIR:M/MyRoom" "$entrydir" ALL
 ENDIF
 
-; Create 'N' index directory
+; 'N' index directory
+echo "Installing 'N'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "N"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -306,7 +307,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:N.info"
   Copy >NIL: "USERPACKAGEDIR:N.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'N'..."
 
 ; Copy 'NegativeFX' entry directory
 IF EXISTS "USERPACKAGEDIR:N/NegativeFX.info"
@@ -524,7 +524,8 @@ IF EXISTS "USERPACKAGEDIR:N/Numeric3"
   Copy >NIL: "USERPACKAGEDIR:N/Numeric3" "$entrydir" ALL
 ENDIF
 
-; Create 'O' index directory
+; 'O' index directory
+echo "Installing 'O'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "O"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -532,7 +533,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:O.info"
   Copy >NIL: "USERPACKAGEDIR:O.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'O'..."
 
 ; Copy 'Oasis' entry directory
 IF EXISTS "USERPACKAGEDIR:O/Oasis.info"
@@ -762,7 +762,8 @@ IF EXISTS "USERPACKAGEDIR:O/Overload2"
   Copy >NIL: "USERPACKAGEDIR:O/Overload2" "$entrydir" ALL
 ENDIF
 
-; Create 'P' index directory
+; 'P' index directory
+echo "Installing 'P'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -770,7 +771,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:P.info"
   Copy >NIL: "USERPACKAGEDIR:P.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'P'..."
 
 ; Copy 'PackVanPee1' entry directory
 IF EXISTS "USERPACKAGEDIR:P/PackVanPee1.info"
@@ -1120,18 +1120,6 @@ IF EXISTS "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc"
   Copy >NIL: "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc" "$entrydir" ALL
 ENDIF
 
-; Copy 'PsygnosisMusicPictureDisc' entry directory
-IF EXISTS "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc.info"
-  Copy >NIL: "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc.info" "$indexdir"
-ENDIF
-set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "P/PsygnosisMusicPictureDisc"`"
-IF NOT EXISTS "$entrydir"
-  MakePath >NIL: "$entrydir"
-ENDIF
-IF EXISTS "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc"
-  Copy >NIL: "USERPACKAGEDIR:P/PsygnosisMusicPictureDisc" "$entrydir" ALL
-ENDIF
-
 ; Copy 'PublicAttack' entry directory
 IF EXISTS "USERPACKAGEDIR:P/PublicAttack.info"
   Copy >NIL: "USERPACKAGEDIR:P/PublicAttack.info" "$indexdir"
@@ -1180,7 +1168,8 @@ IF EXISTS "USERPACKAGEDIR:P/Purple"
   Copy >NIL: "USERPACKAGEDIR:P/Purple" "$entrydir" ALL
 ENDIF
 
-; Create 'Q' index directory
+; 'Q' index directory
+echo "Installing 'Q'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Q"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1188,7 +1177,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:Q.info"
   Copy >NIL: "USERPACKAGEDIR:Q.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'Q'..."
 
 ; Copy 'QED' entry directory
 IF EXISTS "USERPACKAGEDIR:Q/QED.info"
@@ -1238,7 +1226,8 @@ IF EXISTS "USERPACKAGEDIR:Q/QuickMusique"
   Copy >NIL: "USERPACKAGEDIR:Q/QuickMusique" "$entrydir" ALL
 ENDIF
 
-; Create 'R' index directory
+; 'R' index directory
+echo "Installing 'R'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "R"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1246,7 +1235,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:R.info"
   Copy >NIL: "USERPACKAGEDIR:R.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'R'..."
 
 ; Copy 'RainheartProject' entry directory
 IF EXISTS "USERPACKAGEDIR:R/RainheartProject.info"
@@ -1536,7 +1524,8 @@ IF EXISTS "USERPACKAGEDIR:R/Rubbish"
   Copy >NIL: "USERPACKAGEDIR:R/Rubbish" "$entrydir" ALL
 ENDIF
 
-; Create 'S' index directory
+; 'S' index directory
+echo "Installing 'S'..."
 set indexdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 IF NOT EXISTS "$indexdir"
   MakePath >NIL: "$indexdir"
@@ -1544,7 +1533,6 @@ ENDIF
 IF EXISTS "USERPACKAGEDIR:S.info"
   Copy >NIL: "USERPACKAGEDIR:S.info" "$INSTALLDIR"
 ENDIF
-echo "Installing 'S'..."
 
 ; Copy 'SAGA' entry directory
 IF EXISTS "USERPACKAGEDIR:S/SAGA.info"
@@ -2000,4 +1988,16 @@ IF NOT EXISTS "$entrydir"
 ENDIF
 IF EXISTS "USERPACKAGEDIR:S/SoundDeLight"
   Copy >NIL: "USERPACKAGEDIR:S/SoundDeLight" "$entrydir" ALL
+ENDIF
+
+; Copy 'SoundDemo' entry directory
+IF EXISTS "USERPACKAGEDIR:S/SoundDemo.info"
+  Copy >NIL: "USERPACKAGEDIR:S/SoundDemo.info" "$indexdir"
+ENDIF
+set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/SoundDemo"`"
+IF NOT EXISTS "$entrydir"
+  MakePath >NIL: "$entrydir"
+ENDIF
+IF EXISTS "USERPACKAGEDIR:S/SoundDemo"
+  Copy >NIL: "USERPACKAGEDIR:S/SoundDemo" "$entrydir" ALL
 ENDIF
