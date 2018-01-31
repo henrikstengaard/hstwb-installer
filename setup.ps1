@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-29
+# Date:   2018-01-31
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -173,11 +173,96 @@ function ExistingImageDirectory($hstwb)
 
     $newPath = FolderBrowserDialog "Select existing image directory" $path $false
 
-    if ($newPath -and $newPath -ne '')
+    # return, if newpath is not defined
+    if (!$newPath -or $newPath -eq '')
     {
-        $hstwb.Settings.Image.ImageDir = $newPath
-        Save $hstwb
+        return
     }
+
+    # read harddrives uae text file from image file
+    $harddrivesUaeFile = Join-Path -Path $newPath -ChildPath 'harddrives.uae' 
+
+    # return, if harddrives uae text doesn't exist
+    if (!(Test-Path -Path $harddrivesUaeFile))
+    {
+        Write-Error ("Image directory '{0}' doesn't contain harddrives.uae file!" -f $newPath)
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
+
+    # read harddrives uae text
+    $harddrivesUaeText = Get-Content -Path $harddrivesUaeFile -Raw
+
+    # get harddrives from harddrives uae text
+    $harddrives = @()
+    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
+
+    # return, if harddrives uae file doesn't contain uaehf lines
+    if ($harddrives.Count -eq 0)
+    {
+        Write-Error ("Image directory '{0}' harddrives.uae doesn't contain uaehf lines!" -f $newPath)
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
+
+    # return, if harddrives uae file contains invalid uaehf lines
+    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
+    {
+        Write-Error ("Image directory '{0}' harddrives.uae has invalid 'uaehf' lines!" -f $newPath)
+        Write-Host ""
+        Write-Host "Press enter to continue"
+        Read-Host
+        return
+    }
+
+    # check, if image has large harddrives
+    $largeHarddrivesPresent = $false
+    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
+    {
+        # get harddrive path
+        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
+        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newPath)
+        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newPath)
+        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
+
+        # return, if hdf file doesn't exist
+        if (!(Test-Path -Path $harddrivePath))
+        {
+            Write-Error ("Image directory '{0}' doesn't contain HDF file '{1}'!" -f $newPath, $harddrivePath)
+            Write-Host ""
+            Write-Host "Press enter to continue"
+            Read-Host
+            return
+        }
+
+        # get hdf filename
+        $hdfItem = Get-Item $harddrivePath
+
+        # show large harddrive warning, if image has a hdf file larger than 4GB
+        if ($hdfItem.Length -gt 4000000000)
+        {
+            $largeHarddrivesPresent = $true
+        }
+    }
+
+
+    # show large harddrive warning, if image has large harddrives
+    if ($largeHarddrivesPresent)
+    {
+        $confirm = ConfirmDialog "Large harddrive" ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newPath)
+        if (!$confirm)
+        {
+            return
+        }
+    }
+
+    #
+    $hstwb.Settings.Image.ImageDir = $newPath
+    Save $hstwb
 }
 
 
