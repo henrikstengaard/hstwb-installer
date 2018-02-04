@@ -6,6 +6,7 @@ hstwb-installer*.zip
 *.wixobj
 *.wxs
 *.log
+*.pyc
 !hstwb-installer.wxs
 /packages/
 /.output/

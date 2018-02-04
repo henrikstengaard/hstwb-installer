@@ -4,87 +4,7 @@
 import Tkinter as Tk
 import tkFont as tkFont
 import ttk as ttk
-
-
-class PackagesTabModel():
-    def __init__(self,vc):
-        #set delegate/callback pointer
-        self.vc = vc
-        #initialize model
-        self.packages = { 'BetterWB v4.0.3', 'HstWB v1.0.2', 'EAB WHDLoad Games AGA v3.0.0', 'EAB WHDLoad Games AGA v3.0.0'}
-        self.install_packages = { 'HstWB v1.0.2' }
-
-#Delegate goes here. Model would call this on internal change
-    def modelDidChange(self):
-        self.vc.listChangedDelegate()
-
-#Setters and getters for the model
-    def getPackages(self):
-        return self.packages
-
-    def set_list(self, packages):
-        self.packages = packages
-        self.modelDidChange #delegate called on change
-
-class PackagesTabController():
-    def __init__(self, parent):
-        self.parent = parent
-        self.model = PackagesTabModel(self)    # initializes the model
-        self.view = PackagesTabView(self)  #initializes the view
- 
-        #initialize properties in view, if any
-        pass
-
-    def listChanged(self, evt):
-        #model internally chages and needs to signal a change
-        #print(self.model.getList())
-        print 'List changed'
-        w = evt.widget
-        for index in w.curselection():
-            value = w.get(index) 
-            #index = int(w.curselection()[0])
-            #value = w.get(index)
-            print 'You selected item %d: "%s"' % (index, value)
-
-#event handlers -- add functions called by command attribute in view
-    def someHandelerMethod(self):
-        pass
-#delegates -- add functions called by delegtes in model or view
-    def modelDidChangeDelegate(self):
-        pass
-
-class PackagesTabView(Tk.Frame):
-    def __init__(self, vc):
-        self.vc = vc
-        Tk.Frame.__init__(self)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.packages_frame = Tk.LabelFrame(self, text="Packages")
-        self.packages_frame.grid(row=0, sticky="nesw", padx=(5, 5), pady=(5))
-        self.packages_frame.grid_rowconfigure(0, weight=1)
-        self.packages_frame.grid_columnconfigure(0, weight=1)
-
-        self.packages_scrollbar = Tk.Scrollbar(self.packages_frame, orient=Tk.VERTICAL)
-        self.packages_listbox = Tk.Listbox(
-            self.packages_frame,
-            selectmode=Tk.EXTENDED,
-            yscrollcommand=self.packages_scrollbar.set)
-        self.packages_scrollbar.config(command=self.packages_listbox.yview)
-        self.packages_scrollbar.pack(side=Tk.RIGHT, fill=Tk.Y)
-        self.packages_listbox.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
-        self.packages_listbox.bind('<<ListboxSelect>>', self.vc.listChanged)
-
-        self.packages_listbox.insert(Tk.END, "BetterWB v4.0.3")
-        self.packages_listbox.insert(Tk.END, "HstWB v1.0.2")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
+from ui import packages
 
 class WorkbenchTab(Tk.Frame):
     def __init__(self, master):
@@ -95,6 +15,7 @@ class WorkbenchTab(Tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """Create widgets"""
         self.workbench_frame = Tk.LabelFrame(self, text="Workbench")
         self.workbench_frame.grid(row=0, sticky="new", padx=(5, 5), pady=(5))
         self.workbench_frame.grid_rowconfigure(0, weight=1)
@@ -102,7 +23,10 @@ class WorkbenchTab(Tk.Frame):
 
         self.install_workbench = True
 
-        self.install_workbench_checkbutton = Tk.Checkbutton(self.workbench_frame, text="Install Workbench 3.1", variable=self.install_workbench)
+        self.install_workbench_checkbutton = Tk.Checkbutton(
+            self.workbench_frame,
+            text="Install Workbench 3.1",
+            variable=self.install_workbench)
         self.install_workbench_checkbutton.grid(row=0, column=0, columnspan=2, sticky="w")
 
         self.workbench_set_dir_entry = Tk.Entry(self.workbench_frame)
@@ -115,10 +39,14 @@ class WorkbenchTab(Tk.Frame):
         self.tkvar = Tk.StringVar(self)
 
         # Dictionary with options
-        self.choices = { 'Cloanto Amiga Forever 7','Cloanto Amiga Forever 2016', 'Custom'}
-        self.tkvar.set('Cloanto Amiga Forever 7') # set the default option
+        self.choices = {'Cloanto Amiga Forever 7', 'Cloanto Amiga Forever 2016', 'Custom'}
+        self.tkvar.set('Cloanto Amiga Forever 7')
+        # set the default option
 
-        self.workbench_set_option_menu = Tk.OptionMenu(self.workbench_frame, self.tkvar, *self.choices)
+        self.workbench_set_option_menu = Tk.OptionMenu(
+            self.workbench_frame,
+            self.tkvar,
+            *self.choices)
         #self.workbench_set_option_menu.config(bg="GREEN")
         self.workbench_set_option_menu.grid(row=1, column=0, columnspan=3, sticky="ew")
 
@@ -241,7 +169,7 @@ class MainApplication(Tk.Frame):
         self.notebook = ttk.Notebook(self)
         self.workbench_tab = WorkbenchTab(self.notebook)
         self.kickstarts_tab = KickstartsTab(self.notebook)
-        self.packages_tab_controller = PackagesTabController(self.notebook)
+        self.packages_tab_controller = packages.PackagesTabController(self.notebook)
         self.user_packages_tab = UserPackagesTab(self.notebook)
         #self.Button(tab1, text='Exit').pack(padx=100, pady=100)
 
