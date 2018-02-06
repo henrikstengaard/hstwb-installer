@@ -166,6 +166,11 @@ class MainApplication(Tk.Frame):
         # self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+        # https://stackoverflow.com/questions/32291538/tkinter-notebook-tab-text-title-displayed-incorrectly
+        #self.style = ttk.Style()
+        #self.style.configure('TNotebook.Tab', padding=(20, 20, 20, 20))
+        # https://stackoverflow.com/questions/41115607/python-2-7-and-tkinter-tkk-notebook-tabs-text-top-aligned
+
         self.notebook = ttk.Notebook(self)
         self.workbench_tab = WorkbenchTab(self.notebook)
         self.kickstarts_tab = KickstartsTab(self.notebook)
@@ -183,5 +188,10 @@ class MainApplication(Tk.Frame):
 
 if __name__ == '__main__':
     ROOT = Tk.Tk()
+    # a fix for running on OSX - to center the title text vertically
+    if ROOT.tk.call('tk', 'windowingsystem') == 'aqua':  # only for OSX
+        s = ttk.Style()
+        # Note: the name is specially for the text in the widgets
+        s.configure('TNotebook.Tab', padding=(12, 8, 12, 0))
     MainApplication(ROOT)
     ROOT.mainloop()
