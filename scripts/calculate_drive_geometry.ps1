@@ -11,6 +11,9 @@
 #
 # Calculate drive geometry for a drive of size 20 gb, a partition of size 500MB and 2 partitions that expands to available cylinders:
 # .\calculate_drive_geometry.ps1 -driveSize '20GB' -partitions '500MB','+','+'
+#
+# Calculate drive geometry for a drive of size 8gb.hdf file is in bytes, a partition of size 100MB and a partition that expands to available cylinders:
+# .\calculate_drive_geometry.ps1 -driveSize ((get-item '8gb.hdf').length) -partitions '100MB','+'
 
 Param(
 	[Parameter(Mandatory=$true, Position=0)]
