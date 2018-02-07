@@ -6,15 +6,15 @@ class PackagesTabModel(object):
     """Packages Tab Model"""
     def __init__(self, controller):
         """Init"""
-        #set delegate/callback pointer
         self.controller = controller
-        #initialize model
-        self.packages = {
+        self.packages = [
             'BetterWB v4.0.3',
             'HstWB v1.0.2',
             'EAB WHDLoad Games AGA v3.0.0',
-            'EAB WHDLoad Games AGA v3.0.0'}
-        self.install_packages = {'HstWB v1.0.2'}
+            'EAB WHDLoad Games OCS v3.0.0' ]
+        self.selected_packages = [
+            'HstWB v1.0.2',
+            'EAB WHDLoad Games OCS v3.0.0' ]
 
     def model_did_change(self):
         """Model did change"""
@@ -30,28 +30,29 @@ class PackagesTabModel(object):
         #self.modelDidChange #delegate called on change
 
 class PackagesTabController(object):
-    """Packages Tab Controller"""
+    """Packages tab controller"""
     def __init__(self, parent):
         self.parent = parent
-        self.model = PackagesTabModel(self)    # initializes the model
-        self.view = PackagesTabView(self)  #initializes the view
+        self.model = PackagesTabModel(self)
+        self.view = PackagesTabView(self)
+        self.refresh_packages()
 
-        #initialize properties in view, if any
+    def refresh_packages(self):
+        """Update packages"""
+        for index,package in enumerate(self.model.packages):
+            self.view.packages_listbox.insert(Tk.END, package)
+            if package in self.model.selected_packages:
+                self.view.packages_listbox.selection_set(index)
 
-    def list_changed(self, evt):
-        """List changed"""
-        #model internally chages and needs to signal a change
-        #print(self.model.getList())
-        print 'List changed'
-        w = evt.widget
-        for index in w.curselection():
-            value = w.get(index)
-            #index = int(w.curselection()[0])
-            #value = w.get(index)
-            print 'You selected item %d: "%s"' % (index, value)
+    def selected_packages_changed(self, evt):
+        """Selected packages changed"""
+        self.model.selected_packages = []
+        widget = evt.widget
+        for index in widget.curselection():
+            self.model.selected_packages.append(widget.get(index))
 
 class PackagesTabView(Tk.Frame):
-    """Packages Tab View"""
+    """Packages tab view"""
     def __init__(self, controller):
         self.controller = controller
         Tk.Frame.__init__(self)
@@ -72,15 +73,6 @@ class PackagesTabView(Tk.Frame):
             selectmode=Tk.EXTENDED,
             yscrollcommand=self.packages_scrollbar.set)
         self.packages_scrollbar.config(command=self.packages_listbox.yview)
-        self.packages_scrollbar.pack(side=Tk.RIGHT, fill=Tk.Y)
-        self.packages_listbox.pack(side=Tk.LEFT, fill=Tk.BOTH, expand=1)
-        self.packages_listbox.bind('<<ListboxSelect>>', self.controller.list_changed)
-
-        self.packages_listbox.insert(Tk.END, "BetterWB v4.0.3")
-        self.packages_listbox.insert(Tk.END, "HstWB v1.0.2")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
-        self.packages_listbox.insert(Tk.END, "EAB WHDLoad Games AGA v3.0.0")
+        self.packages_scrollbar.pack(side=Tk.RIGHT, fill=Tk.Y, padx=(0, 5), pady=(5))
+        self.packages_listbox.pack(side=Tk.LEFT, fill=Tk.BOTH, padx=(5, 0), pady=(5), expand=1)
+        self.packages_listbox.bind('<<ListboxSelect>>', self.controller.selected_packages_changed)
