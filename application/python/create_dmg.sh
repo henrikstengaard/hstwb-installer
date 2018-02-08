@@ -94,3 +94,8 @@ hdiutil detach "${DEVICE}"
 # now make the final image a compressed disk image
 echo "Creating compressed image"
 hdiutil convert "${DMG_TMP_FILE}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FILE}"
+
+if [ -f "${DMG_TMP_FILE}" ]; then
+  rm -f "${DMG_TMP_FILE}"
+fi
+
