@@ -12,5 +12,3 @@ hstwb-installer*.zip
 !hstwb-installer.wxs
 /packages/
 .output
-/application/python/build
-/application/python/dist

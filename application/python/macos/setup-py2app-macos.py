@@ -8,10 +8,10 @@ Usage:
 
 from setuptools import setup
 
-APP = ['hstwb_installer.py']
-DATA_FILES = ['--iconfile']
+APP = ['hstwb-installer.py']
+DATA_FILES = ['hstwb-installer.ico']
 OPTIONS = {
-  'iconfile': 'hstwb_installer.icns',
+  'iconfile': 'hstwb-installer.icns',
   'plist': {
         'CFBundleName': "HstWB Installer",
         'CFBundleDisplayName': "HstWB Installer",
