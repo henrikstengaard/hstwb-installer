@@ -35,9 +35,9 @@ class PackagesTabController(object):
         self.parent = parent
         self.model = PackagesTabModel(self)
         self.view = PackagesTabView(self)
-        self.refresh_packages()
+        self.update_packages()
 
-    def refresh_packages(self):
+    def update_packages(self):
         """Update packages"""
         for index,package in enumerate(self.model.packages):
             self.view.packages_listbox.insert(Tk.END, package)
