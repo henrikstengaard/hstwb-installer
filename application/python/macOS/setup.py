@@ -11,7 +11,7 @@ from setuptools import setup
 APP = ['hstwb_installer.py']
 DATA_FILES = ['--iconfile']
 OPTIONS = {
-  'iconfile': '/Users/hst/Work/hstwb-installer/application/python/hstwb_installer.icns',
+  'iconfile': 'hstwb_installer.icns',
   'plist': {
         'CFBundleName': "HstWB Installer",
         'CFBundleDisplayName': "HstWB Installer",
