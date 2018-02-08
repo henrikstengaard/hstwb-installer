@@ -1,6 +1,7 @@
 # https://www.begueradj.com/tkinter-best-practices.html
 # https://stackoverflow.com/questions/34276663/tkinter-gui-layout-using-frames-and-grid
 
+import os
 import Tkinter as Tk
 import tkFont as tkFont
 import ttk as ttk
@@ -188,10 +189,12 @@ class MainApplication(Tk.Frame):
 
 if __name__ == '__main__':
     ROOT = Tk.Tk()
-    # a fix for running on OSX - to center the title text vertically
+    ROOT.iconbitmap(os.path.realpath('hstwb_installer2.ico'))
+    #imgicon = Tk.PhotoImage(file=os.path.realpath('hstwb_installer.ico'))
+    #ROOT.tk.call('wm', 'iconphoto', ROOT._w, imgicon)  
+    # Center notebook tabs title text vertically on macOS
     if ROOT.tk.call('tk', 'windowingsystem') == 'aqua':  # only for OSX
         s = ttk.Style()
-        # Note: the name is specially for the text in the widgets
         s.configure('TNotebook.Tab', padding=(12, 8, 12, 0))
     MainApplication(ROOT)
     ROOT.mainloop()
