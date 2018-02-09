@@ -149,7 +149,6 @@ class MainApplication(Tk.Frame):
         self.pack(side="top", fill="both", expand=True)
 
     def configure_gui(self):
-        self.master.iconbitmap(r'hstwb_installer.ico')
         self.master.title('HstWB Installer v2.0.0')
         self.master.geometry('{}x{}'.format(460, 550))
         self.master.resizable(False, False)
@@ -190,8 +189,6 @@ class MainApplication(Tk.Frame):
 if __name__ == '__main__':
     ROOT = Tk.Tk()
     ROOT.iconbitmap(os.path.realpath('hstwb-installer.ico'))
-    #imgicon = Tk.PhotoImage(file=os.path.realpath('hstwb_installer.ico'))
-    #ROOT.tk.call('wm', 'iconphoto', ROOT._w, imgicon)  
     # Center notebook tabs title text vertically on macOS
     if ROOT.tk.call('tk', 'windowingsystem') == 'aqua':  # only for OSX
         s = ttk.Style()
