@@ -189,7 +189,7 @@ class MainApplication(Tk.Frame):
 
 if __name__ == '__main__':
     ROOT = Tk.Tk()
-    ROOT.iconbitmap(os.path.realpath('hstwb_installer2.ico'))
+    ROOT.iconbitmap(os.path.realpath('hstwb_installer.ico'))
     #imgicon = Tk.PhotoImage(file=os.path.realpath('hstwb_installer.ico'))
     #ROOT.tk.call('wm', 'iconphoto', ROOT._w, imgicon)  
     # Center notebook tabs title text vertically on macOS
