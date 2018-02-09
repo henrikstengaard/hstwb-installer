@@ -11,6 +11,6 @@ hstwb-installer*.zip
 .DS_Store
 !hstwb-installer.wxs
 /packages/
-/.output/
+.output
 /application/python/build
 /application/python/dist
