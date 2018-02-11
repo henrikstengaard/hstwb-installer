@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-29
+# Date:   2018-02-11
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1121,53 +1121,44 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 # build winuae image harddrives config text
 function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 {
-    # winuae image harddrives config file
-    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($hstwb.Settings.Image.ImageDir, "harddrives.uae")
+    # image json file
+    $imageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'image.json'
 
-    # fail, if winuae image harddrives config file doesn't exist
-    if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
+    # fail, if image json file doesn't exist
+    if (!(Test-Path -Path $imageJsonFile))
     {
-        Fail $hstwb ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Image.json file '" + $imageJsonFile + "' doesn't exist!")
     }
 
-    # read winuae image harddrives config text
-    $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
+    # read image json file
+    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
 
-    # replace imagedir placeholders
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir)
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $hstwb.Settings.Image.ImageDir)
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('\\', '\').Replace('\', '/')
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
-
-    $uaehfs = @()
-    $winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $uaehfs += $_.Groups[1].Value.Trim() } }
-    $harddrives = @()
-    
-    foreach ($uaehf in $uaehfs)
+    # build fs-uae image harddrive config lines
+    $fsUaeImageHarddrivesConfigLines = @()
+    $index = 0
+    foreach($harddrive in $image.Harddrives)
     {
-        $uaehf | Select-String -Pattern '^hdf,[^,]*,([^,:]*):"?([^"]*)"?,[^,]*,[^,]*,[^,]*,[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ 'Label' = $_.Groups[1].Value.Trim(); 'Path' = $_.Groups[2].Value.Trim(); 'Priority' = $_.Groups[3].Value.Trim() } }
-        $uaehf | Select-String -Pattern '^dir,[^,]*,([^,:]*):[^,:]*:([^,]*),([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ 'Label' = $_.Groups[1].Value.Trim(); 'Path' = $_.Groups[2].Value.Trim(); 'Priority' = $_.Groups[3].Value.Trim() } }
-    }
+        # harddrive path
+        $harddrivePath = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $harddrive.Path
 
-    $fsUaeImageHarddrives = @()
-    
-    for($i = 0; $i -lt $harddrives.Count; $i++)
-    {
-        $harddrive = $harddrives[$i]
-        $fsUaeImageHarddrives += "hard_drive_{0} = {1}" -f $i, ($harddrive.Path.Replace('\', '/'))
-        $fsUaeImageHarddrives += "hard_drive_{0}_label = {1}" -f $i, ($harddrive.Label)
+        # fail, if harddrive path doesn't exist
+        if (!(Test-Path -Path $harddrivePath))
+        {
+            Fail $hstwb ("Error: Harddrive path '" + $harddrivePath + "' doesn't exist!")
+        }
         
-        if ($disableBootableHarddrives)
-        {
-            $fsUaeImageHarddrives += "hard_drive_{0}_priority = -128" -f $i
-        }
-        else
-        {
-            $fsUaeImageHarddrives += "hard_drive_{0}_priority = {1}" -f $i, $harddrive.Priority
-        }
+        # boot priority
+        $bootPriority = if ($disableBootableHarddrives) { -128 } else { $harddrive.BootPriority }
+
+        # fs-uae harddrive config lines
+        $fsUaeImageHarddrivesConfigLines += "hard_drive_{0} = {1}" -f $index, ($harddrivePath.Replace('\', '/'))
+        $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_label = {1}" -f $index, $harddrive.Device
+        $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_priority = {1}" -f $index, $bootPriority
+
+        $index++
     }
 
-    return $fsUaeImageHarddrives -join "`r`n"
+    return $fsUaeImageHarddrivesConfigLines -join "`r`n"
 }
 
 
@@ -1256,29 +1247,79 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kicks
 # build winuae image harddrives config text
 function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 {
-    # winuae image harddrives config file
-    $winuaeImageHarddrivesUaeConfigFile = [System.IO.Path]::Combine($hstwb.Settings.Image.ImageDir, "harddrives.uae")
+    # image json file
+    $imageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'image.json'
 
-    # fail, if winuae image harddrives config file doesn't exist
-    if (!(Test-Path -Path $winuaeImageHarddrivesUaeConfigFile))
+    # fail, if image json file doesn't exist
+    if (!(Test-Path -Path $imageJsonFile))
     {
-        Fail $hstwb ("Error: Image harddrives config file '" + $winuaeImageHarddrivesUaeConfigFile + "' doesn't exist!")
+        Fail $hstwb ("Error: Image.json file '" + $imageJsonFile + "' doesn't exist!")
     }
 
-    # read winuae image harddrives config text
-    $winuaeImageHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeImageHarddrivesUaeConfigFile)
+    # read image json file
+    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
 
-    # replace imagedir placeholders
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir)
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Replace('[$ImageDirEscaped]', $hstwb.Settings.Image.ImageDir.Replace('\', '\\'))
-    $winuaeImageHarddrivesConfigText = $winuaeImageHarddrivesConfigText.Trim()
-
-    if ($disableBootableHarddrives)
+    # build winuae image harddrive config lines
+    $winuaeImageHarddrivesConfigLines = @()
+    $index = 0
+    foreach($harddrive in $image.Harddrives)
     {
-        $winuaeImageHarddrivesConfigText = ($winuaeImageHarddrivesConfigText -split "`r`n" | ForEach-Object { $_ -replace ',-?\d+$', ',-128' -replace ',-?\d+,,uae$', ',-128,,uae' }) -join "`r`n"
+        # harddrive paths
+        $harddrivePath = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $harddrive.Path
+        $harddrivePathEscaped = $harddrivePath.Replace('\', '\\')
+
+        # fail, if harddrive path doesn't exist
+        if (!(Test-Path -Path $harddrivePath))
+        {
+            Fail $hstwb ("Error: Harddrive path '" + $harddrivePath + "' doesn't exist!")
+        }
+        
+        # boot priority
+        $bootPriority = if ($disableBootableHarddrives) { -128 } else { $harddrive.BootPriority }
+
+        if ($harddrive.Type -match 'hdf')
+        {
+            # hdf winuae harddrive config lines
+            $winuaeImageHarddrivesConfigLines += "hardfile2={0},{1}{2},{3},{4},{5},{6},{7},,uae" -f `
+                $harddrive.ReadOnly, `
+                $harddrive.Device,  `
+                $harddrivePath, `
+                $harddrive.Sectors, `
+                $harddrive.Surfaces, `
+                $harddrive.Reserved, `
+                $harddrive.BlockSize, `
+                $bootPriority
+            $winuaeImageHarddrivesConfigLines += "uaehf{0}=hdf,{1},{2}""{3}"",{4},{5},{6},{7},{8},,uae" -f `
+                $index, `
+                $harddrive.ReadOnly, `
+                $harddrive.Device,  `
+                $harddrivePathEscaped, `
+                $harddrive.Sectors, `
+                $harddrive.Surfaces, `
+                $harddrive.Reserved, `
+                $harddrive.BlockSize, `
+                $bootPriority
+        }
+        elseif($harddrive.Type -match 'dir')
+        {
+            # directory winuae harddrive config lines
+            $winuaeImageHarddrivesConfigLines += "filesystem2={0},{1}{2},{3}" -f `
+                $harddrive.ReadOnly, `
+                $harddrive.Device,  `
+                $harddrivePath, `
+                $bootPriority
+            $winuaeImageHarddrivesConfigLines += "uaehf{0}=dir,{1},{2}""{3}"",{4}" -f `
+                $index, `
+                $harddrive.ReadOnly, `
+                $harddrive.Device,  `
+                $harddrivePath, `
+                $bootPriority
+        }
+
+        $index++
     }
 
-    return $winuaeImageHarddrivesConfigText
+    return $winuaeImageHarddrivesConfigLines -join "`r`n"
 }
 
 

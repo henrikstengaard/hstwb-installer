@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-13
+# Date:   2018-02-11
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -342,23 +342,33 @@ function ReadImages($imagesPath)
     # get image files
     $imageFiles = Get-ChildItem -Path $imagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
 
-    # read image ini from image files
+    $warning = $false
+
+    # read image json from image files
     foreach ($imageFile in $imageFiles)
     {
-        # read image ini text file from image file
-        $imageIniText = ReadZipEntryTextFile $imageFile.FullName 'image\.ini$'
+        # read image kson file from image file
+        $imageJsonText = ReadZipEntryTextFile $imageFile.FullName 'image\.json$'
 
         # skip, if image ini text doesn't exist
-        if (!$imageIniText)
+        if (!$imageJsonText)
         {
-            throw ("Image file '" + $imageFile.FullName + "' doesn't contain image.ini file!")
+            $warning = $true
+            Write-Host ("Warning: Image file '{0}' doesn't contain image.json file. Image is ignored!" -f $imageFile.Name) -ForegroundColor Yellow
+            continue
         }
 
-        # read image ini text
-        $imageIni = ReadIniText $imageIniText
+        # read image json text
+        $image = $imageJsonText | ConvertFrom-Json
 
         # add image name and image file to images
-        $images.Set_Item($imageIni.Image.Name, $imageFile.FullName)
+        $images.Set_Item($image.Name, $imageFile.FullName)
+    }
+
+    if ($warning)
+    {
+        Write-Host "Press enter to continue"
+        Read-Host
     }
 
     return $images

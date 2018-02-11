@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-31
+# Date:   2018-02-11
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -179,75 +179,24 @@ function ExistingImageDirectory($hstwb)
         return
     }
 
-    # read harddrives uae text file from image file
-    $harddrivesUaeFile = Join-Path -Path $newPath -ChildPath 'harddrives.uae' 
+    # read image json file
+    $imageJsonFile = Join-Path -Path $newPath -ChildPath 'image.json' 
 
-    # return, if harddrives uae text doesn't exist
-    if (!(Test-Path -Path $harddrivesUaeFile))
+    # return, if image json file doesn't exist
+    if (!(Test-Path -Path $imageJsonFile))
     {
-        Write-Error ("Image directory '{0}' doesn't contain harddrives.uae file!" -f $newPath)
+        Write-Error ("Image directory '{0}' doesn't contain image.json file!" -f $newPath)
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-    # read harddrives uae text
-    $harddrivesUaeText = Get-Content -Path $harddrivesUaeFile -Raw
-
-    # get harddrives from harddrives uae text
-    $harddrives = @()
-    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
-
-    # return, if harddrives uae file doesn't contain uaehf lines
-    if ($harddrives.Count -eq 0)
-    {
-        Write-Error ("Image directory '{0}' harddrives.uae doesn't contain uaehf lines!" -f $newPath)
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
-    # return, if harddrives uae file contains invalid uaehf lines
-    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
-    {
-        Write-Error ("Image directory '{0}' harddrives.uae has invalid 'uaehf' lines!" -f $newPath)
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
+    # read image json file
+    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
 
     # check, if image has large harddrives
-    $largeHarddrivesPresent = $false
-    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
-    {
-        # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
-        # return, if hdf file doesn't exist
-        if (!(Test-Path -Path $harddrivePath))
-        {
-            Write-Error ("Image directory '{0}' doesn't contain HDF file '{1}'!" -f $newPath, $harddrivePath)
-            Write-Host ""
-            Write-Host "Press enter to continue"
-            Read-Host
-            return
-        }
-
-        # get hdf filename
-        $hdfItem = Get-Item $harddrivePath
-
-        # show large harddrive warning, if image has a hdf file larger than 4GB
-        if ($hdfItem.Length -gt 4000000000)
-        {
-            $largeHarddrivesPresent = $true
-        }
-    }
+    $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
 
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
@@ -286,83 +235,24 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     # get image file
     $imageFile = $hstwb.Images.Get_Item($choice)
 
+    # read image json file from image file
+    $imageJsonText = ReadZipEntryTextFile $imageFile 'image\.json$'
 
-    # read harddrives uae text file from image file
-    $harddrivesUaeText = ReadZipEntryTextFile $imageFile 'harddrives\.uae$'
-
-    # return, if harddrives uae text doesn't exist
-    if (!$harddrivesUaeText)
+    # return, if image json file doesn't exist
+    if (!$imageJsonText)
     {
-        Write-Error ("Image file '$imageFile' doesn't contain harddrives.uae file!")
+        Write-Error ("Image file '$imageFile' doesn't contain image.json file!")
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-
-    # get harddrives from harddrives uae text
-    $harddrives = @()
-    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
-
-    # return, if harddrives uae file doesn't contain uaehf lines
-    if ($harddrives.Count -eq 0)
-    {
-        Write-Error ("Image file '$imageFile' harddrives.uae doesn't contain uaehf lines!")
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
-    # return, if harddrives uae file contains invalid uaehf lines
-    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
-    {
-        Write-Error ("Image file '$imageFile' harddrives.uae has invalid 'uaehf' lines!")
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
+    # read image json text
+    $image = $imageJsonText | ConvertFrom-Json
 
     # check, if image has large harddrives
-    $largeHarddrivesPresent = $false
-    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
-    {
-        # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
-        # get hdf filename
-        $hdfFileName = Split-Path $harddrivePath -Leaf
-
-        # open image file and get hdf zip entry matching hdf filename
-        $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
-        $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
-
-        # return, if image file doesn't contain hdf filename
-        if (!$hdfZipEntry)
-        {
-            $zip.Dispose()
-            Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
-            Write-Host ""
-            Write-Host "Press enter to continue"
-            return
-        }
-
-        # show large harddrive warning, if image has a hdf file larger than 4GB
-        if ($hdfZipEntry.Length -gt 4000000000)
-        {
-            $largeHarddrivesPresent = $true
-        }
-
-        # close image file
-        $zip.Dispose()
-    }
-
+    $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
 
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
@@ -374,7 +264,6 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         }
     }
 
-
     # default image dir
     if ($hstwb.Settings.Image.ImageDir)
     {
@@ -385,7 +274,6 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-
     # select new image directory
     $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
 
@@ -394,7 +282,6 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     {
         return
     }
-
 
     # return, if no write permission
     try 
@@ -412,39 +299,30 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         return
     }
 
+    # image json file
+    $imageJsonFile = Join-Path $newImageDirectoryPath -ChildPath "image.json"
 
-
-
-    # harddrives uae file
-    $harddrivesUaeFile = Join-Path $newImageDirectoryPath -ChildPath "harddrives.uae"
-
-    # confirm overwrite, if harddrives.uae already exists in new image directory path
-    if (Test-Path -Path $harddrivesUaeFile)
+    # confirm overwrite, if image json file already exists in new image directory path
+    if (Test-Path -Path $imageJsonFile)
     {
-        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains harddrives.uae and image files.`r`n`r`nDo you want to overwrite files?")
+        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains image.json and image files.`r`n`r`nDo you want to overwrite files?")
         if (!$confirm)
         {
             return
         }
     }
 
-
     # write harddrives.uae to new image directory path
-    [System.IO.File]::WriteAllText($harddrivesUaeFile, $harddrivesUaeText)
-
+    Set-Content -Path $imageJsonFile -Value $imageJsonText
 
     Write-Host ""
-
+    Write-Host ("Creating image '{0}' in directory '{1}'" -f $image.Name, $newImageDirectoryPath) -ForegroundColor Yellow
 
     # prepare harddrives
-    foreach($harddrive in $harddrives)
+    foreach($harddrive in $image.Harddrives)
     {
         # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
+        $harddrivePath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.Path
 
         # extract hdf or create dir harddrive
         switch ($harddrive.Type)
@@ -452,7 +330,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
             "hdf"
             {
                 # get hdf filename
-                $hdfFileName = [System.IO.Path]::GetFileName($harddrivePath)
+                $hdfFileName = Split-Path $harddrivePath -Leaf
 
                 # open image file and get hdf zip entry matching hdf filename
                 $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
@@ -489,13 +367,11 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         }
     }
 
-
     # save settings
     $hstwb.Settings.Image.ImageDir = $newImageDirectoryPath
     Save $hstwb
 
-
-    # wait 5 seconds
+    # continue
     Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
