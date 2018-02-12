@@ -310,6 +310,7 @@ Write-Output ("Heads = {0}" -f $rigidDiskBlock.Heads)
 Write-Output ("Size = {0}" -f (FormatBytes $driveSize 0))
 Write-Output ("Blocks per Track = {0}" -f $rigidDiskBlock.Sectors)
 Write-Output ("Blocks per Cylinder = {0}" -f $rigidDiskBlock.CylBlocks)
+Write-Output ("Park head where cylinder = {0}" -f $rigidDiskBlock.ParkingZone)
 
 
 # get partition list block and set partition number to 1
