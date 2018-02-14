@@ -2,7 +2,7 @@
 # ------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-25
+# Date:   2018-02-14
 #
 # A powershell script to calculate drive geometry for manual configuration using HDToolBox
 #
@@ -24,6 +24,8 @@ Param(
 	[int32]$heads = 16,
 	[Parameter(Mandatory=$false)]
 	[int32]$blocksPerTrack = 63,
+	[Parameter(Mandatory=$false)]
+	[int32]$cylindersReserved = 5,
 	[Parameter(Mandatory=$false)]
 	[string[]]$partitionSizes
 )
@@ -65,22 +67,23 @@ $driveBlocks = [math]::Floor($driveBytes / $sectorSize)
 
 # calculate blocks per cylinder, cylinders and total blocks
 $blocksPerCylinder = $heads * $blocksPerTrack
-$driveCylinders = [math]::Floor($driveBytes / ($heads * $blocksPerTrack * $sectorSize))
-$totalBlocks = $driveCylinders * $heads * $blocksPerTrack
+$driveCylinders = [math]::Floor($driveBytes / ($blocksPerCylinder * $sectorSize))
+$totalBlocks = $driveCylinders * $blocksPerCylinder
 
 # show drive geometry
 Write-Host "Drive Geometry" -ForegroundColor 'Yellow'
-Write-Host ("Drive size:            {0} ({1} bytes)" -f (FormatBytes $driveBytes), $driveBytes)
+Write-Host ("Drive size:            {0} ({1} bytes)" -f (FormatBytes $driveBytes 1), $driveBytes)
 Write-Host ("Drive blocks:          {0}" -f $driveBlocks)
 Write-Host ""
+Write-Host ("Sector Size:           {0}" -f $sectorSize)
 Write-Host ("Cylinders:             {0}" -f $driveCylinders)
 Write-Host ("Heads:                 {0}" -f $heads)
 Write-Host ("Blocks per track:      {0}" -f $blocksPerTrack)
 Write-Host ("Blocks per cylinder:   {0}" -f $blocksPerCylinder)
 Write-Host ("Total blocks:          {0}" -f $totalBlocks)
 
-
-$expandableCylinders = $driveCylinders - 1
+$startCylinder = 2
+$expandableCylinders = $driveCylinders - $startCylinder - $cylindersReserved
 $partitions = @()
 
 # calculate bytes and cylinders per partition and expandable cylinders
@@ -98,7 +101,7 @@ for($i = 0; $i -lt $partitionSizes.Count; $i++)
 	else
 	{
 		$bytes = ConvertToBytes $partitionSize
-		$cylinders = [math]::Floor($bytes / ($heads * $blocksPerTrack * $sectorSize))
+		$cylinders = [math]::Floor($bytes / ($blocksPerCylinder * $sectorSize))
 		$expandableCylinders -= $cylinders
 	}
 
@@ -118,10 +121,9 @@ else
 }
 
 # calculate expandable partition bytes
-$expandablePartitionBytes = $expandablePartitionCylinders * $heads * $blocksPerTrack * $sectorSize
+$expandablePartitionBytes = $expandablePartitionCylinders * $blocksPerCylinder * $sectorSize
 
 # show partitions geometry
-$startCylinder = 2
 for($i = 0; $i -lt $partitions.Count; $i++)
 {
 	$partition = $partitions[$i]
@@ -141,19 +143,22 @@ for($i = 0; $i -lt $partitions.Count; $i++)
 	$endCylinder = $startCylinder + $cylinders - 1
 
 	# adjust cylinders and bytes, if end cylinder is larger than drive cylinders
-	if ($endCylinder -ge $driveCylinders)
+	if ($endCylinder -ge ($driveCylinders - $cylindersReserved))
 	{
-		$endCylinder = $driveCylinders - 1
+		$endCylinder = $driveCylinders - $cylindersReserved - 1
 		$cylinders = $endCylinder - $startCylinder
-		$bytes = $cylinders * $heads * $blocksPerTrack * $sectorSize
+		$bytes = $cylinders * $blocksPerCylinder * $sectorSize
 	}
 
 	Write-Host ""
 	Write-Host ("Partition {0}" -f ($i + 1)) -ForegroundColor 'Yellow'
-	Write-Host ("Partition Size:        {0} ({1} bytes)" -f (FormatBytes $bytes), $bytes)
+	Write-Host ("Partition Size:        {0} ({1} bytes)" -f (FormatBytes $bytes 1), $bytes)
 	Write-Host ("Start Cylinder:        {0}" -f $startCylinder)
 	Write-Host ("End Cylinder:          {0}" -f $endCylinder)
 	Write-Host ("Total Cylinders:       {0}" -f $cylinders)
 
 	$startCylinder += $cylinders
 }
+
+Write-Host ""
+Write-Host ("Cylinder reserved:     {0}" -f $cylindersReserved)
