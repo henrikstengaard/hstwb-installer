@@ -2,7 +2,7 @@
 # --------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-14
+# Date:   2018-02-15
 #
 # A powershell script to read rigid disk block from a hdf file and display drive and partition information.
 #
@@ -12,7 +12,7 @@
 
 Param(
 	[Parameter(Mandatory=$true)]
-	[string]$hdfFile
+	[string]$path
 )
 
 
@@ -278,24 +278,25 @@ Add-Type -TypeDefinition @"
 
 
 # fail, if hdf file doesn't exist
-if (!(Test-Path $hdfFile))
+if (!(Test-Path $path))
 {
-    throw ("Hdf file '{0}' doesn't exist!" -f $hdfFile)
+    throw ("Path '{0}' doesn't exist!" -f $path)
 }
 
 # get hdf size
-$hdfSize = (Get-Item $hdfFile).Length
+$physicalSize = (Get-Item $path).Length
 
 # write program information
-Write-Output 'RDBInfo'
-Write-Output '-------'
-Write-Output ("Hdf File = {0}" -f $hdfFile)
-Write-Output ("Hdf Size = {0} ({1} bytes)" -f (FormatBytes $hdfSize 1), $hdfSize)
+Write-Output 'RDB Info v1.0 by Henrik Noerfjand Stengaard'
 Write-Output ''
+Write-Output 'Physical Disk'
+Write-Output '-------------'
+Write-Output ("Path = {0}" -f $path)
+Write-Output ("Size = {0} ({1} bytes)" -f (FormatBytes $physicalSize 1), $physicalSize)
 
 
 # open hdf file stream and binary reader
-$stream = New-Object System.IO.FileStream $hdfFile, 'Open', 'Read', 'Read'
+$stream = New-Object System.IO.FileStream $path, 'Open', 'Read', 'Read'
 $binaryReader = New-Object System.IO.BinaryReader($stream)
 
 
@@ -330,8 +331,9 @@ if ($rigidDiskBlock -eq $null)
 $driveSize = $rigidDiskBlock.Cylinders * $rigidDiskBlock.Heads * $rigidDiskBlock.Sectors * $blockSize
 
 # write drive information
-Write-Output "Drive"
-Write-Output "-----"
+Write-Output ''
+Write-Output 'Logical Disk'
+Write-Output '------------'
 Write-Output ("Manufacturers Name = {0}" -f $rigidDiskBlock.DiskVendor)
 Write-Output ("Drive Name = {0}" -f $rigidDiskBlock.DiskProduct)
 Write-Output ("Drive Revision = {0}" -f $rigidDiskBlock.DiskRevision)
