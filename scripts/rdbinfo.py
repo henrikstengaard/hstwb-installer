@@ -168,7 +168,17 @@ class RigidDiskBlock:
     controller_vendor = ""
     controller_product = ""
     controller_revision = ""
-    
+
+class PartitionBlock:
+    size = 0 # Size of the structure for checksums
+    checksum = 0 # Checksum of the structure
+    host_id = 0 # SCSI Target ID of host, not really used 
+    next_partition_block = 0 # Block number of the next PartitionBlock
+    flags = 0 # Part Flags (NOMOUNT and BOOTABLE)
+
+    dev_flags = 0 # Preferred flags for OpenDevice
+    drive_name = "" # Preferred DOS device name: BSTR form
+
 class HdfDiskReader(object):
     def __init__(self, reader):
         self.reader = reader
@@ -179,6 +189,10 @@ class HdfDiskReader(object):
 
     def read_char(self, block_data, offset, length):
         return struct.unpack_from('%ds' % length, block_data, offset)[0]
+
+    def read_string(self, block_data, offset):
+        length = struct.unpack_from('B', block_data, offset)[0]
+        return self.read_char(block_data, offset + 1, length)      
     
     def read_long(self, block_data, offset):
         return struct.unpack_from('>l', block_data, offset)[0]
@@ -243,11 +257,48 @@ class HdfDiskReader(object):
 
         return rigid_disk_block
 
+    def read_partition_block(self, block_data):
+        identifier = self.read_identifier(block_data, 0)
+        if identifier != "PART":
+            raise "Invalid partition block"
+
+        partition_block = PartitionBlock()
+        partition_block.size = self.read_unsigned_long(block_data, 4)
+        partition_block.checksum = self.read_long(block_data, 8)
+        partition_block.host_id = self.read_unsigned_long(block_data, 12)
+        partition_block.next_partition_block = self.read_unsigned_long(block_data, 16)
+        partition_block.flags = self.read_unsigned_long(block_data, 20)
+
+        partition_block.dev_flags = self.read_unsigned_long(block_data, 32)
+        partition_block.drive_name = self.read_string(block_data, 36)
+
+        return partition_block
+
+    def read_partition_list(self, rigid_disk_block):
+        partition_blocks = []
+        partition_list = rigid_disk_block.partition_list
+        partition_index = 1
+        while True:
+            partition_block_offset = rigid_disk_block.block_size * partition_list
+            self.reader.seek(partition_block_offset)
+            block_data = self.reader.read(self.BLOCK_SIZE)
+            partition_block = self.read_partition_block(block_data)
+            partition_blocks.append(partition_block)
+            partition_list = partition_block.next_partition_block
+            if partition_list <= 0 or partition_list == 0xFFFFFFFF or partition_index > 128:
+                break
+            partition_index += 1
+        return partition_blocks
+
 DISK_READER = Win32DiskReader()
 DISK_READER.open("c:\\temp\\hdf_repack\\4gb.hdf")
 HDF_DISK_READER = HdfDiskReader(DISK_READER)
 
 rigid_disk_block = HDF_DISK_READER.read_rigid_disk_block()
+partition_blocks = HDF_DISK_READER.read_partition_list(rigid_disk_block)
+
+# calculate drive size
+DRIVE_SIZE = rigid_disk_block.cylinders * rigid_disk_block.heads * rigid_disk_block.sectors * HDF_DISK_READER.BLOCK_SIZE
 
 print ("Physical drive:")
 print ("---------------")
@@ -258,5 +309,11 @@ print ("")
 print ("Cylinders:          %s" % rigid_disk_block.cylinders)
 print ("Heads:              %s" % rigid_disk_block.sectors)
 print ("Blocks per Track:   %s" % rigid_disk_block.heads)
+print ("Size:   %d" % DRIVE_SIZE)
+
+for partition_block in partition_blocks:
+    print ("host id:          %s" % partition_block.host_id)
+    print ("next block:          %s" % partition_block.next_partition_block)
+    print ("drive name:          %s" % partition_block.drive_name)
 
 DISK_READER.close()
