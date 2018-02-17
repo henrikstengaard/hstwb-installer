@@ -311,7 +311,7 @@ print ("Heads:                    %s" % rigid_disk_block.heads)
 print ("Blocks per Track:         %s" % rigid_disk_block.sectors)
 print ("Blocks per Cylinder:      %d" % rigid_disk_block.cyl_blocks)
 print ("Size:                     %s (%d bytes)" % (format_bytes(drive_size, 1), drive_size))
-print ("Park head cylinder:       %d" % rigid_disk_block.parking_zone)
+print ("Park Head Cylinder:       %d" % rigid_disk_block.parking_zone)
 
 # show partitions
 partition_index = 0
@@ -330,8 +330,8 @@ for partition_block in partition_blocks:
     print ("------------")
     print ("Device Name:              %s" % partition_block.drive_name)
     print ("Start Cylinder:           %d" % partition_block.low_cyl)
-    print ("End Cylylinder:           %d" % partition_block.high_cyl)
-    print ("Total Cylinder:           %d" % partition_cylinders)
+    print ("End Cylinder:             %d" % partition_block.high_cyl)
+    print ("Total Cylinders:          %d" % partition_cylinders)
     print ("Size:                     %s (%d bytes)" % (format_bytes(partition_size, 1), partition_size))
     print ("Buffers:                  %d" % partition_block.num_buffer)
     print ("File System Block Size:   %d" % (partition_block.size_block * 4 * partition_block.sectors_per_block))
