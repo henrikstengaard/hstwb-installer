@@ -307,9 +307,11 @@ print ("Drive Name:               %s" % rigid_disk_block.disk_product)
 print ("Drive Revision:           %s" % rigid_disk_block.disk_revision)
 print ("")
 print ("Cylinders:                %s" % rigid_disk_block.cylinders)
-print ("Heads:                    %s" % rigid_disk_block.sectors)
-print ("Blocks per Track:         %s" % rigid_disk_block.heads)
+print ("Heads:                    %s" % rigid_disk_block.heads)
+print ("Blocks per Track:         %s" % rigid_disk_block.sectors)
+print ("Blocks per Cylinder:      %d" % rigid_disk_block.cyl_blocks)
 print ("Size:                     %s (%d bytes)" % (format_bytes(drive_size, 1), drive_size))
+print ("Park head cylinder:       %d" % rigid_disk_block.parking_zone)
 
 # show partitions
 partition_index = 0
