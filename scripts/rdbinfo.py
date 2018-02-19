@@ -3,7 +3,7 @@
 #
 # RDB Info
 # Author: Henrik Noerfjand Stengaard
-# Date: 2018-02-17
+# Date: 2018-02-19
 #
 # A python script to read Rigid Disk Block (RDB) from file or disk device.
 #
@@ -106,6 +106,26 @@ class PartitionBlock:
     control = 0 # Control word for handler/filesystem 
     boot_blocks = 0 # Number of blocks containing boot code 
 
+class FileSystemHeaderBlock:
+    size = 0 # Size of the structure for checksums
+    checksum = 0 # Checksum of the structure
+    host_id = 0 # SCSI Target ID of host, not really used 
+    next_file_sys_header_block = 0 # Block number of the next FileSysHeaderBlock
+    flags = 0 # Flags
+
+    dos_type = 0 # Dos Type
+    version = 0 # filesystem version 0x0027001b == 39.27
+    seg_list_block = 0 # first of linked list of LoadSegBlocks
+    file_system_name = ""
+
+class LoadSegBlock:
+    size = 0 # Size of the structure for checksums
+    checksum = 0 # Checksum of the structure
+    host_id = 0 # SCSI Target ID of host, not really used 
+    next_load_seg_block = 0 # Block number of the next LoadSegBlock
+
+    load_data = []
+
 class RigidDiskReader(object):
     def __init__(self, disk):
         self.disk = disk
@@ -153,7 +173,7 @@ class RigidDiskReader(object):
         rigid_disk_block.flags = self.read_unsigned_long(block_data, 20)
         rigid_disk_block.bad_block_list = self.read_unsigned_long(block_data, 24)
         rigid_disk_block.partition_list = self.read_unsigned_long(block_data, 28)
-        rigid_disk_block.file_sys_hdr_List = self.read_unsigned_long(block_data, 32)
+        rigid_disk_block.file_sys_hdr_list = self.read_unsigned_long(block_data, 32)
         rigid_disk_block.drive_init_code = self.read_unsigned_long(block_data, 36)
         rigid_disk_block.boot_block_list = self.read_unsigned_long(block_data, 40)
 
@@ -238,6 +258,70 @@ class RigidDiskReader(object):
             partition_index += 1
         return partition_blocks
 
+    def read_file_system_header_block(self, block_data):
+        identifier = self.read_identifier(block_data, 0)
+        if identifier != "FSHD":
+            raise "Invalid file sys header block"
+
+        file_system_header_block = FileSystemHeaderBlock()
+        file_system_header_block.size = self.read_unsigned_long(block_data, 4)
+        file_system_header_block.checksum = self.read_long(block_data, 8)
+        file_system_header_block.host_id = self.read_unsigned_long(block_data, 12)
+        file_system_header_block.next_file_sys_header_block = self.read_unsigned_long(block_data, 16)
+        file_system_header_block.flags = self.read_unsigned_long(block_data, 20)
+
+        file_system_header_block.dos_type = self.read_char(block_data, 32, 4)
+        file_system_header_block.version = self.read_unsigned_long(block_data, 36)
+        file_system_header_block.seg_list_block = self.read_unsigned_long(block_data, 72)
+        file_system_header_block.file_system_name = self.read_char(block_data, 172, 128)
+
+        return file_system_header_block
+
+    def read_file_system_header_list(self, rigid_disk_block):
+        file_system_header_blocks = []
+        file_sys_hdr_list = rigid_disk_block.file_sys_hdr_list
+        file_system_header_index = 1
+        while True:
+            file_sys_header_block_offset = rigid_disk_block.block_size * file_sys_hdr_list
+            self.disk.seek(file_sys_header_block_offset)
+            block_data = self.disk.read(self.BLOCK_SIZE)
+            file_system_header_block = self.read_file_system_header_block(block_data)
+            file_system_header_blocks.append(file_system_header_block)
+            file_sys_hdr_list = file_system_header_block.next_file_sys_header_block
+            if file_sys_hdr_list <= 0 or file_sys_hdr_list == 0xFFFFFFFF or file_system_header_index > 128:
+                break
+            file_system_header_index += 1
+        return file_system_header_blocks
+
+    def read_load_seg_block(self, block_data):
+        identifier = self.read_identifier(block_data, 0)
+        if identifier != "LSEG":
+            raise "Invalid load seq block"
+
+        load_seg_block = LoadSegBlock()
+        load_seg_block.size = self.read_unsigned_long(block_data, 4)
+        load_seg_block.checksum = self.read_long(block_data, 8)
+        load_seg_block.host_id = self.read_unsigned_long(block_data, 12)
+        load_seg_block.next_load_seg_block = self.read_unsigned_long(block_data, 16)
+        
+        #load_seg_block.load_data = self.read_char(block_data, 20, load_seg_block.size - 20)
+
+        return load_seg_block
+
+    def read_load_seg_list(self, file_system_header_block):
+        load_seg_blocks = []
+        next_load_seg_block = file_system_header_block.seg_list_block
+        while True:
+            load_seg_block_offset = rigid_disk_block.block_size * next_load_seg_block
+            self.disk.seek(load_seg_block_offset)
+            block_data = self.disk.read(self.BLOCK_SIZE)
+            load_seg_block = self.read_load_seg_block(block_data)
+            load_seg_blocks.append(load_seg_block)
+            next_load_seg_block = load_seg_block.next_load_seg_block
+            if next_load_seg_block <= 0 or next_load_seg_block == 0xFFFFFFFF:
+                break
+        return load_seg_blocks
+
 def format_bytes(size, precision = 0):
     base = math.log(size, 1024)
     units = ["", "K", "M", "G", "T"]
@@ -286,6 +370,17 @@ with open(disk_path, 'rb') as disk:
     rigid_disk_reader = RigidDiskReader(disk)
     rigid_disk_block = rigid_disk_reader.read_rigid_disk_block()
     partition_blocks = rigid_disk_reader.read_partition_list(rigid_disk_block)
+    file_system_header_blocks = rigid_disk_reader.read_file_system_header_list(rigid_disk_block)
+
+    # read file system sizes
+    file_system_sizes = []
+    for file_system_index in range(0, len(file_system_header_blocks)):
+        file_system_header_block = file_system_header_blocks[file_system_index]
+        load_seg_blocks = rigid_disk_reader.read_load_seg_list(file_system_header_block)
+        file_system_size = 0
+        for load_seg_block in load_seg_blocks:
+            file_system_size += (load_seg_block.size - 5) * 4
+        file_system_sizes.append(file_system_size)
 
     # calculate drive size
     drive_size = rigid_disk_block.cylinders * rigid_disk_block.heads * rigid_disk_block.sectors * rigid_disk_reader.BLOCK_SIZE
@@ -314,6 +409,10 @@ print ("Size:                     %s (%d bytes)" % (format_bytes(drive_size, 1),
 print ("Park Head Cylinder:       %d" % rigid_disk_block.parking_zone)
 
 # show partitions
+print ("")
+print ("Partitions")
+print ("----------")
+
 partition_index = 0
 for partition_block in partition_blocks:
     partition_index += 1
@@ -326,8 +425,7 @@ for partition_block in partition_blocks:
     dos_type = hex(struct.unpack_from('>L', partition_block.dos_type, 0)[0])
 
     print ("")
-    print ("Partition %d:" % partition_index)
-    print ("------------")
+    print ("Partition:                %d" % partition_index)
     print ("Device Name:              %s" % partition_block.drive_name)
     print ("Start Cylinder:           %d" % partition_block.low_cyl)
     print ("End Cylinder:             %d" % partition_block.high_cyl)
@@ -348,3 +446,22 @@ for partition_block in partition_blocks:
     print ("Mask:                     %s" % hex(partition_block.mask))
     print ("Max Transfer:             %s, (%d)" % (hex(partition_block.max_transfer), partition_block.max_transfer))
     print ("Dos Type:                 %s (%s)" % (dos_type, dos_type_formatted))
+
+# show filesystem header blocks
+print ("")
+print ("Filesystems")
+print ("-----------")
+
+file_system_index = 0
+for file_system_header_block in file_system_header_blocks:
+    file_system_index += 1
+    dos_type_formatted = "%s\\%02d" % (struct.unpack_from('3s', file_system_header_block.dos_type, 0)[0], struct.unpack_from('B', file_system_header_block.dos_type, 3)[0])
+    dos_type = hex(struct.unpack_from('>L', file_system_header_block.dos_type, 0)[0])
+    version_formatted = "%d.%d" % ((file_system_header_block.version & 0xFFFF0000) >> 16, file_system_header_block.version & 0xFFFF)
+
+    print ("")
+    print ("File system:              %d" % (file_system_index))
+    print ("Dos Type:                 %s (%s)" % (dos_type, dos_type_formatted))
+    print ("Version:                  %s" % (version_formatted))
+    print ("File system name:         %s" % (file_system_header_block.file_system_name))
+    print ("Size:                     %d bytes" % (file_system_sizes[file_system_index - 1]))
