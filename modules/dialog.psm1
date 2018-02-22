@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-18
+# Date:   2018-02-22
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -214,7 +214,7 @@ function EnterPath($prompt)
 
 
 # enter choice
-function EnterChoice($prompt, $options)
+function EnterChoice($prompt, $options, $returnIndex = $false)
 {
     $optionPadding = $options.Count.ToString().Length
 
@@ -231,6 +231,11 @@ function EnterChoice($prompt, $options)
         $choice = (Read-Host) -as [int]
     }
     until ($choice -ne '' -and $choice -ge 1 -and $choice -le $options.Count)
+
+    if ($returnIndex)
+    {
+        $choice - 1
+    }
 
     return $options[$choice - 1]
 }

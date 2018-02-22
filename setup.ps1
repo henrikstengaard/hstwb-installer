@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-11
+# Date:   2018-02-22
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -102,7 +102,7 @@ function SetTitle($version)
 
 
 # menu
-function Menu($hstwb, $title, $options)
+function Menu($hstwb, $title, $options, $returnIndex = $false)
 {
     Clear-Host
     $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
@@ -115,7 +115,7 @@ function Menu($hstwb, $title, $options)
     Write-Host $title -foregroundcolor "Cyan"
     Write-Host ""
 
-    return EnterChoice "Enter choice" $options
+    return EnterChoice "Enter choice" $options $returnIndex
 }
 
 
@@ -217,15 +217,17 @@ function ExistingImageDirectory($hstwb)
 # create image directory menu
 function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 {
-    $toNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
+    # get images sorted naturally
+    $images = $hstwb.Images | Sort-Object @{expression={ [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(20) }) };Ascending=$true}
 
+    # build image template options
     $imageTemplateOptions = @()
-    $imageTemplateOptions += $hstwb.Images.keys | Sort-Object $toNatural
+    $imageTemplateOptions += $images | ForEach-Object { $_.Name }
     $imageTemplateOptions += "Back"
     
 
     # create image directory from image template
-    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions
+    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions $true
 
     if ($choice -eq 'Back')
     {
@@ -233,7 +235,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     }
 
     # get image file
-    $imageFile = $hstwb.Images.Get_Item($choice)
+    $imageFile = $images[$choice].ImageFile
 
     # read image json file from image file
     $imageJsonText = ReadZipEntryTextFile $imageFile 'image\.json$'
@@ -275,7 +277,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     }
 
     # select new image directory
-    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
+    $newImageDirectoryPath = FolderBrowserDialog ("Select new image directory for '{0}'" -f $image.Name) $defaultImageDir $true
 
     # return, if new image directory path is null
     if ($newImageDirectoryPath -eq $null)
@@ -329,27 +331,49 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         {
             "hdf"
             {
-                # get hdf filename
-                $hdfFileName = Split-Path $harddrivePath -Leaf
-
                 # open image file and get hdf zip entry matching hdf filename
                 $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
-                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
 
-                # return, if image file doesn't contain hdf filename
-                if (!$hdfZipEntry)
+                # find file system file in zip file entries
+                $fileSystemZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.FileSystem + '*') }
+
+                # return, if image file doesn't contain file system file
+                if (!$fileSystemZipEntry)
                 {
                     $zip.Dispose()
-                    Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
+                    Write-Error ("Image file '{0}' doesn't contain file system file '{1}'!" -f $imageFile, $harddrive.FileSystem)
                     Write-Host ""
                     Write-Host "Press enter to continue"
                     return
                 }
 
-                # extract hdf zip entry to harddrive path
-                Write-Host "Extracting hdf file '$hdfFileName' to '$harddrivePath'..." 
+                # extract file system zip entry to new image directory
+                $fileSystemPath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.FileSystem
+                Write-Host ("Extracting file system file '{0}' to '{1}'..." -f $harddrive.FileSystem, $fileSystemPath)
+                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($fileSystemZipEntry, $fileSystemPath, $true);
+                Write-Host "Done."
+
+
+                # find hdf file in zip file entries
+                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') }
+
+                # return, if image file doesn't contain hdf filename
+                if (!$hdfZipEntry)
+                {
+                    $zip.Dispose()
+                    Write-Error ("Image file '" + $imageFile + "' doesn't contain hdf file '$harddrive.Path'!")
+                    Write-Host ""
+                    Write-Host "Press enter to continue"
+                    return
+                }
+
+                # extract hdf zip entry to new image directory
+                Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
                 [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true);
                 Write-Host "Done."
+
+                
+                # dispose zip file
                 $zip.Dispose()
             }
             "dir"
@@ -1204,7 +1228,6 @@ try
         $assigns = @{}
     }
 
-
     # hstwb
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
@@ -1218,7 +1241,7 @@ try
             'RunFile' = $runFile;
             'SettingsDir' = $settingsDir
         };
-        'Images' = ReadImages $imagesPath;
+        'Images' = (ReadImages $imagesPath | Where-Object { $_ });
         'Packages' = ReadPackages $packagesPath;
         'Settings' = $settings;
         'Assigns' = $assigns
@@ -1280,7 +1303,7 @@ try
         # set new workbench adf set and save
         $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
     }
-    
+
     # save settings and assigns
     Save $hstwb
 

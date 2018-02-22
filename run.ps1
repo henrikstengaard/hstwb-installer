@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-11
+# Date:   2018-02-22
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1155,6 +1155,13 @@ function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
         $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_label = {1}" -f $index, $harddrive.Device
         $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_priority = {1}" -f $index, $bootPriority
 
+        # add file system to fs-uae harddrive config lines, if file system is defined
+        if ($harddrive.FileSystem)
+        {
+            $fileSystem = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $harddrive.FileSystem
+            $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_file_system = {1}" -f $index, ($fileSystem.Replace('\', '/'))
+        }
+
         $index++
     }
 
@@ -1277,10 +1284,13 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
         # boot priority
         $bootPriority = if ($disableBootableHarddrives) { -128 } else { $harddrive.BootPriority }
 
+        # file system
+        $fileSystem = if ($harddrive.FileSystem) { Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $harddrive.FileSystem } else { "" }
+
         if ($harddrive.Type -match 'hdf')
         {
             # hdf winuae harddrive config lines
-            $winuaeImageHarddrivesConfigLines += "hardfile2={0},{1}{2},{3},{4},{5},{6},{7},,uae" -f `
+            $winuaeImageHarddrivesConfigLines += "hardfile2={0},{1}:{2},{3},{4},{5},{6},{7},{8},uae" -f `
                 $harddrive.ReadOnly, `
                 $harddrive.Device,  `
                 $harddrivePath, `
@@ -1288,8 +1298,9 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
                 $harddrive.Surfaces, `
                 $harddrive.Reserved, `
                 $harddrive.BlockSize, `
-                $bootPriority
-            $winuaeImageHarddrivesConfigLines += "uaehf{0}=hdf,{1},{2}""{3}"",{4},{5},{6},{7},{8},,uae" -f `
+                $bootPriority,
+                $fileSystem
+            $winuaeImageHarddrivesConfigLines += "uaehf{0}=hdf,{1},{2}:""{3}"",{4},{5},{6},{7},{8},{9},uae" -f `
                 $index, `
                 $harddrive.ReadOnly, `
                 $harddrive.Device,  `
@@ -1298,20 +1309,25 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
                 $harddrive.Surfaces, `
                 $harddrive.Reserved, `
                 $harddrive.BlockSize, `
-                $bootPriority
+                $bootPriority,
+                $fileSystem
         }
         elseif($harddrive.Type -match 'dir')
         {
+            $volume = if ($harddrive.Volume) { $harddrive.Volume } else { $harddrive.Device }
+
             # directory winuae harddrive config lines
-            $winuaeImageHarddrivesConfigLines += "filesystem2={0},{1}{2},{3}" -f `
+            $winuaeImageHarddrivesConfigLines += "filesystem2={0},{1}:{2}:{3},{4}" -f `
                 $harddrive.ReadOnly, `
-                $harddrive.Device,  `
+                $harddrive.Device, `
+                $volume, `
                 $harddrivePath, `
                 $bootPriority
-            $winuaeImageHarddrivesConfigLines += "uaehf{0}=dir,{1},{2}""{3}"",{4}" -f `
+            $winuaeImageHarddrivesConfigLines += "uaehf{0}=dir,{1},{2}:{3}:""{4}"",{5}" -f `
                 $index, `
                 $harddrive.ReadOnly, `
-                $harddrive.Device,  `
+                $harddrive.Device, `
+                $volume, `
                 $harddrivePath, `
                 $bootPriority
         }

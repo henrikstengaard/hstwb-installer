@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-11
+# Date:   2018-02-22
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -337,7 +337,7 @@ function UpgradeAssigns($hstwb)
 # read images
 function ReadImages($imagesPath)
 {
-    $images = @{}
+    $images = New-Object System.Collections.Generic.List[System.Object]
     
     # get image files
     $imageFiles = Get-ChildItem -Path $imagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
@@ -362,7 +362,7 @@ function ReadImages($imagesPath)
         $image = $imageJsonText | ConvertFrom-Json
 
         # add image name and image file to images
-        $images.Set_Item($image.Name, $imageFile.FullName)
+        $images.Add(@{ "Name" = $image.Name; "ImageFile" = $imageFile.FullName })
     }
 
     if ($warning)

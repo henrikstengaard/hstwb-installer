@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-26
+# Date:   2018-02-22
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -302,9 +302,14 @@ function CalculateMd5FromText($text)
 # get file hashes
 function GetFileHashes($path)
 {
-    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
-
     $fileHashes = @()
+
+    if (!$path -or !(Test-Path -Path $path))
+    {
+        return $fileHashes
+    }
+
+    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
 
     foreach ($file in $files)
     {
@@ -402,6 +407,13 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 # find workbench adfs
 function FindWorkbenchAdfs($hstwb)
 {
+    # reset workbench adf dir, if it doesn't exist
+    if (!$hstwb.Settings.Workbench.WorkbenchAdfDir -or !(Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
+    {
+        $hstwb.Settings.Workbench.WorkbenchAdfDir = ''
+        return
+    }
+
     # find files with hashes matching workbench adf hashes
     FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
     
@@ -413,6 +425,12 @@ function FindWorkbenchAdfs($hstwb)
 # find kickstart roms
 function FindKickstartRoms($hstwb)
 {
+    # reset kickstart rom dir, if it doesn't exist
+    if (!$hstwb.Settings.Kickstart.KickstartRomDir -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomDir))
+    {
+        $hstwb.Settings.Kickstart.KickstartRomDir = ''
+    }
+
     # find files with hashes matching kickstart rom hashes
     FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
 }
