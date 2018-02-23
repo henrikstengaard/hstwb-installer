@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-22
+# Date:   2018-02-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1155,7 +1155,13 @@ function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
         $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_label = {1}" -f $index, $harddrive.Device
         $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_priority = {1}" -f $index, $bootPriority
 
-        # add file system to fs-uae harddrive config lines, if file system is defined
+        # add read only to fs-uae harddrive config lines, if harddrive is read only configured
+        if ($harddrive.ReadOnly -match "ro")
+        {
+            $fsUaeImageHarddrivesConfigLines += "hard_drive_{0}_read_only" -f $index
+        }
+
+        # add file system to fs-uae harddrive config lines, if harddrive has file system configured
         if ($harddrive.FileSystem)
         {
             $fileSystem = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $harddrive.FileSystem
@@ -1314,6 +1320,7 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
         }
         elseif($harddrive.Type -match 'dir')
         {
+            # set volume, if not defined set it to device
             $volume = if ($harddrive.Volume) { $harddrive.Volume } else { $harddrive.Device }
 
             # directory winuae harddrive config lines
@@ -2745,7 +2752,6 @@ try
             'SupportPath' = $supportPath;
             'EnvArcDir' = 'SYSTEMDIR:Prefs/Env-Archive'
         };
-        'Images' = ReadImages $imagesPath;
         'Packages' = ReadPackages $packagesPath;
         'Settings' = ReadIniFile $settingsFile;
         'Assigns' = ReadIniFile $assignsFile
