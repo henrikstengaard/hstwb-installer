@@ -242,6 +242,34 @@ function ExtractPackages($hstwb, $packageNames, $packagesDir)
 }
 
 
+# install hstwb installer fs-uae theme
+function InstallHstwbInstallerFsUaeTheme($hstwb)
+{
+    $hstwbInstallerFsUaeThemeDir = Join-Path $hstwb.Paths.FsUaePath -ChildPath "theme\\hstwb-installer"
+
+    # fail, if hstwb installer fs-uae theme directory doesn't exist
+    if (!(Test-Path -Path $hstwbInstallerFsUaeThemeDir))
+    {
+        throw ("HstWB Installer FS-UAE theme '{0}' doesn't exist" -f $hstwbInstallerFsUaeThemeDir)
+    }
+
+    # fs-uae theme directory
+    $fsuaeThemeDir = Join-Path ([System.Environment]::GetFolderPath('MyDocuments')) -ChildPath 'FS-UAE\\Themes\\hstwb-installer'
+    
+    # return, if fs-uae themes directory exist
+    if (Test-Path -Path $fsuaeThemeDir)
+    {
+        return
+    }
+
+    # create fs-uae themes directory, if it doesn't exist
+    mkdir -Path $fsuaeThemeDir | Out-Null
+    
+    # copy hstwb installer fs-uae theme directory to fs-uae theme directory
+    Copy-Item -Path "$hstwbInstallerFsUaeThemeDir\*" $fsuaeThemeDir -force
+}
+
+
 # build assign hstwb installer script lines
 function BuildAssignHstwbInstallerScriptLines($hstwb, $createDirectories)
 {
@@ -1511,6 +1539,9 @@ function RunTest($hstwb)
     $emulatorArgs = ''
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
+        # install hstwb installer fs-uae theme
+        InstallHstwbInstallerFsUaeTheme $hstwb
+
         # build fs-uae harddrives config
         $fsUaeHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
         
@@ -1944,6 +1975,9 @@ function RunInstall($hstwb)
     $emulatorArgs = ''
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
+        # install hstwb installer fs-uae theme
+        InstallHstwbInstallerFsUaeTheme $hstwb
+
         # build fs-uae install harddrives config
         $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
 
@@ -2444,6 +2478,9 @@ function RunBuildSelfInstall($hstwb)
     $emulatorArgs = ''
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
+        # install hstwb installer fs-uae theme
+        InstallHstwbInstallerFsUaeTheme $hstwb
+
         # build fs-uae install harddrives config
         $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
 
