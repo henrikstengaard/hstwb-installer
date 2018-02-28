@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-22
+# Date:   2018-02-28
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -101,7 +101,7 @@ function PrintSettings($hstwb)
     $installPackageNames = @{}
     foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
     {
-        $installPackageNames.Set_Item($hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower()), $true)
+        $installPackageNames.Set_Item($hstwb.Settings.Packages[$installPackageKey].ToLower(), $true)
     }
 
     $packageNames = @()
@@ -114,8 +114,9 @@ function PrintSettings($hstwb)
 
         foreach ($packageName in ($packageNames | Where-Object { $installPackageNames.ContainsKey($_) }))
         {
-            $package = $hstwb.Packages.Get_Item($packageName).Latest
-            $installPackages += $package.PackageFullName
+            $package = $hstwb.Packages[$packageName]
+            
+            $installPackages += $package.FullName
         }
 
         Write-Host ("'" + ($installPackages -Join ', ') + "'")

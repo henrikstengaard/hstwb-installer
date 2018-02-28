@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-22
+# Date:   2018-02-28
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -342,8 +342,6 @@ function ReadImages($imagesPath)
     # get image files
     $imageFiles = Get-ChildItem -Path $imagesPath -Filter '*.zip' | Where-Object { !$_.PSIsContainer }
 
-    $warning = $false
-
     # read image json from image files
     foreach ($imageFile in $imageFiles)
     {
@@ -353,22 +351,16 @@ function ReadImages($imagesPath)
         # skip, if image ini text doesn't exist
         if (!$imageJsonText)
         {
-            $warning = $true
-            Write-Host ("Warning: Image file '{0}' doesn't contain image.json file. Image is ignored!" -f $imageFile.Name) -ForegroundColor Yellow
-            continue
+            throw ("Image file '{0}' doesn't contain image.json file!" -f $imageFile.Name)
         }
 
+        # TODO validate image, check structure is correct
+        
         # read image json text
         $image = $imageJsonText | ConvertFrom-Json
 
         # add image name and image file to images
         $images.Add(@{ "Name" = $image.Name; "ImageFile" = $imageFile.FullName })
-    }
-
-    if ($warning)
-    {
-        Write-Host "Press enter to continue"
-        Read-Host
     }
 
     return $images
@@ -386,82 +378,37 @@ function ReadPackages($packagesPath)
     # read package ini from package files
     foreach ($packageFile in $packageFiles)
     {
-        # read package ini text file from package file
-        $packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package\.ini$'
+        # read package json text file from package file
+        $packageJsonText = ReadZipEntryTextFile $packageFile.FullName 'hstwb-package\.json$'
 
         # skip, if package ini text doesn't exist
-        if (!$packageIniText)
+        if (!$packageJsonText)
         {
-            throw ("Package file '" + $packageFile.FullName + "' doesn't contain package.ini file!")
+            throw ("Package file '" + $packageFile.FullName + "' doesn't contain 'hstwb-package.json' file!")
         }
 
-        # read package ini text
-        $packageIni = ReadIniText $packageIniText
-
-        # fail, if package ini doesn't contain package section
-        if (!$packageIni.Package)
-        {
-            throw ("Package file '" + $packageFile.FullName + "' doesn't have package section in package.ini!")
-        }
-
-        # fail, if package ini doesn't have a valid name
-        if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
-        {
-            throw ("Package file '" + $packageFile.FullName + "' doesn't have a valid name in package.ini!")
-        }
-
-        # fail, if package ini doesn't have a valid version
-        if (!$packageIni.Package.Version -or $packageIni.Package.Version -notmatch '^\d+\.\d+\.\d+$' )
-        {
-            throw ("Package file '" + $packageFile.FullName + "' doesn't have a valid version in package section!")
-        }
-
-        # add package file and fullname
-        $packageIni.PackageId = CalculateMd5FromText $packageIni.Package.Name.ToLower()
-        $packageIni.PackageFile = $packageFile.FullName
-        $packageIni.PackageDirName = $packageFile.Name.ToLower() -replace '\.zip$'
-        $packageIni.PackageFullName = "{0} v{1}" -f $packageIni.Package.Name, $packageIni.Package.Version
-
-        # parse package dependencies
-        $packageDependencies = @()
-        foreach($dependencyKey in ($packageIni.Package.Keys | Where-Object { $_ -match 'Dependency\d+' }))
-        {
-            $packageDependencies += $packageIni.Package.Get_Item($dependencyKey)
-        }
-            
-        $packageIni.PackageDependencies = $packageDependencies
+        # read package json text
+        $package = $packageJsonText | ConvertFrom-Json
         
+        # TODO validate package, check structure is correct
 
-        $packageName = $packageIni.Package.Name.ToLower()
-        $packageVersion = $packageIni.Package.Version
+        # add id, fullname and package file properties to package
+        $package | Add-Member -MemberType NoteProperty -Name 'Id' -Value (CalculateMd5FromText $package.Name.ToLower())
+        $package | Add-Member -MemberType NoteProperty -Name 'FullName' -Value ("{0} v{1}" -f $package.Name, $package.Version)
+        $package | Add-Member -MemberType NoteProperty -Name 'PackageFile' -Value $packageFile.FullName
 
-        # get or create package
-        if ($packages.ContainsKey($packageName))
+        # add package, if it's not added or version is newer
+        if (!$packages[$package.Id] -or [version]$package.Version -gt $packages[$package.Id].Version)
         {
-            $package = $packages.Get_Item($packageName)
+            $packages[$package.Name.ToLower()] = $package
         }
-        else
-        {
-            $package = @{ 'Latest' = $null; 'Versions' = @{} }
-        }
-
-        # update latest, if latest is null or package version is greater than latest
-        if (!$package.Latest -or [version]$packageVersion -gt [version]$package.Latest.Package.Version)
-        {
-            $package.Latest = $packageIni
-        }
-
-        # add package to versions
-        $package.Versions.Set_Item($packageVersion, $packageIni)
-
-        # add package to packages
-        $packages.Set_Item($packageName, $package)
     }
 
     return $packages
 }
 
 
+# detect user packages
 function DetectUserPackages($hstwb)
 {
     $userPackages = @{}
@@ -561,36 +508,38 @@ function UpdateAssigns($hstwb)
     $packageNames = @()
     foreach ($installPackageName in $installPackageNames)
     {
-        if (!$hstwb.Packages.ContainsKey($installPackageName))
+        $package = $hstwb.Packages[$installPackageName]
+
+        if (!$package)
         {
             continue
         }
 
-        $package = $hstwb.Packages.Get_Item($installPackageName).Latest
+        $packageNames += $package.Name
 
-        $packageNames += $package.Package.Name
-
-        if (!$package.DefaultAssigns)
+        if (!$package.Assigns -or $package.Assigns.Count -eq 0)
         {
             continue
         }
 
         # add new package assigns, if package exists. otherwise add all package assigns
-        if ($hstwb.Assigns.ContainsKey($package.Package.Name))
+        if ($hstwb.Assigns.ContainsKey($package.Name))
         {
-            $packageAssigns = $hstwb.Assigns.Get_Item($package.Package.Name)
+            $packageAssigns = $hstwb.Assigns[$package.Name]
 
-            foreach ($key in ($package.DefaultAssigns.keys | Sort-Object))
+            foreach ($assign in ($package.Assigns | Where-Object { $_.Path } | Sort-Object @{expression={$_.Name};Ascending=$true} ))
             {
-                if (!$packageAssigns.ContainsKey($key))
+                if ($packageAssigns.ContainsKey($assign.Name))
                 {
-                    $packageAssigns.Set_Item($key, $package.DefaultAssigns.Get_Item($key))
+                    continue
                 }
+                $packageAssigns.Set_Item($assign.Name, $assign.Path)
             }
         }
         else
         {
-            $hstwb.Assigns.Set_Item($package.Package.Name, $package.DefaultAssigns) 
+            $hstwb.Assigns[$package.Name] = @{}
+            $package.Assigns | Where-Object { $_.Path } | Sort-Object @{expression={$_.Name};Ascending=$true} | Foreach-Object { $hstwb.Assigns[$package.Name][$_.Name] = $_.Path }
         }
     }
 

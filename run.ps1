@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-23
+# Date:   2018-02-28
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -194,8 +194,6 @@ function StartProcess($fileName, $arguments, $workingDirectory)
 # find packages to install
 function FindPackagesToInstall($hstwb)
 {
-    $pakageNames = SortPackageNames $hstwb
-
     # get install packages
     $installPackageNames = @{}
     foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
@@ -203,30 +201,44 @@ function FindPackagesToInstall($hstwb)
         $installPackageNames.Set_Item($hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower()), $true)
     }
 
-    # build package nodes for sorting topologically
-    $packageIndex = 0
-    $packageNodes = @()
-    foreach ($pakageName in ($pakageNames | Where-Object { $installPackageNames.ContainsKey( $_ ) }))
-    {
-        $package = $hstwb.Packages.Get_Item($pakageName).Latest
-        $priority = if ($package.Package.Priority) { [Int32]$package.Package.Priority } else { 9999 }
-        $packageIndex++
-        $packageNodes += @{ 'Name'= $package.Package.Name; 'Index' = $packageIndex; 'Dependencies' = $package.PackageDependencies; 'Priority' = $priority }
-    }
+    $packageNames = SortPackageNames $hstwb
 
-    # sort packages, if any are present
     $installPackages = @()
-    if ($installPackageNames.Count -gt 0)
-    {
-        # sort packages by priority and name
-        $packagesSorted = @()
-        $packagesSorted += ,$packageNodes | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Index};Ascending=$true}
-
-        # add topologically sorted packages to install packages
-        TopologicalSort $packagesSorted | ForEach-Object { $installPackages += $_ }
-    }
+    $installPackages += $packageNames | Where-Object { $installPackageNames[$_] }
 
     return $installPackages
+}
+
+
+# extract packages
+function ExtractPackages($hstwb, $packageNames, $packagesDir)
+{
+    foreach($packageName in $packageNames)
+    {
+        # get package
+        $package = $hstwb.Packages[$packageName]
+
+        if (!$package)
+        {
+            continue
+        }
+
+        # extract package file to package directory
+        $packageDir = [System.IO.Path]::Combine($packagesDir, $package.Id)
+        Write-Host ("Extracting '{0}' package to directory '{1}'" -f $package.Name, $packageDir)
+
+        # delete existing package directory, if it exists
+        if(test-path -path $packageDir)
+        {
+            remove-item -Path $packageDir -Recurse -Force
+        }
+
+        # create package directory
+        mkdir $packageDir | Out-Null
+
+        # extract package to package directory
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($package.PackageFile, $packageDir)
+    }
 }
 
 
@@ -354,27 +366,27 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
     foreach ($packageName in $packageNames)
     {
         # get package
-        $package = $hstwb.Packages.Get_Item($packageName.ToLower()).Latest
+        $package = $hstwb.Packages[$packageName.ToLower()]
 
         # add package installation lines to install packages script
         $installPackageLines = @()
-        $installPackageLines += ("; Install package '{0}'" -f $package.PackageFullName)
+        $installPackageLines += ("; Install package '{0}'" -f $package.FullName)
         $installPackageLines += "echo """""
-        $installPackageLines += ("echo ""*e[1mInstalling package '{0}'*e[0m""" -f $package.PackageFullName)
+        $installPackageLines += ("echo ""*e[1mInstalling package '{0}'*e[0m""" -f $package.FullName)
 
         $removePackageAssignLines = @()
 
         # get package assign names
         $packageAssignNames = @()
-        if ($package.Package.Assigns)
+        if ($package.Assigns)
         {
-           $packageAssignNames += $package.Package.Assigns -split ',' | Where-Object { $_ }
+            $packageAssignNames += $package.Assigns | Where-Object { $_.Path } | ForEach-Object { $_.Name }
         }
 
         # package assigns
-        if ($hstwb.Assigns.ContainsKey($package.Package.Name))
+        if ($hstwb.Assigns.ContainsKey($package.Name))
         {
-            $packageAssigns = $hstwb.Assigns.Get_Item($package.Package.Name)
+            $packageAssigns = $hstwb.Assigns[$package.Name]
         }
         else
         {
@@ -391,7 +403,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             # fail, if package assign name doesn't exist in either global or package assigns
             if (!$matchingGlobalAssignName -and !$matchingPackageAssignName)
             {
-                Fail $hstwb ("Error: Package '" + $package.Package.Name + "' doesn't have assign defined for '$assignName' in either global or package assigns!")
+                Fail $hstwb ("Error: Package '" + $package.Name + "' doesn't have assign defined for '$assignName' in either global or package assigns!")
             }
 
             # skip, if package assign name is global
@@ -401,7 +413,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             }
 
             # get assign path and drive
-            $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Package.Name, $assignName).ToLower())
+            $assignId = CalculateMd5FromText (("{0}.{1}" -f $package.Name, $assignName).ToLower())
             $assignDir = $packageAssigns.Get_Item($matchingPackageAssignName)
 
             # append add package assign
@@ -411,7 +423,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             # append ini file set for package assignm, if installer mode is build self install or build package installation
             if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
             {
-                $installPackageLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Package.Name, $assignName
+                $installPackageLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Name, $assignName
             }
 
             # append remove package assign
@@ -422,14 +434,14 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
         # add package dir assign, execute package install script and remove package dir assign
         $installPackageLines += ""
         $installPackageLines += "; Add package dir assign"
-        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}""" -f $package.PackageDirName)
+        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}""" -f $package.Id)
         $installPackageLines += ""
         $installPackageLines += "; Execute package install script"
-        $installPackageLines += ("echo ""Running package '{0}' install script"" >>SYS:HstWB-Installer.log" -f $package.PackageDirName)
+        $installPackageLines += ("echo ""Running package '{0}' install script"" >>SYS:HstWB-Installer.log" -f $package.Id)
         $installPackageLines += "execute ""PACKAGEDIR:Install"""
         $installPackageLines += ""
         $installPackageLines += "; Remove package dir assign"
-        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}"" REMOVE" -f $package.PackageDirName)
+        $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}"" REMOVE" -f $package.Id)
 
 
         # add remove package assign lines, if there are any
@@ -557,9 +569,14 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
         foreach ($packageName in $hstwb.Packages.Keys)
         {
-            $package = $hstwb.Packages.Get_Item($packageName).Latest
-    
-            foreach($dependencyPackageName in $package.PackageDependencies)
+            $package = $hstwb.Packages[$packageName]
+
+            if (!$package.Dependencies)
+            {
+                continue
+            }
+
+            foreach($dependencyPackageName in ($package.Dependencies | ForEach-Object { $_.Name.ToLower() }))
             {
                 if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
                 {
@@ -584,21 +601,21 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         foreach ($installPackageScript in $installPackageScripts)
         {
             $resetPackagesScriptLines += ''
-            $resetPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $resetPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $resetPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $resetPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.FullName)
+            $resetPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+            $resetPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
             $resetPackagesScriptLines += "ENDIF"
 
             $selectAllPackagesScriptLines += ''
-            $selectAllPackagesScriptLines += ("; Select package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $selectAllPackagesScriptLines += ("IF NOT EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $selectAllPackagesScriptLines += ("  echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $selectAllPackagesScriptLines += ("; Select package '{0}'" -f $installPackageScript.Package.FullName)
+            $selectAllPackagesScriptLines += ("IF NOT EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+            $selectAllPackagesScriptLines += ("  echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
             $selectAllPackagesScriptLines += "ENDIF"
 
             $deselectAllPackagesScriptLines += ''
-            $deselectAllPackagesScriptLines += ("; Deselect package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $deselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
-            $deselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $deselectAllPackagesScriptLines += ("; Deselect package '{0}'" -f $installPackageScript.Package.FullName)
+            $deselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+            $deselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
             $deselectAllPackagesScriptLines += "ENDIF"
         }
 
@@ -666,13 +683,13 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # add package options to menu
         foreach ($installPackageScript in $installPackageScripts)
         {
-            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
             $installPackagesScriptLines += "  echo ""Install"" NOLINE >>T:installpackagesmenu"
             $installPackagesScriptLines += "ELSE"
             $installPackagesScriptLines += "  echo ""Skip   "" NOLINE >>T:installpackagesmenu"
             $installPackagesScriptLines += "ENDIF"
-            $hasDependenciesIndicator = if ($installPackageScript.Package.PackageDependencies.Count -gt 0) { ' (**)' } else { '' }
-            $installPackagesScriptLines += ("echo "" : {0}{1}"" >>T:installpackagesmenu" -f $installPackageScript.Package.PackageFullName, $hasDependenciesIndicator)
+            $hasDependenciesIndicator = if ($installPackageScript.Package.Dependencies.Count -gt 0) { ' (**)' } else { '' }
+            $installPackagesScriptLines += ("echo "" : {0}{1}"" >>T:installpackagesmenu" -f $installPackageScript.Package.FullName, $hasDependenciesIndicator)
         }
 
         # add install package option and show install packages menu
@@ -703,12 +720,12 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackageScript = $installPackageScripts[$i]
 
             $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("; Install package menu '{0}' option" -f $package.PackageFullName)
+            $installPackagesScriptLines += ("; Install package menu '{0}' option" -f $package.FullName)
             $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
             $installPackagesScriptLines += "  ; deselect package, if it's selected. Otherwise select package"
-            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
 
-            $packageName = $installPackageScript.Package.Package.Name.ToLower()
+            $packageName = $installPackageScript.Package.Name.ToLower()
 
             # show package dependency warning, if package has dependencies
             if ($dependencyPackageNamesIndex.ContainsKey($packageName))
@@ -718,20 +735,20 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
                 
                 # list selected package names that has dependencies to package
                 $dependencyPackageNames = @()
-                $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
+                $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName)
 
                 foreach($dependencyPackageName in $dependencyPackageNames)
                 {
-                    $package = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
+                    $package = $hstwb.Packages[$dependencyPackageName]
 
                     # add script lines to set show dependency warning, if dependency package is selected
-                    $installPackagesScriptLines += ("    ; Set show dependency warning, if package '{0}' is selected" -f $package.PackageFullName)
-                    $installPackagesScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.PackageId)
+                    $installPackagesScriptLines += ("    ; Set show dependency warning, if package '{0}' is selected" -f $package.FullName)
+                    $installPackagesScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
                     $installPackagesScriptLines += "      set showdependencywarning ""1"""
                     $installPackagesScriptLines += "      IF ""`$dependencypackagenames"" EQ """""
-                    $installPackagesScriptLines += ("        set dependencypackagenames ""{0}""" -f $package.Package.Name)
+                    $installPackagesScriptLines += ("        set dependencypackagenames ""{0}""" -f $package.Name)
                     $installPackagesScriptLines += "      ELSE"
-                    $installPackagesScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $package.Package.Name)
+                    $installPackagesScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $package.Name)
                     $installPackagesScriptLines += "      ENDIF"
                     $installPackagesScriptLines += "    ENDIF"
                     
@@ -740,32 +757,32 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
                 # add script lines to show package dependency warning, if selected packages has dependencies to it
                 $installPackagesScriptLines += "    set deselectpackage ""1"""
                 $installPackagesScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
-                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Package.Name)
+                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Name)
                 $installPackagesScriptLines += "    ENDIF"
                 $installPackagesScriptLines += "    IF `$deselectpackage EQ 1 VAL"
-                $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+                $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
                 $installPackagesScriptLines += "    ENDIF"
             }
             else
             {
                 # deselect package, if no other packages has dependencies to it
-                $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.PackageId)
+                $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
             }
 
             $installPackagesScriptLines += "  ELSE"
 
-            $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package
+            $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package | ForEach-Object { $_.ToLower() }
 
             foreach($dependencyPackageName in $dependencyPackageNames)
             {
-                $dependencyPackage = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
+                $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
 
-                $installPackagesScriptLines += ("    ; Select dependency package '{0}'" -f $dependencyPackage.PackageFullName)
-                $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.PackageId)
+                $installPackagesScriptLines += ("    ; Select dependency package '{0}'" -f $dependencyPackage.FullName)
+                $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
             }
             
-            $installPackagesScriptLines += ("    ; Select package '{0}'" -f $installPackageScript.Package.PackageFullName)
-            $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $installPackagesScriptLines += ("    ; Select package '{0}'" -f $installPackageScript.Package.FullName)
+            $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
             $installPackagesScriptLines += "  ENDIF"
             $installPackagesScriptLines += "ENDIF"
         }
@@ -792,7 +809,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += "  set selectedpackagescount 0"
         foreach ($installPackageScript in $installPackageScripts)
         {
-            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.PackageId)
+            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
             $installPackagesScriptLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
             $installPackagesScriptLines += "  ENDIF"
         }
@@ -835,7 +852,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # add package options to view readme menu
         foreach ($installPackageScript in $installPackageScripts)
         {
-            $installPackagesScriptLines += ("echo ""{0}"" >>T:viewreadmemenu" -f $installPackageScript.Package.PackageFullName)
+            $installPackagesScriptLines += ("echo ""{0}"" >>T:viewreadmemenu" -f $installPackageScript.Package.FullName)
         }
 
         # add back option to view readme menu
@@ -853,12 +870,12 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
             $installPackagesScriptLines += ""
             $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGESDIR:{0}/README.guide""" -f $installPackageScript.Package.PackageDirName)
-            $installPackagesScriptLines += ("    cd ""PACKAGESDIR:{0}""" -f $installPackageScript.Package.PackageDirName)
+            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGESDIR:{0}/README.guide""" -f $installPackageScript.Package.Id)
+            $installPackagesScriptLines += ("    cd ""PACKAGESDIR:{0}""" -f $installPackageScript.Package.Id)
             $installPackagesScriptLines += "    multiview README.guide"
             $installPackagesScriptLines += "    cd ""PACKAGESDIR:"""
             $installPackagesScriptLines += "  ELSE"
-            $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Package.PackageFullName)
+            $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Package.FullName)
             $installPackagesScriptLines += "  ENDIF"
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1034,7 +1051,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             }
             else
             {
-                $installPackagesScriptLines += ("  echo ""*e[1mError: Assign '{0}' is not defined for package '{1}'!*e[0m""" -f $assignName, $installPackageScript.Package.PackageFullName)
+                $installPackagesScriptLines += ("  echo ""*e[1mError: Assign '{0}' is not defined for package '{1}'!*e[0m""" -f $assignName, $installPackageScript.Package.FullName)
             }
 
             $installPackagesScriptLines += "  Set assignsvalid 0"
@@ -1046,7 +1063,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackagesScriptLines += "set devicename ""``type T:_assigndir2``"""
             $installPackagesScriptLines += "Assign >NIL: EXISTS ""`$devicename:"""
             $installPackagesScriptLines += "IF WARN"
-            $installPackagesScriptLines += "  echo ""*e[1mError: Device name '`$devicename:' in assign dir '`$assigndir' doesn't exist for package '{0}'!*e[0m""" -f $installPackageScript.Package.PackageFullName
+            $installPackagesScriptLines += "  echo ""*e[1mError: Device name '`$devicename:' in assign dir '`$assigndir' doesn't exist for package '{0}'!*e[0m""" -f $installPackageScript.Package.FullName
             $installPackagesScriptLines += "  Set assignsvalid 0"
             $installPackagesScriptLines += "ENDIF"
         }
@@ -1087,17 +1104,17 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         
         if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
         {
-            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Package.PackageId)
-            $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Package.Name, 'Version', $installPackageScript.Package.Package.Version
+            $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Package.Id)
+            $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
 
             if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall")
             {
-                $installPackagesScriptLines += ("; Remove package '{0}' install files" -f $installPackageScript.Package.PackageFullName)
+                $installPackagesScriptLines += ("; Remove package '{0}' install files" -f $installPackageScript.Package.FullName)
                 $installPackagesScriptLines += "echo """""
-                $installPackagesScriptLines += ("echo ""*e[1mRemoving package '{0}' install files...*e[0m""" -f $installPackageScript.Package.PackageFullName)
-                $installPackagesScriptLines += ("Delete >NIL: ""PACKAGESDIR:{0}"" ALL" -f $installPackageScript.Package.PackageDirName)            
+                $installPackagesScriptLines += ("echo ""*e[1mRemoving package '{0}' install files...*e[0m""" -f $installPackageScript.Package.FullName)
+                $installPackagesScriptLines += ("Delete >NIL: ""PACKAGESDIR:{0}"" ALL" -f $installPackageScript.Package.Id)            
                 $installPackagesScriptLines += "echo ""Done"""
             }
         }
@@ -1203,7 +1220,7 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
     
     # read fs-uae harddrives config file
     $fsUaeHarddrivesConfigText = [System.IO.File]::ReadAllText($fsUaeHarddrivesConfigFile)
-    
+
     # replace winuae install harddrives placeholders
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallDir]', $installDir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallHarddriveIndex]', [int]$harddriveIndex + 1)
@@ -1578,6 +1595,8 @@ function RunInstall($hstwb)
     $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
     $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
     $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
+    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
+    $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
 
     # create temp workbench path
     if(!(test-path -path $tempWorkbenchDir))
@@ -1597,6 +1616,17 @@ function RunInstall($hstwb)
         mkdir $tempPackagesDir | Out-Null
     }
 
+    # create temp os39 path
+    if(!(test-path -path $tempOs39Dir))
+    {
+        mkdir $tempOs39Dir | Out-Null
+    }
+    
+    # create temp os39 path
+    if(!(test-path -path $tempUserPackagesDir))
+    {
+        mkdir $tempUserPackagesDir | Out-Null
+    }
 
     # temp and image hstwb installer log files
     $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.log'
@@ -1711,26 +1741,15 @@ function RunInstall($hstwb)
         $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
+        # extract packages to temp packages dir
+        ExtractPackages $hstwb $installPackages $tempPackagesDir
 
         # extract packages to package directory
         foreach($installPackage in $installPackages)
         {
-            $package = $hstwb.Packages.Get_Item($installPackage.ToLower()).Latest
-
-            # extract package file to package directory
-            Write-Host ("Extracting '" + $package.PackageFullName + "' package to temp install dir")
-            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package.PackageDirName)
-
-            if(!(test-path -path $packageDir))
-            {
-                mkdir $packageDir | Out-Null
-            }
-
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($package.PackageFile, $packageDir)
-
-            $hstwbInstallerPackagesIni.Set_Item($package.Package.Name, @{ 'Version' = $package.Package.Version })
+            $package = $hstwb.Packages[$installPackage.ToLower()]
+            $hstwbInstallerPackagesIni.Set_Item($package.Name, @{ 'Version' = $package.Version })
         }
-
 
         # build install package script lines
         $installPackagesScriptLines = @()
@@ -1773,6 +1792,12 @@ function RunInstall($hstwb)
     # set user packages dir
     $userPackagesDir = $hstwb.Settings.UserPackages.UserPackagesDir
 
+    # set user packages dir to temp user packages dir, if user packages dir is not defined or doesn't exist
+    if (!$userPackagesDir -or !(Test-Path $userPackagesDir))
+    {
+        $userPackagesDir = $tempUserPackagesDir
+    }
+    
     # create instal user packages prefs file and user packages, if user packages are selected
     if ($installUserPackageNames.Count -gt 0)
     {
@@ -1826,7 +1851,7 @@ function RunInstall($hstwb)
     else
     {
         $amigaOs39IsoFileName = ''
-        $os39Dir = $tempInstallDir
+        $os39Dir = $tempOs39Dir
         $isoFile = ''
     }
 
@@ -2113,30 +2138,43 @@ function RunBuildSelfInstall($hstwb)
     Write-Host "Preparing build self install..."    
 
 
-    # create temp install path
-    $tempInstallDir = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "install")
+    # create temp install dir
+    $tempInstallDir = Join-Path $hstwb.Paths.TempPath -ChildPath "install"
     if(!(test-path -path $tempInstallDir))
     {
         mkdir $tempInstallDir | Out-Null
     }
 
-    # create temp licenses path
+    # create temp licenses dir
     $tempLicensesDir = Join-Path $tempInstallDir -ChildPath "Licenses"
     if(!(test-path -path $tempLicensesDir))
     {
         mkdir $tempLicensesDir | Out-Null
     }
 
-    # create temp packages path
-    $tempPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "packages")
+    # create temp packages dir
+    $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath  "packages"
     if(!(test-path -path $tempPackagesDir))
     {
         mkdir $tempPackagesDir | Out-Null
     }
 
+    # create temp os39 dir
+    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
+    if(!(test-path -path $tempOs39Dir))
+    {
+        mkdir $tempOs39Dir | Out-Null
+    }
 
-    # create install prefs directory
-    $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
+    # create temp user packages dir
+    $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
+    if(!(test-path -path $tempUserPackagesDir))
+    {
+        mkdir $tempUserPackagesDir | Out-Null
+    }
+
+    # create install prefs dir
+    $prefsDir = Join-Path $tempInstallDir -ChildPath "Prefs"
     if(!(test-path -path $prefsDir))
     {
         mkdir $prefsDir | Out-Null
@@ -2233,23 +2271,8 @@ function RunBuildSelfInstall($hstwb)
         $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
-
-        # extract packages to package directory
-        foreach($installPackage in $installPackages)
-        {
-            $package = $hstwb.Packages.Get_Item($installPackage.ToLower()).Latest
-            
-            # extract package file to package directory
-            Write-Host ("Extracting '" + $package.PackageFullName + "' package to temp install dir")
-            $packageDir = [System.IO.Path]::Combine($tempPackagesDir, $package.PackageDirName)
-
-            if(!(test-path -path $packageDir))
-            {
-                mkdir $packageDir | Out-Null
-            }
-
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($package.PackageFile, $packageDir)
-        }
+        # extract packages to temp packages dir
+        ExtractPackages $hstwb $installPackages $tempPackagesDir
 
         # build install package script lines
         $installPackagesScriptLines = @()
@@ -2422,7 +2445,7 @@ function RunBuildSelfInstall($hstwb)
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempInstallDir '' $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
 
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -2445,7 +2468,7 @@ function RunBuildSelfInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempInstallDir '' $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
     
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -2509,6 +2532,17 @@ function RunBuildSelfInstall($hstwb)
 # run build package installation
 function RunBuildPackageInstallation($hstwb)
 {
+    # find packages to install
+    $installPackages = FindPackagesToInstall $hstwb
+
+    # extract packages and write install packages script, if there's packages to install
+    if ($installPackages.Count -eq 0)
+    {
+        Write-Host ""
+        Write-Host "Cancelled, no packages selected!" -ForegroundColor Yellow
+        return
+    }
+
     $outputPackageInstallationPath = FolderBrowserDialog "Select new directory for package installation" ${Env:USERPROFILE} $true
 
     # return, if package installation directory is null
@@ -2540,32 +2574,9 @@ function RunBuildPackageInstallation($hstwb)
     Write-Host ""
     Write-Host "Building package installation to '$outputPackageInstallationPath'..."    
 
-
-    # find packages to install
-    $installPackages = FindPackagesToInstall $hstwb
-
-
-    # extract packages and write install packages script, if there's packages to install
-    if ($installPackages.Count -gt 0)
-    {
-        foreach($installPackage in $installPackages)
-        {
-            $package = $hstwb.Packages.Get_Item($installPackage.ToLower()).Latest
-            
-            # extract package file to package directory
-            Write-Host ("Extracting '" + $package.PackageFullName + "' package to temp install dir")
-            $packageDir = [System.IO.Path]::Combine($outputPackageInstallationPath, $package.PackageDirName)
-
-            if(!(test-path -path $packageDir))
-            {
-                mkdir $packageDir | Out-Null
-            }
-
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($package.PackageFile, $packageDir)
-        }
-    }
-
-
+    # extract packages to temp packages dir
+    ExtractPackages $hstwb $installPackages $outputPackageInstallationPath
+    
     # build install package script lines
     $packageInstallationScriptLines = @()
     $packageInstallationScriptLines += ".KEY validate/s"

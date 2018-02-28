@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-22
+# Date:   2018-02-28
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -487,29 +487,28 @@ function FindBestMatchingWorkbenchAdfSet($hstwb)
 # sort packages to install
 function SortPackageNames($hstwb)
 {
-    $packages = @()
-
-    foreach ($packageName in $hstwb.Packages.Keys)
+    $packageIndex = 0
+    $packageNodes = @()
+    foreach ($package in ($hstwb.Packages.Values | Sort-Object @{expression={$_.Name};Ascending=$true}))
     {
-        $package = $hstwb.Packages.Get_Item($packageName).Latest
-        
-        # get package priority, if it exists. otherwise use default priority 9999
-        $priority = if ($package.Package.Priority) { [Int32]$package.Package.Priority } else { 9999 }
+        # get priority, if it exists. otherwise use default priority 9999
+        $priority = if ($package.Priority) { [Int32]$package.Priority } else { 9999 }
 
-        $packages += @{ 'Name'= $package.Package.Name; 'Dependencies' = $package.PackageDependencies; 'Priority' = $priority }
+        $packageIndex++
+        $packageNodes += @{ 'Name'= $package.Name; 'Index' = $packageIndex; 'Dependencies' = $package.Dependencies.Name; 'Priority' = $priority }
     }
 
     $packageNamesSorted = @()
 
     # topologically sort packages, if any packages are present
-    if ($packages.Count -gt 0)
+    if ($packageNodes.Count -gt 0)
     {
         # sort packages by priority and name
         $packagesSorted = @()
-        $packagesSorted += $packages | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true}
+        $packagesSorted += $packageNodes | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Index};Ascending=$true}
 
         # topologically sort packages and add package names sorted
-        TopologicalSort $packagesSorted | ForEach-Object { $packageNamesSorted += $_ }
+        TopologicalSort $packageNodes | ForEach-Object { $packageNamesSorted += $_ }
     }
 
     return $packageNamesSorted
@@ -521,16 +520,22 @@ function GetDependencyPackageNames($hstwb, $package)
 {
     $dependencyPackageNames = @()
 
-    foreach ($dependencyPackageName in $package.PackageDependencies)
+    if (!$package.Dependencies)
     {
-        if (!$hstwb.Packages.ContainsKey($dependencyPackageName))
+        return $dependencyPackageNames
+    }
+
+    foreach($dependencyPackageName in $package.Dependencies.Name)
+    {
+        $dependencyPackage = $hstwb.Packages[$dependencyPackageName.ToLower()]
+
+        if (!$dependencyPackage)
         {
             continue
         }
 
-        $dependencyPackage = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
         $dependencyPackageNames += GetDependencyPackageNames $hstwb $dependencyPackage
-        $dependencyPackageNames += $dependencyPackageName
+        $dependencyPackageNames += $dependencyPackage.Name
     }
 
     return $dependencyPackageNames

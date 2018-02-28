@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-22
+# Date:   2018-02-28
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -710,6 +710,7 @@ function ConfigurePackagesMenu($hstwb)
 # select packages menu
 function SelectPackagesMenu($hstwb)
 {
+    # get package names sorted
     $packageNames = @()
     $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
 
@@ -728,30 +729,33 @@ function SelectPackagesMenu($hstwb)
 
     foreach ($packageName in $packageNames)
     {
-        $package = $hstwb.Packages.Get_Item($packageName).Latest
+        $package = $hstwb.Packages[$packageName]
 
-        $hasDependenciesIndicator = if ($package.PackageDependencies.Count -gt 0) { ' (*)' } else { '' }
+        $hasDependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
         
-        $packageNameFormatted = "{0}{1}" -f $package.PackageFullName, $hasDependenciesIndicator
+        $packageNameFormatted = "{0}{1}" -f $package.FullName, $hasDependenciesIndicator
 
         $packageNamesFormattedMap.Set_Item($packageNameFormatted, $packageName)
         $packageNamesMap.Set_Item($packageName, $packageNameFormatted)
-        $installPackagesMap.Set_Item($packageName, $package.Package.Name)
+        $installPackagesMap.Set_Item($packageName, $package.Name)
 
-        foreach($dependencyPackageName in $package.PackageDependencies)
+        if ($package.Dependencies)
         {
-            if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+            foreach($dependencyPackageName in ($package.Dependencies | ForEach-Object { $_.Name.ToLower() }))
             {
-                $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+                if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+                {
+                    $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+                }
+                else
+                {
+                    $dependencyPackageNames = @()
+                }
+    
+                $dependencyPackageNames += $packageName
+    
+                $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
             }
-            else
-            {
-                $dependencyPackageNames = @()
-            }
-
-            $dependencyPackageNames += $packageName
-
-            $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
         }
     }
 
@@ -769,7 +773,7 @@ function SelectPackagesMenu($hstwb)
         
         if ($choice -eq 'Select all')
         {
-            $addPackageNames += $hstwb.Packages.Keys
+            $addPackageNames += $packageNames
         }
         elseif ($choice -eq 'Deselect all')
         {
@@ -789,14 +793,14 @@ function SelectPackagesMenu($hstwb)
                 if ($dependencyPackageNamesIndex.ContainsKey($packageName))
                 {
                     # get package
-                    $package = $hstwb.Packages.Get_Item($packageName).Latest
+                    $package = $hstwb.Packages[$packageName]
 
                     # list selected package names that has dependencies to package
                     $dependencyPackageNames = @()
-                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
+                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
                     # show package dependency warning
-                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
+                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
                     {
                         $deselectPackage = $false
                     }
@@ -824,11 +828,11 @@ function SelectPackagesMenu($hstwb)
                 }
 
                 # get package
-                $package = $hstwb.Packages.Get_Item($packageName).Latest
+                $package = $hstwb.Packages[$packageName]
             
                 $installPackages.Remove($packageName)
                 
-                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Package.Name) } | Select-Object -First 1
+                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Name) } | Select-Object -First 1
 
                 if ($packageAssignsKey)
                 {
@@ -848,13 +852,13 @@ function SelectPackagesMenu($hstwb)
                 }
 
                 # get package
-                $package = $hstwb.Packages.Get_Item($packageName).Latest
+                $package = $hstwb.Packages[$packageName]
 
                 $selectedPackageNames = @()
                 
-                if ($package.PackageDependencies.Count -gt 0)
+                if ($package.Dependencies.Count -gt 0)
                 {
-                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package
+                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package | ForEach-Object { $_.ToLower() }
                 }
 
                 $selectedPackageNames += $packageName
@@ -869,11 +873,20 @@ function SelectPackagesMenu($hstwb)
                     $installPackages.Set_Item($selectedPackageName, $true)
 
                     # get selected package
-                    $selectedPackage = $hstwb.Packages.Get_Item($selectedPackageName).Latest
+                    $selectedPackage = $hstwb.Packages[$selectedPackageName]
             
-                    if ($selectedPackage.Package.DefaultAssigns)
+                    if ($selectedPackage.Assigns -and $selectedPackage.Assigns.Count -gt 0)
                     {
-                        $hstwb.Assigns.Set_Item($package.Package.Name, $selectedPackage.Package.DefaultAssigns)
+                        $packageAssigns = @()
+                        $packageAssigns += $selectedPackage.Assigns | Where-Object { $_.Path -and $_.Path -notmatch '^\s*$' }
+
+                        if ($packageAssigns.Count -eq 0)
+                        {
+                            continue
+                        }
+
+                        $hstwb.Assigns[$package.Name] = @{}
+                        $packageAssigns | ForEach-Object { $hstwb.Assigns[$package.Name][$_.Name] = $_.Path }
                     }
                 }
             }
