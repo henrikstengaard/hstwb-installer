@@ -345,13 +345,13 @@ function ReadImages($imagesPath)
     # read image json from image files
     foreach ($imageFile in $imageFiles)
     {
-        # read image kson file from image file
-        $imageJsonText = ReadZipEntryTextFile $imageFile.FullName 'image\.json$'
+        # read image json file from image file
+        $imageJsonText = ReadZipEntryTextFile $imageFile.FullName 'hstwb-image\.json$'
 
         # skip, if image ini text doesn't exist
         if (!$imageJsonText)
         {
-            throw ("Image file '{0}' doesn't contain image.json file!" -f $imageFile.Name)
+            throw ("Image file '{0}' doesn't contain 'hstwb-image.json' file!" -f $imageFile.Name)
         }
 
         # TODO validate image, check structure is correct
