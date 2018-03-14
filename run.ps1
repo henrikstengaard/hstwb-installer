@@ -1166,17 +1166,17 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 # build winuae image harddrives config text
 function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 {
-    # image json file
-    $imageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'image.json'
+    # hstwb image json file
+    $hstwbImageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'hstwb-image.json'
 
-    # fail, if image json file doesn't exist
-    if (!(Test-Path -Path $imageJsonFile))
+    # fail, if hstwb image json file doesn't exist
+    if (!(Test-Path -Path $hstwbImageJsonFile))
     {
-        Fail $hstwb ("Error: Image.json file '" + $imageJsonFile + "' doesn't exist!")
+        Fail $hstwb ("Error: HstWB image file '" + $hstwbImageJsonFile + "' doesn't exist!")
     }
 
-    # read image json file
-    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
+    # read hstwb image json file
+    $image = Get-Content $hstwbImageJsonFile -Raw | ConvertFrom-Json
 
     # build fs-uae image harddrive config lines
     $fsUaeImageHarddrivesConfigLines = @()
@@ -1305,17 +1305,17 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kicks
 # build winuae image harddrives config text
 function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 {
-    # image json file
-    $imageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'image.json'
+    # hstwb image json file
+    $hstwbImageJsonFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'hstwb-image.json'
 
-    # fail, if image json file doesn't exist
-    if (!(Test-Path -Path $imageJsonFile))
+    # fail, if hstwb image json file doesn't exist
+    if (!(Test-Path -Path $hstwbImageJsonFile))
     {
-        Fail $hstwb ("Error: Image.json file '" + $imageJsonFile + "' doesn't exist!")
+        Fail $hstwb ("Error: HstWB image file '" + $hstwbImageJsonFile + "' doesn't exist!")
     }
 
-    # read image json file
-    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
+    # read hstwb image json file
+    $image = Get-Content $hstwbImageJsonFile -Raw | ConvertFrom-Json
 
     # build winuae image harddrive config lines
     $winuaeImageHarddrivesConfigLines = @()

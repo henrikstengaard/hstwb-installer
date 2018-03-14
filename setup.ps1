@@ -179,21 +179,21 @@ function ExistingImageDirectory($hstwb)
         return
     }
 
-    # read image json file
-    $imageJsonFile = Join-Path -Path $newPath -ChildPath 'image.json' 
+    # read hstwb image json file
+    $hstwbImageJsonFile = Join-Path -Path $newPath -ChildPath 'hstwb-image.json' 
 
-    # return, if image json file doesn't exist
-    if (!(Test-Path -Path $imageJsonFile))
+    # return, if hstwb image json file doesn't exist
+    if (!(Test-Path -Path $hstwbImageJsonFile))
     {
-        Write-Error ("Image directory '{0}' doesn't contain image.json file!" -f $newPath)
+        Write-Error ("Image directory '{0}' doesn't contain 'hstwb-image.json' file!" -f $newPath)
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-    # read image json file
-    $image = Get-Content $imageJsonFile -Raw | ConvertFrom-Json
+    # read hstwb image json file
+    $image = Get-Content $hstwbImageJsonFile -Raw | ConvertFrom-Json
 
     # check, if image has large harddrives
     $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
@@ -237,21 +237,21 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     # get image file
     $imageFile = $images[$choice].ImageFile
 
-    # read image json file from image file
-    $imageJsonText = ReadZipEntryTextFile $imageFile 'image\.json$'
+    # read hstwb image json file from image file
+    $hstwbImageJsonText = ReadZipEntryTextFile $imageFile 'hstwb-image\.json$'
 
-    # return, if image json file doesn't exist
-    if (!$imageJsonText)
+    # return, if hstwb image json file doesn't exist
+    if (!$hstwbImageJsonText)
     {
-        Write-Error ("Image file '$imageFile' doesn't contain image.json file!")
+        Write-Error ("Image file '$imageFile' doesn't contain 'hstwb-image.json' file!")
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-    # read image json text
-    $image = $imageJsonText | ConvertFrom-Json
+    # read hstwb image json text
+    $image = $hstwbImageJsonText | ConvertFrom-Json
 
     # check, if image has large harddrives
     $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
@@ -301,13 +301,13 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         return
     }
 
-    # image json file
-    $imageJsonFile = Join-Path $newImageDirectoryPath -ChildPath "image.json"
+    # hstwb image json file
+    $hstwbImageJsonFile = Join-Path $newImageDirectoryPath -ChildPath "hstwb-image.json"
 
-    # confirm overwrite, if image json file already exists in new image directory path
-    if (Test-Path -Path $imageJsonFile)
+    # confirm overwrite, if hstwb image json file already exists in new image directory path
+    if (Test-Path -Path $hstwbImageJsonFile)
     {
-        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains image.json and image files.`r`n`r`nDo you want to overwrite files?")
+        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains 'hstwb-image.json' and image files.`r`n`r`nDo you want to overwrite files?")
         if (!$confirm)
         {
             return
@@ -315,7 +315,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     }
 
     # write harddrives.uae to new image directory path
-    Set-Content -Path $imageJsonFile -Value $imageJsonText
+    Set-Content -Path $hstwbImageJsonFile -Value $hstwbImageJsonText
 
     Write-Host ""
     Write-Host ("Creating image '{0}' in directory '{1}'" -f $image.Name, $newImageDirectoryPath) -ForegroundColor Yellow
@@ -334,47 +334,103 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
                 # open image file and get hdf zip entry matching hdf filename
                 $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
 
-                # find file system file in zip file entries
-                $fileSystemZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.FileSystem + '*') }
-
-                # return, if image file doesn't contain file system file
-                if (!$fileSystemZipEntry)
+                # extract filesystem, if it's defined
+                if ($harddrive.FileSystem -and $harddrive.FileSystem -notmatch '^\s*$')
                 {
-                    $zip.Dispose()
-                    Write-Error ("Image file '{0}' doesn't contain file system file '{1}'!" -f $imageFile, $harddrive.FileSystem)
-                    Write-Host ""
-                    Write-Host "Press enter to continue"
-                    return
-                }
+                    # find file system file in zip file entries
+                    $fileSystemZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.FileSystem + '*') }
 
-                # extract file system zip entry to new image directory
-                $fileSystemPath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.FileSystem
-                Write-Host ("Extracting file system file '{0}' to '{1}'..." -f $harddrive.FileSystem, $fileSystemPath)
-                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($fileSystemZipEntry, $fileSystemPath, $true);
-                Write-Host "Done."
+                    # return, if image file doesn't contain file system file
+                    if (!$fileSystemZipEntry)
+                    {
+                        $zip.Dispose()
+                        Write-Error ("Image file '{0}' doesn't contain file system file '{1}'!" -f $imageFile, $harddrive.FileSystem)
+                        Write-Host ""
+                        Write-Host "Press enter to continue"
+                        return
+                    }
+
+                    # extract file system zip entry to new image directory
+                    $fileSystemPath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.FileSystem
+                    Write-Host ("Extracting file system file '{0}' to '{1}'..." -f $harddrive.FileSystem, $fileSystemPath)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($fileSystemZipEntry, $fileSystemPath, $true);
+                    Write-Host "Done."
+                }
 
 
                 # find hdf file in zip file entries
-                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') }
+                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') } | Select-Object -First 1
+
+                # find zipped hdf file, if image file doesn't contain hdf filename
+                if (!$hdfZipEntry)
+                {
+                    # find hdf zip file in zip file entries
+                    $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + ($harddrive.Path -replace '\.hdf$', '.zip') + '*') } | Select-Object -First 1
+                }
 
                 # return, if image file doesn't contain hdf filename
                 if (!$hdfZipEntry)
                 {
                     $zip.Dispose()
-                    Write-Error ("Image file '" + $imageFile + "' doesn't contain hdf file '$harddrive.Path'!")
+                    Write-Error ("Image file '{0}' doesn't contain hdf file '{1}'!" -f $imageFile, $harddrive.Path)
                     Write-Host ""
                     Write-Host "Press enter to continue"
+                    Read-Host
                     return
                 }
 
-                # extract hdf zip entry to new image directory
-                Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
-                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true);
+                $hdfZipFile = $null
+                if ($hdfZipEntry.Name -match '\.zip$')
+                {
+                    $hdfZipFile = Join-Path $newImageDirectoryPath -ChildPath $hdfZipEntry.Name
+
+                    Write-Host ("Extracting zip file '{0}' to '{1}'..." -f $hdfZipEntry.Name, $hdfZipFile)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $hdfZipFile, $true)
+                }
+                else
+                {
+                    Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true)
+                }
                 Write-Host "Done."
 
-                
                 # dispose zip file
                 $zip.Dispose()
+
+                if ($hdfZipFile)
+                {
+                    # open hdf zip file
+                    $zip = [System.IO.Compression.ZipFile]::Open($hdfZipFile,"Read")
+
+                    # find hdf file in zip file entries
+                    $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') } | Select-Object -First 1
+
+                    # return, if image file doesn't contain hdf filename
+                    if (!$hdfZipEntry)
+                    {
+                        $zip.Dispose()
+                        Write-Error ("Image file '{0}' doesn't contain hdf file '{1}'!" -f $imageFile, $harddrive.Path)
+                        Write-Host ""
+                        Write-Host "Press enter to continue"
+                        Read-Host
+                        return
+                    }
+
+                    Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
+
+                    # extract hdf zip entry to new image directory
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true)
+
+                    # dispose zip file
+                    $zip.Dispose()
+
+                    Write-Host "Done."
+                    
+                    # remove hdf zip file
+                    Write-Host ("Deleting zip file '{0}'..." -f $hdfZipFile)
+                    Remove-Item $hdfZipFile -Force
+                    Write-Host "Done."
+                }                
             }
             "dir"
             {
