@@ -149,7 +149,6 @@ IF $os39dir EQ 1 VAL
   IF $installos39 EQ 0 VAL
     ; Find amiga os 3.9 iso files
     echo "" NOLINE >T:_amigaos39isofiles
-    fsearch "OS39DIR:" PAT amigaos39.iso >>T:_amigaos39isofiles
     fsearch "OS39DIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
 
     ; Get first amiga os 3.9 iso file
