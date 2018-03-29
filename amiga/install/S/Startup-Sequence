@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2018-01-14
+; Date: 2018-03-29
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -125,17 +125,17 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 
-; Install HstWB Installer Packages
-IF EXISTS INSTALLDIR:HstWB-Installer.Packages.ini
-  makepath >NIL: SYSTEMDIR:Prefs/Env-Archive
-  copy >NIL: INSTALLDIR:HstWB-Installer.Packages.ini SYSTEMDIR:Prefs/Env-Archive/HstWB-Installer.Packages.ini
+; Install HstWB Installer Packages prefs
+IF EXISTS INSTALLDIR:Prefs/Packages/Packages.ini
+  MakePath >NIL: SYSTEMDIR:Prefs/HstWB-Installer/Packages
+  copy >NIL: INSTALLDIR:Prefs/Packages/Packages.ini SYSTEMDIR:Prefs/HstWB-Installer/Packages/Packages.ini
 ENDIF
 
 
-; Install HstWB Installer Assigns
-IF EXISTS INSTALLDIR:HstWB-Installer.Assigns.ini
-  makepath >NIL: SYSTEMDIR:Prefs/Env-Archive
-  copy >NIL: INSTALLDIR:HstWB-Installer.Assigns.ini SYSTEMDIR:Prefs/Env-Archive/HstWB-Installer.Assigns.ini
+; Install HstWB Installer Assigns prefs
+IF EXISTS INSTALLDIR:Prefs/Packages/Assigns.ini
+  MakePath >NIL: SYSTEMDIR:Prefs/HstWB-Installer/Packages
+  copy >NIL: INSTALLDIR:Prefs/Packages/Assigns.ini SYSTEMDIR:Prefs/HstWB-Installer/Packages/Assigns.ini
 ENDIF
 
 

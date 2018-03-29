@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-03-14
+# Date:   2018-03-29
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -448,10 +448,10 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
             $installPackageLines += ""
             $installPackageLines += BuildAddAssignScriptLines $assignId $assignName $assignDir
 
-            # append ini file set for package assignm, if installer mode is build self install or build package installation
+            # append ini file set for package assign, if installer mode is build self install or build package installation
             if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
             {
-                $installPackageLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $package.Name, $assignName
+                $installPackageLines += 'execute INSTALLDIR:S/IniFileSet "{0}" "{1}" "{2}" "$assigndir"' -f 'SYSTEMDIR:Prefs/HstWB-Installer/Packages/Assigns.ini', $package.Name, $assignName
             }
 
             # append remove package assign
@@ -506,7 +506,7 @@ function BuildResetAssignsScriptLines($hstwb)
             $resetAssignsScriptLines += ("; Reset assign path setting for package '{0}' and assign '{1}'" -f $assignSectionName, $assignName)
             $resetAssignsScriptLines += '; Get assign path from ini'
             $resetAssignsScriptLines += 'set assigndir ""'
-            $resetAssignsScriptLines += 'set assigndir "`execute INSTALLDIR:S/IniFileGet "{0}/{1}" "{2}" "{3}"`"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', $assignSectionName, $assignName
+            $resetAssignsScriptLines += 'set assigndir "`execute INSTALLDIR:S/IniFileGet "{0}" "{1}" "{2}"`"' -f 'SYSTEMDIR:Prefs/HstWB-Installer/Packages/Assigns.ini', $assignSectionName, $assignName
             $resetAssignsScriptLines += ''
             $resetAssignsScriptLines += '; Create assign path setting, if assign path exists in ini. Otherwise delete assign path setting'
             $resetAssignsScriptLines += 'IF NOT "$assigndir" eq ""'
@@ -580,7 +580,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         # append ini file set for global assign, if installer mode is build self install or build package installation
         if ($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
         {
-            $addGlobalAssignScriptLines += 'execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "$assigndir"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Assigns.ini', 'Global', $assignName
+            $addGlobalAssignScriptLines += 'execute INSTALLDIR:S/IniFileSet "{0}" "{1}" "{2}" "$assigndir"' -f 'SYSTEMDIR:Prefs/HstWB-Installer/Packages/Assigns.ini', 'Global', $assignName
         }
         
         $removeGlobalAssignScriptLines += BuildRemoveAssignScriptLines $assignId $assignName.ToUpper() $assignDir
@@ -1036,9 +1036,9 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += "  echo ""--------------------"""
     $installPackagesScriptLines += "  echo ""*e[0m"" NOLINE"
     $installPackagesScriptLines += ''
-    $installPackagesScriptLines += '  ; Create env-archive directory, if it doesn''t exist and ini file set for package assign'
-    $installPackagesScriptLines += '  IF NOT EXISTS "{0}"' -f $hstwb.Paths.EnvArcDir
-    $installPackagesScriptLines += '    MakePath "{0}"' -f $hstwb.Paths.EnvArcDir
+    $installPackagesScriptLines += "  ; Create HstWB Installer prefs directory, if it doesn't exist"
+    $installPackagesScriptLines += '  IF NOT EXISTS "SYSTEMDIR:Prefs/HstWB-Installer/Packages"'
+    $installPackagesScriptLines += '    MakePath "SYSTEMDIR:Prefs/HstWB-Installer/Packages" >NIL:'
     $installPackagesScriptLines += '  ENDIF'
     $installPackagesScriptLines += "ELSE"
     $installPackagesScriptLines += "  echo ""*e[1mValidating assigns for packages...*e[0m"""
@@ -1133,7 +1133,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
         {
             $installPackagesScriptLines += ("IF EXISTS T:" + $installPackageScript.Package.Id)
-            $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}/{1}" "{2}" "{3}" "{4}"' -f $hstwb.Paths.EnvArcDir, 'HstWB-Installer.Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
+            $installPackagesScriptLines += '  execute INSTALLDIR:S/IniFileSet "{0}" "{1}" "{2}" "{3}"' -f 'SYSTEMDIR:Prefs/HstWB-Installer/Packages/Packages.ini', $installPackageScript.Package.Name, 'Version', $installPackageScript.Package.Version
             $installPackageScript.Lines | ForEach-Object { $installPackagesScriptLines += ("  " + $_) }
             $installPackagesScriptLines += "ENDIF"
 
@@ -1758,7 +1758,7 @@ function RunInstall($hstwb)
     WriteAmigaTextLines $userAssignFile $assignHstwbInstallerScriptLines 
 
 
-    $hstwbInstallerPackagesIni = @{}
+    $packagesIniLines = @()
 
 
     $installPackagesReboot = $false
@@ -1779,7 +1779,8 @@ function RunInstall($hstwb)
         foreach($installPackage in $installPackages)
         {
             $package = $hstwb.Packages[$installPackage.ToLower()]
-            $hstwbInstallerPackagesIni.Set_Item($package.Name, @{ 'Version' = $package.Version })
+            $packagesIniLines += "[{0}]" -f $package.Name
+            $packagesIniLines += "Version={0}" -f $package.Version
         }
 
         # build install package script lines
@@ -1895,39 +1896,42 @@ function RunInstall($hstwb)
     $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
     $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
 
-
+    # create packages prefs directory
+    $packagesPrefsDir = Join-Path $prefsDir -ChildPath "Packages"
+    if(!(test-path -path $packagesPrefsDir))
+    {
+        mkdir $packagesPrefsDir | Out-Null
+    }
+    
     # write hstwb installer packages ini file
-    $hstwbInstallerPackagesIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Packages.ini'
-    WriteIniFile $hstwbInstallerPackagesIniFile $hstwbInstallerPackagesIni
-
+    $hstwbInstallerPackagesIniFile = Join-Path $packagesPrefsDir -ChildPath 'Packages.ini'
+    WriteAmigaTextLines $hstwbInstallerPackagesIniFile $packagesIniLines
 
     # build hstwb installer assigns ini
-    $hstwbInstallerAssignsIni = @{}
+    $assignsIniLines = @()
 
     foreach ($assignSectionName in $hstwb.Assigns.keys)
     {
         $sectionAssigns = $hstwb.Assigns[$assignSectionName]
 
-        foreach ($assignName in ($sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }))
-        {
-            if ($hstwbInstallerAssignsIni.ContainsKey($assignSectionName))
-            {
-                $hstwbInstallerAssignsSection = $hstwbInstallerAssignsIni.Get_Item($assignSectionName)
-            }
-            else
-            {
-                $hstwbInstallerAssignsSection = @{}
-            }
+        $sectionAssignNames = $sectionAssigns.keys | Sort-Object | Where-Object { $_ -notlike 'HstWBInstallerDir' }
 
-            $hstwbInstallerAssignsSection.Set_Item($assignName, $sectionAssigns.Get_Item($assignName))
-            $hstwbInstallerAssignsIni.Set_Item($assignSectionName, $hstwbInstallerAssignsSection)
+        if ($sectionAssignNames.Count -eq 0)
+        {
+            continue
+        }
+
+        $assignsIniLines += "[{0}]" -f $assignSectionName
+
+        foreach ($assignName in $sectionAssignNames)
+        {
+            $assignsIniLines += "{0}={1}" -f $assignName, $sectionAssigns.Get_Item($assignName)
         }
     }
 
-
     # write hstwb installer assigns ini file
-    $hstwbInstallerAssignsIniFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.Assigns.ini'
-    WriteIniFile $hstwbInstallerAssignsIniFile $hstwbInstallerAssignsIni
+    $hstwbInstallerAssignsIniFile = Join-Path $packagesPrefsDir -ChildPath 'Assigns.ini'
+    WriteAmigaTextLines $hstwbInstallerAssignsIniFile $assignsIniLines
 
     # read winuae hstwb installer config file
     $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -2797,8 +2801,7 @@ try
             'TempPath' = $tempPath;
             'AssignsFile' = $assignsFile;
             'SettingsDir' = $settingsDir;
-            'SupportPath' = $supportPath;
-            'EnvArcDir' = 'SYSTEMDIR:Prefs/Env-Archive'
+            'SupportPath' = $supportPath
         };
         'Packages' = ReadPackages $packagesPath;
         'Settings' = ReadIniFile $settingsFile;
