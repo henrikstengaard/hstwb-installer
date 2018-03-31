@@ -5,7 +5,7 @@
 ; Ini File Set Script
 ; -------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2018-01-14
+; Date: 2018-03-31
 ;
 ; This script sets or adds a parameter to a section within an ini file.
 
@@ -28,25 +28,28 @@ set inifilesection 0
 
 ; Get next line from ini file
 LAB nextline
+sed "1q;d" "T:_inifile" >"T:_inifileline"
 set inifileline ""
-set inifileline `Execute INSTALLDIR:S/FirstLine T:_inifile`
+set inifileline `type "T:_inifileline"`
+sed "1d" "T:_inifile" >"T:_inifile2"
+Copy >NIL: "T:_inifile2" "T:_inifile"
+Delete >NIL: "T:_inifile2"
 
 ; Goto end, if line is empty
 IF "$inifileline" EQ ""
   SKIP updateinifile
 ENDIF
 
-echo "$inifileline" >T:_inifileline
-
+; Ini file section
 IF $inifilesection eq 1 val
   ; Set ini file section false, if line contains section to skip line in new ini file
-  search T:_inifileline "[" >NIL:
+  search "T:_inifileline" "[" >NIL:
   IF NOT WARN  
     set inifilesection 0
   ENDIF
 
   ; Set ini file parameter true, if line contains parameter to skip line in new ini file
-  search T:_inifileline "{parametername}=" >NIL:
+  search "T:_inifileline" "{parametername}=" >NIL:
   IF NOT WARN
     set inifileparameter 1
   ENDIF
@@ -54,16 +57,16 @@ ENDIF
 
 ; Copy line to new ini file, if not line contains parameter
 IF NOT $inifileparameter eq 1 VAL
-  type T:_inifileline >>T:_newinifile
+  type "T:_inifileline" >>"T:_newinifile"
 ELSE
   set inifileparameter 0
 ENDIF
 
 ; Set ini file section true, if line contains section name
-search T:_inifileline "[{sectionname}]" >NIL:
+search "T:_inifileline" "[{sectionname}]" >NIL:
 IF NOT WARN
   set inifilesection 1
-  echo "{parametername}={parametervalue}" >>T:_newinifile
+  echo "{parametername}={parametervalue}" >>"T:_newinifile"
 ENDIF
 
 SKIP BACK nextline

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-03-29
+# Date:   2018-03-31
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1812,6 +1812,9 @@ function RunInstall($hstwb)
         WriteAmigaTextLines $installPackagesFile $installPackagesScriptLines 
     }
 
+    # add empty line to packages ini
+    $packagesIniLines += ''
+
     # get user packages
     $installUserPackageNames = @()
     foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Sort-Object | Where-Object { $_ -match 'InstallUserPackage\d+' }))
@@ -1928,6 +1931,9 @@ function RunInstall($hstwb)
             $assignsIniLines += "{0}={1}" -f $assignName, $sectionAssigns.Get_Item($assignName)
         }
     }
+
+    # add empty line to assigns ini
+    $assignsIniLines += ''
 
     # write hstwb installer assigns ini file
     $hstwbInstallerAssignsIniFile = Join-Path $packagesPrefsDir -ChildPath 'Assigns.ini'
