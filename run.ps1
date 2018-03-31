@@ -143,11 +143,42 @@ function ConfirmDialog($title, $message)
 # write text file encoded for Amiga
 function WriteAmigaTextLines($path, $lines)
 {
-	$iso88591 = [System.Text.Encoding]::GetEncoding("ISO-8859-1");
+	$iso88591 = [System.Text.Encoding]::GetEncoding("ISO-8859-1")
 	$utf8 = [System.Text.Encoding]::UTF8;
 
 	$amigaTextBytes = [System.Text.Encoding]::Convert($utf8, $iso88591, $utf8.GetBytes($lines -join "`n"))
 	[System.IO.File]::WriteAllText($path, $iso88591.GetString($amigaTextBytes), $iso88591)
+}
+
+
+# update version amiga text file
+function UpdateVersionAmigaTextFile($amigaTextFile, $version)
+{
+    $iso88591 = [System.Text.Encoding]::GetEncoding("ISO-8859-1")
+    $lines = @()
+    $lines += [System.IO.File]::ReadAllLines($amigaTextFile, $iso88591)
+    
+    $updated = $false
+
+    for ($i = 0; $i -lt $lines.Count; $i++)
+    {
+        if ($lines[$i] -cmatch "[`$VersionText]")
+        {
+            $updated = $true
+            $lines[$i] = $lines[$i].Replace("[`$VersionText]", $version)
+        }
+        
+        if ($lines[$i] -cmatch "[`$VersionDashes]")
+        {
+            $updated = $true
+            $lines[$i] = $lines[$i].Replace("[`$VersionDashes]", ("-" * $version.Length))
+        }
+    }
+
+    if ($updated)
+    {
+        WriteAmigaTextLines $amigaTextFile $lines
+    }
 }
 
 
@@ -1939,6 +1970,11 @@ function RunInstall($hstwb)
     $hstwbInstallerAssignsIniFile = Join-Path $packagesPrefsDir -ChildPath 'Assigns.ini'
     WriteAmigaTextLines $hstwbInstallerAssignsIniFile $assignsIniLines
 
+    # update version in startup sequence files
+    $startupSequenceFiles = @()
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
+    
     # read winuae hstwb installer config file
     $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
@@ -2396,7 +2432,10 @@ function RunBuildSelfInstall($hstwb)
     $selfInstallDir = Join-Path $tempInstallDir -ChildPath "Install-SelfInstall"
     Copy-Item -Path $prefsDir $selfInstallDir -recurse -force
 
-
+    # update version in startup sequence files
+    $startupSequenceFiles = @()
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
 
 
     # hstwb uae run workbench dir

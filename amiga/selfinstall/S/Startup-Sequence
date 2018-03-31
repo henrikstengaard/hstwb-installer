@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-11-18
+; Date: 2018-03-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -22,9 +22,9 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 ; Startup message
 cls 
 echo "*e[32m" NOLINE
-echo "HstWB Installer"
+echo "HstWB Installer v[$VersionText]"
 echo "*e[0m*e[1m" NOLINE
-echo "---------------"
+echo "-----------------[$VersionDashes]"
 echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running build self install."

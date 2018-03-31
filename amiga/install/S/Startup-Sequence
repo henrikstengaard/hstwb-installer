@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2018-03-29
+; Date: 2018-03-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -22,9 +22,9 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 ; Startup message
 cls 
 echo "*e[32m" NOLINE
-echo "HstWB Installer"
+echo "HstWB Installer v[$VersionText]"
 echo "*e[0m*e[1m" NOLINE
-echo "---------------"
+echo "-----------------[$VersionDashes]"
 echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running install."
@@ -107,14 +107,16 @@ ELSE
   resident "DF0:C/Version" PURE
 ENDIF
 echo "Done"
+echo ""
+echo "Continue will show packages status."
+echo ""
+ask "Press ENTER to continue"
+
 
 MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
-
-wait 3
-
 
 ; Fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
