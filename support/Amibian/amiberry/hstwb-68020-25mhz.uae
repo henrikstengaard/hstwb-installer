@@ -1,0 +1,148 @@
+config_description=one of the configs you can select to autoboot
+config_hardware=true
+config_host=true
+config_version=3.6.0
+kickstart_rom_file_id=1483A091,KS ROM v3.1 (A1200)
+amiberry.rom_path=/root/amibian/amiberry/kickstarts/
+amiberry.floppy_path=/root/amibian/amiberry/disks/
+amiberry.hardfile_path=/root/amibian/amiberry/
+amiberry.cd_path=/root/amibian/amiberry/cd32/
+; 
+; *** Controller/Input Configuration
+; 
+joyport0=mouse
+joyport0_autofire=none
+joyport0_friendlyname=Mouse
+joyport0_name=MOUSE0
+; 
+joyport1=joy0
+joyport1_autofire=none
+joyport1_friendlyname=Keyboard as Joystick [Default]
+joyport1_name=JOY0
+; 
+; 
+; 
+input.joymouse_speed_analog=2
+input.joymouse_speed_digital=10
+input.joymouse_deadzone=33
+input.joystick_deadzone=33
+input.analog_joystick_multiplier=15
+input.analog_joystick_offset=-1
+input.mouse_speed=100
+input.autofire_speed=0
+kbd_lang=us
+; 
+; *** Host-Specific
+; 
+amiberry.vertical_offset=0
+amiberry.hide_idle_led=0
+amiberry.gfx_correct_aspect=1
+amiberry.kbd_led_num=-1
+amiberry.kbd_led_scr=-1
+amiberry.scaling_method=-1
+amiberry.use_analogue_remap=false
+amiberry.use_retroarch_quit=true
+amiberry.use_retroarch_menu=true
+amiberry.use_retroarch_reset=false
+; 
+; *** Common / Paths
+; 
+use_gui=no
+kickstart_rom_file=/root/amibian/amiga_files/kickstarts/kick31.rom
+kickstart_rom_file_id=1483A091,KS ROM v3.1 (A1200)
+kickstart_ext_rom_file=
+pcmcia_mb_rom_file=:ENABLED
+ide_mb_rom_file=:ENABLED
+flash_file=
+cart_file=
+; 
+; *** Floppy Drives
+; 
+floppy0=
+floppy1=
+floppy1type=-1
+floppy2=
+floppy3=
+nr_floppies=1
+floppy_speed=800
+; 
+; *** Hard Drives
+; 
+hardfile2=rw,DH0:/root/amibian/amiga_files/hdd/dh0.hdf,32,1,2,512,0,/root/amibian/amiga_files/hdd/pfs3aio,uae0
+uaehf0=hdf,rw,DH0:/root/amibian/amiga_files/hdd/dh0.hdf,32,1,2,512,0,/root/amibian/amiga_files/hdd/pfs3aio,uae0
+filesystem2=rw,DH1:Data:/root/amibian/amiga_files/hdd/dh1/,-128
+uaehf1=dir,rw,DH1:Data:/root/amibian/amiga_files/hdd/dh1/,-128
+filesystem2=rw,DH2:USB:/media/usb0/,-128
+uaehf2=dir,rw,DH2:USB:/media/usb0/,-128
+; 
+; *** CD / CD32
+; 
+cd_speed=100
+; 
+; *** Display / Screen Setup
+; 
+gfx_framerate=0
+gfx_width=640
+gfx_height=256
+gfx_refreshrate=50
+gfx_refreshrate_rtg=50
+gfx_lores=false
+gfx_resolution=hires
+gfx_linemode=none
+gfx_fullscreen_amiga=false
+gfx_fullscreen_picasso=false
+ntsc=false
+; 
+; *** CPU options
+; 
+finegrain_cpu_speed=128
+cpu_type=68020/68881
+cpu_model=68020
+fpu_model=68882
+cpu_compatible=false
+cpu_24bit_addressing=false
+fpu_no_unimplemented=true
+fpu_strict=false
+compfpu=false
+cachesize=0
+; 
+; *** Memory
+; 
+chipmem_size=4
+z3mapping=real
+fastmem_size=8
+a3000mem_size=0
+mbresmem_size=0
+z3mem_size=0
+z3mem_start=0x40000000
+bogomem_size=0
+rtg_modes=0x502
+; 
+; *** Chipset
+; 
+chipset=aga
+chipset_refreshrate=50.000000
+collision_level=playfields
+chipset_compatible=A1200
+rtc=MSM6242B
+ksmirror_a8=true
+pcmcia=true
+immediate_blits=false
+waiting_blits=automatic
+fast_copper=false
+; 
+; *** Sound Options
+; 
+sound_output=exact
+sound_channels=stereo
+sound_stereo_separation=7
+sound_stereo_mixing_delay=0
+sound_frequency=44100
+sound_interpol=none
+sound_filter=off
+sound_filter_type=enhanced
+sound_volume_cd=0
+; 
+; *** Misc. Options
+; 
+bsdsocket_emu=false
