@@ -19,5 +19,5 @@ fi
 
 # clean bash history
 if [ -f ~/.bash_history ]; then
-	echo -n ~/.bash_history
+	echo -n "" >~/.bash_history
 fi
