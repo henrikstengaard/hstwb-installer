@@ -1,7 +1,7 @@
 ; Startup Sequence for Amiga OS 3.9 Installation
 ; ----------------------------------------------
 ;
-; Date: 2018-01-18
+; Date: 2018-04-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -155,9 +155,9 @@ ENDIF
 echo ""
 
 
-; Copy hstwb installer log til install dir, if it exists
-IF EXISTS SYS:HstWB-Installer.log
-  Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
+; Copy hstwb installer log to install dir, if it exists
+IF EXISTS SYS:hstwb-installer.log
+  Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
 ENDIF
 
 echo "Please wait 10 seconds before restarting to allow file"

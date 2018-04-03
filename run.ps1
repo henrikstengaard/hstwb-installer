@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-03-31
+# Date:   2018-04-03
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -391,7 +391,7 @@ function BuildAddAssignScriptLines($assignId, $assignName, $assignDir)
     $addAssignScriptLines += "IF NOT EXISTS ""`$assigndir"""
     $addAssignScriptLines += "  MakePath ""`$assigndir"""
     $addAssignScriptLines += "ENDIF"
-    $addAssignScriptLines += ("echo ""Add assign '`$assigndir' = '{0}'"" >>SYS:HstWB-Installer.log" -f $assignName)
+    $addAssignScriptLines += ("echo ""Add assign '`$assigndir' = '{0}'"" >>SYS:hstwb-installer.log" -f $assignName)
     $addAssignScriptLines += ("SetEnv {0} ""`$assigndir""" -f $assignName)
     $addAssignScriptLines += ("Assign {0}: ""`$assigndir""" -f $assignName)
     
@@ -405,7 +405,7 @@ function BuildRemoveAssignScriptLines($assignId, $assignName, $assignDir)
     $removeAssignScriptLines = @()
     $removeAssignScriptLines += ("; Remove assign and unset variable for assign '{0}'" -f $assignName)
     $removeAssignScriptLines += BuildAssignDirScriptLines $assignId $assignDir
-    $removeAssignScriptLines += ("echo ""Remove assign '`$assigndir' = '{0}'"" >>SYS:HstWB-Installer.log" -f $assignName)
+    $removeAssignScriptLines += ("echo ""Remove assign '`$assigndir' = '{0}'"" >>SYS:hstwb-installer.log" -f $assignName)
     $removeAssignScriptLines += ("Assign {0}: ""`$assigndir"" REMOVE" -f $assignName)
     $removeAssignScriptLines += ("IF EXISTS ""ENV:{0}""" -f $assignName)
     $removeAssignScriptLines += ("  delete >NIL: ""ENV:{0}""" -f $assignName)
@@ -496,7 +496,7 @@ function BuildInstallPackageScriptLines($hstwb, $packageNames)
         $installPackageLines += ("Assign PACKAGEDIR: ""PACKAGESDIR:{0}""" -f $package.Id)
         $installPackageLines += ""
         $installPackageLines += "; Execute package install script"
-        $installPackageLines += ("echo ""Running package '{0}' install script"" >>SYS:HstWB-Installer.log" -f $package.Id)
+        $installPackageLines += ("echo ""Running package '{0}' install script"" >>SYS:hstwb-installer.log" -f $package.Name)
         $installPackageLines += "execute ""PACKAGEDIR:Install"""
         $installPackageLines += ""
         $installPackageLines += "; Remove package dir assign"
@@ -585,6 +585,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 {
     $installPackagesScriptLines = @()
     $installPackagesScriptLines += ""
+    $installPackagesScriptLines += "echo """" >>SYS:hstwb-installer.log"
 
     # append skip reset settings or install packages depending on installer mode
     if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
@@ -1131,7 +1132,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += ''
     $installPackagesScriptLines += "IF ""{validate}"" EQ """""
     $installPackagesScriptLines += "  IF `$assignsvalid EQ 0 VAL"
-    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:HstWB-Installer.log" -f $assignName)
+    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:hstwb-installer.log" -f $assignName)
     $installPackagesScriptLines += "    echo ""*e[1mError: Validate assigns failed!*e[0m"""
     $installPackagesScriptLines += "    echo """""
     $installPackagesScriptLines += "    ask ""Press ENTER to continue"""
@@ -1142,7 +1143,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     $installPackagesScriptLines += "    echo ""Done"""
     $installPackagesScriptLines += "    SKIP end"
     $installPackagesScriptLines += "  ELSE"
-    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:HstWB-Installer.log" -f $assignName)
+    $installPackagesScriptLines += ("   echo ""Error: Validate assigns failed"" >>SYS:hstwb-installer.log" -f $assignName)
     $installPackagesScriptLines += "    echo ""*e[1mError: Validate assigns failed!*e[0m"""
     $installPackagesScriptLines += "    quit 20"
     $installPackagesScriptLines += "  ENDIF"
@@ -1691,9 +1692,23 @@ function RunInstall($hstwb)
     }
 
     # temp and image hstwb installer log files
-    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.log'
-    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'HstWB-Installer.log'
+    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'hstwb-installer.log'
+    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'hstwb-installer.log'
     
+    # backup existing hstwb installer log file
+    if (Test-Path -Path $imageHstwbInstallerLogFile)
+    {
+        $backupImageHstwbInstallerLogCount = 0;
+        $backupImageHstwbInstallerLogFilename = ''
+        do
+        {
+            $backupImageHstwbInstallerLogCount++;
+            $backupImageHstwbInstallerLogFilename = 'hstwb-installer_{0}.log' -f $backupImageHstwbInstallerLogCount
+        } while (Test-Path -Path (Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $backupImageHstwbInstallerLogFilename))
+
+        Rename-Item -Path $imageHstwbInstallerLogFile -NewName $backupImageHstwbInstallerLogFilename
+    }
+
 
     # copy large harddisk to install directory
     $largeHarddiskDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath "largeharddisk\Install-LargeHarddisk"
@@ -1974,6 +1989,11 @@ function RunInstall($hstwb)
     $startupSequenceFiles = @()
     $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
+    
+    # write hstwb installer log file
+    $installLogLines = BuildInstallLog $hstwb
+    WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
+    
     
     # read winuae hstwb installer config file
     $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -2262,8 +2282,22 @@ function RunBuildSelfInstall($hstwb)
 
 
     # temp and image hstwb installer log files
-    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'HstWB-Installer.log'
-    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'HstWB-Installer.log'
+    $tempHstwbInstallerLogFile = Join-Path $tempInstallDir -ChildPath 'hstwb-installer.log'
+    $imageHstwbInstallerLogFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'hstwb-installer.log'
+
+    # backup existing hstwb installer log file
+    if (Test-Path -Path $imageHstwbInstallerLogFile)
+    {
+        $backupImageHstwbInstallerLogCount = 0;
+        $backupImageHstwbInstallerLogFilename = ''
+        do
+        {
+            $backupImageHstwbInstallerLogCount++;
+            $backupImageHstwbInstallerLogFilename = 'hstwb-installer_{0}.log' -f $backupImageHstwbInstallerLogCount
+        } while (Test-Path -Path (Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $backupImageHstwbInstallerLogFilename))
+
+        Rename-Item -Path $imageHstwbInstallerLogFile -NewName $backupImageHstwbInstallerLogFilename
+    }
 
 
     # copy licenses dir
@@ -2436,6 +2470,10 @@ function RunBuildSelfInstall($hstwb)
     $startupSequenceFiles = @()
     $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
+
+    # write hstwb installer log file
+    $installLogLines = BuildInstallLog $hstwb
+    WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
 
 
     # hstwb uae run workbench dir

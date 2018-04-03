@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2018-03-31
+; Date: 2018-04-03
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -163,9 +163,9 @@ echo "HstWB Installer has completed package"
 echo "installation and system is now ready for use."
 echo ""
 
-; Copy hstwb installer log til install dir, if it exists
-IF EXISTS SYS:HstWB-Installer.log
-  Copy >NIL: SYS:HstWB-Installer.log INSTALLDIR:HstWB-Installer.log
+; Copy hstwb installer log to install dir, if it exists
+IF EXISTS SYS:hstwb-installer.log
+  Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
 ENDIF
 
 ; Run install cleanup
