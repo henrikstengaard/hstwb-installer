@@ -51,9 +51,10 @@ Installation
 
 1. Insert sd-card and usb stick in Raspberry Pi.
 2. Turn power on.
-3. Filesystem is automatically expanded at first boot and will
-   reboot to continue installation.
-4. After reboot select emulator dialog is shown to select emulator
+3. Expand filesystem dialog is shown asking to expand filesystem
+   to sd-card size. This is only shown once, but can be started
+   again by typing "~/expand_filesystem.sh" in terminal.
+4. Select emulator dialog is shown to select emulator
    to use for HstWB Installer. This is only shown once, but can
    be started again by typing "~/select_emulator.sh" in terminal. 
 5. Install kickstart script run is started to automatically
@@ -62,7 +63,8 @@ Installation
    indicate, if installation was successful or an error occured.
    If A1200 Kickstart rom a select install directory dialog is
    shown to select a different install directory and retry
-   install kickstart.
+   install kickstart. Install kickstart can be started again by
+   typing "~/install_kickstart.sh" in terminal.
 6. Follow HstWB Installer messages to complete installation of
    Workbench 3.1, Kickstart roms, Amiga OS 3.9 and packages.
    HstWB Installer Wiki has a "Run self install tutorial" at
