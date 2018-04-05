@@ -204,26 +204,26 @@ foreach($packageFile in $packageFiles)
 		continue
 	}
 
-	# read package ini text file from package file
-	$packageIniText = ReadZipEntryTextFile $packageFile.FullName 'package.ini$'
+	# read hstwb package json text file from package file
+	$packageJsonText = ReadZipEntryTextFile $packageFile.FullName 'hstwb-package.json$'
 
-	# return, if harddrives uae text doesn't exist
-	if (!$packageIniText)
+	# return, if hstwb package json text file doesn't exist
+	if (!$packageJsonText)
 	{
-		Fail ("Package '" + $packageFile.FullName + "' doesn't contain a package.ini file")
+		Fail ("Package '{0}' doesn't contain 'hstwb-package.json' file" -f $packageFile.FullName)
 	}
 
-	# read package ini file
-	$packageIni = ReadIniText $packageIniText
-
+	# read hstwb package json text
+	$package = $packageJsonText | ConvertFrom-Json
+	
 	# fail, if package name doesn't exist
-	if (!$packageIni.Package.Name -or $packageIni.Package.Name -eq '')
+	if (!$package.Name -or $package.Name -eq '')
 	{
-		Fail ("Package '$packageFileName' doesn't contain name in package.ini file")
+		Fail ("Package '{0}' doesn't have a valid name" -f $packageFile.FullName)
 	}
 
 	# package name
-	$packageName = $packageIni.Package.Name
+	$packageName = $package.Name
 
 	# create package readme directory
 	$packageReadmeDir = Join-Path $packagesReadmeDir -ChildPath $packageName
