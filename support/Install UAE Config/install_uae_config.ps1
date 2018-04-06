@@ -41,7 +41,7 @@ function FindA1200Kickstart31RomFile($kickstartDir)
 
     # get kickstart files
     $kickstartFiles = @()
-    $kickstartFiles += Get-ChildItem $kickstartDir -Filter *.rom -File
+    $kickstartFiles += Get-ChildItem $kickstartDir -Filter *.rom | Where-Object { ! $_.PSIsContainer }
     
     foreach($kickstartFile in $kickstartFiles)
     {
@@ -134,7 +134,7 @@ function IsValidWorkbenchAdfFile($workbenchAdfFile)
 function InstallWorkbenchAdfFiles($workbenchDir, $outputWorkbenchDir)
 {
     $workbenchFiles = @()
-    $workbenchFiles += Get-ChildItem $workbenchDir -Filter *.adf -File
+    $workbenchFiles += Get-ChildItem $workbenchDir -Filter *.adf | Where-Object { ! $_.PSIsContainer }
     
     foreach($workbenchFile in $workbenchFiles)
     {
@@ -455,7 +455,7 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $workben
     $adfFiles = @()
     if (Test-Path -Path $workbenchDir)
     {
-        $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf -File
+        $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf | Where-Object { ! $_.PSIsContainer }
     }
 
     # add adf files to fs-uae config lines as swappable floppies
