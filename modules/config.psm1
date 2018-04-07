@@ -351,7 +351,8 @@ function ReadImages($imagesPath)
         # skip, if image ini text doesn't exist
         if (!$imageJsonText)
         {
-            throw ("Image file '{0}' doesn't contain 'hstwb-image.json' file!" -f $imageFile.Name)
+            #throw ("Image file '{0}' doesn't contain 'hstwb-image.json' file!" -f $imageFile.Name)
+            continue
         }
 
         # TODO validate image, check structure is correct
@@ -384,7 +385,8 @@ function ReadPackages($packagesPath)
         # skip, if package ini text doesn't exist
         if (!$packageJsonText)
         {
-            throw ("Package file '" + $packageFile.FullName + "' doesn't contain 'hstwb-package.json' file!")
+            #throw ("Package file '" + $packageFile.FullName + "' doesn't contain 'hstwb-package.json' file!")
+            continue
         }
 
         # read package json text
