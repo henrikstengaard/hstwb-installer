@@ -1,7 +1,7 @@
-# Make Installer Script
-# ---------------------
+# Build Release
+# -------------
 #
-# A powershell script to make a msi installer for HstWB Installer.
+# A powershell script to build HstWB Installer portable zip and msi installer releases.
 #
 # Author: Henrik Noerfjand Stengaard
 # Date:   2018-04-07
