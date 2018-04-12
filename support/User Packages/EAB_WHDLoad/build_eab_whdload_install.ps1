@@ -78,13 +78,6 @@ function BuildEabWhdloadInstall()
         [string]$installDir
     )
 
-#    $languages = @()
-#    $languages += ($eabWhdLoadEntries).Language | Sort-Object | Select-Object -Unique
-
-#    $hardwares = @()
-#    $hardwares += ($eabWhdLoadEntries).Hardware | Sort-Object | Select-Object -Unique
-
-
     $languageIndex = @{}
     $hardwareIndex = @{}
 
@@ -123,9 +116,24 @@ function BuildEabWhdloadInstall()
     
     $eabWhdLoadInstallLines = New-Object System.Collections.Generic.List[System.Object]
 
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("; reset")
+
+    foreach($hardware in $hardwares)
+    {
+        $eabWhdLoadInstallLines.Add("set eabhardware{0} ""1""" -f $hardware)
+    }
+
+    foreach($language in $languages)
+    {
+        $eabWhdLoadInstallLines.Add("set eablanguage{0} ""1""" -f $language)
+    }
+    
+    $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("; eab whdload menu")
     $eabWhdLoadInstallLines.Add("LAB eabwhdloadmenu")
     $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("set totalcount ""0""")
     $eabWhdLoadInstallLines.Add("echo """" NOLINE >T:_eabwhdloadmenu")
 
     foreach($hardware in $hardwares)
@@ -134,11 +142,11 @@ function BuildEabWhdloadInstall()
         $eabWhdLoadInstallLines.Add("; '{0}' hardware menu" -f $hardware)
 
         $eabWhdLoadInstallLines.Add("IF ""`$eabhardware{0}"" EQ 1 VAL" -f $hardware)
-        $eabWhdLoadInstallLines.Add("  echo ""Install : "" NOLINE >>T:_eabwhdloadmenu")
+        $eabWhdLoadInstallLines.Add("  echo ""Install"" NOLINE >>T:_eabwhdloadmenu")
         $eabWhdLoadInstallLines.Add("ELSE")
-        $eabWhdLoadInstallLines.Add("  echo ""Skip    : "" NOLINE >>T:_eabwhdloadmenu")
+        $eabWhdLoadInstallLines.Add("  echo ""Skip   "" NOLINE >>T:_eabwhdloadmenu")
         $eabWhdLoadInstallLines.Add("ENDIF")
-        $eabWhdLoadInstallLines.Add(("echo "": {0} hardware ({1} entries)"" >>T:_eabwhdloadmenu" -f $hardware.ToUpper(), $hardwareIndex[$hardware]))
+        $eabWhdLoadInstallLines.Add(("echo "" : {0} hardware ({1} entries)"" >>T:_eabwhdloadmenu" -f $hardware.ToUpper(), $hardwareIndex[$hardware]))
     }
 
     $eabWhdLoadInstallLines.Add("echo ""----------------------------------------"" >>T:_eabwhdloadmenu")
@@ -148,31 +156,28 @@ function BuildEabWhdloadInstall()
         $eabWhdLoadInstallLines.Add("")
         $eabWhdLoadInstallLines.Add("; '{0}' language menu" -f $language)
 
-        if ($languageIndex[$language].Count -le 1)
-        {
-            $hardware = $languageIndex[$language].keys[0]
-            $eabWhdLoadInstallLines.Add("set languagecount ""{0}""" -f $languageIndex[$language][$hardware])
-        }
-        else
-        {
-            $eabWhdLoadInstallLines.Add("set languagecount ""0""")
+        $eabWhdLoadInstallLines.Add("set languagecount ""0""")
 
-            foreach($hardware in $languageIndex[$language].keys)
-            {
-                $eabWhdLoadInstallLines.Add("IF ""`$eabhardware{0}"" EQ 1 VAL" -f $hardware)
-                $eabWhdLoadInstallLines.Add("  set languagecount ``eval `$languagecount + {0}``" -f $languageIndex[$language][$hardware])
-                $eabWhdLoadInstallLines.Add("ENDIF")
-            }
+        foreach($hardware in $languageIndex[$language].keys)
+        {
+            $eabWhdLoadInstallLines.Add("IF ""`$eabhardware{0}"" EQ 1 VAL" -f $hardware)
+            $eabWhdLoadInstallLines.Add("  set languagecount ``eval `$languagecount + {0}``" -f $languageIndex[$language][$hardware])
+            $eabWhdLoadInstallLines.Add("ENDIF")
         }
 
         $eabWhdLoadInstallLines.Add("IF ""`$eablanguage{0}"" EQ 1 VAL" -f $language)
-        $eabWhdLoadInstallLines.Add("  echo ""Install : "" NOLINE >>T:_eabwhdloadmenu")
+        $eabWhdLoadInstallLines.Add("  set totalcount ``eval `$totalcount + `$languagecount``")
+        $eabWhdLoadInstallLines.Add("  echo ""Install"" NOLINE >>T:_eabwhdloadmenu")
         $eabWhdLoadInstallLines.Add("ELSE")
-        $eabWhdLoadInstallLines.Add("  echo ""Skip    : "" NOLINE >>T:_eabwhdloadmenu")
+        $eabWhdLoadInstallLines.Add("  echo ""Skip   "" NOLINE >>T:_eabwhdloadmenu")
         $eabWhdLoadInstallLines.Add("ENDIF")
-        $eabWhdLoadInstallLines.Add("echo "": {0} language (`$languagecount entries)"" >>T:_eabwhdloadmenu" -f $language.ToUpper())
+        $eabWhdLoadInstallLines.Add("echo "" : {0} language (`$languagecount entries)"" >>T:_eabwhdloadmenu" -f $language.ToUpper())
     }
 
+    $eabWhdLoadInstallLines.Add("echo ""----------------------------------------"" >>T:_eabwhdloadmenu")
+    $eabWhdLoadInstallLines.Add("echo ""Install `$totalcount of {0} entries"" >>T:_eabwhdloadmenu" -f $eabWhdLoadEntries.Count)
+    $eabWhdLoadInstallLines.Add("echo ""Skip all entries"" >>T:_eabwhdloadmenu")
+    
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("set eabwhdloadoption """"")
     $eabWhdLoadInstallLines.Add("set eabwhdloadoption ""``RequestList TITLE=""{0}"" LISTFILE=""T:_eabwhdloadmenu"" WIDTH=640 LINES=24``""" -f $title)
@@ -196,12 +201,14 @@ function BuildEabWhdloadInstall()
         $eabWhdLoadInstallLines.Add("ENDIF")
     }
 
+    $eabWhdloadOption++
+    
     foreach($language in $languages)
     {
         $eabWhdloadOption++
 
         $eabWhdLoadInstallLines.Add("")
-        $eabWhdLoadInstallLines.Add("; '{0}' language menu" -f $language)
+        $eabWhdLoadInstallLines.Add("; '{0}' language option" -f $language)
         $eabWhdLoadInstallLines.Add("IF ""`$eabwhdloadoption"" EQ {0} VAL" -f $eabWhdloadOption)
         $eabWhdLoadInstallLines.Add("  IF ""`$eablanguage{0}"" EQ 1 VAL" -f $language)
         $eabWhdLoadInstallLines.Add("    set eablanguage{0} ""0""" -f $language)
@@ -211,10 +218,37 @@ function BuildEabWhdloadInstall()
         $eabWhdLoadInstallLines.Add("  SKIP BACK eabwhdloadmenu")
         $eabWhdLoadInstallLines.Add("ENDIF")
     }
-        
+
+    $eabWhdloadOption += 2
+
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("; Install entries option")
+    $eabWhdLoadInstallLines.Add("IF ""`$eabwhdloadoption"" EQ {0} VAL" -f $eabWhdloadOption)
+    $eabWhdLoadInstallLines.Add("  set confirm ``RequestChoice ""Install EAB WHDLoad"" ""Do you want to install `$totalcount EAB EHDLoad entries?"" ""Yes|No""``")
+    $eabWhdLoadInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
+    $eabWhdLoadInstallLines.Add("    SKIP installentries")
+    $eabWhdLoadInstallLines.Add("  ENDIF")
+    $eabWhdLoadInstallLines.Add("ENDIF")
+
+    $eabWhdloadOption++
+
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("; Skip all entries option")
+    $eabWhdLoadInstallLines.Add("IF ""`$eabwhdloadoption"" EQ {0} VAL" -f $eabWhdloadOption)
+    $eabWhdLoadInstallLines.Add("  SKIP end")
+    $eabWhdLoadInstallLines.Add("ENDIF")
+
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("SKIP BACK eabwhdloadmenu")
 
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("; install entries")
+    $eabWhdLoadInstallLines.Add("LAB installentries")
+    
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("; End")
+    $eabWhdLoadInstallLines.Add("; ---")
+    $eabWhdLoadInstallLines.Add("LAB end")
 
     $eabWhdLoadInstallFile = Join-Path $installDir -ChildPath "EAB-WHDLoad-Install"
     WriteTextLinesForAmiga $eabWhdLoadInstallFile $eabWhdLoadInstallLines.ToArray()
