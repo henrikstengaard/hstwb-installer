@@ -2,9 +2,9 @@
 # -------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-12
+# Date:   2018-04-13
 #
-# A powershell script to build EAB WHDLoad Packs install script.
+# A powershell script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
 
 
 Param(
@@ -33,7 +33,7 @@ function FindEabWhdloadEntries()
     )
     
     $files = @()
-    $files += Get-ChildItem -Path $eabWhdLoadPackDir -Recurse -Include *.lha, *.lzx
+    $files += Get-ChildItem -Path $eabWhdLoadPackDir -Recurse -Include *.lha, *.lzx | Sort-Object @{expression={$_.FullName};Ascending=$true}
     
     $eabWhdLoadEntries = New-Object System.Collections.Generic.List[System.Object]
     
@@ -222,7 +222,7 @@ function BuildEabWhdloadInstall()
     $eabWhdloadOption += 2
 
     $eabWhdLoadInstallLines.Add("")
-    $eabWhdLoadInstallLines.Add("; Install entries option")
+    $eabWhdLoadInstallLines.Add("; install entries option")
     $eabWhdLoadInstallLines.Add("IF ""`$eabwhdloadoption"" EQ {0} VAL" -f $eabWhdloadOption)
     $eabWhdLoadInstallLines.Add("  set confirm ``RequestChoice ""Install EAB WHDLoad"" ""Do you want to install `$totalcount EAB EHDLoad entries?"" ""Yes|No""``")
     $eabWhdLoadInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
@@ -233,45 +233,133 @@ function BuildEabWhdloadInstall()
     $eabWhdloadOption++
 
     $eabWhdLoadInstallLines.Add("")
-    $eabWhdLoadInstallLines.Add("; Skip all entries option")
+    $eabWhdLoadInstallLines.Add("; skip all entries option")
     $eabWhdLoadInstallLines.Add("IF ""`$eabwhdloadoption"" EQ {0} VAL" -f $eabWhdloadOption)
-    $eabWhdLoadInstallLines.Add("  SKIP end")
+    $eabWhdLoadInstallLines.Add("  set confirm ``RequestChoice ""Skip all entries"" ""Do you want to skip all entries?"" ""Yes|No""``")
+    $eabWhdLoadInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
+    $eabWhdLoadInstallLines.Add("    SKIP end")
+    $eabWhdLoadInstallLines.Add("  ENDIF")
     $eabWhdLoadInstallLines.Add("ENDIF")
-
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("SKIP BACK eabwhdloadmenu")
-
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("; install entries")
     $eabWhdLoadInstallLines.Add("LAB installentries")
-    
+    $eabWhdLoadInstallLines.Add("")
+    $eabWhdLoadInstallLines.Add("echo ""*e[1mInstalling entries to '`$INSTALLDIR'*e[0m""")
+    $eabWhdLoadInstallLines.Add("execute ""USERPACKAGEDIR:Install/Install-Entries""")
+    $eabWhdLoadInstallLines.Add("echo ""Done""")
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("; End")
     $eabWhdLoadInstallLines.Add("; ---")
     $eabWhdLoadInstallLines.Add("LAB end")
 
-    $eabWhdLoadInstallFile = Join-Path $installDir -ChildPath "EAB-WHDLoad-Install"
+    $eabWhdLoadInstallFile = Join-Path $installDir -ChildPath "_install"
     WriteTextLinesForAmiga $eabWhdLoadInstallFile $eabWhdLoadInstallLines.ToArray()
-    
+
+
+
+    $eabWhdLoadInstallDir = Join-Path $installDir -ChildPath "Install"
+
+    # create eab whdload install directory, if it doesn't exist
+    if (!(Test-Path -Path $eabWhdLoadInstallDir))
+    {
+        mkdir -Path $eabWhdLoadInstallDir | Out-Null
+    }
+
+
+    $eabWhdLoadInstallEntriesDir = Join-Path $eabWhdLoadInstallDir -ChildPath "Entries"
+
+    # create eab whdload install entries directory, if it doesn't exist
+    if (!(Test-Path -Path $eabWhdLoadInstallEntriesDir))
+    {
+        mkdir -Path $eabWhdLoadInstallEntriesDir | Out-Null
+    }
+
+
+    $eabWhdLoadInstallEntryIndex = @{}
+    $eabWhdLoadInstallEntryFileIndex = @{}
 
     foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
     {
-        $eabWhdLoadInstallLines.Add(("; {0}, {1}" -f $eabWhdLoadEntry.Language, $eabWhdLoadEntry.Hardware))
+        $indexName = $eabWhdLoadEntry.EabWhdLoadFile.Substring(0,1).ToUpper()
+        $hardware = $eabWhdLoadEntry.Hardware
+        $language = $eabWhdLoadEntry.Language
+
+        $eabWhdLoadInstallEntryFile = "{0}-{1}-{2}" -f $indexName, $hardware.ToUpper(), $language.ToUpper()
         
-        $eabWhdLoadFile = "EABWHDLOADDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/")
-        $eabWhdLoadInstallLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
-    
-        if ($file.FullName -match '\.lha$')
+        if (!$eabWhdLoadInstallEntryIndex.ContainsKey($indexName))
         {
-            $eabWhdLoadInstallLines.Add("  lha -m1 x ""{0}"" ""`$INSTALLDIR""" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryIndex[$indexName] = @{}
         }
-        elseif ($file.FullName -match '\.lzx$')
+
+        if (!$eabWhdLoadInstallEntryIndex[$indexName].ContainsKey($hardware))
         {
-            $eabWhdLoadInstallLines.Add("  lzx x ""{0}"" ""`$INSTALLDIR""" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryIndex[$indexName][$hardware] = @{}
         }
-    
-        $eabWhdLoadInstallLines.Add("ENDIF")
+
+        if (!$eabWhdLoadInstallEntryIndex[$indexName][$hardware].ContainsKey($language))
+        {
+            $eabWhdLoadInstallEntryIndex[$indexName][$hardware][$language] = $eabWhdLoadInstallEntryFile
+        }
+        
+        if (!$eabWhdLoadInstallEntryFileIndex.ContainsKey($eabWhdLoadInstallEntryFile))
+        {
+            $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile] = `
+                New-Object System.Collections.Generic.List[System.Object]
+        }
+        
+        $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile]
+        
+        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/")
+        $eabWhdLoadInstallEntryLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
+        $eabWhdLoadInstallEntryLines.Add("  set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``" -f $indexName)
+
+        if ($eabWhdLoadFile -match '\.lha$')
+        {
+            $eabWhdLoadInstallEntryLines.Add("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
+        }
+        elseif ($eabWhdLoadFile -match '\.lzx$')
+        {
+            $eabWhdLoadInstallEntryLines.Add("  lzx x ""{0}"" ""`$entrydir/"" >NIL:" -f $eabWhdLoadFile)
+        }
+
+        $eabWhdLoadInstallEntryLines.Add("  IF NOT `$RC EQ 0")
+        $eabWhdLoadInstallEntryLines.Add("    echo ""Error: Failed to install entry file '{0}' to '`$entrydir'""" -f $eabWhdLoadFile)
+        $eabWhdLoadInstallEntryLines.Add("  ENDIF")
+        $eabWhdLoadInstallEntryLines.Add("ENDIF")
     }
+
+    foreach($eabWhdLoadInstallEntryFilename in $eabWhdLoadInstallEntryFileIndex.keys)
+    {
+        $eabWhdLoadInstallEntryFile = Join-Path $eabWhdLoadInstallEntriesDir -ChildPath $eabWhdLoadInstallEntryFilename
+        WriteTextLinesForAmiga $eabWhdLoadInstallEntryFile $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFilename].ToArray()
+    }
+
+    $eabWhdLoadInstallEntriesLines = New-Object System.Collections.Generic.List[System.Object]
+    
+    foreach($indexName in ($eabWhdLoadInstallEntryIndex.Keys | Sort-Object))
+    {
+        $eabWhdLoadInstallEntriesLines.Add("echo ""Installing {0}...""" -f $indexName)
+
+        foreach($hardware in ($eabWhdLoadInstallEntryIndex[$indexName].Keys | Sort-Object))
+        {
+            $eabWhdLoadInstallEntriesLines.Add("IF ""`$eabhardware{0}"" EQ 1 VAL" -f $hardware)
+
+            foreach($language in ($eabWhdLoadInstallEntryIndex[$indexName][$hardware].Keys | Sort-Object))
+            {
+                $eabWhdLoadInstallEntriesLines.Add("  IF ""`$eablanguage{0}"" EQ 1 VAL" -f $language)
+                $eabWhdLoadInstallEntriesLines.Add(("    echo ""Installing {0}, {1}, {2}...""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
+                $eabWhdLoadInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}"" EQ 1 VAL" -f $eabWhdLoadInstallEntryIndex[$indexName][$hardware][$language])
+                $eabWhdLoadInstallEntriesLines.Add("  ENDIF")
+            }
+                
+            $eabWhdLoadInstallEntriesLines.Add("ENDIF")
+        }
+    }
+    
+    $eabWhdLoadInstallEntriesFile = Join-Path $eabWhdLoadInstallDir -ChildPath 'Install-Entries'
+    WriteTextLinesForAmiga $eabWhdLoadInstallEntriesFile $eabWhdLoadInstallEntriesLines.ToArray()
 }
 
 
@@ -287,5 +375,5 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
     $eabWhdloadEntries = @()
     $eabWhdloadEntries += FindEabWhdloadEntries $eabWhdLoadPackDir.FullName
 
-    BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackDir.Name $eabWhdLoadPacksDir
+    BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackDir.Name $eabWhdLoadPackDir.FullName
 }
