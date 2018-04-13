@@ -317,7 +317,7 @@ function BuildEabWhdloadInstall()
 
         if ($eabWhdLoadFile -match '\.lha$')
         {
-            $eabWhdLoadInstallEntryLines.Add("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryLines.Add("  lha -q -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
         }
         elseif ($eabWhdLoadFile -match '\.lzx$')
         {
