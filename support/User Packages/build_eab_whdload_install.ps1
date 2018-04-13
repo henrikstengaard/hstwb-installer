@@ -363,6 +363,20 @@ function BuildEabWhdloadInstall()
 }
 
 
+# resolve paths
+$eabWhdLoadPacksDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($eabWhdLoadPacksDir)
+
+# write build eab whdload install title
+Write-Output "-------------------------"
+Write-Output "Build EAB WHDLoad Install"
+Write-Output "-------------------------"
+Write-Output "Author: Henrik Noerfjand Stengaard"
+Write-Output "Date: 2018-04-13"
+Write-Output ""
+Write-Output ("EAB WHDLoad Packs directory: '{0}'" -f $eabWhdLoadPacksDir)
+Write-Output ""
+Write-Output "Building EAB WHDLoad Install scripts for user package directories:"
+
 # get eab whdload pack directories
 $eabWhdLoadPackDirs = @()
 $eabWhdLoadPackDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | `
@@ -370,10 +384,18 @@ $eabWhdLoadPackDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | `
 
 foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
 {
-    Write-Output $eabWhdLoadPackDir.FullName
+    Write-Output ("- '{0}'" -f $eabWhdLoadPackDir.Name)
 
     $eabWhdloadEntries = @()
     $eabWhdloadEntries += FindEabWhdloadEntries $eabWhdLoadPackDir.FullName
 
+    if ($eabWhdloadEntries.Count -eq 0)
+    {
+        Write-Output ("- {0} entries" -f $eabWhdloadEntries.Count)
+        continue
+    }
+
     BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackDir.Name $eabWhdLoadPackDir.FullName
 }
+
+Write-Output "Done"
