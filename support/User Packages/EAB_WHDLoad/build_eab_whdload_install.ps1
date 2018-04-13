@@ -321,7 +321,7 @@ function BuildEabWhdloadInstall()
         }
         elseif ($eabWhdLoadFile -match '\.lzx$')
         {
-            $eabWhdLoadInstallEntryLines.Add("  lzx x ""{0}"" ""`$entrydir/"" >NIL:" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryLines.Add("  unlzx -q1 -m e ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
         }
 
         $eabWhdLoadInstallEntryLines.Add("  IF NOT `$RC EQ 0")

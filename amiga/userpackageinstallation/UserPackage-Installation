@@ -10,7 +10,6 @@ set userpackagesdir "`CD`"
 Assign USERPACKAGESDIR: "$userpackagesdir"
 Assign INSTALLDIR: "$userpackagesdir"
 Assign C: "INSTALLDIR:C" ADD
-Assign L: "INSTALLDIR:L" ADD
 Assign SYSTEMDIR: SYS:
 SetEnv TZ MST7
 
