@@ -126,9 +126,9 @@ function BuildEabWhdloadInstall()
     $eabWhdLoadInstallLines.Add("; An AmigaDOS script for installing EAB WHDLoad pack '{0}'" -f $title)
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("; Patch for HstWB Installer without unlzx")
-    $eabWhdLoadInstallLines.Add("IF EXISTS ""USERPACKAGEDIR:unlzx""")
-    $eabWhdLoadInstallLines.Add("  IF NOT EXISTS ""C:unlzx""")
-    $eabWhdLoadInstallLines.Add("    Copy ""USERPACKAGEDIR:unlzx"" ""C:unlzx"" >NIL:")
+    $eabWhdLoadInstallLines.Add("IF NOT EXISTS ""SYS:C/unlzx""")
+    $eabWhdLoadInstallLines.Add("  IF EXISTS ""USERPACKAGEDIR:unlzx""")
+    $eabWhdLoadInstallLines.Add("    Copy ""USERPACKAGEDIR:unlzx"" ""SYS:C/unlzx"" >NIL:")
     $eabWhdLoadInstallLines.Add("  ENDIF")
     $eabWhdLoadInstallLines.Add("ENDIF")
     $eabWhdLoadInstallLines.Add("")
@@ -261,9 +261,7 @@ function BuildEabWhdloadInstall()
     $eabWhdLoadInstallLines.Add("; install entries")
     $eabWhdLoadInstallLines.Add("LAB installentries")
     $eabWhdLoadInstallLines.Add("")
-    $eabWhdLoadInstallLines.Add("echo ""*e[1mInstalling entries to '`$INSTALLDIR'*e[0m""")
     $eabWhdLoadInstallLines.Add("execute ""USERPACKAGEDIR:Install/Install-Entries""")
-    $eabWhdLoadInstallLines.Add("echo ""Done""")
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("; End")
     $eabWhdLoadInstallLines.Add("; ---")
@@ -302,6 +300,11 @@ function BuildEabWhdloadInstall()
         $hardware = $eabWhdLoadEntry.Hardware
         $language = $eabWhdLoadEntry.Language
 
+        if ($indexName -match "^(#|\d)")
+        {
+            $indexName = "0-9"
+        }
+
         $eabWhdLoadInstallEntryFile = "{0}-{1}-{2}" -f $indexName, $hardware.ToUpper(), $language.ToUpper()
         
         if (!$eabWhdLoadInstallEntryIndex.ContainsKey($indexName))
@@ -327,7 +330,7 @@ function BuildEabWhdloadInstall()
         
         $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile]
         
-        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/")
+        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/").Replace("#", "'#")
         $eabWhdLoadInstallEntryLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
 
         if ($eabWhdLoadFile -match '\.lha$')
@@ -359,7 +362,10 @@ function BuildEabWhdloadInstall()
     foreach($indexName in ($eabWhdLoadInstallEntryIndex.Keys | Sort-Object))
     {
         $eabWhdLoadInstallEntriesLines.Add("echo ""Installing {0}...""" -f $indexName)
-        $eabWhdLoadInstallEntriesLines.Add("set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``" -f $indexName)
+        $eabWhdLoadInstallEntriesLines.Add("set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $indexName)
+        $eabWhdLoadInstallEntriesLines.Add("IF NOT EXISTS ""`$entrydir""")
+        $eabWhdLoadInstallEntriesLines.Add("  MakePath ""`$entrydir"" >NIL:")
+        $eabWhdLoadInstallEntriesLines.Add("ENDIF")
 
         foreach($hardware in ($eabWhdLoadInstallEntryIndex[$indexName].Keys | Sort-Object))
         {
@@ -369,7 +375,7 @@ function BuildEabWhdloadInstall()
             {
                 $eabWhdLoadInstallEntriesLines.Add("  IF ""`$eablanguage{0}"" EQ 1 VAL" -f $language)
                 $eabWhdLoadInstallEntriesLines.Add(("    echo ""Installing {0}, {1}, {2}...""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
-                $eabWhdLoadInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}"" EQ 1 VAL" -f $eabWhdLoadInstallEntryIndex[$indexName][$hardware][$language])
+                $eabWhdLoadInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $eabWhdLoadInstallEntryIndex[$indexName][$hardware][$language])
                 $eabWhdLoadInstallEntriesLines.Add("  ENDIF")
             }
                 
