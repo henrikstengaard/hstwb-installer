@@ -2,7 +2,7 @@
 # -------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-17
+# Date:   2018-04-18
 #
 # A powershell script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
 
@@ -393,7 +393,7 @@ Write-Output "-------------------------"
 Write-Output "Build EAB WHDLoad Install"
 Write-Output "-------------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-04-17"
+Write-Output "Date: 2018-04-18"
 Write-Output ""
 
 # resolve paths
@@ -432,8 +432,8 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
     # find eab whdload entries in eab whdload pack directory
     $eabWhdloadEntries = @()
     $eabWhdloadEntries += FindEabWhdloadEntries $eabWhdLoadPackDir.FullName
-    Write-Output ("- '{0}'" -f $eabWhdLoadPackName)
-    Write-Output ("  Found {0} entries" -f $eabWhdloadEntries.Count)
+    Write-Output $eabWhdLoadPackName
+    Write-Output ("- Found {0} entries" -f $eabWhdloadEntries.Count)
 
     # skip eab whdload pack, if it's doesnt contain any entries
     if ($eabWhdloadEntries.Count -eq 0)
@@ -448,9 +448,8 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
     }
 
     # build eab whdload install in eab whdload pack directory
-    Write-Output ("  Building EAB WHDLoad Install...")
+    Write-Output ("- Building EAB WHDLoad Install...")
     BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackName $eabWhdLoadPackDir.FullName
-    Write-Output ("  Done.")
 
     # write entries list
     $eabWhdloadEntriesFile = Join-Path -Path $eabWhdLoadPackDir.FullName -ChildPath "entries.csv"
@@ -458,4 +457,6 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
         ForEach-Object { @{ "File" = $_.EabWhdLoadFile; "Hardware" = $_.Hardware; "Language" = $_.Language } } | `
         ForEach-Object{ New-Object PSObject -Property $_ } | `
         export-csv -delimiter ';' -path $eabWhdloadEntriesFile -NoTypeInformation -Encoding UTF8
+
+    Write-Output ("- Done.")
 }

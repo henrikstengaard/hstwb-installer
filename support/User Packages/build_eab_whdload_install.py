@@ -5,7 +5,7 @@
 # -------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-17
+# Date:   2018-04-18
 #
 # A python script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
 
@@ -13,6 +13,7 @@
 """Build EAB WHDLoad Install"""
 
 from __future__ import print_function
+from __future__ import unicode_literals
 import os
 import re
 import shutil
@@ -20,6 +21,8 @@ import datetime
 from sys import argv
 import io
 import csv
+import codecs
+import unicodedata
 
 # eab whdload entry
 class EabWhdloadEntry:
@@ -30,9 +33,9 @@ class EabWhdloadEntry:
 # write text lines for amiga
 def write_text_lines_for_amiga(path, lines):
     """Write Text Lines for Amiga"""
-    with io.open(path, "w", encoding="ISO-8859-1", newline='\n') as f:
+    with codecs.open(path, "w", "iso-8859-1") as f:
         for l in lines:
-            f.write(unicode(l+'\n'))
+            f.write(unicodedata.normalize('NFC', l)+"\n")
 
 # find eab whdload entries
 def find_eab_whdload_entries(eab_whdload_pack_dir):
@@ -347,7 +350,7 @@ print("-------------------------")
 print("Build EAB WHDLoad Install")
 print("-------------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2018-04-17")
+print("Date: 2018-04-18")
 print("")
 
 # print usage and exit, if arguments are not defined
@@ -386,8 +389,8 @@ for eab_whdload_pack_dir in eab_whdload_pack_dirs:
 
     # find eab whdload entries in eab whdload pack directory
     eab_whdload_entries = find_eab_whdload_entries(eab_whdload_pack_dir)
-    print("- '{0}'".format(eab_whdload_pack_name))
-    print("  Found '{0}' entries".format(len(eab_whdload_entries)))
+    print(eab_whdload_pack_name)
+    print("- Found {0} entries".format(len(eab_whdload_entries)))
 
     # skip eab whdload pack, if it doesn't contain any entries
     if len(eab_whdload_entries) == 0:
@@ -399,16 +402,16 @@ for eab_whdload_pack_dir in eab_whdload_pack_dirs:
         shutil.copyfile(unlzx_file, eab_whdload_pack_unlzx_file)
 
     # build eab whdload install for eab whdload directory
-    print("  Building EAB WHDLoad Install...")
+    print("- Building EAB WHDLoad Install...")
     build_eab_whdload_install(eab_whdload_pack_name, eab_whdload_entries, eab_whdload_pack_dir)
-    print("  Done.")
 
     # write entries list
     eab_whdload_entries_file = os.path.join(eab_whdload_pack_dir, "entries.csv")
     with open(eab_whdload_entries_file, 'wb') as csvfile:
-        # write utf-8 bom
-        csvfile.write('\xef\xbb\xbf')
-        writer = csv.writer(csvfile, delimiter=';', quoting=csv.QUOTE_ALL)
+        csvfile.write(codecs.BOM_UTF8)
+        writer = csv.writer(csvfile, delimiter=str(u';'), quoting=csv.QUOTE_ALL)
         writer.writerow(["File", "Hardware", "Language"])
         for eab_whdload_entry in eab_whdload_entries:
             writer.writerow([eab_whdload_entry.eab_whdload_file.encode('utf-8'), eab_whdload_entry.hardware, eab_whdload_entry.language])
+
+    print("- Done.")
