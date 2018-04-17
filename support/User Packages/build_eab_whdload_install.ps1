@@ -2,7 +2,7 @@
 # -------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-13
+# Date:   2018-04-17
 #
 # A powershell script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
 
@@ -80,44 +80,46 @@ function BuildEabWhdloadInstall()
         [string]$installDir
     )
 
+    # build hardware and language indexes
     $languageIndex = @{}
     $hardwareIndex = @{}
-
     foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
     {
-        if ($hardwareIndex[$eabWhdLoadEntry.Hardware])
+        $hardware = $eabWhdLoadEntry.Hardware
+        $language = $eabWhdLoadEntry.Language
+
+        if ($hardwareIndex[$hardware])
         {
-            $hardwareIndex[$eabWhdLoadEntry.Hardware]++;
+            $hardwareIndex[$hardware]++;
         }
         else
         {
-            $hardwareIndex[$eabWhdLoadEntry.Hardware] = 1;
+            $hardwareIndex[$hardware] = 1;
         }
 
-        if (!$languageIndex[$eabWhdLoadEntry.Language])
+        if (!$languageIndex[$language])
         {
-            $languageIndex[$eabWhdLoadEntry.Language] = @{}
+            $languageIndex[$language] = @{}
         }
         
-        if ($languageIndex[$eabWhdLoadEntry.Language][$eabWhdLoadEntry.Hardware])
+        if ($languageIndex[$language][$hardware])
         {
-            $languageIndex[$eabWhdLoadEntry.Language][$eabWhdLoadEntry.Hardware]++;
+            $languageIndex[$language][$hardware]++;
         }
         else
         {
-            $languageIndex[$eabWhdLoadEntry.Language][$eabWhdLoadEntry.Hardware] = 1;
+            $languageIndex[$language][$hardware] = 1;
         }
     }
 
-    
+    # get hardwares and languages sorted
     $hardwares = @()
     $hardwares += $hardwareIndex.keys | Sort-Object
-
     $languages = @()
     $languages += $languageIndex.keys | Sort-Object
     
+    # build eab whdload install lines
     $eabWhdLoadInstallLines = New-Object System.Collections.Generic.List[System.Object]
-
     $eabWhdLoadInstallLines.Add("; {0}" -f $title)
     $eabWhdLoadInstallLines.Add(("; {0}" -f ("-" * $title.Length)))
     $eabWhdLoadInstallLines.Add("; Author: Henrik Noerfjand Stengaard")
@@ -173,7 +175,7 @@ function BuildEabWhdloadInstall()
 
         $eabWhdLoadInstallLines.Add("set languagecount ""0""")
 
-        foreach($hardware in $languageIndex[$language].keys)
+        foreach($hardware in ($languageIndex[$language].keys | Sort-Object))
         {
             $eabWhdLoadInstallLines.Add("IF ""`$eabhardware{0}"" EQ 1 VAL" -f $hardware)
             $eabWhdLoadInstallLines.Add("  set languagecount ``eval `$languagecount + {0}``" -f $languageIndex[$language][$hardware])
@@ -195,7 +197,7 @@ function BuildEabWhdloadInstall()
     
     $eabWhdLoadInstallLines.Add("")
     $eabWhdLoadInstallLines.Add("set eabwhdloadoption """"")
-    $eabWhdLoadInstallLines.Add("set eabwhdloadoption ""``RequestList TITLE=""{0}"" LISTFILE=""T:_eabwhdloadmenu"" WIDTH=640 LINES=24``""" -f $title)
+    $eabWhdLoadInstallLines.Add("set eabwhdloadoption ``RequestList TITLE=""{0}"" LISTFILE=""T:_eabwhdloadmenu"" WIDTH=640 LINES=24``" -f $title)
     $eabWhdLoadInstallLines.Add("delete >NIL: T:_eabwhdloadmenu")
 
     $eabWhdloadOption = 0;
@@ -268,32 +270,27 @@ function BuildEabWhdloadInstall()
     $eabWhdLoadInstallLines.Add("LAB end")
     $eabWhdLoadInstallLines.Add("")
 
+    # write eab whdload install file
     $eabWhdLoadInstallFile = Join-Path $installDir -ChildPath "_install"
     WriteTextLinesForAmiga $eabWhdLoadInstallFile $eabWhdLoadInstallLines.ToArray()
 
-
-
-    $eabWhdLoadInstallDir = Join-Path $installDir -ChildPath "Install"
-
     # create eab whdload install directory, if it doesn't exist
+    $eabWhdLoadInstallDir = Join-Path $installDir -ChildPath "Install"
     if (!(Test-Path -Path $eabWhdLoadInstallDir))
     {
         mkdir -Path $eabWhdLoadInstallDir | Out-Null
     }
 
-
-    $eabWhdLoadInstallEntriesDir = Join-Path $eabWhdLoadInstallDir -ChildPath "Entries"
-
     # create eab whdload install entries directory, if it doesn't exist
+    $eabWhdLoadInstallEntriesDir = Join-Path $eabWhdLoadInstallDir -ChildPath "Entries"
     if (!(Test-Path -Path $eabWhdLoadInstallEntriesDir))
     {
         mkdir -Path $eabWhdLoadInstallEntriesDir | Out-Null
     }
 
-
+    # build eab whdload install entry and file indexes
     $eabWhdLoadInstallEntryIndex = @{}
     $eabWhdLoadInstallEntryFileIndex = @{}
-
     foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
     {
         $indexName = $eabWhdLoadEntry.EabWhdLoadFile.Substring(0,1).ToUpper()
@@ -348,6 +345,7 @@ function BuildEabWhdloadInstall()
         $eabWhdLoadInstallEntryLines.Add("ENDIF")
     }
 
+    # write eab whdload install entry files
     foreach($eabWhdLoadInstallEntryFilename in $eabWhdLoadInstallEntryFileIndex.keys)
     {
         $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFilename]
@@ -357,8 +355,8 @@ function BuildEabWhdloadInstall()
         WriteTextLinesForAmiga $eabWhdLoadInstallEntryFile $eabWhdLoadInstallEntryLines.ToArray()
     }
 
+    # write eab whdload install entries file
     $eabWhdLoadInstallEntriesLines = New-Object System.Collections.Generic.List[System.Object]
-    
     foreach($indexName in ($eabWhdLoadInstallEntryIndex.Keys | Sort-Object))
     {
         $eabWhdLoadInstallEntriesLines.Add("echo ""Installing {0}...""" -f $indexName)
@@ -390,45 +388,52 @@ function BuildEabWhdloadInstall()
 }
 
 
-# resolve paths
-$eabWhdLoadPacksDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($eabWhdLoadPacksDir)
-
 # write build eab whdload install title
 Write-Output "-------------------------"
 Write-Output "Build EAB WHDLoad Install"
 Write-Output "-------------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-04-14"
+Write-Output "Date: 2018-04-17"
 Write-Output ""
+
+# resolve paths
+$eabWhdLoadPacksDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($eabWhdLoadPacksDir)
+
+# fail, if eab whdload packs directory doesn't exist
+if (!(Test-Path $eabWhdLoadPacksDir))
+{
+    throw ("EAB WHDLoad Packs directory '{0}' doesn't exist" -f $eabWhdLoadPacksDir)
+}
+
+# write eab whdload packs directory
 Write-Output ("EAB WHDLoad Packs directory: '{0}'" -f $eabWhdLoadPacksDir)
 Write-Output ""
 Write-Output "Building EAB WHDLoad Install scripts for user package directories:"
 
-# get eab whdload pack directories
+# find eab whdload directories
 $eabWhdLoadPackDirs = @()
-$eabWhdLoadPackDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | `
-    Where-Object { $_.PSIsContainer -and $_ -match 'whdload' }
+$eabWhdLoadPackDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | Where-Object { $_.PSIsContainer -and $_ -match 'whdload' }
 
-$unlzxFile = Join-Path $eabWhdLoadPacksDir -ChildPath 'unlzx'
-
-if (!(Test-Path $unlzxFile))
+# exit, if eab whdload directories was not found
+if ($eabWhdLoadPackDirs.Count -eq 0)
 {
-    throw ("Unlzx file '{0}' doesn't exist" -f $unlzxFile)
+    Write-Output "No EAB WHDLoad Pack directories was not found!"
+    exit
 }
 
+# unlzx file
+$unlzxFile = Join-Path $eabWhdLoadPacksDir -ChildPath 'unlzx'
+
+# build eab whdload install for eab whdload directories
 foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
 {
-    Write-Output ("- '{0}'" -f $eabWhdLoadPackDir.Name)
-
-    # copy unlzx to eab whdload pack directory
-    Copy-Item $unlzxFile $eabWhdLoadPackDir.FullName
+    $eabWhdLoadPackName = $eabWhdLoadPackDir.Name
 
     # find eab whdload entries in eab whdload pack directory
     $eabWhdloadEntries = @()
     $eabWhdloadEntries += FindEabWhdloadEntries $eabWhdLoadPackDir.FullName
-
-    # write number of entries found
-    Write-Output ("- {0} entries" -f $eabWhdloadEntries.Count)
+    Write-Output ("- '{0}'" -f $eabWhdLoadPackName)
+    Write-Output ("  Found {0} entries" -f $eabWhdloadEntries.Count)
 
     # skip eab whdload pack, if it's doesnt contain any entries
     if ($eabWhdloadEntries.Count -eq 0)
@@ -436,8 +441,16 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
         continue
     }
 
+    # copy unlzx to eab whdload pack directory, if unlzx file exists
+    if (Test-Path $unlzxFile)
+    {
+        Copy-Item $unlzxFile $eabWhdLoadPackDir.FullName
+    }
+
     # build eab whdload install in eab whdload pack directory
-    BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackDir.Name $eabWhdLoadPackDir.FullName
+    Write-Output ("  Building EAB WHDLoad Install...")
+    BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackName $eabWhdLoadPackDir.FullName
+    Write-Output ("  Done.")
 
     # write entries list
     $eabWhdloadEntriesFile = Join-Path -Path $eabWhdLoadPackDir.FullName -ChildPath "entries.csv"
@@ -446,5 +459,3 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
         ForEach-Object{ New-Object PSObject -Property $_ } | `
         export-csv -delimiter ';' -path $eabWhdloadEntriesFile -NoTypeInformation -Encoding UTF8
 }
-
-Write-Output "Done"
