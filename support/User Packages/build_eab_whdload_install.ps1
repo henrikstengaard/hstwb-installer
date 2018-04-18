@@ -327,21 +327,20 @@ function BuildEabWhdloadInstall()
         
         $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile]
         
-        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/").Replace("#", "'#")
-        $eabWhdLoadInstallEntryLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
+        # replace \ with / and espace # with '#
+        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/")
+        $eabWhdLoadFileEscaped = $eabWhdLoadFile.Replace("#", "'#")
 
+        # extract eab whdload file
+        $eabWhdLoadInstallEntryLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
         if ($eabWhdLoadFile -match '\.lha$')
         {
-            $eabWhdLoadInstallEntryLines.Add("  lha -q -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryLines.Add(("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFileEscaped))
         }
         elseif ($eabWhdLoadFile -match '\.lzx$')
         {
-            $eabWhdLoadInstallEntryLines.Add("  unlzx -q1 -m e ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFile)
+            $eabWhdLoadInstallEntryLines.Add(("  unlzx -m e ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFileEscaped))
         }
-
-        $eabWhdLoadInstallEntryLines.Add("  IF NOT `$RC EQ 0")
-        $eabWhdLoadInstallEntryLines.Add("    echo ""Error: Failed to install entry file '{0}' to '`$entrydir'""" -f $eabWhdLoadFile)
-        $eabWhdLoadInstallEntryLines.Add("  ENDIF")
         $eabWhdLoadInstallEntryLines.Add("ENDIF")
     }
 
@@ -359,7 +358,6 @@ function BuildEabWhdloadInstall()
     $eabWhdLoadInstallEntriesLines = New-Object System.Collections.Generic.List[System.Object]
     foreach($indexName in ($eabWhdLoadInstallEntryIndex.Keys | Sort-Object))
     {
-        $eabWhdLoadInstallEntriesLines.Add("echo ""Installing {0}...""" -f $indexName)
         $eabWhdLoadInstallEntriesLines.Add("set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $indexName)
         $eabWhdLoadInstallEntriesLines.Add("IF NOT EXISTS ""`$entrydir""")
         $eabWhdLoadInstallEntriesLines.Add("  MakePath ""`$entrydir"" >NIL:")
@@ -372,7 +370,8 @@ function BuildEabWhdloadInstall()
             foreach($language in ($eabWhdLoadInstallEntryIndex[$indexName][$hardware].Keys | Sort-Object))
             {
                 $eabWhdLoadInstallEntriesLines.Add("  IF ""`$eablanguage{0}"" EQ 1 VAL" -f $language)
-                $eabWhdLoadInstallEntriesLines.Add(("    echo ""Installing {0}, {1}, {2}...""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
+                $eabWhdLoadInstallEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
+                $eabWhdLoadInstallEntriesLines.Add("    wait 1")
                 $eabWhdLoadInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $eabWhdLoadInstallEntryIndex[$indexName][$hardware][$language])
                 $eabWhdLoadInstallEntriesLines.Add("  ENDIF")
             }

@@ -288,24 +288,15 @@ def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
         eab_whdload_install_entry_lines = eab_whdload_install_entry_file_index[eab_whdload_install_entry_file]
         
         # replace \ with / and espace # with '#
-        eab_whdload_file = eab_whdload_entry.eab_whdload_file.replace("\\", "/").replace("#", "'#")
+        eab_whdload_file = u"USERPACKAGEDIR:{0}".format(eab_whdload_entry.eab_whdload_file.replace("\\", "/"))
+        eab_whdload_file_escaped = u"{0}".format(eab_whdload_file.replace("#", "'#"))
 
-        # convert eab whdload file to unicode, if it's string type
-        if isinstance(eab_whdload_file, str):
-            eab_whdload_file = unicode(eab_whdload_file, 'utf-8', 'replace')
-
-        eab_whdload_file = u"USERPACKAGEDIR:{0}".format(eab_whdload_file)
+        # extract eab whdload file
         eab_whdload_install_entry_lines.append(u"IF EXISTS \"{0}\"".format(eab_whdload_file))
-
         if re.search(r'\.lha$', eab_whdload_file, re.I):
-            eab_whdload_install_entry_lines.append(u"  lha -q -m1 x \"{0}\" \"$entrydir/\"".format(eab_whdload_file))
-
-        if re.search(r'\.lzx$', eab_whdload_file, re.I):
-            eab_whdload_install_entry_lines.append(u"  unlzx -q1 -m e \"{0}\" \"$entrydir/\"".format(eab_whdload_file))
-
-        eab_whdload_install_entry_lines.append("  IF NOT $RC EQ 0")
-        eab_whdload_install_entry_lines.append(u"    echo \"Error: Failed to install entry file '{0}' to '$entrydir'\"".format(eab_whdload_file))
-        eab_whdload_install_entry_lines.append("  ENDIF")
+            eab_whdload_install_entry_lines.append(u"  lha -m1 x \"{0}\" \"$entrydir/\"".format(eab_whdload_file_escaped))
+        elif re.search(r'\.lzx$', eab_whdload_file, re.I):
+            eab_whdload_install_entry_lines.append(u"  unlzx -m e \"{0}\" \"$entrydir/\"".format(eab_whdload_file_escaped))
         eab_whdload_install_entry_lines.append("ENDIF")
 
     # write eab whdload install entry files
@@ -320,7 +311,6 @@ def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
     index_names = eab_whdload_install_entry_index.keys()
     index_names.sort()
     for index_name in index_names:
-        eab_whdload_install_entries_lines.append("echo \"Installing {0}...\"".format(index_name))
         eab_whdload_install_entries_lines.append("set entrydir \"`execute INSTALLDIR:S/CombinePath \"$INSTALLDIR\" \"{0}\"`\"".format(index_name))
         eab_whdload_install_entries_lines.append("IF NOT EXISTS \"$entrydir\"")
         eab_whdload_install_entries_lines.append("  MakePath \"$entrydir\" >NIL:")
@@ -335,7 +325,8 @@ def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
             languages.sort()
             for language in languages:
                 eab_whdload_install_entries_lines.append("  IF \"$eablanguage{0}\" EQ 1 VAL".format(language))
-                eab_whdload_install_entries_lines.append("    echo \"Installing {0}, {1}, {2}...\"".format(index_name, hardware.upper(), language.upper()))
+                eab_whdload_install_entries_lines.append("    echo \"*e[1mInstalling {0}, {1}, {2}...*e[0m\"".format(index_name, hardware.upper(), language.upper()))
+                eab_whdload_install_entries_lines.append("    wait 1")
                 eab_whdload_install_entries_lines.append("    Execute \"USERPACKAGEDIR:Install/Entries/{0}\"".format(eab_whdload_install_entry_index[index_name][hardware][language]))
                 eab_whdload_install_entries_lines.append("  ENDIF")
                 
