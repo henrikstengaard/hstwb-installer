@@ -1,10 +1,11 @@
 User packages for HstWB Installer
 ---------------------------------
 
-This directory contains user packages for HstWB Installer and is copied to image directory, 
-when building a self install image. Each directory represents a user package and is valid, 
-if it contains a _installdir file with path to indicate where the user packages will
-be installed.
-By default a user package is copied to path defined in _installdir. It's also possible to
-add a _install file for customizing installation a user package. This useful for extracting
-.lha, .zip archives or modify e.g. startup-sequence with a new assign.
+This directory contains user packages for HstWB Installer and each directory represents 
+a user package. A user package must contains a _installdir file with path to indicate where
+the user packages will be installed.
+
+HstWB Installer will be default copy files in a user package to path defined in _installdir
+file. The installation can be customized by adding a _install AmigaDOS script file to user
+package directory and make use of USERPACKAGEDIR: assign set to root of user package 
+directory and $INSTALLDIR variable set to path from _installdir file.
