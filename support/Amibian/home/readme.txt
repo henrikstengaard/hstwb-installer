@@ -1,7 +1,7 @@
 Amibian HstWB Installer
 -----------------------
 Author: Henrik Noerfjand Stengaard
-Date: 2018-04-04
+Date: 2018-04-23
 
 Amibian HstWB Installer is a preconfigured setup of Amibian with
 ready-made harddrives and configs for Amiberry and Chips UAE4ARM
@@ -39,11 +39,30 @@ Preparation
       requires Amiga OS 3.9 iso is named "AmigaOS3.9.iso", Boing 
       Bag 1 is named "BoingBag39-1.lha" and Boing Bag 2 is named 
       "BoingBag39-2.lha" (it's not case sensitive).
-   4. Copy optional EAB WHDLoad Packs v3.0 downloaded and extracted
-      from EAB File Server to "userpackages" directory. EAB WHDLoad
-      Packs v3.0 directories must be copied to matching directories
-      in "userpackages" directory, e.g. copy "Games_WHDLoad" to 
-      "userpackages\Games_WHDLoad" directory.
+   4. Copy optional EAB WHDLoad Packs downloaded from
+      EAB File Server to "userpackages" directory. HstWB Installer
+      Wiki has a "Prepare self install tutorial" at 
+      https://github.com/henrikstengaard/hstwb-installer/wiki/Prepare-self-install-tutorial
+      describing step by step how to download and prepare EAB 
+      WHDLoad Packs.
+      EAB WHDLoad Packs directories must be copied or moved to
+      following directories in "userpackages" directory:
+      - Copy or move files from "Commodore_Amiga_-_WHDLoad_-_Demos"
+        to "eab-whdload-demos".
+      - Copy or move files from "Commodore_Amiga_-_WHDLoad_-_Games"
+        to "eab-whdload-games".
+      - Copy or move files from 
+        "Commodore_Amiga_-_WHDLoad_-_Games_(Beta_&_Unreleased)"
+        to "eab-whdload-games_beta".
+      Run Build EAB WHDLoad Install:
+      - Windows: Double-click "build_eab_whdload_install.cmd" in
+        Windows Explorer.
+      - macOS: Double-click "build_eab_whdload_install.command" in
+        Finder.
+      - Ubuntu: Double-click "Build EAB WHDLoad Install" in
+        Ubuntu Files.
+      - Linux: Type "./build_eab_whdload_install.sh" and press 
+        enter in terminal.
 
 
 Installation
