@@ -1,0 +1,22 @@
+.KEY path/a
+.BRA {
+.KET }
+
+; Get Device Name
+; ---------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2018-04-29
+;
+; A script to get device name from a path. 
+
+; Write path to combined path
+echo "{path}" >"T:_devicenamepath"
+
+; Replace colon with newline in device name path
+rep "T:_devicenamepath" ":" ":*N"
+
+; Get first line from device name path
+sed "1q;d" "T:_devicenamepath"
+
+; Delete temp file
+Delete T:_devicenamepath >NIL:
