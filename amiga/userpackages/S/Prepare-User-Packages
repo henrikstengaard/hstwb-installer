@@ -5,7 +5,7 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2018-03-29
+; Date: 2018-05-02
 ; Author: Henrik Noerfjand Stengaard
 
 ; Fail, if USERPACKAGESDIR: assign doesn't exist
@@ -98,7 +98,7 @@ ENDIF
 
 ; Make package id
 echo "$userpackage" >T:_packageid
-set packageid "`md5sum <T:_packageid`"
+set packageid "`md5 T:_packageid`"
 
 ; Build user packages reset
 echo "" >>"{installuserpackages}"
@@ -152,7 +152,7 @@ echo "ENDIF" >>T:_userpackagesoptions
 
 ; Make assign id
 echo "$userpackage.InstallDir" >T:_assignid
-set assignid "`md5sum <T:_assignid`"
+set assignid "`md5 T:_assignid`"
 
 ; Get user package install dir
 set installdir ""

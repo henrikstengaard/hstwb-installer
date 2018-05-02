@@ -1,7 +1,7 @@
 ; Find Kickstart Rom
 ; ------------------
 ;
-; Date: 2018-01-14
+; Date: 2018-05-02
 ; Author: Henrik Noerfjand Stengaard
 
 ; Find Kickstart rom files
@@ -23,7 +23,7 @@ IF "$romfile" EQ ""
 ENDIF
 
 ; Get MD5 for romfile
-set md5 `md5sum <"$romfile"`
+set md5 "`md5 "$romfile"`"
 
 ; Copy Cloanto Amiga Forever Kickstart 1.2 (33.180) (A500) rom, if file MD5 matches
 IF $md5 eq "c56ca2a3c644d53e780a7e4dbdc6b699"
