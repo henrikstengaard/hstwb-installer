@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2018-04-03
+; Date: 2018-05-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -85,6 +85,7 @@ IF "$amigaos39" EQ 1 VAL
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Delete" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Eval" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Execute" PURE
+  resident "AmigaOS3.9:EMERGENCY-BOOT/C/List" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Rename" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/MakeDir" PURE
   resident "AmigaOS3.9:EMERGENCY-BOOT/C/Protect" PURE
@@ -103,6 +104,7 @@ ELSE
   resident "DF0:C/Delete" PURE
   resident "DF0:C/Eval" PURE
   resident "DF0:C/Execute" PURE
+  resident "DF0:C/List" PURE
   resident "DF0:C/Rename" PURE
   resident "DF0:C/MakeDir" PURE
   resident "DF0:C/Protect" PURE

@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2018-03-31
+; Date: 2018-05-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -353,6 +353,7 @@ IF "$floppydevice" EQ ""
   resident "$systemfilesdir/C/Delete" PURE
   resident "$systemfilesdir/C/Eval" PURE
   resident "$systemfilesdir/C/Execute" PURE
+  resident "$systemfilesdir/C/List" PURE
   resident "$systemfilesdir/C/Rename" PURE
   resident "$systemfilesdir/C/MakeDir" PURE
   resident "$systemfilesdir/C/Protect" PURE
@@ -370,6 +371,7 @@ ELSE
   resident "$floppydevice:C/Delete" PURE
   resident "$floppydevice:C/Eval" PURE
   resident "$floppydevice:C/Execute" PURE
+  resident "$floppydevice:C/List" PURE
   resident "$floppydevice:C/Rename" PURE
   resident "$floppydevice:C/MakeDir" PURE
   resident "$floppydevice:C/Protect" PURE
