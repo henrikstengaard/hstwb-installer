@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-12
+# Date:   2018-05-10
 #
 # A powershell script to install UAE config for HstWB images by patching hard drive
 # directories to current directory and installing Workbench 3.1 adf and
@@ -108,6 +108,12 @@ function IsValidWorkbenchAdfFile($workbenchAdfFile)
         return $true
     }
 
+    # return true, if md5 matches Cloanto Amiga Forever 7 Workbench 3.1 Install Disk
+    if ($md5Hash -eq 'c5be06daf40d4c3ace4eac874d9b48b1')
+    {
+        return $true
+    }
+    
     # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Locale Disk
     if ($md5Hash -eq 'b53c9ff336e168643b10c4a9cfff4276')
     {
@@ -122,6 +128,12 @@ function IsValidWorkbenchAdfFile($workbenchAdfFile)
 
     # return true, if md5 matches Cloanto Amiga Forever 2016 Workbench 3.1 Workbench Disk
     if ($md5Hash -eq '590c42a69675d6970df350e200fe25dc')
+    {
+        return $true
+    }
+
+    # return true, if md5 matches Cloanto Amiga Forever 7 Workbench 3.1 Workbench Disk
+    if ($md5Hash -eq 'e7b3a83df665a85e7ec27306a152b171')
     {
         return $true
     }
