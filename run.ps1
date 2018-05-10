@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-03
+# Date:   2018-05-10
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -21,91 +21,6 @@ Import-Module (Resolve-Path('modules\data.psm1')) -Force
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
-
-
-# # http://stackoverflow.com/questions/8982782/does-anyone-have-a-dependency-graph-and-topological-sorting-code-snippet-for-pow
-# function Get-TopologicalSort {
-#   param(
-#       [Parameter(Mandatory = $true, Position = 0)]
-#       [hashtable] $edgeList
-#   )
-
-#   # Make sure we can use HashSet
-#   Add-Type -AssemblyName System.Core
-
-#   # Clone it so as to not alter original
-#   $currentEdgeList = [hashtable] (Get-ClonedObject $edgeList)
-
-#   # algorithm from http://en.wikipedia.org/wiki/Topological_sorting#Algorithms
-#   $topologicallySortedElements = New-Object System.Collections.ArrayList
-#   $setOfAllNodesWithNoIncomingEdges = New-Object System.Collections.Queue
-
-#   $fasterEdgeList = @{}
-
-#   # Keep track of all nodes in case they put it in as an edge destination but not source
-#   $allNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentEdgeList.Keys)
-
-#   foreach($currentNode in $currentEdgeList.Keys) {
-#       $currentDestinationNodes = [array] $currentEdgeList[$currentNode]
-#       if($currentDestinationNodes.Length -eq 0) {
-#           $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
-#       }
-
-#       foreach($currentDestinationNode in $currentDestinationNodes) {
-#           if(!$allNodes.Contains($currentDestinationNode)) {
-#               [void] $allNodes.Add($currentDestinationNode)
-#           }
-#       }
-
-#       # Take this time to convert them to a HashSet for faster operation
-#       $currentDestinationNodes = New-Object -TypeName System.Collections.Generic.HashSet[object] -ArgumentList (,[object[]] $currentDestinationNodes )
-#       [void] $fasterEdgeList.Add($currentNode, $currentDestinationNodes)        
-#   }
-
-#   # Now let's reconcile by adding empty dependencies for source nodes they didn't tell us about
-#   foreach($currentNode in $allNodes) {
-#       if(!$currentEdgeList.ContainsKey($currentNode)) {
-#           [void] $currentEdgeList.Add($currentNode, (New-Object -TypeName System.Collections.Generic.HashSet[object]))
-#           $setOfAllNodesWithNoIncomingEdges.Enqueue($currentNode)
-#       }
-#   }
-
-#   $currentEdgeList = $fasterEdgeList
-
-#   while($setOfAllNodesWithNoIncomingEdges.Count -gt 0) {        
-#       $currentNode = $setOfAllNodesWithNoIncomingEdges.Dequeue()
-#       [void] $currentEdgeList.Remove($currentNode)
-#       [void] $topologicallySortedElements.Add($currentNode)
-
-#       foreach($currentEdgeSourceNode in $currentEdgeList.Keys) {
-#           $currentNodeDestinations = $currentEdgeList[$currentEdgeSourceNode]
-#           if($currentNodeDestinations.Contains($currentNode)) {
-#               [void] $currentNodeDestinations.Remove($currentNode)
-
-#               if($currentNodeDestinations.Count -eq 0) {
-#                   [void] $setOfAllNodesWithNoIncomingEdges.Enqueue($currentEdgeSourceNode)
-#               }                
-#           }
-#       }
-#   }
-
-#   if($currentEdgeList.Count -gt 0) {
-#       throw "Graph has at least one cycle!"
-#   }
-
-#   return $topologicallySortedElements
-# }
-
-
-# # Idea from http://stackoverflow.com/questions/7468707/deep-copy-a-dictionary-hashtable-in-powershell 
-# function Get-ClonedObject {
-#     param($DeepCopyObject)
-#     $memStream = new-object IO.MemoryStream
-#     $formatter = new-object Runtime.Serialization.Formatters.Binary.BinaryFormatter
-#     $formatter.Serialize($memStream,$DeepCopyObject)
-#     $memStream.Position=0
-#     $formatter.Deserialize($memStream)
-# }
 
 
 # show folder browser dialog using WinForms
@@ -2491,27 +2406,44 @@ function RunBuildSelfInstall($hstwb)
     }
 
 
-    # copy install uae config to image dir
-    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "Install UAE Config")
-    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
-
-
-    # copy support user packages to image dir
-    $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
-    $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "UserPackages"
-    if (!(Test-Path -Path $imageUserPackagesDir))
+    # create workbench directory in image directory, if it doesn't exist
+    $imageWorkbenchDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "workbench"
+    if (!(Test-Path -Path $imageWorkbenchDir))
     {
-        mkdir $imageUserPackagesDir | Out-Null
+        mkdir $imageWorkbenchDir | Out-Null
     }
-    Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
 
-    
-    # create os39 directory in image directory
-    $imageOs39Dir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "OS39"
+    # create kickstart directory in image directory, if it doesn't exist
+    $imageKickstartDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "kickstart"
+    if (!(Test-Path -Path $imageKickstartDir))
+    {
+        mkdir $imageKickstartDir | Out-Null
+    }
+
+    # create os39 directory in image directory, if it doesn't exist
+    $imageOs39Dir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "os39"
     if (!(Test-Path -Path $imageOs39Dir))
     {
         mkdir $imageOs39Dir | Out-Null
     }
+    
+    # create userpackages directory in image directory, if it doesn't exist
+    $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "userpackages"
+    if (!(Test-Path -Path $imageUserPackagesDir))
+    {
+        mkdir $imageUserPackagesDir | Out-Null
+    }
+
+    # copy install uae config to image dir
+    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "Install UAE Config")
+    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
+
+    # copy support user packages to image dir
+    $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
+    Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
+
+    
+
     
 
     # read winuae hstwb installer config file
