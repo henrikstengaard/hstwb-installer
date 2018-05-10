@@ -507,10 +507,10 @@ if (Test-Path -Path $fsuaeConfigFile)
 
 
 # self install directories
-$workbenchDir = Join-Path $currentDir -ChildPath "Workbench"
-$kickstartDir = Join-Path $currentDir -ChildPath "Kickstart"
-$os39Dir = Join-Path $currentDir -ChildPath "OS39"
-$userPackagesDir = Join-Path $currentDir -ChildPath "UserPackages"
+$workbenchDir = Join-Path $currentDir -ChildPath "workbench"
+$kickstartDir = Join-Path $currentDir -ChildPath "kickstart"
+$os39Dir = Join-Path $currentDir -ChildPath "os39"
+$userPackagesDir = Join-Path $currentDir -ChildPath "userpackages"
 $selfInstallDirs = @()
 
 # check, if workbenchdir exists in uae config files

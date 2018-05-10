@@ -2,7 +2,7 @@
 # ------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2017-11-09
+# Date:   2018-05-10
 #
 # A python script to install UAE config for HstWB images by patching
 # hard drive directories to current directory, use A1200 Kickstart 3.1
@@ -208,10 +208,10 @@ if os.path.isfile(FSUAE_CONFIG_FILE):
         UAE_CONFIG_LINES.extend(f.readlines())
 
 # self install directories
-WORKBENCH_DIR = os.path.join(CURRENT_DIR, 'Workbench')
-KICKSTART_DIR = os.path.join(CURRENT_DIR, 'Kickstart')
-OS39_DIR = os.path.join(CURRENT_DIR, 'OS39')
-USERPACKAGES_DIR = os.path.join(CURRENT_DIR, 'UserPackages')
+WORKBENCH_DIR = os.path.join(CURRENT_DIR, 'workbench')
+KICKSTART_DIR = os.path.join(CURRENT_DIR, 'kickstart')
+OS39_DIR = os.path.join(CURRENT_DIR, 'os39')
+USERPACKAGES_DIR = os.path.join(CURRENT_DIR, 'userpackages')
 SELF_INSTALL_DIRS = []
 
 # check, if self install directories exists in uae config files
