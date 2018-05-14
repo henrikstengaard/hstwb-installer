@@ -33,31 +33,31 @@ function ParseEabWhdloadEntryName()
 
     # patterns for parsing eab whdload entry name
     $idPattern = '([_&])(\d{4})$'
-    $hardwarePattern = '_?(CD32|AGA|CDTV|CD)$'
-    $languagePattern = '_?(En|De|Fr|It|Se|Pl|Es|Cz|Dk|Fi|Gr|CV)$'
+    $hardwarePattern = '_(CD32|AGA|CDTV|CD)$'
+    $languagePattern = '_?(En|De|Fr|It|Se|Pl|Es|Cz|Dk|Fi|Gr|CV|German|Spanish)$'
     $memoryPattern = '_?(Slow|Fast|LowMem|Chip|1MB|1Mb|2MB|15MB|512k|512K|512kb|512Kb|512KB)$'
-    $demoPattern = '_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease)$'
+    $releasePattern = '_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease|BETA)$'
     $publisherDeveloperPattern = '_?(CoreDesign|Paradox|Rowan|Ratsoft|Spotlight|Empire|Impressions|Arcane|Mirrorsoft|Infogrames|Cinemaware|MagneticScrolls|System3|Mindscape|MicroValue|Ocean|MicroIllusions|DesktopDynamite|Infacto|Team17|ElectronicZoo|ReLINE|USGold|Epyx|Psygnosis|Palace|Kaiko|Audios|Sega|Activision|Arcadia|AmigaPower|AmigaFormat|AmigaAction|CUAmiga|TheOne)$'
-    $otherPattern = '_?(AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
-    #$compilationPattern = '_?(&EscapeFromSingesCastle|&Missions|&MissionDisk|&MissionDisks|&SceneryDisk\d*|&Hawaiian|&SceneryDisks|&CityDefense|&ExtraTime|&SpaceHarrier|&Missions|&ExtendedLevels|&CadaverThePayoff|&Planeteers|&ConstrSet|&ConstructionSet|&MstrTrcks|&DDisks|&DataDisks|&DataDisk\d?|&Profidisk|&Data|&TourDisk|&ChallengeGames|&VoyageBeyond|&RetrnFntZone|&RFantasyZone|&SummerGames2|&NewWorlds)'
-    $versionPattern = '_?[vV]((\d+|\d+\.\d+|\d+\.\d+[\._]\d+)([\.\-_])?[a-zA-Z]?)$'
+    $otherPattern = '_?(A1200Version|NONAGA|HardNHeavyHack|[Ff]ix_by_[^_]+|[Hh]ack_by_[^_]+|AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
+    $versionPattern = '_?[Vv]((\d+|\d+\.\d+|\d+\.\d+[\._]\d+)([\.\-_])?[a-zA-Z]?\d*)$'
+    $unsupportedPattern = '[\.\-_](.*)$'
 
     # parsing results
 	$idResults = New-Object System.Collections.Generic.List[System.Object]
 	$hardwareResults = New-Object System.Collections.Generic.List[System.Object]
 	$languageResults = New-Object System.Collections.Generic.List[System.Object]
 	$memoryResults = New-Object System.Collections.Generic.List[System.Object]
-	$demoResults = New-Object System.Collections.Generic.List[System.Object]
+	$releaseResults = New-Object System.Collections.Generic.List[System.Object]
 	$publisherDeveloperResults = New-Object System.Collections.Generic.List[System.Object]
 	$otherResults = New-Object System.Collections.Generic.List[System.Object]
-	#$compilationResults = New-Object System.Collections.Generic.List[System.Object]
 	$versionResults = New-Object System.Collections.Generic.List[System.Object]
+	$unsupportedResults = New-Object System.Collections.Generic.List[System.Object]
 
     # set entry name with filename extension
-    $entryName = $eabWhdLoadEntryName -replace '\.(lha|lzx|zip)$', ''
+    $entryName = $eabWhdLoadEntryName -replace '\.(lha|lzx)$', ''
 
-    # parse entry name
-	do
+    # parse id, hardware, language, memory, demo, publisher/developer, other and version from entry name
+    do
 	{
         $patternMatch = $false
 
@@ -89,6 +89,15 @@ function ParseEabWhdloadEntryName()
 
 			if ($language -notmatch 'En')
 			{
+                if ($language -match 'german')
+                {
+                    $language = 'De'
+                }
+                elseif ($language -match 'spanish')
+                {
+                    $language = 'Es'
+                }
+
 				$languageResults.Add($language.ToLower())
 			}
 
@@ -106,13 +115,13 @@ function ParseEabWhdloadEntryName()
             continue
 		}
         
-        # parse demo from entry name
-		if ($entryName -cmatch $demoPattern)
+        # parse release from entry name
+		if ($entryName -cmatch $releasePattern)
 		{
             $patternMatch = $true
-            $demo = ($entryName | Select-String -Pattern $demoPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$demoResults.Add($demo.ToLower())
-			$entryName = $entryName -creplace $demoPattern, ''
+            $demo = ($entryName | Select-String -Pattern $releasePattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
+			$releaseResults.Add($demo.ToLower())
+			$entryName = $entryName -creplace $releasePattern, ''
             continue
 		}
 
@@ -136,15 +145,6 @@ function ParseEabWhdloadEntryName()
             continue
 		}
 
-        # parse compilation from entry name
-		# if ($entryName -cmatch $compilationPattern)
-		# {
-        #     $patternMatch = $true
-		# 	$compilation = ($entryName | Select-String -Pattern $compilationPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-		# 	$compilationResults.Add(($compilation.ToLower() -replace '^&', ''))
-		# 	$entryName = $entryName -creplace $compilationPattern, ''
-        # }
-        
         # parse version from entry name
 		if ($entryName -cmatch $versionPattern)
 		{
@@ -153,7 +153,17 @@ function ParseEabWhdloadEntryName()
 			$versionResults.Add($version.ToLower())
 			$entryName = $entryName -creplace $versionPattern, ''
             continue
-		}
+        }
+        
+        # parse unsupported from entry name
+        if ($entryName -match $unsupportedPattern)
+        {
+            $patternMatch = $true
+            $unsupported = ($entryName | Select-String -Pattern $unsupportedPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
+            $unsupportedResults.Add($unsupported.ToLower())
+            $entryName = $entryName -replace $unsupportedPattern, ''
+            continue
+        } 
 	} while ($patternMatch)
 
     # remove ambersand from entry name
@@ -175,13 +185,13 @@ function ParseEabWhdloadEntryName()
         'EntryName' = $entryName;
         'IdResults' = $idResults.ToArray();
         'HardwareResults' = $hardwareResults.ToArray();
-        'LanguageResults' = $languageResults.ToArray();
+        'LanguageResults' = $languageResults.ToArray() | Sort-Object | Get-Unique;
         'MemoryResults' = $memoryResults.ToArray();
-        'DemoResults' = $demoResults.ToArray();
+        'ReleaseResults' = $releaseResults.ToArray();
         'PublisherDeveloperResults' = $publisherDeveloperResults.ToArray();
         'OtherResults' = $otherResults.ToArray();
-        # 'CompilationResults' = $compilationResults.ToArray();
-        'VersionResults' = $versionResults.ToArray()
+        'VersionResults' = $versionResults.ToArray();
+        'UnsupportedResults' = $unsupportedResults.ToArray();
     }
 }
 
@@ -225,16 +235,7 @@ function FindEabWhdloadEntries()
             'EabWhdLoadFile' = $eabWhdLoadFile;
             'Language' = $language;
             'Hardware' = $hardware;
-            'EntryName' = $parsedEabWhdloadEntryName.entryName;
-            'IdResults' = $parsedEabWhdloadEntryName.IdResults -join ',';
-            'HardwareResults' = $parsedEabWhdloadEntryName.hardwareResults -join ',';
-            'LanguageResults' = $parsedEabWhdloadEntryName.languageResults -join ',';
-            'MemoryResults' = $parsedEabWhdloadEntryName.memoryResults -join ',';
-            'DemoResults' = $parsedEabWhdloadEntryName.demoResults -join ',';
-            'PublisherDeveloperResults' = $parsedEabWhdloadEntryName.PublisherDeveloperResults -join ',';
-            'OtherResults' = $parsedEabWhdloadEntryName.otherResults -join ',';
-            # 'CompilationResults' = $parsedEabWhdloadEntryName.compilationResults -join ',';
-            'VersionResults' = $parsedEabWhdloadEntryName.VersionResults -join ','
+            'Parsed' = $parsedEabWhdloadEntryName;
         })
     }
 
@@ -616,14 +617,28 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
         continue
     }
 
-    # write entries list
-    $entriesFile = Join-Path $eabWhdLoadPacksDir -ChildPath ("{0}_entries.csv" -f $eabWhdLoadPackName)
-    $eabWhdloadEntries | ForEach-Object{ New-Object PSObject -Property $_ } | Export-Csv -Delimiter ';' -Path $entriesFile -NoTypeInformation -Encoding UTF8
-
     # copy unlzx to eab whdload pack directory, if unlzx file exists
     if (Test-Path $unlzxFile)
     {
         Copy-Item $unlzxFile $eabWhdLoadPackDir.FullName
+    }
+
+    # write warning and suggestion, if invalid index name is detected
+    $eabWhdloadEntryInvalidIndexName = $eabWhdloadEntries | Where-Object { $_.EabWhdLoadFile -notmatch '^(0-9|#|[a-z])[\\]' } | Select-Object -First 1
+    if ($eabWhdloadEntryInvalidIndexName)
+    {
+        $indexName = $eabWhdloadEntryInvalidIndexName.EabWhdLoadFile | Select-String -Pattern '^([^\\]+)[\\]' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
+
+        if ($indexName)
+        {
+            $eabWhdloadFilename = Split-Path $eabWhdloadEntryInvalidIndexName.EabWhdLoadFile -Leaf
+            $suggestedIndexName = $eabWhdloadFilename.Substring(0, 1)
+            if ($suggestedIndexName -match '[0-9]')
+            {
+                $suggestedIndexName = "0-9"
+            }
+            Write-Output ("- Warning: Entries has invalid index name, first invalid index name is '{0}' based on file '{1}'. Move file to '{2}' for a valid index name!" -f $indexName, $eabWhdloadEntryInvalidIndexName.File, (Join-Path (Join-Path $eabWhdLoadPackDir.FullName -ChildPath $suggestedIndexName) -ChildPath $eabWhdloadFilename))
+        }
     }
 
     # build eab whdload install in eab whdload pack directory
@@ -633,7 +648,19 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
     # write entries list
     $eabWhdloadEntriesFile = Join-Path -Path $eabWhdLoadPackDir.FullName -ChildPath "entries.csv"
     $eabWhdloadEntries | `
-        ForEach-Object { @{ "File" = $_.EabWhdLoadFile; "Hardware" = $_.Hardware; "Language" = $_.Language } } | `
+        ForEach-Object { @{ 
+            "File" = $_.EabWhdLoadFile;
+            "EntryName" = $_.Parsed.EntryName;
+            "Id" = ($_.Parsed.IdResults -join ',');
+            "Hardware" = ($_.Parsed.HardwareResults -join ',');
+            "Language" = ($_.Parsed.LanguageResults -join ',');
+            "Memory" = ($_.Parsed.MemoryResults -join ',');
+            "Release" = ($_.Parsed.ReleaseResults -join ',');
+            "PublisherDeveloper" = ($_.Parsed.PublisherDeveloperResults -join ',');
+            "Other" = ($_.Parsed.OtherResults -join ',');
+            "Version" = ($_.Parsed.VersionResults -join ',');
+            "Unsupported" = ($_.Parsed.UnsupportedResults -join ',');
+        } } | `
         ForEach-Object{ New-Object PSObject -Property $_ } | `
         export-csv -delimiter ';' -path $eabWhdloadEntriesFile -NoTypeInformation -Encoding UTF8
 
