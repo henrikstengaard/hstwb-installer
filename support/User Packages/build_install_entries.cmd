@@ -1,2 +1,2 @@
-powershell -ExecutionPolicy Bypass -File build_eab_whdload_install.ps1 -eabwhdloadpacksdir "."
+powershell -ExecutionPolicy Bypass -File build_install_entries.ps1 -userPackagesDir "."
 pause
