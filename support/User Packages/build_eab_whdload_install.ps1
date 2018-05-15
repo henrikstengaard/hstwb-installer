@@ -38,40 +38,40 @@ function WriteTextLinesForAmiga($path, $lines)
 	[System.IO.File]::WriteAllText($path, $iso88591.GetString($amigaTextBytes), $iso88591)
 }
 
-# parse eab whdload entry name
-function ParseEabWhdloadEntryName()
+# parse entry
+function ParseEntry()
 {
     Param(
         [Parameter(Mandatory=$true)]
-        [string]$eabWhdLoadEntryName
+        [string]$entryName
     )
 
-    # patterns for parsing eab whdload entry name
+    # patterns for parsing entry name
     $idPattern = '([_&])(\d{4})$'
     $hardwarePattern = '_(CD32|AGA|CDTV|CD)$'
     $languagePattern = '_?(En|De|Fr|It|Se|Pl|Es|Cz|Dk|Fi|Gr|CV|German|Spanish)$'
     $memoryPattern = '_?(Slow|Fast|LowMem|Chip|1MB|1Mb|2MB|15MB|512k|512K|512kb|512Kb|512KB)$'
     $releasePattern = '_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease|BETA)$'
-    $publisherDeveloperPattern = '_?(CoreDesign|Paradox|Rowan|Ratsoft|Spotlight|Empire|Impressions|Arcane|Mirrorsoft|Infogrames|Cinemaware|MagneticScrolls|System3|Mindscape|MicroValue|Ocean|MicroIllusions|DesktopDynamite|Infacto|Team17|ElectronicZoo|ReLINE|USGold|Epyx|Psygnosis|Palace|Kaiko|Audios|Sega|Activision|Arcadia|AmigaPower|AmigaFormat|AmigaAction|CUAmiga|TheOne)$'
+    $publisherDeveloperPattern = '_?(CoreDesign|Paradox|Rowan|Ratsoft|Spotlight|Empire|Impressions|Arcane|Mirrorsoft|Infogrames|Cinemaware|System3|Mindscape|MicroValue|Ocean|MicroIllusions|DesktopDynamite|Infacto|Team17|ElectronicZoo|ReLINE|USGold|Epyx|Psygnosis|Palace|Kaiko|Audios|Sega|Activision|Arcadia|AmigaPower|AmigaFormat|AmigaAction|CUAmiga|TheOne)$'
     $otherPattern = '_?(A1200Version|NONAGA|HardNHeavyHack|[Ff]ix_by_[^_]+|[Hh]ack_by_[^_]+|AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
     $versionPattern = '_?[Vv]((\d+|\d+\.\d+|\d+\.\d+[\._]\d+)([\.\-_])?[a-zA-Z]?\d*)$'
     $unsupportedPattern = '[\.\-_](.*)$'
 
-    # parsing results
-	$idResults = New-Object System.Collections.Generic.List[System.Object]
-	$hardwareResults = New-Object System.Collections.Generic.List[System.Object]
-	$languageResults = New-Object System.Collections.Generic.List[System.Object]
-	$memoryResults = New-Object System.Collections.Generic.List[System.Object]
-	$releaseResults = New-Object System.Collections.Generic.List[System.Object]
-	$publisherDeveloperResults = New-Object System.Collections.Generic.List[System.Object]
-	$otherResults = New-Object System.Collections.Generic.List[System.Object]
-	$versionResults = New-Object System.Collections.Generic.List[System.Object]
-	$unsupportedResults = New-Object System.Collections.Generic.List[System.Object]
+    # lists with parsing results
+	$idList = New-Object System.Collections.Generic.List[System.Object]
+	$hardwareList = New-Object System.Collections.Generic.List[System.Object]
+	$languageList = New-Object System.Collections.Generic.List[System.Object]
+	$memoryList = New-Object System.Collections.Generic.List[System.Object]
+	$releaseList = New-Object System.Collections.Generic.List[System.Object]
+	$publisherDeveloperList = New-Object System.Collections.Generic.List[System.Object]
+	$otherList = New-Object System.Collections.Generic.List[System.Object]
+	$versionList = New-Object System.Collections.Generic.List[System.Object]
+	$unsupportedList = New-Object System.Collections.Generic.List[System.Object]
 
     # set entry name with filename extension
-    $entryName = $eabWhdLoadEntryName -replace '\.(lha|lzx)$', ''
+    $entryName = $entryName -replace '\.(lha|lzx)$', ''
 
-    # parse id, hardware, language, memory, demo, publisher/developer, other and version from entry name
+    # parse id, hardware, language, memory, demo, publisher/developer, other and version and unsupported from entry name
     do
 	{
         $patternMatch = $false
@@ -81,7 +81,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $id = ($entryName | Select-String -Pattern $idPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[2].Value } | Select-Object -First 1)
-			$idResults.Add($id.ToLower())
+			$idList.Add($id.ToLower())
 			$entryName = $entryName -creplace $idPattern, ''
             continue
 		}
@@ -91,7 +91,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $hardware = ($entryName | Select-String -Pattern $hardwarePattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$hardwareResults.Add($hardware.ToLower())
+			$hardwareList.Add($hardware.ToLower())
 			$entryName = $entryName -creplace $hardwarePattern, ''
             continue
 		}
@@ -113,7 +113,7 @@ function ParseEabWhdloadEntryName()
                     $language = 'Es'
                 }
 
-				$languageResults.Add($language.ToLower())
+				$languageList.Add($language.ToLower())
 			}
 
 			$entryName = $entryName -creplace $languagePattern, ''
@@ -125,7 +125,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $memory = ($entryName | Select-String -Pattern $memoryPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$memoryResults.Add($memory.ToLower())
+			$memoryList.Add($memory.ToLower())
 			$entryName = $entryName -creplace $memoryPattern, ''
             continue
 		}
@@ -135,7 +135,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $demo = ($entryName | Select-String -Pattern $releasePattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$releaseResults.Add($demo.ToLower())
+			$releaseList.Add($demo.ToLower())
 			$entryName = $entryName -creplace $releasePattern, ''
             continue
 		}
@@ -145,7 +145,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $publisherDeveloper = ($entryName | Select-String -Pattern $publisherDeveloperPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$publisherDeveloperResults.Add($publisherDeveloper.ToLower())
+			$publisherDeveloperList.Add($publisherDeveloper.ToLower())
 			$entryName = $entryName -creplace $publisherDeveloperPattern, ''
             continue
 		}
@@ -155,7 +155,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $other = ($entryName | Select-String -Pattern $otherPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1) 
-            $otherResults.Add($other.ToLower())
+            $otherList.Add($other.ToLower())
             $entryName = $entryName -creplace $otherPattern, ''
             continue
 		}
@@ -165,7 +165,7 @@ function ParseEabWhdloadEntryName()
 		{
             $patternMatch = $true
             $version = ($entryName | Select-String -Pattern $versionPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-			$versionResults.Add($version.ToLower())
+			$versionList.Add($version.ToLower())
 			$entryName = $entryName -creplace $versionPattern, ''
             continue
         }
@@ -175,7 +175,7 @@ function ParseEabWhdloadEntryName()
         {
             $patternMatch = $true
             $unsupported = ($entryName | Select-String -Pattern $unsupportedPattern -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1)
-            $unsupportedResults.Add($unsupported.ToLower())
+            $unsupportedList.Add($unsupported.ToLower())
             $entryName = $entryName -replace $unsupportedPattern, ''
             continue
         } 
@@ -185,85 +185,113 @@ function ParseEabWhdloadEntryName()
 	$entryName = $entryName -replace '&$', ''
 
     # add ocs hardware, if no hardware results exist
-    if ($hardwareResults.Count -eq 0)
+    if ($hardwareList.Count -eq 0)
     {
-        $hardwareResults.Add('ocs')
+        $hardwareList.Add('ocs')
     }
 
     # add en language, if no language results exist
-    if ($languageResults.Count -eq 0)
+    if ($languageList.Count -eq 0)
     {
-        $languageResults.Add('en')
+        $languageList.Add('en')
     }
 
     return @{
-        'EntryName' = $entryName;
-        'IdResults' = $idResults.ToArray();
-        'HardwareResults' = $hardwareResults.ToArray();
-        'LanguageResults' = $languageResults.ToArray() | Sort-Object | Get-Unique;
-        'MemoryResults' = $memoryResults.ToArray();
-        'ReleaseResults' = $releaseResults.ToArray();
-        'PublisherDeveloperResults' = $publisherDeveloperResults.ToArray();
-        'OtherResults' = $otherResults.ToArray();
-        'VersionResults' = $versionResults.ToArray();
-        'UnsupportedResults' = $unsupportedResults.ToArray();
+        'Name' = $entryName;
+        'Id' = $idList.ToArray();
+        'Hardware' = $hardwareList.ToArray();
+        'Language' = $languageList.ToArray() | Sort-Object | Get-Unique;
+        'Memory' = $memoryList.ToArray();
+        'Release' = $releaseList.ToArray();
+        'PublisherDeveloper' = $publisherDeveloperList.ToArray();
+        'Other' = $otherList.ToArray();
+        'Version' = $versionList.ToArray();
+        'Unsupported' = $unsupportedList.ToArray();
     }
 }
 
 
-# find eab whdload entries
-function FindEabWhdloadEntries()
+function CalculateEntryRank()
 {
     Param(
         [Parameter(Mandatory=$true)]
-        [string]$eabWhdLoadPackDir
+        [object]$entry
+    )
+
+    $normalRank = 100
+	$normalRank -= ($entry.Language | Where-Object { $_ -notmatch 'en' }).Count * 10
+	$normalRank -= $entry.Release.Count * 10
+	$normalRank -= $entry.PublisherDeveloper.Count * 10
+	$normalRank -= $entry.Other.Count * 10
+	$normalRank -= $entry.Memory.Count * 10
+
+    $lowMemRank = $normalRank
+
+    # get lowest memory
+    $lowestMemory = $entry.Memory | `
+        Where-Object { $_ -match '^\d+(k|m)b?$' } | `
+        ForEach-Object { $_ -replace 'mb$', '000000' -replace '(k|kb)$', '000' } | `
+        Select-Object -First 1
+
+    if ($lowestMemory -ge 512000)
+    {
+        $normalRank -= 10
+        $lowMemRank += (10 / ($lowestMemory / 512000)) * 2
+    }
+    
+    if ($entry.Memory -contains 'lowmem')
+    {
+        $lowMemRank += 10
+    }
+
+    if ($entry.Memory -contains 'chip')
+    {
+        $lowMemRank += 10
+    }
+
+    $entry.Rank = @{
+        'NormalRank' = $normalRank;
+        'LowMemRank' = $lowMemRank
+    }
+}
+
+# find entries
+function FindEntries()
+{
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$packDir
     )
     
     $files = @()
-    $files += Get-ChildItem -Path $eabWhdLoadPackDir -Recurse -Include *.lha, *.lzx | Sort-Object @{expression={$_.FullName};Ascending=$true}
+    $files += Get-ChildItem -Path $packDir -Recurse -Include *.lha, *.lzx | Sort-Object @{expression={$_.FullName};Ascending=$true}
     
-    $eabWhdLoadEntries = New-Object System.Collections.Generic.List[System.Object]
+    $entries = New-Object System.Collections.Generic.List[System.Object]
     
     foreach ($file in $files)
     {
-        $eabWhdLoadPackDirIndex = $eabWhdLoadPackDir.Length + 1
-        $eabWhdLoadFile = $file.FullName.Substring($eabWhdLoadPackDirIndex, $file.FullName.Length - $eabWhdLoadPackDirIndex)
+        $packDirIndex = $packDir.Length + 1
+        $userPackageFile = $file.FullName.Substring($packDirIndex, $file.FullName.Length - $packDirIndex)
     
-        $language = $eabWhdLoadFile | Select-String -Pattern "_(de|fr|it|se|pl|es|cz|dk|fi|gr|cv)(_|\.)" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.ToLower() } | Select-Object -First 1
-    
-        if (!$language)
-        {
-            $language = "en"
-        }
-        
-        $hardware = $eabWhdLoadFile | Select-String -Pattern "_(aga|cd32|cdtv)(_|\.)" -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.ToLower() } | Select-Object -First 1
-    
-        if (!$hardware)
-        {
-            $hardware = "ocs"
-        }
+        $entry = ParseEntry $file.Name
+        $entry.File = $file.FullName
+        $entry.UserPackageFile = $userPackageFile;
 
-        $parsedEabWhdloadEntryName = ParseEabWhdloadEntryName $file.Name
+        CalculateEntryRank $entry
 
-        $eabWhdLoadEntries.Add(@{
-            'File' = $file.FullName;
-            'EabWhdLoadFile' = $eabWhdLoadFile;
-            'Language' = $language;
-            'Hardware' = $hardware;
-            'Parsed' = $parsedEabWhdloadEntryName;
-        })
+        $entries.Add($entry)
     }
 
-    return $eabWhdLoadEntries.ToArray()
+    return $entries.ToArray()
 }
 
 
-# build eab whdload install
-function BuildEabWhdloadInstall()
+# build install
+function BuildInstall()
 {
     Param(
         [Parameter(Mandatory=$true)]
-        [array]$eabWhdLoadEntries,
+        [array]$entries,
         [Parameter(Mandatory=$true)]
         [string]$title,
         [Parameter(Mandatory=$true)]
@@ -273,10 +301,10 @@ function BuildEabWhdloadInstall()
     # build hardware and language indexes
     $languageIndex = @{}
     $hardwareIndex = @{}
-    foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
+    foreach($entry in $entries)
     {
-        $hardware = $eabWhdLoadEntry.Hardware
-        $language = $eabWhdLoadEntry.Language
+        $hardware = $entry.Hardware | Select-Object -First 1
+        $language = $entry.Language | Select-Object -First 1
 
         if ($hardwareIndex[$hardware])
         {
@@ -382,7 +410,7 @@ function BuildEabWhdloadInstall()
     }
 
     $eabWhdLoadInstallLines.Add("echo ""----------------------------------------"" >>T:_eabwhdloadmenu")
-    $eabWhdLoadInstallLines.Add("echo ""Install `$totalcount of {0} entries"" >>T:_eabwhdloadmenu" -f $eabWhdLoadEntries.Count)
+    $eabWhdLoadInstallLines.Add("echo ""Install `$totalcount of {0} entries"" >>T:_eabwhdloadmenu" -f $entries.Count)
     $eabWhdLoadInstallLines.Add("echo ""Skip all entries"" >>T:_eabwhdloadmenu")
     
     $eabWhdLoadInstallLines.Add("")
@@ -481,12 +509,12 @@ function BuildEabWhdloadInstall()
     # build eab whdload install entry and file indexes
     $eabWhdLoadInstallEntryIndex = @{}
     $eabWhdLoadInstallEntryFileIndex = @{}
-    foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
+    foreach($entry in $entries)
     {
-        $eabWhdloadFilename = Split-Path $eabWhdLoadEntry.EabWhdLoadFile -Leaf
+        $eabWhdloadFilename = Split-Path $entry.UserPackageFile -Leaf
         $indexName = GetIndexName $eabWhdloadFilename
-        $hardware = $eabWhdLoadEntry.Hardware
-        $language = $eabWhdLoadEntry.Language
+        $hardware = $entry.Hardware | Select-Object -First 1
+        $language = $entry.Language | Select-Object -First 1
 
         $eabWhdLoadInstallEntryFile = "{0}-{1}-{2}" -f $indexName, $hardware.ToUpper(), $language.ToUpper()
         
@@ -511,33 +539,33 @@ function BuildEabWhdloadInstall()
                 New-Object System.Collections.Generic.List[System.Object]
         }
         
-        $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile]
+        $installEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFile]
         
         # replace \ with / and espace # with '#
-        $eabWhdLoadFile = "USERPACKAGEDIR:{0}" -f $eabWhdLoadEntry.EabWhdLoadFile.Replace("\", "/")
-        $eabWhdLoadFileEscaped = $eabWhdLoadFile.Replace("#", "'#")
+        $userPackageFile = "USERPACKAGEDIR:{0}" -f $entry.UserPackageFile.Replace("\", "/")
+        $userPackageFileEscaped = $userPackageFile.Replace("#", "'#")
 
-        # extract eab whdload file
-        $eabWhdLoadInstallEntryLines.Add("IF EXISTS ""{0}""" -f $eabWhdLoadFile)
-        if ($eabWhdLoadFile -match '\.lha$')
+        # extract entry file
+        $installEntryLines.Add("IF EXISTS ""{0}""" -f $userPackageFile)
+        if ($userPackageFile -match '\.lha$')
         {
-            $eabWhdLoadInstallEntryLines.Add(("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFileEscaped))
+            $installEntryLines.Add(("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $userPackageFileEscaped))
         }
-        elseif ($eabWhdLoadFile -match '\.lzx$')
+        elseif ($userPackageFile -match '\.lzx$')
         {
-            $eabWhdLoadInstallEntryLines.Add(("  unlzx -m e ""{0}"" ""`$entrydir/""" -f $eabWhdLoadFileEscaped))
+            $installEntryLines.Add(("  unlzx -m e ""{0}"" ""`$entrydir/""" -f $userPackageFileEscaped))
         }
-        $eabWhdLoadInstallEntryLines.Add("ENDIF")
+        $installEntryLines.Add("ENDIF")
     }
 
-    # write eab whdload install entry files
+    # write install entry files
     foreach($eabWhdLoadInstallEntryFilename in $eabWhdLoadInstallEntryFileIndex.keys)
     {
-        $eabWhdLoadInstallEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFilename]
-        $eabWhdLoadInstallEntryLines.Add("")
+        $installEntryLines = $eabWhdLoadInstallEntryFileIndex[$eabWhdLoadInstallEntryFilename]
+        $installEntryLines.Add("")
 
         $eabWhdLoadInstallEntryFile = Join-Path $eabWhdLoadInstallEntriesDir -ChildPath $eabWhdLoadInstallEntryFilename
-        WriteTextLinesForAmiga $eabWhdLoadInstallEntryFile $eabWhdLoadInstallEntryLines.ToArray()
+        WriteTextLinesForAmiga $eabWhdLoadInstallEntryFile $installEntryLines.ToArray()
     }
 
     # write eab whdload install entries file
@@ -590,17 +618,17 @@ if (!(Test-Path $eabWhdLoadPacksDir))
     throw ("EAB WHDLoad Packs directory '{0}' doesn't exist" -f $eabWhdLoadPacksDir)
 }
 
-# write eab whdload packs directory
+# write packs directory
 Write-Output ("EAB WHDLoad Packs directory: '{0}'" -f $eabWhdLoadPacksDir)
 Write-Output ""
 Write-Output "Building EAB WHDLoad Install scripts for user package directories:"
 
-# find eab whdload directories
-$eabWhdLoadPackDirs = @()
-$eabWhdLoadPackDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | Where-Object { $_.PSIsContainer -and $_ -match 'whdload' }
+# find pack directories
+$packDirs = @()
+$packDirs += Get-ChildItem -Path $eabWhdLoadPacksDir | Where-Object { $_.PSIsContainer }
 
-# exit, if eab whdload directories was not found
-if ($eabWhdLoadPackDirs.Count -eq 0)
+# exit, if no pack directories was found
+if ($packDirs.Count -eq 0)
 {
     Write-Output "No EAB WHDLoad Pack directories was not found!"
     exit
@@ -609,53 +637,56 @@ if ($eabWhdLoadPackDirs.Count -eq 0)
 # unlzx file
 $unlzxFile = Join-Path $eabWhdLoadPacksDir -ChildPath 'unlzx'
 
-# build eab whdload install for eab whdload directories
-foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
+# build install for pack directories
+foreach($packDir in $packDirs)
 {
-    # get eab whdload pack name
-    $eabWhdLoadPackName = $eabWhdLoadPackDir.Name
-    Write-Output $eabWhdLoadPackName
-    Write-Output '- Scanning for entries...'
+    # get pack name
+    $packName = $packDir.Name
+    Write-Output $packName
+    Write-Output '- Finding entries...'
 
-    # find eab whdload entries in eab whdload pack directory
-    $eabWhdloadEntries = @()
-    $eabWhdloadEntries += FindEabWhdloadEntries $eabWhdLoadPackDir.FullName
-    Write-Output ("- Found {0} entries." -f $eabWhdloadEntries.Count)
+    # find entries in pack directory
+    $entries = @()
+    $entries += FindEntries $packDir.FullName
+    Write-Output ("- Found {0} entries." -f $entries.Count)
 
-    # skip eab whdload pack, if it's doesnt contain any entries
-    if ($eabWhdloadEntries.Count -eq 0)
+    # skip pack, if it's doesnt contain any entries
+    if ($entries.Count -eq 0)
     {
         continue
     }
 
-    # copy unlzx to eab whdload pack directory, if unlzx file exists
+    # copy unlzx to pack directory, if unlzx file exists
     if (Test-Path $unlzxFile)
     {
-        Copy-Item $unlzxFile $eabWhdLoadPackDir.FullName
+        Copy-Item $unlzxFile $packDir.FullName
     }
 
-    # build eab whdload install in eab whdload pack directory
+    # build install in pack directory
     Write-Output ("- Building EAB WHDLoad Install...")
-    BuildEabWhdloadInstall $eabWhdloadEntries $eabWhdLoadPackName $eabWhdLoadPackDir.FullName
+    BuildInstall $entries $packName $packDir.FullName
 
     # write entries list
-    $eabWhdloadEntriesFile = Join-Path -Path $eabWhdLoadPackDir.FullName -ChildPath "entries.csv"
-    $eabWhdloadEntries | `
+    $entriesFile = Join-Path -Path $packDir.FullName -ChildPath "entries.csv"
+    $entries | `
         ForEach-Object { @{ 
-            "File" = $_.EabWhdLoadFile;
-            "EntryName" = $_.Parsed.EntryName;
-            "Id" = ($_.Parsed.IdResults -join ',');
-            "Hardware" = ($_.Parsed.HardwareResults -join ',');
-            "Language" = ($_.Parsed.LanguageResults -join ',');
-            "Memory" = ($_.Parsed.MemoryResults -join ',');
-            "Release" = ($_.Parsed.ReleaseResults -join ',');
-            "PublisherDeveloper" = ($_.Parsed.PublisherDeveloperResults -join ',');
-            "Other" = ($_.Parsed.OtherResults -join ',');
-            "Version" = ($_.Parsed.VersionResults -join ',');
-            "Unsupported" = ($_.Parsed.UnsupportedResults -join ',');
+            "File" = $_.File;
+            "UserPackageFile" = $_.UserPackageFile;
+            "Name" = $_.Name;
+            "Id" = ($_.Id -join ',');
+            "Hardware" = ($_.Hardware -join ',');
+            "Language" = ($_.Language -join ',');
+            "Memory" = ($_.Memory -join ',');
+            "Release" = ($_.Release -join ',');
+            "PublisherDeveloper" = ($_.PublisherDeveloper -join ',');
+            "Other" = ($_.Other -join ',');
+            "Version" = ($_.Version -join ',');
+            "Unsupported" = ($_.Unsupported -join ',');
+            "NormalRank" = $_.Rank.NormalRank;
+            "LowMemRank" = $_.Rank.LowMemRank;
         } } | `
         ForEach-Object{ New-Object PSObject -Property $_ } | `
-        export-csv -delimiter ';' -path $eabWhdloadEntriesFile -NoTypeInformation -Encoding UTF8
+        export-csv -delimiter ';' -path $entriesFile -NoTypeInformation -Encoding UTF8
 
     Write-Output ("- Done.")
 }
