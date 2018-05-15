@@ -48,7 +48,7 @@ function ParseEntry()
 
     # patterns for parsing entry name
     $idPattern = '([_&])(\d{4})$'
-    $hardwarePattern = '_(CD32|AGA|CDTV|CD)$'
+    $hardwarePattern = '_(CD32|AGA|CDTV)$'
     $languagePattern = '_?(En|De|Fr|It|Se|Pl|Es|Cz|Dk|Fi|Gr|CV|German|Spanish)$'
     $memoryPattern = '_?(Slow|Fast|LowMem|Chip|1MB|1Mb|2MB|15MB|512k|512K|512kb|512Kb|512KB)$'
     $releasePattern = '_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease|BETA)$'
@@ -514,7 +514,9 @@ function BuildInstallEntries()
         $entryFilename = Split-Path $entry.UserPackageFile -Leaf
         $indexName = GetIndexName $entryFilename
         $hardware = $entry.Hardware | Select-Object -First 1
-        $language = $entry.Language | Select-Object -First 1
+        $multiLanguages = $entry.Language.Count -gt 1
+
+        $language = if ($multiLanguages) { "MULTI" } else { $entry.Language | Select-Object -First 1 }
 
         $installEntryFilename = "{0}-{1}-{2}" -f $indexName, $hardware.ToUpper(), $language.ToUpper()
         
@@ -546,16 +548,38 @@ function BuildInstallEntries()
         $userPackageFileEscaped = $userPackageFile.Replace("#", "'#")
 
         # extract entry file
-        $installEntryLines.Add("IF EXISTS ""{0}""" -f $userPackageFile)
+        if ($multiLanguages)
+        {
+            $installEntryLines.Add("set entriesmulti ""0""")
+
+            foreach ($language in $entry.Language)
+            {
+                $installEntryLines.Add("IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
+                $installEntryLines.Add("  set entriesmulti ""1""")
+                $installEntryLines.Add("ENDIF")
+            }
+
+            $installEntryLines.Add("IF `$entriesmulti EQ 1 VAL")
+        }
+
+        $padding = if ($multiLanguages) { 2 } else { 0 }
+        $paddingText = " " * $padding
+
+        $installEntryLines.Add(("{0}IF EXISTS ""{1}""" -f $paddingText, $userPackageFile))
         if ($userPackageFile -match '\.lha$')
         {
-            $installEntryLines.Add(("  lha -m1 x ""{0}"" ""`$entrydir/""" -f $userPackageFileEscaped))
+            $installEntryLines.Add(("{0}  lha -m1 x ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
         }
         elseif ($userPackageFile -match '\.lzx$')
         {
-            $installEntryLines.Add(("  unlzx -m e ""{0}"" ""`$entrydir/""" -f $userPackageFileEscaped))
+            $installEntryLines.Add(("{0}  unlzx -m e ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
         }
-        $installEntryLines.Add("ENDIF")
+        $installEntryLines.Add("{0}ENDIF" -f $paddingText)
+
+        if ($multiLanguages)
+        {
+            $installEntryLines.Add("ENDIF")
+        }
     }
 
     # write install entry lines files
@@ -583,13 +607,20 @@ function BuildInstallEntries()
 
             foreach($language in ($installEntryFilenameIndex[$indexName][$hardware].Keys | Sort-Object))
             {
-                $mainInstallEntriesLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
-                $mainInstallEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
-                $mainInstallEntriesLines.Add("    wait 1")
-                $mainInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $installEntryFilenameIndex[$indexName][$hardware][$language])
-                $mainInstallEntriesLines.Add("  ENDIF")
+                if ($language -match 'MULTI')
+                {
+                    $mainInstallEntriesLines.Add("  Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $installEntryFilenameIndex[$indexName][$hardware][$language])
+                }
+                else
+                {
+                    $mainInstallEntriesLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
+                    $mainInstallEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
+                    $mainInstallEntriesLines.Add("    wait 1")
+                    $mainInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $installEntryFilenameIndex[$indexName][$hardware][$language])
+                    $mainInstallEntriesLines.Add("  ENDIF")
+                }
             }
-                
+
             $mainInstallEntriesLines.Add("ENDIF")
         }
     }
