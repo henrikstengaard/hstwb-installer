@@ -2,7 +2,7 @@
 # -------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-14
+# Date:   2018-05-15
 #
 # A powershell script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
 
@@ -12,6 +12,21 @@ Param(
 	[string]$eabWhdLoadPacksDir
 )
 
+
+# get index name from first character in name
+function GetIndexName($name)
+{
+    if (!$name -or $name -match '^\s*$')
+    {
+        return "_";
+    }
+	elseif ($name -match '^(#|\d)')
+	{
+        return "0-9"
+	}
+
+	return $name.Substring(0,1).ToUpper()
+}
 
 # write text lines for amiga with iso 8859-1 character set encoding
 function WriteTextLinesForAmiga($path, $lines)
@@ -468,14 +483,10 @@ function BuildEabWhdloadInstall()
     $eabWhdLoadInstallEntryFileIndex = @{}
     foreach($eabWhdLoadEntry in $eabWhdLoadEntries)
     {
-        $indexName = $eabWhdLoadEntry.EabWhdLoadFile.Substring(0,1).ToUpper()
+        $eabWhdloadFilename = Split-Path $eabWhdLoadEntry.EabWhdLoadFile -Leaf
+        $indexName = GetIndexName $eabWhdloadFilename
         $hardware = $eabWhdLoadEntry.Hardware
         $language = $eabWhdLoadEntry.Language
-
-        if ($indexName -match "^(#|\d)")
-        {
-            $indexName = "0-9"
-        }
 
         $eabWhdLoadInstallEntryFile = "{0}-{1}-{2}" -f $indexName, $hardware.ToUpper(), $language.ToUpper()
         
@@ -567,7 +578,7 @@ Write-Output "-------------------------"
 Write-Output "Build EAB WHDLoad Install"
 Write-Output "-------------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-14"
+Write-Output "Date: 2018-05-15"
 Write-Output ""
 
 # resolve paths
@@ -621,24 +632,6 @@ foreach($eabWhdLoadPackDir in $eabWhdLoadPackDirs)
     if (Test-Path $unlzxFile)
     {
         Copy-Item $unlzxFile $eabWhdLoadPackDir.FullName
-    }
-
-    # write warning and suggestion, if invalid index name is detected
-    $eabWhdloadEntryInvalidIndexName = $eabWhdloadEntries | Where-Object { $_.EabWhdLoadFile -notmatch '^(0-9|#|[a-z])[\\]' } | Select-Object -First 1
-    if ($eabWhdloadEntryInvalidIndexName)
-    {
-        $indexName = $eabWhdloadEntryInvalidIndexName.EabWhdLoadFile | Select-String -Pattern '^([^\\]+)[\\]' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
-
-        if ($indexName)
-        {
-            $eabWhdloadFilename = Split-Path $eabWhdloadEntryInvalidIndexName.EabWhdLoadFile -Leaf
-            $suggestedIndexName = $eabWhdloadFilename.Substring(0, 1)
-            if ($suggestedIndexName -match '[0-9]')
-            {
-                $suggestedIndexName = "0-9"
-            }
-            Write-Output ("- Warning: Entries has invalid index name, first invalid index name is '{0}' based on file '{1}'. Move file to '{2}' for a valid index name!" -f $indexName, $eabWhdloadEntryInvalidIndexName.File, (Join-Path (Join-Path $eabWhdLoadPackDir.FullName -ChildPath $suggestedIndexName) -ChildPath $eabWhdloadFilename))
-        }
     }
 
     # build eab whdload install in eab whdload pack directory
