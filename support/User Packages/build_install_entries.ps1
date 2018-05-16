@@ -344,10 +344,10 @@ function BuildUserPackageInstall()
     # build hardware and language indexes
     $languageIndex = @{}
     $hardwareIndex = @{}
+
     foreach($entry in $entries)
     {
         $hardware = $entry.Hardware | Select-Object -First 1
-        $language = $entry.Language | Select-Object -First 1
 
         if ($hardwareIndex[$hardware])
         {
@@ -358,18 +358,28 @@ function BuildUserPackageInstall()
             $hardwareIndex[$hardware] = 1;
         }
 
-        if (!$languageIndex[$language])
+        foreach($language in $entry.Language)
         {
-            $languageIndex[$language] = @{}
-        }
-        
-        if ($languageIndex[$language][$hardware])
-        {
-            $languageIndex[$language][$hardware]++;
-        }
-        else
-        {
-            $languageIndex[$language][$hardware] = 1;
+            $set = if ($entry.Language.Count -gt 1) { "multi" } else { "single" }
+
+            if (!$languageIndex[$set])
+            {
+                $languageIndex[$set] = @{}
+            }
+            
+            if (!$languageIndex[$set][$language])
+            {
+                $languageIndex[$set][$language] = @{}
+            }
+            
+            if ($languageIndex[$set][$language][$hardware])
+            {
+                $languageIndex[$set][$language][$hardware]++;
+            }
+            else
+            {
+                $languageIndex[$set][$language][$hardware] = 1;
+            }
         }
     }
 
@@ -377,7 +387,7 @@ function BuildUserPackageInstall()
     $hardwares = @()
     $hardwares += $hardwareIndex.keys | Sort-Object
     $languages = @()
-    $languages += $languageIndex.keys | Sort-Object
+    $languages += $languageIndex["single"].keys | Sort-Object
     
     # build entries install lines
     $userPackageInstallLines = New-Object System.Collections.Generic.List[System.Object]
@@ -414,6 +424,7 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("LAB entriesinstallmenu")
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("set totalcount ""0""")
+    $userPackageInstallLines.Add("set totalmulticount ""0""")
     $userPackageInstallLines.Add("echo """" NOLINE >T:_entriesinstallmenu")
 
     $userPackageInstallLines.Add("echo ""Selected entries set: `$entriesset"" >>T:_entriesinstallmenu")
@@ -440,25 +451,41 @@ function BuildUserPackageInstall()
         $userPackageInstallLines.Add("; '{0}' language menu" -f $language)
 
         $userPackageInstallLines.Add("set languagecount ""0""")
+        $userPackageInstallLines.Add("set multicount ""0""")
 
-        foreach($hardware in ($languageIndex[$language].keys | Sort-Object))
+        foreach($hardware in ($languageIndex["single"][$language].keys | Sort-Object))
         {
             $userPackageInstallLines.Add("IF ""`$entrieshardware{0}"" EQ 1 VAL" -f $hardware)
-            $userPackageInstallLines.Add("  set languagecount ``eval `$languagecount + {0}``" -f $languageIndex[$language][$hardware])
+            $userPackageInstallLines.Add("  set languagecount ``eval `$languagecount + {0}``" -f $languageIndex["single"][$language][$hardware])
+
+            if ($languageIndex.ContainsKey("multi") -and $languageIndex["multi"].ContainsKey($language) -and $languageIndex["multi"][$language].ContainsKey($hardware))
+            {
+                $userPackageInstallLines.Add("  set multicount ``eval `$multicount + {0}``" -f $languageIndex["multi"][$language][$hardware])
+            }
+
             $userPackageInstallLines.Add("ENDIF")
         }
 
         $userPackageInstallLines.Add("IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
         $userPackageInstallLines.Add("  set totalcount ``eval `$totalcount + `$languagecount``")
+        $userPackageInstallLines.Add("  set totalmulticount ``eval `$totalmulticount + `$multicount``")
         $userPackageInstallLines.Add("  echo ""Install"" NOLINE >>T:_entriesinstallmenu")
         $userPackageInstallLines.Add("ELSE")
         $userPackageInstallLines.Add("  echo ""Skip   "" NOLINE >>T:_entriesinstallmenu")
         $userPackageInstallLines.Add("ENDIF")
-        $userPackageInstallLines.Add("echo "" : {0} language (`$languagecount entries)"" >>T:_entriesinstallmenu" -f $language.ToUpper())
+        $userPackageInstallLines.Add("echo "" : {0} language (`$languagecount entries"" NOLINE >>T:_entriesinstallmenu" -f $language.ToUpper())
+        $userPackageInstallLines.Add("IF ""`$multicount"" GT 0 VAL")
+        $userPackageInstallLines.Add("  echo "", `$multicount multi"" NOLINE >>T:_entriesinstallmenu")
+        $userPackageInstallLines.Add("ENDIF")
+        $userPackageInstallLines.Add("echo "")"" >>T:_entriesinstallmenu" -f $language.ToUpper())
     }
 
     $userPackageInstallLines.Add("echo ""----------------------------------------"" >>T:_entriesinstallmenu")
-    $userPackageInstallLines.Add("echo ""Install `$totalcount of {0} entries"" >>T:_entriesinstallmenu" -f $entries.Count)
+    $userPackageInstallLines.Add("echo ""Install `$totalcount of {0} entries"" NOLINE >>T:_entriesinstallmenu" -f $entries.Count)
+    $userPackageInstallLines.Add("IF ""`$totalmulticount"" GT 0 VAL")
+    $userPackageInstallLines.Add("  echo "", `$totalmulticount multi"" NOLINE >>T:_entriesinstallmenu")
+    $userPackageInstallLines.Add("ENDIF")
+    $userPackageInstallLines.Add("echo """" >>T:_entriesinstallmenu")
     $userPackageInstallLines.Add("echo ""Skip all entries"" >>T:_entriesinstallmenu")
     
     $userPackageInstallLines.Add("")
@@ -466,11 +493,11 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("set entriesinstalloption ``RequestList TITLE=""{0}"" LISTFILE=""T:_entriesinstallmenu"" WIDTH=640 LINES=24``" -f $userPackageName)
     $userPackageInstallLines.Add("delete >NIL: T:_entriesinstallmenu")
 
-    $entriesinstalloption = 0;
+    $entriesInstallOption = 1;
 
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; entries set option")
-    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
     $userPackageInstallLines.Add("  set entriessetindex ``RequestChoice ""Select entries set"" ""Select entries set to install.*N*N- All: Install all entries.*N- Best Version: Install best version of*N  identical entries.*N- Best Version: Install best version of*N  identical entries for low mem Amigas."" ""All|Best Version|Best Version LowMem""``")
     $userPackageInstallLines.Add("  IF `$entriessetindex EQ 1 VAL")
     $userPackageInstallLines.Add("    set entriesset ""All""")
@@ -484,15 +511,15 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("  SKIP BACK entriesinstallmenu")
     $userPackageInstallLines.Add("ENDIF")
 
-    $entriesinstalloption += 2;
+    $entriesInstallOption++
     
     foreach($hardware in $hardwares)
     {
-        $entriesinstalloption++
+        $entriesInstallOption++
 
         $userPackageInstallLines.Add("")
         $userPackageInstallLines.Add("; '{0}' hardware option" -f $hardware)
-        $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+        $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
         $userPackageInstallLines.Add("  IF ""`$entrieshardware{0}"" EQ 1 VAL" -f $hardware)
         $userPackageInstallLines.Add("    set entrieshardware{0} ""0""" -f $hardware)
         $userPackageInstallLines.Add("  ELSE")
@@ -502,15 +529,15 @@ function BuildUserPackageInstall()
         $userPackageInstallLines.Add("ENDIF")
     }
 
-    $entriesinstalloption++
+    $entriesInstallOption++
     
     foreach($language in $languages)
     {
-        $entriesinstalloption++
+        $entriesInstallOption++
 
         $userPackageInstallLines.Add("")
         $userPackageInstallLines.Add("; '{0}' language option" -f $language)
-        $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+        $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
         $userPackageInstallLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
         $userPackageInstallLines.Add("    set entrieslanguage{0} ""0""" -f $language)
         $userPackageInstallLines.Add("  ELSE")
@@ -520,22 +547,22 @@ function BuildUserPackageInstall()
         $userPackageInstallLines.Add("ENDIF")
     }
 
-    $entriesinstalloption += 2
+    $entriesInstallOption += 2
 
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; install entries option")
-    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
     $userPackageInstallLines.Add("  set confirm ``RequestChoice ""Install entries"" ""Do you want to install `$totalcount entries?"" ""Yes|No""``")
     $userPackageInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
     $userPackageInstallLines.Add("    SKIP installentries")
     $userPackageInstallLines.Add("  ENDIF")
     $userPackageInstallLines.Add("ENDIF")
 
-    $entriesinstalloption++
+    $entriesInstallOption++
 
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; skip all entries option")
-    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
     $userPackageInstallLines.Add("  set confirm ``RequestChoice ""Skip all entries"" ""Do you want to skip all entries?"" ""Yes|No""``")
     $userPackageInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
     $userPackageInstallLines.Add("    SKIP end")
@@ -665,44 +692,44 @@ function BuildInstallEntries()
         WriteTextLinesForAmiga $installEntryFile $installEntryLines.ToArray()
     }
 
-    # write main install entries file
-    $mainInstallEntriesLines = New-Object System.Collections.Generic.List[System.Object]
+    # write install entries file
+    $installEntriesLines = New-Object System.Collections.Generic.List[System.Object]
     foreach($indexName in ($installEntryFilenameIndex.Keys | Sort-Object))
     {
-        $mainInstallEntriesLines.Add("set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $indexName)
-        $mainInstallEntriesLines.Add("IF NOT EXISTS ""`$entrydir""")
-        $mainInstallEntriesLines.Add("  MakePath ""`$entrydir"" >NIL:")
-        $mainInstallEntriesLines.Add("ENDIF")
+        $installEntriesLines.Add("set entrydir ""``execute INSTALLDIR:S/CombinePath ""`$INSTALLDIR"" ""{0}""``""" -f $indexName)
+        $installEntriesLines.Add("IF NOT EXISTS ""`$entrydir""")
+        $installEntriesLines.Add("  MakePath ""`$entrydir"" >NIL:")
+        $installEntriesLines.Add("ENDIF")
 
         foreach($hardware in ($installEntryFilenameIndex[$indexName].Keys | Sort-Object))
         {
-            $mainInstallEntriesLines.Add("IF ""`$entrieshardware{0}"" EQ 1 VAL" -f $hardware)
+            $installEntriesLines.Add("IF ""`$entrieshardware{0}"" EQ 1 VAL" -f $hardware)
 
             foreach($language in ($installEntryFilenameIndex[$indexName][$hardware].Keys | Sort-Object))
             {
                 if ($language -match 'MULTI')
                 {
-                    $mainInstallEntriesLines.Add(("  Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
+                    $installEntriesLines.Add(("  Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
                 }
                 else
                 {
-                    $mainInstallEntriesLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
-                    $mainInstallEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
-                    $mainInstallEntriesLines.Add("    wait 1")
-                    $mainInstallEntriesLines.Add(("    Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
-                    $mainInstallEntriesLines.Add("  ENDIF")
+                    $installEntriesLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
+                    $installEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
+                    $installEntriesLines.Add("    wait 1")
+                    $installEntriesLines.Add(("    Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
+                    $installEntriesLines.Add("  ENDIF")
                 }
             }
 
-            $mainInstallEntriesLines.Add("ENDIF")
+            $installEntriesLines.Add("ENDIF")
         }
     }
 
-    $mainInstallEntriesLines.Add("")
+    $installEntriesLines.Add("")
     
-    # write main install entries file
-    $mainInstallEntriesFile = Join-Path $installEntriesDir -ChildPath 'Install-Entries'
-    WriteTextLinesForAmiga $mainInstallEntriesFile $mainInstallEntriesLines.ToArray()
+    # write install entries file
+    $installEntriesFile = Join-Path $installEntriesDir -ChildPath 'Install-Entries'
+    WriteTextLinesForAmiga $installEntriesFile $installEntriesLines.ToArray()
 }
 
 # write entries list
