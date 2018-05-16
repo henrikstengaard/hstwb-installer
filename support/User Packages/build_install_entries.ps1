@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-15
+# Date:   2018-05-16
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -211,21 +211,22 @@ function ParseEntry()
 }
 
 
-function CalculateEntryRank()
+# calculate best version
+function CalculateBestVersionRank()
 {
     Param(
         [Parameter(Mandatory=$true)]
         [object]$entry
     )
 
-    $normalRank = 100
-	$normalRank -= ($entry.Language | Where-Object { $_ -notmatch 'en' }).Count * 10
-	$normalRank -= $entry.Release.Count * 10
-	$normalRank -= $entry.PublisherDeveloper.Count * 10
-	$normalRank -= $entry.Other.Count * 10
-	$normalRank -= $entry.Memory.Count * 10
+    $rank = 100
+	$rank -= ($entry.Language | Where-Object { $_ -notmatch 'en' }).Count * 10
+	$rank -= $entry.Release.Count * 10
+	$rank -= $entry.PublisherDeveloper.Count * 10
+	$rank -= $entry.Other.Count * 10
+	$rank -= $entry.Memory.Count * 10
 
-    $lowMemRank = $normalRank
+    $lowMemRank = $rank
 
     # get lowest memory
     $lowestMemory = $entry.Memory | `
@@ -235,24 +236,22 @@ function CalculateEntryRank()
 
     if ($lowestMemory -ge 512000)
     {
-        $normalRank -= 10
+        $rank -= 10
         $lowMemRank += (10 / ($lowestMemory / 512000)) * 2
     }
     
     if ($entry.Memory -contains 'lowmem')
     {
-        $lowMemRank += 10
+        $lowMemRank += 20
     }
 
     if ($entry.Memory -contains 'chip')
     {
-        $lowMemRank += 10
+        $lowMemRank += 20
     }
 
-    $entry.Rank = @{
-        'NormalRank' = $normalRank;
-        'LowMemRank' = $lowMemRank
-    }
+    $entry.BestVersionRank = $rank
+    $entry.BestVersionLowMemRank = $lowMemRank
 }
 
 # find entries
@@ -277,7 +276,7 @@ function FindEntries()
         $entry.File = $file.FullName
         $entry.UserPackageFile = $userPackageFile;
 
-        CalculateEntryRank $entry
+        CalculateBestVersionRank $entry
 
         $entries.Add($entry)
     }
@@ -285,9 +284,53 @@ function FindEntries()
     return $entries.ToArray()
 }
 
+# build entries best version
+function BuildEntriesBestVersion()
+{
+    Param(
+        [Parameter(Mandatory=$true)]
+        [array]$entries,
+        [Parameter(Mandatory=$true)]
+        [bool]$lowMem
+    )
+    
+    # build entry versions index
+    $entryVersionsIndex = @{}
+    foreach ($entry in $entries)
+    {
+        foreach($language in $entry.Language)
+        {
+            $entryVersionId = ("{0}-{1}-{2}" -f $entry.Name, ($entry.Hardware | Select-Object -First 1), $language).ToLower()
 
-# build install entries
-function BuildInstallEntries()
+            if (!$entryVersionsIndex.ContainsKey($entryVersionId))
+            {
+                $entryVersionsIndex[$entryVersionId] = New-Object System.Collections.Generic.List[System.Object]
+            }
+
+            $entryVersionsIndex[$entryVersionId].Add($entry)
+        }
+    }
+
+    # build entries best version from highest ranking entry version
+    $entriesBestVersion = New-Object System.Collections.Generic.List[System.Object]
+    foreach($entryVersionId in $entryVersionsIndex.Keys)
+    {
+        $entryVersionsSortedByRank = if ($lowMem) { 
+            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionLowMemRank};Ascending=$false}
+        } else {
+            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionRank};Ascending=$false}
+        }
+
+        $entryBestVersion = $entryVersionsSortedByRank | Select-Object -First 1
+
+        $entriesBestVersion.Add($entryBestVersion)
+    }
+
+    return $entriesBestVersion | Sort-Object @{expression={$_.Name};Ascending=$true}
+}
+
+# build user package install
+function BuildUserPackageInstall()
 {
     Param(
         [Parameter(Mandatory=$true)]
@@ -354,6 +397,8 @@ function BuildInstallEntries()
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; reset")
 
+    $userPackageInstallLines.Add("set entriesset ""All""")
+    
     foreach($hardware in $hardwares)
     {
         $userPackageInstallLines.Add("set entrieshardware{0} ""1""" -f $hardware)
@@ -371,6 +416,9 @@ function BuildInstallEntries()
     $userPackageInstallLines.Add("set totalcount ""0""")
     $userPackageInstallLines.Add("echo """" NOLINE >T:_entriesinstallmenu")
 
+    $userPackageInstallLines.Add("echo ""Selected entries set: `$entriesset"" >>T:_entriesinstallmenu")
+    $userPackageInstallLines.Add("echo ""----------------------------------------"" >>T:_entriesinstallmenu")
+    
     foreach($hardware in $hardwares)
     {
         $userPackageInstallLines.Add("")
@@ -420,6 +468,24 @@ function BuildInstallEntries()
 
     $entriesinstalloption = 0;
 
+    $userPackageInstallLines.Add("")
+    $userPackageInstallLines.Add("; entries set option")
+    $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesinstalloption)
+    $userPackageInstallLines.Add("  set entriessetindex ``RequestChoice ""Select entries set"" ""Select entries set to install.*N*N- All: Install all entries.*N- Best Version: Install best version of*N  identical entries.*N- Best Version: Install best version of*N  identical entries for low mem Amigas."" ""All|Best Version|Best Version LowMem""``")
+    $userPackageInstallLines.Add("  IF `$entriessetindex EQ 1 VAL")
+    $userPackageInstallLines.Add("    set entriesset ""All""")
+    $userPackageInstallLines.Add("  ENDIF")
+    $userPackageInstallLines.Add("  IF `$entriessetindex EQ 2 VAL")
+    $userPackageInstallLines.Add("    set entriesset ""Best Version""")
+    $userPackageInstallLines.Add("  ENDIF")
+    $userPackageInstallLines.Add("  IF `$entriessetindex EQ 0 VAL")
+    $userPackageInstallLines.Add("    set entriesset ""Best Version LowMem""")
+    $userPackageInstallLines.Add("  ENDIF")
+    $userPackageInstallLines.Add("  SKIP BACK entriesinstallmenu")
+    $userPackageInstallLines.Add("ENDIF")
+
+    $entriesinstalloption += 2;
+    
     foreach($hardware in $hardwares)
     {
         $entriesinstalloption++
@@ -481,7 +547,15 @@ function BuildInstallEntries()
     $userPackageInstallLines.Add("; install entries")
     $userPackageInstallLines.Add("LAB installentries")
     $userPackageInstallLines.Add("")
-    $userPackageInstallLines.Add("execute ""USERPACKAGEDIR:Install/Install-Entries""")
+    $userPackageInstallLines.Add("IF ""`$entriesset"" EQ ""All""")
+    $userPackageInstallLines.Add("  execute ""USERPACKAGEDIR:Install/All/Install-Entries""")
+    $userPackageInstallLines.Add("ENDIF")
+    $userPackageInstallLines.Add("IF ""`$entriesset"" EQ ""Best Version""")
+    $userPackageInstallLines.Add("  execute ""USERPACKAGEDIR:Install/Best-Version/Install-Entries""")
+    $userPackageInstallLines.Add("ENDIF")
+    $userPackageInstallLines.Add("IF ""`$entriesset"" EQ ""Best Version LowMem""")
+    $userPackageInstallLines.Add("  execute ""USERPACKAGEDIR:Install/Best-Version-LowMem/Install-Entries""")
+    $userPackageInstallLines.Add("ENDIF")
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; End")
     $userPackageInstallLines.Add("; ---")
@@ -491,21 +565,20 @@ function BuildInstallEntries()
     # write user package install file
     $userPackageInstallFile = Join-Path $entriesDir -ChildPath "_install"
     WriteTextLinesForAmiga $userPackageInstallFile $userPackageInstallLines.ToArray()
+}
 
-    # create entries install directory, if it doesn't exist
-    $entriesInstallDir = Join-Path $entriesDir -ChildPath "Install"
-    if (!(Test-Path -Path $entriesInstallDir))
-    {
-        mkdir -Path $entriesInstallDir | Out-Null
-    }
-
-    # create install entries directory, if it doesn't exist
-    $installEntriesDir = Join-Path $entriesInstallDir -ChildPath "Entries"
-    if (!(Test-Path -Path $installEntriesDir))
-    {
-        mkdir -Path $installEntriesDir | Out-Null
-    }
-
+# build install entries
+function BuildInstallEntries()
+{
+    Param(
+        [Parameter(Mandatory=$true)]
+        [array]$entries,
+        [Parameter(Mandatory=$true)]
+        [string]$userPackagePath,
+        [Parameter(Mandatory=$true)]
+        [string]$installEntriesDir
+    )
+        
     # build install entry and filename indexes
     $installEntryFilenameIndex = @{}
     $installEntryLinesIndex = @{}
@@ -609,14 +682,14 @@ function BuildInstallEntries()
             {
                 if ($language -match 'MULTI')
                 {
-                    $mainInstallEntriesLines.Add("  Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $installEntryFilenameIndex[$indexName][$hardware][$language])
+                    $mainInstallEntriesLines.Add(("  Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
                 }
                 else
                 {
                     $mainInstallEntriesLines.Add("  IF ""`$entrieslanguage{0}"" EQ 1 VAL" -f $language)
                     $mainInstallEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
                     $mainInstallEntriesLines.Add("    wait 1")
-                    $mainInstallEntriesLines.Add("    Execute ""USERPACKAGEDIR:Install/Entries/{0}""" -f $installEntryFilenameIndex[$indexName][$hardware][$language])
+                    $mainInstallEntriesLines.Add(("    Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
                     $mainInstallEntriesLines.Add("  ENDIF")
                 }
             }
@@ -628,17 +701,47 @@ function BuildInstallEntries()
     $mainInstallEntriesLines.Add("")
     
     # write main install entries file
-    $mainInstallEntriesFile = Join-Path $entriesInstallDir -ChildPath 'Install-Entries'
+    $mainInstallEntriesFile = Join-Path $installEntriesDir -ChildPath 'Install-Entries'
     WriteTextLinesForAmiga $mainInstallEntriesFile $mainInstallEntriesLines.ToArray()
 }
 
+# write entries list
+function WriteEntriesList()
+{
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$entriesFile,
+        [Parameter(Mandatory=$true)]
+        [array]$entries
+    )
+
+    $entries | `
+        ForEach-Object { @{ 
+            "File" = $_.File;
+            "UserPackageFile" = $_.UserPackageFile;
+            "Name" = $_.Name;
+            "Id" = ($_.Id -join ',');
+            "Hardware" = ($_.Hardware -join ',');
+            "Language" = ($_.Language -join ',');
+            "Memory" = ($_.Memory -join ',');
+            "Release" = ($_.Release -join ',');
+            "PublisherDeveloper" = ($_.PublisherDeveloper -join ',');
+            "Other" = ($_.Other -join ',');
+            "Version" = ($_.Version -join ',');
+            "Unsupported" = ($_.Unsupported -join ',');
+            "BestVersionRank" = $_.BestVersionRank;
+            "BestVersionLowMemRank" = $_.BestVersionLowMemRank;
+        } } | `
+        ForEach-Object{ New-Object PSObject -Property $_ } | `
+        export-csv -delimiter ';' -path $entriesFile -NoTypeInformation -Encoding UTF8
+}
 
 # write build install entries title
 Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-15"
+Write-Output "Date: 2018-05-16"
 Write-Output ""
 
 # resolve paths
@@ -696,29 +799,53 @@ foreach($userPackageDir in $userPackageDirs)
 
     # build install entries in user package directory
     Write-Output ("- Building install entries...")
-    BuildInstallEntries $entries $userPackageName $userPackageDir.FullName
 
-    # write entries list
-    $entriesFile = Join-Path -Path $userPackageDir.FullName -ChildPath "entries.csv"
-    $entries | `
-        ForEach-Object { @{ 
-            "File" = $_.File;
-            "UserPackageFile" = $_.UserPackageFile;
-            "Name" = $_.Name;
-            "Id" = ($_.Id -join ',');
-            "Hardware" = ($_.Hardware -join ',');
-            "Language" = ($_.Language -join ',');
-            "Memory" = ($_.Memory -join ',');
-            "Release" = ($_.Release -join ',');
-            "PublisherDeveloper" = ($_.PublisherDeveloper -join ',');
-            "Other" = ($_.Other -join ',');
-            "Version" = ($_.Version -join ',');
-            "Unsupported" = ($_.Unsupported -join ',');
-            "NormalRank" = $_.Rank.NormalRank;
-            "LowMemRank" = $_.Rank.LowMemRank;
-        } } | `
-        ForEach-Object{ New-Object PSObject -Property $_ } | `
-        export-csv -delimiter ';' -path $entriesFile -NoTypeInformation -Encoding UTF8
+    # build best versions
+    $entriesBestVersion = BuildEntriesBestVersion $entries $false
+    $entriesBestVersionLowMem = BuildEntriesBestVersion $entries $true
+
+    # build user package install
+    BuildUserPackageInstall $entries $userPackageName $userPackageDir.FullName
+
+    # create user package install directory, if it doesn't exist
+    $userPackageInstallDir = Join-Path $userPackageDir.FullName -ChildPath "Install"
+    if (!(Test-Path -Path $userPackageInstallDir))
+    {
+        mkdir -Path $userPackageInstallDir | Out-Null
+    }
+
+    # entries sets
+    $entriesSets = @(
+        @{
+            'Name' = 'All';
+            'Entries' = $entries
+        },
+        @{
+            'Name' = 'Best-Version';
+            'Entries' = $entriesBestVersion
+        },
+        @{
+            'Name' = 'Best-Version-Lowmem';
+            'Entries' = $entriesBestVersionLowMem
+        })
+
+    # build install entries for entries sets
+    foreach ($entriesSet in $entriesSets)
+    {
+        # create install entries directory, if it doesn't exist
+        $installEntriesDir = Join-Path $userPackageInstallDir -ChildPath $entriesSet.Name
+        if (!(Test-Path -Path $installEntriesDir))
+        {
+            mkdir -Path $installEntriesDir | Out-Null
+        }
+
+        # build install entries
+        BuildInstallEntries $entriesSet.Entries ("Install/{0}" -f $entriesSet.Name) $installEntriesDir
+
+        # write entries list
+        $entriesListFile = Join-Path -Path $userPackageDir.FullName -ChildPath ("entries-{0}.csv" -f $entriesSet.Name.ToLower())
+        WriteEntriesList $entriesListFile $entriesSet.Entries
+    }
 
     Write-Output ("- Done.")
 }
