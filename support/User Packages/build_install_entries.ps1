@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-16
+# Date:   2018-05-17
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -298,17 +298,16 @@ function BuildEntriesBestVersion()
     $entryVersionsIndex = @{}
     foreach ($entry in $entries)
     {
-        foreach($language in $entry.Language)
+        $languageSet = if ($entry.Language.Count -gt 1) { 'multi' } else { 'single' }
+
+        $entryVersionId = ("{0}-{1}-{2}" -f $entry.Name, ($entry.Hardware | Select-Object -First 1), $languageSet).ToLower()
+
+        if (!$entryVersionsIndex.ContainsKey($entryVersionId))
         {
-            $entryVersionId = ("{0}-{1}-{2}" -f $entry.Name, ($entry.Hardware | Select-Object -First 1), $language).ToLower()
-
-            if (!$entryVersionsIndex.ContainsKey($entryVersionId))
-            {
-                $entryVersionsIndex[$entryVersionId] = New-Object System.Collections.Generic.List[System.Object]
-            }
-
-            $entryVersionsIndex[$entryVersionId].Add($entry)
+            $entryVersionsIndex[$entryVersionId] = New-Object System.Collections.Generic.List[System.Object]
         }
+
+        $entryVersionsIndex[$entryVersionId].Add($entry)
     }
 
     # build entries best version from highest ranking entry version
@@ -344,7 +343,6 @@ function BuildUserPackageInstall()
     # build hardware and language indexes
     $languageIndex = @{}
     $hardwareIndex = @{}
-    $multiLanguageIndex = @{}
 
     foreach($entriesSet in $entriesSets)
     {
@@ -366,15 +364,10 @@ function BuildUserPackageInstall()
                 $hardwareIndex[$entriesSet.Name][$hardware] = 1;
             }
 
+            $languageSet = if ($entry.Language.Count -gt 1) { 'multi' } else { 'single' }
+
             foreach($language in $entry.Language)
             {
-                $languageSet = "single"
-                if ($entry.Language.Count -gt 1)
-                {
-                    $languageSet = "multi"
-                    $multiLanguageIndex[$entry.File] = $true
-                }
-
                 if (!$languageIndex[$entriesSet.Name])
                 {
                     $languageIndex[$entriesSet.Name] = @{}
@@ -409,7 +402,7 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("; Author: Henrik Noerfjand Stengaard")
     $userPackageInstallLines.Add("; Date: {0}" -f (Get-Date -format "yyyy-MM-dd"))
     $userPackageInstallLines.Add("")
-    $userPackageInstallLines.Add("; An AmigaDOS script for installing entries in user package '{0}'" -f $userPackageName)
+    $userPackageInstallLines.Add("; An AmigaDOS script for installing entries in user package '{0}' built by Build Install Entries script." -f $userPackageName)
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; Patch for HstWB Installer without unlzx")
     $userPackageInstallLines.Add("IF NOT EXISTS ""SYS:C/unlzx""")
@@ -856,7 +849,7 @@ Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-16"
+Write-Output "Date: 2018-05-17"
 Write-Output ""
 
 # resolve paths
