@@ -211,7 +211,7 @@ function ParseEntry()
 }
 
 
-# calculate best version
+# calculate best version rank
 function CalculateBestVersionRank()
 {
     Param(
@@ -893,13 +893,13 @@ foreach($userPackageDir in $userPackageDirs)
     $entries += FindEntries $userPackageDir.FullName
     Write-Output ("- Found {0} entries." -f $entries.Count)
 
-    # skip user package, if it's doesnt contain any entries
+    # skip user package directory, if it's doesnt contain any entries
     if ($entries.Count -eq 0)
     {
         continue
     }
 
-    # copy unlzx to pack directory, if unlzx file exists
+    # copy unlzx to user package directory, if unlzx file exists
     if (Test-Path $unlzxFile)
     {
         Copy-Item $unlzxFile $userPackageDir.FullName
