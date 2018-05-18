@@ -2,6 +2,6 @@
 Type=Application
 Terminal=true
 Icon=
-Name=Build EAB WHDLoad Install
-Exec=bash -c 'cd "$(dirname "$1")" && python build_eab_whdload_install.py "."; read -r -p "Press any key to continue..." key' dummy %k
+Name=Build Install Entries
+Exec=bash -c 'cd "$(dirname "$1")" && python build_install_entries.py "."; read -r -p "Press any key to continue..." key' dummy %k
 Categories=Utility;

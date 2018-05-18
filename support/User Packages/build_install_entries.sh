@@ -1,4 +1,4 @@
 #!/bin/sh
 
-python build_eab_whdload_install.py "."
+python build_install_entries.py "."
 read -r -p "Press any key to continue..." key
