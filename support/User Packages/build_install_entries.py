@@ -1,16 +1,16 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
-# Build EAB WHDLoad Install
-# -------------------------
+# Build Install Entries
+# ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-18
+# Date:   2018-05-18
 #
-# A python script to build EAB WHDLoad Packs install script for HstWB Installer user packages.
+# A powershell script to build install entries script for HstWB Installer user packages.
 
 
-"""Build EAB WHDLoad Install"""
+"""Build Install Entries"""
 
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -24,11 +24,28 @@ import csv
 import codecs
 import unicodedata
 
-# eab whdload entry
-class EabWhdloadEntry:
-    eab_whdload_file = ""
-    language = ""
-    hardware = ""
+# entry
+class Entry:
+    file_full_name = ""
+    user_package_file = ""
+    name = ""
+    entry_id = []
+    language = []
+    hardware = []
+    memory = []
+    release = []
+    publisher_developer = []
+    other = []
+    version = []
+    unsupported = []
+    best_version_rank = 0
+    best_version_lowmem_rank = 0
+
+# entries set
+class EntriesSet:
+    name = ""
+    description = ""
+    entries = ""
 
 # write text lines for amiga
 def write_text_lines_for_amiga(path, lines):
@@ -37,47 +54,247 @@ def write_text_lines_for_amiga(path, lines):
         for l in lines:
             f.write(unicodedata.normalize('NFC', l)+"\n")
 
-# find eab whdload entries
-def find_eab_whdload_entries(eab_whdload_pack_dir):
-    """Find EAB WHDLoad Entries"""
+# parse entry
+def parse_entry(entry_name):
+    """Parse Entry"""
 
-    eab_whdload_pack_dir_index = len(eab_whdload_pack_dir) + 1
-    eab_whdload_entries = []
+    # patterns for parsing entry name
+    id_pattern = r'([_&])(\d{4})$'
+    hardware_pattern = r'_(CD32|AGA|CDTV)$'
+    language_pattern = r'_?(En|De|Fr|It|Se|Pl|Es|Cz|Dk|Fi|Gr|CV|German|Spanish)$'
+    memory_pattern = r'_?(Slow|Fast|LowMem|Chip|1MB|1Mb|2MB|15MB|512k|512K|512kb|512Kb|512KB)$'
+    release_pattern = r'_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease|BETA)$'
+    publisher_developer_pattern = r'_?(CoreDesign|Paradox|Rowan|Ratsoft|Spotlight|Empire|Impressions|Arcane|Mirrorsoft|Infogrames|Cinemaware|System3|Mindscape|MicroValue|Ocean|MicroIllusions|DesktopDynamite|Infacto|Team17|ElectronicZoo|ReLINE|USGold|Epyx|Psygnosis|Palace|Kaiko|Audios|Sega|Activision|Arcadia|AmigaPower|AmigaFormat|AmigaAction|CUAmiga|TheOne)$'
+    other_pattern = r'_?(CD|A1200Version|NONAGA|HardNHeavyHack|[Ff]ix_by_[^_]+|[Hh]ack_by_[^_]+|AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
+    version_pattern = r'_?[Vv]((\d+|\d+\.\d+|\d+\.\d+[\._]\d+)([\.\-_])?[a-zA-Z]?\d*)$'
+    unsupported_pattern = r'[\.\-_](.*)$'
 
-    for root, directories, filenames in os.walk(unicode(eab_whdload_pack_dir, 'utf-8')):
+    # lists with parsing results
+    id_list = []
+    language_list = []
+    hardware_list = []
+    memory_list = []
+    release_list = []
+    publisher_developer_list = []
+    other_list = []
+    version_list = []
+    unsupported_list = []
+
+    # set entry name with filename extension
+    entry_name = re.sub(r'\.(lha|lzx)$', '', entry_name, re.I)
+
+    pattern_match = True
+    while pattern_match:
+        pattern_match = False
+
+        # parse id from entry name
+        id_match = re.search(id_pattern, entry_name)
+        if id_match:
+            pattern_match = True
+            entry_id = id_match.group(2)
+            id_list.append(entry_id.lower())
+            entry_name = re.sub(id_pattern, '', entry_name)
+            continue
+
+        # parse hardware from entry name
+        hardware_match = re.search(hardware_pattern, entry_name)
+        if hardware_match:
+            pattern_match = True
+            hardware = hardware_match.group(1).lower()
+            hardware_list.append(hardware.lower())
+            entry_name = re.sub(hardware_pattern, '', entry_name)
+            continue
+
+        # parse language from entry name
+        language_match = re.search(language_pattern, entry_name)
+        if language_match:
+            pattern_match = True
+            language = language_match.group(1)
+
+            if language is not u'En':
+                if re.search(r'german', language, re.I):
+                    language = u'De'
+                if re.search(r'spanish', language, re.I):
+                    language = u'Es'
+                language_list.append(language.lower())
+
+            entry_name = re.sub(language_pattern, '', entry_name)
+            continue
+
+        # parse memory from entry name
+        memory_match = re.search(memory_pattern, entry_name)
+        if memory_match:
+            pattern_match = True
+            memory = memory_match.group(1)
+            memory_list.append(memory.lower())
+            entry_name = re.sub(memory_pattern, '', entry_name)
+            continue
+
+        # parse release from entry name
+        release_match = re.search(release_pattern, entry_name)
+        if release_match:
+            pattern_match = True
+            release = release_match.group(1)
+            release_list.append(release.lower())
+            entry_name = re.sub(release_pattern, '', entry_name)
+            continue
+
+        # parse developer publisher from entry name
+        publisher_developer_match = re.search(publisher_developer_pattern, entry_name)
+        if publisher_developer_match:
+            pattern_match = True
+            publisher_developer = publisher_developer_match.group(1)
+            publisher_developer_list.append(publisher_developer.lower())
+            entry_name = re.sub(publisher_developer_pattern, '', entry_name)
+            continue
+
+        # parse other from entry name
+        other_match = re.search(other_pattern, entry_name)
+        if other_match:
+            pattern_match = True
+            other = other_match.group(1)
+            other_list.append(other.lower())
+            entry_name = re.sub(other_pattern, '', entry_name)
+            continue
+
+        # parse version from entry name
+        version_match = re.search(version_pattern, entry_name)
+        if version_match:
+            pattern_match = True
+            version = version_match.group(1)
+            version_list.append(version.lower())
+            entry_name = re.sub(version_pattern, '', entry_name)
+            continue
+
+        # parse unsupported from entry name
+        unsupported_match = re.search(unsupported_pattern, entry_name, re.I)
+        if unsupported_match:
+            pattern_match = True
+            unsupported = unsupported_match.group(1)
+            unsupported_list.append(unsupported.lower())
+            entry_name = re.sub(unsupported_pattern, '', entry_name, re.I)
+            continue
+
+    # add ocs hardware, if no hardware results exist
+    if len(hardware_list) == 0:
+        hardware_list.append(u'ocs')
+
+    # add en language, if no language results exist
+    if len(language_list) == 0:
+        language_list.append(u'en')
+
+    entry = Entry()
+    entry.name = entry_name
+    entry.entry_id = id_list
+    entry.language = language_list
+    entry.hardware = hardware_list
+    entry.memory = memory_list
+    entry.release = release_list
+    entry.publisher_developer = publisher_developer_list
+    entry.other = other_list
+    entry.version = version_list
+    entry.unsupported = unsupported_list
+
+    return entry
+
+# calculate best version rank
+def calculate_best_version_rank(entry):
+    rank = 100
+    rank = rank - len([x for x in entry.language if not re.search(r'en', x, re.I)]) * 10
+    rank = rank - len(entry.release) * 10
+    rank = rank - len(entry.publisher_developer) * 10
+    rank = rank - len(entry.other) * 10
+    rank = rank - len(entry.memory) * 10
+
+    lowmem_rank = rank
+
+    lowest_memory_list = [x for x in entry.memory if re.search(r'^\d+(k|m)b?$', x, re.I)]
+
+    for i in range(0, len(lowest_memory_list)):
+        lowest_memory_list[i] = re.sub(r'mb$', '000000', lowest_memory_list[i], re.I)
+        lowest_memory_list[i] = re.sub(r'(k|kb)$', '000', lowest_memory_list[i], re.I)
+
+    if len(lowest_memory_list) > 0:
+        sorted(lowest_memory_list)
+
+        lowest_memory = float(lowest_memory_list[0])
+
+        rank = rank - 10
+        lowmem_rank = lowmem_rank + (10 / (lowest_memory / 512000)) * 2
+
+    if len([x for x in entry.memory if re.search(r'lowmem', x, re.I)]) > 0:
+        lowmem_rank = lowmem_rank + 20
+
+    if len([x for x in entry.memory if re.search(r'chip', x, re.I)]) > 0:
+        lowmem_rank = lowmem_rank + 20
+
+    entry.best_version_rank = rank
+    entry.best_version_lowmem_rank = lowmem_rank
+
+# find entries
+def find_entries(user_package_dir):
+    """Find Entries"""
+
+    user_package_dir_index = len(user_package_dir) + 1
+    entries = []
+
+    for root, directories, filenames in os.walk(unicode(user_package_dir, 'utf-8')):
         for filename in filenames:
             # skip, if filename doesn't end with .lha or .lzx
             if not (filename.endswith(".lha") or filename.endswith(".lzx")):
                 continue
 
             file_full_name = os.path.join(root, filename)
-            eab_whdload_file = file_full_name[eab_whdload_pack_dir_index : len(file_full_name)]
+            user_package_file = file_full_name[user_package_dir_index : len(file_full_name)]
 
-            # detect language
-            language = "en"
-            language_match = re.search(
-                r'_(de|fr|it|se|pl|es|cz|dk|fi|gr|cv)(_|\.)', filename, re.M|re.I)
-            if language_match:
-                language = language_match.group(1).lower()
+            # parse entry
+            entry = parse_entry(filename)
 
-            # detect hardware
-            hardware = "ocs"
-            hardware_match = re.search(
-                r'_(aga|cd32|cdtv)(_|\.)', filename, re.M|re.I)
-            if hardware_match:
-                hardware = hardware_match.group(1).lower()
+            # add file full name and user package file
+            entry.file_full_name = os.path.realpath(file_full_name)
+            entry.user_package_file = user_package_file
 
-            # add eab whdload entry
-            eab_whdload_entry = EabWhdloadEntry()
-            eab_whdload_entry.eab_whdload_file = eab_whdload_file
-            eab_whdload_entry.language = language
-            eab_whdload_entry.hardware = hardware
-            eab_whdload_entries.append(eab_whdload_entry)
+            calculate_best_version_rank(entry)
 
-    # sort eab whdload entries
-    sorted(eab_whdload_entries, key=lambda entry: entry.eab_whdload_file)
+            # add entry
+            entries.append(entry)
+
+    # sort entries
+    sorted(entries, key=lambda entry: entry.user_package_file)
     
-    return eab_whdload_entries
+    return entries
+
+# build entries best version
+def build_entries_best_version(entries, lowmem):
+    """Build Entries Best Version"""
+
+    # build entry versions index
+    entry_versions_index = {}
+    for entry in entries:
+        language_set = "multi" if len(entry.language) > 1 else "single" 
+
+        entry_version_id = "{0}-{1}-{2}".format(entry.name, entry.hardware[0], language_set).lower()
+
+        if not entry_version_id in entry_versions_index:
+            entry_versions_index[entry_version_id] = []
+        
+        entry_versions_index[entry_version_id].append(entry)
+
+    # build entries best version from highest ranking entry version
+    best_version_entries = []
+    for entry_version_id in entry_versions_index.keys():
+        entry_versions_sorted_by_rank = entry_versions_index[entry_version_id]
+        if lowmem:
+            sorted(entry_versions_sorted_by_rank, key=lambda entry: entry.best_version_lowmem_rank, reverse=True)
+        else:
+            sorted(entry_versions_sorted_by_rank, key=lambda entry: entry.best_version_rank, reverse=True)
+
+        entry_best_version = entry_versions_sorted_by_rank[0]
+        best_version_entries.append(entry_best_version)
+
+    sorted(best_version_entries, key=lambda entry: entry.name)
+
+    return best_version_entries
 
 # build eab whdload install
 def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
@@ -335,13 +552,51 @@ def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
     eab_whdload_install_entries_file = os.path.join(eab_whdload_install_dir, "Install-Entries")
     write_text_lines_for_amiga(eab_whdload_install_entries_file, eab_whdload_install_entries_lines)
 
+# write entries list
+def write_entries_list(entries_file, entries):
+    """Write entries list"""
+    with open(entries_file, 'wb') as csvfile:
+        csvfile.write(codecs.BOM_UTF8)
+        writer = csv.writer(csvfile, delimiter=str(u';'), quoting=csv.QUOTE_ALL)
+        writer.writerow([
+            "File",
+            "UserPackageFile",
+            "Name",
+            "Id",
+            "Hardware",
+            "Language",
+            "Memory",
+            "Release",
+            "PublisherDeveloper",
+            "Other",
+            "Version",
+            "Unsupported",
+            "BestVersionRank",
+            "BestVersionLowMemRank"])
+        for entry in entries:
+            writer.writerow([
+                entry.file_full_name.encode('utf-8'),
+                entry.user_package_file.encode('utf-8'),
+                entry.name.encode('utf-8'),
+                ','.join(entry.entry_id).encode('utf-8'),
+                ','.join(entry.hardware).encode('utf-8'),
+                ','.join(entry.language).encode('utf-8'),
+                ','.join(entry.memory).encode('utf-8'),
+                ','.join(entry.release).encode('utf-8'),
+                ','.join(entry.publisher_developer).encode('utf-8'),
+                ','.join(entry.other).encode('utf-8'),
+                ','.join(entry.version).encode('utf-8'),
+                ','.join(entry.unsupported).encode('utf-8'),
+                entry.best_version_rank,
+                entry.best_version_lowmem_rank])
 
-# write build eab whdload install title
-print("-------------------------")
-print("Build EAB WHDLoad Install")
-print("-------------------------")
+
+# write build install entries title
+print("---------------------")
+print("Build Install Entries")
+print("---------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2018-04-18")
+print("Date: 2018-05-18")
 print("")
 
 # print usage and exit, if arguments are not defined
@@ -349,60 +604,99 @@ if len(argv) <= 1:
     print("Usage: %s \"[PATH]\"" % argv[0])
     exit(1)
 
-# get eab whdload packs directory argument
-eab_whdload_packs_dir = argv[1].strip()
+# get user packages directory argument
+user_packages_dir = argv[1].strip()
 
-# fail, if eab whdload packs directory doesn't exist
-if not os.path.isdir(eab_whdload_packs_dir):
-    print("EAB WHDLoad Packs directory '{0}' doesn't exist".format(eab_whdload_packs_dir))
+# fail, if user packages directory doesn't exist
+if not os.path.isdir(user_packages_dir):
+    print("User packages directory '{0}' doesn't exist".format(user_packages_dir))
     exit(1)
 
-# write eab whdload packs directory
-print("EAB WHDLoad Packs directory: '{0}'".format(eab_whdload_packs_dir))
+# write user packages directory
+print("User packages directory: '{0}'".format(user_packages_dir))
 print("")
-print("Building EAB WHDLoad Install scripts for user package directories:")
+print("Building install scripts for user package directories:")
 
-# find eab whdload directories
-eab_whdload_pack_dirs = [os.path.join(eab_whdload_packs_dir, o) for o in os.listdir(eab_whdload_packs_dir) 
-    if os.path.isdir(os.path.join(eab_whdload_packs_dir,o)) and re.search("whdload", o, re.I)]
+# find user package directories
+dirs = [os.path.join(user_packages_dir, o) for o in os.listdir(user_packages_dir)]
+user_package_dirs = [x for x in dirs if os.path.isfile(os.path.join(x,'_installdir'))]
 
-# exit, if eab whdload directories was not found
-if len(eab_whdload_pack_dirs) == 0:
-    print("No EAB WHDLoad Pack directories was not found!")
+# exit, if no user package directories was found
+if len(user_package_dirs) == 0:
+    print("No user package directories was not found!")
     exit(0)
 
 # unlzx file
-unlzx_file = os.path.join(eab_whdload_packs_dir, 'unlzx')
+unlzx_file = os.path.join(user_packages_dir, 'unlzx')
 
-# build eab whdload install for eab whdload directories
-for eab_whdload_pack_dir in eab_whdload_pack_dirs:
-    eab_whdload_pack_name = os.path.basename(eab_whdload_pack_dir)
+# build install entries for user package directories
+for user_package_dir in user_package_dirs:
+    # get user package name
+    user_package_name = os.path.basename(user_package_dir)
+    print(user_package_name)
+    print("- Finding entries...")
 
-    # find eab whdload entries in eab whdload pack directory
-    eab_whdload_entries = find_eab_whdload_entries(eab_whdload_pack_dir)
-    print(eab_whdload_pack_name)
-    print("- Found {0} entries".format(len(eab_whdload_entries)))
+    # find entries in user package directory
+    entries = find_entries(user_package_dir)
+    print("- Found {0} entries".format(len(entries)))
 
-    # skip eab whdload pack, if it doesn't contain any entries
-    if len(eab_whdload_entries) == 0:
+    # skip user package directory, if it's doesnt contain any entries
+    if len(entries) == 0:
         continue
 
-    # copy unlzx to eab whdload pack directory, if unlzx file exists
+    # copy unlzx to user package directory, if unlzx file exists
     if os.path.isfile(unlzx_file):
-        eab_whdload_pack_unlzx_file = os.path.join(eab_whdload_pack_dir, 'unlzx')
-        shutil.copyfile(unlzx_file, eab_whdload_pack_unlzx_file)
+        user_package_unlzx_file = os.path.join(user_package_dir, 'unlzx')
+        shutil.copyfile(unlzx_file, user_package_unlzx_file)
 
-    # build eab whdload install for eab whdload directory
-    print("- Building EAB WHDLoad Install...")
-    build_eab_whdload_install(eab_whdload_pack_name, eab_whdload_entries, eab_whdload_pack_dir)
+    # build install entries in user package directory
+    print("- Building install entries...")
 
-    # write entries list
-    eab_whdload_entries_file = os.path.join(eab_whdload_pack_dir, "entries.csv")
-    with open(eab_whdload_entries_file, 'wb') as csvfile:
-        csvfile.write(codecs.BOM_UTF8)
-        writer = csv.writer(csvfile, delimiter=str(u';'), quoting=csv.QUOTE_ALL)
-        writer.writerow(["File", "Hardware", "Language"])
-        for eab_whdload_entry in eab_whdload_entries:
-            writer.writerow([eab_whdload_entry.eab_whdload_file.encode('utf-8'), eab_whdload_entry.hardware, eab_whdload_entry.language])
+    # build best versions
+    entries_best_version = build_entries_best_version(entries, False)
+    entries_best_version_lowmem = build_entries_best_version(entries, True)
+
+    # entries sets
+    entries_sets = []
+
+    entries_set_all = EntriesSet()
+    entries_set_all.name = 'All'
+    entries_set_all.description = 'Install all entries.'
+    entries_set_all.entries = entries
+    entries_sets.append(entries_set_all)
+
+    entries_set_best_version = EntriesSet()
+    entries_set_best_version.name = 'Best-Version'
+    entries_set_best_version.description = 'Install best version of identical entries.'
+    entries_set_best_version.entries = entries_best_version
+    entries_sets.append(entries_set_best_version)
+
+    entries_set_best_version_lowmem = EntriesSet()
+    entries_set_best_version_lowmem.name = 'Best-Version-Lowmem'
+    entries_set_best_version_lowmem.description = 'Install best version of identical entries for low mem Amigas.'
+    entries_set_best_version_lowmem.entries = entries_best_version
+    entries_sets.append(entries_set_best_version_lowmem)
+
+    # build user package install
+    # build_eab_whdload_install(eab_whdload_pack_name, eab_whdload_entries, user_package_dir)
+
+    # create user package install directory, if it doesn't exist
+    user_package_install_dir = os.path.join(user_package_dir, "Install")
+    if not os.path.isdir(user_package_install_dir):
+        os.makedirs(user_package_install_dir)
+
+    # build install entries for entries sets
+    for entries_set in entries_sets:
+        # create install entries directory, if it doesn't exist
+        install_entries_dir = os.path.join(user_package_install_dir, entries_set.name)
+        if not os.path.isdir(install_entries_dir):
+            os.makedirs(install_entries_dir)
+
+        # build install entries
+        # BuildInstallEntries $entriesSet.Entries ("Install/{0}" -f $entriesSet.Name) $installEntriesDir
+
+        # write entries list
+        entries_list_file = os.path.join(user_package_dir, "entries-{0}.csv".format(entries_set.name.lower()))
+        write_entries_list(entries_list_file, entries_set.entries)
 
     print("- Done.")
