@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-17
+# Date:   2018-05-20
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -53,7 +53,7 @@ function ParseEntry()
     $memoryPattern = '_?(Slow|Fast|LowMem|Chip|1MB|1Mb|2MB|15MB|512k|512K|512kb|512Kb|512KB)$'
     $releasePattern = '_?(Rolling|Playable|Demo\d?|Demos|Preview|DemoLatest|DemoPlay|DemoRoll|Prerelease|BETA)$'
     $publisherDeveloperPattern = '_?(CoreDesign|Paradox|Rowan|Ratsoft|Spotlight|Empire|Impressions|Arcane|Mirrorsoft|Infogrames|Cinemaware|System3|Mindscape|MicroValue|Ocean|MicroIllusions|DesktopDynamite|Infacto|Team17|ElectronicZoo|ReLINE|USGold|Epyx|Psygnosis|Palace|Kaiko|Audios|Sega|Activision|Arcadia|AmigaPower|AmigaFormat|AmigaAction|CUAmiga|TheOne)$'
-    $otherPattern = '_?(A1200Version|NONAGA|HardNHeavyHack|[Ff]ix_by_[^_]+|[Hh]ack_by_[^_]+|AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
+    $otherPattern = '_?(CD|A1200Version|NONAGA|HardNHeavyHack|[Ff]ix_by_[^_]+|[Hh]ack_by_[^_]+|AmigaStar|QuattroFighters|QuattroArcade|EarlyBuild|Oracle|Nomad|DOS|HighDensity|CompilationArcadeAction|_DizzyCollection|EasyPlay|Repacked|F1Licenceware|Alt|AltLevels|NoSpeech|NoMusic|NoSounds|NoVoice|NoMovie|Fix|Fixed|Aminet|ComicRelief|Util|Files|Image\d?|68060|060|Intro|NoIntro|NTSC|Censored|Kick31|Kick13|\dDisk|\(EasyPlay\)|Kernal1.1|Kernal_Version_1.1|Cracked|HiRes|LoRes|Crunched|Decrunched)$'
     $versionPattern = '_?[Vv]((\d+|\d+\.\d+|\d+\.\d+[\._]\d+)([\.\-_])?[a-zA-Z]?\d*)$'
     $unsupportedPattern = '[\.\-_](.*)$'
 
@@ -298,8 +298,7 @@ function BuildEntriesBestVersion()
     $entryVersionsIndex = @{}
     foreach ($entry in $entries)
     {
-        $languageSet = if ($entry.Language.Count -gt 1) { 'multi' } else { 'single' }
-
+        $languageSet = if ($entry.Language.Count -gt 1) { 'multi' } else { "single-{0}" -f $entry.Language | Select-Object -First 1 }
         $entryVersionId = ("{0}-{1}-{2}" -f $entry.Name, ($entry.Hardware | Select-Object -First 1), $languageSet).ToLower()
 
         if (!$entryVersionsIndex.ContainsKey($entryVersionId))
@@ -315,9 +314,9 @@ function BuildEntriesBestVersion()
     foreach($entryVersionId in $entryVersionsIndex.Keys)
     {
         $entryVersionsSortedByRank = if ($lowMem) { 
-            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionLowMemRank};Ascending=$false}
+            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionLowMemRank};Ascending=$false}, @{expression={$_.UserPackageFile};Ascending=$true}
         } else {
-            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionRank};Ascending=$false}
+            $entryVersionsIndex[$entryVersionId] | Sort-Object @{expression={$_.BestVersionRank};Ascending=$false}, @{expression={$_.UserPackageFile};Ascending=$true}
         }
 
         $entryBestVersion = $entryVersionsSortedByRank | Select-Object -First 1
@@ -325,7 +324,7 @@ function BuildEntriesBestVersion()
         $entriesBestVersion.Add($entryBestVersion)
     }
 
-    return $entriesBestVersion | Sort-Object @{expression={$_.Name};Ascending=$true}
+    return $entriesBestVersion | Sort-Object @{expression={$_.UserPackageFile};Ascending=$true}
 }
 
 # build user package install
@@ -435,11 +434,19 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("; install entries menu")
     $userPackageInstallLines.Add("LAB installentriesmenu")
 
+    $entriesSetNames = New-Object System.Collections.Generic.List[System.Object]
+    $entriesSetDescriptionLines = New-Object System.Collections.Generic.List[System.Object]
+
     $entriesSetId = 0
     foreach($entriesSet in $entriesSets)
     {
+        $entriesSetName = $entriesSet.Name.Replace("-", " ")
+        $entriesSetNames.Add($entriesSetName)
+        $entriesSetDescriptionLines.Add("{0}:" -f $entriesSetName)
+        $entriesSetDescriptionLines.Add("- {0}" -f $entriesSet.Description)
+    
         $entriesSetId++
-        $userPackageInstallLines.Add("; show entries set '{0}' menu" -f $entriesSet.Name)
+        $userPackageInstallLines.Add("; show entries set '{0}' menu" -f $entriesSetName)
         $userPackageInstallLines.Add("IF ""`$entriessetid"" EQ {0} VAL" -f $entriesSetId)
         $userPackageInstallLines.Add("  SKIP entriesset{0}menu" -f $entriesSetId)
         $userPackageInstallLines.Add("ENDIF")
@@ -516,7 +523,7 @@ function BuildUserPackageInstall()
             $userPackageInstallLines.Add("IF ""`$multicount"" GT 0 VAL")
             $userPackageInstallLines.Add("  echo "", `$multicount multi"" NOLINE >>T:_entriessetmenu")
             $userPackageInstallLines.Add("ENDIF")
-            $userPackageInstallLines.Add("echo "")"" >>T:_entriessetmenu" -f $language.ToUpper())
+            $userPackageInstallLines.Add("echo "")"" >>T:_entriessetmenu")
         }
 
         $userPackageInstallLines.Add("echo ""----------------------------------------"" >>T:_entriessetmenu")
@@ -538,17 +545,6 @@ function BuildUserPackageInstall()
         $userPackageInstallLines.Add("delete >NIL: T:_entriessetmenu")
     
         $entriesInstallOption = 1;
-
-        $entriesSetNames = New-Object System.Collections.Generic.List[System.Object]
-        $entriesSetDescriptionLines = New-Object System.Collections.Generic.List[System.Object]
-
-        foreach($entriesSet in $entriesSets)
-        {
-            $entriesSetName = $entriesSet.Name.Replace("-", " ")
-            $entriesSetNames.Add($entriesSetName)
-            $entriesSetDescriptionLines.Add("{0}:" -f $entriesSetName)
-            $entriesSetDescriptionLines.Add("- {0}" -f $entriesSet.Description)
-        }
 
         $userPackageInstallLines.Add("")
         $userPackageInstallLines.Add("; select entries set option")
@@ -618,6 +614,7 @@ function BuildUserPackageInstall()
             $userPackageInstallLines.Add("  set entrieslanguage{0} ""1""" -f $language)
         }
             
+        $userPackageInstallLines.Add("  SKIP BACK entriesset{0}menu" -f $entriesSetId)
         $userPackageInstallLines.Add("ENDIF")
 
         $entriesInstallOption++
@@ -636,6 +633,7 @@ function BuildUserPackageInstall()
             $userPackageInstallLines.Add("  set entrieslanguage{0} ""0""" -f $language)
         }
             
+        $userPackageInstallLines.Add("  SKIP BACK entriesset{0}menu" -f $entriesSetId)
         $userPackageInstallLines.Add("ENDIF")
 
         $entriesInstallOption++
@@ -849,7 +847,7 @@ Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-17"
+Write-Output "Date: 2018-05-20"
 Write-Output ""
 
 # resolve paths
