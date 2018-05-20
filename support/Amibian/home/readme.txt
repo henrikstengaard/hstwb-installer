@@ -1,7 +1,7 @@
 Amibian HstWB Installer
 -----------------------
 Author: Henrik Noerfjand Stengaard
-Date: 2018-04-23
+Date: 2018-05-20
 
 Amibian HstWB Installer is a preconfigured setup of Amibian with
 ready-made harddrives and configs for Amiberry and Chips UAE4ARM
@@ -54,14 +54,14 @@ Preparation
       - Copy or move files from 
         "Commodore_Amiga_-_WHDLoad_-_Games_(Beta_&_Unreleased)"
         to "eab-whdload-games_beta".
-      Run Build EAB WHDLoad Install:
-      - Windows: Double-click "build_eab_whdload_install.cmd" in
+      Run Build Install Entries:
+      - Windows: Double-click "build_install_entries.cmd" in
         Windows Explorer.
-      - macOS: Double-click "build_eab_whdload_install.command" in
+      - macOS: Double-click "build_install_entries.command" in
         Finder.
-      - Ubuntu: Double-click "Build EAB WHDLoad Install" in
+      - Ubuntu: Double-click "Build Install Entries" in
         Ubuntu Files.
-      - Linux: Type "./build_eab_whdload_install.sh" and press 
+      - Linux: Type "./build_install_entries.sh" and press 
         enter in terminal.
 
 
