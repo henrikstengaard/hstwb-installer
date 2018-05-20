@@ -5,7 +5,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-18
+# Date:   2018-05-20
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -46,6 +46,16 @@ class EntriesSet:
     name = ""
     description = ""
     entries = ""
+
+# get index name
+def get_index_name(name):
+    """Get Index Name"""
+    if not name or re.search(r'^\s*$', name, re.I):
+        return "_"
+    elif re.search(r'^(#|\d)', name, re.I):
+        return "0-9"
+    
+    return name[0:1].upper()
 
 # write text lines for amiga
 def write_text_lines_for_amiga(path, lines):
@@ -215,7 +225,7 @@ def calculate_best_version_rank(entry):
         lowest_memory_list[i] = re.sub(r'(k|kb)$', '000', lowest_memory_list[i], re.I)
 
     if len(lowest_memory_list) > 0:
-        sorted(lowest_memory_list)
+        lowest_memory_list = sorted(lowest_memory_list, key=lambda x: x.lower())
 
         lowest_memory = float(lowest_memory_list[0])
 
@@ -260,7 +270,7 @@ def find_entries(user_package_dir):
             entries.append(entry)
 
     # sort entries
-    sorted(entries, key=lambda entry: entry.user_package_file)
+    entries = sorted(entries, key=lambda entry: entry.user_package_file.lower())
     
     return entries
 
@@ -271,8 +281,7 @@ def build_entries_best_version(entries, lowmem):
     # build entry versions index
     entry_versions_index = {}
     for entry in entries:
-        language_set = "multi" if len(entry.language) > 1 else "single" 
-
+        language_set = "multi" if len(entry.language) > 1 else "single-{0}".format(entry.language[0]) 
         entry_version_id = "{0}-{1}-{2}".format(entry.name, entry.hardware[0], language_set).lower()
 
         if not entry_version_id in entry_versions_index:
@@ -285,272 +294,404 @@ def build_entries_best_version(entries, lowmem):
     for entry_version_id in entry_versions_index.keys():
         entry_versions_sorted_by_rank = entry_versions_index[entry_version_id]
         if lowmem:
-            sorted(entry_versions_sorted_by_rank, key=lambda entry: entry.best_version_lowmem_rank, reverse=True)
+            entry_versions_sorted_by_rank = sorted(entry_versions_sorted_by_rank, key=lambda entry: (-entry.best_version_lowmem_rank, entry.user_package_file.lower()))
         else:
-            sorted(entry_versions_sorted_by_rank, key=lambda entry: entry.best_version_rank, reverse=True)
+            entry_versions_sorted_by_rank = sorted(entry_versions_sorted_by_rank, key=lambda entry: (-entry.best_version_rank, entry.user_package_file.lower()))
 
         entry_best_version = entry_versions_sorted_by_rank[0]
         best_version_entries.append(entry_best_version)
 
-    sorted(best_version_entries, key=lambda entry: entry.name)
+    best_version_entries = sorted(best_version_entries, key=lambda entry: entry.user_package_file.lower())
 
     return best_version_entries
 
-# build eab whdload install
-def build_eab_whdload_install(title, eab_whdload_entries, eab_whdload_pack_dir):
-    """Build EAB Whdload Install"""
+# build user package install
+def build_user_package_install(entries_sets, user_package_name, entries_dir):
+    """Build User Package Install"""
 
     # build hardware and language indexes
     hardware_index = {}
     language_index = {}
-    for eab_whdload_entry in eab_whdload_entries:
-        hardware = eab_whdload_entry.hardware
-        language = eab_whdload_entry.language
+    for entries_set in entries_sets:
+        for entry in entries_set.entries:
+            hardware = entry.hardware[0]
 
-        if hardware in hardware_index:
-            hardware_index[hardware] += 1
-        else:
-            hardware_index[hardware] = 1
+            if not entries_set.name in hardware_index:
+                hardware_index[entries_set.name] = {}
 
-        if not language in language_index:
-            language_index[language] = {}
+            if hardware in hardware_index[entries_set.name]:
+                hardware_index[entries_set.name][hardware] += 1
+            else:
+                hardware_index[entries_set.name][hardware] = 1
 
-        if hardware in language_index[language]:
-            language_index[language][hardware] += 1
-        else:
-            language_index[language][hardware] = 1
+            language_set = "multi" if len(entry.language) > 1 else "single" 
 
-    # get hardwares and languages sorted
-    hardwares = hardware_index.keys()
-    hardwares.sort()
-    languages = language_index.keys()
-    languages.sort()
+            for language in entry.language:
+                if not entries_set.name in language_index:
+                    language_index[entries_set.name] = {}
 
-    # build eab whdload install lines
-    eab_whdload_install_lines = []
-    eab_whdload_install_lines.append("; {0}".format(title))
-    eab_whdload_install_lines.append(("; {0}".format("-" * len(title))))
-    eab_whdload_install_lines.append("; Author: Henrik Noerfjand Stengaard")
-    eab_whdload_install_lines.append("; Date: {0}".format(datetime.date.today().strftime('%Y-%m-%d')))
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; An AmigaDOS script for installing EAB WHDLoad pack '{0}'".format(title))
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; Patch for HstWB Installer without unlzx")
-    eab_whdload_install_lines.append("IF NOT EXISTS \"SYS:C/unlzx\"")
-    eab_whdload_install_lines.append("  IF EXISTS \"USERPACKAGEDIR:unlzx\"")
-    eab_whdload_install_lines.append("    Copy \"USERPACKAGEDIR:unlzx\" \"SYS:C/unlzx\" >NIL:")
-    eab_whdload_install_lines.append("  ENDIF")
-    eab_whdload_install_lines.append("ENDIF")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; reset")
+                if not language_set in language_index[entries_set.name]:
+                    language_index[entries_set.name][language_set] = {}
 
-    for hardware in hardwares:
-        eab_whdload_install_lines.append("set eabhardware{0} \"1\"".format(hardware))
+                if not language in language_index[entries_set.name][language_set]:
+                    language_index[entries_set.name][language_set][language] = {}
 
-    for language in languages:
-        eab_whdload_install_lines.append("set eablanguage{0} \"1\"".format(language))
+                if hardware in language_index[entries_set.name][language_set][language]:
+                    language_index[entries_set.name][language_set][language][hardware] += 1
+                else:
+                    language_index[entries_set.name][language_set][language][hardware] = 1
 
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; eab whdload menu")
-    eab_whdload_install_lines.append("LAB eabwhdloadmenu")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("set totalcount \"0\"")
-    eab_whdload_install_lines.append("echo \"\" NOLINE >T:_eabwhdloadmenu")
+    # build entries install lines
+    user_package_install_lines = []
+    user_package_install_lines.append("; {0}".format(user_package_name))
+    user_package_install_lines.append(("; {0}".format("-" * len(user_package_name))))
+    user_package_install_lines.append("; Author: Henrik Noerfjand Stengaard")
+    user_package_install_lines.append("; Date: {0}".format(datetime.date.today().strftime('%Y-%m-%d')))
+    user_package_install_lines.append("")
+    user_package_install_lines.append("; An AmigaDOS script for installing entries in user package '{0}' built by Build Install Entries script.".format(user_package_name))
+    user_package_install_lines.append("")
+    user_package_install_lines.append("; Patch for HstWB Installer without unlzx")
+    user_package_install_lines.append("IF NOT EXISTS \"SYS:C/unlzx\"")
+    user_package_install_lines.append("  IF EXISTS \"USERPACKAGEDIR:unlzx\"")
+    user_package_install_lines.append("    Copy \"USERPACKAGEDIR:unlzx\" \"SYS:C/unlzx\" >NIL:")
+    user_package_install_lines.append("  ENDIF")
+    user_package_install_lines.append("ENDIF")
+    user_package_install_lines.append("")
+    user_package_install_lines.append("; reset")
 
-    for hardware in hardwares:
-        eab_whdload_install_lines.append("")
-        eab_whdload_install_lines.append("; '{0}' hardware menu".format(hardware))
-        eab_whdload_install_lines.append("IF \"$eabhardware{0}\" EQ 1 VAL".format(hardware))
-        eab_whdload_install_lines.append("  echo \"Install\" NOLINE >>T:_eabwhdloadmenu")
-        eab_whdload_install_lines.append("ELSE")
-        eab_whdload_install_lines.append("  echo \"Skip   \" NOLINE >>T:_eabwhdloadmenu")
-        eab_whdload_install_lines.append("ENDIF")
-        eab_whdload_install_lines.append(("echo \" : {0} hardware ({1} entries)\" >>T:_eabwhdloadmenu".format(hardware.upper(), hardware_index[hardware])))
+    user_package_install_lines.append("set entriessetid \"1\"")
 
-    eab_whdload_install_lines.append("echo \"----------------------------------------\" >>T:_eabwhdloadmenu")
+    all_hardwares = []
+    for entries_set_name in hardware_index.keys():
+        for hardware in hardware_index[entries_set_name].keys():
+            all_hardwares.append(hardware)
+    all_hardwares = list(set(all_hardwares))
+    all_hardwares.sort()
 
-    for language in languages:
-        eab_whdload_install_lines.append("")
-        eab_whdload_install_lines.append("; '{0}' language menu".format(language))
-        eab_whdload_install_lines.append("set languagecount \"0\"")
+    for hardware in all_hardwares:
+        user_package_install_lines.append("set entrieshardware{0} \"1\"".format(hardware))
 
-        language_hardwares = language_index[language].keys()
-        language_hardwares.sort()
-        for hardware in language_hardwares:
-            eab_whdload_install_lines.append("IF \"$eabhardware{0}\" EQ 1 VAL".format(hardware))
-            eab_whdload_install_lines.append("  set languagecount `eval $languagecount + {0}`".format(language_index[language][hardware]))
-            eab_whdload_install_lines.append("ENDIF")
+    all_languages = []
+    for entries_set_name in language_index.keys():
+        for language in language_index[entries_set_name]["single"].keys():
+            all_languages.append(language)
+    all_languages = list(set(all_languages))
+    all_languages.sort()
 
-        eab_whdload_install_lines.append("IF \"$eablanguage{0}\" EQ 1 VAL".format(language))
-        eab_whdload_install_lines.append("  set totalcount `eval $totalcount + $languagecount`")
-        eab_whdload_install_lines.append("  echo \"Install\" NOLINE >>T:_eabwhdloadmenu")
-        eab_whdload_install_lines.append("ELSE")
-        eab_whdload_install_lines.append("  echo \"Skip   \" NOLINE >>T:_eabwhdloadmenu")
-        eab_whdload_install_lines.append("ENDIF")
-        eab_whdload_install_lines.append("echo \" : {0} language ($languagecount entries)\" >>T:_eabwhdloadmenu".format(language.upper()))
+    for language in all_languages:
+        user_package_install_lines.append("set entrieslanguage{0} \"1\"".format(language))
 
-    eab_whdload_install_lines.append("echo \"----------------------------------------\" >>T:_eabwhdloadmenu")
-    eab_whdload_install_lines.append("echo \"Install $totalcount of {0} entries\" >>T:_eabwhdloadmenu".format(len(eab_whdload_entries)))
-    eab_whdload_install_lines.append("echo \"Skip all entries\" >>T:_eabwhdloadmenu")
+    user_package_install_lines.append("")
+    user_package_install_lines.append("; install entries menu")
+    user_package_install_lines.append("LAB installentriesmenu")
+
+    entries_set_names = []
+    entries_set_description_lines = []
     
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("set eabwhdloadoption \"\"")
-    eab_whdload_install_lines.append("set eabwhdloadoption `RequestList TITLE=\"{0}\" LISTFILE=\"T:_eabwhdloadmenu\" WIDTH=640 LINES=24`".format(title))
-    eab_whdload_install_lines.append("delete >NIL: T:_eabwhdloadmenu")
+    entries_set_id = 0
+    for entries_set in entries_sets:
+        entries_set_name = entries_set.name.replace("-", " ")
+        entries_set_names.append(entries_set_name)
+        entries_set_description_lines.append("{0}:".format(entries_set_name))
+        entries_set_description_lines.append("- {0}".format(entries_set.description))
+        
+        entries_set_id += 1
+        user_package_install_lines.append("; show entries set '{0}' menu".format(entries_set_name))
+        user_package_install_lines.append("IF \"$entriessetid\" EQ {0} VAL".format(entries_set_id))
+        user_package_install_lines.append("  SKIP entriesset{0}menu".format(entries_set_id))
+        user_package_install_lines.append("ENDIF")
 
-    eab_whdload_option = 0
+    entries_set_id = 0
+    for entries_set in entries_sets:
+        entries_set_id += 1
 
-    for hardware in hardwares:
-        eab_whdload_option += 1
+        # get hardwares and languages sorted
+        hardwares = hardware_index[entries_set.name].keys()
+        hardwares.sort()
+        languages = language_index[entries_set.name]["single"].keys()
+        languages.sort()
 
-        eab_whdload_install_lines.append("")
-        eab_whdload_install_lines.append("; '{0}' hardware option".format(hardware))
-        eab_whdload_install_lines.append("IF \"$eabwhdloadoption\" EQ {0} VAL".format(eab_whdload_option))
-        eab_whdload_install_lines.append("  IF \"$eabhardware{0}\" EQ 1 VAL".format(hardware))
-        eab_whdload_install_lines.append("    set eabhardware{0} \"0\"".format(hardware))
-        eab_whdload_install_lines.append("  ELSE")
-        eab_whdload_install_lines.append("    set eabhardware{0} \"1\"".format(hardware))
-        eab_whdload_install_lines.append("  ENDIF")
-        eab_whdload_install_lines.append("  SKIP BACK eabwhdloadmenu")
-        eab_whdload_install_lines.append("ENDIF")
-
-    eab_whdload_option += 1
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; entries set '{0}' menu".format(entries_set.name))
+        user_package_install_lines.append("LAB entriesset{0}menu".format(entries_set_id))
+        user_package_install_lines.append("")
+        user_package_install_lines.append("set totalcount \"0\"")
+        user_package_install_lines.append("set totalmulticount \"0\"")
+        user_package_install_lines.append("echo \"\" NOLINE >T:_entriessetmenu")
     
-    for language in languages:
-        eab_whdload_option += 1
+        user_package_install_lines.append("echo \"Selected entries set: {0}\" >>T:_entriessetmenu".format(entries_set.name.replace("-", " ")))
+        user_package_install_lines.append("echo \"----------------------------------------\" >>T:_entriessetmenu")
 
-        eab_whdload_install_lines.append("")
-        eab_whdload_install_lines.append("; '{0}' language option".format(language))
-        eab_whdload_install_lines.append("IF \"$eabwhdloadoption\" EQ {0} VAL".format(eab_whdload_option))
-        eab_whdload_install_lines.append("  IF \"$eablanguage{0}\" EQ 1 VAL".format(language))
-        eab_whdload_install_lines.append("    set eablanguage{0} \"0\"".format(language))
-        eab_whdload_install_lines.append("  ELSE")
-        eab_whdload_install_lines.append("    set eablanguage{0} \"1\"".format(language))
-        eab_whdload_install_lines.append("  ENDIF")
-        eab_whdload_install_lines.append("  SKIP BACK eabwhdloadmenu")
-        eab_whdload_install_lines.append("ENDIF")
+        for hardware in hardwares:
+            user_package_install_lines.append("")
+            user_package_install_lines.append("; '{0}' hardware menu".format(hardware))
+            user_package_install_lines.append("IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
+            user_package_install_lines.append("  echo \"Install\" NOLINE >>T:_entriessetmenu")
+            user_package_install_lines.append("ELSE")
+            user_package_install_lines.append("  echo \"Skip   \" NOLINE >>T:_entriessetmenu")
+            user_package_install_lines.append("ENDIF")
+            user_package_install_lines.append(("echo \" : {0} hardware ({1} entries)\" >>T:_entriessetmenu".format(hardware.upper(), hardware_index[entries_set.name][hardware])))
 
-    eab_whdload_option += 2
+        user_package_install_lines.append("echo \"----------------------------------------\" >>T:_entriessetmenu")
 
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; install entries option")
-    eab_whdload_install_lines.append("IF \"$eabwhdloadoption\" EQ {0} VAL".format(eab_whdload_option))
-    eab_whdload_install_lines.append("  set confirm `RequestChoice \"Install EAB WHDLoad\" \"Do you want to install $totalcount EAB EHDLoad entries?\" \"Yes|No\"`")
-    eab_whdload_install_lines.append("  IF \"$confirm\" EQ \"1\"")
-    eab_whdload_install_lines.append("    SKIP installentries")
-    eab_whdload_install_lines.append("  ENDIF")
-    eab_whdload_install_lines.append("ENDIF")
+        for language in languages:
+            user_package_install_lines.append("")
+            user_package_install_lines.append("; '{0}' language menu".format(language))
+            user_package_install_lines.append("set languagecount \"0\"")
+            user_package_install_lines.append("set multicount \"0\"")
 
-    eab_whdload_option += 1
+            language_hardwares = language_index[entries_set.name]["single"][language].keys()
+            language_hardwares.sort()
+            for hardware in language_hardwares:
+                user_package_install_lines.append("IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
+                user_package_install_lines.append("  set languagecount `eval $languagecount + {0}`".format(language_index[entries_set.name]["single"][language][hardware]))
 
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; skip all entries option")
-    eab_whdload_install_lines.append("IF \"$eabwhdloadoption\" EQ {0} VAL".format(eab_whdload_option))
-    eab_whdload_install_lines.append("  set confirm `RequestChoice \"Skip all entries\" \"Do you want to skip all entries?\" \"Yes|No\"`")
-    eab_whdload_install_lines.append("  IF \"$confirm\" EQ \"1\"")
-    eab_whdload_install_lines.append("    SKIP end")
-    eab_whdload_install_lines.append("  ENDIF")
-    eab_whdload_install_lines.append("ENDIF")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("SKIP BACK eabwhdloadmenu")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; install entries")
-    eab_whdload_install_lines.append("LAB installentries")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("execute \"USERPACKAGEDIR:Install/Install-Entries\"")
-    eab_whdload_install_lines.append("")
-    eab_whdload_install_lines.append("; End")
-    eab_whdload_install_lines.append("; ---")
-    eab_whdload_install_lines.append("LAB end")
+                if "multi" in language_index[entries_set.name] and language in language_index[entries_set.name]["multi"] and hardware in language_index[entries_set.name]["multi"][language]:
+                    user_package_install_lines.append("  set multicount `eval $multicount + {0}`".format(language_index[entries_set.name]["multi"][language][hardware]))
 
-    # write eab whdload install file
-    eab_whdload_install_file = os.path.join(eab_whdload_pack_dir, "_install")
-    write_text_lines_for_amiga(eab_whdload_install_file, eab_whdload_install_lines)
+                user_package_install_lines.append("ENDIF")
 
-    # create eab whdload pack install directory, if it doesn't exist
-    eab_whdload_install_dir = os.path.join(eab_whdload_pack_dir, "Install")
-    if not os.path.isdir(eab_whdload_install_dir):
-        os.makedirs(eab_whdload_install_dir)
+            user_package_install_lines.append("IF \"$entrieslanguage{0}\" EQ 1 VAL".format(language))
+            user_package_install_lines.append("  set totalcount `eval $totalcount + $languagecount`")
+            user_package_install_lines.append("  IF \"$multicount\" GT \"$totalmulticount\" VAL")
+            user_package_install_lines.append("    set totalmulticount \"$multicount\"")
+            user_package_install_lines.append("  ENDIF")
+            user_package_install_lines.append("  echo \"Install\" NOLINE >>T:_entriessetmenu")
+            user_package_install_lines.append("ELSE")
+            user_package_install_lines.append("  echo \"Skip   \" NOLINE >>T:_entriessetmenu")
+            user_package_install_lines.append("ENDIF")
+            user_package_install_lines.append("echo \" : {0} language ($languagecount entries\" NOLINE >>T:_entriessetmenu".format(language.upper()))
+            user_package_install_lines.append("IF \"$multicount\" GT 0 VAL")
+            user_package_install_lines.append("  echo \", $multicount multi\" NOLINE >>T:_entriessetmenu")
+            user_package_install_lines.append("ENDIF")
+            user_package_install_lines.append("echo \")\" >>T:_entriessetmenu")
 
-    # create eab whdload install entries directory, if it doesn't exist
-    eab_whdload_install_entries_dir = os.path.join(eab_whdload_install_dir, "Entries")
-    if not os.path.isdir(eab_whdload_install_entries_dir):
-        os.makedirs(eab_whdload_install_entries_dir)
+        user_package_install_lines.append("echo \"----------------------------------------\" >>T:_entriessetmenu")
+        user_package_install_lines.append("echo \"Install all entries\" >>T:_entriessetmenu")
+        user_package_install_lines.append("echo \"Skip all entries\" >>T:_entriessetmenu")
+        user_package_install_lines.append("echo \"Start entries installation ($totalcount of {0} entries\" NOLINE >>T:_entriessetmenu".format(len(entries_set.entries)))
+        user_package_install_lines.append("IF \"$totalmulticount\" GT 1 VAL")
+        user_package_install_lines.append("  echo \", 1-$totalmulticount multi\" NOLINE >>T:_entriessetmenu")
+        user_package_install_lines.append("ENDIF")
+        user_package_install_lines.append("IF \"$totalmulticount\" EQ 1 VAL")
+        user_package_install_lines.append("  echo \", 1 multi\" NOLINE >>T:_entriessetmenu")
+        user_package_install_lines.append("ENDIF")
+        user_package_install_lines.append("echo \")\" >>T:_entriessetmenu")
+        user_package_install_lines.append("echo \"Skip entries installation\" >>T:_entriessetmenu")
 
-    # build eab whdload install entry and file indexes
-    eab_whdload_install_entry_index = {}
-    eab_whdload_install_entry_file_index = {}
-    for eab_whdload_entry in eab_whdload_entries:
-        index_name = eab_whdload_entry.eab_whdload_file[0:1].upper()
-        hardware = eab_whdload_entry.hardware
-        language = eab_whdload_entry.language
+        user_package_install_lines.append("")
+        user_package_install_lines.append("set entriesinstalloption \"\"")
+        user_package_install_lines.append("set entriesinstalloption `RequestList TITLE=\"{0}\" LISTFILE=\"T:_entriessetmenu\" WIDTH=640 LINES=24`".format(user_package_name))
+        user_package_install_lines.append("delete >NIL: T:_entriessetmenu")
 
-        if re.search(r'^(#|\d)', index_name, re.I):
-            index_name = "0-9"
+        entries_install_option = 1
+
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; select entries set option")
+        user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+        user_package_install_lines.append("  set entriessetindex `RequestChoice \"Select entries set\" \"Select entries set to install.*N*N{0}\" \"{1}\"`".format('*N'.join(entries_set_description_lines), '|'.join(entries_set_names)))
+
+        for i in range(1, len(entries_sets) + 1):
+            entries_set_index = i if i < len(entries_sets) else 0 
+            user_package_install_lines.append("  IF $entriessetindex EQ {0} VAL".format(entries_set_index))
+            user_package_install_lines.append("    set entriessetid \"{0}\"".format(i))
+            user_package_install_lines.append("  ENDIF")
+
+        user_package_install_lines.append("  SKIP BACK installentriesmenu")
+        user_package_install_lines.append("ENDIF")
+
+        entries_install_option += 1
+
+        for hardware in hardwares:
+            entries_install_option += 1
+
+            user_package_install_lines.append("")
+            user_package_install_lines.append("; '{0}' hardware option".format(hardware))
+            user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+            user_package_install_lines.append("  IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
+            user_package_install_lines.append("    set entrieshardware{0} \"0\"".format(hardware))
+            user_package_install_lines.append("  ELSE")
+            user_package_install_lines.append("    set entrieshardware{0} \"1\"".format(hardware))
+            user_package_install_lines.append("  ENDIF")
+            user_package_install_lines.append("  SKIP BACK entriesset{0}menu".format(entries_set_id))
+            user_package_install_lines.append("ENDIF")
+
+        entries_install_option += 1
         
-        eab_whdload_install_entry_file = "{0}-{1}-{2}".format(index_name, hardware.upper(), language.upper())
+        for language in languages:
+            entries_install_option += 1
 
-        if not index_name in eab_whdload_install_entry_index:
-            eab_whdload_install_entry_index[index_name] = {}
+            user_package_install_lines.append("")
+            user_package_install_lines.append("; '{0}' language option".format(language))
+            user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+            user_package_install_lines.append("  IF \"$entrieslanguage{0}\" EQ 1 VAL".format(language))
+            user_package_install_lines.append("    set entrieslanguage{0} \"0\"".format(language))
+            user_package_install_lines.append("  ELSE")
+            user_package_install_lines.append("    set entrieslanguage{0} \"1\"".format(language))
+            user_package_install_lines.append("  ENDIF")
+            user_package_install_lines.append("  SKIP BACK entriesset{0}menu".format(entries_set_id))
+            user_package_install_lines.append("ENDIF")
 
-        if not hardware in eab_whdload_install_entry_index[index_name]:
-            eab_whdload_install_entry_index[index_name][hardware] = {}
+        entries_install_option += 2
 
-        if not language in eab_whdload_install_entry_index[index_name][hardware]:
-            eab_whdload_install_entry_index[index_name][hardware][language] = eab_whdload_install_entry_file
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; install all entries option")
+        user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+
+        for hardware in all_hardwares:
+            user_package_install_lines.append("  set entrieshardware{0} \"1\"".format(hardware))
+
+        for language in all_languages:
+            user_package_install_lines.append("  set entrieslanguage{0} \"1\"".format(language))
+            
+        user_package_install_lines.append("  SKIP BACK entriesset{0}menu".format(entries_set_id))
+        user_package_install_lines.append("ENDIF")
+
+        entries_install_option += 1
+
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; skip all entries option")
+        user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+
+        for hardware in all_hardwares:
+            user_package_install_lines.append("  set entrieshardware{0} \"0\"".format(hardware))
+
+        for language in all_languages:
+            user_package_install_lines.append("  set entrieslanguage{0} \"0\"".format(language))
+            
+        user_package_install_lines.append("  SKIP BACK entriesset{0}menu".format(entries_set_id))
+        user_package_install_lines.append("ENDIF")
+
+        entries_install_option += 1
+
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; start entries installation option")
+        user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+        user_package_install_lines.append("  set confirm `RequestChoice \"Start entries installation\" \"Do you want to entries installation of $totalcount entries?\" \"Yes|No\"`")
+        user_package_install_lines.append("  IF \"$confirm\" EQ \"1\"")
+        user_package_install_lines.append("    execute \"USERPACKAGEDIR:Install/{0}/Install-Entries\"".format(entries_set.name))
+        user_package_install_lines.append("    SKIP end")
+        user_package_install_lines.append("  ENDIF")
+        user_package_install_lines.append("ENDIF")
+
+        entries_install_option += 1
+
+        user_package_install_lines.append("")
+        user_package_install_lines.append("; skip entries installation option")
+        user_package_install_lines.append("IF \"$entriesinstalloption\" EQ {0} VAL".format(entries_install_option))
+        user_package_install_lines.append("  set confirm `RequestChoice \"Skip entries installation\" \"Do you want to skip entries installation?\" \"Yes|No\"`")
+        user_package_install_lines.append("  IF \"$confirm\" EQ \"1\"")
+        user_package_install_lines.append("    SKIP end")
+        user_package_install_lines.append("  ENDIF")
+        user_package_install_lines.append("ENDIF")
+        user_package_install_lines.append("")
+        user_package_install_lines.append("SKIP BACK entriesset{0}menu".format(entries_set_id))
+
+    user_package_install_lines.append("")
+    user_package_install_lines.append("; End")
+    user_package_install_lines.append("; ---")
+    user_package_install_lines.append("LAB end")
+
+    # write user package install file
+    user_package_install_file = os.path.join(entries_dir, "_install")
+    write_text_lines_for_amiga(user_package_install_file, user_package_install_lines)
+
+# build install entries
+def build_install_entries(entries, user_package_path, install_entries_dir):
+    """Build Install Entries"""
+
+    # build install entry and filename indexes
+    install_entry_filename_index = {}
+    install_entry_lines_index = {}
+    for entry in entries:
+        entry_filename = os.path.basename(entry.user_package_file)
+        index_name = get_index_name(entry_filename)
+        hardware = entry.hardware[0]
+        has_multi_languages = len(entry.language) > 1
+        language = "MULTI" if has_multi_languages else entry.language[0]
         
-        if not eab_whdload_install_entry_file in eab_whdload_install_entry_file_index:
-            eab_whdload_install_entry_file_index[eab_whdload_install_entry_file] = []
+        install_entry_filename = "{0}-{1}-{2}".format(index_name, hardware.upper(), language.upper())
 
-        eab_whdload_install_entry_lines = eab_whdload_install_entry_file_index[eab_whdload_install_entry_file]
+        if not index_name in install_entry_filename_index:
+            install_entry_filename_index[index_name] = {}
+
+        if not hardware in install_entry_filename_index[index_name]:
+            install_entry_filename_index[index_name][hardware] = {}
+
+        if not language in install_entry_filename_index[index_name][hardware]:
+            install_entry_filename_index[index_name][hardware][language] = install_entry_filename
+        
+        if not install_entry_filename in install_entry_lines_index:
+            install_entry_lines_index[install_entry_filename] = []
+
+        install_entry_lines = install_entry_lines_index[install_entry_filename]
         
         # replace \ with / and espace # with '#
-        eab_whdload_file = u"USERPACKAGEDIR:{0}".format(eab_whdload_entry.eab_whdload_file.replace("\\", "/"))
-        eab_whdload_file_escaped = u"{0}".format(eab_whdload_file.replace("#", "'#"))
+        user_package_file = u"USERPACKAGEDIR:{0}".format(entry.user_package_file.replace("\\", "/"))
+        user_package_file_escaped = u"{0}".format(user_package_file.replace("#", "'#"))
 
-        # extract eab whdload file
-        eab_whdload_install_entry_lines.append(u"IF EXISTS \"{0}\"".format(eab_whdload_file))
-        if re.search(r'\.lha$', eab_whdload_file, re.I):
-            eab_whdload_install_entry_lines.append(u"  lha -m1 x \"{0}\" \"$entrydir/\"".format(eab_whdload_file_escaped))
-        elif re.search(r'\.lzx$', eab_whdload_file, re.I):
-            eab_whdload_install_entry_lines.append(u"  unlzx -m e \"{0}\" \"$entrydir/\"".format(eab_whdload_file_escaped))
-        eab_whdload_install_entry_lines.append("ENDIF")
+        # extract entry file
+        if has_multi_languages:
+            install_entry_lines.append("set entriesmulti \"0\"")
 
-    # write eab whdload install entry files
-    for eab_whdload_install_entry_filename in eab_whdload_install_entry_file_index.keys():
-        eab_whdload_install_entry_lines = eab_whdload_install_entry_file_index[eab_whdload_install_entry_filename]
+            for language in entry.language:
+                install_entry_lines.append("IF \"$entrieslanguage{0}\" EQ 1 VAL".format(language))
+                install_entry_lines.append("  set entriesmulti \"1\"")
+                install_entry_lines.append("ENDIF")
 
-        eab_whdload_install_entry_file = os.path.join(eab_whdload_install_entries_dir, eab_whdload_install_entry_filename)
-        write_text_lines_for_amiga(eab_whdload_install_entry_file, eab_whdload_install_entry_lines)
+            install_entry_lines.append("IF $entriesmulti EQ 1 VAL")
 
-    # write eab whdload install entries file
-    eab_whdload_install_entries_lines = []
-    index_names = eab_whdload_install_entry_index.keys()
+        padding = 2 if has_multi_languages else 0
+        padding_text = " " * padding
+
+        install_entry_lines.append(u"{0}IF EXISTS \"{1}\"".format(padding_text, user_package_file))
+        if re.search(r'\.lha$', user_package_file, re.I):
+            install_entry_lines.append(u"{0}  lha -m1 x \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
+        elif re.search(r'\.lzx$', user_package_file, re.I):
+            install_entry_lines.append(u"{0}  unlzx -m e \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
+        install_entry_lines.append("{0}ENDIF".format(padding_text))
+
+        if has_multi_languages:
+            install_entry_lines.append("ENDIF")
+
+    # write install entry lines files
+    for install_entry_filename in install_entry_lines_index.keys():
+        install_entry_lines = install_entry_lines_index[install_entry_filename]
+
+        install_entry_file = os.path.join(install_entries_dir, install_entry_filename)
+        write_text_lines_for_amiga(install_entry_file, install_entry_lines)
+
+    # write install entries file
+    install_entries_lines = []
+    index_names = install_entry_filename_index.keys()
     index_names.sort()
     for index_name in index_names:
-        eab_whdload_install_entries_lines.append("set entrydir \"`execute INSTALLDIR:S/CombinePath \"$INSTALLDIR\" \"{0}\"`\"".format(index_name))
-        eab_whdload_install_entries_lines.append("IF NOT EXISTS \"$entrydir\"")
-        eab_whdload_install_entries_lines.append("  MakePath \"$entrydir\" >NIL:")
-        eab_whdload_install_entries_lines.append("ENDIF")
+        install_entries_lines.append("set entrydir \"`execute INSTALLDIR:S/CombinePath \"$INSTALLDIR\" \"{0}\"`\"".format(index_name))
+        install_entries_lines.append("IF NOT EXISTS \"$entrydir\"")
+        install_entries_lines.append("  MakePath \"$entrydir\" >NIL:")
+        install_entries_lines.append("ENDIF")
 
-        hardwares = eab_whdload_install_entry_index[index_name].keys()
-        hardwares.sort()
+        hardwares = install_entry_filename_index[index_name].keys()
+        hardwares = sorted(hardwares, key=lambda hardware: hardware.lower())
         for hardware in hardwares:
-            eab_whdload_install_entries_lines.append("IF \"$eabhardware{0}\" EQ 1 VAL".format(hardware))
+            install_entries_lines.append("IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
 
-            languages = eab_whdload_install_entry_index[index_name][hardware].keys()
-            languages.sort()
+            languages = install_entry_filename_index[index_name][hardware].keys()
+            languages = sorted(languages, key=lambda language: language.lower())
             for language in languages:
-                eab_whdload_install_entries_lines.append("  IF \"$eablanguage{0}\" EQ 1 VAL".format(language))
-                eab_whdload_install_entries_lines.append("    echo \"*e[1mInstalling {0}, {1}, {2}...*e[0m\"".format(index_name, hardware.upper(), language.upper()))
-                eab_whdload_install_entries_lines.append("    wait 1")
-                eab_whdload_install_entries_lines.append("    Execute \"USERPACKAGEDIR:Install/Entries/{0}\"".format(eab_whdload_install_entry_index[index_name][hardware][language]))
-                eab_whdload_install_entries_lines.append("  ENDIF")
+                if re.search(r'multi', language, re.I):
+                    install_entries_lines.append("  Execute \"USERPACKAGEDIR:{0}/{1}\"".format(user_package_path, install_entry_filename_index[index_name][hardware][language]))
+                else:
+                    install_entries_lines.append("  IF \"$entrieslanguage{0}\" EQ 1 VAL".format(language))
+                    install_entries_lines.append("    echo \"*e[1mInstalling {0}, {1}, {2}...*e[0m\"".format(index_name, hardware.upper(), language.upper()))
+                    install_entries_lines.append("    wait 1")
+                    install_entries_lines.append("    Execute \"USERPACKAGEDIR:{0}/{1}\"".format(user_package_path, install_entry_filename_index[index_name][hardware][language]))
+                    install_entries_lines.append("  ENDIF")
                 
-            eab_whdload_install_entries_lines.append("ENDIF")
+            install_entries_lines.append("ENDIF")
     
-    eab_whdload_install_entries_file = os.path.join(eab_whdload_install_dir, "Install-Entries")
-    write_text_lines_for_amiga(eab_whdload_install_entries_file, eab_whdload_install_entries_lines)
+    install_entries_file = os.path.join(install_entries_dir, "Install-Entries")
+    write_text_lines_for_amiga(install_entries_file, install_entries_lines)
 
 # write entries list
 def write_entries_list(entries_file, entries):
@@ -596,7 +737,7 @@ print("---------------------")
 print("Build Install Entries")
 print("---------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2018-05-18")
+print("Date: 2018-05-20")
 print("")
 
 # print usage and exit, if arguments are not defined
@@ -674,11 +815,11 @@ for user_package_dir in user_package_dirs:
     entries_set_best_version_lowmem = EntriesSet()
     entries_set_best_version_lowmem.name = 'Best-Version-Lowmem'
     entries_set_best_version_lowmem.description = 'Install best version of identical entries for low mem Amigas.'
-    entries_set_best_version_lowmem.entries = entries_best_version
+    entries_set_best_version_lowmem.entries = entries_best_version_lowmem
     entries_sets.append(entries_set_best_version_lowmem)
 
     # build user package install
-    # build_eab_whdload_install(eab_whdload_pack_name, eab_whdload_entries, user_package_dir)
+    build_user_package_install(entries_sets, user_package_name, user_package_dir)
 
     # create user package install directory, if it doesn't exist
     user_package_install_dir = os.path.join(user_package_dir, "Install")
@@ -693,7 +834,7 @@ for user_package_dir in user_package_dirs:
             os.makedirs(install_entries_dir)
 
         # build install entries
-        # BuildInstallEntries $entriesSet.Entries ("Install/{0}" -f $entriesSet.Name) $installEntriesDir
+        build_install_entries(entries_set.entries, "Install/{0}".format(entries_set.name), install_entries_dir)
 
         # write entries list
         entries_list_file = os.path.join(user_package_dir, "entries-{0}.csv".format(entries_set.name.lower()))
