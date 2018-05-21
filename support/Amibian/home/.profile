@@ -22,6 +22,12 @@ if [ -f ~/select_emulator.sh -a -f ~/.select_emulator ]; then
 	~/select_emulator.sh
 fi
 
+# build install entries
+if [ -f ~/build_install_entries.sh -a -f ~/.build_install_entries ]; then
+  rm -f ~/.build_install_entries
+	~/build_install_entries.sh
+fi
+
 # start emulator, if not logged in via ssh
 mytty=`tty`
 if [ "$mytty" == "/dev/tty1" ]; then

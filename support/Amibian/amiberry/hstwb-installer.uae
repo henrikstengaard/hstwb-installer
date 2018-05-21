@@ -109,8 +109,8 @@ cpu_compatible=false
 cpu_24bit_addressing=false
 fpu_no_unimplemented=true
 fpu_strict=false
-compfpu=false
-cachesize=0
+compfpu=true
+cachesize=16384
 ; 
 ; *** Memory
 ; 
