@@ -1,7 +1,7 @@
 ; Install Workbench Disk
 ; ----------------------
 ;
-; Date: 2017-11-29
+; Date: 2018-05-23
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -159,7 +159,7 @@ ENDIF
 
 ; Install Workbench 3.1 Install
 echo "Copying Workbench 3.1 Install files from $floppydevice:..."
-resident "$floppydevice:C/IconPos" PURE
+resident >NIL: "$floppydevice:C/IconPos" PURE
 makedir >NIL: SYSTEMDIR:Tools
 copy $floppydevice:HDTools/BRU SYSTEMDIR:Tools CLONE
 copy $floppydevice:HDTools/HDBackup SYSTEMDIR:Tools CLONE

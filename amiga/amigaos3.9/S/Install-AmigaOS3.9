@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9 Script
 ; ---------------------------
 ;
-; Date: 2018-03-31
+; Date: 2018-05-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -242,7 +242,7 @@ ENDIF
 ; -------
 
 echo "Cleaning up..."
-resident "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" PURE
+Resident >NIL: "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" PURE
 
 ICONPOS >NIL: "SYSTEMDIR:Prefs"   10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
 ICONPOS >NIL: "SYSTEMDIR:Prefs/Font"                       10 10

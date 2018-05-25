@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2018-05-11
+; Date: 2018-05-23
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -13,7 +13,7 @@ FailAt 21
 
 ; Load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
-  ; Load scsi.device, if current loaded scsi.device is less than v43.45
+  ; Load scsi.device, if current loaded scsi.device version is less than v43.45
   Version >NIL: "scsi.device" 43 45
   IF WARN
     LoadModule DEVS:scsi.device
@@ -39,9 +39,9 @@ C:MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 C:Copy ENVARC:~(#?.info) ENV: ALL QUIET
 
+; Load commands resident
 Resident >NIL: C:Assign PURE
 Resident >NIL: C:Execute PURE
-Resident >NIL: C:UnZip PURE
 
 Assign >NIL: T: RAM:T
 Assign >NIL: CLIPS: RAM:Clipboards
@@ -112,11 +112,13 @@ Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
 
 ; Load commands resident 
-resident INSTALLDIR:C/Reboot PURE
-resident INSTALLDIR:C/TotalReset PURE 
-resident INSTALLDIR:C/UnZip PURE 
-resident INSTALLDIR:C/UAEquit PURE 
-resident INSTALLDIR:C/MakePath PURE 
+Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
+Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
+Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
+Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
+Resident >NIL: "INSTALLDIR:C/LhA" PURE
+Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
+Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 
 ; Run install packages
