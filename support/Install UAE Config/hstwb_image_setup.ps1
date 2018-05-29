@@ -212,7 +212,7 @@ $workbench31AdfFilenamesDetected = $workbench31AdfMd5Files | `
 Write-Output ("Workbench dir : '{0}'" -f $workbenchDir)
 Write-Output ("- {0} of {1} Workbench 3.1 adf files detected" -f $workbench31AdfFilenamesDetected.Count, $workbench31AdfFilenames.Count)
 $workbench31AdfMd5Files | `
-    ForEach-Object { Write-Output ("- {0} : '{1}'" -f $workbench31AdfMd5Index[$_.Md5.ToLower()].Name, $_.File) }
+    ForEach-Object { Write-Output ("- {0} MD5 match: '{1}'" -f $workbench31AdfMd5Index[$_.Md5.ToLower()].Name, $_.File) }
 
 # index kickstart rom md5
 $kickstartRomMd5Index = @{}
@@ -240,24 +240,24 @@ Write-Output ""
 Write-Output ("Kickstart dir : '{0}'" -f $kickstartDir)
 Write-Output ("- {0} of {1} Kickstart rom files detected" -f $kickstartRomFilenamesDetected.Count, $kickstartRomFilenames.Count)
 $kickstartRomMd5Files | `
-    ForEach-Object { Write-Output ("- {0} : '{1}'" -f $kickstartRomMd5Index[$_.Md5.ToLower()].Name, $_.File) }
+    ForEach-Object { Write-Output ("- {0} MD5 match: '{1}'" -f $kickstartRomMd5Index[$_.Md5.ToLower()].Name, $_.File) }
 
 # index os39 md5
 $os39Md5Index = @{}
 $os39Md5Entries | `
     ForEach-Object { $os39Md5Index[$_.Md5.ToLower()] = $_ }
 
+# os39 filenames
+$os39FilenamesIndex = @{}
+$os39Md5Entries | `
+    ForEach-Object { $os39FilenamesIndex[$_.Filename.ToLower()] = $_ }
+
 # get os39 files from os39 dir
 $os39Md5Files = GetMd5FilesFromDir $os39Dir
 
-# os39 filenames
-$os39Filenames = $os39Md5Entries.Filename | `
-    Sort-Object | `
-    Get-Unique
-
 # os39 filenames detected
 $os39FilenamesDetected = $os39Md5Files | `
-    Where-Object { $os39Md5Index.ContainsKey($_.Md5.ToLower()) -or $os39Filenames -contains (Split-Path $_.File -Leaf) } | `
+    Where-Object { $os39Md5Index.ContainsKey($_.Md5.ToLower()) -or $os39FilenamesIndex.ContainsKey((Split-Path $_.File -Leaf)) } | `
     ForEach-Object { $_.File }
     Sort-Object | `
     Get-Unique
@@ -265,7 +265,21 @@ $os39FilenamesDetected = $os39Md5Files | `
 # write os39 directory
 Write-Output ""
 Write-Output ("OS39 dir : '{0}'" -f $os39Dir)
-Write-Output ("- {0} of {1} Amiga OS 3.9 files detected" -f $os39FilenamesDetected.Count, $os39Filenames.Count)
+Write-Output ("- {0} of {1} Amiga OS 3.9 files detected" -f $os39FilenamesDetected.Count, $os39FilenamesIndex.Count)
+
+foreach($os39Md5File in $os39Md5Files)
+{
+    $filename = (Split-Path $os39Md5File.File -Leaf).ToLower()
+
+    if ($os39Md5Index.ContainsKey($os39Md5File.Md5.ToLower()))
+    {
+        ForEach-Object { Write-Output ("- {0} MD5 match: '{1}'" -f $os39Md5Index[$os39Md5File.Md5.ToLower()].Name, $os39Md5File.File) }
+    }
+    elseif ($os39FilenamesIndex.ContainsKey($filename))
+    {
+        ForEach-Object { Write-Output ("- {0} filename match: '{1}'" -f $os39FilenamesIndex[$filename].Name, $os39Md5File.File) }
+    }
+}
 
 # write user packages directory
 Write-Output ""
