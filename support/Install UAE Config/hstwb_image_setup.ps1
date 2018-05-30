@@ -4,10 +4,11 @@
 # Author: Henrik Noerfjand Stengaard
 # Date:   2018-05-30
 #
-# A powershell script to setup HstWB images with following:
+# A powershell script to setup HstWB images with following installation:
 # - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever using MD5 hashes.
 # - Validate files in self install directories using MD5 hashes to indicate, if all files are present for self install.
 # - Patch and install UAE and FS-UAE configuration files.
+# - For FS-UAE configuration files, .adf files from Workbench directory are added as swappable floppies.
 
 
 Param(
@@ -400,6 +401,7 @@ $workbench31AdfMd5Files | `
     ForEach-Object { Write-Output ("- {0} MD5 match '{1}'" -f $workbench31AdfMd5Index[$_.Md5.ToLower()].Name, $_.File) }
 Write-Output "Done"
 
+
 # write kickstart directory
 Write-Output ""
 Write-Output ("Validating Kickstart dir '{0}'..." -f $kickstartDir)
@@ -430,6 +432,7 @@ Write-Output ("- {0} of {1} Kickstart rom files detected" -f $kickstartRomFilena
 $kickstartRomMd5Files | `
     ForEach-Object { Write-Output ("- {0} MD5 match '{1}'" -f $kickstartRomMd5Index[$_.Md5.ToLower()].Name, $_.File) }
 Write-Output "Done"
+
 
 # write os39 directory
 Write-Output ""
@@ -477,7 +480,7 @@ Write-Output "Done"
 
 # write user packages directory
 Write-Output ""
-Write-Output ("Validating user packages dir '{0}'..." -f $userPackagesDir)
+Write-Output ("Validating User Packages dir '{0}'..." -f $userPackagesDir)
 
 $userPackageDirs = @()
 $userPackageDirs += Get-ChildItem $userPackagesDir | `
