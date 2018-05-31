@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-30
+# Date:   2018-05-31
 #
 # A python script to setup HstWB images with following installation:
 # - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever using MD5 hashes.
@@ -219,15 +219,115 @@ def patch_fsuae_config_file( \
         _f.writelines(fsuae_config_lines)
 
 
-md5_files = get_md5_entries_from_dir('test\\kickstart')
+# md5_files = get_md5_entries_from_dir('test\\kickstart')
 
-for md5_file in md5_files:
-    print(md5_file.md5_hash, md5_file.full_filename)
+# for md5_file in md5_files:
+#     print(md5_file.md5_hash, md5_file.full_filename)
 
-exit
+# exit
+
+
+# workbench 3.1 adf md5 entries
+WORKBENCH31_ADF_MD5_ENTRIES = [
+    { 'Md5': 'c1c673eba985e9ab0888c5762cfa3d8f', 'Filename': 'workbench31extras.adf', 'Name': 'Workbench 3.1, Extras Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': '6fae8b94bde75497021a044bdbf51abc', 'Filename': 'workbench31fonts.adf', 'Name': 'Workbench 3.1, Fonts Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': 'd6aa4537586bf3f2687f30f8d3099c99', 'Filename': 'workbench31install.adf', 'Name': 'Workbench 3.1, Install Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': 'b53c9ff336e168643b10c4a9cfff4276', 'Filename': 'workbench31locale.adf', 'Name': 'Workbench 3.1, Locale Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': '4fa1401aeb814d3ed138f93c54a5caef', 'Filename': 'workbench31storage.adf', 'Name': 'Workbench 3.1, Storage Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': '590c42a69675d6970df350e200fe25dc', 'Filename': 'workbench31workbench.adf', 'Name': 'Workbench 3.1, Workbench Disk (Cloanto Amiga Forever 2016)' },
+
+    { 'Md5': 'c5be06daf40d4c3ace4eac874d9b48b1', 'Filename': 'workbench31install.adf', 'Name': 'Workbench 3.1, Install Disk (Cloanto Amiga Forever 7)' },
+    { 'Md5': 'e7b3a83df665a85e7ec27306a152b171', 'Filename': 'workbench31workbench.adf', 'Name': 'Workbench 3.1, Workbench Disk (Cloanto Amiga Forever 7)' }
+]
+
+# kickstart rom md5 entries
+KICKSTART_ROM_MD5_ENTRIES = [
+    { 'Md5': 'c56ca2a3c644d53e780a7e4dbdc6b699', 'Filename': 'kick33180.A500', 'Encrypted': True, 'Name': 'Kickstart 1.2, 33.180, A500 Rom (Cloanto Amiga Forever 7/2016)' },
+    { 'Md5': '89160c06ef4f17094382fc09841557a6', 'Filename': 'kick34005.A500', 'Encrypted': True, 'Name': 'Kickstart 1.3, 34.5, A500 Rom (Cloanto Amiga Forever 7/2016)' },
+    { 'Md5': 'c3e114cd3b513dc0377a4f5d149e2dd9', 'Filename': 'kick40063.A600', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.063, A600 Rom (Cloanto Amiga Forever 7/2016)' },
+    { 'Md5': 'dc3f5e4698936da34186d596c53681ab', 'Filename': 'kick40068.A1200', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.068, A1200 Rom (Cloanto Amiga Forever 7/2016)' },
+    { 'Md5': '8b54c2c5786e9d856ce820476505367d', 'Filename': 'kick40068.A4000', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.068, A4000 Rom (Cloanto Amiga Forever 7/2016)' },
+
+    { 'Md5': '85ad74194e87c08904327de1a9443b7a', 'Filename': 'kick33180.A500', 'Encrypted': False, 'Name': 'Kickstart 1.2, 33.180, A500 Rom (Original)' },
+    { 'Md5': '82a21c1890cae844b3df741f2762d48d', 'Filename': 'kick34005.A500', 'Encrypted': False, 'Name': 'Kickstart 1.3, 34.5, A500 Rom (Original)' },
+    { 'Md5': 'e40a5dfb3d017ba8779faba30cbd1c8e', 'Filename': 'kick40063.A600', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.063, A600 Rom (Original)' },
+    { 'Md5': '646773759326fbac3b2311fd8c8793ee', 'Filename': 'kick40068.A1200', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.068, A1200 Rom (Original)' },
+    { 'Md5': '9bdedde6a4f33555b4a270c8ca53297d', 'Filename': 'kick40068.A4000', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.068, A4000 Rom (Original)' }
+]
+
+# os 39 md5 entries
+OS39_MD5_ENTRIES = [
+    { 'Md5': '3cb96e77d922a4f8eb696e525a240448', 'Filename': 'amigaos3.9.iso', 'Name': 'Amiga OS 3.9 iso', 'Size': 490856448 },
+    { 'Md5': 'e32a107e68edfc9b28a2fe075e32e5f6', 'Filename': 'amigaos3.9.iso', 'Name': 'Amiga OS 3.9 iso', 'Size': 490686464 },
+    { 'Md5': '71353d4aeb9af1f129545618d013a8c8', 'Filename': 'boingbag39-1.lha', 'Name': 'Boing Bag 1 for Amiga OS 3.9', 'Size': 5254174 },
+    { 'Md5': 'fd45d24bb408203883a4c9a56e968e28', 'Filename': 'boingbag39-2.lha', 'Name': 'Boing Bag 2 for Amiga OS 3.9', 'Size': 2053444 }
+]
+
+
 
 # get patch only argument
 PATCH_ONLY = len(sys.argv) >= 2 and re.search(r'--patch-only', sys.argv[1])
+
+INSTALL_DIR = '.'
+AMIGA_FOREVER_DATA_DIR = None
+
+# set amiga forever data directory to amiga forever data environment variable, if not defined
+if (os.environ['AMIGAFOREVERDATA'] != None):
+    AMIGA_FOREVER_DATA_DIR = os.environ['AMIGAFOREVERDATA']
+
+# get arguments
+for i in range(0, len(sys.argv)):
+    # install dir argument
+    if (i + 1 < len(sys.argv) and re.search(r'--installdir', sys.argv[i])):
+        INSTALL_DIR = sys.argv[i + 1]
+    # amiga forever data dir argument
+    if (i + 1 < len(sys.argv) and re.search(r'--amigaforeverdatadir', sys.argv[i])):
+        AMIGA_FOREVER_DATA_DIR = sys.argv[i + 1]
+
+# print hstwb image setup title
+print '-----------------'
+print 'HstWB Image Setup'
+print '-----------------'
+print 'Author: Henrik Noerfjand Stengaard'
+print 'Date: 2018-05-31'
+print ''
+print 'Install dir \'{0}\''.format(INSTALL_DIR)
+
+# fail, if install directory doesn't exist
+if (INSTALL_DIR != None and not os.path.isdir(INSTALL_DIR)):
+    print 'Error: Install dir doesn\'t exist'
+    exit(1)
+
+# self install directories
+WORKBENCH_DIR = os.path.join(INSTALL_DIR, 'workbench')
+KICKSTART_DIR = os.path.join(INSTALL_DIR, 'kickstart')
+OS39_DIR = os.path.join(INSTALL_DIR, 'os39')
+USERPACKAGES_DIR = os.path.join(INSTALL_DIR, 'userpackages')
+
+# create self install directories, if they don't exist
+for SELF_INSTALL_DIR in [WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DIR]:
+    if not os.path.exists(SELF_INSTALL_DIR):
+        os.makedirs(SELF_INSTALL_DIR)
+
+
+# cloanto amiga forever
+print ''
+print 'Cloanto Amiga Forever'
+print '---------------------'
+print 'Amiga Forever data dir \'{0}\''.format(AMIGA_FOREVER_DATA_DIR if not AMIGA_FOREVER_DATA_DIR == None else '')
+if (AMIGA_FOREVER_DATA_DIR != None and os.path.isdir(AMIGA_FOREVER_DATA_DIR)):
+    print 'Installing Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever...'
+    # TODO write install amiga forever code
+    print 'Done'
+else:
+    print 'Skip: Amiga Forever data directory is not defined or doesn\'t exist!'
+
+
+
+
+
+exit(0)
+
 
 # get current directory
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
