@@ -33,10 +33,10 @@ def calculate_md5_from_file(_file):
         for chunk in iter(lambda: _f.read(4096), b""):
             hash_md5.update(chunk)
 
-    return hash_md5.hexdigest()
+    return hash_md5.hexdigest().lower()
 
-# get md5 entries from dir
-def get_md5_entries_from_dir(_dir):
+# get md5 files from dir
+def get_md5_files_from_dir(_dir):
     """Get Md5 Files From Dir"""
 
     md5_files = []    
@@ -227,8 +227,8 @@ def patch_fsuae_config_file( \
 # exit
 
 
-# workbench 3.1 adf md5 entries
-WORKBENCH31_ADF_MD5_ENTRIES = [
+# valid workbench 3.1 md5 entries
+valid_workbench31_md5_entries = [
     { 'Md5': 'c1c673eba985e9ab0888c5762cfa3d8f', 'Filename': 'workbench31extras.adf', 'Name': 'Workbench 3.1, Extras Disk (Cloanto Amiga Forever 2016)' },
     { 'Md5': '6fae8b94bde75497021a044bdbf51abc', 'Filename': 'workbench31fonts.adf', 'Name': 'Workbench 3.1, Fonts Disk (Cloanto Amiga Forever 2016)' },
     { 'Md5': 'd6aa4537586bf3f2687f30f8d3099c99', 'Filename': 'workbench31install.adf', 'Name': 'Workbench 3.1, Install Disk (Cloanto Amiga Forever 2016)' },
@@ -240,8 +240,8 @@ WORKBENCH31_ADF_MD5_ENTRIES = [
     { 'Md5': 'e7b3a83df665a85e7ec27306a152b171', 'Filename': 'workbench31workbench.adf', 'Name': 'Workbench 3.1, Workbench Disk (Cloanto Amiga Forever 7)' }
 ]
 
-# kickstart rom md5 entries
-KICKSTART_ROM_MD5_ENTRIES = [
+# valid kickstart md5 entries
+valid_kickstart_md5_entries = [
     { 'Md5': 'c56ca2a3c644d53e780a7e4dbdc6b699', 'Filename': 'kick33180.A500', 'Encrypted': True, 'Name': 'Kickstart 1.2, 33.180, A500 Rom (Cloanto Amiga Forever 7/2016)' },
     { 'Md5': '89160c06ef4f17094382fc09841557a6', 'Filename': 'kick34005.A500', 'Encrypted': True, 'Name': 'Kickstart 1.3, 34.5, A500 Rom (Cloanto Amiga Forever 7/2016)' },
     { 'Md5': 'c3e114cd3b513dc0377a4f5d149e2dd9', 'Filename': 'kick40063.A600', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.063, A600 Rom (Cloanto Amiga Forever 7/2016)' },
@@ -255,19 +255,32 @@ KICKSTART_ROM_MD5_ENTRIES = [
     { 'Md5': '9bdedde6a4f33555b4a270c8ca53297d', 'Filename': 'kick40068.A4000', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.068, A4000 Rom (Original)' }
 ]
 
-# os 39 md5 entries
-OS39_MD5_ENTRIES = [
+# valid os39 md5 entries
+valid_os39_md5_entries = [
     { 'Md5': '3cb96e77d922a4f8eb696e525a240448', 'Filename': 'amigaos3.9.iso', 'Name': 'Amiga OS 3.9 iso', 'Size': 490856448 },
     { 'Md5': 'e32a107e68edfc9b28a2fe075e32e5f6', 'Filename': 'amigaos3.9.iso', 'Name': 'Amiga OS 3.9 iso', 'Size': 490686464 },
     { 'Md5': '71353d4aeb9af1f129545618d013a8c8', 'Filename': 'boingbag39-1.lha', 'Name': 'Boing Bag 1 for Amiga OS 3.9', 'Size': 5254174 },
     { 'Md5': 'fd45d24bb408203883a4c9a56e968e28', 'Filename': 'boingbag39-2.lha', 'Name': 'Boing Bag 2 for Amiga OS 3.9', 'Size': 2053444 }
 ]
 
+# index valid workbench 3.1 md5 entries
+valid_workbench31_md5_index = {}
+for entry in valid_workbench31_md5_entries:
+    valid_workbench31_md5_index[entry['Md5'].lower()] = entry
 
+# index valid kickstart rom md5 entries
+valid_kickstart_md5_index = {}
+for entry in valid_kickstart_md5_entries:
+    valid_kickstart_md5_index[entry['Md5'].lower()] = entry
 
-# get patch only argument
-PATCH_ONLY = len(sys.argv) >= 2 and re.search(r'--patch-only', sys.argv[1])
+# index valid os39 md5 entries
+valid_os39_md5_index = {}
+valid_os39_filename_index = {}
+for entry in valid_os39_md5_entries:
+    valid_os39_md5_index[entry['Md5'].lower()] = entry
+    valid_os39_filename_index[entry['Filename'].lower()] = entry
 
+# arguments
 INSTALL_DIR = '.'
 AMIGA_FOREVER_DATA_DIR = None
 
@@ -316,15 +329,153 @@ print 'Cloanto Amiga Forever'
 print '---------------------'
 print 'Amiga Forever data dir \'{0}\''.format(AMIGA_FOREVER_DATA_DIR if not AMIGA_FOREVER_DATA_DIR == None else '')
 if (AMIGA_FOREVER_DATA_DIR != None and os.path.isdir(AMIGA_FOREVER_DATA_DIR)):
-    print 'Installing Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever...'
-    # TODO write install amiga forever code
+    print 'Install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever:'
+
+    SHARED_DIR = os.path.join(AMIGA_FOREVER_DATA_DIR, 'Shared')
+
+    # install workbench 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
+    SHARED_ADF_DIR = os.path.join(SHARED_DIR, 'adf')
+    print '- Amiga Forever data dir shared adf dir \'{0}\''.format(SHARED_ADF_DIR)
+    if os.path.isdir(SHARED_ADF_DIR):
+        print '- Installing Workbench 3.1 adf files to Workbench dir \'{0}\'...'.format(WORKBENCH_DIR)
+
+        # copy workbench 3.1 adf files from shared adf dir that matches valid workbench 3.1 md5
+        for md5_file in get_md5_files_from_dir(SHARED_ADF_DIR):
+            if not md5_file.md5_hash in valid_workbench31_md5_index:
+                continue
+            shutil.copyfile(
+                md5_file.full_filename,
+                os.path.join(WORKBENCH_DIR, os.path.basename(md5_file.full_filename)))
+    else:
+        print 'Skip: Amiga Forever data shared adf dir doesn\'t exist!'
+
+    # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
+    SHARED_ROM_DIR = os.path.join(SHARED_DIR, 'rom')
+    print '- Amiga Forever data dir shared rom dir \'{0}\''.format(SHARED_ROM_DIR)
+    if os.path.isdir(SHARED_ROM_DIR):
+        print '- Installing Kickstart rom files to Kickstart dir \'{0}\'...'.format(KICKSTART_DIR)
+
+        # copy kickstart rom files from shared rom dir that matches valid kickstart md5
+        for md5_file in get_md5_files_from_dir(SHARED_ROM_DIR):
+            if not md5_file.md5_hash in valid_kickstart_md5_index:
+                continue
+            shutil.copyfile(
+                md5_file.full_filename,
+                os.path.join(KICKSTART_DIR, os.path.basename(md5_file.full_filename)))
+
+        # copy amiga forever rom key file, if it exists
+        rom_key_file = os.path.join(SHARED_ROM_DIR, 'rom.key')
+        if os.path.isfile(rom_key_file):
+            shutil.copyfile(rom_key_file, os.path.join(KICKSTART_DIR, 'rom.key'))
+    else:
+        print 'Skip: Amiga Forever data shared rom dir doesn\'t exist!'
     print 'Done'
 else:
-    print 'Skip: Amiga Forever data directory is not defined or doesn\'t exist!'
+    print 'Skip: Amiga Forever data dir is not defined or doesn\'t exist!'
 
 
+# print self install directories
+print ''
+print 'Self install directories'
+print '------------------------'
+print "Validating Workbench dir \'{0}\'...".format(WORKBENCH_DIR)
+
+# get workbench 3.1 md5 files from workbench dir that matches valid workbench 3.1 md5
+workbench31_md5_files = []
+detected_workbench31_filenames = []
+for md5_file in get_md5_files_from_dir(WORKBENCH_DIR):
+    if not md5_file.md5_hash in valid_workbench31_md5_index:
+        continue
+    workbench31_md5_files.append(md5_file)
+    detected_workbench31_filenames.append(
+        valid_workbench31_md5_index[md5_file.md5_hash]['Filename'])
+detected_workbench31_filenames = list(set(detected_workbench31_filenames))
+detected_workbench31_filenames.sort()
+
+# workbench 3.1 filenames
+workbench31_filenames = []
+for entry in valid_workbench31_md5_entries:
+    workbench31_filenames.append(entry['Filename'].lower())
+workbench31_filenames = list(set(workbench31_filenames))
+workbench31_filenames.sort()
+
+# print workbench 3.1 md5 files
+print '- {0} of {1} Workbench 3.1 adf files detected'.format(
+    len(detected_workbench31_filenames), 
+    len(workbench31_filenames))
+for workbench31_md5_file in workbench31_md5_files:
+    print '- {0} MD5 match \'{1}\''.format(
+        valid_workbench31_md5_index[workbench31_md5_file.md5_hash]['Name'], 
+        workbench31_md5_file.full_filename)
+print 'Done'
 
 
+# print kickstart directory
+print ''
+print 'Validating Kickstart dir \'{0}\'...'.format(KICKSTART_DIR)
+
+# get kickstart md5 files from kickstart dir that matches valid kickstart md5
+kickstart_md5_files = []
+detected_kickstart_filenames = []
+for md5_file in get_md5_files_from_dir(KICKSTART_DIR):
+    if not md5_file.md5_hash in valid_kickstart_md5_index:
+        continue
+    detected_kickstart_filenames.append(
+        valid_kickstart_md5_index[md5_file.md5_hash]['Filename'])
+detected_kickstart_filenames = list(set(detected_kickstart_filenames))
+detected_kickstart_filenames.sort()
+
+# kickstart filenames
+kickstart_filenames = []
+for entry in valid_kickstart_md5_entries:
+    kickstart_filenames.append(entry['Filename'].lower())
+kickstart_filenames = list(set(kickstart_filenames))
+kickstart_filenames.sort()
+
+# print kickstart md5 files
+print '- {0} of {1} Kickstart rom files detected'.format(
+    len(detected_kickstart_filenames), 
+    len(kickstart_filenames))
+for kickstart_md5_file in kickstart_md5_files:
+    print '- {0} MD5 match \'{1}\''.format(
+        valid_kickstart_md5_index[kickstart_md5_file.md5_hash]['Name'], 
+        kickstart_md5_file.full_filename)
+print 'Done'
+
+# print os39 directory
+print ''
+print 'Validating OS39 dir \'{0}\'...'.format(OS39_DIR)
+
+# get os39 files from os39 dir
+os39_md5_files = get_md5_files_from_dir(OS39_DIR)
+
+# os39 filenames detected
+detected_os39_filenames_index = {}
+for md5_file in os39_md5_files:
+    os39_filename = os.path.basename(md5_file.full_filename).lower()
+    if not os39_filename in valid_os39_filename_index:
+        continue
+    detected_os39_filenames_index[valid_os39_filename_index[os39_filename]['Filename']] = md5_file
+for md5_file in os39_md5_files:
+    if not md5_file.md5_hash in valid_os39_md5_index:
+        continue
+    detected_os39_filenames_index[valid_os39_md5_index[md5_file.md5_hash]['Filename']] = md5_file
+
+# print os39 files
+print '- {0} Amiga OS 3.9 files detected'.format(len(detected_os39_filenames_index))
+
+detected_os39_filenames = []
+for detected_os39_filename in detected_os39_filenames_index.keys():
+    detected_os39_filenames.append(detected_os39_filename)
+detected_os39_filenames.sort()
+
+for os39_filename in detected_os39_filenames:
+    os39_md5_file = detected_os39_filenames_index[os39_filename]
+
+    if os39_md5_file.md5_hash in valid_os39_md5_index:
+        print '- {0} MD5 match \'{1}\''.format(valid_os39_md5_index[os39_md5_file.md5_hash]['Name'], os39_md5_file.full_filename)
+    elif os39_filename in valid_os39_filename_index:
+        print '- {0} filename match \'{1}\''.format(valid_os39_filename_index[os39_filename]['Name'], os39_md5_file.full_filename)
 
 exit(0)
 
@@ -430,11 +581,11 @@ if os.path.isfile(FSUAE_CONFIG_FILE):
     FSUAE_CONFIG_DIR = find_fsuae_config_dir()
 
     # install fs-uae config file, if fs-uae config directory exists and patch only is not set
-    if not PATCH_ONLY and FSUAE_CONFIG_DIR:
-        print '- Installing in FS-UAE configuration directory "{0}"...'.format(FSUAE_CONFIG_DIR)
-        INSTALL_FSUAE_CONFIG_FILE = os.path.join(
-            FSUAE_CONFIG_DIR, os.path.basename(FSUAE_CONFIG_FILE))
-        shutil.copyfile(FSUAE_CONFIG_FILE, INSTALL_FSUAE_CONFIG_FILE)
+    # if not PATCH_ONLY and FSUAE_CONFIG_DIR:
+    #     print '- Installing in FS-UAE configuration directory "{0}"...'.format(FSUAE_CONFIG_DIR)
+    #     INSTALL_FSUAE_CONFIG_FILE = os.path.join(
+    #         FSUAE_CONFIG_DIR, os.path.basename(FSUAE_CONFIG_FILE))
+    #     shutil.copyfile(FSUAE_CONFIG_FILE, INSTALL_FSUAE_CONFIG_FILE)
 
     print 'Done'
 else:
