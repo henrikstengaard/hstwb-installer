@@ -2,10 +2,13 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-31
+# Date:   2018-06-01
 #
 # A python script to setup HstWB images with following installation:
-# - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever using MD5 hashes.
+# - Find Cloanto Amiga Forever data dir from
+#   1. Drives or mounted iso.
+#   2. Environment variable "AMIGAFOREVERDATA".
+# - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever data dir using MD5 hashes.
 # - Validate files in self install directories using MD5 hashes to indicate, if all files are present for self install.
 # - Patch and install UAE and FS-UAE configuration files.
 # - For FS-UAE configuration files, .adf files from Workbench directory are added as swappable floppies.
@@ -18,6 +21,7 @@ import hashlib
 import re
 import shutil
 import sys
+import subprocess
 
 
 # md5 file
@@ -51,6 +55,110 @@ def get_md5_files_from_dir(_dir):
         md5_files.append(md5_file)
     
     return md5_files
+
+# find amiga forever data for from media windows
+def find_amiga_forever_data_dir_from_media_windows():
+    # process to run fsutil to list drives
+    process = subprocess.Popen(['fsutil', 'fsinfo', 'drives'], bufsize=-1,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    # get stdout and stderr from process
+    (stdout, stderr) = process.communicate()
+
+    # return, if return code is not 0
+    if process.returncode:
+        return None
+
+    # parse volume dirs from process stdout and find valid
+    for line in stdout.split('\n'):
+        # match drives
+        drives_match = re.search(r'^[^:]+:\s*(.+)\s*$', line)
+        if not drives_match:
+            continue
+        # get drives
+        drives = drives_match.group(1).strip().split(' ')
+        for drive in drives:
+            # find valid amiga files from drive
+            amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(drive, 'utf-8'))
+
+            # return, if amiga forever data dir is valid
+            if amiga_forever_data_dir != None:
+                return amiga_forever_data_dir
+
+    return None
+
+# find amiga forever data dir from media macos
+def find_amiga_forever_data_dir_from_media_macos():
+    # process to run hdiutil to list mounted volumes
+    process = subprocess.Popen(['hdiutil', 'info'], bufsize=-1,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    # get stdout and stderr from process
+    (stdout, stderr) = process.communicate()
+
+    # return, if return code is not 0
+    if process.returncode:
+        return None
+
+    # parse volume dirs from process stdout and find valid
+    for line in stdout.split('\n'):
+        columns = line.split('\t')
+        if len(columns) < 3:
+            continue
+        # match volume dir from 3rd column
+        volume_dir_match = re.search(r'^(/[^/]+/.+)\s*$', columns[2])
+        if not volume_dir_match:
+            continue
+        # get volume dir
+        volume_dir = volume_dir_match.group(1)
+
+        # find valid amiga files from volume dir
+        amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(volume_dir, 'utf-8'))
+
+        if amiga_forever_data_dir != None:
+            return amiga_forever_data_dir
+    
+    return None
+
+def find_amiga_forever_data_dir_from_media_linux():
+    # process to run findmnt to list mounted isos
+    process = subprocess.Popen(['findmnt', '-t', 'iso9660'], bufsize=-1,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # get stdout and stderr from process
+    (stdout, stderr) = process.communicate()
+
+    # return, if return code is not 0
+    if process.returncode:
+        return None
+
+    # parse volume dirs from process stdout and find valid
+    for line in stdout.split('\n'):
+        print line
+        # match target dir
+        target_dir_match = re.search(r'^(/[^\s]+)', line)
+        if not target_dir_match:
+            continue
+        # get target dir
+        target_dir = target_dir_match.group(1)
+
+        # find valid amiga files from target dir
+        amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(target_dir, 'utf-8'))
+
+        if amiga_forever_data_dir != None:
+            return amiga_forever_data_dir
+    
+    return None
+
+# find valid amiga files dir
+def find_valid_amiga_files_dir(_dir):
+    if not os.path.isdir(_dir):
+        return None
+    amiga_files_dirs = [f for f in os.listdir(_dir) if os.path.isdir(os.path.join(_dir, f))]
+    for amiga_files_dir in amiga_files_dirs:
+        if re.search(r'^amiga\sfiles$', amiga_files_dir, re.I):
+            return os.path.join(_dir, amiga_files_dir)
+    return None
 
 # find a1200 kickstart 3.1 rom file
 def find_a1200_kickstart31_rom_file(kickstart_dir):
@@ -219,14 +327,6 @@ def patch_fsuae_config_file( \
         _f.writelines(fsuae_config_lines)
 
 
-# md5_files = get_md5_entries_from_dir('test\\kickstart')
-
-# for md5_file in md5_files:
-#     print(md5_file.md5_hash, md5_file.full_filename)
-
-# exit
-
-
 # valid workbench 3.1 md5 entries
 valid_workbench31_md5_entries = [
     { 'Md5': 'c1c673eba985e9ab0888c5762cfa3d8f', 'Filename': 'workbench31extras.adf', 'Name': 'Workbench 3.1, Extras Disk (Cloanto Amiga Forever 2016)' },
@@ -282,11 +382,19 @@ for entry in valid_os39_md5_entries:
 
 # arguments
 INSTALL_DIR = '.'
-AMIGA_FOREVER_DATA_DIR = None
+amiga_forever_data_dir = None
 
-# set amiga forever data directory to amiga forever data environment variable, if not defined
-if (os.environ['AMIGAFOREVERDATA'] != None):
-    AMIGA_FOREVER_DATA_DIR = os.environ['AMIGAFOREVERDATA']
+# find amiga forever data dir from media on platforms windows, macos and linux
+if sys.platform == "win32":
+    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_windows()
+elif sys.platform == "darwin":    
+    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_macos()
+elif sys.platform == "linux" or sys.platform == "linux2":
+    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_linux()
+
+# set amiga forever data directory to amiga forever data environment variable
+if amiga_forever_data_dir == None and 'AMIGAFOREVERDATA' in os.environ and os.environ['AMIGAFOREVERDATA'] != None:
+    amiga_forever_data_dir = os.environ['AMIGAFOREVERDATA']
 
 # get arguments
 for i in range(0, len(sys.argv)):
@@ -295,14 +403,14 @@ for i in range(0, len(sys.argv)):
         INSTALL_DIR = sys.argv[i + 1]
     # amiga forever data dir argument
     if (i + 1 < len(sys.argv) and re.search(r'--amigaforeverdatadir', sys.argv[i])):
-        AMIGA_FOREVER_DATA_DIR = sys.argv[i + 1]
+        amiga_forever_data_dir = sys.argv[i + 1]
 
 # print hstwb image setup title
 print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2018-05-31'
+print 'Date: 2018-06-01'
 print ''
 print 'Install dir \'{0}\''.format(INSTALL_DIR)
 
@@ -327,11 +435,11 @@ for SELF_INSTALL_DIR in [WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DI
 print ''
 print 'Cloanto Amiga Forever'
 print '---------------------'
-print 'Amiga Forever data dir \'{0}\''.format(AMIGA_FOREVER_DATA_DIR if not AMIGA_FOREVER_DATA_DIR == None else '')
-if (AMIGA_FOREVER_DATA_DIR != None and os.path.isdir(AMIGA_FOREVER_DATA_DIR)):
+print 'Amiga Forever data dir \'{0}\''.format(amiga_forever_data_dir if not amiga_forever_data_dir == None else '')
+if (amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir)):
     print 'Install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever:'
 
-    SHARED_DIR = os.path.join(AMIGA_FOREVER_DATA_DIR, 'Shared')
+    SHARED_DIR = os.path.join(amiga_forever_data_dir, 'Shared')
 
     # install workbench 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
     SHARED_ADF_DIR = os.path.join(SHARED_DIR, 'adf')
@@ -420,6 +528,7 @@ detected_kickstart_filenames = []
 for md5_file in get_md5_files_from_dir(KICKSTART_DIR):
     if not md5_file.md5_hash in valid_kickstart_md5_index:
         continue
+    kickstart_md5_files.append(md5_file)
     detected_kickstart_filenames.append(
         valid_kickstart_md5_index[md5_file.md5_hash]['Filename'])
 detected_kickstart_filenames = list(set(detected_kickstart_filenames))
@@ -476,118 +585,3 @@ for os39_filename in detected_os39_filenames:
         print '- {0} MD5 match \'{1}\''.format(valid_os39_md5_index[os39_md5_file.md5_hash]['Name'], os39_md5_file.full_filename)
     elif os39_filename in valid_os39_filename_index:
         print '- {0} filename match \'{1}\''.format(valid_os39_filename_index[os39_filename]['Name'], os39_md5_file.full_filename)
-
-exit(0)
-
-
-# get current directory
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-
-# read winuae and fs-uae config files
-UAE_CONFIG_LINES = []
-
-# add fs-uae config lines, if fs-uae config file exists
-FSUAE_CONFIG_FILE = os.path.join(CURRENT_DIR, 'hstwb-installer.fs-uae')
-if os.path.isfile(FSUAE_CONFIG_FILE):
-    with open(FSUAE_CONFIG_FILE) as f:
-        UAE_CONFIG_LINES.extend(f.readlines())
-
-# self install directories
-WORKBENCH_DIR = os.path.join(CURRENT_DIR, 'workbench')
-KICKSTART_DIR = os.path.join(CURRENT_DIR, 'kickstart')
-OS39_DIR = os.path.join(CURRENT_DIR, 'os39')
-USERPACKAGES_DIR = os.path.join(CURRENT_DIR, 'userpackages')
-SELF_INSTALL_DIRS = []
-
-# check, if self install directories exists in uae config files
-WORKBENCH_DIR_PRESENT = False
-KICKSTART_DIR_PRESENT = False
-OS39_DIR_PRESENT = False
-USERPACKAGES_DIR_PRESENT = False
-for UAE_CONFIG_LINE in UAE_CONFIG_LINES:
-    if re.search('WORKBENCHDIR', UAE_CONFIG_LINE):
-        WORKBENCH_DIR_PRESENT = True
-        SELF_INSTALL_DIRS.append(WORKBENCH_DIR)
-    if re.search('KICKSTARTDIR', UAE_CONFIG_LINE):
-        KICKSTART_DIR_PRESENT = True
-        SELF_INSTALL_DIRS.append(KICKSTART_DIR)
-    if re.search('OS39DIR', UAE_CONFIG_LINE):
-        OS39_DIR_PRESENT = True
-        SELF_INSTALL_DIRS.append(OS39_DIR)
-    if re.search('USERPACKAGESDIR', UAE_CONFIG_LINE):
-        USERPACKAGES_DIR_PRESENT = True
-        SELF_INSTALL_DIRS.append(USERPACKAGES_DIR)
-
-# create self install directories, if they don't exist
-for SELF_INSTALL_DIR in SELF_INSTALL_DIRS:
-    if not os.path.exists(SELF_INSTALL_DIR):
-        os.makedirs(SELF_INSTALL_DIR)
-
-
-# print install use config title
-print '------------------'
-print 'Install UAE Config'
-print '------------------'
-print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2017-11-09'
-print ''
-print 'Patch hard drives to use the following directories:'
-print 'IMAGEDIR        : "{0}"'.format(CURRENT_DIR)
-
-# print workbenchdir, if it's present
-if WORKBENCH_DIR_PRESENT:
-    print 'WORKBENCHDIR    : "{0}"'.format(WORKBENCH_DIR)
-
-# print kickstartdir, if it's present
-if KICKSTART_DIR_PRESENT:
-    print 'KICKSTARTDIR    : "{0}"'.format(KICKSTART_DIR)
-
-# print os39dir, if it's present
-if OS39_DIR_PRESENT:
-    print 'OS39DIR         : "{0}"'.format(OS39_DIR)
-
-# print userpackagesdir, if it's present
-if USERPACKAGES_DIR_PRESENT:
-    print 'USERPACKAGESDIR : "{0}"'.format(USERPACKAGES_DIR)
-
-# set a1200 kickstart rom dir to kickstart dir, if it exists.
-# otherwise set a1200 kickstart rom dir to current dir
-if KICKSTART_DIR_PRESENT:
-    A1200_KICKSTART_ROM_DIR = KICKSTART_DIR
-else:
-    A1200_KICKSTART_ROM_DIR = CURRENT_DIR
-
-# get a1200 kickstart 3.1 rom from a1200 kickstart rom dir
-A1200_KICKSTART_ROM_FILE = find_a1200_kickstart31_rom_file(A1200_KICKSTART_ROM_DIR)
-
-# patch and install fs-uae config file, if it exists
-if os.path.isfile(FSUAE_CONFIG_FILE):
-    print ''
-    print 'FS-UAE configuration file "{0}"'.format(FSUAE_CONFIG_FILE)
-    print '- Patching hard drive directories, kickstart rom file, ' \
-        'Amiga OS 3.9 iso file and add Workbench adf files as swappable floppies...'
-
-    # patch fs-uae config file
-    patch_fsuae_config_file(
-        FSUAE_CONFIG_FILE, \
-        A1200_KICKSTART_ROM_FILE, \
-        CURRENT_DIR, \
-        WORKBENCH_DIR, \
-        KICKSTART_DIR, \
-        OS39_DIR, \
-        USERPACKAGES_DIR)
-
-    # get fs-uae config directory
-    FSUAE_CONFIG_DIR = find_fsuae_config_dir()
-
-    # install fs-uae config file, if fs-uae config directory exists and patch only is not set
-    # if not PATCH_ONLY and FSUAE_CONFIG_DIR:
-    #     print '- Installing in FS-UAE configuration directory "{0}"...'.format(FSUAE_CONFIG_DIR)
-    #     INSTALL_FSUAE_CONFIG_FILE = os.path.join(
-    #         FSUAE_CONFIG_DIR, os.path.basename(FSUAE_CONFIG_FILE))
-    #     shutil.copyfile(FSUAE_CONFIG_FILE, INSTALL_FSUAE_CONFIG_FILE)
-
-    print 'Done'
-else:
-    print 'FS-UAE configuration file "{0}" doesn''t exist!'.format(FSUAE_CONFIG_FILE)
-    
