@@ -56,10 +56,9 @@ def get_md5_files_from_dir(_dir):
     
     return md5_files
 
-# find amiga forever data for from media windows
-def find_amiga_forever_data_dir_from_media_windows():
-    # process to run fsutil to list drives
-    process = subprocess.Popen(['fsutil', 'fsinfo', 'drives'], bufsize=-1,
+def run_command(commands):
+    # process to run commands
+    process = subprocess.Popen(commands, bufsize=-1,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     
     # get stdout and stderr from process
@@ -68,9 +67,19 @@ def find_amiga_forever_data_dir_from_media_windows():
     # return, if return code is not 0
     if process.returncode:
         return None
+    
+    return stdout
 
-    # parse volume dirs from process stdout and find valid
-    for line in stdout.split('\n'):
+# find amiga forever data for from media windows
+def find_amiga_forever_data_dir_from_media_windows():
+    # run command fsutil to list drives
+    output = run_command(['fsutil', 'fsinfo', 'drives'])
+
+    if output == None:
+        return None
+
+    # parse volume dirs from output and find valid
+    for line in output.split('\n'):
         # match drives
         drives_match = re.search(r'^[^:]+:\s*(.+)\s*$', line)
         if not drives_match:
@@ -89,19 +98,14 @@ def find_amiga_forever_data_dir_from_media_windows():
 
 # find amiga forever data dir from media macos
 def find_amiga_forever_data_dir_from_media_macos():
-    # process to run hdiutil to list mounted volumes
-    process = subprocess.Popen(['hdiutil', 'info'], bufsize=-1,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
-    # get stdout and stderr from process
-    (stdout, stderr) = process.communicate()
+    # run command hdiutil to list mounted volumes
+    output = run_command(['hdiutil', 'info'])
 
-    # return, if return code is not 0
-    if process.returncode:
+    if output == None:
         return None
 
-    # parse volume dirs from process stdout and find valid
-    for line in stdout.split('\n'):
+    # parse volume dirs from output and find valid
+    for line in output.split('\n'):
         columns = line.split('\t')
         if len(columns) < 3:
             continue
@@ -121,19 +125,14 @@ def find_amiga_forever_data_dir_from_media_macos():
     return None
 
 def find_amiga_forever_data_dir_from_media_linux():
-    # process to run findmnt to list mounted isos
-    process = subprocess.Popen(['findmnt', '-t', 'iso9660'], bufsize=-1,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # run command findmnt to list mounted isos
+    output = run_command(['findmnt', '-t', 'iso9660'])
 
-    # get stdout and stderr from process
-    (stdout, stderr) = process.communicate()
-
-    # return, if return code is not 0
-    if process.returncode:
+    if output == None:
         return None
 
-    # parse volume dirs from process stdout and find valid
-    for line in stdout.split('\n'):
+    # parse volume dirs from output and find valid
+    for line in output.split('\n'):
         print line
         # match target dir
         target_dir_match = re.search(r'^(/[^\s]+)', line)
