@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-01
+# Date:   2018-06-02
 #
 # A python script to setup HstWB images with following installation:
 # - Find Cloanto Amiga Forever data dir from
@@ -380,26 +380,14 @@ for entry in valid_os39_md5_entries:
     valid_os39_filename_index[entry['Filename'].lower()] = entry
 
 # arguments
-INSTALL_DIR = '.'
+install_dir = '.'
 amiga_forever_data_dir = None
-
-# find amiga forever data dir from media on platforms windows, macos and linux
-if sys.platform == "win32":
-    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_windows()
-elif sys.platform == "darwin":    
-    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_macos()
-elif sys.platform == "linux" or sys.platform == "linux2":
-    amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_linux()
-
-# set amiga forever data directory to amiga forever data environment variable
-if amiga_forever_data_dir == None and 'AMIGAFOREVERDATA' in os.environ and os.environ['AMIGAFOREVERDATA'] != None:
-    amiga_forever_data_dir = os.environ['AMIGAFOREVERDATA']
 
 # get arguments
 for i in range(0, len(sys.argv)):
     # install dir argument
     if (i + 1 < len(sys.argv) and re.search(r'--installdir', sys.argv[i])):
-        INSTALL_DIR = sys.argv[i + 1]
+        install_dir = sys.argv[i + 1]
     # amiga forever data dir argument
     if (i + 1 < len(sys.argv) and re.search(r'--amigaforeverdatadir', sys.argv[i])):
         amiga_forever_data_dir = sys.argv[i + 1]
@@ -409,71 +397,93 @@ print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2018-06-01'
+print 'Date: 2018-06-02'
 print ''
-print 'Install dir \'{0}\''.format(INSTALL_DIR)
+print 'Install dir \'{0}\''.format(install_dir)
 
 # fail, if install directory doesn't exist
-if (INSTALL_DIR != None and not os.path.isdir(INSTALL_DIR)):
+if (install_dir != None and not os.path.isdir(install_dir)):
     print 'Error: Install dir doesn\'t exist'
     exit(1)
 
 # self install directories
-WORKBENCH_DIR = os.path.join(INSTALL_DIR, 'workbench')
-KICKSTART_DIR = os.path.join(INSTALL_DIR, 'kickstart')
-OS39_DIR = os.path.join(INSTALL_DIR, 'os39')
-USERPACKAGES_DIR = os.path.join(INSTALL_DIR, 'userpackages')
+workbench_dir = os.path.join(install_dir, 'workbench')
+kickstart_dir = os.path.join(install_dir, 'kickstart')
+os39_dir = os.path.join(install_dir, 'os39')
+userpackages_dir = os.path.join(install_dir, 'userpackages')
 
 # create self install directories, if they don't exist
-for SELF_INSTALL_DIR in [WORKBENCH_DIR, KICKSTART_DIR, OS39_DIR, USERPACKAGES_DIR]:
-    if not os.path.exists(SELF_INSTALL_DIR):
-        os.makedirs(SELF_INSTALL_DIR)
+for self_install_dir in [workbench_dir, kickstart_dir, os39_dir, userpackages_dir]:
+    if not os.path.exists(self_install_dir):
+        os.makedirs(self_install_dir)
 
 
 # cloanto amiga forever
 print ''
 print 'Cloanto Amiga Forever'
 print '---------------------'
+
+# autodetect amiga forever data dir, if it's not defined
+if amiga_forever_data_dir == None:
+    print 'Autodetecting Amiga Forever data dir:'
+
+    # find amiga forever data dir from media on platforms windows, macos and linux
+    if sys.platform == "win32":
+        amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_windows()
+    elif sys.platform == "darwin":    
+        amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_macos()
+    elif sys.platform == "linux" or sys.platform == "linux2":
+        amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_linux()
+
+    if amiga_forever_data_dir != None:
+        print '- Detected Amiga Forever data dir from media'
+    elif 'AMIGAFOREVERDATA' in os.environ and os.environ['AMIGAFOREVERDATA'] != None:
+        print '- Detected Amiga Forever data dir from environment variable'
+        amiga_forever_data_dir = os.environ['AMIGAFOREVERDATA']
+    print 'Done'
+    print ''
+
+# install workbench 3.1 and kickstart rom files from amiga forever data dir, if it defined and exists
 print 'Amiga Forever data dir \'{0}\''.format(amiga_forever_data_dir if not amiga_forever_data_dir == None else '')
 if (amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir)):
     print 'Install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever:'
 
-    SHARED_DIR = os.path.join(amiga_forever_data_dir, 'Shared')
+    shared_dir = os.path.join(amiga_forever_data_dir, 'Shared')
 
     # install workbench 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
-    SHARED_ADF_DIR = os.path.join(SHARED_DIR, 'adf')
-    print '- Amiga Forever data dir shared adf dir \'{0}\''.format(SHARED_ADF_DIR)
-    if os.path.isdir(SHARED_ADF_DIR):
-        print '- Installing Workbench 3.1 adf files to Workbench dir \'{0}\'...'.format(WORKBENCH_DIR)
+    shared_adf_dir = os.path.join(shared_dir, 'adf')
+    print '- Amiga Forever data dir shared adf dir \'{0}\''.format(shared_adf_dir)
+    if os.path.isdir(shared_adf_dir):
+        print '- Installing Workbench 3.1 adf files to Workbench dir \'{0}\'...'.format(workbench_dir)
 
         # copy workbench 3.1 adf files from shared adf dir that matches valid workbench 3.1 md5
-        for md5_file in get_md5_files_from_dir(SHARED_ADF_DIR):
+        for md5_file in get_md5_files_from_dir(shared_adf_dir):
             if not md5_file.md5_hash in valid_workbench31_md5_index:
                 continue
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(WORKBENCH_DIR, os.path.basename(md5_file.full_filename)))
+                os.path.join(workbench_dir, os.path.basename(md5_file.full_filename)))
     else:
         print 'Skip: Amiga Forever data shared adf dir doesn\'t exist!'
 
     # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
-    SHARED_ROM_DIR = os.path.join(SHARED_DIR, 'rom')
-    print '- Amiga Forever data dir shared rom dir \'{0}\''.format(SHARED_ROM_DIR)
-    if os.path.isdir(SHARED_ROM_DIR):
-        print '- Installing Kickstart rom files to Kickstart dir \'{0}\'...'.format(KICKSTART_DIR)
+    shared_rom_dir = os.path.join(shared_dir, 'rom')
+    print '- Amiga Forever data dir shared rom dir \'{0}\''.format(shared_rom_dir)
+    if os.path.isdir(shared_rom_dir):
+        print '- Installing Kickstart rom files to Kickstart dir \'{0}\'...'.format(kickstart_dir)
 
         # copy kickstart rom files from shared rom dir that matches valid kickstart md5
-        for md5_file in get_md5_files_from_dir(SHARED_ROM_DIR):
+        for md5_file in get_md5_files_from_dir(shared_rom_dir):
             if not md5_file.md5_hash in valid_kickstart_md5_index:
                 continue
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(KICKSTART_DIR, os.path.basename(md5_file.full_filename)))
+                os.path.join(kickstart_dir, os.path.basename(md5_file.full_filename)))
 
         # copy amiga forever rom key file, if it exists
-        rom_key_file = os.path.join(SHARED_ROM_DIR, 'rom.key')
+        rom_key_file = os.path.join(shared_rom_dir, 'rom.key')
         if os.path.isfile(rom_key_file):
-            shutil.copyfile(rom_key_file, os.path.join(KICKSTART_DIR, 'rom.key'))
+            shutil.copyfile(rom_key_file, os.path.join(kickstart_dir, 'rom.key'))
     else:
         print 'Skip: Amiga Forever data shared rom dir doesn\'t exist!'
     print 'Done'
@@ -485,12 +495,12 @@ else:
 print ''
 print 'Self install directories'
 print '------------------------'
-print "Validating Workbench dir \'{0}\'...".format(WORKBENCH_DIR)
+print "Validating Workbench dir \'{0}\'...".format(workbench_dir)
 
 # get workbench 3.1 md5 files from workbench dir that matches valid workbench 3.1 md5
 workbench31_md5_files = []
 detected_workbench31_filenames = []
-for md5_file in get_md5_files_from_dir(WORKBENCH_DIR):
+for md5_file in get_md5_files_from_dir(workbench_dir):
     if not md5_file.md5_hash in valid_workbench31_md5_index:
         continue
     workbench31_md5_files.append(md5_file)
@@ -519,12 +529,12 @@ print 'Done'
 
 # print kickstart directory
 print ''
-print 'Validating Kickstart dir \'{0}\'...'.format(KICKSTART_DIR)
+print 'Validating Kickstart dir \'{0}\'...'.format(kickstart_dir)
 
 # get kickstart md5 files from kickstart dir that matches valid kickstart md5
 kickstart_md5_files = []
 detected_kickstart_filenames = []
-for md5_file in get_md5_files_from_dir(KICKSTART_DIR):
+for md5_file in get_md5_files_from_dir(kickstart_dir):
     if not md5_file.md5_hash in valid_kickstart_md5_index:
         continue
     kickstart_md5_files.append(md5_file)
@@ -552,10 +562,10 @@ print 'Done'
 
 # print os39 directory
 print ''
-print 'Validating OS39 dir \'{0}\'...'.format(OS39_DIR)
+print 'Validating OS39 dir \'{0}\'...'.format(os39_dir)
 
 # get os39 files from os39 dir
-os39_md5_files = get_md5_files_from_dir(OS39_DIR)
+os39_md5_files = get_md5_files_from_dir(os39_dir)
 
 # os39 filenames detected
 detected_os39_filenames_index = {}
@@ -584,3 +594,67 @@ for os39_filename in detected_os39_filenames:
         print '- {0} MD5 match \'{1}\''.format(valid_os39_md5_index[os39_md5_file.md5_hash]['Name'], os39_md5_file.full_filename)
     elif os39_filename in valid_os39_filename_index:
         print '- {0} filename match \'{1}\''.format(valid_os39_filename_index[os39_filename]['Name'], os39_md5_file.full_filename)
+
+print 'Done'
+
+# print user packages directory
+print ''
+print 'Validating User Packages dir \'{0}\'...'.format(userpackages_dir)
+
+user_package_dirs = [os.path.join(userpackages_dir, n) for n in os.listdir(unicode(userpackages_dir, 'utf-8')) \
+        if os.path.isfile(os.path.join(os.path.join(userpackages_dir, n), '_installdir'))]
+
+print '- {0} user packages detected'.format(len(user_package_dirs))
+
+for user_package_dir in user_package_dirs:
+    print '- {0} \'{1}\''.format(os.path.basename(user_package_dir), user_package_dir)
+print 'Done'
+
+
+# print files for patching
+print ''
+print 'Files for patching'
+print '------------------'
+print 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files for patching configuration files...'
+
+# find first a1200 kickstart 3.1 rom md5 file
+a1200_kickstart_rom_md5_file = None
+for md5_file in kickstart_md5_files:
+    if md5_file.md5_hash in valid_kickstart_md5_index and re.search(r'kick40068\.a1200', valid_kickstart_md5_index[md5_file.md5_hash]['Filename'], re.I):
+        a1200_kickstart_rom_md5_file = md5_file
+        break
+
+# find a1200 kickstart 3.1 rom file
+a1200_kickstart_rom_file = None
+if a1200_kickstart_rom_md5_file != None:
+    # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
+    rom_key_file = os.path.join(kickstart_dir, 'rom.key')
+    if valid_kickstart_md5_index[md5_file.md5_hash]['Encrypted'] and not os.path.isfile(rom_key_file):
+        print 'Error: Amiga Forever rom key file \'{0}\' doesn\'t exist'.format(rom_key_file)
+        exit(1)
+    a1200_kickstart_rom_file = a1200_kickstart_rom_md5_file.full_filename
+
+if a1200_kickstart_rom_file != None:
+    print '- Using A1200 Kickstart 3.1 rom file \'{0}\''.format(a1200_kickstart_rom_file)
+else:
+    print '- No A1200 Kickstart 3.1 rom file detected'
+
+# get amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'        
+amiga_os39_md5_files = []
+for md5_file in os39_md5_files:
+    if ((md5_file.md5_hash in valid_os39_md5_index and 
+        re.search(r'amigaos3\.9\.iso', valid_os39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
+        re.search(r'(\\|//)?amigaos3\.9\.iso$', md5_file.full_filename, re.I)):
+        amiga_os39_md5_files.append(md5_file)
+
+# sort amiga os39 md5 files by matching md5, then filename
+amiga_os39_md5_files = sorted(amiga_os39_md5_files, key=lambda x: x.md5_hash not in valid_os39_md5_index)
+
+amiga_os39_iso_file = None
+if len(amiga_os39_md5_files) >= 1:
+    amiga_os39_iso_file = amiga_os39_md5_files[0].full_filename
+    print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os39_iso_file)
+else:
+    print '- No Amiga OS 3.9 iso file detected'
+
+print 'Done'
