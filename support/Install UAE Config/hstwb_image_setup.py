@@ -2,10 +2,10 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-02
+# Date:   2018-06-03
 #
 # A python script to setup HstWB images with following installation:
-# - Find Cloanto Amiga Forever data dir from
+# - Find Cloanto Amiga Forever data dir from media:
 #   1. Drives or mounted iso.
 #   2. Environment variable "AMIGAFOREVERDATA".
 # - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever data dir using MD5 hashes.
@@ -159,51 +159,6 @@ def find_valid_amiga_files_dir(_dir):
             return os.path.join(_dir, amiga_files_dir)
     return None
 
-# find a1200 kickstart 3.1 rom file
-def find_a1200_kickstart31_rom_file(kickstart_dir):
-    """Find A1200 Kickstart31 Rom File"""
-
-    # return none, if kickstart dir doesn't exist
-    if not os.path.exists(kickstart_dir):
-        return None
-
-    # get rom files from kickstart dir
-    rom_files = [os.path.join(kickstart_dir, _f) for _f in os.listdir(kickstart_dir) \
-        if os.path.isfile(os.path.join(kickstart_dir, _f)) and _f.endswith(".rom")]
-
-    for rom_file in rom_files:
-        md5_hash = calculate_md5_from_file(rom_file)
-
-        # return kickstart file, if md5 matches
-        # Cloanto Amiga Forever 2016 Kickstart 3.1 (40.068) (A1200) rom
-        if md5_hash == 'dc3f5e4698936da34186d596c53681ab':
-            return rom_file
-
-        # return kickstart file, if md5 matches
-        # Custom Kickstart 3.1 (40.068) (A1200) rom
-        if md5_hash == '646773759326fbac3b2311fd8c8793ee':
-            return rom_file
-
-    return None
-
-# find amiga os 3.9 iso file
-def find_amiga_os_39_iso_file(os39_dir):
-    """Find Amiga OS 3.9 iso file"""
-
-    # return none, if os39 dir doesn't exist
-    if not os.path.exists(os39_dir):
-        return None
-
-    # get amiga os 3.9 iso files from os39 directory
-    amiga_os_39_iso_files = [os.path.join(os39_dir, _f) for _f in os.listdir(os39_dir) \
-        if os.path.isfile(os.path.join(os39_dir, _f)) and re.search(r'amigaos3\.9\.iso$', _f)]
-
-    # return none, if amiga os 3.9 iso files exist doesn't exist
-    if len(amiga_os_39_iso_files) == 0:
-        return None
-
-    return amiga_os_39_iso_files[0]
-
 # find fsuae config dir
 def find_fsuae_config_dir():
     """Find FSUAE Config Dir"""
@@ -222,15 +177,12 @@ def find_fsuae_config_dir():
 def patch_fsuae_config_file( \
     fsuae_config_file, \
     a1200_kickstart_rom_file, \
-    current_dir, \
-    workbench_dir, \
-    kickstart_dir, \
-    os39_dir, \
-    userpackages_dir):
+    amiga_os39_iso_file, \
+    workbench_dir):
     """Patch FSUAE Config File"""
 
-    # find amiga os 3.9 iso file in os39 dir
-    amiga_os_39_iso_file = find_amiga_os_39_iso_file(os39_dir)
+    # get fs-uae config dir
+    fsuae_config_dir = os.path.dirname(fsuae_config_file)
 
     # read fs-uae config file
     hard_drive_labels = {}
@@ -254,14 +206,15 @@ def patch_fsuae_config_file( \
 
         # patch cdrom drive 0
         if re.search(r'^cdrom_drive_0\s*=', line):
-            if amiga_os_39_iso_file:
-                line = 'cdrom_drive_0 = {0}\n'.format(amiga_os_39_iso_file.replace('\\', '/'))
+            if amiga_os39_iso_file:
+                line = 'cdrom_drive_0 = {0}\n'.format(
+                    amiga_os39_iso_file.replace('\\', '/'))
             else:
                 line = 'cdrom_drive_0 = \n'
 
         # patch logs dir
         if re.search(r'^logs_dir\s*=', line):
-            line = 'logs_dir = {0}\n'.format(current_dir.replace('\\', '/'))
+            line = 'logs_dir = {0}\n'.format(fsuae_config_dir.replace('\\', '/'))
 
         # patch kickstart file
         if re.search(r'^kickstart_file\s*=', line):
@@ -278,33 +231,12 @@ def patch_fsuae_config_file( \
             hard_drive_index = hard_drive_match.group(1)
             hard_drive_path = hard_drive_match.group(2)
             if hard_drive_index in hard_drive_labels:
-                # patch workbenchdir hard drive
-                if hard_drive_labels[hard_drive_index] == 'WORKBENCHDIR':
-                    line = re.sub(
-                        r'^(hard_drive_\d+\s*=\s*).*', \
-                        '\\1{0}'.format(workbench_dir.replace('\\', '/')), line)
-                # patch kickstartdir hard drive
-                elif hard_drive_labels[hard_drive_index] == 'KICKSTARTDIR':
-                    line = re.sub(
-                        r'^(hard_drive_\d+\s*=\s*).*', \
-                        '\\1{0}'.format(kickstart_dir.replace('\\', '/')), line)
-                # patch os39dir hard drive
-                elif hard_drive_labels[hard_drive_index] == 'OS39DIR':
-                    line = re.sub(
-                        r'^(hard_drive_\d+\s*=\s*).*', \
-                        '\\1{0}'.format(os39_dir.replace('\\', '/')), line)
-                # patch userpackagesdir hard drive
-                elif hard_drive_labels[hard_drive_index] == 'USERPACKAGESDIR':
-                    line = re.sub(
-                        r'^(hard_drive_\d+\s*=\s*).*', \
-                        '\\1{0}'.format(userpackages_dir.replace('\\', '/')), line)
                 # patch hard drive
-                else:
-                    hard_drive_path = os.path.join(
-                        current_dir, os.path.basename(hard_drive_path)).replace('\\', '/')
-                    line = re.sub(
-                        r'^(hard_drive_\d+\s*=\s*).*', \
-                        '\\1{0}'.format(hard_drive_path), line)
+                hard_drive_path = os.path.join(
+                    fsuae_config_dir, os.path.basename(hard_drive_path)).replace('\\', '/')
+                line = re.sub(
+                    r'^(hard_drive_\d+\s*=\s*).*', \
+                    '\\1{0}'.format(hard_drive_path), line)
 
         # update line, if it's changed
         if line != fsuae_config_lines[i]:
@@ -317,6 +249,8 @@ def patch_fsuae_config_file( \
             if os.path.isfile(os.path.join(workbench_dir, _f)) and _f.endswith(".adf")])
 
     # add adf files to fs-uae config lines as swappable floppies
+    if len(adf_files) > 0:
+        fsuae_config_lines.append('\n')
     for i in range(0, len(adf_files)):
         fsuae_config_lines.append(
             'floppy_image_{0} = {1}\n'.format(i, adf_files[i].replace('\\', '/')))
@@ -397,7 +331,7 @@ print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2018-06-02'
+print 'Date: 2018-06-03'
 print ''
 print 'Install dir \'{0}\''.format(install_dir)
 
@@ -602,7 +536,7 @@ print ''
 print 'Validating User Packages dir \'{0}\'...'.format(userpackages_dir)
 
 user_package_dirs = [os.path.join(userpackages_dir, n) for n in os.listdir(unicode(userpackages_dir, 'utf-8')) \
-        if os.path.isfile(os.path.join(os.path.join(userpackages_dir, n), '_installdir'))]
+    if os.path.isfile(os.path.join(os.path.join(userpackages_dir, n), '_installdir'))]
 
 print '- {0} user packages detected'.format(len(user_package_dirs))
 
@@ -656,5 +590,53 @@ if len(amiga_os39_md5_files) >= 1:
     print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os39_iso_file)
 else:
     print '- No Amiga OS 3.9 iso file detected'
+
+print 'Done'
+
+
+# # print uae configuration
+# print ''
+# print 'UAE configuration'
+# print '-----------------'
+
+# print 'Done'
+
+
+# print fs-uae configuration
+print ''
+print 'FS-UAE configuration'
+print '--------------------'
+
+# get fs-uae config directory
+fsuae_config_dir = find_fsuae_config_dir()
+
+# get fs-uae config files from install directory
+fsuae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
+    if re.search(r'\.fs-uae$', n, re.I)]
+
+# print patch and install fs-uae configuration files
+print 'Patching and installing FS-UAE configuration files from \'{0}\'...'.format(install_dir)
+
+# print fs-uae configuration dir, if it exists
+if fsuae_config_dir != None:
+    print '- FS-UAE configuration dir detected \'{0}\''.format(fsuae_config_dir)
+
+# patch and install fs-uae configuration files
+if len(fsuae_config_files) > 0:
+    for fsuae_config_file in fsuae_config_files:
+        print '- FS-UAE configuration file \'{0}\''.format(fsuae_config_file)
+        patch_fsuae_config_file(
+            os.path.realpath(fsuae_config_file),
+            os.path.realpath(a1200_kickstart_rom_file),
+            os.path.realpath(amiga_os39_iso_file),
+            os.path.realpath(workbench_dir))
+
+        # install fs-uae config file, if fs-uae config directory exists
+        if fsuae_config_dir != None:
+            shutil.copyfile(
+                fsuae_config_file, 
+                os.path.join(fsuae_config_dir, os.path.basename(fsuae_config_file)))
+else:
+    print '- No FS-UAE configuration files detected'
 
 print 'Done'
