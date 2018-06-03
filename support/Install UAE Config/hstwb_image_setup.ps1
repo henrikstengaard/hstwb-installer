@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-30
+# Date:   2018-06-03
 #
 # A powershell script to setup HstWB images with following installation:
 # - Detect and install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever using MD5 hashes.
@@ -288,7 +288,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-30"
+Write-Output "Date: 2018-06-03"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
@@ -509,7 +509,7 @@ if ($a1200KickstartRomMd5File)
 {
     # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
     $romKeyFile = Join-Path $kickstartDir -ChildPath 'rom.key'
-    if ($a1200KickstartRomMd5Entry.Encrypted -and !(Test-Path $romKeyFile))
+    if ($kickstartRomMd5Index[$a1200KickstartRomMd5File.Md5.ToLower()].Encrypted -and !(Test-Path $romKeyFile))
     {
         throw ("Amiga Forever rom key file '{0}' doesn't exist" -f $romKeyFile)
     }
@@ -527,7 +527,7 @@ else
 }
 
 $amigaOs39IsoMd5File = $os39Md5Files | `
-    Where-Object { ($os39Md5Index.ContainsKey($_.Md5.ToLower()) -and $os39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso$') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
+    Where-Object { ($os39Md5Index.ContainsKey($_.Md5.ToLower()) -and $os39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
     Sort-Object @{expression={!$os39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
     Select-Object -First 1
 
