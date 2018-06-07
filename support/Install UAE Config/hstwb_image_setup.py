@@ -573,48 +573,58 @@ if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forev
     print ''
     print 'Cloanto Amiga Forever'
     print '---------------------'
+    print 'Install Workbench 3.1 adf and Kickstart rom files from Amiga Forever data dir...'
 
     shared_dir = os.path.join(amiga_forever_data_dir, 'Shared')
     shared_adf_dir = os.path.join(shared_dir, 'adf')
     shared_rom_dir = os.path.join(shared_dir, 'rom')
 
-    # install workbench 3.1 adf and kickstart rom files from amiga forever data dir, if self install is true
-    print 'Install Workbench 3.1 adf and Kickstart rom files from Cloanto Amiga Forever:'
-
     # install workbench 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
-    print '- Amiga Forever data dir shared adf dir \'{0}\''.format(shared_adf_dir)
     if os.path.isdir(shared_adf_dir):
-        print '- Installing Workbench 3.1 adf files to Workbench dir \'{0}\'...'.format(workbench_dir)
-
         # copy workbench 3.1 adf files from shared adf dir that matches valid workbench 3.1 md5
+        installed_workbench31_adf_filenames = []
         for md5_file in get_md5_files_from_dir(shared_adf_dir):
             if not md5_file.md5_hash in valid_workbench31_md5_index:
                 continue
+            workbench31_adf_filename = os.path.basename(md5_file.full_filename)
+            installed_workbench31_adf_filenames.append(workbench31_adf_filename)
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(workbench_dir, os.path.basename(md5_file.full_filename)))
+                os.path.join(workbench_dir, workbench31_adf_filename))
+
+        # print installed workbench 3.1 adf files
+        print '- {0} Workbench 3.1 adf files installed: \'{1}\''.format(
+            len(installed_workbench31_adf_filenames), 
+            ', '.join(installed_workbench31_adf_filenames))
     else:
-        print 'Skip: Amiga Forever data shared adf dir doesn\'t exist!'
+        print '- No Amiga Forever data shared adf dir detected'
 
     # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
-    print '- Amiga Forever data dir shared rom dir \'{0}\''.format(shared_rom_dir)
     if os.path.isdir(shared_rom_dir):
-        print '- Installing Kickstart rom files to Kickstart dir \'{0}\'...'.format(kickstart_dir)
-
         # copy kickstart rom files from shared rom dir that matches valid kickstart md5
+        installed_kickstart_rom_filenames = []
         for md5_file in get_md5_files_from_dir(shared_rom_dir):
             if not md5_file.md5_hash in valid_kickstart_md5_index:
                 continue
+            kickstart_rom_filename = os.path.basename(md5_file.full_filename)
+            installed_kickstart_rom_filenames.append(kickstart_rom_filename)
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(kickstart_dir, os.path.basename(md5_file.full_filename)))
+                os.path.join(kickstart_dir, kickstart_rom_filename))
 
         # copy amiga forever rom key file, if it exists
-        rom_key_file = os.path.join(shared_rom_dir, 'rom.key')
+        rom_key_filename = 'rom.key'
+        rom_key_file = os.path.join(shared_rom_dir, rom_key_filename)
         if os.path.isfile(rom_key_file):
-            shutil.copyfile(rom_key_file, os.path.join(kickstart_dir, 'rom.key'))
+            installed_kickstart_rom_filenames.append(rom_key_filename)
+            shutil.copyfile(rom_key_file, os.path.join(kickstart_dir, rom_key_filename))
+
+        # print installed kickstart rom files
+        print '- {0} Kickstart rom files installed: \'{1}\''.format(
+            len(installed_kickstart_rom_filenames), 
+            ', '.join(installed_kickstart_rom_filenames))
     else:
-        print 'Skip: Amiga Forever data shared rom dir doesn\'t exist!'
+        print '- No Amiga Forever data shared rom dir detected'
     print 'Done'
 
 
@@ -669,11 +679,15 @@ if self_install:
     detected_kickstart_md5_index = {}
     detected_kickstart_filenames = []
     for md5_file in get_md5_files_from_dir(kickstart_dir):
+        detected_kickstart_filename = os.path.basename(md5_file.full_filename)
+        if re.search(r'^rom.key$', detected_kickstart_filename, re.I):
+            detected_kickstart_filenames.append(detected_kickstart_filename)
+            continue
         if not md5_file.md5_hash in valid_kickstart_md5_index:
             continue
         detected_kickstart_md5_index[valid_kickstart_md5_index[md5_file.md5_hash]['Filename'].lower()] = \
             valid_kickstart_md5_index[md5_file.md5_hash]
-        detected_kickstart_filenames.append(os.path.basename(md5_file.full_filename))
+        detected_kickstart_filenames.append(detected_kickstart_filename)
     detected_kickstart_filenames = list(set(detected_kickstart_filenames))
     detected_kickstart_filenames.sort()
 
