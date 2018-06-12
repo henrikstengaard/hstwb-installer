@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-07
+# Date:   2018-06-12
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -480,13 +480,13 @@ print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2018-06-07'
+print 'Date: 2018-06-12'
 print ''
 print 'Install dir \'{0}\''.format(install_dir)
 
 # fail, if install directory doesn't exist
 if (install_dir != None and not os.path.isdir(install_dir)):
-    print 'Error: Install dir doesn\'t exist'
+    print 'Error: Install dir \'{0}\' doesn\'t exist'.format(install_dir)
     exit(1)
 
 # set uae install directory to winuae config directory, if uae install directory is not defined and platform is win32
@@ -535,7 +535,7 @@ if self_install:
 
 # autodetect amiga forever data dir, if it's not defined
 if amiga_forever_data_dir == None:
-    # find amiga forever data dir from media on platforms windows, macos and linux and from environment variable on windows
+    # find amiga forever data dir from media on platforms windows, macos and linux
     if sys.platform == "win32":
         amiga_forever_data_dir = find_amiga_forever_data_dir_from_media_windows()
     elif sys.platform == "darwin":    
