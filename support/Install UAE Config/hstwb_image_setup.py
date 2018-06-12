@@ -189,9 +189,9 @@ def find_valid_amiga_files_dir(_dir):
             return os.path.join(_dir, amiga_files_dir)
     return None
 
-# find fsuae config dir
-def find_fsuae_config_dir():
-    """Find FS-UAE config dir"""
+# get fsuae config dir
+def get_fsuae_config_dir():
+    """Get FS-UAE config dir"""
 
     user_home_dir = os.path.expanduser('~')
     directories = [os.path.join(user_home_dir, _f) for _f in os.listdir(user_home_dir) \
@@ -250,20 +250,14 @@ def patch_uae_config_file( \
         line = uae_config_lines[i]
 
         # patch cd image 0 file
-        if re.search(r'^cdimage0\s*=', line, re.I):
-            if amiga_os39_iso_file:
-                line = 'cdimage0={0}\n'.format(
-                    re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), amiga_os39_iso_file.replace('\\', '\\\\')))
-            else:
-                line = 'cdimage0=\n'
+        if re.search(r'^cdimage0\s*=', line, re.I) and amiga_os39_iso_file:
+            line = 'cdimage0={0}\n'.format(
+                re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), amiga_os39_iso_file.replace('\\', '\\\\')))
 
         # patch kickstart rom file
-        if re.search(r'^kickstart_rom_file\s*=', line, re.I):
-            if a1200_kickstart_rom_file:
-                line = 'kickstart_rom_file={0}\n'.format(
-                    re.sub(r'[\\/]', os.sep.replace('\\', '\\\\'), a1200_kickstart_rom_file.replace('\\', '\\\\')))
-            else:
-                line = 'kickstart_rom_file=\n'
+        if re.search(r'^kickstart_rom_file\s*=', line, re.I) and a1200_kickstart_rom_file:
+            line = 'kickstart_rom_file={0}\n'.format(
+                re.sub(r'[\\/]', os.sep.replace('\\', '\\\\'), a1200_kickstart_rom_file.replace('\\', '\\\\')))
 
         # patch hardfile2 path
         hardfile2_match = re.search(r'^hardfile2=[^,]*,[^:]*:([^,]+)', line, re.I)
@@ -326,24 +320,18 @@ def patch_fsuae_config_file( \
         line = fsuae_config_lines[i]
 
         # patch cdrom drive 0
-        if re.search(r'^cdrom_drive_0\s*=', line):
-            if amiga_os39_iso_file:
-                line = 'cdrom_drive_0 = {0}\n'.format(
-                    amiga_os39_iso_file.replace('\\', '/'))
-            else:
-                line = 'cdrom_drive_0 = \n'
+        if re.search(r'^cdrom_drive_0\s*=', line) and amiga_os39_iso_file:
+            line = 'cdrom_drive_0 = {0}\n'.format(
+                amiga_os39_iso_file.replace('\\', '/'))
 
         # patch logs dir
         if re.search(r'^logs_dir\s*=', line):
             line = 'logs_dir = {0}\n'.format(fsuae_config_dir.replace('\\', '/'))
 
         # patch kickstart file
-        if re.search(r'^kickstart_file\s*=', line):
-            if a1200_kickstart_rom_file:
-                line = 'kickstart_file = {0}\n'.format(
-                    a1200_kickstart_rom_file.replace('\\', '/'))
-            else:
-                line = 'kickstart_file = \n'
+        if re.search(r'^kickstart_file\s*=', line) and a1200_kickstart_rom_file:
+            line = 'kickstart_file = {0}\n'.format(
+                a1200_kickstart_rom_file.replace('\\', '/'))
 
         # patch hard drives
         hard_drive_match = re.match(
@@ -489,13 +477,13 @@ if (install_dir != None and not os.path.isdir(install_dir)):
     print 'Error: Install dir \'{0}\' doesn\'t exist'.format(install_dir)
     exit(1)
 
-# set uae install directory to winuae config directory, if uae install directory is not defined and platform is win32
+# set uae install directory to detected winuae config directory, if uae install directory is not defined and platform is win32
 if uae_install_dir == None and sys.platform == "win32":
     uae_install_dir = get_winuae_config_dir()
 
 # set fs-uae install directory to detected fs-uae config directory, if fs-uae install directory is not defined
 if fsuae_install_dir == None:
-    fsuae_install_dir = find_fsuae_config_dir()
+    fsuae_install_dir = get_fsuae_config_dir()
 
 # get uae config files from install directory
 uae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
@@ -593,7 +581,7 @@ if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forev
                 os.path.join(workbench_dir, workbench31_adf_filename))
 
         # print installed workbench 3.1 adf files
-        print '- {0} Workbench 3.1 adf files installed: \'{1}\''.format(
+        print '- {0} Workbench 3.1 adf files installed \'{1}\''.format(
             len(installed_workbench31_adf_filenames), 
             ', '.join(installed_workbench31_adf_filenames))
     else:
@@ -620,7 +608,7 @@ if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forev
             shutil.copyfile(rom_key_file, os.path.join(kickstart_dir, rom_key_filename))
 
         # print installed kickstart rom files
-        print '- {0} Kickstart rom files installed: \'{1}\''.format(
+        print '- {0} Kickstart rom files installed \'{1}\''.format(
             len(installed_kickstart_rom_filenames), 
             ', '.join(installed_kickstart_rom_filenames))
     else:
@@ -660,10 +648,10 @@ if self_install:
 
     # print detected workbench 3.1 adf files
     if len(detected_workbench31_filenames) > 0:
-        print '- {0} Workbench 3.1 adf files detected: \'{1}\''.format(
+        print '- {0} Workbench 3.1 adf files detected \'{1}\''.format(
             len(detected_workbench31_filenames), 
             ', '.join(detected_workbench31_filenames))
-        print '- {0} Workbench 3.1 adfs detected: \'{1}\''.format(
+        print '- {0} Workbench 3.1 adfs detected \'{1}\''.format(
             len(detected_workbench31_adfs), 
             ', '.join(detected_workbench31_adfs))
     else:
@@ -679,15 +667,15 @@ if self_install:
     detected_kickstart_md5_index = {}
     detected_kickstart_filenames = []
     for md5_file in get_md5_files_from_dir(kickstart_dir):
-        detected_kickstart_filename = os.path.basename(md5_file.full_filename)
-        if re.search(r'^rom.key$', detected_kickstart_filename, re.I):
-            detected_kickstart_filenames.append(detected_kickstart_filename)
+        kickstart_filename = os.path.basename(md5_file.full_filename)
+        if re.search(r'^rom.key$', kickstart_filename, re.I):
+            detected_kickstart_filenames.append(kickstart_filename)
             continue
         if not md5_file.md5_hash in valid_kickstart_md5_index:
             continue
         detected_kickstart_md5_index[valid_kickstart_md5_index[md5_file.md5_hash]['Filename'].lower()] = \
             valid_kickstart_md5_index[md5_file.md5_hash]
-        detected_kickstart_filenames.append(detected_kickstart_filename)
+        detected_kickstart_filenames.append(kickstart_filename)
     detected_kickstart_filenames = list(set(detected_kickstart_filenames))
     detected_kickstart_filenames.sort()
 
@@ -700,10 +688,10 @@ if self_install:
 
     # print detected kickstart rom files
     if len(detected_kickstart_filenames) > 0:
-        print '- {0} Kickstart rom files detected: \'{1}\''.format(
+        print '- {0} Kickstart rom files detected \'{1}\''.format(
             len(detected_kickstart_filenames), 
             ', '.join(detected_kickstart_filenames))
-        print '- {0} Kickstart roms detected: \'{1}\''.format(
+        print '- {0} Kickstart roms detected \'{1}\''.format(
             len(detected_kickstart_roms), 
             ', '.join(detected_kickstart_roms))
     else:
@@ -721,24 +709,22 @@ if self_install:
     # os39 filenames detected
     detected_os39_filenames_index = {}
     for md5_file in os39_md5_files:
-        os39_filename = os.path.basename(md5_file.full_filename).lower()
-        if not os39_filename in valid_os39_filename_index:
+        os39_filename = os.path.basename(md5_file.full_filename)
+        if not os39_filename.lower() in valid_os39_filename_index:
             continue
-        detected_os39_filenames_index[valid_os39_filename_index[os39_filename]['Filename']] = md5_file
+        detected_os39_filenames_index[valid_os39_filename_index[os39_filename.lower()]['Filename'].lower()] = md5_file
     for md5_file in os39_md5_files:
         if not md5_file.md5_hash in valid_os39_md5_index:
             continue
         detected_os39_filenames_index[valid_os39_md5_index[md5_file.md5_hash]['Filename']] = md5_file
 
     # detected os 39 filenames
-    detected_os39_filenames = []
-    for detected_os39_filename in detected_os39_filenames_index.keys():
-        detected_os39_filenames.append(detected_os39_filename)
+    detected_os39_filenames = detected_os39_filenames_index.keys()
     detected_os39_filenames.sort()
 
     # print detected amiga os39 files
     if len(detected_os39_filenames) > 0:
-        print '- {0} Amiga OS 3.9 files detected: \'{1}\''.format(len(detected_os39_filenames_index), ', '.join(detected_os39_filenames))
+        print '- {0} Amiga OS 3.9 files detected \'{1}\''.format(len(detected_os39_filenames_index), ', '.join(detected_os39_filenames))
     else:
         print '- No Amiga OS 3.9 files detected'
     print 'Done'
@@ -754,7 +740,7 @@ if self_install:
 
     # print detected user packages
     if len(user_package_dirs) > 0:
-        print '- {0} user packages detected: \'{1}\''.format(len(user_package_dirs), ', '.join(user_package_dirs))
+        print '- {0} user packages detected \'{1}\''.format(len(user_package_dirs), ', '.join(user_package_dirs))
     else:
         print '- No user packages detected'
     print 'Done'
@@ -789,19 +775,19 @@ if kickstart_dir != None and os.path.isdir(kickstart_dir):
 amiga_os39_iso_file = None
 if os39_dir != None and os.path.isdir(os39_dir):
     # get amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'        
-    amiga_os39_md5_files = []
+    amiga_os39_iso_md5_files = []
     os39_md5_files = get_md5_files_from_dir(os39_dir)
     for md5_file in os39_md5_files:
         if ((md5_file.md5_hash in valid_os39_md5_index and 
             re.search(r'amigaos3\.9\.iso', valid_os39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
             re.search(r'(\\|//)?amigaos3\.9\.iso$', md5_file.full_filename, re.I)):
-            amiga_os39_md5_files.append(md5_file)
+            amiga_os39_iso_md5_files.append(md5_file)
 
     # sort amiga os39 md5 files by matching md5, then filename
-    amiga_os39_md5_files = sorted(amiga_os39_md5_files, key=lambda x: x.md5_hash not in valid_os39_md5_index)
+    amiga_os39_iso_md5_files = sorted(amiga_os39_iso_md5_files, key=lambda x: x.md5_hash not in valid_os39_md5_index)
 
-    if len(amiga_os39_md5_files) >= 1:
-        amiga_os39_iso_file = amiga_os39_md5_files[0].full_filename
+    if len(amiga_os39_iso_md5_files) >= 1:
+        amiga_os39_iso_file = amiga_os39_iso_md5_files[0].full_filename
 
 # print a1200 kickstart rom file, if it's defined
 if a1200_kickstart_rom_file != None:
@@ -827,8 +813,6 @@ if workbench_dir != None:
     workbench_dir = os.path.realpath(workbench_dir)
 
 
-
-
 # print uae configuration
 print ''
 print 'UAE configuration'
@@ -841,8 +825,9 @@ if uae_install_dir != None:
 
 # patch and install uae configuration files
 if len(uae_config_files) > 0:
-    print '- UAE configuration files \'{0}\''.format(', '.join(uae_config_files))    
+    print '- {0} UAE configuration files \'{1}\''.format(len(uae_config_files), ', '.join(uae_config_files))    
     for uae_config_file in uae_config_files:
+        # patch uae config file
         patch_uae_config_file(
             os.path.realpath(uae_config_file),
             a1200_kickstart_rom_file,
@@ -872,8 +857,9 @@ if fsuae_install_dir != None:
 
 # patch and install fs-uae configuration files
 if len(fsuae_config_files) > 0:
-    print '- FS-UAE configuration files \'{0}\''.format(', '.join(fsuae_config_files))    
+    print '- {0} FS-UAE configuration files \'{1}\''.format(len(fsuae_config_files), ', '.join(fsuae_config_files))
     for fsuae_config_file in fsuae_config_files:
+        # patch fs-uae config file
         patch_fsuae_config_file(
             os.path.realpath(fsuae_config_file),
             a1200_kickstart_rom_file,
