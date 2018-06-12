@@ -103,13 +103,20 @@ function FindValidAmigaFilesDir($dir)
     return $amigaFiles.FullName
 }
 
-# find fsuae config dir
-function FindFsuaeConfigDir()
+# get fsuae config dir
+function GetFsuaeConfigDir()
 {
     # get fs-uae config directory from my documents directory
-    return Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | `
+    $fsuaeConfigurations = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | `
         Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | `
         Select-Object -First 1
+
+    if (!$fsuaeConfigurations)
+    {
+        return $null
+    }
+
+    return $fsuaeConfigurations.FullName
 }
 
 # get winuae config dir
@@ -330,7 +337,8 @@ $validKickstartMd5Entries | ForEach-Object { $validKickstartMd5Index[$_['Md5'].T
 
 # index valid os39 md5 entries
 $validOs39Md5Index = @{}
-$validOs39Md5Entries | ForEach-Object { $validOs39Md5Index[$_['Md5'].ToLower()] = $_ }
+$validOs39FilenameIndex = @{}
+$validOs39Md5Entries | ForEach-Object { $validOs39Md5Index[$_['Md5'].ToLower()] = $_; $validOs39FilenameIndex[$_['Filename'].ToLower()] = $_; }
 
 # set install directory to current directory, if it's not defined
 if (!$installDir)
@@ -379,7 +387,7 @@ if (!(Test-Path $installDir))
     throw ("Error: Install dir '{0}' doesn't exist" -f $installDir)
 }
 
-# set uae install directory to winuae config directory, if uae install directory is not defined
+# set uae install directory to detected winuae config directory, if uae install directory is not defined
 if (!$uaeInstallDir)
 {
     $uaeInstallDir = GetWinuaeConfigDir
@@ -388,7 +396,7 @@ if (!$uaeInstallDir)
 # set fs-uae install directory to detected fs-uae config directory, if fs-uae install directory is not defined
 if (!$fsuaeInstallDir)
 {
-    $fsuaeInstallDir = FindFsuaeConfigDir
+    $fsuaeInstallDir = GetFsuaeConfigDir
 }
 
 # get uae config files from install directory
@@ -512,7 +520,7 @@ if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDa
         }
 
         # write installed workbench 3.1 adf files
-        Write-Output ('- {0} Workbench 3.1 adf files installed: ''{1}''' -f $installedWorkbench31AdfFilenames.Count, ($installedWorkbench31AdfFilenames -join ', '))
+        Write-Output ('- {0} Workbench 3.1 adf files installed ''{1}''' -f $installedWorkbench31AdfFilenames.Count, ($installedWorkbench31AdfFilenames -join ', '))
     }
     else
     {
@@ -544,13 +552,13 @@ if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDa
         }
         
         # write installed workbench 3.1 adf files
-        Write-Output ('- {0} Kickstart rom files installed: ''{1}''' -f $installedKickstartRomFilenames.Count, ($installedKickstartRomFilenames -join ', '))
+        Write-Output ('- {0} Kickstart rom files installed ''{1}''' -f $installedKickstartRomFilenames.Count, ($installedKickstartRomFilenames -join ', '))
     }
     else
     {
         Write-Output '- No Amiga Forever data shared rom dir detected'
     }
-    Write-Output "Done"
+    Write-Output 'Done'
 }
 
 # validate self install directories, if self install is defined
@@ -563,7 +571,7 @@ if ($selfInstall)
     Write-Output 'Validating Workbench...'
     Write-Output ("- Workbench dir '{0}'" -f $workbenchDir)
 
-    #detected workbench 3.1 md5 index and filenames from workbench dir that matches valid workbench 3.1 md5
+    # detected workbench 3.1 md5 index and filenames from workbench dir that matches valid workbench 3.1 md5
     $detectedWorkbench31Md5Index = @{}
     $detectedWorkbench31Filenames = New-Object System.Collections.Generic.List[System.Object]
     foreach ($md5File in (GetMd5FilesFromDir $workbenchDir))
@@ -576,7 +584,6 @@ if ($selfInstall)
             $validWorkbench31Md5Index[$md5File.Md5]
         $detectedWorkbench31Filenames.Add((Split-Path $md5File.File -Leaf))
     }
-
     $detectedWorkbench31Filenames = $detectedWorkbench31Filenames | `
         Sort-Object | `
         Get-Unique
@@ -590,8 +597,8 @@ if ($selfInstall)
     # print detected workbench 3.1 adf files
     if ($detectedWorkbench31Filenames.Count -gt 0)
     {
-        Write-Output ('- {0} Workbench 3.1 adf files detected: ''{1}''' -f $detectedWorkbench31Filenames.Count, ($detectedWorkbench31Filenames -join ', '))
-        Write-Output ('- {0} Workbench 3.1 adfs detected: ''{1}''' -f $detectedWorkbench31Adfs.Count, ($detectedWorkbench31Adfs -join ', '))
+        Write-Output ('- {0} Workbench 3.1 adf files detected ''{1}''' -f $detectedWorkbench31Filenames.Count, ($detectedWorkbench31Filenames -join ', '))
+        Write-Output ('- {0} Workbench 3.1 adfs detected ''{1}''' -f $detectedWorkbench31Adfs.Count, ($detectedWorkbench31Adfs -join ', '))
     }
     else
     {
@@ -599,227 +606,222 @@ if ($selfInstall)
     }
     Write-Output 'Done'
 
+    # write kickstart directory
+    Write-Output ''
+    Write-Output 'Validating Kickstart...'
+    Write-Output ('- Kickstart dir ''{0}''...' -f $kickstartDir)
 
-}
-
-exit
-
-# index workbench 3.1 adf md5
-$workbench31AdfMd5Index = @{}
-$workbench31AdfMd5Entries | `
-    ForEach-Object { $workbench31AdfMd5Index[$_.Md5.ToLower()] = $_ }
-
-# get workbench 3.1 adf files from workbench dir that matches workbench 3.1 md5
-$workbench31AdfMd5Files = GetMd5FilesFromDir $workbenchDir | `
-    Where-Object { $workbench31AdfMd5Index.ContainsKey($_.Md5.ToLower()) }
-
-# workbench 3.1 adf filenames
-$workbench31AdfFilenames = $workbench31AdfMd5Entries.Filename | `
-    Sort-Object | `
-    Get-Unique
-
-# workbench 3.1 adf filenames detected
-$workbench31AdfFilenamesDetected = $workbench31AdfMd5Files | `
-    Where-Object { $workbench31AdfMd5Index.ContainsKey($_.Md5.ToLower()) } | `
-    ForEach-Object { $workbench31AdfMd5Index[$_.Md5.ToLower()].Filename } | `
-    Sort-Object | `
-    Get-Unique
-
-# write workbench 3.1 adf files
-Write-Output ("- {0} of {1} Workbench 3.1 adf files detected" -f $workbench31AdfFilenamesDetected.Count, $workbench31AdfFilenames.Count)
-$workbench31AdfMd5Files | `
-    ForEach-Object { Write-Output ("- {0} MD5 match '{1}'" -f $workbench31AdfMd5Index[$_.Md5.ToLower()].Name, $_.File) }
-Write-Output "Done"
-
-
-# write kickstart directory
-Write-Output ""
-Write-Output ("Validating Kickstart dir '{0}'..." -f $kickstartDir)
-
-# index kickstart rom md5
-$kickstartRomMd5Index = @{}
-$kickstartRomMd5Entries | `
-    ForEach-Object { $kickstartRomMd5Index[$_.Md5.ToLower()] = $_ }
-
-# get kickstart rom files from kickstart dir that matches kickstart rom md5
-$kickstartRomMd5Files = GetMd5FilesFromDir $kickstartDir | `
-    Where-Object { $kickstartRomMd5Index.ContainsKey($_.Md5.ToLower()) }
-
-# workbench 3.1 adf filenames
-$kickstartRomFilenames = $kickstartRomMd5Entries.Filename | `
-    Sort-Object | `
-    Get-Unique
-
-# workbench 3.1 adf filenames detected
-$kickstartRomFilenamesDetected = $kickstartRomMd5Files | `
-    Where-Object { $kickstartRomMd5Index.ContainsKey($_.Md5.ToLower()) } | `
-    ForEach-Object { $kickstartRomMd5Index[$_.Md5.ToLower()].Filename } | `
-    Sort-Object | `
-    Get-Unique
-    
-# write workbench 3.1 adf files
-Write-Output ("- {0} of {1} Kickstart rom files detected" -f $kickstartRomFilenamesDetected.Count, $kickstartRomFilenames.Count)
-$kickstartRomMd5Files | `
-    ForEach-Object { Write-Output ("- {0} MD5 match '{1}'" -f $kickstartRomMd5Index[$_.Md5.ToLower()].Name, $_.File) }
-Write-Output "Done"
-
-
-# write os39 directory
-Write-Output ""
-Write-Output ("Validating OS39 dir '{0}'..." -f $os39Dir)
-
-# index os39 md5
-$os39Md5Index = @{}
-$os39Md5Entries | `
-    ForEach-Object { $os39Md5Index[$_.Md5.ToLower()] = $_ }
-
-# os39 filenames
-$os39FilenamesIndex = @{}
-$os39Md5Entries | `
-    ForEach-Object { $os39FilenamesIndex[$_.Filename.ToLower()] = $_ }
-
-# get os39 files from os39 dir
-$os39Md5Files = GetMd5FilesFromDir $os39Dir
-
-# os39 filenames detected
-$os39FilenamesDetectedIndex = @{}
-$os39Md5Files | `
-    Where-Object { $os39FilenamesIndex.ContainsKey((Split-Path $_.File -Leaf).ToLower()) } | `
-    ForEach-Object { $os39FilenamesDetectedIndex[$os39FilenamesIndex[(Split-Path $_.File -Leaf).ToLower()].Filename] = $_ }
-$os39Md5Files | `
-    Where-Object { $os39Md5Index.ContainsKey($_.Md5.ToLower()) } | `
-    ForEach-Object { $os39FilenamesDetectedIndex[$os39Md5Index[$_.Md5.ToLower()].Filename] = $_ }
-
-# write os39 files
-Write-Output ("- {0} Amiga OS 3.9 files detected" -f $os39FilenamesDetectedIndex.Count)
-foreach($os39Filename in ($os39FilenamesDetectedIndex.Keys | Sort-Object))
-{
-    $os39File = $os39FilenamesDetectedIndex[$os39Filename]
-
-    if ($os39Md5Index.ContainsKey($os39File.Md5.ToLower()))
+    # detected kickstart md5 index and filenames from kickstart dir that matches valid kickstart md5
+    $detectedKickstartMd5Index = @{}
+    $detectedKickstartFilenames = New-Object System.Collections.Generic.List[System.Object]
+    foreach ($md5File in (GetMd5FilesFromDir $kickstartDir))
     {
-        ForEach-Object { Write-Output ("- {0} MD5 match '{1}'" -f $os39Md5Index[$os39File.Md5.ToLower()].Name, $os39File.File) }
+        $detectedKickstartFilename = Split-Path $md5File.File -Leaf
+        if ($detectedKickstartFilename -match 'rom\.key')
+        {
+            $detectedKickstartFilenames.Add($detectedKickstartFilename)
+            continue
+        }
+        if (!$validKickstartMd5Index.ContainsKey($md5File.Md5))
+        {
+            continue
+        }
+        $detectedKickstartMd5Index[$validKickstartMd5Index[$md5File.Md5]['Filename'].ToLower()] = `
+            $validKickstartMd5Index[$md5File.Md5]
+        $detectedKickstartFilenames.Add($detectedKickstartFilename)
     }
-    elseif ($os39FilenamesIndex.ContainsKey($os39Filename))
+    $detectedKickstartFilenames = $detectedKickstartFilenames | `
+        Sort-Object | `
+        Get-Unique
+
+    # detected kickstart roms
+    $detectedKickstartRoms = $detectedKickstartMd5Index.Keys | `
+        Foreach-Object { $detectedKickstartMd5Index[$_]['Name'] } | `
+        Sort-Object | `
+        Get-Unique
+
+    # write detected kickstart rom files
+    if ($detectedKickstartFilenames.Count -gt 0)
     {
-        ForEach-Object { Write-Output ("- {0} filename match '{1}'" -f $os39FilenamesIndex[$os39Filename].Name, $os39File.File) }
+        Write-Output ('- {0} Kickstart rom files detected ''{1}''' -f $detectedKickstartFilenames.Count, ($detectedKickstartFilenames -join ', '))
+        Write-Output ('- {0} Kickstart roms detected ''{1}''' -f $detectedKickstartRoms.Count, ($detectedKickstartRoms -join ', '))
     }
+    else
+    {
+        Write-Output '- No Kickstart rom files detected'
+    }
+    Write-Output 'Done'
+
+    # write os39 directory
+    Write-Output ''
+    Write-Output 'Validating OS39...'
+    Write-Output ('- OS39 dir ''{0}''...' -f $os39Dir)
+
+    # get os39 files from os39 directory
+    $os39Md5Files = GetMd5FilesFromDir $os39Dir
+
+    # os39 filenames detected
+    $detectedOs39FilenamesIndex = @{}
+    foreach ($md5File in $os39Md5Files)
+    {
+        $os39Filename = Split-Path $md5File.File -Leaf
+        if (!$validOs39FilenameIndex.ContainsKey($os39Filename.ToLower()))
+        {
+            continue
+        }
+        $detectedOs39FilenamesIndex[$validOs39FilenameIndex[$os39Filename.ToLower()]['Filename'].ToLower()] = `
+            $md5File
+    }
+    foreach ($md5File in $os39Md5Files)
+    {
+        if (!$validOs39Md5Index.ContainsKey($md5File.Md5))
+        {
+            continue
+        }
+        $detectedOs39FilenamesIndex[$validOs39Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
+            $md5File
+    }
+
+    # detected os 39 filenames
+    $detectedOs39Filenames = $detectedOs39FilenamesIndex.Keys | `
+        Sort-Object | `
+        Get-Unique
+
+    # write detected amiga os39 files
+    if ($detectedOs39Filenames.Count -gt 0)
+    {
+        Write-Output ('- {0} Amiga OS 3.9 files detected ''{1}''' -f $detectedOs39Filenames.Count, ($detectedOs39Filenames -join ', '))
+    }
+    else
+    {
+        Write-Output '- No Amiga OS 3.9 files detected'
+    }
+    Write-Output 'Done'
+
+    # write user packages directory
+    Write-Output ''
+    Write-Output 'Validating User Packages'
+    Write-Output ('- User Packages dir ''{0}''...' -f $userPackagesDir)
+
+    # detected user package dirs
+    $detectedUserPackageDirs = @()
+    $detectedUserPackageDirs += Get-ChildItem $userPackagesDir | `
+        Where-Object { $_.PSIsContainer -and (Test-Path (Join-Path $_.FullName -ChildPath '_installdir')) }
+
+    # write detected user packages
+    if ($detectedUserPackageDirs.Count -gt 0)
+    {
+        Write-Output ('- {0} user packages detected ''{1}''' -f $detectedUserPackageDirs.Count, ($detectedUserPackageDirs -join ', '))
+    }
+    else
+    {
+        Write-Output '- No user packages detected'
+    }
+    Write-Output 'Done'
 }
-Write-Output "Done"
-
-
-# write user packages directory
-Write-Output ""
-Write-Output ("Validating User Packages dir '{0}'..." -f $userPackagesDir)
-
-$userPackageDirs = @()
-$userPackageDirs += Get-ChildItem $userPackagesDir | `
-    Where-Object { $_.PSIsContainer -and (Test-Path (Join-Path $_.FullName -ChildPath '_installdir')) }
-
-Write-Output ("- {0} user packages detected" -f $userPackageDirs.Count)
-$userPackageDirs | `
-    ForEach-Object { Write-Output ("- {0} '{1}'" -f $_.Name, $_.FullName) }
-Write-Output "Done"
 
 
 # write files for patching
-Write-Output ""
-Write-Output "Files for patching"
-Write-Output "------------------"
-Write-Output "Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files for patching configuration files..."
+Write-Output ''
+Write-Output 'Files for patching'
+Write-Output '------------------'
+Write-Output 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files...'
 
-# find first a1200 kickstart 3.1 rom md5 file
-$a1200KickstartRomMd5File = $kickstartRomMd5Files | `
-    Where-Object { $kickstartRomMd5Index.ContainsKey($_.Md5.ToLower()) -and $kickstartRomMd5Index[$_.Md5.ToLower()].Filename -match 'kick40068\.A1200' } | `
-    Select-Object -First 1
-
-# find a1200 kickstart 3.1 rom file
+# find a1200 kickstart rom file, if kickstart dir is defined and exists
 $a1200KickstartRomFile = $null
-if ($a1200KickstartRomMd5File)
+if ($kickstartDir -and (Test-Path $kickstartDir))
 {
-    # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
-    $romKeyFile = Join-Path $kickstartDir -ChildPath 'rom.key'
-    if ($kickstartRomMd5Index[$a1200KickstartRomMd5File.Md5.ToLower()].Encrypted -and !(Test-Path $romKeyFile))
-    {
-        throw ("Amiga Forever rom key file '{0}' doesn't exist" -f $romKeyFile)
-    }
+    # find first a1200 kickstart 3.1 rom md5 file
+    $a1200KickstartRomMd5File = GetMd5FilesFromDir $kickstartDir | `
+        Where-Object { $validKickstartMd5Index.ContainsKey($_.Md5) -and $validKickstartMd5Index[$_.Md5].Filename -match 'kick40068\.A1200' } | `
+        Select-Object -First 1
 
-    $a1200KickstartRomFile = $a1200KickstartRomMd5File.File
+    # find a1200 kickstart 3.1 rom file
+    if ($a1200KickstartRomMd5File)
+    {
+        # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
+        $romKeyFile = Join-Path $kickstartDir -ChildPath 'rom.key'
+        if ($validKickstartMd5Index[$a1200KickstartRomMd5File.Md5].Encrypted -and !(Test-Path $romKeyFile))
+        {
+            throw ('Error: Amiga Forever rom key file ''{0}'' doesn''t exist' -f $romKeyFile)
+        }
+        $a1200KickstartRomFile = $a1200KickstartRomMd5File.File
+    }
 }
 
+# find amiga os39 iso file, if os39 dir is defined and exists
+$amigaOs39IsoFile = $null
+if ($os39Dir -and (Test-Path $os39Dir))
+{
+    # find first amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'
+    $amigaOs39IsoMd5File = GetMd5FilesFromDir $os39Dir | `
+        Where-Object { ($validOs39Md5Index.ContainsKey($_.Md5.ToLower()) -and $validOs39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
+        Sort-Object @{expression={!$validOs39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
+        Select-Object -First 1
+
+    # set amiga os39 iso file, if amiga os39 iso md5 file is defined
+    if ($amigaOs39IsoMd5File)
+    {
+        $amigaOs39IsoFile = $amigaOs39IsoMd5File.File
+    }
+}
+
+# write a1200 kickstart rom file, if it's defined
 if ($a1200KickstartRomFile)
 {
-    Write-Output ("- Using A1200 Kickstart 3.1 rom file '{0}'" -f $a1200KickstartRomFile)
+    Write-Output ('- Using A1200 Kickstart 3.1 rom file ''{0}''' -f $a1200KickstartRomFile)
 }
 else
 {
-    Write-Output "- No A1200 Kickstart 3.1 rom file detected"
+    Write-Output '- No A1200 Kickstart 3.1 rom file detected'
 }
 
-$amigaOs39IsoMd5File = $os39Md5Files | `
-    Where-Object { ($os39Md5Index.ContainsKey($_.Md5.ToLower()) -and $os39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
-    Sort-Object @{expression={!$os39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
-    Select-Object -First 1
-
-$amigaOs39IsoFile = $null
+# write amiga os39 iso file, if it's defined
 if ($amigaOs39IsoMd5File)
 {
-    $amigaOs39IsoFile = $amigaOs39IsoMd5File.File
-    Write-Output ("- Using Amiga OS 3.9 iso file '{0}'" -f $amigaOs39IsoFile)
+    Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
 }
 else
 {
-    Write-Output "- No Amiga OS 3.9 iso file detected"
+    Write-Output '- No Amiga OS 3.9 iso file detected'
 }
 
-Write-Output "Done"
+Write-Output 'Done'
 
 
 # write uae configuration
-Write-Output ""
-Write-Output "UAE configuration"
-Write-Output "-----------------"
+Write-Output ''
+Write-Output 'UAE configuration'
+Write-Output '-----------------'
+Write-Output 'Patching and installing UAE configuration files...'
 
-
-# winuae config directory
-$winuaeConfigDir = Get-ChildItem -Path ${Env:PUBLIC} -Recurse | `
-    Where-Object { $_.PSIsContainer -and $_.FullName -match 'Amiga Files\\WinUAE\\Configurations$' } | `
-    Select-Object -First 1
-
-# get uae config files from install directory
-$uaeConfigFiles = @()
-$uaeConfigFiles += Get-ChildItem $installDir -Filter *.uae
-
-# patch and install uae configuration files
-Write-Output ("Patching and installing UAE configuration files from '{0}'..." -f $installDir)
-
-# write winuae configuration dir, if it exists
-if ($winuaeConfigDir)
+# write uae install dir, if it exists
+if ($uaeInstallDir)
 {
-    Write-Output ("- WinUAE configuration dir detected '{0}'" -f $winuaeConfigDir.FullName)
+    Write-Output ('- UAE install dir ''{0}''' -f $uaeInstallDir)
 }
 
+# patch and install uae configuration files
 if ($uaeConfigFiles.Count -gt 0)
 {
+    Write-Output ('- {0} UAE configuration files ''{1}''' -f $uaeConfigFiles.Count, ($uaeConfigFiles -join ', '))
     foreach($uaeConfigFile in $uaeConfigFiles)
     {
-        Write-Output ("- UAE configuration file '{0}'..." -f $uaeConfigFile.FullName)
-
         # patch uae config file
         PatchUaeConfigFile $uaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile
 
-        # install winuae config file, if winuae config directory exists
-        if ($winuaeConfigDir)
+        # install uae config file in uae install directory, if uae install directory is defined
+        if ($uaeInstallDir)
         {
             Copy-Item $uaeConfigFile.FullName -Destination $winuaeConfigDir.FullName -Force
         }
-    }
+    }    
 }
 else
 {
-    Write-Output ("- No UAE configuration files detected")
+    Write-Output '- No UAE configuration files detected'
 }
-Write-Output "Done"
+Write-Output 'Done'
 
 
 # write fs-uae configuration
@@ -827,33 +829,23 @@ Write-Output ""
 Write-Output "FS-UAE configuration"
 Write-Output "--------------------"
 
-# get fs-uae config directory from my documents directory
-$fsuaeConfigDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | `
-    Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | `
-    Select-Object -First 1
-
-# get fs-uae config files from install directory
-$fsuaeConfigFiles = @()
-$fsuaeConfigFiles += Get-ChildItem $installDir -Filter *.fs-uae
-
-# patch and install fs-uae configuration files
-Write-Output ("Patching and installing FS-UAE configuration files from '{0}'..." -f $installDir)
-
-# write fs-uae configuration dir, if it exists
-if ($fsuaeConfigDir)
+# write fs-uae install directory, if it exists
+if ($fsuaeInstallDir)
 {
-    Write-Output ("- FS-UAE configuration dir detected '{0}'" -f $fsuaeConfigDir.FullName)
+    Write-Output ('- FS-UAE install dir ''{0}''' -f $fsuaeInstallDir)
 }
 
+# patch and install fs-uae configuration files
 if ($fsuaeConfigFiles.Count -gt 0)
 {
+    Write-Output ('- {0} FS-UAE configuration files ''{1}''' -f $fsuaeConfigFiles.Count, ($fsuaeConfigFiles -join ', '))
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
     {
-        Write-Output ("- FS-UAE configuration file '{0}'" -f $fsuaeConfigFile.FullName)
+        # patch fs-uae config file
         PatchFsuaeConfigFile $fsuaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile
 
-        # install fs-uae config file, if fs-uae config directory exists
-        if ($fsuaeConfigDir)
+        # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
+        if ($fsuaeInstallDir)
         {
             Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeConfigDir.FullName -Force
         }
