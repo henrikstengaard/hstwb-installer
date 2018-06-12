@@ -208,7 +208,7 @@ function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39Is
 }
 
 # patch fs-uae config file
-function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile)
+function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile, $workbenchDir)
 {
     # get fs-uae config dir
     $fsuaeConfigDir = Split-Path $fsuaeConfigFile -Parent
@@ -270,7 +270,7 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs
 
     # get adf files from workbench dir
     $adfFiles = @()
-    if (Test-Path -Path $workbenchDir)
+    if ($workbenchDir -and (Test-Path -Path $workbenchDir))
     {
         $adfFiles += Get-ChildItem -Path $workbenchDir -Filter *.adf | Where-Object { ! $_.PSIsContainer }
     }
@@ -813,7 +813,7 @@ if ($uaeConfigFiles.Count -gt 0)
         # install uae config file in uae install directory, if uae install directory is defined
         if ($uaeInstallDir)
         {
-            Copy-Item $uaeConfigFile.FullName -Destination $winuaeConfigDir.FullName -Force
+            Copy-Item $uaeConfigFile.FullName -Destination $uaeInstallDir -Force
         }
     }    
 }
@@ -842,12 +842,12 @@ if ($fsuaeConfigFiles.Count -gt 0)
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
     {
         # patch fs-uae config file
-        PatchFsuaeConfigFile $fsuaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile
+        PatchFsuaeConfigFile $fsuaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile $workbenchDir
 
         # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
         if ($fsuaeInstallDir)
         {
-            Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeConfigDir.FullName -Force
+            Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeInstallDir -Force
         }
     }
 }
