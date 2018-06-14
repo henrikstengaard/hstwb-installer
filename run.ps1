@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-10
+# Date:   2018-06-14
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1947,9 +1947,9 @@ function RunInstall($hstwb)
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
 
-    # copy install uae config to image dir
-    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "Install UAE Config")
-    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
+    # copy hstwb image setup to image dir
+    $hstwbImageSetupDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "hstwb_image_setup")
+    Copy-Item -Path "$hstwbImageSetupDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
     
 
     #
@@ -2434,9 +2434,13 @@ function RunBuildSelfInstall($hstwb)
         mkdir $imageUserPackagesDir | Out-Null
     }
 
-    # copy install uae config to image dir
-    $installUaeConfigDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "Install UAE Config")
-    Copy-Item -Path "$installUaeConfigDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
+    # copy hstwb image setup to image dir
+    $hstwbImageSetupDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "hstwb_image_setup")
+    Copy-Item -Path "$hstwbImageSetupDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
+
+    # copy self install to image dir
+    $selfInstallDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "self_install")
+    Copy-Item -Path "$selfInstallDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
 
     # copy support user packages to image dir
     $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
