@@ -33,7 +33,15 @@ foreach($packageDir in $packageDirs)
     $changes = & "git" "status" "--porcelain"
     if ($changes -notmatch '^\s*$')
     {
-        Write-Host ('Failed to update package dir ''{0}'': Package dir has git changes' -f $packageDir.FullName) -ForegroundColor Red
+        Write-Host ('Failed to update package dir ''{0}'': Package dir has changes' -f $packageDir.FullName) -ForegroundColor Red
+        exit 1
+    }
+
+    # fail, if package has unpushed commits
+    $unpushedCommits = & "git" "cherry" "-v"
+    if ($unpushedCommits -notmatch '^\s*$')
+    {
+        Write-Host ('Failed to update package dir ''{0}'': Package dir has unpushed' -f $packageDir.FullName) -ForegroundColor Red
         exit 1
     }
 
