@@ -4,7 +4,7 @@
 # A powershell script to build HstWB Installer portable zip and msi installer releases.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-07
+# Date:   2018-06-27
 
 # Requirements:
 # - Pandoc
@@ -241,7 +241,7 @@ Write-Output ""
 # build portable release
 # ----------------------
 
-$portableZipFile = Join-Path $releaseDir -ChildPath ("hstwb-installer.{0}-portable.zip" -f $hstwbInstallerVersion.ToLower())
+$portableZipFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}_portable.zip" -f $hstwbInstallerVersion.ToLower())
 
 Write-Output "Build portable zip release"
 Write-Output "--------------------------"
@@ -298,7 +298,7 @@ if ($candleProcess.ExitCode -ne 0)
 
 
 # link wixobj files
-$msiFile = Join-Path $releaseDir -ChildPath ("hstwb-installer.{0}.msi" -f $hstwbInstallerVersion.ToLower())
+$msiFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}_setup.msi" -f $hstwbInstallerVersion.ToLower())
 Write-Output "- Linking wixobj files..."
 Write-Output ""
 
