@@ -1,7 +1,7 @@
 Amibian HstWB Installer
 -----------------------
 Author: Henrik Noerfjand Stengaard
-Date: 2018-05-20
+Date: 2018-06-28
 
 Amibian HstWB Installer is a preconfigured setup of Amibian with
 ready-made harddrives and configs for Amiberry and Chips UAE4ARM
@@ -17,7 +17,7 @@ Preparation
 
 1. Write amibian_hstwb-installer.img to sd-card with Win32 Disk
    Imager, ApplePi Baker, dd or similar imaging tool.
-2. FAT32 format a usb stick and extract hstwb_installer_install.zip
+2. FAT32 format a usb stick and extract usb_self_install.zip
    to root of the usb stick.
 3. Copy install files to usb stick:
    1. Copy required Kickstart rom files to "kickstart" directory.
@@ -91,7 +91,8 @@ Installation
    describing step by step how to run self install with
    screenshots.
    For an example setup install packages: BetterWB, HstWB, 
-   EAB WHDLoad Demos Menu v3.0.0 and EAB WHDLoad Games Menu v3.0.0. 
+   EAB WHDLoad Demos AGA Menu v3.0.0 and EAB WHDLoad Games AGA 
+   Menu v3.0.0. 
 7. When HstWB Installer is complete, replace emulator config1 with
    hstwb-68020-25mhz config file. This is done by pressing F12, 
    click Configurations, click "hstwb-68020-25mhz", click Load,
