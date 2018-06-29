@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-12
+# Date:   2018-06-29
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -22,6 +22,7 @@
 """HstWB Image Setup"""
 
 import os
+import stat
 import hashlib
 import re
 import shutil
@@ -432,6 +433,7 @@ amiga_forever_data_dir = None
 uae_install_dir = None
 fsuae_install_dir = None
 patch_only = False
+self_install = False
 
 # get arguments
 for i in range(0, len(sys.argv)):
@@ -462,13 +464,16 @@ for i in range(0, len(sys.argv)):
     # patch only argument
     elif (re.search(r'--patchonly', sys.argv[i])):
         patch_only = True
+    # self install argument
+    elif (re.search(r'--selfinstall', sys.argv[i])):
+        self_install = True
 
 # print hstwb image setup title
 print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2018-06-12'
+print 'Date: 2018-06-29'
 print ''
 print 'Install dir \'{0}\''.format(install_dir)
 
@@ -493,6 +498,10 @@ uae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(ins
 fsuae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
     if os.path.isfile(os.path.join(install_dir, n)) and re.search(r'\.fs-uae$', n, re.I)]
 
+# print uae and fs-uae configuration files
+print '{0} UAE configuration file(s)'.format(len(uae_config_files))
+print '{0} FS-UAE configuration file(s)'.format(len(fsuae_config_files))
+
 # detect, if uae or fs-uae config files has self install directories
 config_files_has_self_install_dirs = False
 for uae_config_file in uae_config_files:
@@ -505,7 +514,6 @@ for fsuae_config_file in fsuae_config_files:
         break
 
 # set self install true, if patch only is not defined and config files has self install directories
-self_install = False
 if not patch_only and config_files_has_self_install_dirs:
     self_install = True
 
@@ -576,9 +584,11 @@ if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forev
                 continue
             workbench31_adf_filename = os.path.basename(md5_file.full_filename)
             installed_workbench31_adf_filenames.append(workbench31_adf_filename)
+            installed_workbench31_adf_file = os.path.join(workbench_dir, workbench31_adf_filename)
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(workbench_dir, workbench31_adf_filename))
+                installed_workbench31_adf_file)
+            os.chmod(installed_workbench31_adf_file, stat.S_IWRITE)
 
         # print installed workbench 3.1 adf files
         print '- {0} Workbench 3.1 adf files installed \'{1}\''.format(
@@ -596,16 +606,22 @@ if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forev
                 continue
             kickstart_rom_filename = os.path.basename(md5_file.full_filename)
             installed_kickstart_rom_filenames.append(kickstart_rom_filename)
+            installed_kickstart_rom_file = os.path.join(kickstart_dir, kickstart_rom_filename)
             shutil.copyfile(
                 md5_file.full_filename,
-                os.path.join(kickstart_dir, kickstart_rom_filename))
+                installed_kickstart_rom_file)
+            os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
 
         # copy amiga forever rom key file, if it exists
         rom_key_filename = 'rom.key'
         rom_key_file = os.path.join(shared_rom_dir, rom_key_filename)
         if os.path.isfile(rom_key_file):
             installed_kickstart_rom_filenames.append(rom_key_filename)
-            shutil.copyfile(rom_key_file, os.path.join(kickstart_dir, rom_key_filename))
+            installed_kickstart_rom_file = os.path.join(kickstart_dir, rom_key_filename)
+            shutil.copyfile(
+                rom_key_file,
+                installed_kickstart_rom_file)
+            os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
 
         # print installed kickstart rom files
         print '- {0} Kickstart rom files installed \'{1}\''.format(
@@ -746,62 +762,64 @@ if self_install:
     print 'Done'
 
 
-# print files for patching
-print ''
-print 'Files for patching'
-print '------------------'
-print 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files...'
-
-# find a1200 kickstart rom file, if kickstart dir is defined and exists
+# find files for patching, if uae or fs-uae config files are present
 a1200_kickstart_rom_file = None
-if kickstart_dir != None and os.path.isdir(kickstart_dir):
-    # find first a1200 kickstart 3.1 rom md5 file
-    a1200_kickstart_rom_md5_file = None
-    for md5_file in get_md5_files_from_dir(kickstart_dir):
-        if md5_file.md5_hash in valid_kickstart_md5_index and re.search(r'kick40068\.a1200', valid_kickstart_md5_index[md5_file.md5_hash]['Filename'], re.I):
-            a1200_kickstart_rom_md5_file = md5_file
-            break
-
-    # find a1200 kickstart 3.1 rom file
-    if a1200_kickstart_rom_md5_file != None:
-        # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
-        rom_key_file = os.path.join(kickstart_dir, 'rom.key')
-        if valid_kickstart_md5_index[md5_file.md5_hash]['Encrypted'] and not os.path.isfile(rom_key_file):
-            print 'Error: Amiga Forever rom key file \'{0}\' doesn\'t exist'.format(rom_key_file)
-            exit(1)
-        a1200_kickstart_rom_file = a1200_kickstart_rom_md5_file.full_filename
-
-# find amiga os39 iso file, if os39 dir is defined and exists
 amiga_os39_iso_file = None
-if os39_dir != None and os.path.isdir(os39_dir):
-    # get amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'        
-    amiga_os39_iso_md5_files = []
-    os39_md5_files = get_md5_files_from_dir(os39_dir)
-    for md5_file in os39_md5_files:
-        if ((md5_file.md5_hash in valid_os39_md5_index and 
-            re.search(r'amigaos3\.9\.iso', valid_os39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
-            re.search(r'(\\|//)?amigaos3\.9\.iso$', md5_file.full_filename, re.I)):
-            amiga_os39_iso_md5_files.append(md5_file)
+if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
+    # print files for patching
+    print ''
+    print 'Files for patching'
+    print '------------------'
+    print 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files...'
 
-    # sort amiga os39 md5 files by matching md5, then filename
-    amiga_os39_iso_md5_files = sorted(amiga_os39_iso_md5_files, key=lambda x: x.md5_hash not in valid_os39_md5_index)
+    # find a1200 kickstart rom file, if kickstart dir is defined and exists
+    if kickstart_dir != None and os.path.isdir(kickstart_dir):
+        # find first a1200 kickstart 3.1 rom md5 file
+        a1200_kickstart_rom_md5_file = None
+        for md5_file in get_md5_files_from_dir(kickstart_dir):
+            if md5_file.md5_hash in valid_kickstart_md5_index and re.search(r'kick40068\.a1200', valid_kickstart_md5_index[md5_file.md5_hash]['Filename'], re.I):
+                a1200_kickstart_rom_md5_file = md5_file
+                break
 
-    if len(amiga_os39_iso_md5_files) >= 1:
-        amiga_os39_iso_file = amiga_os39_iso_md5_files[0].full_filename
+        # find a1200 kickstart 3.1 rom file
+        if a1200_kickstart_rom_md5_file != None:
+            # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
+            rom_key_file = os.path.join(kickstart_dir, 'rom.key')
+            if valid_kickstart_md5_index[md5_file.md5_hash]['Encrypted'] and not os.path.isfile(rom_key_file):
+                print 'Error: Amiga Forever rom key file \'{0}\' doesn\'t exist'.format(rom_key_file)
+                exit(1)
+            a1200_kickstart_rom_file = a1200_kickstart_rom_md5_file.full_filename
 
-# print a1200 kickstart rom file, if it's defined
-if a1200_kickstart_rom_file != None:
-    print '- Using A1200 Kickstart 3.1 rom file \'{0}\''.format(a1200_kickstart_rom_file)
-else:
-    print '- No A1200 Kickstart 3.1 rom file detected'
+    # find amiga os39 iso file, if os39 dir is defined and exists
+    if os39_dir != None and os.path.isdir(os39_dir):
+        # get amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'        
+        amiga_os39_iso_md5_files = []
+        os39_md5_files = get_md5_files_from_dir(os39_dir)
+        for md5_file in os39_md5_files:
+            if ((md5_file.md5_hash in valid_os39_md5_index and 
+                re.search(r'amigaos3\.9\.iso', valid_os39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
+                re.search(r'(\\|//)?amigaos3\.9\.iso$', md5_file.full_filename, re.I)):
+                amiga_os39_iso_md5_files.append(md5_file)
 
-# print amiga os39 iso file, if it's defined
-if amiga_os39_iso_file != None:
-    print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os39_iso_file)
-else:
-    print '- No Amiga OS 3.9 iso file detected'
+        # sort amiga os39 md5 files by matching md5, then filename
+        amiga_os39_iso_md5_files = sorted(amiga_os39_iso_md5_files, key=lambda x: x.md5_hash not in valid_os39_md5_index)
 
-print 'Done'
+        if len(amiga_os39_iso_md5_files) >= 1:
+            amiga_os39_iso_file = amiga_os39_iso_md5_files[0].full_filename
+
+    # print a1200 kickstart rom file, if it's defined
+    if a1200_kickstart_rom_file != None:
+        print '- Using A1200 Kickstart 3.1 rom file \'{0}\''.format(a1200_kickstart_rom_file)
+    else:
+        print '- No A1200 Kickstart 3.1 rom file detected'
+
+    # print amiga os39 iso file, if it's defined
+    if amiga_os39_iso_file != None:
+        print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os39_iso_file)
+    else:
+        print '- No Amiga OS 3.9 iso file detected'
+
+    print 'Done'
 
 
 # get full path for a1200 kickstart rom file, amiga os39 iso file and workbench dir, if they are defined
@@ -813,18 +831,18 @@ if workbench_dir != None:
     workbench_dir = os.path.realpath(workbench_dir)
 
 
-# print uae configuration
-print ''
-print 'UAE configuration'
-print '-----------------'
-print 'Patching and installing UAE configuration files...'
-
-# print uae install dir, if it exists
-if uae_install_dir != None:
-    print '- UAE install dir \'{0}\''.format(uae_install_dir)
-
-# patch and install uae configuration files
+# patch and install uae configuration files, if they are present
 if len(uae_config_files) > 0:
+    # print uae configuration
+    print ''
+    print 'UAE configuration'
+    print '-----------------'
+    print 'Patching and installing UAE configuration files...'
+
+    # print uae install dir, if it exists
+    if uae_install_dir != None:
+        print '- UAE install dir \'{0}\''.format(uae_install_dir)
+
     print '- {0} UAE configuration files \'{1}\''.format(len(uae_config_files), ', '.join(uae_config_files))    
     for uae_config_file in uae_config_files:
         # patch uae config file
@@ -839,24 +857,22 @@ if len(uae_config_files) > 0:
             shutil.copyfile(
                 uae_config_file, 
                 os.path.join(uae_install_dir, os.path.basename(uae_config_file)))
-else:
-    print '- No UAE configuration files detected'
 
-print 'Done'
+    print 'Done'
 
 
-# print fs-uae configuration
-print ''
-print 'FS-UAE configuration'
-print '--------------------'
-print 'Patching and installing FS-UAE configuration files...'
-
-# print fs-uae install directory, if it exists
-if fsuae_install_dir != None:
-    print '- FS-UAE install dir \'{0}\''.format(fsuae_install_dir)
-
-# patch and install fs-uae configuration files
+# patch and install fs-uae configuration files, if they are present
 if len(fsuae_config_files) > 0:
+    # print fs-uae configuration
+    print ''
+    print 'FS-UAE configuration'
+    print '--------------------'
+    print 'Patching and installing FS-UAE configuration files...'
+
+    # print fs-uae install directory, if it exists
+    if fsuae_install_dir != None:
+        print '- FS-UAE install dir \'{0}\''.format(fsuae_install_dir)
+
     print '- {0} FS-UAE configuration files \'{1}\''.format(len(fsuae_config_files), ', '.join(fsuae_config_files))
     for fsuae_config_file in fsuae_config_files:
         # patch fs-uae config file
@@ -871,7 +887,5 @@ if len(fsuae_config_files) > 0:
             shutil.copyfile(
                 fsuae_config_file, 
                 os.path.join(fsuae_install_dir, os.path.basename(fsuae_config_file)))
-else:
-    print '- No FS-UAE configuration files detected'
 
-print 'Done'
+    print 'Done'

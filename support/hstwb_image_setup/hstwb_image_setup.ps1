@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-12
+# Date:   2018-06-29
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -37,7 +37,9 @@ Param(
 	[Parameter(Mandatory=$false)]
     [string]$fsuaeInstallDir,
 	[Parameter(Mandatory=$false)]
-    [switch]$patchOnly
+    [switch]$patchOnly,
+	[Parameter(Mandatory=$false)]
+    [switch]$selfInstall
 )
 
 
@@ -378,7 +380,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-06-12"
+Write-Output "Date: 2018-06-29"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
@@ -407,6 +409,10 @@ $uaeConfigFiles = Get-ChildItem $installDir | `
 $fsuaeConfigFiles = Get-ChildItem $installDir | `
     Where-Object { !$_.PSIsContainer -and $_.Name -match '\.fs-uae$' }
 
+# write uae and fs-uae configuration files
+Write-Output ('{0} UAE configuration file(s)' -f $uaeConfigFiles.Count)
+Write-Output ('{0} FS-UAE configuration file(s)' -f $fsuaeConfigFiles.Count)
+    
 # detect, if uae or fs-uae config files has self install directories
 $configFilesHasSelfInstallDirs = $false
 if (($uaeConfigFiles | Where-Object { ConfigFileHasSelfInstallDirs $_.FullName }).Count -gt 0)
@@ -419,7 +425,6 @@ if (!$configFilesHasSelfInstallDirs -and ($fsuaeConfigFiles | Where-Object { Con
 }
 
 # set self install true, if patch only is not defined and config files has self install directories
-$selfInstall = $false
 if (!$patchOnly -and $configFilesHasSelfInstallDirs)
 {
     $selfInstall = $true
@@ -515,8 +520,11 @@ if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDa
             {
                 continue
             }
-            $installedWorkbench31AdfFilenames.Add((Split-Path $md5File.File -Leaf))
-            Copy-Item $md5File.File -Destination $workbenchDir -Force
+            $workbench31AdfFilename = Split-Path $md5File.File -Leaf
+            $installedWorkbench31AdfFilenames.Add($workbench31AdfFilename)
+            $installedWorkbench31AdfFile = Join-Path $workbenchDir -ChildPath $workbench31AdfFilename
+            Copy-Item $md5File.File -Destination $installedWorkbench31AdfFile -Force
+            Set-ItemProperty $installedWorkbench31AdfFile -name IsReadOnly -value $false
         }
 
         # write installed workbench 3.1 adf files
@@ -538,8 +546,11 @@ if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDa
             {
                 continue
             }
-            $installedKickstartRomFilenames.Add((Split-Path $md5File.File -Leaf))
-            Copy-Item $md5File.File -Destination $kickstartDir -Force
+            $kickstartRomFilename = Split-Path $md5File.File -Leaf
+            $installedKickstartRomFilenames.Add($kickstartRomFilename)
+            $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $kickstartRomFilename
+            Copy-Item $md5File.File -Destination $installedKickstartRomFile -Force
+            Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
         }
 
         # copy amiga forever rom key file, if it exists
@@ -548,7 +559,9 @@ if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDa
         if (Test-Path $romKeyFile)
         {
             $installedKickstartRomFilenames.Add($romKeyFilename)
-            Copy-Item $romKeyFile -Destination $kickstartDir -Force
+            $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $romKeyFilename
+            Copy-Item $romKeyFile -Destination $installedKickstartRomFile -Force
+            Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
         }
         
         # write installed workbench 3.1 adf files
@@ -720,90 +733,92 @@ if ($selfInstall)
     Write-Output 'Done'
 }
 
-
-# write files for patching
-Write-Output ''
-Write-Output 'Files for patching'
-Write-Output '------------------'
-Write-Output 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files...'
-
-# find a1200 kickstart rom file, if kickstart dir is defined and exists
+# find files for patching, if uae or fs-uae config files are present
 $a1200KickstartRomFile = $null
-if ($kickstartDir -and (Test-Path $kickstartDir))
-{
-    # find first a1200 kickstart 3.1 rom md5 file
-    $a1200KickstartRomMd5File = GetMd5FilesFromDir $kickstartDir | `
-        Where-Object { $validKickstartMd5Index.ContainsKey($_.Md5) -and $validKickstartMd5Index[$_.Md5].Filename -match 'kick40068\.A1200' } | `
-        Select-Object -First 1
-
-    # find a1200 kickstart 3.1 rom file
-    if ($a1200KickstartRomMd5File)
-    {
-        # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
-        $romKeyFile = Join-Path $kickstartDir -ChildPath 'rom.key'
-        if ($validKickstartMd5Index[$a1200KickstartRomMd5File.Md5].Encrypted -and !(Test-Path $romKeyFile))
-        {
-            throw ('Error: Amiga Forever rom key file ''{0}'' doesn''t exist' -f $romKeyFile)
-        }
-        $a1200KickstartRomFile = $a1200KickstartRomMd5File.File
-    }
-}
-
-# find amiga os39 iso file, if os39 dir is defined and exists
 $amigaOs39IsoFile = $null
-if ($os39Dir -and (Test-Path $os39Dir))
+if ($uaeConfigFiles.Count -gt 0 -or $fsuaeConfigFiles.Count -gt 0)
 {
-    # find first amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'
-    $amigaOs39IsoMd5File = GetMd5FilesFromDir $os39Dir | `
-        Where-Object { ($validOs39Md5Index.ContainsKey($_.Md5.ToLower()) -and $validOs39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
-        Sort-Object @{expression={!$validOs39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
-        Select-Object -First 1
+    # write files for patching
+    Write-Output ''
+    Write-Output 'Files for patching'
+    Write-Output '------------------'
+    Write-Output 'Finding A1200 Kickstart 3.1 rom and Amiga OS 3.9 iso files...'
 
-    # set amiga os39 iso file, if amiga os39 iso md5 file is defined
+    # find a1200 kickstart rom file, if kickstart dir is defined and exists
+    if ($kickstartDir -and (Test-Path $kickstartDir))
+    {
+        # find first a1200 kickstart 3.1 rom md5 file
+        $a1200KickstartRomMd5File = GetMd5FilesFromDir $kickstartDir | `
+            Where-Object { $validKickstartMd5Index.ContainsKey($_.Md5) -and $validKickstartMd5Index[$_.Md5].Filename -match 'kick40068\.A1200' } | `
+            Select-Object -First 1
+
+        # find a1200 kickstart 3.1 rom file
+        if ($a1200KickstartRomMd5File)
+        {
+            # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
+            $romKeyFile = Join-Path $kickstartDir -ChildPath 'rom.key'
+            if ($validKickstartMd5Index[$a1200KickstartRomMd5File.Md5].Encrypted -and !(Test-Path $romKeyFile))
+            {
+                throw ('Error: Amiga Forever rom key file ''{0}'' doesn''t exist' -f $romKeyFile)
+            }
+            $a1200KickstartRomFile = $a1200KickstartRomMd5File.File
+        }
+    }
+
+    # find amiga os39 iso file, if os39 dir is defined and exists
+    if ($os39Dir -and (Test-Path $os39Dir))
+    {
+        # find first amiga os39 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'
+        $amigaOs39IsoMd5File = GetMd5FilesFromDir $os39Dir | `
+            Where-Object { ($validOs39Md5Index.ContainsKey($_.Md5.ToLower()) -and $validOs39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.9\.iso') -or ($_.File -match '\\?amigaos3\.9\.iso$') } | `
+            Sort-Object @{expression={!$validOs39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
+            Select-Object -First 1
+
+        # set amiga os39 iso file, if amiga os39 iso md5 file is defined
+        if ($amigaOs39IsoMd5File)
+        {
+            $amigaOs39IsoFile = $amigaOs39IsoMd5File.File
+        }
+    }
+
+    # write a1200 kickstart rom file, if it's defined
+    if ($a1200KickstartRomFile)
+    {
+        Write-Output ('- Using A1200 Kickstart 3.1 rom file ''{0}''' -f $a1200KickstartRomFile)
+    }
+    else
+    {
+        Write-Output '- No A1200 Kickstart 3.1 rom file detected'
+    }
+
+    # write amiga os39 iso file, if it's defined
     if ($amigaOs39IsoMd5File)
     {
-        $amigaOs39IsoFile = $amigaOs39IsoMd5File.File
+        Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
     }
+    else
+    {
+        Write-Output '- No Amiga OS 3.9 iso file detected'
+    }
+
+    Write-Output 'Done'
 }
 
-# write a1200 kickstart rom file, if it's defined
-if ($a1200KickstartRomFile)
-{
-    Write-Output ('- Using A1200 Kickstart 3.1 rom file ''{0}''' -f $a1200KickstartRomFile)
-}
-else
-{
-    Write-Output '- No A1200 Kickstart 3.1 rom file detected'
-}
-
-# write amiga os39 iso file, if it's defined
-if ($amigaOs39IsoMd5File)
-{
-    Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
-}
-else
-{
-    Write-Output '- No Amiga OS 3.9 iso file detected'
-}
-
-Write-Output 'Done'
-
-
-# write uae configuration
-Write-Output ''
-Write-Output 'UAE configuration'
-Write-Output '-----------------'
-Write-Output 'Patching and installing UAE configuration files...'
-
-# write uae install dir, if it exists
-if ($uaeInstallDir)
-{
-    Write-Output ('- UAE install dir ''{0}''' -f $uaeInstallDir)
-}
-
-# patch and install uae configuration files
+# patch and install uae configuration files, if they are present
 if ($uaeConfigFiles.Count -gt 0)
 {
+    # write uae configuration
+    Write-Output ''
+    Write-Output 'UAE configuration'
+    Write-Output '-----------------'
+    Write-Output 'Patching and installing UAE configuration files...'
+
+    # write uae install dir, if it exists
+    if ($uaeInstallDir)
+    {
+        Write-Output ('- UAE install dir ''{0}''' -f $uaeInstallDir)
+    }
+
     Write-Output ('- {0} UAE configuration files ''{1}''' -f $uaeConfigFiles.Count, ($uaeConfigFiles -join ', '))
     foreach($uaeConfigFile in $uaeConfigFiles)
     {
@@ -816,28 +831,23 @@ if ($uaeConfigFiles.Count -gt 0)
             Copy-Item $uaeConfigFile.FullName -Destination $uaeInstallDir -Force
         }
     }    
-}
-else
-{
-    Write-Output '- No UAE configuration files detected'
-}
-Write-Output 'Done'
-
-
-# write fs-uae configuration
-Write-Output ""
-Write-Output "FS-UAE configuration"
-Write-Output "--------------------"
-
-# write fs-uae install directory, if it exists
-if ($fsuaeInstallDir)
-{
-    Write-Output ('- FS-UAE install dir ''{0}''' -f $fsuaeInstallDir)
+    Write-Output 'Done'
 }
 
-# patch and install fs-uae configuration files
+# patch and install fs-uae configuration files, if they are present
 if ($fsuaeConfigFiles.Count -gt 0)
 {
+    # write fs-uae configuration
+    Write-Output ""
+    Write-Output "FS-UAE configuration"
+    Write-Output "--------------------"
+
+    # write fs-uae install directory, if it exists
+    if ($fsuaeInstallDir)
+    {
+        Write-Output ('- FS-UAE install dir ''{0}''' -f $fsuaeInstallDir)
+    }
+
     Write-Output ('- {0} FS-UAE configuration files ''{1}''' -f $fsuaeConfigFiles.Count, ($fsuaeConfigFiles -join ', '))
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
     {
@@ -850,9 +860,5 @@ if ($fsuaeConfigFiles.Count -gt 0)
             Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeInstallDir -Force
         }
     }
+    Write-Output "Done"
 }
-else
-{
-    Write-Output ("- No FS-UAE configuration files detected")
-}
-Write-Output "Done"
