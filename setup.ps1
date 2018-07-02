@@ -94,13 +94,6 @@ function ConfirmDialog($title, $message, $icon = 'Asterisk')
 }
 
 
-# set title
-function SetTitle($version)
-{
-    $host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f $version
-}
-
-
 # menu
 function Menu($hstwb, $title, $options, $returnIndex = $false)
 {
@@ -1262,7 +1255,8 @@ $settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-SetTitle HstwbInstallerVersion
+$host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVersion)
+
 
 try
 {
