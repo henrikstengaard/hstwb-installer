@@ -2,13 +2,13 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-05
+# Date:   2018-07-04
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
 
 Param(
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$settingsDir
 )
 
@@ -1250,8 +1250,12 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
-$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
+if (!$settingsDir)
+{
+    $settingsDir = Join-Path $env:LOCALAPPDATA -ChildPath 'HstWB Installer'
+}
+$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 

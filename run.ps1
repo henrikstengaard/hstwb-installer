@@ -2,13 +2,13 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-14
+# Date:   2018-07-04
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
 
 Param(
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$settingsDir
 )
 
@@ -2781,8 +2781,13 @@ $amigaPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPS
 $licensesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("licenses")
 $scriptsPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("scripts")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
-$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 $supportPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("support")
+
+if (!$settingsDir)
+{
+    $settingsDir = Join-Path $env:LOCALAPPDATA -ChildPath 'HstWB Installer'
+}
+$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
