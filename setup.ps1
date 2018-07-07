@@ -1217,7 +1217,7 @@ function RunInstaller($hstwb)
     & $hstwb.Paths.RunFile -settingsDir $hstwb.Paths.SettingsDir
     Write-Host ""
 
-    SetTitle($hstwb.Version)
+    $host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVersion)
 }
 
 
