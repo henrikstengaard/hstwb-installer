@@ -2,13 +2,13 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-31
+# Date:   2018-07-04
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
 
 Param(
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$false)]
 	[string]$settingsDir
 )
 
@@ -94,15 +94,8 @@ function ConfirmDialog($title, $message, $icon = 'Asterisk')
 }
 
 
-# set title
-function SetTitle($version)
-{
-    $host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f $version
-}
-
-
 # menu
-function Menu($hstwb, $title, $options)
+function Menu($hstwb, $title, $options, $returnIndex = $false)
 {
     Clear-Host
     $versionPadding = new-object System.String('-', ($hstwb.Version.Length + 2))
@@ -115,7 +108,7 @@ function Menu($hstwb, $title, $options)
     Write-Host $title -foregroundcolor "Cyan"
     Write-Host ""
 
-    return EnterChoice "Enter choice" $options
+    return EnterChoice "Enter choice" $options $returnIndex
 }
 
 
@@ -179,75 +172,24 @@ function ExistingImageDirectory($hstwb)
         return
     }
 
-    # read harddrives uae text file from image file
-    $harddrivesUaeFile = Join-Path -Path $newPath -ChildPath 'harddrives.uae' 
+    # read hstwb image json file
+    $hstwbImageJsonFile = Join-Path -Path $newPath -ChildPath 'hstwb-image.json' 
 
-    # return, if harddrives uae text doesn't exist
-    if (!(Test-Path -Path $harddrivesUaeFile))
+    # return, if hstwb image json file doesn't exist
+    if (!(Test-Path -Path $hstwbImageJsonFile))
     {
-        Write-Error ("Image directory '{0}' doesn't contain harddrives.uae file!" -f $newPath)
+        Write-Error ("Image directory '{0}' doesn't contain 'hstwb-image.json' file!" -f $newPath)
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-    # read harddrives uae text
-    $harddrivesUaeText = Get-Content -Path $harddrivesUaeFile -Raw
-
-    # get harddrives from harddrives uae text
-    $harddrives = @()
-    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
-
-    # return, if harddrives uae file doesn't contain uaehf lines
-    if ($harddrives.Count -eq 0)
-    {
-        Write-Error ("Image directory '{0}' harddrives.uae doesn't contain uaehf lines!" -f $newPath)
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
-    # return, if harddrives uae file contains invalid uaehf lines
-    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
-    {
-        Write-Error ("Image directory '{0}' harddrives.uae has invalid 'uaehf' lines!" -f $newPath)
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
+    # read hstwb image json file
+    $image = Get-Content $hstwbImageJsonFile -Raw | ConvertFrom-Json
 
     # check, if image has large harddrives
-    $largeHarddrivesPresent = $false
-    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
-    {
-        # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
-        # return, if hdf file doesn't exist
-        if (!(Test-Path -Path $harddrivePath))
-        {
-            Write-Error ("Image directory '{0}' doesn't contain HDF file '{1}'!" -f $newPath, $harddrivePath)
-            Write-Host ""
-            Write-Host "Press enter to continue"
-            Read-Host
-            return
-        }
-
-        # get hdf filename
-        $hdfItem = Get-Item $harddrivePath
-
-        # show large harddrive warning, if image has a hdf file larger than 4GB
-        if ($hdfItem.Length -gt 4000000000)
-        {
-            $largeHarddrivesPresent = $true
-        }
-    }
+    $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
 
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
@@ -268,15 +210,17 @@ function ExistingImageDirectory($hstwb)
 # create image directory menu
 function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 {
-    $toNatural = { [regex]::Replace($_, '\d+', { $args[0].Value.PadLeft(20) }) }
+    # get images sorted naturally
+    $images = $hstwb.Images | Sort-Object @{expression={ [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(20) }) };Ascending=$true}
 
+    # build image template options
     $imageTemplateOptions = @()
-    $imageTemplateOptions += $hstwb.Images.keys | Sort-Object $toNatural
+    $imageTemplateOptions += $images | ForEach-Object { $_.Name }
     $imageTemplateOptions += "Back"
     
 
     # create image directory from image template
-    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions
+    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions $true
 
     if ($choice -eq 'Back')
     {
@@ -284,96 +228,36 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     }
 
     # get image file
-    $imageFile = $hstwb.Images.Get_Item($choice)
+    $imageFile = $images[$choice].ImageFile
 
+    # read hstwb image json file from image file
+    $hstwbImageJsonText = ReadZipEntryTextFile $imageFile 'hstwb-image\.json$'
 
-    # read harddrives uae text file from image file
-    $harddrivesUaeText = ReadZipEntryTextFile $imageFile 'harddrives\.uae$'
-
-    # return, if harddrives uae text doesn't exist
-    if (!$harddrivesUaeText)
+    # return, if hstwb image json file doesn't exist
+    if (!$hstwbImageJsonText)
     {
-        Write-Error ("Image file '$imageFile' doesn't contain harddrives.uae file!")
+        Write-Error ("Image file '$imageFile' doesn't contain 'hstwb-image.json' file!")
         Write-Host ""
         Write-Host "Press enter to continue"
         Read-Host
         return
     }
 
-
-    # get harddrives from harddrives uae text
-    $harddrives = @()
-    $harddrivesUaeText -split "`r`n" | ForEach-Object { $_ | Select-String -Pattern '^uaehf\d+=(hdf|dir),[^,]*,([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $harddrives += @{ "Type" = $_.Groups[1].Value.Trim(); "Path" = $_.Groups[2].Value.Trim() } } }
-
-    # return, if harddrives uae file doesn't contain uaehf lines
-    if ($harddrives.Count -eq 0)
-    {
-        Write-Error ("Image file '$imageFile' harddrives.uae doesn't contain uaehf lines!")
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
-    # return, if harddrives uae file contains invalid uaehf lines
-    if (($harddrives | Where-Object { ($_.Type -and $_.Type -eq '') -or ($_.Path -and $_.Path -eq '') }).Count -gt 0)
-    {
-        Write-Error ("Image file '$imageFile' harddrives.uae has invalid 'uaehf' lines!")
-        Write-Host ""
-        Write-Host "Press enter to continue"
-        Read-Host
-        return
-    }
-
+    # read hstwb image json text
+    $image = $hstwbImageJsonText | ConvertFrom-Json
 
     # check, if image has large harddrives
-    $largeHarddrivesPresent = $false
-    foreach($harddrive in ($harddrives | Where-Object { $_.Type -match 'hdf' }))
-    {
-        # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
-        # get hdf filename
-        $hdfFileName = Split-Path $harddrivePath -Leaf
-
-        # open image file and get hdf zip entry matching hdf filename
-        $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
-        $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
-
-        # return, if image file doesn't contain hdf filename
-        if (!$hdfZipEntry)
-        {
-            $zip.Dispose()
-            Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
-            Write-Host ""
-            Write-Host "Press enter to continue"
-            return
-        }
-
-        # show large harddrive warning, if image has a hdf file larger than 4GB
-        if ($hdfZipEntry.Length -gt 4000000000)
-        {
-            $largeHarddrivesPresent = $true
-        }
-
-        # close image file
-        $zip.Dispose()
-    }
-
+    $largeHarddrivesPresent = $image.Harddrives | Where-Object { $_.Type -match 'hdf' -and $_.Size -gt 4000000000 } | Select-Object -First 1
 
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog 'Large harddrive' ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $choice) 'Warning'
+        $confirm = ConfirmDialog 'Large harddrive' ("Image '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $image.Name) 'Warning'
         if (!$confirm)
         {
             return
         }
     }
-
 
     # default image dir
     if ($hstwb.Settings.Image.ImageDir)
@@ -385,16 +269,14 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-
     # select new image directory
-    $newImageDirectoryPath = FolderBrowserDialog "Select new image directory for '$choice'" $defaultImageDir $true
+    $newImageDirectoryPath = FolderBrowserDialog ("Select new image directory for '{0}'" -f $image.Name) $defaultImageDir $true
 
     # return, if new image directory path is null
     if ($newImageDirectoryPath -eq $null)
     {
         return
     }
-
 
     # return, if no write permission
     try 
@@ -412,67 +294,136 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         return
     }
 
+    # hstwb image json file
+    $hstwbImageJsonFile = Join-Path $newImageDirectoryPath -ChildPath "hstwb-image.json"
 
-
-
-    # harddrives uae file
-    $harddrivesUaeFile = Join-Path $newImageDirectoryPath -ChildPath "harddrives.uae"
-
-    # confirm overwrite, if harddrives.uae already exists in new image directory path
-    if (Test-Path -Path $harddrivesUaeFile)
+    # confirm overwrite, if hstwb image json file already exists in new image directory path
+    if (Test-Path -Path $hstwbImageJsonFile)
     {
-        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains harddrives.uae and image files.`r`n`r`nDo you want to overwrite files?")
+        $confirm = ConfirmDialog "Overwrite files" ("Image directory '" + $newImageDirectoryPath + "' already contains 'hstwb-image.json' and image files.`r`n`r`nDo you want to overwrite files?")
         if (!$confirm)
         {
             return
         }
     }
 
-
     # write harddrives.uae to new image directory path
-    [System.IO.File]::WriteAllText($harddrivesUaeFile, $harddrivesUaeText)
-
+    Set-Content -Path $hstwbImageJsonFile -Value $hstwbImageJsonText
 
     Write-Host ""
-
+    Write-Host ("Creating image '{0}' in directory '{1}'" -f $image.Name, $newImageDirectoryPath) -ForegroundColor Yellow
 
     # prepare harddrives
-    foreach($harddrive in $harddrives)
+    foreach($harddrive in $image.Harddrives)
     {
         # get harddrive path
-        $harddrivePath = $harddrive.Path -replace '.+:([^:]+)$', '$1'
-        $harddrivePath = $harddrivePath.Replace('[$ImageDir]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath.Replace('[$ImageDirEscaped]', $newImageDirectoryPath)
-        $harddrivePath = $harddrivePath -replace '\\+', '\' -replace '"', ''
-
+        $harddrivePath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.Path
 
         # extract hdf or create dir harddrive
         switch ($harddrive.Type)
         {
             "hdf"
             {
-                # get hdf filename
-                $hdfFileName = [System.IO.Path]::GetFileName($harddrivePath)
-
                 # open image file and get hdf zip entry matching hdf filename
                 $zip = [System.IO.Compression.ZipFile]::Open($imageFile,"Read")
-                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $hdfFileName + '*') }
+
+                # extract filesystem, if it's defined
+                if ($harddrive.FileSystem -and $harddrive.FileSystem -notmatch '^\s*$')
+                {
+                    # find file system file in zip file entries
+                    $fileSystemZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.FileSystem + '*') }
+
+                    # return, if image file doesn't contain file system file
+                    if (!$fileSystemZipEntry)
+                    {
+                        $zip.Dispose()
+                        Write-Error ("Image file '{0}' doesn't contain file system file '{1}'!" -f $imageFile, $harddrive.FileSystem)
+                        Write-Host ""
+                        Write-Host "Press enter to continue"
+                        return
+                    }
+
+                    # extract file system zip entry to new image directory
+                    $fileSystemPath = Join-Path -Path $newImageDirectoryPath -ChildPath $harddrive.FileSystem
+                    Write-Host ("Extracting file system file '{0}' to '{1}'..." -f $harddrive.FileSystem, $fileSystemPath)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($fileSystemZipEntry, $fileSystemPath, $true);
+                    Write-Host "Done."
+                }
+
+
+                # find hdf file in zip file entries
+                $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') } | Select-Object -First 1
+
+                # find zipped hdf file, if image file doesn't contain hdf filename
+                if (!$hdfZipEntry)
+                {
+                    # find hdf zip file in zip file entries
+                    $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + ($harddrive.Path -replace '\.hdf$', '.zip') + '*') } | Select-Object -First 1
+                }
 
                 # return, if image file doesn't contain hdf filename
                 if (!$hdfZipEntry)
                 {
                     $zip.Dispose()
-                    Write-Error ("Image file '" + $imageFile + "' doesn't contain HDF file '$hdfFileName'!")
+                    Write-Error ("Image file '{0}' doesn't contain hdf file '{1}'!" -f $imageFile, $harddrive.Path)
                     Write-Host ""
                     Write-Host "Press enter to continue"
+                    Read-Host
                     return
                 }
 
-                # extract hdf zip entry to harddrive path
-                Write-Host "Extracting hdf file '$hdfFileName' to '$harddrivePath'..." 
-                [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true);
+                $hdfZipFile = $null
+                if ($hdfZipEntry.Name -match '\.zip$')
+                {
+                    $hdfZipFile = Join-Path $newImageDirectoryPath -ChildPath $hdfZipEntry.Name
+
+                    Write-Host ("Extracting zip file '{0}' to '{1}'..." -f $hdfZipEntry.Name, $hdfZipFile)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $hdfZipFile, $true)
+                }
+                else
+                {
+                    Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true)
+                }
                 Write-Host "Done."
+
+                # dispose zip file
                 $zip.Dispose()
+
+                if ($hdfZipFile)
+                {
+                    # open hdf zip file
+                    $zip = [System.IO.Compression.ZipFile]::Open($hdfZipFile,"Read")
+
+                    # find hdf file in zip file entries
+                    $hdfZipEntry = $zip.Entries | Where-Object { $_.FullName -like ('*' + $harddrive.Path + '*') } | Select-Object -First 1
+
+                    # return, if image file doesn't contain hdf filename
+                    if (!$hdfZipEntry)
+                    {
+                        $zip.Dispose()
+                        Write-Error ("Image file '{0}' doesn't contain hdf file '{1}'!" -f $imageFile, $harddrive.Path)
+                        Write-Host ""
+                        Write-Host "Press enter to continue"
+                        Read-Host
+                        return
+                    }
+
+                    Write-Host ("Extracting hdf file '{0}' to '{1}'..." -f $harddrive.Path, $harddrivePath)
+
+                    # extract hdf zip entry to new image directory
+                    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($hdfZipEntry, $harddrivePath, $true)
+
+                    # dispose zip file
+                    $zip.Dispose()
+
+                    Write-Host "Done."
+                    
+                    # remove hdf zip file
+                    Write-Host ("Deleting zip file '{0}'..." -f $hdfZipFile)
+                    Remove-Item $hdfZipFile -Force
+                    Write-Host "Done."
+                }                
             }
             "dir"
             {
@@ -489,13 +440,11 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
         }
     }
 
-
     # save settings
     $hstwb.Settings.Image.ImageDir = $newImageDirectoryPath
     Save $hstwb
 
-
-    # wait 5 seconds
+    # continue
     Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
@@ -810,6 +759,7 @@ function ConfigurePackagesMenu($hstwb)
 # select packages menu
 function SelectPackagesMenu($hstwb)
 {
+    # get package names sorted
     $packageNames = @()
     $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
 
@@ -828,30 +778,33 @@ function SelectPackagesMenu($hstwb)
 
     foreach ($packageName in $packageNames)
     {
-        $package = $hstwb.Packages.Get_Item($packageName).Latest
+        $package = $hstwb.Packages[$packageName]
 
-        $hasDependenciesIndicator = if ($package.PackageDependencies.Count -gt 0) { ' (*)' } else { '' }
+        $hasDependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
         
-        $packageNameFormatted = "{0}{1}" -f $package.PackageFullName, $hasDependenciesIndicator
+        $packageNameFormatted = "{0}{1}" -f $package.FullName, $hasDependenciesIndicator
 
         $packageNamesFormattedMap.Set_Item($packageNameFormatted, $packageName)
         $packageNamesMap.Set_Item($packageName, $packageNameFormatted)
-        $installPackagesMap.Set_Item($packageName, $package.Package.Name)
+        $installPackagesMap.Set_Item($packageName, $package.Name)
 
-        foreach($dependencyPackageName in $package.PackageDependencies)
+        if ($package.Dependencies)
         {
-            if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+            foreach($dependencyPackageName in ($package.Dependencies | ForEach-Object { $_.Name.ToLower() }))
             {
-                $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+                if ($dependencyPackageNamesIndex.ContainsKey($dependencyPackageName))
+                {
+                    $dependencyPackageNames = $dependencyPackageNamesIndex.Get_Item($dependencyPackageName)
+                }
+                else
+                {
+                    $dependencyPackageNames = @()
+                }
+    
+                $dependencyPackageNames += $packageName
+    
+                $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
             }
-            else
-            {
-                $dependencyPackageNames = @()
-            }
-
-            $dependencyPackageNames += $packageName
-
-            $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
         }
     }
 
@@ -869,7 +822,7 @@ function SelectPackagesMenu($hstwb)
         
         if ($choice -eq 'Select all')
         {
-            $addPackageNames += $hstwb.Packages.Keys
+            $addPackageNames += $packageNames
         }
         elseif ($choice -eq 'Deselect all')
         {
@@ -889,14 +842,14 @@ function SelectPackagesMenu($hstwb)
                 if ($dependencyPackageNamesIndex.ContainsKey($packageName))
                 {
                     # get package
-                    $package = $hstwb.Packages.Get_Item($packageName).Latest
+                    $package = $hstwb.Packages[$packageName]
 
                     # list selected package names that has dependencies to package
                     $dependencyPackageNames = @()
-                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages.Get_Item($_).Latest.Package.Name }
+                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
                     # show package dependency warning
-                    if (!(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Package.Name)))
+                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
                     {
                         $deselectPackage = $false
                     }
@@ -924,11 +877,11 @@ function SelectPackagesMenu($hstwb)
                 }
 
                 # get package
-                $package = $hstwb.Packages.Get_Item($packageName).Latest
+                $package = $hstwb.Packages[$packageName]
             
                 $installPackages.Remove($packageName)
                 
-                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Package.Name) } | Select-Object -First 1
+                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Name) } | Select-Object -First 1
 
                 if ($packageAssignsKey)
                 {
@@ -948,13 +901,13 @@ function SelectPackagesMenu($hstwb)
                 }
 
                 # get package
-                $package = $hstwb.Packages.Get_Item($packageName).Latest
+                $package = $hstwb.Packages[$packageName]
 
                 $selectedPackageNames = @()
                 
-                if ($package.PackageDependencies.Count -gt 0)
+                if ($package.Dependencies.Count -gt 0)
                 {
-                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package
+                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package | ForEach-Object { $_.ToLower() }
                 }
 
                 $selectedPackageNames += $packageName
@@ -969,11 +922,20 @@ function SelectPackagesMenu($hstwb)
                     $installPackages.Set_Item($selectedPackageName, $true)
 
                     # get selected package
-                    $selectedPackage = $hstwb.Packages.Get_Item($selectedPackageName).Latest
+                    $selectedPackage = $hstwb.Packages[$selectedPackageName]
             
-                    if ($selectedPackage.Package.DefaultAssigns)
+                    if ($selectedPackage.Assigns -and $selectedPackage.Assigns.Count -gt 0)
                     {
-                        $hstwb.Assigns.Set_Item($package.Package.Name, $selectedPackage.Package.DefaultAssigns)
+                        $packageAssigns = @()
+                        $packageAssigns += $selectedPackage.Assigns | Where-Object { $_.Path -and $_.Path -notmatch '^\s*$' }
+
+                        if ($packageAssigns.Count -eq 0)
+                        {
+                            continue
+                        }
+
+                        $hstwb.Assigns[$package.Name] = @{}
+                        $packageAssigns | ForEach-Object { $hstwb.Assigns[$package.Name][$_.Name] = $_.Path }
                     }
                 }
             }
@@ -1255,7 +1217,7 @@ function RunInstaller($hstwb)
     & $hstwb.Paths.RunFile -settingsDir $hstwb.Paths.SettingsDir
     Write-Host ""
 
-    SetTitle($hstwb.Version)
+    $host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVersion)
 }
 
 
@@ -1288,12 +1250,17 @@ $workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvi
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
-$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 
+if (!$settingsDir)
+{
+    $settingsDir = Join-Path $env:LOCALAPPDATA -ChildPath 'HstWB Installer'
+}
+$settingsDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($settingsDir)
 $settingsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-settings.ini"
 $assignsFile = Join-Path $settingsDir -ChildPath "hstwb-installer-assigns.ini"
 
-SetTitle HstwbInstallerVersion
+$host.ui.RawUI.WindowTitle = "HstWB Installer Setup v{0}" -f (HstwbInstallerVersion)
+
 
 try
 {
@@ -1328,7 +1295,6 @@ try
         $assigns = @{}
     }
 
-
     # hstwb
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
@@ -1342,7 +1308,7 @@ try
             'RunFile' = $runFile;
             'SettingsDir' = $settingsDir
         };
-        'Images' = ReadImages $imagesPath;
+        'Images' = (ReadImages $imagesPath | Where-Object { $_ });
         'Packages' = ReadPackages $packagesPath;
         'Settings' = $settings;
         'Assigns' = $assigns
@@ -1404,7 +1370,7 @@ try
         # set new workbench adf set and save
         $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
     }
-    
+
     # save settings and assigns
     Save $hstwb
 

@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-26
+# Date:   2018-04-03
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -302,9 +302,14 @@ function CalculateMd5FromText($text)
 # get file hashes
 function GetFileHashes($path)
 {
-    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
-
     $fileHashes = @()
+
+    if (!$path -or !(Test-Path -Path $path))
+    {
+        return $fileHashes
+    }
+
+    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
 
     foreach ($file in $files)
     {
@@ -402,6 +407,13 @@ function FindMatchingWorkbenchAdfs($hashes, $path)
 # find workbench adfs
 function FindWorkbenchAdfs($hstwb)
 {
+    # reset workbench adf dir, if it doesn't exist
+    if (!$hstwb.Settings.Workbench.WorkbenchAdfDir -or !(Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
+    {
+        $hstwb.Settings.Workbench.WorkbenchAdfDir = ''
+        return
+    }
+
     # find files with hashes matching workbench adf hashes
     FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
     
@@ -413,6 +425,12 @@ function FindWorkbenchAdfs($hstwb)
 # find kickstart roms
 function FindKickstartRoms($hstwb)
 {
+    # reset kickstart rom dir, if it doesn't exist
+    if (!$hstwb.Settings.Kickstart.KickstartRomDir -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomDir))
+    {
+        $hstwb.Settings.Kickstart.KickstartRomDir = ''
+    }
+
     # find files with hashes matching kickstart rom hashes
     FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
 }
@@ -469,29 +487,28 @@ function FindBestMatchingWorkbenchAdfSet($hstwb)
 # sort packages to install
 function SortPackageNames($hstwb)
 {
-    $packages = @()
-
-    foreach ($packageName in $hstwb.Packages.Keys)
+    $packageIndex = 0
+    $packageNodes = @()
+    foreach ($package in ($hstwb.Packages.Values | Sort-Object @{expression={$_.Name};Ascending=$true}))
     {
-        $package = $hstwb.Packages.Get_Item($packageName).Latest
-        
-        # get package priority, if it exists. otherwise use default priority 9999
-        $priority = if ($package.Package.Priority) { [Int32]$package.Package.Priority } else { 9999 }
+        # get priority, if it exists. otherwise use default priority 9999
+        $priority = if ($package.Priority) { [Int32]$package.Priority } else { 9999 }
 
-        $packages += @{ 'Name'= $package.Package.Name; 'Dependencies' = $package.PackageDependencies; 'Priority' = $priority }
+        $packageIndex++
+        $packageNodes += @{ 'Name'= $package.Name; 'Index' = $packageIndex; 'Dependencies' = $package.Dependencies.Name; 'Priority' = $priority }
     }
 
     $packageNamesSorted = @()
 
     # topologically sort packages, if any packages are present
-    if ($packages.Count -gt 0)
+    if ($packageNodes.Count -gt 0)
     {
         # sort packages by priority and name
         $packagesSorted = @()
-        $packagesSorted += $packages | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Name};Ascending=$true}
+        $packagesSorted += $packageNodes | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Index};Ascending=$true}
 
         # topologically sort packages and add package names sorted
-        TopologicalSort $packagesSorted | ForEach-Object { $packageNamesSorted += $_ }
+        TopologicalSort $packageNodes | ForEach-Object { $packageNamesSorted += $_ }
     }
 
     return $packageNamesSorted
@@ -503,17 +520,169 @@ function GetDependencyPackageNames($hstwb, $package)
 {
     $dependencyPackageNames = @()
 
-    foreach ($dependencyPackageName in $package.PackageDependencies)
+    if (!$package.Dependencies)
     {
-        if (!$hstwb.Packages.ContainsKey($dependencyPackageName))
+        return $dependencyPackageNames
+    }
+
+    foreach($dependencyPackageName in $package.Dependencies.Name)
+    {
+        $dependencyPackage = $hstwb.Packages[$dependencyPackageName.ToLower()]
+
+        if (!$dependencyPackage)
         {
             continue
         }
 
-        $dependencyPackage = $hstwb.Packages.Get_Item($dependencyPackageName).Latest
         $dependencyPackageNames += GetDependencyPackageNames $hstwb $dependencyPackage
-        $dependencyPackageNames += $dependencyPackageName
+        $dependencyPackageNames += $dependencyPackage.Name
     }
 
     return $dependencyPackageNames
+}
+
+function BuildInstallLog($hstwb)
+{
+    $osVersion = Get-CimInstance Win32_OperatingSystem | Select-Object Caption | ForEach-Object { $_.Caption }
+    $osArchitecture = Get-CimInstance Win32_OperatingSystem | Select-Object OSArchitecture | ForEach-Object { $_.OSArchitecture }
+    $buildNumber = Get-CimInstance Win32_OperatingSystem | Select-Object BuildNumber | ForEach-Object { $_.BuildNumber }
+    $powershellVersion = Get-Host | Select-Object Version | ForEach-Object { $_.Version }
+
+    $installLogLines = New-Object System.Collections.Generic.List[System.Object]
+    $installLogLines.Add('HstWB Installer')
+    $installLogLines.Add('---------------')
+    $installLogLines.Add('Author: Henrik Noerfjand Stengaard')
+    $installLogLines.Add('Date: {0}' -f (Get-Date -format "yyyy-MM-dd HH:mm:ss"))
+    $installLogLines.Add('')
+    $installLogLines.Add('System')
+    $installLogLines.Add(("- OS: '{0} {1} ({2})'" -f $osVersion, $osArchitecture, $buildNumber))
+    $installLogLines.Add("- Powershell: '{0}'" -f $powershellVersion)
+    $installLogLines.Add("- HstWB Installer: 'v{0}'" -f $hstwb.Version)
+    $installLogLines.Add('')
+    $installLogLines.Add('Settings')
+    $installLogLines.Add("- Settings File: '{0}'" -f $hstwb.Paths.SettingsFile)
+    $installLogLines.Add("- Assigns File: '{0}'" -f $hstwb.Paths.AssignsFile)
+    $installLogLines.Add('Image')
+    $installLogLines.Add("- Image Dir: '{0}'" -f $hstwb.Settings.Image.ImageDir)
+    $installLogLines.Add('Workbench')
+    $installLogLines.Add("- Install Workbench: '{0}'" -f $hstwb.Settings.Workbench.InstallWorkbench)
+    $installLogLines.Add("- Workbench Adf Dir: '{0}'" -f $hstwb.Settings.Workbench.WorkbenchAdfDir)
+    
+    $workbenchAdfSetHashes = @() 
+    $workbenchAdfSetFiles = @()
+    if ($hstwb.Settings.Workbench.WorkbenchAdfSet -notmatch '^$')
+    {
+        $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
+        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
+    }
+
+    $installLogLines.Add(("- Workbench Adf Set: '{0}' ({1}/{2})" -f $hstwb.Settings.Workbench.WorkbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count))
+
+    for ($i = 0; $i -lt $workbenchAdfSetFiles.Count; $i++)
+    {
+        $installLogLines.Add(("- Workbench Adf File {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $workbenchAdfSetFiles.Count, $workbenchAdfSetFiles[$i].Filename, $workbenchAdfSetFiles[$i].File))     
+    }
+
+    $installLogLines.Add('Amiga OS 3.9')
+    $installLogLines.Add("- Install Amiga OS 3.9: '{0}'" -f $hstwb.Settings.AmigaOS39.InstallAmigaOS39)
+    $installLogLines.Add("- Install Boing Bags: '{0}'" -f $hstwb.Settings.AmigaOS39.InstallBoingBags)
+    $installLogLines.Add("- Amiga OS 3.9 Iso File: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+    $installLogLines.Add('Kickstart')
+    $installLogLines.Add("- Install Kickstart: '{0}'" -f $hstwb.Settings.Kickstart.InstallKickstart)
+    $installLogLines.Add("- Kickstart Rom Dir: '{0}'" -f $hstwb.Settings.Kickstart.KickstartRomDir)
+
+    $kickstartRomSetHashes = @() 
+    $kickstartRomSetFiles = @()
+    if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+    {
+        $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
+        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
+    }
+
+    $installLogLines.Add(("- Kickstart Rom Set: '{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count))
+
+    for ($i = 0; $i -lt $kickstartRomSetFiles.Count; $i++)
+    {
+        $installLogLines.Add(("- Kickstart Rom File {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $kickstartRomSetFiles.Count, $kickstartRomSetFiles[$i].Filename, $kickstartRomSetFiles[$i].File))     
+    }
+    
+    $installLogLines.Add('Packages')
+
+    # get install packages
+    $installPackageIndex = @{}
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
+    {
+        $installPackageIndex.Set_Item($hstwb.Settings.Packages[$installPackageKey].ToLower(), $true)
+    }
+
+    $packageNames = @()
+    $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
+    
+    $installPackageNames = @()
+    $installPackageNames += $packageNames | Where-Object { $installPackageIndex.ContainsKey($_) } 
+
+    for ($i = 0; $i -lt $installPackageNames.Count; $i++)
+    {
+        $installLogLines.Add(("- Install Package {0}/{1}: '{2}'" -f ($i + 1), $installPackageNames.Count, $installPackageNames[$i]))     
+    }
+
+    $installLogLines.Add('User Packages')
+
+    if ($hstwb.Settings.UserPackages.UserPackagesDir -and (Test-Path -Path $hstwb.Settings.UserPackages.UserPackagesDir))
+    {
+        $installLogLines.Add("- User Packages Dir: '{0}'" -f $hstwb.Settings.UserPackages.UserPackagesDir)
+    }
+    else
+    {
+        $installLogLines.Add("- User Packages Dir: ''")
+    }
+
+    # get install user packages
+    $installUserPackageNames = @()
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
+    {
+        $userPackageName = $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
+        $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+        $installUserPackageNames += $userPackage.Name
+    }
+    
+    for ($i = 0; $i -lt $installUserPackageNames.Count; $i++)
+    {
+        $installLogLines.Add(("- Install User Package {0}/{1}: '{2}'" -f ($i + 1), $installUserPackageNames.Count, $installUserPackageNames[$i]))     
+    }
+
+    $installLogLines.Add("Emulator")
+
+    $emulatorFile = ''
+
+    if ($hstwb.Settings.Emulator.EmulatorFile -and (Test-Path -Path $hstwb.Settings.Emulator.EmulatorFile))
+    {
+        $emulatorName = DetectEmulatorName $hstwb.Settings.Emulator.EmulatorFile
+
+        if ($emulatorName)
+        {
+            $emulatorFile = "{0} ({1})" -f $emulatorName, $hstwb.Settings.Emulator.EmulatorFile
+        }
+        else
+        {
+            $emulatorFile = $hstwb.Settings.Emulator.EmulatorFile
+        }
+    }
+    
+    $installLogLines.Add("- Emulator File: '{0}'" -f $emulatorFile)
+    $installLogLines.Add("Installer")
+
+    $installerMode = ''
+    switch ($hstwb.Settings.Installer.Mode)
+    {
+        "Test" { $installerMode = "Test" }
+        "Install" { $installerMode = "Install" }
+        "BuildSelfInstall" { $installerMode = "Build Self Install" }
+        "BuildPackageInstallation" { $installerMode = "Build Package Installation" }
+        "BuildUserPackageInstallation" { $installerMode = "Build User Package Installation" }
+    }
+
+    $installLogLines.Add("- Mode: '{0}'" -f $installerMode)
+
+    return $installLogLines.ToArray()
 }

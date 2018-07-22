@@ -44,14 +44,11 @@ Install WinUAE and FS-UAE config files for Windows 7+ with the following steps:
    config files.
    Workbench 3.1 adf files and Kickstart rom files are automatically copied from
    Cloanto Amiga Forever, if it's installed.
-2. For HstWB self install image, copy Workbench 3.1 adf files to Workbench directory,
-   Kickstart rom files to Kickstart directory and copy Amiga OS 3.9 iso (must be
-   named "amigaos3.9.iso") and boing bag 1 & 2 to OS39 directory, if installing
-   Amiga OS 3.9.
-3. Double-click "install_uae_config.cmd" in Windows Explorer or run
-   "install_uae_config.ps1" from Powershell to patch and install WinUAE and FS-UAE
-   config files with updated Kickstart and OS39 directories. 
-4. WinUAE and FS-UAE now has a hstwb-installer configuration ready to use.
+2. If Amiga Forever is not installed, copy Workbench 3.1 adf files to Workbench
+   directory, Kickstart rom files to Kickstart directory. Copy Amiga OS 3.9 iso
+   (must be named "amigaos3.9.iso") and boing bag 1 & 2 to OS39 directory, if
+   installing Amiga OS 3.9.
+3. WinUAE and FS-UAE now has a hstwb-installer configuration ready to use.
 
 
 Install FS-UAE config file for Mac OS X
@@ -62,18 +59,14 @@ Prerequisites:
   directories.
 
 Install FS-UAE config file for Mac OS X with the following steps:
-1. Double-click "install_uae_config.command" in Finder or run "install_uae_config.sh"
-   in Terminal to patch and install FS-UAE config file.
-2. Press CTRL+Q to close terminal window with Install UAE Config output.
-3. For HstWB self install image, copy Workbench 3.1 adf files to Workbench directory,
-   Kickstart rom files to Kickstart directory and copy Amiga OS 3.9 iso (must be
-   named "amigaos3.9.iso") and boing bag 1 & 2 to OS39 directory, if installing
-   Amiga OS 3.9.
-4. Double-click "install_uae_config.command" in Finder or run "install_uae_config.sh"
+1. Copy Workbench 3.1 adf files to Workbench directory, Kickstart rom files to
+   Kickstart directory and copy Amiga OS 3.9 iso (must be named "amigaos3.9.iso")
+   and boing bag 1 & 2 to OS39 directory, if installing Amiga OS 3.9.
+2. Double-click "install_uae_config.command" in Finder or run "install_uae_config.sh"
    in Terminal to patch and install FS-UAE config file with updated Kickstart and
    OS39 directories. 
-5. Press CTRL+Q to close terminal window with Install UAE Config output.
-6. FS-UAE now has a hstwb-installer configuration ready to use.
+3. Press CTRL+Q to close terminal window with Install UAE Config output.
+4. FS-UAE now has a hstwb-installer configuration ready to use.
 
 
 Install FS-UAE config file for Linux
@@ -84,15 +77,9 @@ Prerequisites:
   directories.
 
 Install FS-UAE config file for Linux with the following steps:
-1. Run "install_uae_config.sh" from shell or terminal to patch and install
+1. Copy Workbench 3.1 adf files to Workbench directory, Kickstart rom files to
+   Kickstart directory and copy Amiga OS 3.9 iso (must be named "amigaos3.9.iso")
+   and boing bag 1 & 2 to OS39 directory, if installing Amiga OS 3.9.
+2. Run "install_uae_config.sh" from shell or terminal to patch and install
    FS-UAE config file. For Ubuntu, double-click "install_uae_config.desktop" in Files.
-   This requires execute permission, which can be added by right-click 
-   "install_uae_config.desktop", select properties, permissions tab and check "Allow
-   executing file as a program".
-2. For HstWB self install image, copy Workbench 3.1 adf files to Workbench directory,
-   Kickstart rom files to Kickstart directory and copy Amiga OS 3.9 iso (must be
-   named "amigaos3.9.iso") and boing bag 1 & 2 to OS39 directory, if installing
-   Amiga OS 3.9.
-3. Run "install_uae_config.sh" from shell or terminal to patch and install
-   FS-UAE config file. For Ubuntu, double-click "install_uae_config.desktop" in Files.
-4. FS-UAE now has a hstwb-installer configuration ready to use.
+3. FS-UAE now has a hstwb-installer configuration ready to use.

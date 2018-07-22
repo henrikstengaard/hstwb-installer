@@ -1,0 +1,62 @@
+HstWB Image Setup Readme
+------------------------
+
+HstWB Image Setup is a set of scripts to automatically prepare files for self
+install and installs UAE and FS-UAE config files.
+
+The scripts are written in both Powershell and Python for cross platform support
+of Windows, macOS and Linux and it comes with extra files so they can easily be
+run directly from Windows Explorer, macOS Finder and Ubuntu Files.
+
+Self install directories "workbench", "kickstart", "os39" and "userpackages"
+are created, if HstWB Image Setup detects UAE and FS-UAE config files has
+harddrives configured for self install. Files for self install files are
+prepared by detecting and installing Workbench 3.1 adf and Kickstart rom
+files in "workbench", "kickstart" directories from Cloanto Amiga Forever,
+if it's installed or cd/dvd-rom iso is mounted.
+
+Files for Amiga OS 3.9 and user packages installation must be prepared manually
+by manually copying files to self install directories "os39" and "userpackages".
+If HstWB Image Setup is unable to detect Cloanto Amiga Forever, then self
+install directories "workbench" and "kickstart" must also be prepared manually
+by copying files.
+
+Self install directories must contain following:
+- "workbench": Directory with Workbench 3.1 adf files.
+- "kickstart": Directory with Kickstart rom files.
+- "os39": Directory with Amiga OS 3.9 iso and Boing Bag 1 & 2 files.
+- "userpackages": Directory with user packages.
+
+Each self install directory is validated to indicate, if required files 
+for installation of Workbench 3.1, Kickstart roms, Amiga OS 3.9 and
+user packages are present.
+
+UAE and FS-UAE config files are prepared by patching harddrive paths to same
+path as config files and install UAE and FS-UAE config files in WinUAE and
+FS-UAE default configuration directories.
+
+Kickstart rom file in UAE and FS-UAE config files are patched to use Amiga 1200
+Kickstart 3.1 rom, if it exists in "kickstart" directory.
+
+Cd image file in UAE and FS-UAE config files are patched to use Amiga OS3.9 iso,
+if it exists in "os39" directory.
+
+For FS-UAE config files, Workbench 3.1 .adf files in "workbench" directory are
+added as swappable floppies.
+
+
+Running HstWB Image Setup
+-------------------------
+
+Prerequisites:
+- Cloanto Amiga Forever is installed or cd/dvd-rom iso is mounted for
+  automatically detect and install Workbench 3.1 adf and Kickstart rom
+  files.  
+- WinUAE and FS-UAE installed and started once to create default configuration 
+  directories for installation of UAE and FS-UAE config files.
+
+Run HstWB Image Setup:
+- Windows: Double-click "hstwb_image_setup.cmd" in Windows Explorer.
+- macOS: Double-click "hstwb_image_setup.command" in macOS Finder.
+- Ubuntu: Double-click "HstWB Image Setup" in Ubuntu Files.
+- Linux: Type "./hstwb_image_setup.sh" and press enter in terminal.

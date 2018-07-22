@@ -1,9 +1,11 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2017-11-18
+; Date: 2018-05-23
 ; Author: Henrik Noerfjand Stengaard
 
+
+FailAt 21
 
 ; Load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
@@ -19,12 +21,18 @@ ENDIF
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
 
+; Copy hstwb installer log to sys dir, if it exists
+IF EXISTS INSTALLDIR:hstwb-installer.log
+  Copy >NIL: INSTALLDIR:hstwb-installer.log SYS:hstwb-installer.log
+ENDIF
+
+
 ; Startup message
 cls 
 echo "*e[32m" NOLINE
-echo "HstWB Installer"
+echo "HstWB Installer v[$VersionText]"
 echo "*e[0m*e[1m" NOLINE
-echo "---------------"
+echo "-----------------[$VersionDashes]"
 echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running build self install."
@@ -125,11 +133,13 @@ execute S:Assign-HstWB-Installer
 
 
 ; Load commands resident 
-resident INSTALLDIR:C/Reboot PURE
-resident INSTALLDIR:C/TotalReset PURE
-resident INSTALLDIR:C/UnZip PURE 
-resident INSTALLDIR:C/UAEquit PURE 
-resident INSTALLDIR:C/MakePath PURE 
+Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
+Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
+Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
+Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
+Resident >NIL: "INSTALLDIR:C/LhA" PURE
+Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
+Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 
 echo ""

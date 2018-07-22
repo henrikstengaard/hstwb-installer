@@ -1,0 +1,3 @@
+$hdfFile = [io.file]::Open('c:\temp\4gb.hdf', 'Open', 'Write')
+$hdfFile.SetLength(4000000000)
+$hdfFile.Close()

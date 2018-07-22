@@ -11,4 +11,5 @@ hstwb-installer*.zip
 .DS_Store
 !hstwb-installer.wxs
 /packages/
-.output
+/.output/
+/.release/

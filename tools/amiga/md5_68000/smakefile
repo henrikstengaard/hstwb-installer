@@ -1,0 +1,11 @@
+all: md5
+
+clean:
+	delete md5 *.lib *.o *.lnk
+	smake
+
+md5: md52.o md5.o
+   sc link md52.o md5.o to md5 CPU=68000 opt nostkchk MATH=standard LIB:scm.lib
+
+md52.o: md52.c md52.h
+md5.o: md5.c
