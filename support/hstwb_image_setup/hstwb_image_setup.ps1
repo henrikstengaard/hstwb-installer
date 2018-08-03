@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-29
+# Date:   2018-08-03
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -135,8 +135,17 @@ function GetWinuaeConfigDir()
 }
 
 # patch uae config file
-function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile)
+function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
+    # self install dirs index
+    $selfInstallDirsIndex = 
+    @{
+        'workbenchdir' = $workbenchDir;
+        'kickstartdir' = $kickstartDir;
+        'os39dir' = $os39Dir;
+        'userpackagesdir' = $userPackagesDir;
+    }
+
     # get uae config dir
     $uaeConfigDir = Split-Path $uaeConfigFile -Parent
 
@@ -164,11 +173,20 @@ function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39Is
         # patch hardfile2 to current directory
         if ($line -match '^hardfile2=')
         {
+            $hardfileDevice = $line | Select-String -Pattern '^hardfile2=[^,]*,([^:]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
             $hardfilePath = $line | Select-String -Pattern '^hardfile2=[^,]*,[^:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
 
-            if ($hardfilePath)
+            if ($hardfileDevice -and $hardfilePath)
             {
-                $hardfilePath = Join-Path $uaeConfigDir -ChildPath (Split-Path $hardfilePath -Leaf)
+                $hardfilePath = if ($selfInstallDirsIndex.ContainsKey($hardfileDevice.ToLower()))
+                {
+                    $selfInstallDirsIndex[$hardfileDevice]
+                }
+                else
+                {
+                    Join-Path $uaeConfigDir -ChildPath (Split-Path $hardfilePath -Leaf)
+                }
+                
                 $line = $line -replace '^(hardfile2=[^,]*,[^,:]*:)[^,]*', "`$1$hardfilePath"
             }
         }
@@ -176,11 +194,20 @@ function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39Is
         # patch uaehf to current directory
         if ($line -match '^uaehf\d+=')
         {
+            $uaehfDevice = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,([^,:]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
             $uaehfPath = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
             
-            if ($uaehfPath)
+            if ($uaehfDevice -and $uaehfPath)
             {
-                $uaehfPath = (Join-Path $uaeConfigDir -ChildPath (Split-Path ($uaehfPath.Replace('\\', '\')) -Leaf)).Replace('\', '\\')
+                $uaehfPath = if ($selfInstallDirsIndex.ContainsKey($uaehfDevice.ToLower()))
+                {
+                    $selfInstallDirsIndex[$uaehfDevice].Replace('\', '\\')
+                }
+                else
+                {
+                    (Join-Path $uaeConfigDir -ChildPath (Split-Path ($uaehfPath.Replace('\\', '\')) -Leaf)).Replace('\', '\\')
+                }
+                
                 $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
             }
         }
@@ -188,11 +215,20 @@ function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39Is
         # patch filesystem2 to current directory
         if ($line -match '^filesystem2=')
         {
+            $filesystemDevice = $line | Select-String -Pattern '^filesystem2=[^,]*,([^,:]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
             $filesystemPath = $line | Select-String -Pattern '^filesystem2=[^,]*,[^,:]*:[^:]*:([^,]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
 
-            if ($filesystemPath)
+            if ($filesystemDevice -and $filesystemPath)
             {
-                $filesystemPath = Join-Path $uaeConfigDir -ChildPath (Split-Path $filesystemPath -Leaf)
+                $filesystemPath = if ($selfInstallDirsIndex.ContainsKey($filesystemDevice.ToLower()))
+                {
+                    $selfInstallDirsIndex[$filesystemDevice].Replace('\', '\\')
+                }
+                else
+                {
+                    Join-Path $uaeConfigDir -ChildPath (Split-Path $filesystemPath -Leaf)
+                }
+                
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$filesystemPath"
             }
         }
@@ -210,7 +246,7 @@ function PatchUaeConfigFile($uaeConfigFile, $a1200KickstartRomFile, $amigaOs39Is
 }
 
 # patch fs-uae config file
-function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile, $workbenchDir)
+function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs39IsoFile, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # get fs-uae config dir
     $fsuaeConfigDir = Split-Path $fsuaeConfigFile -Parent
@@ -258,7 +294,15 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $a1200KickstartRomFile, $amigaOs
             # patch hard drive, if hard drive index exists 
             if ($harddriveIndex -and $harddrivePath -and $harddriveLabels.ContainsKey($harddriveIndex))
             {
-                $harddrivePath = Join-Path $fsuaeConfigDir -ChildPath (Split-Path $harddrivePath -Leaf)
+                $harddrivePath = switch ($harddriveLabels[$harddriveIndex].ToLower())
+                {
+                    'workbenchdir' { $workbenchDir }
+                    'kickstartdir' { $kickstartDir }
+                    'os39dir' { $os39Dir }
+                    'userpackagesdir' { $userPackagesDir }
+                    default { Join-Path $fsuaeConfigDir -ChildPath (Split-Path $harddrivePath -Leaf) }
+                }
+
                 $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
             }
         }
@@ -823,7 +867,7 @@ if ($uaeConfigFiles.Count -gt 0)
     foreach($uaeConfigFile in $uaeConfigFiles)
     {
         # patch uae config file
-        PatchUaeConfigFile $uaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile
+        PatchUaeConfigFile $uaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
         # install uae config file in uae install directory, if uae install directory is defined
         if ($uaeInstallDir)
@@ -852,7 +896,7 @@ if ($fsuaeConfigFiles.Count -gt 0)
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
     {
         # patch fs-uae config file
-        PatchFsuaeConfigFile $fsuaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile $workbenchDir
+        PatchFsuaeConfigFile $fsuaeConfigFile.FullName $a1200KickstartRomFile $amigaOs39IsoFile $workbenchDir $kickstartDir $os39Dir $userPackagesDir
 
         # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
         if ($fsuaeInstallDir)

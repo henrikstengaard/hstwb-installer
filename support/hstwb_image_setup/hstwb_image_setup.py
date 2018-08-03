@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-29
+# Date:   2018-08-03
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -234,8 +234,19 @@ def patch_uae_config_file( \
     uae_config_file, \
     a1200_kickstart_rom_file, \
     amiga_os39_iso_file, \
-    workbench_dir):
+    workbench_dir, \
+    kickstart_dir, \
+    os39_dir, \
+    userpackages_dir):
     """Patch UAE Config File"""
+
+    # self install dirs index
+    self_install_dirs_index = {
+        "workbenchdir": workbench_dir,
+        "kickstartdir": kickstart_dir,
+        "os39dir": os39_dir,
+        "userpackagesdir": userpackages_dir,
+    }
 
     # get uae config dir
     uae_config_dir = os.path.dirname(uae_config_file)
@@ -261,23 +272,32 @@ def patch_uae_config_file( \
                 re.sub(r'[\\/]', os.sep.replace('\\', '\\\\'), a1200_kickstart_rom_file.replace('\\', '\\\\')))
 
         # patch hardfile2 path
-        hardfile2_match = re.search(r'^hardfile2=[^,]*,[^:]*:([^,]+)', line, re.I)
-        if hardfile2_match:
-            hardfile_path = os.path.join(uae_config_dir, os.path.basename(hardfile2_match.group(1)))
+        hardfile2_device_match = re.search(r'^hardfile2=[^,]*,([^:]*)', line, re.I)
+        hardfile2_path_match = re.search(r'^hardfile2=[^,]*,[^:]*:([^,]+)', line, re.I)
+        if hardfile2_device_match and hardfile2_path_match:
+            hardfile_path = self_install_dirs_index.get(
+                hardfile2_device_match.group(1).lower(),
+                os.path.join(uae_config_dir, os.path.basename(hardfile2_path_match.group(1))))
             line = re.sub(r'^(hardfile2=[^,]*,[^,:]*:)[^,]+', 
                 '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # patch uaehf path
-        uaehf_match = re.search(r'^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]+)', line, re.I)
-        if uaehf_match:
-            uaehf_path = os.path.join(uae_config_dir, os.path.basename(uaehf_match.group(1)))
+        uaehf_device_match = re.search(r'^uaehf\d+=[^,]*,[^,]*,([^,:]*)', line, re.I)
+        uaehf_path_match = re.search(r'^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]+)', line, re.I)
+        if uaehf_device_match and uaehf_path_match:
+            uaehf_path = self_install_dirs_index.get(
+                uaehf_device_match.group(1).lower(),
+                os.path.join(uae_config_dir, os.path.basename(uaehf_path_match.group(1))))
             line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]+', 
                 '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # patch filesystem2 path
-        filesystem2_match = re.search(r'^filesystem2=[^,]*,[^,:]*:[^:]*:([^,]+)', line, re.I)
-        if filesystem2_match:
-            filesystem2_path = os.path.join(uae_config_dir, os.path.basename(filesystem2_match.group(1)))
+        filesystem2_device_match = re.search(r'^filesystem2=[^,]*,[^,:]*:([^:]*)', line, re.I)
+        filesystem2_path_match = re.search(r'^filesystem2=[^,]*,[^,:]*:[^:]*:([^,]+)', line, re.I)
+        if filesystem2_device_match and filesystem2_path_match:
+            filesystem2_path = self_install_dirs_index.get(
+                filesystem2_device_match.group(1).lower(),
+                os.path.join(uae_config_dir, os.path.basename(filesystem2_path_match.group(1))))
             line = re.sub(r'^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]+', 
                 '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), filesystem2_path.replace('\\', '\\\\'))), line, 0, re.I)
 
@@ -294,8 +314,19 @@ def patch_fsuae_config_file( \
     fsuae_config_file, \
     a1200_kickstart_rom_file, \
     amiga_os39_iso_file, \
-    workbench_dir):
+    workbench_dir, \
+    kickstart_dir, \
+    os39_dir, \
+    userpackages_dir):
     """Patch FSUAE Config File"""
+
+    # self install dirs index
+    self_install_dirs_index = {
+        "workbenchdir": workbench_dir,
+        "kickstartdir": kickstart_dir,
+        "os39dir": os39_dir,
+        "userpackagesdir": userpackages_dir,
+    }
 
     # get fs-uae config dir
     fsuae_config_dir = os.path.dirname(fsuae_config_file)
@@ -341,9 +372,10 @@ def patch_fsuae_config_file( \
             hard_drive_index = hard_drive_match.group(1)
             hard_drive_path = hard_drive_match.group(2)
             if hard_drive_index in hard_drive_labels:
-                # patch hard drive
-                hard_drive_path = os.path.join(
-                    fsuae_config_dir, os.path.basename(hard_drive_path)).replace('\\', '/')
+                hard_drive_path = self_install_dirs_index.get(
+                    hard_drive_labels[hard_drive_index].lower(),
+                    os.path.join(
+                        fsuae_config_dir, os.path.basename(hard_drive_path)).replace('\\', '/'))
                 line = re.sub(
                     r'^(hard_drive_\d+\s*=\s*).*', \
                     '\\1{0}'.format(hard_drive_path), line)
@@ -822,13 +854,19 @@ if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
     print 'Done'
 
 
-# get full path for a1200 kickstart rom file, amiga os39 iso file and workbench dir, if they are defined
+# get full path for a1200 kickstart rom file, amiga os39 iso file, workbench, kickstart, os39 and user packages dir, if they are defined
 if a1200_kickstart_rom_file != None:
     a1200_kickstart_rom_file = os.path.realpath(a1200_kickstart_rom_file)
 if amiga_os39_iso_file != None:
     amiga_os39_iso_file = os.path.realpath(amiga_os39_iso_file)
 if workbench_dir != None:
     workbench_dir = os.path.realpath(workbench_dir)
+if kickstart_dir != None:
+    kickstart_dir = os.path.realpath(kickstart_dir)
+if os39_dir != None:
+    os39_dir = os.path.realpath(os39_dir)
+if user_packages_dir != None:
+    user_packages_dir = os.path.realpath(user_packages_dir)
 
 
 # patch and install uae configuration files, if they are present
@@ -850,7 +888,10 @@ if len(uae_config_files) > 0:
             os.path.realpath(uae_config_file),
             a1200_kickstart_rom_file,
             amiga_os39_iso_file,
-            workbench_dir)
+            workbench_dir,
+            kickstart_dir,
+            os39_dir,
+            user_packages_dir)
         
         # install uae config file in uae install directory, if uae install directory is defined
         if uae_install_dir != None:
@@ -880,7 +921,10 @@ if len(fsuae_config_files) > 0:
             os.path.realpath(fsuae_config_file),
             a1200_kickstart_rom_file,
             amiga_os39_iso_file,
-            workbench_dir)
+            workbench_dir,
+            kickstart_dir,
+            os39_dir,
+            user_packages_dir)
 
         # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
         if fsuae_install_dir != None:
