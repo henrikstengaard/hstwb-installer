@@ -1,0 +1,10 @@
+; Amiga OS 3.1.4 Extras
+; ---------------------
+;
+; Date: 2018-10-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1.4 extras floppy disk or adf file.
+
+
+Copy >NIL: "$amigaosdisk:~(Fonts)" "SYSTEMDIR:" ALL CLONE

@@ -79,9 +79,32 @@ IF NOT $RC EQ 0 VAL
   SKIP fail
 ENDIF 
 
-; test, run install amiga os 3.1.4
+; test assigns
 Assign >NIL: SYSTEMDIR: DH0:
-execute INSTALLDIR:S/Install-Amiga-OS-3.1.4-Disk
+
+; test install amiga os 3.1.4 from disk
+;execute INSTALLDIR:S/Install-Amiga-OS-3.1.4-Disk
+;SKIP end
+
+; fail, if amigaosdir: doesn't exist
+Assign >NIL: EXISTS AMIGAOSDIR:
+IF NOT $RC EQ 0 VAL
+  echo ""
+  echo "*e[1mERROR: AMIGAOSDIR: doesn't exist!*e[22m"
+  SKIP fail
+ENDIF 
+
+; TODO: write amiga os 3.1.4 adf identification script
+MakeDir >NIL: "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-workbench.adf" "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-locale.adf" "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-extras.adf" "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-fonts.adf" "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-storage.adf" "SYSTEMDIR:Temp"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-modules-a1200.adf" TO "SYSTEMDIR:Temp/amiga-os-314-modules.adf"
+Copy >NIL: "AMIGAOSDIR:amiga-os-314-install.adf" "SYSTEMDIR:Temp"
+Execute "INSTALLDIR:S/Install-Amiga-OS-3.1.4-Adf"
+
 
 SKIP end
 

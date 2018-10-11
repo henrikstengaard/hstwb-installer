@@ -1,0 +1,145 @@
+; Amiga OS 3.1.4 Install
+; ----------------------
+;
+; Date: 2018-10-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
+
+
+; copy disk.info
+IF EXISTS "SYSTEMDIR:Disk.info"
+  Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Update/Disk.info" "SYSTEMDIR:" CLONE
+
+Copy >NIL: "$amigaosdisk:HDTools/(hd|bru)#?" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:Installer" "SYSTEMDIR:System" CLONE
+
+; copy workbench.library
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  Protect >NIL: "SYSTEMDIR:Libs/workbench.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
+
+; copy icon.library
+IF EXISTS "SYSTEMDIR:Libs/icon.library"
+  Protect >NIL: "SYSTEMDIR:Libs/icon.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/icon.library" "SYSTEMDIR:Libs" CLONE
+
+; copy startup-sequence
+Copy "$amigaosdisk:Update/Startup-HardDrive" "SYSTEMDIR:S" CLONE
+IF EXISTS "SYSTEMDIR:S/Startup-Sequence"
+  Protect >NIL: "SYSTEMDIR:S/Startup-Sequence" +prwed
+  Delete >NIL: "SYSTEMDIR:S/Startup-Sequence"
+ENDIF
+Copy >NIL: "SYSTEMDIR:S/Startup-HardDrive" "SYSTEMDIR:S/Startup-Sequence"
+
+; copy fastfilesystem
+IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+  Protect >NIL: "SYSTEMDIR:L/FastFileSystem" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE
+
+
+Assign C: SYSTEMDIR:C
+Path C:
+
+IF EXISTS SYSTEMDIR:S
+  Assign S: SYSTEMDIR:S
+ENDIF
+
+IF EXISTS SYSTEMDIR:L
+  Assign L: SYSTEMDIR:L
+ENDIF
+
+IF EXISTS SYSTEMDIR:Libs
+  Assign LIBS: SYSTEMDIR:Libs
+ENDIF
+
+IF EXISTS SYSTEMDIR:Devs
+  Assign DEVS: SYSTEMDIR:Devs
+ENDIF
+
+IF EXISTS SYSTEMDIR:Fonts
+  Assign Fonts: SYSTEMDIR:Fonts
+ENDIF
+
+IF EXISTS SYSTEMDIR:Prefs/Env-Archive
+  Assign ENVARC: SYSTEMDIR:Prefs/Env-Archive
+ENDIF
+
+; run update wb files
+Assign >NIL: NEWWB: SYSTEMDIR:
+"$amigaosdisk:C/UpdateWBFiles"
+
+echo "Done"
+
+
+; Clean up
+; --------
+
+echo ""
+echo "Cleaning up icons..."
+
+Resident "$amigaosdisk:C/IconPos" PURE
+
+IconPos >NIL: "SYSTEMDIR:Prefs"     12 20
+IconPos >NIL: "SYSTEMDIR:Prefs/Printer"  160 48
+
+IconPos >NIL: "SYSTEMDIR:Utilities" 98 4
+IconPos >NIL: "SYSTEMDIR:Utilities/Clock" 91 11
+IconPos >NIL: "SYSTEMDIR:Utilities/MultiView" 11 11
+
+IconPos >NIL: "SYSTEMDIR:Tools"                           98 38
+IconPos >NIL: "SYSTEMDIR:Tools/IconEdit"                 111 45
+IconPos >NIL: "SYSTEMDIR:Tools/HDToolBox"                 202 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Blanker"        8 84
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/ClickToFront"  99 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/CrossDOS"      99 44
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Exchange"       8  4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/FKey"          99 84
+
+IconPos >NIL: "SYSTEMDIR:System"    184 4
+IconPos >NIL: "SYSTEMDIR:WBStartup" 184 38
+IconPos >NIL: "SYSTEMDIR:Devs"      270 4
+Copy >NIL: "SYSTEMDIR:Devs.info" "SYSTEMDIR:Storage.info" CLONE
+IconPos >NIL: "SYSTEMDIR:Storage"   270 38 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Monitors"   10 106 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Printers"   10 140 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Expansion" 356 20
+IconPos >NIL: "SYSTEMDIR:Disk"      DXPOS 28 DYPOS 29 DWIDTH 462 DHEIGHT 93
+
+Protect >NIL: "SYSTEMDIR:C/Execute" ph add
+
+; copy glowicons to system directory, if glow icons have been selected
+IF "$glowicons" EQ 1 VAL
+  IF EXISTS "SYSTEMDIR:Temp/glowicons"
+    echo "Installing glow icons..."
+    Copy >NIL: "SYSTEMDIR:Temp/glowicons" "SYSTEMDIR:" ALL CLONE
+    Delete >NIL: "SYSTEMDIR:Temp/glowicons" ALL
+  ENDIF
+ENDIF
+
+; copy workbench prefs to use best icon quality and no icon border
+IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4"
+  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
+ENDIF
+
+IF "$screenmode" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256"
+    echo "Updating screenmode prefs..."
+    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+  ENDIF
+ELSE
+  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16"
+    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+  ENDIF
+ENDIF
+
+; update dh1 disk icon, if dh1: device exists
+Assign >NIL: EXISTS DH1:
+IF $RC EQ 0 VAL
+  Copy >NIL: "SYSTEMDIR:Disk.info" "DH1:Disk.info"
+ENDIF

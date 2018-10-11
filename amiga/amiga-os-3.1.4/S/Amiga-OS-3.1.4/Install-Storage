@@ -1,0 +1,25 @@
+; Amiga OS 3.1.4 Storage
+; ----------------------
+;
+; Date: 2018-10-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1.4 storage floppy disk or adf file.
+
+
+Copy >NIL: "$amigaosdisk:#?.info" SYSTEMDIR:Storage CLONE
+Copy >NIL: "$amigaosdisk:Monitors" SYSTEMDIR:Storage/Monitors CLONE
+Copy >NIL: "$amigaosdisk:DOSDrivers" SYSTEMDIR:Storage/DOSDrivers CLONE
+Copy >NIL: "$amigaosdisk:Printers" SYSTEMDIR:Devs/Printers CLONE
+Copy >NIL: "$amigaosdisk:Keymaps" SYSTEMDIR:Devs/Keymaps CLONE
+
+; TODO: detect vblank frequency to determine pal or ntsc monitor
+Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
+Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+
+; copy glowicons to temp directory, if glow icons have been selected
+IF "$glowicons" EQ 1 VAL
+  MakeDir >NIL: "SYSTEMDIR:Temp"
+  MakeDir >NIL: "SYSTEMDIR:Temp/glowicons"
+  Copy >NIL: "$amigaosdisk:glowicons" "SYSTEMDIR:Temp/glowicons" ALL CLONE
+ENDIF
