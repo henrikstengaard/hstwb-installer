@@ -1,0 +1,331 @@
+; Install Amiga OS 3.1.4
+; ----------------------
+;
+; Date: 2018-10-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of Amiga OS 3.1.4.
+
+
+
+; set variable and assigns for installing, hardcoded for testing!
+set amigaosdir "DF0"
+Assign >NIL: SYSTEMDIR: DH0:
+Assign >NIL: INSTALLDIR: PC:amiga-os-3.1.4
+Assign >NIL: C: PC:shared/C ADD
+Assign >NIL: Devs: PC:shared/Devs ADD
+Assign >NIL: L: PC:shared/L ADD
+Assign >NIL: Libs: PC:shared/Libs ADD
+Assign >NIL: S: PC:shared/S ADD
+
+
+; print amiga os 3.1.4 installation message
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.1.4 Installation"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------------"
+echo "*e[0m" NOLINE 
+
+; Set stack
+stack 16384
+
+failat 21
+
+; fail, if installdir: doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF NOT $RC EQ 0 VAL
+  echo ""
+  echo "*e[1mERROR: INSTALLDIR: doesn't exist!*e[22m"
+  SKIP end
+ENDIF 
+
+; Fail, if exec.library is less than v39
+Version >NIL: exec.library 39
+IF WARN
+  echo "*e[1mError: Amiga OS 3.1.4 requires minimum Kickstart 3.0 rom.*e[0m"
+  SKIP end
+ENDIF
+
+
+; Workbench disk
+; --------------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Workbench disk"
+ask "Press ENTER to continue"
+echo ""
+echo "Loading system files..."
+echo "Done"
+
+Resident "$amigaosdir:C/Assign" PURE
+Resident "$amigaosdir:C/Copy" PURE
+Resident "$amigaosdir:C/Delete" PURE
+Resident "$amigaosdir:C/MakeDir" PURE
+Resident "$amigaosdir:C/Protect" PURE
+Resident "$amigaosdir:C/Rename" PURE
+Resident "$amigaosdir:C/RequestChoice" PURE
+Resident "$amigaosdir:C/Version" PURE
+
+MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
+Assign ENV: RAM:Env
+Assign T: RAM:
+SetEnv TZ MST7 
+
+; glow icons
+set glowicons `RequestChoice "Install GlowIcons" "Do you want to install Amiga OS 3.1.4 GlowIcons?" "Yes|No"`
+
+; screenmode
+set screenmode `RequestChoice "Update screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"PAL:640 x 512, 256 colors*"?" "Yes|No"`
+
+echo "Installing files from Amiga OS 3.1.4 Workbench disk..."
+
+; make drawers
+MakeDir >NIL: "SYSTEMDIR:Prefs"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
+MakeDir >NIL: "SYSTEMDIR:Fonts"
+MakeDir >NIL: "SYSTEMDIR:Expansion"
+MakeDir >NIL: "SYSTEMDIR:WBStartup"
+MakeDir >NIL: "SYSTEMDIR:Locale"
+MakeDir >NIL: "SYSTEMDIR:Locale/Catalogs"
+MakeDir >NIL: "SYSTEMDIR:Locale/Languages"
+MakeDir >NIL: "SYSTEMDIR:Locale/Countries"
+MakeDir >NIL: "SYSTEMDIR:Locale/Help"
+MakeDir >NIL: "SYSTEMDIR:Classes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Gadgets"
+MakeDir >NIL: "SYSTEMDIR:Classes/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Images"
+MakeDir >NIL: "SYSTEMDIR:Devs"
+MakeDir >NIL: "SYSTEMDIR:Devs/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Devs/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Devs/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Printers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage"
+MakeDir >NIL: "SYSTEMDIR:Storage/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Printers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Storage/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage/DataTypes"
+
+Copy >NIL: "$amigaosdir:~(Locale)" SYSTEMDIR: ALL CLONE
+
+Assign >NIL: C: "SYSTEMDIR:C" ADD
+Assign >NIL: Libs: "SYSTEMDIR:Libs" ADD
+
+echo "Done"
+
+
+; Locale disk
+; -----------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Locale disk"
+ask "Press ENTER to continue"
+
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Locale disk..."
+Copy >NIL: "$amigaosdir:#?" "SYSTEMDIR:Locale" ALL CLONE
+echo "Done"
+
+
+; Extra disk
+; ----------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Extra disk"
+ask "Press ENTER to continue"
+
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Extra disk..."
+Copy >NIL: "$amigaosdir:~(Fonts)" "SYSTEMDIR:" ALL CLONE
+echo "Done"
+
+
+; Fonts disk
+; ----------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Fonts disk"
+ask "Press ENTER to continue"
+
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Fonts disk..."
+Copy >NIL: "$amigaosdir:#?" "SYSTEMDIR:Fonts" ALL CLONE
+echo "Done"
+
+
+; Storage disk
+; ------------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Storage disk"
+ask "Press ENTER to continue"
+
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Storage disk..."
+
+Copy >NIL: "$amigaosdir:#?.info" SYSTEMDIR:Storage CLONE
+Copy >NIL: "$amigaosdir:Monitors" SYSTEMDIR:Storage/Monitors CLONE
+Copy >NIL: "$amigaosdir:DOSDrivers" SYSTEMDIR:Storage/DOSDrivers CLONE
+Copy >NIL: "$amigaosdir:Printers" SYSTEMDIR:Devs/Printers CLONE
+Copy >NIL: "$amigaosdir:Keymaps" SYSTEMDIR:Devs/Keymaps CLONE
+
+; TODO: detect vblank frequency to determine pal or ntsc monitor
+Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
+Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+
+; copy glowicons to temp directory, if glow icons have been selected
+IF "$glowicons" EQ 1 VAL
+  MakeDir >NIL: "SYSTEMDIR:Temp"
+  MakeDir >NIL: "SYSTEMDIR:Temp/glowicons"
+  Copy >NIL: "$amigaosdir:glowicons" "SYSTEMDIR:Temp/glowicons" ALL CLONE
+ENDIF
+
+echo "Done"
+
+
+; Modules disk
+; ------------
+
+; Modules are only required to be copied if we are below V45
+Version >NIL: expansion.library 45 RES
+IF NOT $RC EQ 0
+  ; copy modules
+
+  ; user selects model
+  ; diskname = "ModulesA500_3.1.4", "ModulesA600_3.1.4","ModulesA1200_3.1.4","ModulesA2000_3.1.4","ModulesA3000_3.1.4","ModulesA4000D_3.1.4","ModulesA4000T_3.1.4"
+
+  echo ""
+  echo "Insert Amiga OS 3.1.4 Modules disk"
+  ask "Press ENTER to continue"
+
+  echo ""
+  echo "Installing files from Amiga OS 3.1.4 Modules disk..."
+  Copy >NIL: "$amigaosdir:" SYSTEMDIR: ALL CLONE
+  echo "Done"
+ENDIF
+
+
+; Install disk
+; ------------
+
+echo ""
+echo "Insert Amiga OS 3.1.4 Install disk"
+ask "Press ENTER to continue"
+
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Install disk..."
+
+; copy disk.info
+IF EXISTS "SYSTEMDIR:Disk.info"
+  Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
+ENDIF
+Copy >NIL: "$amigaosdir:Update/Disk.info" "SYSTEMDIR:" CLONE
+
+Copy >NIL: "$amigaosdir:HDTools/(hd|bru)#?" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdir:Installer" "SYSTEMDIR:System" CLONE
+
+; copy workbench.library
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  Protect >NIL: "SYSTEMDIR:Libs/workbench.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdir:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
+
+; copy icon.library
+IF EXISTS "SYSTEMDIR:Libs/icon.library"
+  Protect >NIL: "SYSTEMDIR:Libs/icon.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdir:Libs/icon.library" "SYSTEMDIR:Libs" CLONE
+
+; copy startup-sequence
+Copy "$amigaosdir:Update/Startup-HardDrive" "SYSTEMDIR:S" CLONE
+IF EXISTS "SYSTEMDIR:S/Startup-Sequence"
+  Protect >NIL: "SYSTEMDIR:S/Startup-Sequence" +prwed
+  Delete >NIL: "SYSTEMDIR:S/Startup-Sequence"
+ENDIF
+Copy >NIL: "SYSTEMDIR:S/Startup-HardDrive" "SYSTEMDIR:S/Startup-Sequence"
+
+; copy fastfilesystem
+IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+  Protect >NIL: "SYSTEMDIR:L/FastFileSystem" +prwed
+ENDIF
+Copy >NIL: "$amigaosdir:L/FastFileSystem" "SYSTEMDIR:L" CLONE
+
+; run update wb files
+Assign >NIL: NEWWB: SYSTEMDIR:
+"$amigaosdir:C/UpdateWBFiles"
+
+echo "Done"
+
+
+; Clean up
+; --------
+
+echo ""
+echo "Cleaning up icons..."
+
+Resident "$amigaosdir:C/IconPos" PURE
+
+IconPos >NIL: "SYSTEMDIR:Prefs"     12 20
+IconPos >NIL: "SYSTEMDIR:Prefs/Printer"  160 48
+
+IconPos >NIL: "SYSTEMDIR:Utilities" 98 4
+IconPos >NIL: "SYSTEMDIR:Utilities/Clock" 91 11
+IconPos >NIL: "SYSTEMDIR:Utilities/MultiView" 11 11
+
+IconPos >NIL: "SYSTEMDIR:Tools"                           98 38
+IconPos >NIL: "SYSTEMDIR:Tools/IconEdit"                 111 45
+IconPos >NIL: "SYSTEMDIR:Tools/HDToolBox"                 202 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Blanker"        8 84
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/ClickToFront"  99 4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/CrossDOS"      99 44
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Exchange"       8  4
+IconPos >NIL: "SYSTEMDIR:Tools/Commodities/FKey"          99 84
+
+IconPos >NIL: "SYSTEMDIR:System"    184 4
+IconPos >NIL: "SYSTEMDIR:WBStartup" 184 38
+IconPos >NIL: "SYSTEMDIR:Devs"      270 4
+Copy >NIL: "SYSTEMDIR:Devs.info" "SYSTEMDIR:Storage.info" CLONE
+IconPos >NIL: "SYSTEMDIR:Storage"   270 38 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Monitors"   10 106 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Storage/Printers"   10 140 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+IconPos >NIL: "SYSTEMDIR:Expansion" 356 20
+IconPos >NIL: "SYSTEMDIR:Disk"      DXPOS 28 DYPOS 29 DWIDTH 462 DHEIGHT 93
+
+Protect >NIL: "SYSTEMDIR:C/Execute" ph add
+
+; copy glowicons to system directory, if glow icons have been selected
+IF "$glowicons" EQ 1 VAL
+  IF EXISTS "SYSTEMDIR:Temp/glowicons"
+    echo "Installing glow icons..."
+    Copy >NIL: "SYSTEMDIR:Temp/glowicons" "SYSTEMDIR:" ALL CLONE
+    Delete >NIL: "SYSTEMDIR:Temp/glowicons" ALL
+  ENDIF
+ENDIF
+
+; copy workbench prefs to use best icon quality and no icon border
+IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4"
+  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
+ENDIF
+
+IF "$screenmode" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256"
+    echo "Updating screenmode prefs..."
+    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+  ENDIF
+ELSE
+  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16"
+    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+  ENDIF
+ENDIF
+
+
+echo "Done"
+
+echo ""
+echo "Amiga OS 3.1.4 installation is complete."
+echo ""
+
+; --------
+LAB end
