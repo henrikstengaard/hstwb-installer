@@ -123,7 +123,7 @@ ENDIF
 ; install amiga os 3.1.4
 IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.1.4-Adf"
   ; run install amiga os 3.1.4 adf
-  Execute "INSTALLDIR:S/Amiga-OS-3.1/Install-Amiga-OS-3.1.4-Adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Amiga-OS-3.1.4-Adf"
 
   SKIP complete
 ENDIF
