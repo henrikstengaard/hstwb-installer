@@ -12,8 +12,8 @@ echo ""
 echo "*e[1mDetecting Amiga OS 3.1.4 adf files in AMIGAOSDIR:...*e[0m"
 
 ; create amiga os 3.1.4 install directory, if it doesn't exist
-IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/"
-  MakePath >NIL: "INSTALLDIR:Amiga-OS-314"
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS-314"
 ENDIF
 
 ; delete install amiga os 3.1.4 adf prefs, if it exists
@@ -24,38 +24,38 @@ ENDIF
 ; run detect amiga os 3.1.4 adf, if AMIGAOSDIR: exists and check if all Amiga OS 3.1.4 adf files are present
 Assign >NIL: EXISTS AMIGAOSDIR:
 IF NOT WARN
-  List AMIGAOSDIR: PAT=#? ALL LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
+  List AMIGAOSDIR: PAT=#? ALL LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
   Execute T:_copy_amiga-os-3.1.4_adfs
   Delete >NIL: T:_copy_amiga-os-3.1.4_adfs
 
   ; Set install from adf to 0, if one or more Amiga OS 3.1.4 adf files doesn't exist
   echo ""
   set installfromadf "1"
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-workbench.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench.adf"
     ECHO "Amiga OS 3.1.4 Workbench adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-locale.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-locale.adf"
     ECHO "Amiga OS 3.1.4 Locale adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-extras.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-extras.adf"
     ECHO "Amiga OS 3.1.4 Extras adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-fonts.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-fonts.adf"
     ECHO "Amiga OS 3.1.4 Fonts adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-storage.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-storage.adf"
     ECHO "Amiga OS 3.1.4 Storage adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-modules-a1200.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a1200.adf"
     ECHO "Amiga OS 3.1.4 Modules adf doesn't exist!"
     set installfromadf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Amiga-OS-314/amiga-os-314-install.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-install.adf"
     ECHO "Amiga OS 3.1.4 Install adf doesn't exist!"
     set installfromadf "0"
   ENDIF
