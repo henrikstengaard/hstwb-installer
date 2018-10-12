@@ -94,27 +94,64 @@ IF NOT $RC EQ 0 VAL
   SKIP fail
 ENDIF 
 
-; TODO: write amiga os 3.1.4 adf identification script
-MakeDir >NIL: "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-workbench.adf" "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-locale.adf" "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-extras.adf" "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-fonts.adf" "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-storage.adf" "SYSTEMDIR:Temp"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-modules-a1200.adf" TO "SYSTEMDIR:Temp/amiga-os-314-modules.adf"
-Copy >NIL: "AMIGAOSDIR:amiga-os-314-install.adf" "SYSTEMDIR:Temp"
-Execute "INSTALLDIR:S/Install-Amiga-OS-3.1.4-Adf"
+; detect amiga os 3.9 in AMIGAOSDIR:
+;Execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
 
+; detect amiga os 3.1.4 in AMIGAOSDIR:
+Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
+
+; detect amiga os 3.1 in AMIGAOSDIR:
+;Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
+
+
+; install amiga os 3.9
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.9"
+  ; ask user to install amiga os 3.1 first
+  set installamigaos31 `RequestChoice "Install Amiga OS 3.1" "Do you want to install Amiga OS 3.1*Nbefore installing Amiga OS 3.9?" "Yes|No"` 
+  IF "$installamigaos31" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.1-Adf"
+      ; run install amiga os 3.1 adf
+    ELSE
+      ; run install amiga os 3.1 disk
+    ENDIF
+  ENDIF
+
+  ; run install amiga os 3.9.0
+  SKIP complete
+ENDIF
+
+; install amiga os 3.1.4
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.1.4-Adf"
+  ; run install amiga os 3.1.4 adf
+  Execute "INSTALLDIR:S/Amiga-OS-3.1/Install-Amiga-OS-3.1.4-Adf"
+
+  SKIP complete
+ENDIF
+
+; install amiga os from disk
+echo "install amiga os from disk"
+SKIP end
+
+
+; complete
+; --------
+
+LAB complete
+echo ""
+echo "Complete"
 
 SKIP end
 
 
-; Fail
+; fail
+; ----
+
 LAB fail
 echo ""
 echo "Installation failed."
 quit
 
 
-; End
+; end
+; ---
 LAB end

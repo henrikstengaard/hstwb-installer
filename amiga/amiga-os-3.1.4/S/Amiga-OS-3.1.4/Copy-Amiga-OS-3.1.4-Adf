@@ -1,0 +1,133 @@
+.KEY file/a,dir/a
+.BRA {
+.KET }
+
+; Copy Amiga OS 3.1.4 Adf
+; -----------------------
+;
+; Date: 2018-10-12
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
+
+
+; end, if file doesn't exist
+IF NOT EXISTS "{file}"
+  SKIP end
+ENDIF
+
+; end, if dir doesn't exist
+IF NOT EXISTS "{dir}"
+  SKIP end
+ENDIF
+
+; get md5 for file
+set md5 "`md5 "{file}"`"
+
+; copy amiga os 3.1.4 workbench adf, if file md5 matches
+IF $md5 eq "05a7469fd903744aa5f53741765bf668"
+  echo "Amiga OS 3.1.4 Workbench adf"
+  set adffile "amiga-os-314-workbench.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 locale adf, if file md5 matches
+IF $md5 eq "4007bfe06b5b51af981a3fa52c51f54a"
+  echo "Amiga OS 3.1.4 Locale adf"
+  set adffile "amiga-os-314-locale.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 extras adf, if file md5 matches
+IF $md5 eq "988ddad5106d5b846be57b711d878b4c"
+  echo "Amiga OS 3.1.4 Extras adf"
+  set adffile "amiga-os-314-extras.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 fonts adf, if file md5 matches
+IF $md5 eq "27a7af42777a43a06f8d9d8e74226e56"
+  echo "Amiga OS 3.1.4 Fonts adf"
+  set adffile "amiga-os-314-fonts.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 storage adf, if file md5 matches
+IF $md5 eq "372215cd27888d65a95db92b6513e702"
+  echo "Amiga OS 3.1.4 Storage adf"
+  set adffile "amiga-os-314-storage.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a500 adf, if file md5 matches
+IF $md5 eq "8a3824e64dbe2c8327d5995188d5fdd3"
+  echo "Amiga OS 3.1.4 Modules A500 adf"
+  set adffile "amiga-os-314-modules-a500.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a600 adf, if file md5 matches
+IF $md5 eq "c5a96c56ee5a7e2ca639c755d89dda36"
+  echo "Amiga OS 3.1.4 Modules A600 adf"
+  set adffile "amiga-os-314-modules-a600.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a2000 adf, if file md5 matches
+IF $md5 eq "b201f0b45c5748be103792e03f938027"
+  echo "Amiga OS 3.1.4 Modules A2000 adf"
+  set adffile "amiga-os-314-modules-a2000.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a1200 adf, if file md5 matches
+IF $md5 eq "2797193dc7b7daa233abe1bcfee9d5a1"
+  echo "Amiga OS 3.1.4 Modules A1200 adf"
+  set adffile "amiga-os-314-modules-a1200.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a3000 adf, if file md5 matches
+IF $md5 eq "60263124ea2c5f1831a3af639d085a28"
+  echo "Amiga OS 3.1.4 Modules A3000 adf"
+  set adffile "amiga-os-314-modules-a3000.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a4000d adf, if file md5 matches
+IF $md5 eq "7d20dc438e802e41def3694d2be59f0f"
+  echo "Amiga OS 3.1.4 Modules A4000D adf"
+  set adffile "amiga-os-314-modules-a4000d.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a4000t adf, if file md5 matches
+IF $md5 eq "68fb2ca4b81daeaf140d35dc7a63d143"
+  echo "Amiga OS 3.1.4 Modules A4000T adf"
+  set adffile "amiga-os-314-modules-a4000t.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 install adf, if file md5 matches
+IF $md5 eq "7e9b5ec9cf89d9aae771cd1b708792d9"
+  echo "Amiga OS 3.1.4 install adf"
+  set adffile "amiga-os-314-install.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy adf file
+; -------------
+LAB copyadffile
+
+; escape characters
+echo "{file}" NOLINE >T:_adffile
+rep T:_adffile "(" "'("
+rep T:_adffile ")" "')"
+rep T:_adffile "[" "'["
+rep T:_adffile "]" "']"
+Copy >NIL: "`type T:_adffile`" TO "{dir}/$adffile"
+Delete >NIL: T:_adffile
+
+; end
+; ---
+LAB end
