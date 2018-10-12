@@ -38,69 +38,70 @@ set screenmode `RequestChoice "Update Screenmode" "Do you want to update screenm
 ; workbench adf
 ; -------------
 echo "Installing from Amiga OS 3.1.4 Workbench..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Workbench"
 
 
 ; locale adf
 ; ----------
 echo "Installing from Amiga OS 3.1.4 Locale..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-locale"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-locale.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-locale" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-locale"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-locale.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-locale" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-locale"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-locale"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Locale"
 
 ; extras adf
 ; ----------
 echo "Installing from Amiga OS 3.1.4 Extras..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-extras"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-extras.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-extras" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-extras"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-extras.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-extras" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-extras"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-extras"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Extras"
 
 
 ; fonts adf
 ; ---------
 echo "Installing from Amiga OS 3.1.4 Fonts..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-fonts"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-fonts.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-fonts" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-fonts"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-fonts.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-fonts" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-fonts"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-fonts"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Fonts"
 
 
 ; storage adf
 ; -----------
 echo "Installing from Amiga OS 3.1.4 Storage..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-storage"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-storage.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-storage" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-storage"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-storage.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-storage" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-storage"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-storage"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Storage"
 
 
 ; modules adf
 ; -----------
+set model "a1200"
 echo "Installing from Amiga OS 3.1.4 Modules..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-modules-$model"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-modules-$model.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-modules-$model" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-modules-$model"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Modules"
 
 
 ; install adf
 ; -----------
 echo "Installing from Amiga OS 3.1.4 Install..."
-MakeDir >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-install"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-install.adf" "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-install" DIMG OVERWRITE
+MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-install"
+xadUnFile >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-install.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-install" DIMG OVERWRITE
 
-Assign AMIGAOSDISK: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-install"
+Assign AMIGAOSDISK: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-install"
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Install"
 
 
