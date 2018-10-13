@@ -1,7 +1,7 @@
 ; Startup Sequence
-; ------------------------------------
+; ----------------
 ;
-; Date: 2018-10-11
+; Date: 2018-10-13
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -70,88 +70,7 @@ Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
 
-
-; fail, if installdir: doesn't exist
-Assign >NIL: EXISTS INSTALLDIR:
-IF NOT $RC EQ 0 VAL
-  echo ""
-  echo "*e[1mERROR: INSTALLDIR: doesn't exist!*e[22m"
-  SKIP fail
-ENDIF 
-
-; test assigns
-Assign >NIL: SYSTEMDIR: DH0:
-
-; test install amiga os 3.1.4 from disk
-;execute INSTALLDIR:S/Install-Amiga-OS-3.1.4-Disk
-;SKIP end
-
-; fail, if amigaosdir: doesn't exist
-Assign >NIL: EXISTS AMIGAOSDIR:
-IF NOT $RC EQ 0 VAL
-  echo ""
-  echo "*e[1mERROR: AMIGAOSDIR: doesn't exist!*e[22m"
-  SKIP fail
-ENDIF 
-
-; detect amiga os 3.9 in AMIGAOSDIR:
-;Execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-
-; detect amiga os 3.1.4 in AMIGAOSDIR:
-Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
-
-; detect amiga os 3.1 in AMIGAOSDIR:
-;Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
-
-
-; install amiga os 3.9
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.9"
-  ; ask user to install amiga os 3.1 first
-  set installamigaos31 `RequestChoice "Install Amiga OS 3.1" "Do you want to install Amiga OS 3.1*Nbefore installing Amiga OS 3.9?" "Yes|No"` 
-  IF "$installamigaos31" EQ 1 VAL
-    IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.1-Adf"
-      ; run install amiga os 3.1 adf
-    ELSE
-      ; run install amiga os 3.1 disk
-    ENDIF
-  ENDIF
-
-  ; run install amiga os 3.9.0
-  SKIP complete
-ENDIF
-
-; install amiga os 3.1.4
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.1.4-Adf"
-  ; run install amiga os 3.1.4 adf
-  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Amiga-OS-3.1.4-Adf"
-
-  SKIP complete
-ENDIF
-
-; install amiga os from disk
-echo "install amiga os from disk"
-SKIP end
-
-
-; complete
-; --------
-
-LAB complete
-echo ""
-echo "Complete"
-
-SKIP end
-
-
-; fail
-; ----
-
-LAB fail
-echo ""
-echo "Installation failed."
-quit
-
-
-; end
-; ---
-LAB end
+; mount kingcon and run hstwb-installer in new kingcon shell
+Mount KCON: from INSTALLDIR:Devs/KingCON-mountlist
+Mount KRAW: from INSTALLDIR:Devs/KingCON-mountlist 
+NewShell WINDOW "KCON:0/0/640/300/HstWB Installer" FROM INSTALLDIR:S/HstWB-Installer
