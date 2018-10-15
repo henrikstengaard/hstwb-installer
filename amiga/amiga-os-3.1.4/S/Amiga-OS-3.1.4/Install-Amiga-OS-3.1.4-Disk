@@ -1,14 +1,10 @@
 ; Install Amiga OS 3.1.4 Disk
 ; ---------------------------
 ;
-; Date: 2018-10-11
+; Date: 2018-10-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from floppy disks.
-
-
-; set variable with amiga os dir, hardcoded for testing!
-set amigaosdisk "DF0"
 
 
 ; amiga os 3.1.4 installation message
@@ -21,7 +17,7 @@ echo "*e[0m" NOLINE
 
 ; install amiga os 3.1.4 from adf message
 echo ""
-echo "*e[1mInstalling Amiga OS 3.1.4 from floppy disks*e[0m"
+echo "*e[1mInstall Amiga OS 3.1.4 from floppy disks*e[0m"
 
 ; fail, if exec.library is less than v39
 Version >NIL: exec.library 39
@@ -30,6 +26,9 @@ IF WARN
   SKIP end
 ENDIF
 
+; set variables, df0 hardcoded for testing!
+set amigaosdisk "DF0"
+set amigaosfloppy "1"
 
 ; glow icons and screenmode
 ; -------------------------
@@ -40,286 +39,215 @@ set screenmode `RequestChoice "Update Screenmode" "Do you want to update screenm
 ; workbench disk
 ; --------------
 
-; TODO: validate workbench disk is inserted!
+; run install amiga os 3.1.4 workbench
 echo ""
 echo "Installing files from Amiga OS 3.1.4 Workbench disk..."
-
-; make drawers
-MakeDir >NIL: "SYSTEMDIR:Prefs"
-MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive"
-MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
-MakeDir >NIL: "SYSTEMDIR:Fonts"
-MakeDir >NIL: "SYSTEMDIR:Expansion"
-MakeDir >NIL: "SYSTEMDIR:WBStartup"
-MakeDir >NIL: "SYSTEMDIR:Locale"
-MakeDir >NIL: "SYSTEMDIR:Locale/Catalogs"
-MakeDir >NIL: "SYSTEMDIR:Locale/Languages"
-MakeDir >NIL: "SYSTEMDIR:Locale/Countries"
-MakeDir >NIL: "SYSTEMDIR:Locale/Help"
-MakeDir >NIL: "SYSTEMDIR:Classes"
-MakeDir >NIL: "SYSTEMDIR:Classes/Gadgets"
-MakeDir >NIL: "SYSTEMDIR:Classes/DataTypes"
-MakeDir >NIL: "SYSTEMDIR:Classes/Images"
-MakeDir >NIL: "SYSTEMDIR:Devs"
-MakeDir >NIL: "SYSTEMDIR:Devs/Monitors"
-MakeDir >NIL: "SYSTEMDIR:Devs/DataTypes"
-MakeDir >NIL: "SYSTEMDIR:Devs/DOSDrivers"
-MakeDir >NIL: "SYSTEMDIR:Devs/Printers"
-MakeDir >NIL: "SYSTEMDIR:Devs/Keymaps"
-MakeDir >NIL: "SYSTEMDIR:Storage"
-MakeDir >NIL: "SYSTEMDIR:Storage/DOSDrivers"
-MakeDir >NIL: "SYSTEMDIR:Storage/Printers"
-MakeDir >NIL: "SYSTEMDIR:Storage/Monitors"
-MakeDir >NIL: "SYSTEMDIR:Storage/Keymaps"
-MakeDir >NIL: "SYSTEMDIR:Storage/DataTypes"
-
-Copy >NIL: "$amigaosdisk:~(Locale)" SYSTEMDIR: ALL CLONE
-
-Assign >NIL: C: "SYSTEMDIR:C" ADD
-Assign >NIL: Libs: "SYSTEMDIR:Libs" ADD
-
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Workbench
 echo "Done"
 
 
-; Locale disk
+; locale disk
 ; -----------
 
+; print insert locale disk
+LAB insertlocaledisk
 echo ""
-echo "Insert Amiga OS 3.1.4 Locale disk"
+echo "*e[1mPlease insert Amiga OS 3.1.4 Locale disk in $amigaosdisk:*e[0m"
 ask "Press ENTER to continue"
-
 echo ""
-echo "Installing files from Amiga OS 3.1.4 Locale disk..."
-Copy >NIL: "$amigaosdisk:#?" "SYSTEMDIR:Locale" ALL CLONE
-echo "Done"
 
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertlocaledisk back
+endif
 
-; Extra disk
-; ----------
-
-echo ""
-echo "Insert Amiga OS 3.1.4 Extra disk"
-ask "Press ENTER to continue"
-
-echo ""
-echo "Installing files from Amiga OS 3.1.4 Extra disk..."
-Copy >NIL: "$amigaosdisk:~(Fonts)" "SYSTEMDIR:" ALL CLONE
-echo "Done"
-
-
-; Fonts disk
-; ----------
-
-echo ""
-echo "Insert Amiga OS 3.1.4 Fonts disk"
-ask "Press ENTER to continue"
-
-echo ""
-echo "Installing files from Amiga OS 3.1.4 Fonts disk..."
-Copy >NIL: "$amigaosdisk:#?" "SYSTEMDIR:Fonts" ALL CLONE
-echo "Done"
-
-
-; Storage disk
-; ------------
-
-echo ""
-echo "Insert Amiga OS 3.1.4 Storage disk"
-ask "Press ENTER to continue"
-
-echo ""
-echo "Installing files from Amiga OS 3.1.4 Storage disk..."
-
-Copy >NIL: "$amigaosdisk:#?.info" SYSTEMDIR:Storage CLONE
-Copy >NIL: "$amigaosdisk:Monitors" SYSTEMDIR:Storage/Monitors CLONE
-Copy >NIL: "$amigaosdisk:DOSDrivers" SYSTEMDIR:Storage/DOSDrivers CLONE
-Copy >NIL: "$amigaosdisk:Printers" SYSTEMDIR:Devs/Printers CLONE
-Copy >NIL: "$amigaosdisk:Keymaps" SYSTEMDIR:Devs/Keymaps CLONE
-
-; TODO: detect vblank frequency to determine pal or ntsc monitor
-Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
-Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
-
-; copy glowicons to temp directory, if glow icons have been selected
-IF "$glowicons" EQ 1 VAL
-  MakeDir >NIL: "SYSTEMDIR:Temp"
-  MakeDir >NIL: "SYSTEMDIR:Temp/glowicons"
-  Copy >NIL: "$amigaosdisk:glowicons" "SYSTEMDIR:Temp/glowicons" ALL CLONE
+; run detect amiga os 3.1.4 locale
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Locale
+IF NOT "$localevalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Locale disk disk is not valid!"
+  SKIP insertlocaledisk back
 ENDIF
 
+; run install amiga os 3.1.4 locale
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Locale disk..."
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Locale
 echo "Done"
 
 
-; Modules disk
+; extras disk
+; -----------
+
+; print insert extras disk
+LAB insertextrasdisk
+echo ""
+echo "*e[1mPlease insert Amiga OS 3.1.4 Extras disk in $amigaosdisk:*e[0m"
+ask "Press ENTER to continue"
+echo ""
+
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertextrasdisk back
+endif
+
+; run detect amiga os 3.1.4 extras
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Extras
+IF NOT "$extrasvalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Extras disk is not valid!"
+  SKIP insertextrasdisk back
+ENDIF
+
+; run install amiga os 3.1.4 extras
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Extras disk..."
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Extras
+echo "Done"
+
+
+; fonts disk
+; ----------
+
+; print insert fonts disk
+LAB insertfontsdisk
+echo ""
+echo "*e[1mPlease insert Amiga OS 3.1.4 Fonts disk in $amigaosdisk:*e[0m"
+ask "Press ENTER to continue"
+echo ""
+
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertfontsdisk back
+endif
+
+; run detect amiga os 3.1.4 fonts
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Fonts
+IF NOT "$fontsvalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Fonts disk is not valid!"
+  SKIP insertfontsdisk back
+ENDIF
+
+; run install amiga os 3.1.4 fonts
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Fonts disk..."
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Fonts
+echo "Done"
+
+
+; storage disk
 ; ------------
 
+; print insert storage disk
+LAB insertstoragedisk
+echo ""
+echo "*e[1mPlease insert Amiga OS 3.1.4 Storage disk in $amigaosdisk:*e[0m"
+ask "Press ENTER to continue"
+echo ""
+
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertstoragedisk back
+endif
+
+; run detect amiga os 3.1.4 storage
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Storage
+IF NOT "$storagevalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Storage disk is not valid!"
+  SKIP insertstoragedisk back
+ENDIF
+
+; run install amiga os 3.1.4 storage
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Storage disk..."
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Storage
+echo "Done"
+
+
+; modules disk
+; ------------
+
+; print insert modules disk
+LAB insertmodulesdisk
+echo ""
+echo "*e[1mPlease insert Amiga OS 3.1.4 Modules disk in $amigaosdisk:*e[0m"
+ask "Press ENTER to continue"
+echo ""
+
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertmodulesdisk back
+endif
+
+; run detect amiga os 3.1.4 modules
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Modules
+IF NOT "$modulesvalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Modules disk is not valid!"
+  SKIP insertmodulesdisk back
+ENDIF
+
+; run install amiga os 3.1.4 modules
+echo ""
+echo "Installing files from Amiga OS 3.1.4 Modules disk..."
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Modules
+echo "Done"
+
+
 ; Modules are only required to be copied if we are below V45
-Version >NIL: expansion.library 45 RES
-IF NOT $RC EQ 0
+;Version >NIL: expansion.library 45 RES
+;IF NOT $RC EQ 0
   ; copy modules
 
   ; user selects model
   ; diskname = "ModulesA500_3.1.4", "ModulesA600_3.1.4","ModulesA1200_3.1.4","ModulesA2000_3.1.4","ModulesA3000_3.1.4","ModulesA4000D_3.1.4","ModulesA4000T_3.1.4"
 
-  echo ""
-  echo "Insert Amiga OS 3.1.4 Modules disk"
-  ask "Press ENTER to continue"
+;  echo ""
+;  echo "Insert Amiga OS 3.1.4 Modules disk"
+;  ask "Press ENTER to continue"
 
-  echo ""
-  echo "Installing files from Amiga OS 3.1.4 Modules disk..."
-  Copy >NIL: "$amigaosdisk:" SYSTEMDIR: ALL CLONE
-  echo "Done"
-ENDIF
+;  echo ""
+;  echo "Installing files from Amiga OS 3.1.4 Modules disk..."
+;  Copy >NIL: "$amigaosdisk:" SYSTEMDIR: ALL CLONE
+;  echo "Done"
+;ENDIF
 
 
-; Install disk
+; install disk
 ; ------------
 
+; print insert install disk
+LAB insertinstalldisk
 echo ""
-echo "Insert Amiga OS 3.1.4 Install disk"
+echo "*e[1mPlease insert Amiga OS 3.1.4 Install disk in $amigaosdisk:*e[0m"
 ask "Press ENTER to continue"
+echo ""
 
+; check if disk is present in floppy device
+DiskInDrive $amigaosdisk:
+if warn
+  echo "No disk is inserted in $amigaosdisk:!"
+  SKIP insertinstalldisk back
+endif
+
+; run detect amiga os 3.1.4 install
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Install
+IF NOT "$installvalid" EQ 1 VAL
+  echo "Amiga OS 3.1.4 Install disk is not valid!"
+  SKIP insertinstalldisk back
+ENDIF
+
+; run install amiga os 3.1.4 install
 echo ""
 echo "Installing files from Amiga OS 3.1.4 Install disk..."
-
-; copy disk.info
-IF EXISTS "SYSTEMDIR:Disk.info"
-  Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
-ENDIF
-Copy >NIL: "$amigaosdisk:Update/Disk.info" "SYSTEMDIR:" CLONE
-
-Copy >NIL: "$amigaosdisk:HDTools/(hd|bru)#?" "SYSTEMDIR:Tools" CLONE
-Copy >NIL: "$amigaosdisk:Installer" "SYSTEMDIR:System" CLONE
-
-; copy workbench.library
-IF EXISTS "SYSTEMDIR:Libs/workbench.library"
-  Protect >NIL: "SYSTEMDIR:Libs/workbench.library" +prwed
-ENDIF
-Copy >NIL: "$amigaosdisk:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
-
-; copy icon.library
-IF EXISTS "SYSTEMDIR:Libs/icon.library"
-  Protect >NIL: "SYSTEMDIR:Libs/icon.library" +prwed
-ENDIF
-Copy >NIL: "$amigaosdisk:Libs/icon.library" "SYSTEMDIR:Libs" CLONE
-
-; copy startup-sequence
-Copy "$amigaosdisk:Update/Startup-HardDrive" "SYSTEMDIR:S" CLONE
-IF EXISTS "SYSTEMDIR:S/Startup-Sequence"
-  Protect >NIL: "SYSTEMDIR:S/Startup-Sequence" +prwed
-  Delete >NIL: "SYSTEMDIR:S/Startup-Sequence"
-ENDIF
-Copy >NIL: "SYSTEMDIR:S/Startup-HardDrive" "SYSTEMDIR:S/Startup-Sequence"
-
-; copy fastfilesystem
-IF EXISTS "SYSTEMDIR:L/FastFileSystem"
-  Protect >NIL: "SYSTEMDIR:L/FastFileSystem" +prwed
-ENDIF
-Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE
-
-
-Assign C: SYSTEMDIR:C
-Path C:
-
-IF EXISTS SYSTEMDIR:S
-  Assign S: SYSTEMDIR:S
-ENDIF
-
-IF EXISTS SYSTEMDIR:L
-  Assign L: SYSTEMDIR:L
-ENDIF
-
-IF EXISTS SYSTEMDIR:Libs
-  Assign LIBS: SYSTEMDIR:Libs
-ENDIF
-
-IF EXISTS SYSTEMDIR:Devs
-  Assign DEVS: SYSTEMDIR:Devs
-ENDIF
-
-IF EXISTS SYSTEMDIR:Fonts
-  Assign Fonts: SYSTEMDIR:Fonts
-ENDIF
-
-IF EXISTS SYSTEMDIR:Prefs/Env-Archive
-  Assign ENVARC: SYSTEMDIR:Prefs/Env-Archive
-ENDIF
-
-; run update wb files
-Assign >NIL: NEWWB: SYSTEMDIR:
-"$amigaosdisk:C/UpdateWBFiles"
-
-echo "Done"
-
-
-; Clean up
-; --------
-
-echo ""
-echo "Cleaning up icons..."
-
-Resident "$amigaosdisk:C/IconPos" PURE
-
-IconPos >NIL: "SYSTEMDIR:Prefs"     12 20
-IconPos >NIL: "SYSTEMDIR:Prefs/Printer"  160 48
-
-IconPos >NIL: "SYSTEMDIR:Utilities" 98 4
-IconPos >NIL: "SYSTEMDIR:Utilities/Clock" 91 11
-IconPos >NIL: "SYSTEMDIR:Utilities/MultiView" 11 11
-
-IconPos >NIL: "SYSTEMDIR:Tools"                           98 38
-IconPos >NIL: "SYSTEMDIR:Tools/IconEdit"                 111 45
-IconPos >NIL: "SYSTEMDIR:Tools/HDToolBox"                 202 4
-IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Blanker"        8 84
-IconPos >NIL: "SYSTEMDIR:Tools/Commodities/ClickToFront"  99 4
-IconPos >NIL: "SYSTEMDIR:Tools/Commodities/CrossDOS"      99 44
-IconPos >NIL: "SYSTEMDIR:Tools/Commodities/Exchange"       8  4
-IconPos >NIL: "SYSTEMDIR:Tools/Commodities/FKey"          99 84
-
-IconPos >NIL: "SYSTEMDIR:System"    184 4
-IconPos >NIL: "SYSTEMDIR:WBStartup" 184 38
-IconPos >NIL: "SYSTEMDIR:Devs"      270 4
-Copy >NIL: "SYSTEMDIR:Devs.info" "SYSTEMDIR:Storage.info" CLONE
-IconPos >NIL: "SYSTEMDIR:Storage"   270 38 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-IconPos >NIL: "SYSTEMDIR:Storage/Monitors"   10 106 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-IconPos >NIL: "SYSTEMDIR:Storage/Printers"   10 140 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-IconPos >NIL: "SYSTEMDIR:Expansion" 356 20
-IconPos >NIL: "SYSTEMDIR:Disk"      DXPOS 28 DYPOS 29 DWIDTH 462 DHEIGHT 93
-
-Protect >NIL: "SYSTEMDIR:C/Execute" ph add
-
-; copy glowicons to system directory, if glow icons have been selected
-IF "$glowicons" EQ 1 VAL
-  IF EXISTS "SYSTEMDIR:Temp/glowicons"
-    echo "Installing glow icons..."
-    Copy >NIL: "SYSTEMDIR:Temp/glowicons" "SYSTEMDIR:" ALL CLONE
-    Delete >NIL: "SYSTEMDIR:Temp/glowicons" ALL
-  ENDIF
-ENDIF
-
-; copy workbench prefs to use best icon quality and no icon border
-IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4"
-  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
-ENDIF
-
-IF "$screenmode" EQ 1 VAL
-  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256"
-    echo "Updating screenmode prefs..."
-    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
-  ENDIF
-ELSE
-  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16"
-    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
-  ENDIF
-ENDIF
-
-; update dh1 disk icon, if dh1: device exists
-Assign >NIL: EXISTS DH1:
-IF $RC EQ 0 VAL
-  Copy >NIL: "SYSTEMDIR:Disk.info" "DH1:Disk.info"
-ENDIF
-
-
+Execute INSTALLDIR:S/Amiga-OS-3.1.4/Install-Install
 echo "Done"
 
 echo ""
