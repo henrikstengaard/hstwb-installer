@@ -1,0 +1,44 @@
+; Detect Amiga OS 3.1.4 Modules
+; -----------------------------
+;
+; Date: 2018-10-16
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.1.4 modules floppy disk or adf file.
+
+set modulesvalid "0"
+
+; end, if installing from floppy and volume name is not "ModulesA1200_3.1.4"
+IF "$amigaosfloppy" EQ 1 VAL
+  IF "`Which $amigaosdisk:`" EQ "ModulesA1200_3.1.4:"
+    SKIP modulesa1200
+  ENDIF
+
+  SKIP end
+ENDIF
+
+; adf, how to detect volume name?
+
+
+; modules a1200
+; -------------
+
+LAB modulesa1200
+
+; end, if a1200 scsi device doesn't exist
+IF NOT EXISTS "$amigaosdisk:DEVS/A1200/scsi.device"
+  SKIP end
+ENDIF
+
+; end, if a1200 scsi device is less than v45.7
+Version >NIL: "$amigaosdisk:DEVS/A1200/scsi.device" 45 6 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP end
+ENDIF
+
+set modulesvalid "1"
+
+; end
+; ---
+
+LAB end

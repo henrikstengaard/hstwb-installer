@@ -1,0 +1,39 @@
+; Detect Amiga OS 3.1.4 Extras
+; ----------------------------
+;
+; Date: 2018-10-16
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.1.4 extras floppy disk or adf file.
+
+set extrasvalid "0"
+
+; end, if installing from floppy and volume name is not "Extras3.1.4"
+IF "$amigaosfloppy" EQ 1 VAL
+  IF NOT "`Which $amigaosdisk:`" EQ "Extras3.1.4:"
+    SKIP end
+  ENDIF
+ENDIF
+
+; end, if intellifont doesn't exist
+IF NOT EXISTS "$amigaosdisk:System/Intellifont"
+  SKIP end
+ENDIF 
+
+; end, if fastfilesystem doesn't exist
+IF NOT EXISTS "$amigaosdisk:L/FastFileSystem"
+  SKIP end
+ENDIF
+
+; end, if fastfilesystem is less than v46.13
+Version >NIL: "$amigaosdisk:L/FastFileSystem" 46 12 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP end
+ENDIF
+
+set extrasvalid "1"
+
+; end
+; ---
+
+LAB end
