@@ -1,0 +1,10 @@
+; Image PFS3 format
+; -----------------
+;
+; Date: 2018-11-03
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to format PFS3 images for HstWB Installer
+
+pfsformat drive dh0: name "Workbench" quick noicons fnsize=107
+pfsformat drive dh1: name "Data" quick noicons fnsize=107
