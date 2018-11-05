@@ -508,7 +508,7 @@ function SortPackageNames($hstwb)
         $packagesSorted += $packageNodes | Sort-Object @{expression={$_.Priority};Ascending=$true}, @{expression={$_.Index};Ascending=$true}
 
         # topologically sort packages and add package names sorted
-        TopologicalSort $packageNodes | ForEach-Object { $packageNamesSorted += $_ }
+        TopologicalSort $packagesSorted | ForEach-Object { $packageNamesSorted += $_ }
     }
 
     return $packageNamesSorted
