@@ -1,6 +1,6 @@
 # Images for HstWB Installer
 
-Example image.json file:
+Example hstwb-image.json file:
 
 ```json
 {
@@ -32,3 +32,8 @@ Example image.json file:
     ]
 }
 ```
+
+Formatting pfs3 partitions
+
+pfsformat drive dh0: name "Workbench" quick noicons fnsize=107
+pfsformat drive dh1: name "Data" quick noicons fnsize=107
