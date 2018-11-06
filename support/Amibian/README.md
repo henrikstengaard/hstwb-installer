@@ -21,19 +21,19 @@ Mount partition as loop with calculation of partition offset (sector size * star
 sudo losetup -o $((512*125056)) /dev/loop0 amibian1.4.1001_hstwb.img
 ```
 
-Check partition, if needed:
+Check partition:
 ```
 sudo e2fsck /dev/loop0
 ```
 
-Fix partition size, if needed:
+Fix partition size:
 ```
 sudo resize2fs /dev/loop0
 ```
 
 Mount partition as disk:
 ```
-sudo if [ ! -d /mnt/disk ]; then; mkdir /mnt/disk; fi
+if [ ! -d /mnt/disk ]; then sudo mkdir /mnt/disk; fi
 sudo mount /dev/loop0 /mnt/disk
 ```
 
