@@ -1,7 +1,7 @@
 ; Find Kickstart Rom
 ; ------------------
 ;
-; Date: 2018-05-02
+; Date: 2018-10-03
 ; Author: Henrik Noerfjand Stengaard
 
 ; Find Kickstart rom files
@@ -71,9 +71,10 @@ IF $md5 eq "8b54c2c5786e9d856ce820476505367d"
 ENDIF
 
 ; Copy Cloanto Amiga Forever Kickstart rom key, if it exists
-echo "{file}" NOLINE >T:_kickstartromfile
-IF "`wc -l <T:_kickstartromfile`" EQ 7 VAL
-  search >NIL: T:_kickstartromfile "rom.key"
+echo "$romfile" NOLINE >T:_kickstartromfile
+search >NIL: T:_kickstartromfile "rom.key"
+IF $RC EQ 0 VAL
+  search >NIL: "$romfile" "CLOANTO (R) AMIGA FOREVER (TM) ROM KEY FILE"
   IF $RC EQ 0 VAL
     IF NOT EXISTS "INSTALLDIR:Kickstart/rom.key"
       echo "Cloanto Amiga Forever Kickstart rom key"

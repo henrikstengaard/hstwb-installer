@@ -45,6 +45,14 @@ foreach($packageDir in $packageDirs)
         exit 1
     }
 
+    # fail, if package is not master branch
+    $unpushedCommits = & "git" "rev-parse" "--abbrev-ref" "HEAD"
+    if ($unpushedCommits -notmatch '^master$')
+    {
+        Write-Host ('Failed to update package dir ''{0}'': Package dir doesn''t not master branch' -f $packageDir.FullName) -ForegroundColor Red
+        exit 1
+    }
+
     # git pull latest changes
     & "git" "pull"
     if ($LASTEXITCODE -ne 0)
