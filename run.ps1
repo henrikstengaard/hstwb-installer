@@ -1213,7 +1213,7 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
 
 
 # build fs-uae self install harddrives config text
-function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
@@ -1234,8 +1234,8 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kicks
     $fsUaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($fsUaeSelfInstallHarddrivesConfigFile)
 
     # replace winuae self install harddrives placeholders
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchHarddriveIndex]', [int]$harddriveIndex + 1)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOSDir]', $amigaOsDir.Replace('\', '/'))
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOSHarddriveIndex]', [int]$harddriveIndex + 1)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir.Replace('\', '/'))
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartHarddriveIndex]', [int]$harddriveIndex + 2)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
@@ -1385,7 +1385,7 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
 
 
 # build winuae self install harddrives config text
-function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $os39Dir, $userPackagesDir)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
@@ -1406,8 +1406,8 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kick
     $winuaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeSelfInstallHarddrivesConfigFile)
 
     # replace winuae self install harddrives placeholders
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchUaehfIndex]', [int]$uaehfIndex + 1)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsDir]', $amigaOsDir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartUaehfIndex]', [int]$uaehfIndex + 2)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
@@ -2249,11 +2249,15 @@ function RunBuildSelfInstall($hstwb)
     # copy amiga os 3.9 to install directory
     $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
     Copy-Item -Path "$amigaOs39Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
-    
-    # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
-    Copy-Item -Path "$amigaWorkbenchDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
+    # copy amiga os 3.1.4 to install directory
+    $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
+    Copy-Item -Path "$amigaOs314Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+    # copy amiga os 3.1 to install directory
+    $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
+    Copy-Item -Path "$amigaOs31Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    
     # copy kickstart to install directory
     $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
     Copy-Item -Path "$amigaKickstartDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
@@ -2391,11 +2395,11 @@ function RunBuildSelfInstall($hstwb)
     WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
 
 
-    # hstwb uae run workbench dir
-    $workbenchDir = ''
+    # amiga os dir
+    $amigaOsDir = ''
     if ($hstwb.Settings.Workbench.WorkbenchAdfDir -and (Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
     {
-        $workbenchDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
+        $amigaOsDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
     }
     
     # hstwb uae kickstart dir
@@ -2406,11 +2410,11 @@ function RunBuildSelfInstall($hstwb)
     }
 
 
-    # create workbench directory in image directory, if it doesn't exist
-    $imageWorkbenchDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "workbench"
-    if (!(Test-Path -Path $imageWorkbenchDir))
+    # create amiga os directory in image directory, if it doesn't exist
+    $imageAmigaOsDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "amigaos"
+    if (!(Test-Path -Path $imageAmigaOsDir))
     {
-        mkdir $imageWorkbenchDir | Out-Null
+        mkdir $imageAmigaOsDir | Out-Null
     }
 
     # create kickstart directory in image directory, if it doesn't exist
@@ -2455,7 +2459,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $amigaOsDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
 
 
     # replace hstwb installer uae winuae configuration placeholders
@@ -2475,7 +2479,7 @@ function RunBuildSelfInstall($hstwb)
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $amigaOsDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
     
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))

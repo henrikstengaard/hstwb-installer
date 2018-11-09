@@ -1,6 +1,6 @@
-hard_drive_[$WorkbenchHarddriveIndex] = [$WorkbenchDir]
-hard_drive_[$WorkbenchHarddriveIndex]_label = WORKBENCHDIR
-hard_drive_[$WorkbenchHarddriveIndex]_read_only = 1
+hard_drive_[$AmigaOsHarddriveIndex] = [$AmigaOsDir]
+hard_drive_[$AmigaOsHarddriveIndex]_label = AMIGAOSDIR
+hard_drive_[$AmigaOsHarddriveIndex]_read_only = 0
 hard_drive_[$KickstartHarddriveIndex] = [$KickstartDir]
 hard_drive_[$KickstartHarddriveIndex]_label = KICKSTARTDIR
 hard_drive_[$KickstartHarddriveIndex]_read_only = 1
