@@ -2395,21 +2395,6 @@ function RunBuildSelfInstall($hstwb)
     WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
 
 
-    # amiga os dir
-    $amigaOsDir = ''
-    if ($hstwb.Settings.Workbench.WorkbenchAdfDir -and (Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
-    {
-        $amigaOsDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
-    }
-    
-    # hstwb uae kickstart dir
-    $kickstartDir = ''
-    if ($hstwb.Settings.Kickstart.KickstartRomDir -and (Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomDir))
-    {
-        $kickstartDir = $hstwb.Settings.Kickstart.KickstartRomDir
-    }
-
-
     # create amiga os directory in image directory, if it doesn't exist
     $imageAmigaOsDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "amigaos"
     if (!(Test-Path -Path $imageAmigaOsDir))
@@ -2459,7 +2444,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $amigaOsDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageOs39Dir $imageUserPackagesDir
 
 
     # replace hstwb installer uae winuae configuration placeholders
@@ -2479,7 +2464,7 @@ function RunBuildSelfInstall($hstwb)
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $amigaOsDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageOs39Dir $imageUserPackagesDir
     
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
