@@ -5,7 +5,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-20
+# Date:   2018-11-10
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -648,7 +648,7 @@ def build_install_entries(entries, user_package_path, install_entries_dir):
         if re.search(r'\.lha$', user_package_file, re.I):
             install_entry_lines.append(u"{0}  lha -m1 x \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
         elif re.search(r'\.lzx$', user_package_file, re.I):
-            install_entry_lines.append(u"{0}  unlzx -m e \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
+            install_entry_lines.append(u"{0}  unlzx -m x \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
         install_entry_lines.append("{0}ENDIF".format(padding_text))
 
         if has_multi_languages:
