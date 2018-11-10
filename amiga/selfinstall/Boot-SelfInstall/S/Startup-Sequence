@@ -165,31 +165,31 @@ failat 21
 ; --------------
 
 ; goto amiga os 3.1 adf, if copy amiga os 3.1.4 adf script doesn't exist
-IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf"
+IF NOT EXISTS "HSTWBINSTALLER:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf"
   SKIP amigaos31adf
 ENDIF
 
 ; create amiga os 3.1.4 installdir temp directory, if it doesn't exist
-IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/"
-  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS-314"
+IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-314/"
+  MakePath >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314"
 ENDIF
 
 ; copy amiga os 3.1.4 adf files to installdir temp directory
-List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*" WORKBENCH" >T:_copy_amiga-os-3.1.4_adfs
+List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute HSTWBINSTALLER:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"HSTWBINSTALLER:Temp/Amiga-OS-314*" WORKBENCH" >T:_copy_amiga-os-3.1.4_adfs
 Execute T:_copy_amiga-os-3.1.4_adfs
 Delete >NIL: T:_copy_amiga-os-3.1.4_adfs
 
 ; skip to amiga os 3.1 adf, if amiga os 3.1.4 workbench adf doesn't exist
-IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench.adf"
   SKIP amigaos31adf
 ENDIF
 
 ; extract amiga os 3.1.4 workbench adf
-MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-workbench.adf" "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench" DIMG OVERWRITE
+MakeDir >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench"
+xadUnFile >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench.adf" "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench" DIMG OVERWRITE
 
 ; load system files from amiga os 3.1.4 workbench adf
-set systemfilesdir "SYSTEMDIR:Temp/Amiga-OS-314/amiga-os-314-workbench/C"
+set systemfilesdir "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench/C"
 SKIP loadsystemfiles
 
 
@@ -198,31 +198,31 @@ SKIP loadsystemfiles
 LAB amigaos31adf
 
 ; goto generic, if copy amiga os 3.1 adf script doesn't exist
-IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf"
+IF NOT EXISTS "HSTWBINSTALLER:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf"
   SKIP amigaosdisk
 ENDIF
 
 ; create amiga os 3.1 installdir temp directory, if it doesn't exist
-IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/"
-  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS-310"
+IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-310/"
+  MakePath >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310"
 ENDIF
 
 ; copy amiga os 3.1 adf files to installdir temp directory
-List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-310*" WORKBENCH" >T:_copy_amiga-os-3.1_adfs
+List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute HSTWBINSTALLER:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"HSTWBINSTALLER:Temp/Amiga-OS-310*" WORKBENCH" >T:_copy_amiga-os-3.1_adfs
 Execute T:_copy_amiga-os-3.1_adfs
 Delete >NIL: T:_copy_amiga-os-3.1_adfs
 
 ; goto generic, if amiga os 3.1 workbench adf doesn't exist
-IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-workbench.adf"
+IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench.adf"
   SKIP generic
 ENDIF
 
 ; extract amiga os 3.1 workbench adf
-MakeDir >NIL: "SYSTEMDIR:Temp/Amiga-OS-310/amiga-os-310-workbench"
-xadUnFile >NIL: "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-workbench.adf" "SYSTEMDIR:Temp/Amiga-OS-310/amiga-os-310-workbench" DIMG OVERWRITE
+MakeDir >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench"
+xadUnFile >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench.adf" "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench" DIMG OVERWRITE
 
 ; load system files from amiga os 3.1 workbench adf
-set systemfilesdir "SYSTEMDIR:Temp/Amiga-OS-310/amiga-os-310-workbench/C"
+set systemfilesdir "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench/C"
 SKIP loadsystemfiles
 
 

@@ -2241,9 +2241,17 @@ function RunBuildSelfInstall($hstwb)
     }
     Copy-Item -Path "$largeHarddiskDir\*" $selfInstallLargeHarddiskDir -recurse -force
 
+    # create boot self install hstwb installer directory
+    $bootSelfInstallHstwbInstallerDir = Join-Path $tempInstallDir "Boot-SelfInstall\_HstWB-Installer"
+    if(!(test-path -path $bootSelfInstallHstwbInstallerDir))
+    {
+        mkdir $bootSelfInstallHstwbInstallerDir | Out-Null
+    }
+
     # copy shared to install directory
     $sharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
+    Copy-Item -Path "$sharedDir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy amiga os 3.9 to install directory
@@ -2252,10 +2260,12 @@ function RunBuildSelfInstall($hstwb)
 
     # copy amiga os 3.1.4 to install directory
     $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
+    Copy-Item -Path "$amigaOs314Dir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$amigaOs314Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
     # copy amiga os 3.1 to install directory
     $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
+    Copy-Item -Path "$amigaOs31Dir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$amigaOs31Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy kickstart to install directory
