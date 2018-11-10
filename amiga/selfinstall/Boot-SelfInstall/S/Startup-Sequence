@@ -110,7 +110,7 @@ IF WARN
   ; Set failat to 21
   failat 21
   echo "CD0: device is not present! Skip Amiga OS 3.9 cd-rom."
-  SKIP amigaos314adf
+  SKIP amigaosadf
 ENDIF
 
 ; Goto find amigs os adf, if AmigaOS3.9: is not present
@@ -119,7 +119,7 @@ IF WARN
   ; Set failat to 21
   failat 21
   echo "AmigaOS3.9: device is not present! Skip Amiga OS 3.9 cd-rom."
-  SKIP amigaos314adf
+  SKIP amigaosadf
 ENDIF
 
 ; Set failat to 21
@@ -128,7 +128,7 @@ failat 21
 ; Goto find amigs os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
 IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
   echo "Amiga OS 3.9 cd-rom is not valid! Skip Amiga OS 3.9 cd-rom."
-  SKIP amigaos314adf
+  SKIP amigaosadf
 ENDIF
 
 ; load system files from amiga os 3.9 emergency boot
@@ -136,9 +136,9 @@ set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
 SKIP loadsystemfiles
 
 
-; amiga os 3.1.4 adf
-; ------------------
-LAB amigaos314adf
+; amiga os adf
+; ------------
+LAB amigaosadf
 
 echo ""
 echo "*e[1mLoading Amiga OS system files from Amiga OS 3.1.4 or 3.1"
@@ -160,78 +160,108 @@ ENDIF
 ; set failat to 21
 failat 21
 
+; find adf files in AMIGAOSDIR:
+FSearch >RAM:_adffiles "AMIGAOSDIR:" PAT="#?.adf"
 
-; amiga os 3.1.4
-; --------------
+; next adf file
+LAB nextadffile
 
-; goto amiga os 3.1 adf, if copy amiga os 3.1.4 adf script doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf"
-  SKIP amigaos31adf
-ENDIF
+; get next adf file from adf files
+set adffile ""
+set adffile `sed "1q;d" "RAM:_adffiles"` 
 
-; create amiga os 3.1.4 installdir temp directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-314/"
-  MakePath >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314"
-ENDIF
+echo "$adffile"
 
-; copy amiga os 3.1.4 adf files to installdir temp directory
-List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute HSTWBINSTALLER:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"HSTWBINSTALLER:Temp/Amiga-OS-314*" WORKBENCH" >T:_copy_amiga-os-3.1.4_adfs
-Execute T:_copy_amiga-os-3.1.4_adfs
-Delete >NIL: T:_copy_amiga-os-3.1.4_adfs
-
-; skip to amiga os 3.1 adf, if amiga os 3.1.4 workbench adf doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench.adf"
-  SKIP amigaos31adf
-ENDIF
-
-; extract amiga os 3.1.4 workbench adf
-MakeDir >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench"
-xadUnFile >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench.adf" "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench" DIMG OVERWRITE
-
-; load system files from amiga os 3.1.4 workbench adf
-set systemfilesdir "HSTWBINSTALLER:Temp/Amiga-OS-314/amiga-os-314-workbench/C"
-SKIP loadsystemfiles
-
-
-; amiga os 3.1
-; ------------
-LAB amigaos31adf
-
-; goto generic, if copy amiga os 3.1 adf script doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf"
+; goto amiga os disk, if no valid amiga os 3.1.4 or 3.1 workbench adf was detected
+IF "$adffile" EQ ""
+  echo "Amiga OS 3.1.4 or 3.1 Workbench adf file is not present!"
   SKIP amigaosdisk
 ENDIF
 
-; create amiga os 3.1 installdir temp directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-310/"
-  MakePath >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310"
+; goto next adf file, if file size is not 901120 bytes
+set filesize `wc -c <"$adffile"`
+IF NOT $filesize EQ 901120 VAL
+  SKIP BACK nextadffile
 ENDIF
 
-; copy amiga os 3.1 adf files to installdir temp directory
-List AMIGAOSDIR: PAT=#? ALL FILES LFORMAT "Execute HSTWBINSTALLER:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"HSTWBINSTALLER:Temp/Amiga-OS-310*" WORKBENCH" >T:_copy_amiga-os-3.1_adfs
-Execute T:_copy_amiga-os-3.1_adfs
-Delete >NIL: T:_copy_amiga-os-3.1_adfs
-
-; goto generic, if amiga os 3.1 workbench adf doesn't exist
-IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench.adf"
-  SKIP generic
+; find amiga os 3.1.4 workbench disk volume name in adf file
+FSearch >RAM:_amigaos314volume "$adffile" TXT="Workbench3.1.4"
+set amigaos314volume `wc -l <RAM:_amigaos314volume`
+IF $amigaos314volume GT 0 VAL
+  SKIP adflist
 ENDIF
 
-; extract amiga os 3.1 workbench adf
-MakeDir >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench"
-xadUnFile >NIL: "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench.adf" "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench" DIMG OVERWRITE
+; find amiga os 3.1 workbench disk volume name in adf file
+FSearch >RAM:_amigaos310volume "$adffile" TXT="Workbench3.1"
+set amigaos310volume `wc -l <RAM:_amigaos310volume`
+IF $amigaos310volume GT 0 VAL
+  SKIP adflist
+ENDIF
 
-; load system files from amiga os 3.1 workbench adf
-set systemfilesdir "HSTWBINSTALLER:Temp/Amiga-OS-310/amiga-os-310-workbench/C"
-SKIP loadsystemfiles
+; goto next adf file, workbench volume name
+SKIP BACK nextadffile
+
+; adf list
+LAB adflist
+
+; goto next adf file, if xadunfile doesn't return error code 0
+xadUnFile >RAM:_adflist "$adffile" DIMG LIST
+IF NOT $RC EQ 0
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if adf doesn't contain which file
+grep >NIL: -i "C/Which" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if adf doesn't contain assign file
+grep >NIL: -i "C/Assign" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if adf doesn't contain datatypes.library file
+grep >NIL: -i "Libs/datatypes.library" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if adf doesn't contain cli file
+grep >NIL: -i "System/CLI" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if adf doesn't contain shell.info file
+grep >NIL: -i "System/Shell.info" <RAM:_adflist
+IF NOT $RC EQ 0 VAL
+  SKIP BACK nextadffile
+ENDIF 
+
+; extract amiga os adf
+; --------------------
+
+echo "$adffile"
+
+; create temp amiga os workbench directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLER:Temp/Amiga-OS-Workbench"
+  MakePath >NIL: "HSTWBINSTALLER:Temp/Workbench"
+ENDIF
+
+; Extract files from amiga os workbench adf
+xadUnFile >NIL: "$adffile" "HSTWBINSTALLER:Temp/Amiga-OS-Workbench" DIMG OVERWRITE
+
+; goto load system files
+set systemfilesdir "HSTWBINSTALLER:Temp/Amiga-OS-Workbench/C"
+SKIP loadsystemfiles 
 
 
 ; amiga os disk
 ; -------------
 LAB amigaosdisk
 
-echo "Amiga OS 3.1.4 or 3.1 Workbench adf file is not present!"
-echo "Skip Amiga OS 3.1.4 and 3.1 Workbench adf file."
 echo ""
 echo "Amiga OS system files could not be loaded from Amiga OS 3.9,"
 echo "3.1.4 or 3.1 Workbench adf file. To retry, change cd-rom"
