@@ -8,7 +8,7 @@
 ; set failat to 21
 FailAt 21
 
-; Load patched scsi.device v43.45, if it exists
+; load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
   ; Load scsi.device, if current loaded scsi.device is less than v43.45
   Version >NIL: "scsi.device" 43 45
@@ -27,11 +27,14 @@ stack 16384
 MakePath >NIL: RAM:Env
 AssPlus >NIL:
 
+; set floppy device to none (used for eject disk)
+set floppydevice ""
+
 ; fail, if exec.library is less than v40
 Version >NIL: exec.library 40
 IF WARN
-  echo "*e[1mError: HstWB Installer requires minimum Kickstart 3.1 rom.*e[0m"
-  quit
+  echo "*e[1mError: HstWB Installer requires minimum Kickstart 3.1 rom!*e[0m"
+  SKIP fail
 ENDIF
 
 
@@ -386,20 +389,19 @@ ask "Press ENTER to continue"
 ; ------------------
 LAB selfinstallstart
 
-; fail, if assign hstwb installer doesn't exist
-IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "Error: Assign hstwb installer doesn't exist!"
+; fail, if HSTWBINSTALLERDIR: device doesn't exist
+Assign >NIL: EXISTS HSTWBINSTALLERDIR:
+IF WARN
+  echo "*e[1mError: Self install HSTWBINSTALLERDIR: device doesn't exist!*e[0m"
   SKIP fail
 ENDIF
-execute S:Assign-HstWB-Installer
 
-; add assigns to installdir
-Assign >NIL: S: INSTALLDIR:S ADD
-Assign >NIL: C: INSTALLDIR:C ADD
-Assign >NIL: Devs: INSTALLDIR:Devs ADD
-Assign >NIL: L: INSTALLDIR:L ADD
-Assign >NIL: Libs: INSTALLDIR:Libs ADD
-Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
+; fail, if INSTALLDIR: device doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF WARN
+  echo "*e[1mError: Self install INSTALLDIR: device doesn't exist!*e[0m"
+  SKIP fail
+ENDIF
 
 ; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
@@ -410,43 +412,30 @@ Resident >NIL: "INSTALLDIR:C/LhA" PURE
 Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
-; fail, if HSTWBINSTALLERDIR: device doesn't exist
-Assign >NIL: EXISTS HSTWBINSTALLERDIR:
-IF WARN
-  echo "Error: HSTWBINSTALLERDIR: device doesn't exist!"
-  SKIP fail
-ENDIF
-
-
-; Create install prefs drawer, if it doesn't exist
+; create install prefs drawer, if it doesn't exist
 IF NOT EXISTS INSTALLDIR:Prefs
   makepath INSTALLDIR:Prefs
 ENDIF
 
-
-; Run patch installation
+; pun patch installation
 execute "INSTALLDIR:S/Patch-Installation"
 
-
-; Run prepare self install
+; run prepare self install
 execute "INSTALLDIR:S/Prepare-SelfInstall"
 
-
-; Run remove self install
+; run remove self install
 execute "INSTALLDIR:S/Remove-SelfInstall"
 
-
-; Run install start
+; run install start
 execute "INSTALLDIR:S/Install-Start"
 
-
-; Goto self install complete, if floppy device is empty
+; goto self install complete, if floppy device is empty
 IF "$floppydevice" EQ ""
   SKIP selfinstallcomplete
 ENDIF
 
 
-; Print eject disk message
+; print eject disk message
 cls
 echo "*e[32m" NOLINE
 echo "Eject disk"
@@ -455,26 +444,57 @@ echo "----------"
 echo "*e[22m" NOLINE
 echo ""
 echo "A system reboot is required for installation process"
-echo "to continue and floppy disk must be ejected."
+echo "to continue and any floppy disk must be ejected."
 
-
-; Check if disk is present in floppy device, if present go back to eject disk
+; eject disk
 LAB ejectdisk
-DiskInDrive $floppydevice:
+
+; check if disk is present in floppy device DF0:, if present go back to eject disk
+DiskInDrive DF0:
 IF NOT WARN
   echo ""
-  echo "Please eject disk from $floppydevice:"
+  echo "Please eject disk from DF0:"
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF1:, if present go back to eject disk
+DiskInDrive DF1:
+IF NOT WARN
+  echo ""
+  echo "Please eject disk from DF1:"
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF2:, if present go back to eject disk
+DiskInDrive DF2:
+IF NOT WARN
+  echo ""
+  echo "Please eject disk from DF2:"
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF3:, if present go back to eject disk
+DiskInDrive DF3:
+IF NOT WARN
+  echo ""
+  echo "Please eject disk from DF3:"
   echo ""
   ask "Press ENTER to continue"
   SKIP ejectdisk back
 ENDIF
 
 
-; Complete
-; --------
+; self install complete
+; ---------------------
 LAB selfinstallcomplete
 
-; Remove assigns from installdir
+; remove assigns from installdir
 Assign >NIL: S: INSTALLDIR:S REMOVE
 Assign >NIL: C: INSTALLDIR:C REMOVE
 Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
@@ -482,19 +502,18 @@ Assign >NIL: L: INSTALLDIR:L REMOVE
 Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
 Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
-
-; Run Install-Complete
+; run Install-Complete
 execute "INSTALLDIR:S/Install-Complete"
 
 SKIP end
 
 
-; Fail
+; fail
 LAB fail
 echo ""
 echo "Installation failed."
 quit
 
 
-; End
+; end
 LAB end
