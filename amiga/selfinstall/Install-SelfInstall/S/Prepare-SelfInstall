@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-01-14
+; Date: 2018-11-13
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -10,8 +10,22 @@
 ; Clear screen
 cls 
 
+; delete temp amiga os workbench directory, if it exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench"
+  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench" ALL
+ENDIF
 
-; Delete install workbench prefs, if it exists
+; delete temp amiga os 3.1.4 directory, if it exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-314"
+  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-314" ALL
+ENDIF
+
+; delete temp amiga os 3.1 directory, if it exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-310"
+  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-310" ALL
+ENDIF
+
+; delete install workbench prefs, if it exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
   Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench"
 ENDIF

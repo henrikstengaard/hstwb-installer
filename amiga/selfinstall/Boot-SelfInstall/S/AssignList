@@ -1,9 +1,10 @@
-T:                RAM:
-ENV:              RAM:
-HSTWBINSTALLER:   SYS:_HstWB-Installer
-C:                HSTWBINSTALLER:C               A
-Devs:             HSTWBINSTALLER:Devs            A
-L:                HSTWBINSTALLER:L               A
-Libs:             HSTWBINSTALLER:Libs            A
-Prefs:            HSTWBINSTALLER:Prefs           A
-S:                HSTWBINSTALLER:S               A
+T:                   RAM:
+ENV:                 RAM:Env
+HSTWBINSTALLERDIR:   [$HstwbInstallerDir]
+INSTALLDIR:          HSTWBINSTALLERDIR:Install
+C:                   INSTALLDIR:C               A
+Devs:                INSTALLDIR:Devs            A
+L:                   INSTALLDIR:L               A
+Libs:                INSTALLDIR:Libs            A
+Prefs:               INSTALLDIR:Prefs           A
+S:                   INSTALLDIR:S               A

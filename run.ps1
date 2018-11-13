@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-07-04
+# Date:   2018-11-13
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2241,17 +2241,9 @@ function RunBuildSelfInstall($hstwb)
     }
     Copy-Item -Path "$largeHarddiskDir\*" $selfInstallLargeHarddiskDir -recurse -force
 
-    # create boot self install hstwb installer directory
-    $bootSelfInstallHstwbInstallerDir = Join-Path $tempInstallDir "Boot-SelfInstall\_HstWB-Installer"
-    if(!(test-path -path $bootSelfInstallHstwbInstallerDir))
-    {
-        mkdir $bootSelfInstallHstwbInstallerDir | Out-Null
-    }
-
     # copy shared to install directory
     $sharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
-    Copy-Item -Path "$sharedDir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy amiga os 3.9 to install directory
@@ -2260,12 +2252,10 @@ function RunBuildSelfInstall($hstwb)
 
     # copy amiga os 3.1.4 to install directory
     $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
-    Copy-Item -Path "$amigaOs314Dir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$amigaOs314Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
     # copy amiga os 3.1 to install directory
     $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
-    Copy-Item -Path "$amigaOs31Dir\*" $bootSelfInstallHstwbInstallerDir -recurse -force
     Copy-Item -Path "$amigaOs31Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
     
     # copy kickstart to install directory
@@ -2284,6 +2274,24 @@ function RunBuildSelfInstall($hstwb)
     # create self install prefs file
     $uaePrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
     Set-Content $uaePrefsFile -Value ""
+
+
+    # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "Boot-SelfInstall\S\AssignList"
+    if (Test-Path $assignListFile)
+    {
+        # read assign list lines
+        $assignListLines = Get-Content $assignListFile
+
+        # replace placeholders in assign list lines
+        for ($i = 0; $i -lt $assignListLines.Count; $i++)
+        {
+            $assignListLines[$i] = $assignListLines[$i].Replace('[$HstwbInstallerDir]', $hstwb.Assigns.Global.HstWBInstallerDir)
+        }
+
+        # write assing list
+        WriteAmigaTextLines $assignListFile $assignListLines
+    }
 
 
     # build assign hstwb installers script lines
