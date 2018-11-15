@@ -1,20 +1,20 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2018-04-03
+; Date: 2018-11-15
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to complete Workbench and Kickstart roms installation by rebooting system or quiting UAE.
+; An AmigaDOS script to complete Amiga OS and Kickstart roms installation by rebooting system or quiting UAE.
 
 
 ; Create install complete prefs
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
 
-; Workbench and Kickstart roms installation complete
+; Amiga OS and Kickstart roms installation complete
 cls
 echo "*e[32m" NOLINE
-echo "Workbench and Kickstart roms installation complete"
+echo "Amiga OS and Kickstart roms installation complete"
 echo "*e[0m*e[1m" NOLINE
 echo "--------------------------------------------------"
 echo "*e[0m" NOLINE
@@ -29,13 +29,12 @@ ENDIF
 
 
 ; Status message
-IF EXISTS INSTALLDIR:Prefs/Install-AmigaOS3.9
+IF EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-3.9
+  echo "HstWB Installer has completed Amiga OS and Kickstart roms"
   IF $uae EQ 1 VAL
-    echo "HstWB Installer has completed Workbench and Kickstart roms"
     echo "installation and will quit and restart UAE to start"
     echo "installation of Amiga OS 3.9 using Emergency Boot."
   ELSE
-    echo "HstWB Installer has completed Workbench and Kickstart roms"
     echo "installation and will reboot system to start"
     echo "installation of Amiga OS 3.9 using Emergency Boot."
   ENDIF
@@ -48,17 +47,16 @@ ELSE
     Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
     Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 
+    echo "HstWB Installer has completed Amiga OS and Kickstart roms"
     IF $uae EQ 1 VAL
-      echo "HstWB Installer has completed Workbench and Kickstart roms"
       echo "installation and will quit and restart UAE to"
       echo "start package installation."
     ELSE
-      echo "HstWB Installer has completed Workbench and Kickstart roms"
       echo "installation and will reboot system to"
       echo "start package installation."
     ENDIF
   ELSE
-    echo "HstWB Installer has completed Workbench and Kickstart roms"
+    echo "HstWB Installer has completed Amiga OS and Kickstart roms"
     echo "installation and system is now ready for use."
   ENDIF
 ENDIF

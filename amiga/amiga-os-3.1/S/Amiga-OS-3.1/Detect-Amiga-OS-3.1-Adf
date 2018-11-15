@@ -1,0 +1,258 @@
+; Find Workbench Adf
+; ------------------
+;
+; Date: 2018-05-02
+; Author: Henrik Noerfjand Stengaard
+
+; Find Workbench adf files
+echo ""
+echo "*e[1mFinding Workbench adf files in WORKBENCHDIR:...*e[0m"
+
+; Search for workbench adf files in WORKBENCHDIR:
+fsearch WORKBENCHDIR:#?.adf >T:_workbenchadffiles
+
+; Get next adf file
+LAB nextadffile
+set adffile ""
+set adffile `Execute INSTALLDIR:S/FirstLine T:_workbenchadffiles`
+
+; Goto end, if adffile is empty
+IF "$adffile" EQ ""
+  SKIP end
+ENDIF
+
+; Get MD5 for romfile
+set md5 "`md5 "$adffile"`"
+
+; Copy Cloanto Amiga Forever 2016 Workbench 3.1 Workbench adf, if file MD5 matches
+IF $md5 eq "590c42a69675d6970df350e200fe25dc"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31workbench.adf"
+    echo "Cloanto Amiga Forever 2016 Workbench 3.1 Workbench adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31workbench.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7 Workbench 3.1 Workbench adf, if file MD5 matches
+IF $md5 eq "e7b3a83df665a85e7ec27306a152b171"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31workbench.adf"
+    echo "Cloanto Amiga Forever 7 Workbench 3.1 Workbench adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31workbench.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7/2016 Workbench 3.1 Storage adf, if file MD5 matches
+IF $md5 eq "4fa1401aeb814d3ed138f93c54a5caef"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31storage.adf"
+    echo "Cloanto Amiga Forever 7/2016 Workbench 3.1 Storage adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31storage.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7/2016 Workbench 3.1 Locale adf, if file MD5 matches
+IF $md5 eq "b53c9ff336e168643b10c4a9cfff4276"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31locale.adf"
+    echo "Cloanto Amiga Forever 7/2016 Workbench 3.1 Locale adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31locale.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 2016 Workbench 3.1 Install adf, if file MD5 matches
+IF $md5 eq "d6aa4537586bf3f2687f30f8d3099c99"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31install.adf"
+    echo "Cloanto Amiga Forever 2016 Workbench 3.1 Install adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31install.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7 Workbench 3.1 Install adf, if file MD5 matches
+IF $md5 eq "c5be06daf40d4c3ace4eac874d9b48b1"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31install.adf"
+    echo "Cloanto Amiga Forever 7 Workbench 3.1 Install adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31install.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7/2016 Workbench 3.1 Fonts adf, if file MD5 matches
+IF $md5 eq "6fae8b94bde75497021a044bdbf51abc"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31fonts.adf"
+    echo "Cloanto Amiga Forever 7/2016 Workbench 3.1 Fonts adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31fonts.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Copy Cloanto Amiga Forever 7/2016 Workbench 3.1 Extras adf, if file MD5 matches
+IF $md5 eq "c1c673eba985e9ab0888c5762cfa3d8f"
+  IF NOT EXISTS "INSTALLDIR:Workbench/workbench31extras.adf"
+    echo "Cloanto Amiga Forever 7/2016 Workbench 3.1 Extras adf"
+    set workbenchadffile "INSTALLDIR:Workbench/workbench31extras.adf"
+    SKIP copyadffile
+  ENDIF
+ENDIF
+
+; Goto nextadffile, if file size is not 901120 bytes
+set filesize `wc -c <"$adffile"`
+IF NOT $filesize EQ 901120 VAL
+  SKIP nextadffile
+ENDIF
+
+; Goto nextadffile, if xadunfile doesn't return error code 0
+xadUnFile >T:_adflist "$adffile" DIMG LIST
+IF NOT $RC EQ 0
+  SKIP nextadffile
+ENDIF
+
+; Copy Workbench 3.1 Workbench adf, if it contains text "Workbench 3.1"
+FSearch >T:_diskname "$adffile" TXT="Workbench3.1"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  set workbenchadfvalid 1
+
+  ; Set workbench adf valid 0, if adf doesn't contain which file
+  grep >NIL: -i "C/Which" <T:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchadfvalid 0
+  ENDIF
+
+  ; Set workbench adf valid 0, if adf doesn't contain assign file
+  grep >NIL: -i "C/Assign" <T:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchadfvalid 0
+  ENDIF
+
+  ; Set workbench adf valid 0, if adf doesn't contain datatypes.library file
+  grep >NIL: -i "Libs/datatypes.library" <T:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchadfvalid 0
+  ENDIF
+
+  ; Set workbench adf valid 0, if adf doesn't contain cli file
+  grep >NIL: -i "System/CLI" <T:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchadfvalid 0
+  ENDIF
+
+  ; Set workbench adf valid 0, if adf doesn't contain shell.info file
+  grep >NIL: -i "System/Shell.info" <T:_adflist
+  IF NOT $RC EQ 0 VAL
+    set workbenchadfvalid 0
+  ENDIF
+
+  ; Copy workbench 3.1 workbench file, if workbench adf is valid
+  IF $workbenchadfvalid EQ 1 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31workbench.adf"
+      echo "Workbench 3.1 Workbench adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31workbench.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF 
+ENDIF 
+
+; Copy Workbench 3.1 Storage adf, if it contains text "Storage3.1"
+FSearch >T:_diskname "$adffile" TXT="Storage3.1"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  grep >NIL: -i "DosDrivers/RAD" <T:_adflist
+  IF $RC EQ 0 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31storage.adf"
+      echo "Workbench 3.1 Storage adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31storage.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF
+ENDIF
+
+; Copy Workbench 3.1 Locale adf, if it contains text "Locale"
+FSearch >T:_diskname "$adffile" TXT="Locale"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  grep >NIL: -i "Countries/great_britain.country" <T:_adflist
+  IF $RC EQ 0 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31locale.adf"
+      echo "Workbench 3.1 Locale adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31locale.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF
+ENDIF
+
+; Copy Workbench 3.1 Install adf, if it contains text "Install3.1"
+FSearch >T:_diskname "$adffile" TXT="Install3.1"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  grep >NIL: -i "HDTools/BRU" <T:_adflist
+  IF $RC EQ 0 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31install.adf"
+      echo "Workbench 3.1 Install adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31install.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF
+ENDIF
+
+; Copy Workbench 3.1 Fonts adf, if it contains text "Fonts"
+FSearch >T:_diskname "$adffile" TXT="Fonts"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  grep >NIL: -i "topaz/11" <T:_adflist
+  IF $RC EQ 0 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31fonts.adf" 
+      echo "Workbench 3.1 Fonts adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31fonts.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF
+ENDIF
+
+; Copy Workbench 3.1 Extras adf, if it contains text "Extras3.1"
+FSearch >T:_diskname "$adffile" TXT="Extras3.1"
+set diskname `wc -l <T:_diskname`
+IF NOT $diskname EQ 0 VAL
+  grep >NIL: -i "System/Intellifont" <T:_adflist
+  IF $RC EQ 0 VAL
+    IF NOT EXISTS "INSTALLDIR:Workbench/workbench31extras.adf"
+      echo "Workbench 3.1 Extras adf"
+      set workbenchadffile "INSTALLDIR:Workbench/workbench31extras.adf"
+      SKIP copyadffile
+    ENDIF
+  ENDIF
+ENDIF
+
+SKIP BACK nextadffile
+
+
+; Copy adf file
+; -------------
+LAB copyadffile
+
+echo "$adffile" NOLINE >T:_workbenchadffile
+rep T:_workbenchadffile "(" "'("
+rep T:_workbenchadffile ")" "')"
+rep T:_workbenchadffile "[" "'["
+rep T:_workbenchadffile "]" "']"
+copy >NIL: "`type T:_workbenchadffile`" TO "$workbenchadffile"
+
+SKIP BACK nextadffile
+
+
+; End
+; ---
+LAB end
+
+echo "Done"
+
+IF EXISTS T:_workbenchadffiles
+  Delete >NIL: T:_workbenchadffiles
+ENDIF
+IF EXISTS T:_workbenchadffile
+  Delete >NIL: T:_workbenchadffile
+ENDIF
+IF EXISTS T:_adflist
+  Delete >NIL: T:_adflist
+ENDIF
