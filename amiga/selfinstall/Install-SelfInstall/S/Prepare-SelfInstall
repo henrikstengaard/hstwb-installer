@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-11-15
+; Date: 2018-11-26
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -9,57 +9,6 @@
 
 ; Clear screen
 cls 
-
-; delete temp amiga os workbench directory, if it exists
-IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench"
-  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench" ALL
-ENDIF
-
-; delete temp amiga os 3.1.4 directory, if it exists
-IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-314"
-  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-314" ALL
-ENDIF
-
-; delete temp amiga os 3.1 directory, if it exists
-IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-310"
-  Delete >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-310" ALL
-ENDIF
-
-; delete install workbench prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Workbench"
-  Delete >NIL: "INSTALLDIR:Prefs/Install-Workbench"
-ENDIF
-
-; delete install amiga os 3.9 prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3.9"
-  Delete >NIL: "INSTALLDIR:Prefs/Install-Amiga-OS-3.9"
-ENDIF
-
-; delete install kickstart prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
-  Delete >NIL: "INSTALLDIR:Prefs/Install-Kickstart"
-ENDIF
-
-; delete install boing bags prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Install-BoingBags"
-  Delete >NIL: "INSTALLDIR:Prefs/Install-BoingBags"
-ENDIF
-
-; delete install user packages prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Install-User-Packages"
-  Delete >NIL: "INSTALLDIR:Prefs/Install-User-Packages"
-ENDIF
-
-; delete user packages prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/User-Packages"
-  Delete >NIL: "INSTALLDIR:Prefs/User-Packages"
-ENDIF
-
-; delete install user packages, if it exists
-IF EXISTS "INSTALLDIR:S/Install-User-Packages"
-  Delete >NIL: "INSTALLDIR:S/Install-User-Packages"
-ENDIF
-
 
 echo "*e[32m" NOLINE
 echo "Device Names Overview"
@@ -93,43 +42,6 @@ echo "HstWB-Installer has detected device names with"
 echo "following status:"
 
 
-; Set amigaos39 to 1
-set amigaos39 "1"
-
-
-; Set fail at 255 for DiskInDrive to fail silently
-failat 255
-
-
-; Set amigaos39 to 0, if device CD0: doesn't contain a cd-rom
-DiskInDrive >NIL: CD0:
-IF WARN
-  set amigaos39 "0"
-ENDIF
-
-
-; Set fail at 21
-failat 21
-
-
-; Check if CD0: and AmigaOS3.9: device names exists and set amigaos39
-IF $amigaos39 EQ 1 VAL
-  Assign >NIL: EXISTS AmigaOS3.9:
-  IF WARN
-    set amigaos39 "0"
-  ENDIF
-ENDIF
-
-
-; Print cd drive status depending on amigaos39
-IF $amigaos39 EQ 1 VAL
-  echo "- *e[1mCD0*e[0m: Present! Install Amiga OS 3.9 from CD drive."
-ELSE
-  echo "- *e[1mCD0*e[0m: Not present! Skip Amiga OS 3.9 installation"
-  echo "  from CD drive."
-ENDIF
-
-
 ; set amigaosdir to 1, if device name AMIGAOSDIR: exists
 set amigaosdir "0"
 Assign >NIL: EXISTS AMIGAOSDIR:
@@ -149,13 +61,11 @@ ENDIF
 
 
 ; Check for amiga os 3.9 iso and boing bags, if AMIGAOSDIR: device name exists
-set amigaos39isofile ""
-set installboingbags "0"
 IF $amigaosdir EQ 1 VAL
   ; run detect amiga os 3.9, if it exists
-  IF EXISTS "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-    execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-  ENDIF
+  ;IF EXISTS "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
+  ;  execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
+  ;ENDIF
 
   ; run detect amiga os 3.1.4 adf, if it exists
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
@@ -166,46 +76,32 @@ IF $amigaosdir EQ 1 VAL
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
     execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
   ENDIF
-
-
-  ; Find and sort boing bag files
-  fsearch "AMIGAOSDIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
-  frsort <T:_boingbagfiles1 >T:_boingbagfiles
-
-  ; Set install boing bags
-  set installboingbags `wc -l <T:_boingbagfiles` 
-
-  ; Find amiga os 3.9 iso, if not installing amiga os 3.9 from cd-drive
-  IF $amigaos39 EQ 0 VAL
-    ; Find amiga os 3.9 iso files
-    echo "" NOLINE >T:_amigaos39isofiles
-    fsearch "AMIGAOSDIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles
-
-    ; Get first amiga os 3.9 iso file
-    sed "1q;d" T:_amigaos39isofiles >T:_amigaos39isofile
-    set amigaos39isofile "`type T:_amigaos39isofile`"
-    IF NOT "$amigaos39isofile" EQ ""
-      set amigaos39 "1"
-    ENDIF
-  ENDIF
-
-  ; print amigaosdir installation status
-  IF $amigaos39 EQ 1 VAL
-    IF NOT $installboingbags EQ 0 VAL
-      echo "- *e[1mAMIGAOSDIR*e[0m: Present! Install Amiga OS 3.9 from iso and"
-      echo "  apply Boing Bag updates."
-    ELSE
-      echo "- *e[1mAMIGAOSDIR*e[0m: Present! Install Amiga OS 3.9 from iso."
-    ENDIF
-  ELSE
-    echo "- *e[1mAMIGAOSDIR*e[0m: Present! Skip Amiga OS 3.9 installation"
-    echo "  from iso, Amiga OS 3.9 iso doesn't exist."
-  ENDIF
 ELSE
   echo "- *e[1mAMIGAOSDIR*e[0m: Not present! Skip Amiga OS 3.9 installation"
   echo "  from iso and Boing Bag updates."
 ENDIF
+echo ""
+ask "Press ENTER to continue"
 
+; create detect amiga os log
+echo "" NOLINE >INSTALLDIR:Temp/Detect-Amiga-OS.log
+IF EXISTS INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  type INSTALLDIR:Temp/Amiga-OS-314-Adf.log >>INSTALLDIR:Temp/Detect-Amiga-OS.log
+  echo "" >>INSTALLDIR:Temp/Detect-Amiga-OS.log
+ENDIF
+IF EXISTS INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  type INSTALLDIR:Temp/Amiga-OS-310-Adf.log >>INSTALLDIR:Temp/Detect-Amiga-OS.log
+  echo "" >>INSTALLDIR:Temp/Detect-Amiga-OS.log
+ENDIF
+
+
+; build amiga os menu
+execute INSTALLDIR:S/Build-Amiga-OS-Menu INSTALLDIR:Temp/Amiga-OS-Menu
+
+; execute amiga os menu
+execute INSTALLDIR:Temp/Amiga-OS-Menu
+
+quit
 
 ; Confirm install workbench 3.1, if installing amiga os 3.9
 IF $amigaos39 EQ 1 VAL

@@ -1,11 +1,11 @@
-.KEY file/a,dir/a,workbench/s
+.KEY file/a,dir/a
 .BRA {
 .KET }
 
 ; Copy Amiga OS 3.1 Adf
 ; ---------------------
 ;
-; Date: 2018-11-09
+; Date: 2018-11-26
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1 adf files.
@@ -27,61 +27,56 @@ set md5 "`md5 "{file}"`"
 
 ; copy cloanto amiga forever 2016 amiga os 3.1 workbench adf, if file md5 matches
 IF $md5 eq "590c42a69675d6970df350e200fe25dc"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Workbench adf"
+  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-workbench.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7 amiga os 3.1 workbench adf, if file md5 matches
 IF $md5 eq "e7b3a83df665a85e7ec27306a152b171"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Workbench adf"
+  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-workbench.adf"
   SKIP copyadffile
 ENDIF
 
-; goto generic, if workbench switch is enabled
-IF "{workbench}" EQ ""
-  SKIP generic
-ENDIF
-
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 storage adf, if file md5 matches
 IF $md5 eq "4fa1401aeb814d3ed138f93c54a5caef"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Storage adf"
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Storage adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-storage.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 Locale adf, if file md5 matches
 IF $md5 eq "b53c9ff336e168643b10c4a9cfff4276"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Locale adf"
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Locale adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-locale.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 2016 amiga os 3.1 install adf, if file md5 matches
 IF $md5 eq "d6aa4537586bf3f2687f30f8d3099c99"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Install adf"
+  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-install.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7 amiga os 3.1 install adf, if file md5 matches
 IF $md5 eq "c5be06daf40d4c3ace4eac874d9b48b1"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Install adf"
+  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-install.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 fonts adf, if file md5 matches
 IF $md5 eq "6fae8b94bde75497021a044bdbf51abc"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Fonts adf"
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Fonts adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-fonts.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 extras adf, if file md5 matches
 IF $md5 eq "c1c673eba985e9ab0888c5762cfa3d8f"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf"
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffile "amiga-os-310-extras.adf"
   SKIP copyadffile
 ENDIF
@@ -89,7 +84,6 @@ ENDIF
 
 ; generic
 ; -------
-LAB generic
 
 ; goto end, if file size is not 901120 bytes
 set filesize `wc -c <"{file}"`
@@ -141,16 +135,11 @@ IF NOT $diskname EQ 0 VAL
 
   ; copy amiga os 3.1 workbench file, if workbench adf is valid
   IF $adfvalid EQ 1 VAL
-    echo "Amiga OS 3.1 Workbench adf"
+    echo "Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-workbench.adf"
     SKIP copyadffile
   ENDIF 
 ENDIF 
-
-; goto end, if workbench switch is enabled
-IF "{workbench}" EQ ""
-  SKIP end
-ENDIF
 
 ; copy amiga os 3.1 storage adf, if it contains text "Storage3.1"
 FSearch >T:_diskname "{file}" TXT="Storage3.1"
@@ -159,7 +148,7 @@ Delete >NIL: T:_diskname
 IF NOT $diskname EQ 0 VAL
   grep >NIL: -i "DosDrivers/RAD" <T:_adflist
   IF $RC EQ 0 VAL
-    echo "Amiga OS 3.1 Storage adf"
+    echo "Amiga OS 3.1 Storage adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-storage.adf"
     SKIP copyadffile
   ENDIF
@@ -172,7 +161,7 @@ Delete >NIL: T:_diskname
 IF NOT $diskname EQ 0 VAL
   grep >NIL: -i "Countries/great_britain.country" <T:_adflist
   IF $RC EQ 0 VAL
-    echo "Amiga OS 3.1 Locale adf"
+    echo "Amiga OS 3.1 Locale adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-locale.adf"
     SKIP copyadffile
   ENDIF
@@ -185,7 +174,7 @@ Delete >NIL: T:_diskname
 IF NOT $diskname EQ 0 VAL
   grep >NIL: -i "HDTools/BRU" <T:_adflist
   IF $RC EQ 0 VAL
-    echo "Amiga OS 3.1 Install adf"
+    echo "Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-install.adf"
     SKIP copyadffile
   ENDIF
@@ -198,7 +187,7 @@ Delete >NIL: T:_diskname
 IF NOT $diskname EQ 0 VAL
   grep >NIL: -i "topaz/11" <T:_adflist
   IF $RC EQ 0 VAL
-    echo "Amiga OS 3.1 Fonts adf"
+    echo "Amiga OS 3.1 Fonts adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-fonts.adf"
     SKIP copyadffile
   ENDIF
@@ -211,7 +200,7 @@ Delete >NIL: T:_diskname
 IF NOT $diskname EQ 0 VAL
   grep >NIL: -i "System/Intellifont" <T:_adflist
   IF $RC EQ 0 VAL
-    echo "Amiga OS 3.1 Extras adf"
+    echo "Amiga OS 3.1 Extras adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set adffile "amiga-os-310-extras.adf"
     SKIP copyadffile
   ENDIF
@@ -224,7 +213,12 @@ SKIP end
 ; -------------
 LAB copyadffile
 
-echo "$adffile" NOLINE >T:_escapedadffile
+echo "Copy '{file}'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+echo "To '{dir}/$adffile'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+echo "" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+
+; escape filename characters and copy adf file
+echo "{file}" NOLINE >T:_escapedadffile
 rep T:_escapedadffile "(" "'("
 rep T:_escapedadffile ")" "')"
 rep T:_escapedadffile "[" "'["
@@ -236,9 +230,3 @@ Delete >NIL: T:_escapedadffile
 ; end
 ; ---
 LAB end
-
-IF EXISTS T:_adflist
-  Delete >NIL: T:_adflist
-ENDIF
-
-echo "Done"

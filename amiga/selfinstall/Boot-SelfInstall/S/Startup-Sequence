@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Self Install
 ; ---------------------------------------
 ;
-; Date: 2018-11-13
+; Date: 2018-11-26
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -412,10 +412,28 @@ Resident >NIL: "INSTALLDIR:C/LhA" PURE
 Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
-; create install prefs drawer, if it doesn't exist
-IF NOT EXISTS INSTALLDIR:Prefs
-  makepath INSTALLDIR:Prefs
+
+; create hstwbinstalldir temp directory, if it doesn't exist. otherwise delete all files from hstwbinstalldir temp directory
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Temp"
+ELSE
+  Delete >NIL: "HSTWBINSTALLERDIR:Temp/#?" ALL
 ENDIF
+
+; create installdir temp directory, if it doesn't exist. otherwise delete all files from installdir temp directory
+IF NOT EXISTS "INSTALLDIR:Temp/"
+  MakePath >NIL: "INSTALLDIR:Temp"
+ELSE
+  Delete >NIL: "INSTALLDIR:Temp/#?" ALL
+ENDIF
+
+; create install prefs directory, if it doesn't exist. otherwise delete all files from install prefs directory
+IF NOT EXISTS "INSTALLDIR:Prefs/"
+  MakePath >NIL: "INSTALLDIR:Prefs"
+ELSE
+  Delete >NIL: "INSTALLDIR:Prefs/#?" ALL
+ENDIF
+
 
 ; pun patch installation
 execute "INSTALLDIR:S/Patch-Installation"
