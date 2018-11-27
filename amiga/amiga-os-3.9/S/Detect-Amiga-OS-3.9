@@ -63,6 +63,18 @@ IF "$amigaosdir" EQ 1 VAL
   ENDIF
 ENDIF
 
+; goto 
+IF "$amigaos39cd" EQ 1
+  SKIP amigaos39valid
+ENDIF
+
+
+
+; amiga os 3.9 iso
+; ----------------
+LAB amigaos39iso
+
+
 
 ; amiga os 3.9 valid
 ; ------------------
@@ -74,16 +86,12 @@ IF NOT $RC EQ 0 VAL
   SKIP boingbags
 ENDIF
 
-
-IF "$amigaos39cd"
-
-; create amiga os 3.9 iso prefs, if amiga os 3.9 iso file exists
-
-
+; goto boingbags, if "AmigaOS3.9:EMERGENCY-BOOT" directory doesn't exist
+IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
+  SKIP boingbags
+ENDIF
 
 
-
-; amiga os 3.9 iso
-; ----------------
-LAB amigaos39iso
-
+; boing bags
+; ----------
+LAB boingbags
