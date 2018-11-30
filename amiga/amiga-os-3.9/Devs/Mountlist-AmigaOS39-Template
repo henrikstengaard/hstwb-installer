@@ -1,0 +1,21 @@
+FCD0:
+Unit           = "[$AmigaOS39IsoFile]"
+Device         = INSTALLDIR:Devs/filedisk.device
+FileSystem     = INSTALLDIR:L/AmiCDFS
+Flags          = 0
+BlocksPerTrack = 32
+BlockSize      = 2048
+Reserved       = 0
+LowCyl         = 0
+HighCyl        = 11000
+Surfaces       = 1
+Buffers        = 64
+BufMemType     = 1
+Mask           = 0x7fffffff
+GlobVec        = -1
+Priority       = 10
+DosType        = 0x43444653
+StackSize      = 600
+Mount          = 1
+Control        = "LC BL=8 FB=32"
+#
