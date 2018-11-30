@@ -1,4 +1,4 @@
-filesystem2=ro,AMIGAOSDIR:AMIGAOSDIR:[$AmigaOsDir],-128
+filesystem2=rw,AMIGAOSDIR:AMIGAOSDIR:[$AmigaOsDir],-128
 uaehf[$AmigaOsUaehfIndex]=dir,rw,AMIGAOSDIR:AMIGAOSDIR:[$AmigaOsDir],-128
 filesystem2=ro,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
 uaehf[$KickstartUaehfIndex]=dir,ro,KICKSTARTDIR:KICKSTARTDIR:[$KickstartDir],-128
