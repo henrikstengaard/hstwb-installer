@@ -1,17 +1,16 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-11-30
+; Date: 2018-12-01
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
+; AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
 
 
-; Clear screen
+; self install overview
 cls 
-
 echo "*e[32m" NOLINE
-echo "Device Names Overview"
+echo "Self install overview"
 echo "*e[0m*e[1m" NOLINE
 echo "---------------------"
 echo "*e[0m" NOLINE
@@ -21,52 +20,51 @@ echo "following device names for installation of Amiga OS 3.9,"
 echo "3.1.4, 3.1, Kickstart roms and user packages:"
 echo "- *e[1mCD0: CD drive with Amiga OS 3.9 cd-rom."
 echo "- *e[1mAMIGAOSDIR*e[0m: Directory with Amiga 3.1.4 or 3.1 adf files,"
-echo "  Amiga OS 3.9 iso and boing bag lha files."
+echo "  Amiga OS 3.9 iso and Boing Bag lha files."
 echo "  *e[1mNote: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device).*e[0m"
 echo "- *e[1mKICKSTARTDIR*e[0m: Directory with Kickstart rom files."
 echo "- *e[1mUSERPACKAGESDIR*e[0m: Directory with user packages."
 echo ""
+echo "Continue will detect Amiga OS."
+echo ""
 ask "Press ENTER to continue"
 
 
-; Clear screen
+; detect amiga os
 cls 
 echo "*e[32m" NOLINE
-echo "Device Names Status"
+echo "Detect Amiga OS"
 echo "*e[0m*e[1m" NOLINE
-echo "-------------------"
+echo "---------------"
 echo "*e[0m" NOLINE
 echo ""
-echo "HstWB-Installer has detected device names with"
-echo "following status:"
+echo "*e[1mDetecting Amiga OS:*e[0m"
 
+; set failat to 255 for DiskInDrive to fail silently
+failat 255
 
-; set amigaosdir to 1, if device name AMIGAOSDIR: exists
+; set amigaosdir to 1, if "AMIGAOSDIR:" device exists
 set amigaosdir "0"
-Assign >NIL: EXISTS AMIGAOSDIR:
-IF NOT WARN
-  ; Set fail at 255 for DiskInDrive to fail silently
-  failat 255
-
-  ; set amigaosdir to 1, if device AMIGAOSDIR: is mapped to a directory
-  DiskInDrive >NIL: AMIGAOSDIR:
-  IF NOT WARN
-    set amigaosdir "1"
-  ENDIF
-
-  ; Set fail at 21
-  failat 21
+DiskInDrive >NIL: AMIGAOSDIR:
+IF $RC EQ 0 VAL
+  set amigaosdir "1"
+ELSE
+  echo "*e[1mAMIGAOSDIR*e[0m: Not present! Skip detecting"
+  echo "Amiga OS 3.9 iso, Amiga 3.1.4 or 3.1 adf files and"
+  echo "Boing Bag lha files."
 ENDIF
 
+; set failat to 21
+failat 21
 
-; Check for amiga os 3.9 iso and boing bags, if AMIGAOSDIR: device name exists
+; run detect amiga os 3.9, if it exists
+IF EXISTS "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
+  execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
+ENDIF
+
+; run detect amiga os 3.1.4 and 3.1 adf, if AMIGAOSDIR: device name exists
 IF $amigaosdir EQ 1 VAL
-  ; run detect amiga os 3.9, if it exists
-  IF EXISTS "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-    execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-  ENDIF
-
   ; run detect amiga os 3.1.4 adf, if it exists
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
     execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
@@ -76,10 +74,11 @@ IF $amigaosdir EQ 1 VAL
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
     execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
   ENDIF
-ELSE
-  echo "- *e[1mAMIGAOSDIR*e[0m: Not present! Skip Amiga OS 3.9 installation"
-  echo "  from iso and Boing Bag updates."
 ENDIF
+
+echo "Done"
+echo ""
+echo "Continue will show Select Amiga OS installation menu."
 echo ""
 ask "Press ENTER to continue"
 
@@ -98,11 +97,10 @@ IF EXISTS INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   echo "" >>INSTALLDIR:Temp/Detect-Amiga-OS.log
 ENDIF
 
-
 ; build amiga os menu
 execute INSTALLDIR:S/Build-Amiga-OS-Menu INSTALLDIR:Temp/Amiga-OS-Menu
 
-; execute amiga os menu
+; run amiga os menu
 execute INSTALLDIR:Temp/Amiga-OS-Menu
 
 quit

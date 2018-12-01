@@ -1,18 +1,17 @@
 ; Detect Amiga OS 3.9
 ; -------------------
 ;
-; Date: 2018-11-30
+; Date: 2018-12-01
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
 
-; detect amiga os 3.9 cd-rom and iso file
-echo ""
-echo "*e[1mDetecting Amiga OS 3.9 cd-rom and iso file in AMIGAOSDIR:...*e[0m"
+; detect amiga os 3.9 cd-rom
+echo "Amiga OS 3.9 cd-rom in CD0:..."
 
 echo "Amiga OS 3.9" >INSTALLDIR:Temp/Amiga-OS-390.log
 echo "------------" >>INSTALLDIR:Temp/Amiga-OS-390.log
-echo "Detecting Amiga OS 3.9 cd-rom and iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
+echo "Detecting Amiga OS 3.9 cd-rom in CD0:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
 
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255
@@ -38,10 +37,14 @@ ENDIF
 ; set failat to 21
 failat 21
 
-;
+; detect amiga os 3.9 iso file in amigaosdir: device
 set amigaos39iso "0"
 set checkamigaos39iso "0"
 IF "$amigaosdir" EQ 1 VAL
+; detect amiga os 3.9 cd-rom and iso file
+  echo "Amiga OS 3.9 iso file in AMIGAOSDIR:...*e[0m"
+  echo "Detecting Amiga OS 3.9 iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
+
   ; find and sort amiga os 3.9 iso files
   echo "" NOLINE >T:_amigaos39isofiles
   fsearch "AMIGAOSDIR:" PAT amigaos39.iso >>T:_amigaos39isofiles1
@@ -135,12 +138,15 @@ ENDIF
 ; boing bags
 ; ----------
 
-echo "Done"
+; goto end, if amigaosdir device doesn't exist
+IF "$amigaosdir" EQ 0 VAL
+  SKIP end
+ENDIF
 
-; detect amiga os 3.9 cd-rom and iso file
-echo ""
-echo "*e[1mDetecting Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:...*e[0m"
+; detect amiga os 3.9 boing bag files in amigaosdir: device
+echo "Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:..."
 
+echo "" >>INSTALLDIR:Temp/Amiga-OS-390.log
 echo "Detecting Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
 
 ; find and sort amiga os 3.9 boing bag files
@@ -174,5 +180,3 @@ ENDIF
 ; end
 ; ---
 LAB end
-
-echo "Done"

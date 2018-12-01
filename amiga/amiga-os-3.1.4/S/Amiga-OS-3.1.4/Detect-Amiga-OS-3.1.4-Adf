@@ -1,15 +1,14 @@
 ; Detect Amiga OS 3.1.4 Adf
 ; -------------------------
 ;
-; Date: 2018-11-30
+; Date: 2018-12-01
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1.4 adf files are present.
 
 
 ; detect amiga os 3.1.4 adf files
-echo ""
-echo "*e[1mDetecting Amiga OS 3.1.4 adf files in AMIGAOSDIR:...*e[0m"
+echo "Amiga OS 3.1.4 adf files in AMIGAOSDIR:..."
 
 echo "Amiga OS 3.1.4 adf" >INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 echo "------------------" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
@@ -52,31 +51,31 @@ IF NOT WARN
 
   set amigaos314modules "0"
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a500.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A500-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A500-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a600.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A600-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A600-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a2000.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A2000-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A2000-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a1200.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A1200-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A1200-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a3000.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A3000-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A3000-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a4000d.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A4000D-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A4000D-ADF
     set amigaos314modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-modules-a4000t.adf"
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A4000T-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-A4000T-ADF
     set amigaos314modules "1"
   ENDIF
 
@@ -92,7 +91,7 @@ IF NOT WARN
 
   ; create install amiga os 3.1.4 adf prefs, if amigaos314adf is 1
   IF "$amigaos314adf" EQ 1 VAL
-    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-Adf
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-314-ADF
   ENDIF
 ENDIF
 
@@ -100,5 +99,3 @@ ENDIF
 ; End
 ; ---
 LAB end
-
-echo "Done"
