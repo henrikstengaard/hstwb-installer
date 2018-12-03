@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1 Adf
 ; ---------------------
 ;
-; Date: 2018-11-26
+; Date: 2018-12-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1 adf files.
@@ -91,11 +91,18 @@ IF NOT $filesize EQ 901120 VAL
   SKIP end
 ENDIF
 
-; goto end, if xadunfile doesn't return error code 0
-xadUnFile >T:_adflist "{file}" DIMG LIST
-IF NOT $RC EQ 0 VAL
-  SKIP end
-ENDIF
+; create mountlist for adf file
+Copy "INSTALLDIR:Devs/Mountlist-AmigaOS310-Template" "T:Mountlist-AmigaOS310-Adf" >NIL:
+rep "T:Mountlist-AmigaOS310-Adf" "[$AmigaOS310AdfFile]" "{file}"
+
+; mount adf file using fdf0: device
+Mount FDF0: FROM "T:Mountlist-AmigaOS310-Adf"
+Wait 1
+
+; 
+IF "`Which FDF0:`" EQ "Workbench3.1:"
+
+
 
 ; copy amiga os 3.1 workbench adf, if it contains text "Workbench 3.1" and adf is valid
 FSearch >T:_diskname "{file}" TXT="Workbench3.1"
@@ -230,3 +237,10 @@ Delete >NIL: T:_escapedadffile
 ; end
 ; ---
 LAB end
+
+; unmount fdf0: device, if device exists
+Assign >NIL: EXISTS "FDF0:"
+IF $RC EQ 0 VAL
+  Assign >NIL: "`Which FDF0:`" dismount remove
+  Assign >NIL: "FDF0:" dismount remove
+ENDIF

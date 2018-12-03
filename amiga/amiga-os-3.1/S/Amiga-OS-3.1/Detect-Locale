@@ -1,0 +1,37 @@
+; Detect Amiga OS 3.1 Locale
+; --------------------------
+;
+; Date: 2018-12-03
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.1 locale floppy disk or adf file.
+
+set localevalid "0"
+
+; end, if amiga os disk volume name is not "Locale:"
+IF NOT "`Which $amigaosdisk:`" EQ "Locale:"
+  SKIP end
+ENDIF
+
+; end, if great_britain.country doesn't exist
+IF NOT EXISTS "$amigaosdisk:Countries/great_britain.country"
+  SKIP end
+ENDIF 
+
+; end, if system.catalog doesn't exist
+IF NOT EXISTS "$amigaosdisk:Catalogs/deutsch/sys/system.catalog"
+  SKIP end
+ENDIF
+
+; end, if system.catalog is less than v45.314
+Version >NIL: "$amigaosdisk:Catalogs/deutsch/sys/system.catalog" 45 313 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP end
+ENDIF
+
+set localevalid "1"
+
+; end
+; ---
+
+LAB end

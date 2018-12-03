@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-12-01
+; Date: 2018-12-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -25,6 +25,8 @@ echo "  *e[1mNote: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device).*e[0m"
 echo "- *e[1mKICKSTARTDIR*e[0m: Directory with Kickstart rom files."
 echo "- *e[1mUSERPACKAGESDIR*e[0m: Directory with user packages."
+echo ""
+echo "TODO: Describe detection and installation process!"
 echo ""
 echo "Continue will detect Amiga OS."
 echo ""
@@ -105,46 +107,6 @@ execute INSTALLDIR:Temp/Amiga-OS-Menu
 
 quit
 
-; Confirm install workbench 3.1, if installing amiga os 3.9
-IF $amigaos39 EQ 1 VAL
-  ; Install Workbench 3.1
-  set installworkbench `RequestChoice "Install Workbench 3.1" "Do you want to install Workbench 3.1*Nbefore installing Amiga OS 3.9?" "Yes|No"`
-ELSE
-  set installworkbench "1"
-ENDIF
-
-; Check workbench, if installing workbench
-IF $installworkbench EQ 1 VAL
-  ; Create install workbench prefs
-  echo "" >INSTALLDIR:Prefs/Install-Workbench
-
-  ; Check if WORKBENCHDIR: and set workbench
-  set workbench "0"
-  Assign >NIL: EXISTS WORKBENCHDIR:
-  IF NOT WARN
-    ; Set fail at 255 for DiskInDrive to fail silently
-    failat 255
-
-    ; Set workbench to 1, if device WORKBENCHDIR: is mapped to a directory
-    DiskInDrive >NIL: WORKBENCHDIR:
-    IF NOT WARN
-      set workbench "1"
-    ENDIF
-
-    ; Set fail at 21
-    failat 21
-  ENDIF
-
-  ; Print workbench status
-  IF $workbench EQ 1 VAL
-    echo "- WORKBENCHDIR: Present! Install Workbench 3.1 from adf."
-  ELSE
-    echo "- WORKBENCHDIR: Not present! Install Workbench 3.1 from"
-    echo "  disks."
-  ENDIF 
-ELSE
-  echo "- WORKBENCHDIR: Ignored! Skip Workbench 3.1 installation."
-ENDIF
 
 
 ; Check if KICKSTARTDIR: and set kickstart
@@ -201,54 +163,6 @@ ELSE
   echo "  installation."
 ENDIF
 
-
-; Create backup of mountlist, if it doesn't exist. Otherwise overwrite mountlist with backup.
-IF NOT EXISTS INSTALLDIR:Devs/Mountlist.bak
-  Copy >NIL: INSTALLDIR:Devs/Mountlist INSTALLDIR:Devs/Mountlist.bak
-ELSE
-  Copy >NIL: INSTALLDIR:Devs/Mountlist.bak INSTALLDIR:Devs/Mountlist
-ENDIF
-
-
-; Replace os39isofilename placeholder in mountlist 
-IF NOT "$amigaos39isofile" EQ ""
-  rep INSTALLDIR:Devs/Mountlist "AMIGAOSDIR:[*$OS39IsoFileName]" "$amigaos39isofile"
-ELSE
-  rep INSTALLDIR:Devs/Mountlist "AMIGAOSDIR:[*$OS39IsoFileName]" ""
-ENDIF
-
-
-; Install amiga os 3.9, if amigaos39 is 1
-IF $amigaos39 EQ 1 VAL 
-  ; Create install amiga os 3.9 prefs
-  echo "" >INSTALLDIR:Prefs/Install-Amiga-OS-3.9
-
-  ; Print amiga os 3.9 iso file, if present
-  IF NOT "$amigaos39isofile" EQ ""
-    echo ""
-    echo "*e[1mUsing Amiga OS 3.9 iso file:*e[0m"
-    echo "$amigaos39isofile"
-  ENDIF
-
-  ; Examine if boing bag files exists
-  IF EXISTS T:_boingbagfiles
-    set boingbagfilescount `wc -l <T:_boingbagfiles`
-
-    ; Install boing bags, if one or more boing bag files exists
-    echo ""
-    IF $boingbagfilescount gt 0 VAL
-      ; Create install boing bags prefs
-      echo "" >INSTALLDIR:Prefs/Install-BoingBags
-
-      ; Print boing bag files
-      echo "*e[1mUsing Boing Bag file(s):*e[0m"
-      type T:_boingbagfiles
-    ELSE
-      echo "Boing Bag file(s) doesn't exist. Skip Boing Bags"
-      echo "installation."
-    ENDIF
-  ENDIF
-ENDIF
 
 echo ""
 IF $userpackages EQ 0 VAL
