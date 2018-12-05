@@ -1,5 +1,5 @@
 FDF0:
-Unit            = "[$AmigaOS310AdfFile]"
+Unit            = "[$AdfFile]"
 Device          = filedisk.device
 Flags           = 0
 Surfaces        = 2

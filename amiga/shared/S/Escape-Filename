@@ -1,0 +1,28 @@
+.KEY file/a
+.BRA {
+.KET }
+
+; Escape Filename
+; ---------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2018-12-05
+;
+; AmigaDOS script to escape filenames.
+
+
+; end, if file doesn't exist
+IF NOT EXISTS "{file}"
+  SKIP end
+ENDIF
+
+; escape filename characters
+rep "{file}" " " "' "
+rep "{file}" "(" "'("
+rep "{file}" ")" "')"
+rep "{file}" "[" "'["
+rep "{file}" "]" "']"
+
+
+; end
+; ---
+LAB end
