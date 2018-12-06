@@ -1,14 +1,14 @@
 ; Detect Amiga OS 3.1 Adf
 ; -----------------------
 ;
-; Date: 2018-12-05
+; Date: 2018-12-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1 adf files are present.
 
 
 ; detect amiga os 3.1 adf files
-echo "Amiga OS 3.1 adf files in AMIGAOSDIR:..."
+echo "Amiga OS 3.1 adf files in AMIGAOSDIR:"
 
 echo "Amiga OS 3.1 adf" >INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 echo "----------------" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
@@ -23,11 +23,12 @@ ENDIF
 Assign >NIL: EXISTS AMIGAOSDIR:
 IF NOT WARN
   ; create script to copy amiga os 3.1 adf files 
-  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-310*"" >T:_copy_amiga-os-3.1_adfs
+  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "echo *".*" NOLINE*NExecute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-310*"" >T:_copy_amiga-os-3.1_adfs
 
   ; run copy amiga os 3.1 adfs
   Execute T:_copy_amiga-os-3.1_adfs
   Delete >NIL: T:_copy_amiga-os-3.1_adfs
+  echo ""
 
   ; set amigaos310adf to 0, if one or more amiga os 3.1 adf files doesn't exist
   set amigaos310adf "1"

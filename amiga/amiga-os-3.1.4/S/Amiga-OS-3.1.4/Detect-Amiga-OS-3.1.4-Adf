@@ -8,7 +8,7 @@
 
 
 ; detect amiga os 3.1.4 adf files
-echo "Amiga OS 3.1.4 adf files in AMIGAOSDIR:..."
+echo "Amiga OS 3.1.4 adf files in AMIGAOSDIR:"
 
 echo "Amiga OS 3.1.4 adf" >INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 echo "------------------" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
@@ -22,9 +22,13 @@ ENDIF
 ; run detect amiga os 3.1.4 adf, if amigaosdir: exists and check if all amiga os 3.1.4 adf files are present
 Assign >NIL: EXISTS AMIGAOSDIR:
 IF NOT WARN
-  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
+  ; create script to copy amiga os 3.1.4 adf files 
+  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "echo *".*" NOLINE*NExecute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
+
+  ; run copy amiga os 3.1.4 adfs
   Execute T:_copy_amiga-os-3.1.4_adfs
   Delete >NIL: T:_copy_amiga-os-3.1.4_adfs
+  echo ""
 
   ; set amigaos314adf to 0, if one or more Amiga OS 3.1.4 adf files doesn't exist
   set amigaos314adf "1"
