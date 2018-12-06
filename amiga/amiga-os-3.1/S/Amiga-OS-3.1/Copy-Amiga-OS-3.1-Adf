@@ -16,6 +16,9 @@ IF NOT EXISTS "{file}"
   SKIP end
 ENDIF
 
+; add file to log
+echo "File = '{file}'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+
 ; goto end, if dir doesn't exist
 IF NOT EXISTS "{dir}"
   SKIP end
@@ -47,58 +50,65 @@ set md5 ""
 set md5 "`type T:_md5`"
 Delete >NIL: T:_md5
 
+; add md5 to log
+echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+
+
+; md5
+; ---
+
 ; copy cloanto amiga forever 2016 amiga os 3.1 workbench adf, if file md5 matches
 IF "$md5" eq "590c42a69675d6970df350e200fe25dc"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-workbench.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7 amiga os 3.1 workbench adf, if file md5 matches
 IF "$md5" eq "e7b3a83df665a85e7ec27306a152b171"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-workbench.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 storage adf, if file md5 matches
 IF "$md5" eq "4fa1401aeb814d3ed138f93c54a5caef"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Storage adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Storage adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-storage.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 Locale adf, if file md5 matches
 IF "$md5" eq "b53c9ff336e168643b10c4a9cfff4276"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Locale adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Locale adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-locale.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 2016 amiga os 3.1 install adf, if file md5 matches
 IF "$md5" eq "d6aa4537586bf3f2687f30f8d3099c99"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-install.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7 amiga os 3.1 install adf, if file md5 matches
 IF "$md5" eq "c5be06daf40d4c3ace4eac874d9b48b1"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-install.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 fonts adf, if file md5 matches
 IF "$md5" eq "6fae8b94bde75497021a044bdbf51abc"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Fonts adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Fonts adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-fonts.adf"
   SKIP copyadffile
 ENDIF
 
 ; copy cloanto amiga forever 7/2016 amiga os 3.1 extras adf, if file md5 matches
 IF "$md5" eq "c1c673eba985e9ab0888c5762cfa3d8f"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-extras.adf"
   SKIP copyadffile
 ENDIF
@@ -111,6 +121,9 @@ ENDIF
 IF NOT "`wc -c <"$tempadffile"`" EQ 901120 VAL
   SKIP end
 ENDIF
+
+; add mount file to log
+echo "Mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 
 ; create mountlist adf for file
 Copy "INSTALLDIR:Devs/Mountlist-Adf-Template" "T:Mountlist-Adf" >NIL:
@@ -153,7 +166,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Workbench"
 
 ; copy amiga os 3.1 workbench file, if workbench adf is valid
 IF "$workbenchvalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Workbench adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Workbench adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-workbench.adf"
   SKIP copyadffile
 ENDIF
@@ -163,7 +176,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Storage"
 
 ; copy amiga os 3.1 storage file, if storage adf is valid
 IF "$storagevalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Storage adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Storage adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-storage.adf"
   SKIP copyadffile
 ENDIF
@@ -173,7 +186,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Locale"
 
 ; copy amiga os 3.1 locale file, if locale adf is valid
 IF "$localevalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Locale adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Locale adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-locale.adf"
   SKIP copyadffile
 ENDIF
@@ -183,7 +196,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Install"
 
 ; copy amiga os 3.1 install file, if install adf is valid
 IF "$installvalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Install adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Install adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-install.adf"
   SKIP copyadffile
 ENDIF
@@ -193,7 +206,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Fonts"
 
 ; copy amiga os 3.1 fonts file, if fonts adf is valid
 IF "$fontsvalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Fonts adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Fonts adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-fonts.adf"
   SKIP copyadffile
 ENDIF
@@ -203,7 +216,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Extras"
 
 ; copy amiga os 3.1 extras file, if extras adf is valid
 IF "$extrasvalid" EQ 1 VAL
-  echo "Amiga OS 3.1 Extras adf" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  echo "Amiga OS 3.1 Extras adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-extras.adf"
   SKIP copyadffile
 ENDIF
@@ -215,9 +228,8 @@ SKIP end
 ; -------------
 LAB copyadffile
 
-echo "Copy '{file}'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-echo "To '{dir}/$adffilename'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-echo "" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+; add add copy to log
+echo "Copying to '{dir}/$adffilename'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 
 Copy >NIL: "$tempadffile" TO "{dir}/$adffilename"
 
