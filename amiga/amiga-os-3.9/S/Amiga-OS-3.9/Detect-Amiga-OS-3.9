@@ -61,8 +61,8 @@ IF "$amigaosdir" EQ 1 VAL
     echo "Amiga OS 3.9 iso file" >>INSTALLDIR:Temp/Amiga-OS-390.log
     echo "'$amigaos39isofile'" >>INSTALLDIR:Temp/Amiga-OS-390.log
 
-    Copy "INSTALLDIR:Devs/Mountlist-AmigaOS39-Template" "INSTALLDIR:Devs/Mountlist-AmigaOS39" >NIL:
-    rep "INSTALLDIR:Devs/Mountlist-AmigaOS39" "[*$AmigaOS39IsoFile]" "$amigaos39isofile"
+    Copy "INSTALLDIR:Devs/Mountlist-Iso-Template" "INSTALLDIR:Devs/Mountlist-Iso" >NIL:
+    rep "INSTALLDIR:Devs/Mountlist-Iso" "[*$AmigaOS39IsoFile]" "$amigaos39isofile"
     set amigaos39iso "1"
     set checkamigaos39iso "1"
   ELSE
