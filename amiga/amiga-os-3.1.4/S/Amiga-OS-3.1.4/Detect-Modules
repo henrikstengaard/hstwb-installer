@@ -1,42 +1,86 @@
 ; Detect Amiga OS 3.1.4 Modules
 ; -----------------------------
 ;
-; Date: 2018-10-16
+; Date: 2018-12-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.1.4 modules floppy disk or adf file.
 
+set modulesmodel ""
 set modulesvalid "0"
 
-; end, if installing from floppy and volume name is not "ModulesA1200_3.1.4"
-IF "$amigaosfloppy" EQ 1 VAL
-  IF "`Which $amigaosdisk:`" EQ "ModulesA1200_3.1.4:"
-    SKIP modulesa1200
-  ENDIF
-
-  SKIP end
+; goto check modules, if volume name is "ModulesA500_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA500_3.1.4:"
+  set modulesmodel "A500"
+  SKIP checkmodules
 ENDIF
 
-; adf, how to detect volume name?
+; goto check modules, if volume name is "ModulesA600_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA600_3.1.4:"
+  set modulesmodel "A600"
+  SKIP checkmodules
+ENDIF
+
+; goto check modules, if volume name is "ModulesA1200_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA1200_3.1.4:"
+  set modulesmodel "A1200"
+  SKIP checkmodules
+ENDIF
+
+; goto check modules, if volume name is "ModulesA2000_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA2000_3.1.4:"
+  set modulesmodel "A2000"
+  SKIP checkmodules
+ENDIF
+
+; goto check modules, if volume name is "ModulesA3000_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA3000_3.1.4:"
+  set modulesmodel "A3000"
+  SKIP checkmodules
+ENDIF
+
+; goto check modules, if volume name is "ModulesA4000D_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA4000D_3.1.4:"
+  set modulesmodel "A4000D"
+  SKIP checkmodules
+ENDIF
+
+; goto check modules, if volume name is "ModulesA4000T_3.1.4:"
+IF "`Which $amigaosdisk:`" EQ "ModulesA4000T_3.1.4:"
+  set modulesmodel "A4000T"
+  SKIP checkmodules
+ENDIF
+
+SKIP end
 
 
-; modules a1200
+; check modules
 ; -------------
 
-LAB modulesa1200
+LAB checkmodules
 
-; end, if a1200 scsi device doesn't exist
-IF NOT EXISTS "$amigaosdisk:DEVS/A1200/scsi.device"
-  SKIP end
-ENDIF
+; check scsi device, if devs modules model exist
+IF EXISTS "$amigaosdisk:DEVS/$modulesmodel"
+  ; end, if scsi device doesn't exist
+  IF NOT EXISTS "$amigaosdisk:DEVS/$modulesmodel/scsi.device"
+    SKIP end
+  ENDIF
 
-; end, if a1200 scsi device is less than v45.7
-Version >NIL: "$amigaosdisk:DEVS/A1200/scsi.device" 45 6 FILE
-IF NOT $RC EQ 0 VAL
-  SKIP end
+  ; end, if scsi device is greater than v45.7
+  Version >NIL: "$amigaosdisk:DEVS/$modulesmodel/scsi.device" 45 8 FILE
+  IF $RC EQ 0 VAL
+    SKIP end
+  ENDIF
+
+  ; end, if scsi device is less than v45.7
+  Version >NIL: "$amigaosdisk:DEVS/$modulesmodel/scsi.device" 45 6 FILE
+  IF NOT $RC EQ 0 VAL
+    SKIP end
+  ENDIF
 ENDIF
 
 set modulesvalid "1"
+
 
 ; end
 ; ---

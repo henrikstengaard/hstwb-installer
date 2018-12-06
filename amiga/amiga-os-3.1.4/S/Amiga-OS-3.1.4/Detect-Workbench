@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1.4 Workbench
 ; -------------------------------
 ;
-; Date: 2018-10-16
+; Date: 2018-12-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.1.4 workbench floppy disk or adf file.
@@ -13,11 +13,9 @@ IF NOT EXISTS "$amigaosdisk:C/Which"
   SKIP end
 ENDIF
 
-; end, if installing from floppy and volume name is not "Workbench3.1.4"
-IF "$amigaosfloppy" EQ 1 VAL
-  IF NOT "`$amigaosdisk:c/which $amigaosdisk:`" EQ "Workbench3.1.4:"
-    SKIP end
-  ENDIF
+; end, if volume name is not "Workbench3.1.4:"
+IF NOT "`$amigaosdisk:c/which $amigaosdisk:`" EQ "Workbench3.1.4:"
+  SKIP end
 ENDIF
 
 ; end, if assign doesn't exist
@@ -27,6 +25,12 @@ ENDIF
 
 ; end, if datatypes.library doesn't exist
 IF NOT EXISTS "$amigaosdisk:Libs/datatypes.library"
+  SKIP end
+ENDIF
+
+; end, if datatypes.library is higher than v46.3
+Version >NIL: "$amigaosdisk:Libs/datatypes.library" 46 4 FILE
+IF $RC EQ 0 VAL
   SKIP end
 ENDIF
 
@@ -51,6 +55,12 @@ IF NOT EXISTS "$amigaosdisk:Libs/version.library"
   SKIP end
 ENDIF
 
+; end, if version.library is greater than v45.195
+Version >NIL: "$amigaosdisk:Libs/version.library" 45 196 FILE
+IF $RC EQ 0 VAL
+  SKIP end
+ENDIF
+
 ; end, if version.library is less than v45.195
 Version >NIL: "$amigaosdisk:Libs/version.library" 45 194 FILE
 IF NOT $RC EQ 0 VAL
@@ -58,6 +68,7 @@ IF NOT $RC EQ 0 VAL
 ENDIF
 
 set workbenchvalid "1"
+
 
 ; end
 ; ---
