@@ -1,12 +1,13 @@
 ; Detect Amiga OS 3.1 Workbench
 ; -------------------------------
 ;
-; Date: 2018-12-05
+; Date: 2018-12-07
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.1 workbench floppy disk or adf file.
 
-set workbenchvalid "0"
+
+set diskvalid "0"
 
 ; end, if which doesn't exist
 IF NOT EXISTS "$amigaosdisk:C/Which"
@@ -67,7 +68,7 @@ IF NOT $RC EQ 0 VAL
   SKIP end
 ENDIF
 
-set workbenchvalid "1"
+set diskvalid "1"
 
 
 ; end

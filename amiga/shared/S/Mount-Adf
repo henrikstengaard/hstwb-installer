@@ -1,0 +1,60 @@
+.KEY adffile/a
+.BRA {
+.KET }
+
+; Mount Adf
+; ---------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2018-12-07
+;
+; AmigaDOS script to mount adf file as FDF0: device.
+
+
+set adfmounted "0"
+
+; quit, if mount adf template doesn't exist
+IF NOT EXISTS "INSTALLDIR:Devs/Mountlist-Adf-Template"
+  echo "*e[1mError: Mount adf template doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; create mountlist for adf file
+Copy "INSTALLDIR:Devs/Mountlist-Adf-Template" "T:Mountlist-Adf" >NIL:
+rep "T:Mountlist-Adf" "[*$AdfFile]" "{adffile}"
+
+; mount fdf0: device using mountlist
+Mount FDF0: FROM "T:Mountlist-Adf"
+
+; goto end, if mount failed
+IF NOT $RC EQ 0 VAL
+  ; delete mountlist adf
+  Delete >NIL: "T:Mountlist-Adf"
+
+  ; goto end
+  SKIP end
+ENDIF
+
+; delete mountlist adf
+Delete >NIL: "T:Mountlist-Adf"
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; goto end, if FDF0: device is not present
+DiskInDrive >NIL: FDF0:
+IF NOT $RC EQ 0 VAL
+  ; set failat to 21
+  failat 21
+
+  ; goto end
+  SKIP end
+ENDIF
+
+; set failat to 21
+failat 21
+
+set adfmounted "1"
+
+; end
+LAB end

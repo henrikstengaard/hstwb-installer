@@ -1,0 +1,42 @@
+; Install Amiga OS 3.1
+; --------------------
+;
+; Date: 2018-12-07
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of Amiga OS 3.1 from either adf files or floppy disks.
+
+
+; amiga os 3.1 installation message
+cls
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.1 Installation"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------------"
+echo "*e[0m" NOLINE 
+echo ""
+
+
+; if amiga os 3.1 adf exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-310-ADF"
+  ; install amiga os 3.1 from adf files message
+  echo "*e[1mInstall Amiga OS 3.1 from adf files:*e[0m"
+
+  ; run install amiga os 3.1 adf
+  execute "INSTALLDIR:S/Amiga-OS-3.1/Install-Adf"
+ELSE
+  ; install amiga os 3.1 from adf files message
+  echo "*e[1mInstall Amiga OS 3.1 from floppy disks*e[0m"
+
+  ; run install amiga os 3.1 adf
+  execute "INSTALLDIR:S/Amiga-OS-3.1/Install-Disk"
+ENDIF 
+
+echo "Done"
+echo ""
+echo "Amiga OS 3.1 installation is complete."
+echo ""
+ask "Press ENTER to continue"
+
+; --------
+LAB end

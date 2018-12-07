@@ -1,8 +1,16 @@
 ; Start Self Install
 ; ------------------
 ;
-; Date: 2018-12-06
+; Date: 2018-12-07
 ; Author: Henrik Noerfjand Stengaard
+
+
+; fail, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
+  echo "*e[1mError: Assign hstwb installer doesn't exist!*e[0m"
+  SKIP fail
+ENDIF
+execute S:Assign-HstWB-Installer
 
 
 ; fail, if HSTWBINSTALLERDIR: device doesn't exist

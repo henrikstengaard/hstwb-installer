@@ -1,12 +1,13 @@
 ; Detect Amiga OS 3.1 Fonts
 ; -------------------------
 ;
-; Date: 2018-12-05
+; Date: 2018-12-07
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.1 fonts floppy disk or adf file.
 
-set fontsvalid "0"
+
+set diskvalid "0"
 
 ; end, if amiga os disk volume name is not "Fonts:"
 IF NOT "`Which $amigaosdisk:`" EQ "Fonts:"
@@ -23,7 +24,7 @@ IF NOT EXISTS "$amigaosdisk:Disk.info"
   SKIP end
 ENDIF
 
-set fontsvalid "1"
+set diskvalid "1"
 
 
 ; end
