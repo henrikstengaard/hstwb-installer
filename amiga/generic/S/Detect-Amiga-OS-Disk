@@ -138,6 +138,3 @@ SKIP BACK insertdisk
 
 ; end
 LAB end
-
-echo ""
-ask "Press ENTER to continue"

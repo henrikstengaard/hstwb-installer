@@ -99,6 +99,7 @@ IF NOT "`Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-{disk}"`" EQ ""
 ENDIF
 
 ; run install amiga os 3.1 disk
-echo "Amiga OS 3.1 {disk} from $amigaosdisk: floppy device..."
+echo "Installing Amiga OS 3.1 {disk} from $amigaosdisk:"
+echo "floppy device..."
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Install-{disk}"
 echo "Done"
