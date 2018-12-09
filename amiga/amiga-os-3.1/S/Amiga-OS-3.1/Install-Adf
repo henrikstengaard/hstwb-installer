@@ -1,14 +1,14 @@
 ; Install Adf
 ; -----------
 ;
-; Date: 2018-12-07
+; Date: 2018-12-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1 from adf files.
 
 
 ; set amigaosdisk to fdf0: device
-set amigaosdisk "FDF0"
+setenv amigaosdisk "FDF0"
 
 
 ; workbench adf
