@@ -1,7 +1,7 @@
-; Amiga OS 3.1.4 Install
-; ----------------------
+; Install Install
+; ---------------
 ;
-; Date: 2018-10-11
+; Date: 2018-12-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -74,13 +74,10 @@ ENDIF
 Assign >NIL: NEWWB: SYSTEMDIR:
 "$amigaosdisk:C/UpdateWBFiles"
 
-echo "Done"
-
 
 ; Clean up
 ; --------
 
-echo ""
 echo "Cleaning up icons..."
 
 Resident "$amigaosdisk:C/IconPos" PURE
@@ -122,19 +119,33 @@ IF "$glowicons" EQ 1 VAL
   ENDIF
 ENDIF
 
+; create prefs env archive sys directory
+MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
+
 ; copy workbench prefs to use best icon quality and no icon border
-IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4"
-  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs_3.1.4" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
+IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs"
+  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
 ENDIF
 
-IF "$screenmode" EQ 1 VAL
-  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256"
-    echo "Updating screenmode prefs..."
-    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_256" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+IF "$palmonitor" EQ 1 VAL
+  IF "$screenmode" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x512.prefs"
+      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    ENDIF
+  ELSE
+    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x256.prefs"
+      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x256.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    ENDIF
   ENDIF
 ELSE
-  IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16"
-    Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs_3.1.4_16" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+  IF "$screenmode" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x400.prefs"
+      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    ENDIF
+  ELSE
+    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x200.prefs"
+      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x200.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    ENDIF
   ENDIF
 ENDIF
 
@@ -143,3 +154,10 @@ Assign >NIL: EXISTS DH1:
 IF $RC EQ 0 VAL
   Copy >NIL: "SYSTEMDIR:Disk.info" "DH1:Disk.info"
 ENDIF
+
+; install 680x0 libraries required for cpus and accelerator cards
+MakePath >NIL: "SYSTEMDIR:Temp"
+lha -m1 x "INSTALLDIR:Extras/MMULib.lha" "SYSTEMDIR:Temp/" >NIL:
+Copy >NIL: "SYSTEMDIR:Temp/MMULib/Libs/680?0.library" "SYSTEMDIR:Libs" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/MMULib/Libs/mmu.library" "SYSTEMDIR:Libs" CLONE
+Delete >NIL: "SYSTEMDIR:Temp/MMULib" ALL

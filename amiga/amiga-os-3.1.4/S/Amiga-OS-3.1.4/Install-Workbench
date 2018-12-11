@@ -1,7 +1,7 @@
-; Install Amiga OS 3.1.4 Workbench
-; --------------------------------
+; Install Workbench
+; -----------------
 ;
-; Date: 2018-10-11
+; Date: 2018-12-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 workbench floppy disk or adf file.
@@ -36,6 +36,3 @@ MakeDir >NIL: "SYSTEMDIR:Storage/Keymaps"
 MakeDir >NIL: "SYSTEMDIR:Storage/DataTypes"
 
 Copy >NIL: "$amigaosdisk:~(Locale)" SYSTEMDIR: ALL CLONE
-
-Assign >NIL: C: "SYSTEMDIR:C" ADD
-Assign >NIL: Libs: "SYSTEMDIR:Libs" ADD

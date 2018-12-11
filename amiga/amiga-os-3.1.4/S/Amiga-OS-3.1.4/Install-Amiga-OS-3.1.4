@@ -1,10 +1,10 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2018-10-12
+; Date: 2018-12-11
 ; Author: Henrik Noerfjand Stengaard
 ;
-; AmigaDOS script to automate installation of Amiga OS 3.1.4 from either adf files or floppy disks.
+; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
 
 
 ; amiga os 3.1.4 installation message
@@ -14,42 +14,30 @@ echo "Amiga OS 3.1.4 Installation"
 echo "*e[0m*e[1m" NOLINE
 echo "---------------------------"
 echo "*e[0m" NOLINE 
+echo ""
 
+; glow icons and screenmode
+setenv glowicons `RequestChoice "Install Glow Icons" "Do you want to install Amiga OS 3.1.4 GlowIcons?" "Yes|No"`
+setenv screenmode `RequestChoice "Update Screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"640 x 512, 256 colors*"?" "Yes|No"`
 
-; Find, install amiga os 3.1.4 from adf and fallback to disk, if self install prefs exists. Otherwise install workbench adf
-set installfromadf "0"
-IF EXISTS INSTALLDIR:Prefs/Self-Install
-  ; run install amiga os 3.1.4 adf, if prefs exists
-  IF EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-3.1.4-Adf
-    set installfromadf "1"
-  ENDIF
+; run install amiga os 3.1.4 adf, if prefs exists. otherwise run install amiga os 3.1.4 disk
+fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314
+IF "`wc -l <T:_install_amiga-os-314`" GT 0 VAL
+  ; install amiga os 3.1.4 from adf files message
+  echo "*e[1mInstall Amiga OS 3.1.4 from adf files:*e[0m"
+
+  ; run install amiga os 3.1.4 adf
+  execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Adf"
+  echo "Done"
 ELSE
-  echo ""
-  set installfromadf "1"
-ENDIF
+  ; install amiga os 3.1.4 from adf files message
+  echo "*e[1mInstall Amiga OS 3.1.4 from floppy disks*e[0m"
 
-
-; run install amiga os 3.1.4 from adf, if install from adf is 1 otherwise
-IF "$installfromadf" EQ 1 VAL
-  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Amiga-OS-3.1.4-Adf"
-ELSE
-  Execute "INSTALLDIR:S/Detect-Amiga-OS-Disk"
-ENDIF
-
-self install process:
-- detect amiga os 3.9
-- detect amiga os 3.1.4
-- detect amiga os 3.1.0
-- if amiga os 3.9 cd-rom is mounted or iso file exist, run install amiga os 3.9. if amiga os 3.1.0 exist ask if both should be installed. goto next
-- if amiga os 3.1.0 adf exist, run install amiga os 3.1.0 adf
-- if amiga os 3.1.4 adf exist, run install amiga os 3.1.4 adf. if amiga os 3.1.0 exist ask if both should be installed. goto next
-
-
-echo "Done"
+  ; run install amiga os 3.1.4 adf
+  execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Disk"
+ENDIF 
 
 echo ""
 echo "Amiga OS 3.1.4 installation is complete."
 echo ""
-
-; --------
-LAB end
+ask "Press ENTER to continue"
