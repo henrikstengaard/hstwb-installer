@@ -1,7 +1,7 @@
 ; Install Install
 ; ---------------
 ;
-; Date: 2018-12-11
+; Date: 2018-12-12
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -123,28 +123,28 @@ ENDIF
 MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
 
 ; copy workbench prefs to use best icon quality and no icon border
-IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs"
-  Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
+IF EXISTS "INSTALLDIR:Extras/Prefs/Workbench.prefs"
+  Copy >NIL: "INSTALLDIR:Extras/Prefs/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
 ENDIF
 
 IF "$palmonitor" EQ 1 VAL
   IF "$screenmode" EQ 1 VAL
-    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x512.prefs"
-      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ELSE
-    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x256.prefs"
-      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_PAL_640x256.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x256.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x256.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ENDIF
 ELSE
   IF "$screenmode" EQ 1 VAL
-    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x400.prefs"
-      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ELSE
-    IF EXISTS "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x200.prefs"
-      Copy >NIL: "INSTALLDIR:Prefs/Env-Archive/Sys/ScreenMode_NTSC_640x200.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x200.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x200.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ENDIF
 ENDIF

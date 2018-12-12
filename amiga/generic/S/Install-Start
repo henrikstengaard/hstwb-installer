@@ -1,11 +1,20 @@
 ; Install Start
 ; -------------
 ;
-; Date: 2018-12-11
+; Date: 2018-12-12
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to start installation of Large Harddisk, Amiga OS 3.9, 3.1.4 or 3.1, Kickstarts and packages.
 
+
+; detect pal or ntsc monitor
+setenv palmonitor "1"
+INSTALLDIR:C/paltest >T:_paltest
+search >NIL: T:_paltest "PAL  (256/512 lines)"
+IF NOT $RC EQ 0 VAL
+  setenv palmonitor "0"
+ENDIF
+Delete >NIL: T:_paltest
 
 ; Copy large harddisk, if install large harddisk exists
 IF EXISTS "INSTALLDIR:Install-LargeHarddisk"
