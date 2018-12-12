@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1.4 Install
 ; -----------------------------
 ;
-; Date: 2018-12-10
+; Date: 2018-12-12
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.1.4 install floppy disk or adf file.
@@ -24,7 +24,7 @@ IF $RC EQ 0 VAL
 ENDIF
 
 ; end, if hdtoolbox is less than v46.17
-Version >NIL: "$amigaosdisk:Catalogs/deutsch/sys/system.catalog" 46 16 FILE
+Version >NIL: "$amigaosdisk:HDTools/HDToolBox" 46 16 FILE
 IF NOT $RC EQ 0 VAL
   SKIP notvalid
 ENDIF
