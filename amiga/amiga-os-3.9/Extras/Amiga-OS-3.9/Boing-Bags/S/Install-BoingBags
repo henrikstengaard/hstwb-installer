@@ -1,54 +1,70 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2018-05-23
+; Date: 2018-12-23
 ; Author: Henrik Noerfjand Stengaard 
 ;
-; An AmigaDOS script to automate installation of Boing Bags.
+; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
 
 
-; Add alias
+; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
-
+; amiga os 3.9 boing bags installation message
 cls
 echo "*e[32m" NOLINE
 echo "Amiga OS 3.9 Boing Bags installation"
 echo "*e[0m*e[1m" NOLINE
 echo "------------------------------------"
 echo "*e[0m" NOLINE
+echo ""
 
+; goto end, if device AMIGAOSDIR: doesn't exist
+Assign >NIL: EXISTS AMIGAOSDIR:
+IF WARN
+  echo "*e[1mERROR: Device AMIGAOSDIR: doesn't exist!*e[22m"
+  SKIP end
+ENDIF
 
-; Goto end, if version.library is not version 45 (Amiga OS 3.9)
+; goto end, if boing bag 1 file doesn't exist
+IF NOT EXISTS "AMIGAOSDIR:BoingBag39-1.lha"
+  echo ""
+  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in"
+  echo "device AMIGAOSDIR:. Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
+  SKIP end
+ENDIF
+
+; goto end, if version.library is not version 45 (Amiga OS 3.9)
 Version >NIL: "SYS:Libs/version.library" 45 FILE
 IF WARN
-  echo ""
   echo "*e[1mERROR: Boing Bags installation requires AmigaOS 3.9!*e[22m"
   SKIP end
 ENDIF
 
-
-; Goto end, if assign hstwb installer doesn't exist
+; goto end, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
-  echo ""
   echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
   SKIP end
 ENDIF
 
-
-; Run assign hstwb installer
+; run assign hstwb installer
 execute S:Assign-HstWB-Installer
 
+; goto end, if device INSTALLDIR: doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF WARN
+  echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
+  SKIP end
+ENDIF
 
-; Add assigns to installdir
+; add assigns to installdir
 Assign >NIL: C: INSTALLDIR:C ADD
 Assign >NIL: Devs: INSTALLDIR:Devs ADD
 Assign >NIL: L: INSTALLDIR:L ADD
 Assign >NIL: Libs: INSTALLDIR:Libs ADD
 Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
-
-; Load commands resident 
+; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
 Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
 Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
@@ -58,75 +74,6 @@ Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 
-; Goto end, if device OS39DIR: doesn't exist
-Assign >NIL: EXISTS OS39DIR:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device OS39DIR: doesn't exist!*e[22m"
-  SKIP end
-ENDIF
-
-
-; Goto end, if device INSTALLDIR: doesn't exist
-Assign >NIL: EXISTS INSTALLDIR:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
-  SKIP end
-ENDIF
-
-
-; Goto end, if boing bag 1 file doesn't exist
-IF NOT EXISTS "OS39DIR:BoingBag39-1.lha"
-  echo ""
-  echo "*e[1mERROR: Boing bags doesn't exist in device OS39DIR:. Skipping installation!*e[22m"
-  SKIP end
-ENDIF
-
-
-; Goto mount amiga os 3.9 iso, if device CD0: doesn't exists
-Assign >NIL: EXISTS CD0:
-IF WARN
-  SKIP mountamigaos39iso
-ENDIF
-
-
-; Set fail at 255 for DiskInDrive to fail silently
-failat 255
-
-
-; Goto mount amiga os 3.9 iso, if device CD0: doesn't contain a cd-rom
-DiskInDrive >NIL: CD0:
-IF WARN
-  ; Set fail at 21
-  failat 21
-
-  SKIP mountamigaos39iso
-ENDIF
-
-
-; Set fail at 21
-failat 21
-
-
-; Goto check amiga os 3.9 cd, if CD0:OS-VERSION3.9.INFO exists
-IF EXISTS CD0:OS-VERSION3.9.INFO
-  SKIP checkamigaos39cd
-ENDIF
-
-
-; Mount FCD0: with Amiga OS 3.9 iso
-; ---------------------------------
-LAB mountamigaos39iso
-
-echo ""
-echo "CD Drive device CD0: not found."
-echo ""
-echo "Installation process will fallback to mounting"
-echo "Amiga OS 3.9 iso as a virtual cd-rom drive."
-echo ""
-ask "Press ENTER to continue"
-
 echo ""
 echo "Mounting Amiga OS 3.9 iso..."
 Mount FCD0: FROM INSTALLDIR:Devs/Mountlist
@@ -134,20 +81,8 @@ wait 5
 echo "Done"
 
 
-; Goto end, if device FCD0: doesn't exist
-Assign >NIL: EXISTS FCD0:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device FCD0: doesn't exist!*e[22m"
-  SKIP end
-ENDIF
 
-
-; Check Amiga OS 3.9 CD
-; ---------------------
-LAB checkamigaos39cd
-
-; Goto end, if device AmigaOS3.9: doesn't exist
+; goto end, if device AmigaOS3.9: doesn't exist
 Assign >NIL: EXISTS AmigaOS3.9:
 IF WARN
   echo ""
@@ -156,45 +91,48 @@ IF WARN
 ENDIF
 
 
-; Create temp boing bags directory
+; boing bag 1
+; -----------
+
+; create temp boing bags directory
 makedir >NIL: SYS:T/BoingBags
 
-
-; Install Boing Bag 1
+; run install boing bag 1
 execute S:Install-BoingBag1
 
-
-; Goto complete, if boing bag 2 file doesn't exist
-IF NOT EXISTS "OS39DIR:BoingBag39-2.lha"
+; goto complete, if boing bag 2 file doesn't exist
+IF NOT EXISTS "AMIGAOSDIR:BoingBag39-2.lha"
   SKIP complete
 ENDIF
 
 
-; Install Boing Bag 2
+; boing bag 2
+; -----------
+
+; run install boing bag 2
 execute S:Install-BoingBag2
 
 
-; Complete
+; complete
 ; --------
 LAB complete
 
-; Remove assigns from installdir
+; remove assigns from installdir
 Assign >NIL: C: INSTALLDIR:C REMOVE
 Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
 Assign >NIL: L: INSTALLDIR:L REMOVE
 Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
 Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
-; Delete temp boing bags directory
+; delete temp boing bags directory
 Delete >NIL: SYS:T/BoingBags ALL
 
-; Delete install boing bags scripts
-Delete >NIL: S:Copy-Locale
-Delete >NIL: S:Install-BoingBag#?
+; delete install boing bags scripts from systemdir
+Delete >NIL: SYS:S/Install-BoingBags
 Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
 
-; Replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-Packages
+; replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
+IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
   Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
   Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 ENDIF
@@ -204,8 +142,8 @@ echo "Boing Bags installation is complete."
 echo ""
 
 
-; Reboot message
-IF EXISTS INSTALLDIR:Prefs/Install-Packages
+; reboot message
+IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
   echo "HstWB Installer has completed installation of"
   echo "Amiga OS 3.9 Boing Bags and will now reboot to"
   echo "start package installation."
@@ -217,26 +155,26 @@ ENDIF
 echo ""
 
 
-; Set uae to 1, if use prefs exists
+; set uae to 1, if use prefs exists
 set uae "0"
 IF EXISTS INSTALLDIR:Prefs/UAE
   set uae "1"
 ENDIF
 
 
-; Set installpackages to 1, if install packages prefs exists
+; set installpackages to 1, if install packages prefs exists
 set installpackages "0"
-IF EXISTS INSTALLDIR:Prefs/Install-Packages
+IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
   set installpackages "1"
 ENDIF
 
-; Set installpackages to 1, if install user packages prefs exists
+; set installpackages to 1, if install user packages prefs exists
 IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
   set installpackages "1"
 ENDIF
 
-; Run install cleanup, if install packages is 0
-IF $installpackages EQ 0 VAL
+; run install cleanup, if install packages is 0
+IF "$installpackages" EQ 0 VAL
   execute INSTALLDIR:S/Install-Cleanup
 ENDIF
 

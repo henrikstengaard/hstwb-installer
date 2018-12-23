@@ -1,7 +1,7 @@
 ; Startup Sequence for Amiga OS 3.9 Installation
 ; ----------------------------------------------
 ;
-; Date: 2018-05-23
+; Date: 2018-12-23
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -49,43 +49,35 @@ Assign >NIL: LIBS: SYS:Classes ADD
 Assign >NIL: HELP: LOCALE:Help DEFER
 
 
-; Add alias
+; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
-
-; Timezone for unzip
+; set timezone for unzip
 SetEnv TZ MST7
 
-; Data types required for multiview and update screenmode
+; data types required for multiview and update screenmode
 C:AddDataTypes REFRESH QUIET
 
-
-; Paths
+; set paths
 Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
 
-
-; Startup clear screen
-cls
-
-
-; Fail, if assign hstwb installer doesn't exist
+; goto fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "Error: assign hstwb installer doesn't exist!"
+  echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
   SKIP fail
 ENDIF
 
-
-; Run Assign-HstWB-Installer
+; run assign-hstwb-installer
 execute S:Assign-HstWB-Installer
 
-; Add assigns to installdir
+; add assigns to installdir
 Assign >NIL: C: INSTALLDIR:C ADD
 Assign >NIL: Devs: INSTALLDIR:Devs ADD
 Assign >NIL: L: INSTALLDIR:L ADD
 Assign >NIL: Libs: INSTALLDIR:Libs ADD
 Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
-; Load commands resident 
+; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
 Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
 Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
@@ -95,19 +87,25 @@ Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 
-; Run install Amiga OS 3.9
-cls
-execute "INSTALLDIR:S/Install-AmigaOS3.9"
+; install amiga os 3.9
+; --------------------
 
+; mount amiga os 3.9 iso, if amiga os 3.9 iso prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39"
+  wait 5
+ENDIF
 
-; Replace startup-sequence with workbench startup-sequence
+; run install amigs os 3.9
+execute "INSTALLDIR:S/Amiga-OS-3.9/Install-Amiga-OS-3.9"
+
+; replace startup-sequence with workbench startup-sequence
 IF EXISTS S:Startup-Sequence.Workbench
   Delete >NIL: S:Startup-Sequence
   Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
 ENDIF
 
-
-; Remove assigns from installdir
+; remove assigns from installdir
 Assign >NIL: C: INSTALLDIR:C REMOVE
 Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
 Assign >NIL: L: INSTALLDIR:L REMOVE
@@ -115,14 +113,13 @@ Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
 Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
 
-; Set use to 1, if use prefs exists
+; set use to 1, if use prefs exists
 set uae "0"
 IF EXISTS INSTALLDIR:Prefs/UAE
   set uae "1"
 ENDIF
 
-
-; Amiga OS 3.9 installation complete
+; amiga OS 3.9 installation complete message
 cls
 echo "*e[32m" NOLINE
 echo "Amiga OS 3.9 Installation Complete"
@@ -131,13 +128,13 @@ echo "----------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
-
-IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
+; amiga os 3.9 boing bags or packages message
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
   echo "HstWB Installer has completed Amiga OS 3.9 installation and"
   echo "will reboot system to start installation of"
   echo "Boing Bags in Amiga OS 3.9 during WBStartup."
 ELSE
-  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
     ; Copy assign hstwb installer for installing boing bags
     Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
 
@@ -155,7 +152,7 @@ ENDIF
 echo ""
 
 
-; Copy hstwb installer log to install dir, if it exists
+; copy hstwb installer log to install dir, if it exists
 IF EXISTS SYS:hstwb-installer.log
   Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
 ENDIF
@@ -168,7 +165,7 @@ echo ""
 ask "Press ENTER to continue"
 
 
-; End
+; end
 ; ---
 LAB end
 

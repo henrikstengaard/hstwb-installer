@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.9
 ; -------------------
 ;
-; Date: 2018-12-06
+; Date: 2018-12-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
@@ -113,9 +113,65 @@ IF NOT $RC EQ 0 VAL
   ENDIF
 ENDIF
 
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Workbench3.5" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Workbench3.5"
+  echo "AmigaOS3.9:OS-VERSION3.9/Workbench3.5 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Workbench3.9" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Workbench3.9"
+  echo "AmigaOS3.9:OS-VERSION3.9/Workbench3.9 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Extras" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Extras"
+  echo "AmigaOS3.9:OS-VERSION3.9/Extras directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
 ; goto end, if "AmigaOS3.9:EMERGENCY-BOOT" directory doesn't exist
-IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT"
   echo "AmigaOS3.9:EMERGENCY-BOOT directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS"
+  echo "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
   IF "$amigaos39iso" EQ 1 VAL
     IF "$checkamigaos39iso" EQ 1 VAL
       SKIP BACK amigaos39iso

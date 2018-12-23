@@ -1,10 +1,10 @@
-; Install Amiga OS 3.9 Script
-; ---------------------------
+; Install Amiga OS 3.9
+; --------------------
 ;
-; Date: 2018-05-23
+; Date: 2018-12-23
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigsDOS script to automate installation of Amiga OS 3.9.
+; AmigsDOS script to automate installation of Amiga OS 3.9.
 ;
 ; References:
 ; https://modelrail.otenko.com/c64amiga/amiga-1200-installing-amigaos-3-9
@@ -19,187 +19,50 @@ echo "Amiga OS 3.9 Installation"
 echo "*e[0m*e[1m" NOLINE
 echo "-------------------------"
 echo "*e[0m" NOLINE
-
-
-; Goto fail, if device OS39DIR: doesn't exist
-Assign >NIL: EXISTS OS39DIR:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device OS39DIR: doesn't exist!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto fail, if device INSTALLDIR: doesn't exist
-Assign >NIL: EXISTS INSTALLDIR:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto mount amiga os 3.9 iso, if device CD0: doesn't exists
-Assign >NIL: EXISTS CD0:
-IF WARN
-  SKIP mountamigaos39iso
-ENDIF
-
-
-; Set fail at 255 for DiskInDrive to fail silently
-failat 255
-
-
-; Goto mount amiga os 3.9 iso, if device CD0: doesn't contain a cd-rom
-DiskInDrive >NIL: CD0:
-IF WARN
-  ; Set fail at 21
-  failat 21
-
-  SKIP mountamigaos39iso
-ENDIF
-
-
-; Set fail at 21
-failat 21
-
-
-; Goto check amiga os 3.9 cd, if CD0:OS-VERSION3.9.INFO exists
-IF EXISTS CD0:OS-VERSION3.9.INFO
-  SKIP checkamigaos39cd
-ENDIF
-
-
-; Mount FCD0: with Amiga OS 3.9 iso
-; ---------------------------------
-LAB mountamigaos39iso
-
 echo ""
-echo "CD Drive device CD0: not found."
-echo ""
-echo "Installation process will fallback to mounting"
-echo "Amiga OS 3.9 iso as a virtual cd-rom drive."
-echo ""
-ask "Press ENTER to continue"
 
-echo ""
-echo "Mounting Amiga OS 3.9 iso..."
-Mount FCD0: FROM INSTALLDIR:Devs/Mountlist
-wait 5
-echo "Done"
-
-
-; Goto fail, if device FCD0: doesn't exist
-Assign >NIL: EXISTS FCD0:
-IF WARN
-  echo ""
-  echo "*e[1mERROR: Device FCD0: doesn't exist!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Check Amiga OS 3.9 CD
-; ---------------------
-LAB checkamigaos39cd
-
-; Goto fail, if device AmigaOS3.9: doesn't exist
+; goto fail, if device AmigaOS3.9: doesn't exist
 Assign >NIL: EXISTS AmigaOS3.9:
 IF WARN
-  echo ""
   echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
   SKIP fail
 ENDIF
 
-
-; Goto fail, if AmigaOS3.9:OS-VERSION3.9/Workbench3.5 doesn't exist
-IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/Workbench3.5
-  echo ""
-  echo "*e[1mERROR: Amiga OS 3.9 CD doesn't contain 'OS-VERSION3.9/Workbench3.5'!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto fail, if AmigaOS3.9:OS-VERSION3.9/Workbench3.9 doesn't exist
-IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/Workbench3.9
-  echo ""
-  echo "*e[1mERROR: Amiga OS 3.9 CD doesn't contain 'OS-VERSION3.9/Workbench3.9'!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto fail, if AmigaOS3.9:OS-VERSION3.9/Extras doesn't exist
-IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/Extras
-  echo ""
-  echo "*e[1mERROR: Amiga OS 3.9 CD doesn't contain 'OS-VERSION3.9/Extras'!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto fail, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
-IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
-  echo ""
-  echo "*e[1mERROR: Amiga OS 3.9 CD doesn't contain 'EMERGENCY-BOOT'!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Goto fail, if AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS doesn't exist
-IF NOT EXISTS AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS
-  echo ""
-  echo "*e[1mERROR: Amiga OS 3.9 CD doesn't contain 'OS-VERSION3.9/INSTALL-TOOLS'!*e[22m"
-  SKIP fail
-ENDIF
-
-
-; Copy Workbench 3.9
-echo ""
+; install amiga os 3.9 message
 echo "*e[1mInstalling Amiga OS 3.9*e[0m"
-echo "Copying Workbench..."
 
+; copy workbench
+echo "Copying Workbench..."
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.5 SYSTEMDIR: ALL
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.9 SYSTEMDIR: ALL
 
-
-; Copy libs
+; copy libs
 echo "Copying Libs..."
-
-;Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Libs/mpega.library SYSTEMDIR:Libs
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Libs/asyncio.library SYSTEMDIR:Libs
 
-
-; Copy backdrops (optional)
+; copy backdrops (optional)
 echo "Copying Backdrops..."
-
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Extras/Backdrops SYSTEMDIR:Prefs/Presets/Backdrops ALL
 
-
-; Copy locale
+; copy locale
 echo "Copying Locale..."
-
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/LOCALE SYSTEMDIR:Locale ALL
 
-
-; Copy keymaps
-; ------------
-
+; copy keymaps
 echo "Copying keymaps..."
-
 Copy >NIL: AmigaOS3.9:OS-VERSION3.9/Workbench3.9/Storage/Keymaps SYSTEMDIR:Devs/Keymaps
 
+; copy 68040.library, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
+  Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
+ENDIF
 
-; Copy 68040.library, if it doesn't exist
-;IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
-;  Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
-;ENDIF
+; copy 68060.library, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
+  Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
+ENDIF
 
-; Copy 68060.library, if it doesn't exist
-;IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
-;  Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
-;ENDIF
-
-
-; Update FastFileSystem
-; ---------------------
+; rename fastfilesystem to old, if it exists
 IF EXISTS "SYSTEMDIR:L/FastFileSystem"
   Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 FILE
   IF WARN
@@ -207,40 +70,28 @@ IF EXISTS "SYSTEMDIR:L/FastFileSystem"
   ENDIF 
 ENDIF 
 
+; copy fastfilesystem
 Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/L/FastFileSystem" "SYSTEMDIR:L"
 
-
-; Fix fonts
-; ---------
-
+; fix fonts
 echo "Fix fonts..."
-
 Assign >NIL: Fonts: "SYSTEMDIR:Fonts"
-
 SYSTEMDIR:System/FixFonts
-
 Assign >NIL: Fonts: "SYSTEMDIR:Fonts" REMOVE
 
-
-; Prefs
-; -----
-
+; copy prefs
 Copy >NIL: "AmigaOS3.9:OS-VERSION3.9/EMERGENCY-DISK/PREFS/ENV-ARCHIVE/SYS/FONT.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/REACTION.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBCONFIG.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBPATTERN.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WORKBENCH.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
 
-
-; Copy uae prefs, if it exists in install
+; copy uae prefs, if it exists in install
 IF EXISTS INSTALLDIR:Prefs/UAE
   Copy >NIL: INSTALLDIR:Prefs/UAE SYSTEMDIR:Prefs
 ENDIF
 
-
-; Cleanup
-; -------
-
+; cleanup
 echo "Cleaning up..."
 Resident >NIL: "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" PURE
 
@@ -326,18 +177,21 @@ ICONPOS >NIL: "SYSTEMDIR:Expansion" 80 150
 ICONPOS >NIL: "SYSTEMDIR:Trashcan" 160 220
 ICONPOS >NIL: "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
+; copy pal or ntsc screenmode prefs
+IF "$palmonitor" EQ 1 VAL
+  Copy >NIL: INSTALLDIR:Extras/Amiga-OS-3.9/Prefs/ScreenMode_PAL_640x512.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs
+ELSE
+  Copy >NIL: INSTALLDIR:Extras/Amiga-OS-3.9/Prefs/ScreenMode_NTSC_640x400.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs
+ENDIF
 
-; Copy default 640 x 512 display mode screenmode prefs
-Copy >NIL: INSTALLDIR:Install-AmigaOS3.9/Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
+; copy install amiga os 3.9 to systemdir and update startup sequence to load patch scsi.device, if install amiga os 3.9 boing bags 1 prefs exist
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
+  ; copy assign hstwb installer and amiga os 3.9 boing bags
+  Copy >NIL: "INSTALLDIR:S/Assign-HstWB-Installer" "SYSTEMDIR:S"
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/S" "SYSTEMDIR:S" ALL
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/WBStartup" "SYSTEMDIR:WBStartup" ALL
 
-
-; Copy install amiga os 3.9 to systemdir and update startup sequence to load patch scsi.device, if install boing bags prefs exist
-IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
-  ; Copy assign hstwb installer and install amiga os 3.9 for installing boing bags
-  Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
-  Copy >NIL: INSTALLDIR:Install-AmigaOS3.9 SYSTEMDIR: ALL
-
-  ; Update startup sequence with loadmodule patched scsi.device
+  ; update startup sequence with loadmodule patched scsi.device
   echo "FailAt 21" >>T:Startup-Sequence
   echo "" >>T:Startup-Sequence
   echo "; Load patched scsi.device v43.45, if it exists" >T:Startup-Sequence
@@ -354,7 +208,7 @@ IF EXISTS INSTALLDIR:Prefs/Install-BoingBags
 ENDIF
 
 
-; Done message
+; done message
 echo "Done"
 echo ""
 echo "Amiga OS 3.9 installation is complete."
@@ -362,21 +216,17 @@ echo "Amiga OS 3.9 installation is complete."
 SKIP end
 
 
-; Fail
+; fail
 ; ----
 LAB fail
 
 echo ""
 echo "Amiga OS 3.9 installation failed and has stopped"
 echo "installation process."
-echo ""
-echo "Try to resolve error, if possible then restart to"
-echo "rerun installation process."
-echo ""
 quit
 
 
-; End
+; end
 ; ---
 LAB end
 

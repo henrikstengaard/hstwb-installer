@@ -1,17 +1,16 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2018-12-11
+; Date: 2018-12-23
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to complete Amiga OS and Kickstart roms installation by rebooting system or quiting UAE.
+; AmigaDOS script to complete Amiga OS and Kickstart roms installation by rebooting system or quiting UAE.
 
 
-; Create install complete prefs
+; create install complete prefs
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
-
-; Amiga OS and Kickstart roms installation complete
+; amiga OS and Kickstart roms installation complete
 cls
 echo "*e[32m" NOLINE
 echo "Amiga OS and Kickstart roms installation complete"
@@ -20,16 +19,15 @@ echo "--------------------------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
-
-; Set uae to 1, if use prefs exists
+; set uae to 1, if use prefs exists
 set uae "0"
 IF EXISTS INSTALLDIR:Prefs/UAE
   set uae "1"
 ENDIF
 
-
-; Status message
-IF EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-3.9
+; status message
+fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-390#?" >T:_install_amiga-os-390
+IF "`wc -l <T:_install_amiga-os-390`" GT 0 VAL
   echo "HstWB Installer has completed Amiga OS and Kickstart roms"
   IF $uae EQ 1 VAL
     echo "installation and will quit and restart UAE to start"
@@ -39,7 +37,7 @@ IF EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-3.9
     echo "installation of Amiga OS 3.9 using Emergency Boot."
   ENDIF
 ELSE
-  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
     ; Copy assign hstwb installer for installing boing bags
     Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
 
@@ -62,16 +60,22 @@ ELSE
 ENDIF
 echo ""
 
+; remove assigns from installdir
+Assign >NIL: S: INSTALLDIR:S REMOVE
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
-; Copy hstwb installer log to install dir, if it exists
+; copy hstwb installer log to install dir, if it exists
 IF EXISTS SYS:hstwb-installer.log
   Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
 ENDIF
 
-
-; Replace startup sequence and run install cleanup, if install boing bags, install packages and install user packages prefs doesn't exist
-IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
-  IF NOT EXISTS INSTALLDIR:Prefs/Install-Packages
+; replace startup sequence and run install cleanup, if install boing bags, install packages and install user packages prefs doesn't exist
+IF NOT EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1
+  IF NOT EXISTS INSTALLDIR:System/Prefs/Install-Packages
     IF NOT EXISTS INSTALLDIR:Prefs/Install-User-Packages
       ; Replace startup-sequence with workbench startup-sequence, if it exists
       IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
@@ -85,12 +89,11 @@ IF NOT EXISTS INSTALLDIR:Prefs/Install-BoingBags
   ENDIF
 ENDIF
 
-
 echo "Please let the system wait 10 seconds before continuing"
 echo "to allow file system to write changes to disk." 
 echo ""
 
-; Quit UAE or reboot message
+; quit UAE or reboot message
 IF $uae EQ 1 VAL
   echo "Continue will quit UAE in 10 seconds."
 ELSE
@@ -101,7 +104,7 @@ echo ""
 ask "Press ENTER to continue"
 echo ""
 
-; Quit UAE, if UAE is used. Otherwise reboot
+; quit UAE, if UAE is used. Otherwise reboot
 IF $uae EQ 1 VAL
   echo "UAE will quit in 10 seconds..."
   wait 10

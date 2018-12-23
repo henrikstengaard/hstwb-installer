@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-11-13
+# Date:   2018-12-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1656,6 +1656,13 @@ function RunInstall($hstwb)
     Copy-Item -Path "$amigaUserPackagesDir\*" $tempInstallDir -recurse -force
 
 
+    # create system prefs directory
+    $systemPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "System\Prefs")
+    if(!(test-path -path $systemPrefsDir))
+    {
+        mkdir $systemPrefsDir | Out-Null
+    }
+
     # create prefs directory
     $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
     if(!(test-path -path $prefsDir))
@@ -1729,8 +1736,8 @@ function RunInstall($hstwb)
     {
         $installPackagesReboot = $true
 
-        # create install packages prefs file
-        $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
+        # create install packages system prefs file
+        $installPackagesFile = Join-Path $systemPrefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
         # extract packages to temp packages dir
