@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2018-12-06
+; Date: 2018-12-25
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -26,7 +26,7 @@ Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
 ; set stack
 stack 16384
 
-; add assigns from S:AssignList
+; add assigns from S:AssignList using assplus
 MakePath >NIL: RAM:Env
 AssPlus >NIL:
 

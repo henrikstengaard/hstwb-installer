@@ -1,52 +1,58 @@
 ; Install Emergency Boot
 ; ----------------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-25
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to install Emergency Boot for Amiga OS 3.9 installation.
 
 
+; add amiga os 3.9 emergency boot installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 Emergency Boot installation" >>SYS:hstwb-installer.log
+echo "----------------------------------------" >>SYS:hstwb-installer.log
+
 ; emergency boot installation message
 cls 
 echo "*e[32m" NOLINE
-echo "Amiga OS 3.9 Emergency Boot Installation"
+echo "Amiga OS 3.9 Emergency Boot installation"
 echo "*e[0m*e[1m" NOLINE
 echo "----------------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
 ; goto end, if "AmigaOS3.9:" device doesn't exist
-Assign >NIL: EXISTS AmigaOS3.9:
+Assign >>SYS:hstwb-installer.log EXISTS AmigaOS3.9:
 IF NOT $RC EQ 0 VAL
+  echo "ERROR: Device AmigaOS3.9: doesn't exist!" >>SYS:hstwb-installer.log
+
   echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
   SKIP fail
 ENDIF
 
-; copy emergency boot
-echo "*e[1mInstalling Emergency Boot for Amiga OS 3.9 installation*e[0m"
+; add copy emergency boot to log file
+echo "Installing Amiga OS 3.9 Emergency Boot" >>SYS:hstwb-installer.log
+echo "Copying Emergency Boot..." >>SYS:hstwb-installer.log
+
+; copy emergency boot message
+echo "*e[1mInstalling Amiga OS 3.9 Emergency Boot*e[0m"
 echo "Copying Emergency Boot..."
 
 ; copy emergency boot files to systemdir
-Copy >NIL: AmigaOS3.9:EMERGENCY-BOOT SYSTEMDIR: ALL
-
-; delete disk.info icon from systemdir, if it exists
-IF EXISTS SYSTEMDIR:Disk.info
-  Delete >NIL: SYSTEMDIR:Disk.info
-ENDIF
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:EMERGENCY-BOOT SYSTEMDIR: ALL
 
 ; copy assign hstwb installer for installing boing bags
-Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
+Copy >>SYS:hstwb-installer.log INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
 
 ; replace workbench startup-sequence with Amiga OS 3.9 startup-sequence
-Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Emergency-Boot
-Copy >NIL: INSTALLDIR:S/Amiga-OS-3.9/Startup-Sequence.AmigaOS3.9 SYSTEMDIR:S/Startup-Sequence
-
+Rename >>SYS:hstwb-installer.log SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Emergency-Boot
+Copy >>SYS:hstwb-installer.log INSTALLDIR:S/Amiga-OS-3.9/Startup-Sequence.AmigaOS3.9 SYSTEMDIR:S/Startup-Sequence
 
 ; done message
+echo "Done" >>SYS:hstwb-installer.log
 echo "Done"
 echo ""
-echo "Emergency Boot installation is complete."
+echo "Amiga OS 3.9 Emergency Boot installation is complete."
 
 SKIP end
 
@@ -56,8 +62,8 @@ SKIP end
 LAB fail
 
 echo ""
-echo "Emergency Boot installation failed and has stopped"
-echo "installation process."
+echo "Amiga OS 3.9 Emergency Boot installation failed and has"
+echo "stopped installation process."
 echo ""
 echo "Restart to rerun installation process."
 quit

@@ -1,7 +1,7 @@
 ; Startup Sequence for Amiga OS 3.9 Installation
 ; ----------------------------------------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-25
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -92,6 +92,8 @@ Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 ; mount amiga os 3.9 iso, if amiga os 3.9 iso prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  echo "Mounting Amiga OS 3.9 iso file" >>SYS:hstwb-installer.log
+
   Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39"
   wait 5
 ENDIF
@@ -112,7 +114,6 @@ Assign >NIL: L: INSTALLDIR:L REMOVE
 Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
 Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
 
-
 ; set use to 1, if use prefs exists
 set uae "0"
 IF EXISTS INSTALLDIR:Prefs/UAE
@@ -131,8 +132,8 @@ echo ""
 ; amiga os 3.9 boing bags or packages message
 IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
   echo "HstWB Installer has completed Amiga OS 3.9 installation and"
-  echo "will reboot system to start installation of"
-  echo "Boing Bags in Amiga OS 3.9 during WBStartup."
+  echo "will reboot system to start installation of Boing Bags in"
+  echo "Amiga OS 3.9."
 ELSE
   IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
     ; Copy assign hstwb installer for installing boing bags
@@ -150,7 +151,6 @@ ELSE
   ENDIF
 ENDIF
 echo ""
-
 
 ; copy hstwb installer log to install dir, if it exists
 IF EXISTS SYS:hstwb-installer.log

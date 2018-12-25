@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-25
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
@@ -9,6 +9,11 @@
 
 ; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
+; add amiga os 3.9 boing bags installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 Boing Bags installation" >>SYS:hstwb-installer.log
+echo "------------------------------------" >>SYS:hstwb-installer.log
 
 ; amiga os 3.9 boing bags installation message
 cls
@@ -19,30 +24,19 @@ echo "------------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
-; goto end, if device AMIGAOSDIR: doesn't exist
-Assign >NIL: EXISTS AMIGAOSDIR:
-IF WARN
-  echo "*e[1mERROR: Device AMIGAOSDIR: doesn't exist!*e[22m"
-  SKIP end
-ENDIF
-
-; goto end, if boing bag 1 file doesn't exist
-IF NOT EXISTS "AMIGAOSDIR:BoingBag39-1.lha"
-  echo ""
-  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in"
-  echo "device AMIGAOSDIR:. Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
-  SKIP end
-ENDIF
-
 ; goto end, if version.library is not version 45 (Amiga OS 3.9)
-Version >NIL: "SYS:Libs/version.library" 45 FILE
+Version >>SYS:hstwb-installer.log "SYS:Libs/version.library" 45 FILE
 IF WARN
-  echo "*e[1mERROR: Boing Bags installation requires AmigaOS 3.9!*e[22m"
+  echo "ERROR: Boing Bags installation requires Amiga OS 3.9!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Boing Bags installation requires Amiga OS 3.9!*e[22m"
   SKIP end
 ENDIF
 
 ; goto end, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
+  echo "ERROR: Assign hstwb installer doesn't exist!" >>SYS:hstwb-installer.log
+
   echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
   SKIP end
 ENDIF
@@ -51,39 +45,59 @@ ENDIF
 execute S:Assign-HstWB-Installer
 
 ; goto end, if device INSTALLDIR: doesn't exist
-Assign >NIL: EXISTS INSTALLDIR:
+Assign >>SYS:hstwb-installer.log EXISTS INSTALLDIR:
 IF WARN
+  echo "ERROR: Device INSTALLDIR: doesn't exist!" >>SYS:hstwb-installer.log
+
   echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
   SKIP end
 ENDIF
 
 ; add assigns to installdir
-Assign >NIL: C: INSTALLDIR:C ADD
-Assign >NIL: Devs: INSTALLDIR:Devs ADD
-Assign >NIL: L: INSTALLDIR:L ADD
-Assign >NIL: Libs: INSTALLDIR:Libs ADD
-Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
+Assign >>SYS:hstwb-installer.log C: INSTALLDIR:C ADD
+Assign >>SYS:hstwb-installer.log Devs: INSTALLDIR:Devs ADD
+Assign >>SYS:hstwb-installer.log L: INSTALLDIR:L ADD
+Assign >>SYS:hstwb-installer.log Libs: INSTALLDIR:Libs ADD
+Assign >>SYS:hstwb-installer.log Prefs: INSTALLDIR:Prefs ADD
 
 ; load commands resident 
-Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
-Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
-Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
-Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
-Resident >NIL: "INSTALLDIR:C/LhA" PURE
-Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
-Resident >NIL: "INSTALLDIR:C/UnZip" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/MakePath" PURE 
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/Reboot" PURE 
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/TotalReset" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UAEquit" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/LhA" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UNLZX" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UnZip" PURE
 
+; mount amiga os 3.9 iso, if amiga os 3.9 iso prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  echo "Mounting Amiga OS 3.9 iso file" >>SYS:hstwb-installer.log
 
-echo ""
-echo "Mounting Amiga OS 3.9 iso..."
-Mount FCD0: FROM INSTALLDIR:Devs/Mountlist
-wait 5
-echo "Done"
+  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39"
+  wait 5
+ENDIF
 
+; goto end, if device AMIGAOSDIR: doesn't exist
+Assign >>SYS:hstwb-installer.log EXISTS AMIGAOSDIR:
+IF WARN
+  echo "Device AMIGAOSDIR: doesn't exist!" >>SYS:hstwb-installer.log
 
+  echo "*e[1mERROR: Device AMIGAOSDIR: doesn't exist!*e[22m"
+  SKIP end
+ENDIF
+
+; goto end, if boing bag 1 file doesn't exist
+IF NOT EXISTS "AMIGAOSDIR:BoingBag39-1.lha"
+  echo "ERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in device AMIGAOSDIR:.!" >>SYS:hstwb-installer.log
+  echo "Skipping Amiga OS 3.9 Boing Bags installation!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in"
+  echo "device AMIGAOSDIR:. Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
+  SKIP end
+ENDIF
 
 ; goto end, if device AmigaOS3.9: doesn't exist
-Assign >NIL: EXISTS AmigaOS3.9:
+Assign >>SYS:hstwb-installer.log EXISTS AmigaOS3.9:
 IF WARN
   echo ""
   echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
@@ -95,10 +109,10 @@ ENDIF
 ; -----------
 
 ; create temp boing bags directory
-makedir >NIL: SYS:T/BoingBags
+makedir >>SYS:hstwb-installer.log SYS:T/BoingBags
 
 ; run install boing bag 1
-execute S:Install-BoingBag1
+execute INSTALLDIR:S/Amiga-OS-3.9/Install-BoingBag1
 
 ; goto complete, if boing bag 2 file doesn't exist
 IF NOT EXISTS "AMIGAOSDIR:BoingBag39-2.lha"
@@ -110,7 +124,7 @@ ENDIF
 ; -----------
 
 ; run install boing bag 2
-execute S:Install-BoingBag2
+execute INSTALLDIR:S/Amiga-OS-3.9/Install-BoingBag2
 
 
 ; complete
@@ -118,23 +132,23 @@ execute S:Install-BoingBag2
 LAB complete
 
 ; remove assigns from installdir
-Assign >NIL: C: INSTALLDIR:C REMOVE
-Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
-Assign >NIL: L: INSTALLDIR:L REMOVE
-Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
-Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
+Assign >>SYS:hstwb-installer.log C: INSTALLDIR:C REMOVE
+Assign >>SYS:hstwb-installer.log Devs: INSTALLDIR:Devs REMOVE
+Assign >>SYS:hstwb-installer.log L: INSTALLDIR:L REMOVE
+Assign >>SYS:hstwb-installer.log Libs: INSTALLDIR:Libs REMOVE
+Assign >>SYS:hstwb-installer.log Prefs: INSTALLDIR:Prefs REMOVE
 
 ; delete temp boing bags directory
-Delete >NIL: SYS:T/BoingBags ALL
+Delete >>SYS:hstwb-installer.log SYS:T/BoingBags ALL
 
 ; delete install boing bags scripts from systemdir
-Delete >NIL: SYS:S/Install-BoingBags
-Delete >NIL: SYS:WBStartup/Start-Install-BoingBags#?
+Delete >>SYS:hstwb-installer.log SYS:S/Install-BoingBags
+Delete >>SYS:hstwb-installer.log SYS:WBStartup/Start-Install-BoingBags#?
 
 ; replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
 IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
-  Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
-  Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+  Rename >>SYS:hstwb-installer.log SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+  Copy >>SYS:hstwb-installer.log INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 ENDIF
 
 echo ""
@@ -190,7 +204,7 @@ IF $installpackages EQ 1 VAL
   echo ""
   echo "System will reboot in 10 seconds..."
   wait 10
-  TotalReset >NIL:
+  TotalReset >>SYS:hstwb-installer.log
 ENDIF
 
 
@@ -207,11 +221,11 @@ echo ""
 IF $uae EQ 1 VAL
   echo "UAE will quit in 10 seconds..."
   wait 10
-  UAEquit >NIL:
+  UAEquit >>SYS:hstwb-installer.log
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  TotalReset >NIL:
+  TotalReset >>SYS:hstwb-installer.log
 ENDIF
 
 ENDSHELL

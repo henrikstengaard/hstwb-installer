@@ -1,37 +1,38 @@
 ; Install Boing Bag 2
 ; -------------------
 ;
-; Date: 2017-10-09
+; Date: 2018-12-25
 ; Author: Henrik Noerfjand Stengaard
 ;
-; An AmigaDOS script to automate installation of Boing Bag 2.
+; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bag 2.
 
 
-; Install Boing Bag 2
+; install boing bag 2
 ; -------------------
+
+; add amiga os 3.9 boing bag 2 installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 Boing Bag 2 installation" >>SYS:hstwb-installer.log
+echo "-------------------------------------" >>SYS:hstwb-installer.log
 
 echo ""
 echo "*e[1mInstalling Boing Bag 2*e[0m"
 
-
-; Extract boing bag 2
+; extract boing bag 2
 echo "Extracting..."
-INSTALLDIR:C/lha -m1 x "OS39DIR:BoingBag39-2.lha" SYS:T/BoingBags/ >NIL:
+INSTALLDIR:C/lha -m1 x "AMIGAOSDIR:BoingBag39-2.lha" "SYS:T/BoingBags/" >>SYS:hstwb-installer.log
 echo "Installing..."
 
-
-; Run boing bag 2 updater
+; run boing bag 2 updater
 SYS:T/BoingBags/BoingBag3.9-2/C/Updater SYS:T/BoingBags/BoingBag3.9-2/AmigaOS-Update "SYS:"
 
-
-; Run xad updater, if xadmaster.library version is less than 10
-Version >NIL: "SYS:Libs/xadmaster.library" 10 FILE
+; run xad updater, if xadmaster.library version is less than 10
+Version >>SYS:hstwb-installer.log "SYS:Libs/xadmaster.library" 10 FILE
 IF WARN
   SYS:T/BoingBags/BoingBag3.9-2/C/Updater SYS:T/BoingBags/BoingBag3.9-2/XAD-Update "SYS:"
 ENDIF
 
-
-; Install Boing Bag 2 AmigaOS ROM Update, if it exists
+; install boing bag 2 amiga os rom update, if it exists
 IF EXISTS "SYS:Devs/AmigaOS ROM Update.BB39-2"
   SET bakname "AmigaOS ROM Update.old"
 
@@ -48,22 +49,23 @@ IF EXISTS "SYS:Devs/AmigaOS ROM Update.BB39-2"
   ENDIF
 
   IF EXISTS "SYS:Devs/AmigaOS ROM Update"
-    Copy >NIL: "SYS:Devs/AmigaOS ROM Update" "SYS:Devs/$bakname"
+    Copy >>SYS:hstwb-installer.log "SYS:Devs/AmigaOS ROM Update" "SYS:Devs/$bakname"
   ENDIF
 
   IF EXISTS "SYS:Devs/AmigaOS ROM Update.BB39-2"
-    Copy >NIL: "SYS:Devs/AmigaOS ROM Update.BB39-2" "SYS:Devs/AmigaOS ROM Update"
+    Copy >>SYS:hstwb-installer.log "SYS:Devs/AmigaOS ROM Update.BB39-2" "SYS:Devs/AmigaOS ROM Update"
   ENDIF
 ENDIF 
 
+; fix installer
+Copy >>SYS:hstwb-installer.log "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:C"
+Copy >>SYS:hstwb-installer.log "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:Utilities"
 
-; Fix installer
-Copy >NIL: "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:C"
-Copy >NIL: "SYS:T/BoingBags/BoingBag3.9-2/C/Installer" "SYS:Utilities"
-
+; done message
+echo "Done" >>SYS:hstwb-installer.log
 echo "Done"
 
 
-; End
+; end
 ; ---
 LAB end
