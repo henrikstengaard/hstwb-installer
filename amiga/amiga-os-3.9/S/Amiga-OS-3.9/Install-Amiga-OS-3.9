@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2018-12-25
+; Date: 2018-12-26
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -196,7 +196,9 @@ ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Trashcan" 160 220
 ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 ; copy pal or ntsc screenmode prefs
-IF "$palmonitor" EQ 1 VAL
+INSTALLDIR:C/paltest >T:_paltest
+search >>SYS:hstwb-installer.log T:_paltest "PAL  (256/512 lines)"
+IF $RC EQ 0 VAL
   echo "Copying PAL monitor and screensmode" >>SYS:hstwb-installer.log
   Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
   Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
