@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1.4 Adf
 ; -------------------------
 ;
-; Date: 2018-12-01
+; Date: 2018-12-27
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1.4 adf files are present.
@@ -22,6 +22,12 @@ ENDIF
 ; run detect amiga os 3.1.4 adf, if amigaosdir: exists and check if all amiga os 3.1.4 adf files are present
 Assign >NIL: EXISTS AMIGAOSDIR:
 IF NOT WARN
+  ; set amiga os disk to "FDF0"
+  setenv amigaosdisk "FDF0"
+
+  ; run unmount adf
+  execute "INSTALLDIR:S/Unmount-Adf"
+
   ; create script to copy amiga os 3.1.4 adf files 
   List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "echo *".*" NOLINE*NExecute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
 

@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1 Adf
 ; ---------------------
 ;
-; Date: 2018-12-09
+; Date: 2018-12-27
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1 adf files.
@@ -111,6 +111,11 @@ IF "$md5" eq "c1c673eba985e9ab0888c5762cfa3d8f"
   echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
   set adffilename "amiga-os-310-extras.adf"
   SKIP copyadffile
+ENDIF
+
+; goto end, if md5 only prefs exists
+IF EXISTS INSTALLDIR:Prefs/MD5-Only
+  SKIP end
 ENDIF
 
 

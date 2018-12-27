@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1.4 Adf
 ; -----------------------
 ;
-; Date: 2018-12-06
+; Date: 2018-12-27
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
@@ -177,6 +177,83 @@ IF "$md5" eq "7e9b5ec9cf89d9aae771cd1b708792d9"
   SKIP copyadffile
 ENDIF
 
+; goto end, if md5 only prefs exists
+IF EXISTS INSTALLDIR:Prefs/MD5-Only
+  SKIP end
+ENDIF
+
+
+; mount file
+; ----------
+
+; goto end, if file size is not 901120 bytes
+IF NOT "`wc -c <"$tempadffile"`" EQ 901120 VAL
+  SKIP end
+ENDIF
+
+; add mount file to log
+echo "Mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+
+; run mount adf
+execute "INSTALLDIR:S/Mount-Adf" "$tempadffile"
+
+; goto end, if adf is not mounted
+IF NOT "$adfmounted" EQ 1 VAL
+  ; run unmount adf
+  execute "INSTALLDIR:S/Unmount-Adf"
+
+  SKIP end
+ENDIF
+
+; copy amiga os 3.1.4 workbench file, if workbench adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Workbench"`" EQ ""
+  echo "Amiga OS 3.1.4 Workbench adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-workbench.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 storage file, if storage adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Storage"`" EQ ""
+  echo "Amiga OS 3.1.4 Storage adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-storage.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 locale file, if locale adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Locale"`" EQ ""
+  echo "Amiga OS 3.1.4 Locale adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-locale.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 install file, if install adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Install"`" EQ ""
+  echo "Amiga OS 3.1.4 Install adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-install.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 fonts file, if fonts adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Fonts"`" EQ ""
+  echo "Amiga OS 3.1.4 Fonts adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-fonts.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 extras file, if extras adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Extras"`" EQ ""
+  echo "Amiga OS 3.1.4 Extras adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-extras.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 extras file, if extras adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Modules"`" EQ ""
+  echo "Amiga OS 3.1.4 Modules $modulesname adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-modules-$modulesfile.adf"
+  SKIP copyadffile
+ENDIF
+
 SKIP end
 
 
@@ -193,3 +270,6 @@ Copy >NIL: "$tempadffile" TO "{dir}/$adffilename"
 ; end
 ; ---
 LAB end
+
+; run unmount adf
+execute "INSTALLDIR:S/Unmount-Adf"
