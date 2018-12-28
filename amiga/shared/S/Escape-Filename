@@ -5,9 +5,11 @@
 ; Escape Filename
 ; ---------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2018-12-05
+; Date: 2018-12-28
 ;
 ; AmigaDOS script to escape filenames.
+; Escase characters ( ) [ ] ~ | # ? % `
+; http://www.amiga.org/forums/archive/index.php/t-23790.html
 
 
 ; end, if file doesn't exist
