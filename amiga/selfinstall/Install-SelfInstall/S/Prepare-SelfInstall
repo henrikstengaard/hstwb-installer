@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-12-27
+; Date: 2018-12-28
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
@@ -110,7 +110,62 @@ execute INSTALLDIR:S/Build-Amiga-OS-Menu INSTALLDIR:Temp/Amiga-OS-Menu
 ; run amiga os menu
 execute INSTALLDIR:Temp/Amiga-OS-Menu
 
+
+; detect kickstart
+cls 
+echo "*e[32m" NOLINE
+echo "Detect Kickstart roms"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "*e[1mDetecting Kickstart roms:*e[0m"
+
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; set kickstartdir to 1, if "KICKSTARTDIR:" device exists
+set kickstartdir "0"
+DiskInDrive >NIL: KICKSTARTDIR:
+IF $RC EQ 0 VAL
+  set kickstartdir "1"
+ELSE
+  ;echo "Warning: KICKSTARTDIR: device doesn't exist or is not mapped to a directory!" >>INSTALLDIR:Temp/Kickstart-Rom.log
+
+  echo "*e[KICKSTARTDIR*e[0m: Not present! Skip detecting"
+  echo "Kickstart rom files."
+ENDIF
+
+; set failat to 21
+failat 21
+
+; run detect kickstart rom, if KICKSTARTDIR: device exists
+IF "$kickstartdir" EQ 1 VAL
+  ; run detect kickstart, if it exists
+  IF EXISTS "INSTALLDIR:S/Kickstart/Detect-Kickstart"
+    execute "INSTALLDIR:S/Kickstart/Detect-Kickstart"
+  ENDIF
+ENDIF
+
+echo "Done"
+echo ""
+echo "Continue will show Select Kickstart installation menu."
+echo ""
+ask "Press ENTER to continue"
+
+; build kickstart menu
+execute INSTALLDIR:S/Build-Kickstart-Menu INSTALLDIR:Temp/Kickstart-Menu
+
+; run kickstart menu
+execute INSTALLDIR:Temp/Kickstart-Menu
+
+
 SKIP selfinstallready
+
+
+
+
+
 
 
 ; Check if KICKSTARTDIR: and set kickstart

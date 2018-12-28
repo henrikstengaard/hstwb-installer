@@ -1,0 +1,402 @@
+.KEY kickstartmenu/a
+.BRA {
+.KET }
+
+; Build Kickstart Menu
+; --------------------
+;
+; Date: 2018-12-28
+; Author: Henrik Noerfjand Stengaard
+
+
+echo "" NOLINE >T:_kickstartdefault
+echo "" NOLINE >T:_kickstartoption
+echo "" NOLINE >T:_kickstartmenu
+
+echo "set kickstartromcount *"0*"" >>T:_kickstartdefault
+
+echo "LAB kickstartmenu" >>T:_kickstartmenu
+echo "echo *"*" NOLINE >T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart 1.2 (33.180) a500 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Kick33180-A500-Rom
+  echo "set afkick33180a500 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afkick33180a500*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afkick33180a500 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afkick33180a500 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afkick33180a500*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afkick33180a500 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart 1.2 (33.180) A500 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart 1.3 (34.5) a500 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Kick34005-A500-Rom
+  echo "set afkick34005a500 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afkick34005a500*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afkick34005a500 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afkick34005a500 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afkick34005a500*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afkick34005a500 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart 1.3 (34.5) A500 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart 3.1 (40.063) a600 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Kick40063-A600-Rom
+  echo "set afkick40063a600 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afkick40063a600*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afkick40063a600 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afkick40063a600 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afkick40063a600*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afkick40063a600 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart 3.1 (40.063) A600 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart 3.1 (40.068) a1200 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Kick40068-A1200-Rom
+  echo "set afkick40068a1200 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afkick40068a1200*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afkick40068a1200 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afkick40068a1200 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afkick40068a1200*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afkick40068a1200 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart 3.1 (40.068) A1200 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart 3.1 (40.068) a4000 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Kick40068-A4000-Rom
+  echo "set afkick40068a4000 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afkick40068a4000*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afkick40068a4000 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afkick40068a4000 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afkick40068a4000*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afkick40068a4000 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart 3.1 (40.068) A4000 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; cloanto amiga forever kickstart rom key
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/AF-Rom-Key
+  echo "set afromkey *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$afromkey*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set afromkey *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set afromkey *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$afromkey*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set afromkey *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Cloanto Amiga Forever Kickstart rom key*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; add splitter
+set menuoption `eval $menuoption + 1`
+echo "echo *"--------------------------------------------------*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; original kickstart 1.2 (33.180) a500 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/Kick33180-A500-Rom
+  echo "set kick33180a500 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$kick33180a500*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set kick33180a500 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set kick33180a500 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$kick33180a500*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set kick33180a500 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Original Kickstart 1.2 (33.180) A500 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; original kickstart 1.3 (34.5) a500 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/Kick34005-A500-Rom
+  echo "set kick34005a500 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$kick34005a500*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set kick34005a500 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set kick34005a500 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$kick34005a500*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set kick34005a500 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Original Kickstart 1.3 (34.5) A500 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; original kickstart 3.1 (40.063) a600 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/Kick40063-A600-Rom
+  echo "set kick40063a600 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$kick40063a600*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set kick40063a600 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set kick40063a600 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$kick40063a600*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set kick40063a600 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Original Kickstart 3.1 (40.063) A600 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; original kickstart 3.1 (40.068) a1200 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/Kick40068-A1200-Rom
+  echo "set kick40068a1200 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$kick40068a1200*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set kick40068a1200 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set kick40068a1200 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$kick40068a1200*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set kick40068a1200 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Original Kickstart 3.1 (40.068) A1200 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; original kickstart 3.1 (40.068) a4000 rom
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartmenu
+IF EXISTS INSTALLDIR:Prefs/Kick40068-A4000-Rom
+  echo "set kick40068a4000 *"1*"" >>T:_kickstartdefault
+
+  echo "" >>T:_kickstartoption
+  echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+  echo "  IF *"*$kick40068a4000*" EQ 1 VAL" >>T:_kickstartoption
+  echo "    set kick40068a4000 *"1*"" >>T:_kickstartoption
+  echo "  ELSE" >>T:_kickstartoption
+  echo "    set kick40068a4000 *"0*"" >>T:_kickstartoption
+  echo "  ENDIF" >>T:_kickstartoption
+  echo "ENDIF" >>T:_kickstartoption
+
+  echo "IF *"*$kick40068a4000*" EQ *"1*"" >>T:_kickstartmenu
+  echo "  set kickstartromcount *`eval *$kickstartromcount + 1*`" >>T:_kickstartmenu
+  echo "  echo *"Install*" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ELSE" >>T:_kickstartmenu
+  echo "  echo *"Skip   *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+  echo "ENDIF" >>T:_kickstartmenu
+ELSE
+  echo "set kick40068a4000 *"0*"" >>T:_kickstartdefault
+
+  echo "echo *"N/A    *" NOLINE >>T:kickstartmenu" >>T:_kickstartmenu
+ENDIF
+echo "echo *" : Kickstart 3.1 (40.068) A4000 rom*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; add splitter
+set menuoption `eval $menuoption + 1`
+echo "echo *"--------------------------------------------------*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; view detect kickstart log option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartoption
+echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_kickstartoption
+echo "  IF EXISTS *"INSTALLDIR:Temp/Detect-Kickstart.log*" EQ $menuoption VAL" >>T:_kickstartoption
+echo "    Lister *"INSTALLDIR:Temp/Detect-Kickstart.log*" >NIL:" >>T:_kickstartoption
+echo "  ELSE" >>T:_kickstartoption
+echo "    RequestChoice *"Error*" *"Detect Kickstart log doesn't exist!*" *"OK*" >NIL:" >>T:_kickstartoption
+echo "  ENDIF" >>T:_kickstartoption
+echo "ENDIF" >>T:_kickstartoption
+echo "" >>T:_kickstartmenu
+echo "echo *"View Detect Kickstart log*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; confirm kickstart installation option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartoption
+echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_kickstartoption
+echo "  set confirm *`RequestChoice *"Kickstart installation*" *"Do you want to install**N*$kickstartromcount Kickstart rom file(s)?*" *"Yes|No*"*`" >>T:_kickstartoption
+echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_kickstartoption
+echo "    SKIP kickstartinstall" >>T:_kickstartoption
+echo "  ENDIF" >>T:_kickstartoption
+echo "ENDIF" >>T:_kickstartoption
+echo "" >>T:_kickstartmenu
+echo "echo *"Confirm install *$kickstartromcount Kickstart rom file(s)*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; show kickstart installation menu
+echo "" >>T:_kickstartmenu
+echo "set kickstartoption *"*"" >>T:_kickstartmenu
+echo "set kickstartoption *"*`RequestList TITLE=*"Select Kickstart installation*" LISTFILE=*"T:kickstartmenu*" WIDTH=640 LINES=24*`*"" >>T:_kickstartmenu
+
+; add kickstart options to kickstart menu
+echo "" >>T:_kickstartmenu
+type T:_kickstartoption >>T:_kickstartmenu
+
+echo "" >>T:_kickstartmenu
+echo "SKIP BACK kickstartmenu" >>T:_kickstartmenu
+echo "" >>T:_kickstartmenu
+echo "; kickstart install" >>T:_kickstartmenu
+echo "; -----------------" >>T:_kickstartmenu
+echo "LAB kickstartinstall" >>T:_kickstartmenu
+echo "IF *"*$kick33180a500*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Kick33180-A500-Rom*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "IF *"*$kick34005a500*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Kick34005-A500-Rom*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "IF *"*$kick40063a600*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Kick40063-A600-Rom*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "IF *"*$kick40068a1200*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Kick40068-A1200-Rom*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "IF *"*$kick40068a4000*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Kick40068-A4000-Rom*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "IF *"*$afromkey*" EQ 1 VAL" >>T:_kickstartmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Rom-Key*"" >>T:_kickstartmenu
+echo "ENDIF" >>T:_kickstartmenu
+echo "" >>T:_kickstartmenu
+echo "LAB end" >>T:_kickstartmenu
+echo "" >>T:_kickstartmenu
+
+; build kickstart menu
+type T:_kickstartdefault >"{kickstartmenu}"
+type T:_kickstartmenu >>"{kickstartmenu}"
+type T:_kickstartoption >>"{kickstartmenu}"
