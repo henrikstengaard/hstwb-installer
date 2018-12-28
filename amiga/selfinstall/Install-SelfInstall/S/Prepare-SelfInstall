@@ -142,8 +142,8 @@ failat 21
 ; run detect kickstart rom, if KICKSTARTDIR: device exists
 IF "$kickstartdir" EQ 1 VAL
   ; run detect kickstart, if it exists
-  IF EXISTS "INSTALLDIR:S/Kickstart/Detect-Kickstart"
-    execute "INSTALLDIR:S/Kickstart/Detect-Kickstart"
+  IF EXISTS "INSTALLDIR:S/Kickstart/Detect-Kickstart-Rom"
+    execute "INSTALLDIR:S/Kickstart/Detect-Kickstart-Rom"
   ENDIF
 ENDIF
 
@@ -152,6 +152,11 @@ echo ""
 echo "Continue will show Select Kickstart installation menu."
 echo ""
 ask "Press ENTER to continue"
+
+; create detect kickstart log
+IF EXISTS "INSTALLDIR:Temp/Kickstart-Rom.log"
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart-Rom.log" "INSTALLDIR:Temp/Detect-Kickstart.log"
+ENDIF
 
 ; build kickstart menu
 execute INSTALLDIR:S/Build-Kickstart-Menu INSTALLDIR:Temp/Kickstart-Menu
