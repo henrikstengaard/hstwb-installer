@@ -46,6 +46,6 @@ Delete >NIL: T:_install_amiga-os-314
 Delete >NIL: T:_install_amiga-os-310
 
 ; install kickstart, if prefs exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart"
-  execute "INSTALLDIR:S/Install-Kickstart"
+IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart-Rom"
+  execute "INSTALLDIR:S/Kickstart/Install-Kickstart-Rom"
 ENDIF
