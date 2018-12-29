@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1.4 Adf
 ; -----------------------
 ;
-; Date: 2018-12-27
+; Date: 2018-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
@@ -261,10 +261,15 @@ SKIP end
 ; -------------
 LAB copyadffile
 
-; add add copy to log
+; add copy to log
 echo "Copying to '{dir}/$adffilename'" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 
-Copy >NIL: "$tempadffile" TO "{dir}/$adffilename"
+; make adf file deletable, if it exists
+IF EXISTS "{dir}/$adffilename"
+  Protect >NIL: "{dir}/$adffilename" +prwed
+ENDIF
+
+Copy >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log "$escapedfile" TO "{dir}/$adffilename"
 
 
 ; end
