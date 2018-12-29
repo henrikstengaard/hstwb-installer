@@ -95,7 +95,8 @@ ENDIF
 echo "{file}" NOLINE >T:_kickstartromfile
 search >NIL: T:_kickstartromfile "rom.key"
 IF $RC EQ 0 VAL
-  search >NIL: "$tempromfile" "CLOANTO (R) AMIGA FOREVER (TM) ROM KEY FILE"
+  Copy >NIL: "$escapedfile" TO "INSTALLDIR:Temp/rom.key"
+  search >NIL: "INSTALLDIR:Temp/rom.key" "CLOANTO (R) AMIGA FOREVER (TM) ROM KEY FILE"
   IF $RC EQ 0 VAL
     echo "Cloanto Amiga Forever Kickstart rom key detected" >>INSTALLDIR:Temp/Kickstart-Rom.log
     set kickstartromfile "af-rom.key"
