@@ -1,7 +1,7 @@
 ; Detect Kickstart Rom
 ; --------------------
 ;
-; Date: 2018-12-28
+; Date: 2018-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Kickstart rom files are present.
@@ -91,7 +91,7 @@ IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick40068.A4000"
 ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick40068.A4000"
   set kick40068a4000 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick40068-A4000-Rom
+  echo "" NOLINE >INSTALLDIR:Prefs/Kick40068-A4000-Rom
 ENDIF
 IF NOT "$kick40068a4000" EQ 1 VAL
   echo "kickstart 3.1 (40.068) A4000 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
