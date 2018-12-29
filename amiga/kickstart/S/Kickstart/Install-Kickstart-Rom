@@ -1,19 +1,19 @@
 ; Install Kickstart Rom
 ; ---------------------
 ;
-; Date: 2018-12-28
+; Date: 2018-12-29
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; kickstart installation
 cls
 echo "*e[32m" NOLINE
-echo "Kickstart Installation"
+echo "Kickstart installation"
 echo "*e[0m*e[1m" NOLINE
 echo "----------------------"
 echo "*e[0m" NOLINE
 echo ""
-echo "*e[1mInstalling Kickstart roms*e[0m"
+echo "*e[1mInstalling Kickstart roms files:*e[0m"
 
 ; create devs kickstarts directory, if doesn't exists
 IF NOT EXISTS "SYSTEMDIR:Devs/Kickstarts/"
