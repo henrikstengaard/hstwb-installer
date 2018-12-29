@@ -5,7 +5,7 @@
 ; Copy Kickstart Rom
 ; ------------------
 ;
-; Date: 2018-12-28
+; Date: 2018-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Kickstart rom files.
@@ -145,10 +145,16 @@ SKIP end
 ; -------------
 LAB copyromfile
 
-; add add copy to log
+; add copy rom file to log
 echo "Copying to '{dir}/$kickstartromfile'" >>INSTALLDIR:Temp/Kickstart-Rom.log
 
-Copy >NIL: "$tempromfile" TO "{dir}/$kickstartromfile"
+; make rom file deletable, if it exists
+IF EXISTS "{dir}/$kickstartromfile"
+  Protect >NIL: "{dir}/$kickstartromfile" +prwed
+ENDIF
+
+; copy rom file
+Copy >>INSTALLDIR:Temp/Kickstart-Rom.log "$escapedfile" "{dir}/$kickstartromfile"
 
 
 ; end
