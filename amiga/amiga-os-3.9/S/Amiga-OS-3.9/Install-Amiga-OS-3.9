@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2018-12-26
+; Date: 2018-12-30
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -108,92 +108,93 @@ ENDIF
 ; cleanup
 echo "Cleaning up..." >>SYS:hstwb-installer.log
 echo "Cleaning up..."
-Resident >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" PURE
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" "INSTALLDIR:Temp/"
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:Temp/ICONPOS" PURE
 
 ; update system-device drawer
 "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/MergeIcons" >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/Icons/Disk.info" "SYSTEMDIR:Disk.info" FREEPOS
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs"   10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Font"                       10 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Locale"                     80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs" 10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Font" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Locale" 80 10
 
 ;      (tooltype (dest (tackon target "Prefs/Locale")) (settooltype "MAP" "PROGDIR:WORLDMAP"))
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Pointer"                   150 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterPS"                 220 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Sound"                     290 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ReAction"                  360 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/IControl"                   10 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Overscan"                   80 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Printer"                   150 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ScreenMode"                220 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Time"                      290 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Workbench"                 360 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Input"                     10 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Palette"                   80 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterGfx"               150 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Serial"                   220 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/WBPattern"                290 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Presets"                  430 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/CacheCDFS"                360 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Pointer" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterPS" 220 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Sound" 290 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ReAction" 360 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/IControl" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Overscan" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Printer" 150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ScreenMode" 220 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Time" 290 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Workbench" 360 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Input" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Palette" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterGfx" 150 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Serial" 220 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/WBPattern" 290 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Presets" 430 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/CacheCDFS" 360 150
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities"      10 80 DXPOS 40 DYPOS 60 DWIDTH 180 DHEIGHT 100
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/Clock"                  80 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/MultiView"              10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities" 10 80 DXPOS 40 DYPOS 60 DWIDTH 180 DHEIGHT 100
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/Clock" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/MultiView" 10 10
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools"          10 150 DXPOS 20 DYPOS 80 DWIDTH 290 DHEIGHT 300
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities"     10 10 DXPOS 80 DYPOS 60 DWIDTH 240 DHEIGHT 240
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Exchange"       10 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Blanker"        10 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/ClickToFront"   80 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/CrossDOS"       80 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/FKey"          150 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/AutoPoint"     10 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/NoCapsLock"    80 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/MouseBlanker"  150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools" 10 150 DXPOS 20 DYPOS 80 DWIDTH 290 DHEIGHT 300
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities" 10 10 DXPOS 80 DYPOS 60 DWIDTH 240 DHEIGHT 240
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Exchange" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Blanker" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/ClickToFront" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/CrossDOS" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/FKey" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/AutoPoint" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/NoCapsLock" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/MouseBlanker" 150 80
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/EditPad"                   80  10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/IconEdit"                 150  10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrepCard"                 220  10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Mounter"                   10  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/MEmacs"                    80  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/ShowConfig"               150  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/CMD"                      220  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Calculator"                10 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/HDToolBox"                 80 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/KeyShow"                  150 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Lacer"                    220 150
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/GraphicDump"               10 220
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/InitPrinter"               80 220
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrintFiles"               150 220
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/FindFile"                 220 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/EditPad" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/IconEdit" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrepCard" 220 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Mounter" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/MEmacs" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/ShowConfig" 150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/CMD" 220 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Calculator" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/HDToolBox" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/KeyShow" 150 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Lacer" 220 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/GraphicDump" 10 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/InitPrinter" 80 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrintFiles" 150 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/FindFile" 220 220
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System"    10 10 DXPOS 50 DYPOS 60 DWIDTH 240 DHEIGHT 180
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/FixFonts"                10 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Format"                  80 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/NoFastMem"              150 10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/RexxMast"                10 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Shell"                   80 80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Intellifont"            150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System" 10 10 DXPOS 50 DYPOS 60 DWIDTH 240 DHEIGHT 180
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/FixFonts" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Format" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/NoFastMem" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/RexxMast" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Shell" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Intellifont" 150 80
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs"      80 10 DXPOS 80 DYPOS 77 DWIDTH 180 DHEIGHT 230
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Datatypes"                 10  10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/DosDrivers"                10  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/KeyMaps"                   80  10
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Monitors"                  80  80
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Printers"                 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs" 80 10 DXPOS 80 DYPOS 77 DWIDTH 180 DHEIGHT 230
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Datatypes" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/DosDrivers" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/KeyMaps" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Monitors" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Printers" 10 150
 
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage"              80  80 DXPOS 480 DYPOS 77 DWIDTH 180 DHEIGHT 230
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Datatypes"    10  10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/DosDrivers"   10  80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/KeyMaps"      80  10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors"     80  80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Printers"     10 150 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage" 80 80 DXPOS 480 DYPOS 77 DWIDTH 180 DHEIGHT 230
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Datatypes" 10 10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/DosDrivers" 10 80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/KeyMaps" 80 10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors" 80 80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Printers" 10 150 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
 
 ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:WBStartup" 80 220
 ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Expansion" 80 150
 ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Trashcan" 160 220
-ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Disk"      DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Disk" DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
 
 ; copy pal or ntsc screenmode prefs
 INSTALLDIR:C/paltest >T:_paltest
