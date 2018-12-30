@@ -1,7 +1,7 @@
 ; Install Complete
 ; ----------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-30
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to complete Amiga OS and Kickstart roms installation by rebooting system or quiting UAE.
@@ -15,7 +15,7 @@ cls
 echo "*e[32m" NOLINE
 echo "Amiga OS and Kickstart roms installation complete"
 echo "*e[0m*e[1m" NOLINE
-echo "--------------------------------------------------"
+echo "-------------------------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
@@ -26,8 +26,7 @@ IF EXISTS INSTALLDIR:Prefs/UAE
 ENDIF
 
 ; status message
-fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-390#?" >T:_install_amiga-os-390
-IF "`wc -l <T:_install_amiga-os-390`" GT 0 VAL
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390"
   echo "HstWB Installer has completed Amiga OS and Kickstart roms"
   IF $uae EQ 1 VAL
     echo "installation and will quit and restart UAE to start"

@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2018-12-26
+; Date: 2018-12-30
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -496,6 +496,9 @@ echo "; amiga os install" >>T:_amigaosmenu
 echo "; ----------------" >>T:_amigaosmenu
 echo "LAB amigaosinstall" >>T:_amigaosmenu
 echo "echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-*$amigaosinstall*"" >>T:_amigaosmenu
+echo "IF *"*$amigaos39*" EQ 1 VAL" >>T:_amigaosmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Amiga-OS-390*"" >>T:_amigaosmenu
+echo "ENDIF" >>T:_amigaosmenu
 echo "IF *"*$boingbaginstall*" GT 0 VAL" >>T:_amigaosmenu
 echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1*"" >>T:_amigaosmenu
 echo "ENDIF" >>T:_amigaosmenu
