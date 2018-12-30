@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2018-12-25
+; Date: 2018-12-30
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
@@ -73,7 +73,7 @@ Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UnZip" PURE
 IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
   echo "Mounting Amiga OS 3.9 iso file" >>SYS:hstwb-installer.log
 
-  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39"
+  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso"
   wait 5
 ENDIF
 
