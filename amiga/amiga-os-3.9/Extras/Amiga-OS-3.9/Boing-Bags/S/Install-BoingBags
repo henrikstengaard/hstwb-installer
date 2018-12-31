@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2018-12-30
+; Date: 2018-12-31
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
@@ -146,7 +146,7 @@ Delete >>SYS:hstwb-installer.log SYS:S/Install-BoingBags
 Delete >>SYS:hstwb-installer.log SYS:WBStartup/Start-Install-BoingBags#?
 
 ; replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
-IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
   Rename >>SYS:hstwb-installer.log SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
   Copy >>SYS:hstwb-installer.log INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
 ENDIF
@@ -157,7 +157,7 @@ echo ""
 
 
 ; reboot message
-IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
   echo "HstWB Installer has completed installation of"
   echo "Amiga OS 3.9 Boing Bags and will now reboot to"
   echo "start package installation."
@@ -178,7 +178,7 @@ ENDIF
 
 ; set installpackages to 1, if install packages prefs exists
 set installpackages "0"
-IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
   set installpackages "1"
 ENDIF
 

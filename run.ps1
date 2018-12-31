@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-12-23
+# Date:   2018-12-31
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1656,13 +1656,6 @@ function RunInstall($hstwb)
     Copy-Item -Path "$amigaUserPackagesDir\*" $tempInstallDir -recurse -force
 
 
-    # create system prefs directory
-    $systemPrefsDir = [System.IO.Path]::Combine($tempInstallDir, "System\Prefs")
-    if(!(test-path -path $systemPrefsDir))
-    {
-        mkdir $systemPrefsDir | Out-Null
-    }
-
     # create prefs directory
     $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
     if(!(test-path -path $prefsDir))
@@ -1737,7 +1730,7 @@ function RunInstall($hstwb)
         $installPackagesReboot = $true
 
         # create install packages system prefs file
-        $installPackagesFile = Join-Path $systemPrefsDir -ChildPath 'Install-Packages'
+        $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
         # extract packages to temp packages dir
@@ -2277,10 +2270,9 @@ function RunBuildSelfInstall($hstwb)
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
     Copy-Item -Path "$amigaUserPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
-
     # create self install prefs file
-    $uaePrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
-    Set-Content $uaePrefsFile -Value ""
+    $selfInstallPrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
+    Set-Content $selfInstallPrefsFile -Value ""
 
 
     # patch assign list
@@ -2405,10 +2397,24 @@ function RunBuildSelfInstall($hstwb)
     $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Remove-HstWBInstaller")
     WriteAmigaTextLines $removeHstwbInstallerScriptFile $removeHstwbInstallerScriptLines 
 
+    # create default directory
+    $defaultDir = Join-Path $tempInstallDir -ChildPath "Default"
+    if(!(test-path -path $defaultDir))
+    {
+        mkdir $defaultDir | Out-Null
+    }
+
+    # copy prefs directory to default prefs directory
+    Copy-Item -Path "$prefsDir\*" $defaultDir -recurse -force
+
+    # move default directory to prefs directory
+    $defaultPrefsDir = Join-Path $prefsDir -ChildPath "Default"
+    Move-Item -Path $defaultDir -Destination $defaultPrefsDir
 
     # copy prefs to install self install
     $selfInstallDir = Join-Path $tempInstallDir -ChildPath "Install-SelfInstall"
     Copy-Item -Path $prefsDir $selfInstallDir -recurse -force
+
 
     # update version in startup sequence files
     $startupSequenceFiles = @()

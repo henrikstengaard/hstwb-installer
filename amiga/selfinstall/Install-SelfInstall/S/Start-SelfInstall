@@ -1,7 +1,7 @@
 ; Start Self Install
 ; ------------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -53,11 +53,13 @@ ENDIF
 
 ; create install prefs directory, if it doesn't exist. otherwise delete all files from install prefs directory
 IF NOT EXISTS "INSTALLDIR:Prefs/"
-  MakePath >NIL: "INSTALLDIR:Prefs"
+  MakePath >NIL: "INSTALLDIR:Prefs/Default"
 ELSE
-  Delete >NIL: "INSTALLDIR:Prefs/#?" ALL
+  Delete >NIL: "INSTALLDIR:Prefs/~(Default)#?" ALL
 ENDIF
 
+; copy default prefs to prefs directory
+Copy "INSTALLDIR:Prefs/Default/#?" "INSTALLDIR:Prefs" ALL
 
 ; run prepare self install
 execute "INSTALLDIR:S/Prepare-SelfInstall"

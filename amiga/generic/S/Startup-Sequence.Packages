@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2018-12-23
+; Date: 2018-12-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -123,7 +123,7 @@ Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
 ; Run install packages
 cls
-IF EXISTS INSTALLDIR:System/Prefs/Install-Packages
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
   execute INSTALLDIR:S/Install-Packages
 ENDIF
 
