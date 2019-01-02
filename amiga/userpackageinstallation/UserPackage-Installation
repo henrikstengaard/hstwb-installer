@@ -18,8 +18,8 @@ IF NOT EXISTS "ENV:ReqTools.prefs"
   copy >NIL: "INSTALLDIR:Env/ReqTools.prefs" "ENV:"
 ENDIF
 
-; run list user packages
-Execute INSTALLDIR:S/List-User-Packages T:User-Packages
+; run detect user packages
+Execute INSTALLDIR:S/Detect-User-Packages T:User-Packages
 
 ; Check if user packages contains any user packages
 set userpackagescount `wc -l <T:User-Packages`
