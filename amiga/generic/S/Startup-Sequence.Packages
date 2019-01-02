@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2018-12-31
+; Date: 2019-01-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -207,5 +207,5 @@ IF $uae EQ 1 VAL
 ELSE
   echo "System will reboot in 10 seconds..."
   wait 10
-  Reboot >NIL:
+  TotalReset >NIL:
 ENDIF
