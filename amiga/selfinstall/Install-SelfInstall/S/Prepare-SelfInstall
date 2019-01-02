@@ -1,10 +1,11 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2018-12-28
+; Date: 2019-01-02
 ; Author: Henrik Noerfjand Stengaard
 ;
-; AmigaDOS script to prepare self install by detecting precense of CD drive, Amiga OS 3.9 iso and Boing Bags to configure installation flow.
+; AmigaDOS script to prepare self install by detecting precense of CD drive,
+; Amiga OS 3.9 iso and Boing Bags to configure installation flow.
 
 
 ; self install overview
@@ -25,8 +26,6 @@ echo "  *e[1mNote: Directory must be read/write, if installing Amiga"
 echo "  OS 3.9 from iso (required by filedisk.device).*e[0m"
 echo "- *e[1mKICKSTARTDIR*e[0m: Directory with Kickstart rom files."
 echo "- *e[1mUSERPACKAGESDIR*e[0m: Directory with user packages."
-echo ""
-echo "TODO: Describe detection and installation process!"
 echo ""
 echo "Continue will detect Amiga OS."
 echo ""
@@ -165,108 +164,14 @@ execute INSTALLDIR:S/Build-Kickstart-Menu INSTALLDIR:Temp/Kickstart-Menu
 execute INSTALLDIR:Temp/Kickstart-Menu
 
 
-SKIP selfinstallready
+; detect user packages
+; --------------------
 
+; run detect user packages
+execute INSTALLDIR:S/Detect-User-Packages
 
-
-
-
-
-
-; Check if KICKSTARTDIR: and set kickstart
-set kickstart "0"
-Assign >NIL: EXISTS KICKSTARTDIR:
-IF NOT WARN
-  ; Set fail at 255 for DiskInDrive to fail silently
-  failat 255
-
-  ; Set workbench to 1, if device KICKSTARTDIR: is mapped to a directory
-  DiskInDrive >NIL: KICKSTARTDIR:
-  IF NOT WARN
-    set kickstart "1"
-  ENDIF
-
-  ; Set fail at 21
-  failat 21
-ENDIF
-
-
-; Print kickstart status and create install kickstart prefs, if KICKSTARTDIR: exists
-IF $kickstart EQ 1 VAL
-  ; Create install kickstart prefs
-  echo "" >INSTALLDIR:Prefs/Install-Kickstart
-  echo "- *e[1mKICKSTARTDIR*e[0m: Present! Install Kickstart rom files."
-ELSE
-  echo "- *e[1mKICKSTARTDIR*e[0m: Not present! Skip Kickstart rom installation."
-ENDIF
-
-
-; Check if USERPACKAGESDIR: and set userpackages
-set userpackages "0"
-Assign >NIL: EXISTS USERPACKAGESDIR:
-IF NOT WARN
-  ; Set fail at 255 for DiskInDrive to fail silently
-  failat 255
-
-  ; Set userpackages to 1, if device USERPACKAGESDIR: is mapped to a directory
-  DiskInDrive >NIL: USERPACKAGESDIR:
-  IF NOT WARN
-    set userpackages "1"
-  ENDIF
-
-  ; Set fail at 21
-  failat 21
-ENDIF
-
-
-; Print user packges dir status and create install user packages prefs, if USERPACKAGESDIR: exists
-IF $userpackages EQ 1 VAL
-  echo "- *e[1mUSERPACKAGESDIR*e[0m: Present! Install user packages."
-ELSE
-  echo "- *e[1mUSERPACKAGESDIR*e[0m: Not present! Skip user package"
-  echo "  installation."
-ENDIF
-
-
-echo ""
-IF $userpackages EQ 0 VAL
-  echo "Continue will show self install ready."
-  echo ""
-  ask "Press ENTER to continue"
-  SKIP selfinstallready
-ENDIF
-
-echo "Continue will show user package status."
-echo ""
-ask "Press ENTER to continue"
-
-
-; Print user packages status
-cls 
-echo "*e[32m" NOLINE
-echo "User Packages Status"
-echo "*e[0m*e[1m" NOLINE
-echo "--------------------"
-echo "*e[0m" NOLINE
-
-; Run find user packages
-Execute INSTALLDIR:S/Find-User-Packages INSTALLDIR:Prefs/User-Packages
-
-; Check if user packages prefs contains any user packages
-set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
-IF $userpackagescount GT 0 VAL
-  ; Create install user packages prefs
-  echo "" >INSTALLDIR:Prefs/Install-User-Packages
-
-  ; Run prepare user packages
-  echo ""
-  Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
-  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages INSTALL
-  Delete >NIL: T:User-Packages
-ELSE
-  echo ""
-  echo "*e[1mNo user packages found, skipping user package installation!*e[22m"
-ENDIF
+; add detect user packages to log
+type "INSTALLDIR:Temp/Detect-User-Packages.log" >>SYS:hstwb-installer.log
 
 echo ""
 echo "Continue will show self install ready."

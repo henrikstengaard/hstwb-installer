@@ -5,7 +5,7 @@
 ; Prepare User Packages
 ; ---------------------
 ;
-; Date: 2018-05-02
+; Date: 2019-01-02
 ; Author: Henrik Noerfjand Stengaard
 
 ; Fail, if USERPACKAGESDIR: assign doesn't exist
@@ -28,10 +28,7 @@ IF NOT EXISTS "{userpackages}"
   quit 20
 ENDIF
 
-; Get user packages count
-set userpackagescount `wc -l <"{userpackages}"`
-
-echo "*e[1mPreparing $userpackagescount user package(s) for installation...*e[0m"
+echo "*e[1mBuilding user packages menu for installation...*e[0m"
 
 set menuindex 1
 

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-12-31
+# Date:   2019-01-02
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2222,6 +2222,13 @@ function RunBuildSelfInstall($hstwb)
     $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "selfinstall")
     Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
 
+    # create install self install directory
+    $installSelfInstallDir = Join-Path $tempInstallDir -ChildPath 'Install-SelfInstall'
+    if(!(test-path -path $installSelfInstallDir))
+    {
+        mkdir $installSelfInstallDir | Out-Null
+    }
+
     # copy generic to install directory
     $amigaGenericDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
@@ -2266,9 +2273,16 @@ function RunBuildSelfInstall($hstwb)
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
-    # copy amiga user packages dir
-    $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
-    Copy-Item -Path "$amigaUserPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    # create self install user packages dir
+    $selfInstallUserPackagesDir = Join-Path $installSelfInstallDir -ChildPath 'User-Packages'
+    if(!(test-path -path $selfInstallUserPackagesDir))
+    {
+        mkdir $selfInstallUserPackagesDir | Out-Null
+    }
+
+    # copy user packages dir
+    $amigaUserPackagesDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath 'userpackages'
+    Copy-Item -Path "$amigaUserPackagesDir\*" $selfInstallUserPackagesDir -recurse -force
 
     # create self install prefs file
     $selfInstallPrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'

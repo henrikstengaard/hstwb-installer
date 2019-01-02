@@ -1,0 +1,65 @@
+; Detect User Packages
+; --------------------
+;
+; Date: 2019-01-02
+; Author: Henrik Noerfjand Stengaard
+
+
+; detect user packages
+; --------------------
+LAB detectuserpackages
+
+echo "" >"INSTALLDIR:Temp/Detect-User-Packages.log"
+echo "Detect user packages" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
+echo "--------------------" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
+
+cls 
+echo "*e[32m" NOLINE
+echo "Detect user packages"
+echo "*e[0m*e[1m" NOLINE
+echo "--------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; set userpackagesdir to 1, if "USERPACKAGESDIR:" device exists
+set userpackagesdir "0"
+DiskInDrive >NIL: USERPACKAGESDIR:
+IF $RC EQ 0 VAL
+  set userpackagesdir "1"
+ENDIF
+
+; set failat to 21
+failat 21
+
+; goto end, if userpackagesdir is not set to 1
+IF NOT "$userpackagesdir" EQ 1 VAL
+  echo "USERPACKAGESDIR: device doesn't exist or is not mapped to a directory!" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
+  echo "USERPACKAGESDIR: device doesn't exist or is not mapped to a directory!"
+  SKIP end
+ENDIF
+
+; run detect user packages
+Execute INSTALLDIR:User-Packages/S/Detect-User-Packages INSTALLDIR:Prefs/User-Packages
+
+; goto end, if no user packages are present
+set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
+IF "$userpackagescount" EQ 0 VAL
+  echo "No user packages found, skipping user package installation!" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
+  echo "No user packages found, skipping user package installation!"
+ENDIF
+
+; create install user packages prefs
+echo "" >INSTALLDIR:Prefs/Install-User-Packages
+
+; run build install user packages
+echo ""
+Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
+Execute INSTALLDIR:User-Packages/S/Build-Install-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages INSTALL
+Delete >NIL: T:User-Packages
+
+
+; end
+LAB end

@@ -2,52 +2,52 @@
 .BRA {
 .KET }
 
-; Find User Packages
-; ------------------
+; Detect User Packages
+; --------------------
 ;
-; Date: 2018-04-17
+; Date: 2019-01-02
 ; Author: Henrik Noerfjand Stengaard
 
-echo ""
-echo "*e[1mFinding user packages in USERPACKAGESDIR:*e[0m"
+echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
 
-; Create empty user packages file
+; create empty user packages file
 echo "" NOLINE >"{userpackagesfile}"
 
-; Goto end, if USERPACKAGESDIR: device name doesn't exist
+; goto end, if USERPACKAGESDIR: device name doesn't exist
 Assign >NIL: EXISTS USERPACKAGESDIR:
 IF WARN
   SKIP end
 ENDIF 
 
-; List directories in USERPACKAGESDIR:
+; list directories in USERPACKAGESDIR:
 list "USERPACKAGESDIR:" DIRS LFORMAT="%n" >T:_userpackages1
 sed "s/\/$//" T:_userpackages1 >T:_userpackages2
 frsort <T:_userpackages2 >T:_userpackages3
 
-; Get next user package from user packages
+; get next user package from user packages
 LAB next
 set userpackage ""
 set userpackage `Execute INSTALLDIR:S/FirstLine T:_userpackages3`
 
-; Goto end, if userpackage is empty
+; goto end, if userpackage is empty
 IF "$userpackage" EQ ""
   SKIP end
 ENDIF
 
-; Goto next, if user package dir doesn't contain a _installdir assign file
+; goto next, if user package dir doesn't contain a _installdir assign file
 IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
   SKIP BACK next
 ENDIF
 
-; Print user package and add user package to user packages file
+; print user package and add user package to user packages file
 echo "$userpackage"
 echo "$userpackage" >>"{userpackagesfile}"
 
 SKIP BACK next
 
 
-; End
+; end
+; ---
 LAB end
 
 echo "Done"
