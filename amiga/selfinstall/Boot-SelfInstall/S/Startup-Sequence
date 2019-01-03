@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2018-12-25
+; Date: 2019-01-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -366,6 +366,7 @@ LAB loadsystemfiles
 resident "$systemfilesdir/Assign" PURE
 resident "$systemfilesdir/Copy" PURE
 resident "$systemfilesdir/Delete" PURE
+resident "$systemfilesdir/DiskChange" PURE
 resident "$systemfilesdir/Eval" PURE
 resident "$systemfilesdir/Execute" PURE
 resident "$systemfilesdir/List" PURE

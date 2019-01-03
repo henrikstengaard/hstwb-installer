@@ -5,7 +5,7 @@
 ; Detect User Packages
 ; --------------------
 ;
-; Date: 2019-01-02
+; Date: 2019-01-03
 ; Author: Henrik Noerfjand Stengaard
 
 echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
@@ -18,6 +18,9 @@ Assign >NIL: EXISTS USERPACKAGESDIR:
 IF WARN
   SKIP end
 ENDIF 
+
+; disk change USERPACKAGESDIR: device to detect changed directories and files
+DiskChange USERPACKAGESDIR:
 
 ; list directories in USERPACKAGESDIR:
 list "USERPACKAGESDIR:" DIRS LFORMAT="%n" >T:_userpackages1

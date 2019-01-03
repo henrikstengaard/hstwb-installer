@@ -1,0 +1,18 @@
+User packages help
+------------------
+
+Detected user packages shows valid user packages detected
+in USERPACKAGESDIR: device. This only shows detected user
+packages before starting self install. User packages can
+be selected and installed later during self install.
+
+Select "Show detect user packages log" to examine details
+about detected user packages.
+
+If one or more user packages are not detected, user
+packages can be changed now and detect user packages can
+be restarted by selecting "Restart detect user package".
+
+If detected user packages are as expected, then select
+"Continue with [x] user package(s)" to continue self
+install.

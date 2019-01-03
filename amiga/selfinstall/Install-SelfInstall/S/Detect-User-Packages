@@ -1,25 +1,14 @@
 ; Detect User Packages
 ; --------------------
 ;
-; Date: 2019-01-02
+; Date: 2019-01-03
 ; Author: Henrik Noerfjand Stengaard
 
 
-; detect user packages
-; --------------------
-LAB detectuserpackages
-
-echo "" >"INSTALLDIR:Temp/Detect-User-Packages.log"
-echo "Detect user packages" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-echo "--------------------" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-
-cls 
-echo "*e[32m" NOLINE
-echo "Detect user packages"
-echo "*e[0m*e[1m" NOLINE
-echo "--------------------"
-echo "*e[0m" NOLINE
-echo ""
+; delete install user packages prefs, if it exists
+IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+  Delete >NIL: INSTALLDIR:Prefs/Install-User-Packages
+ENDIF
 
 ; set failat 255 for diskindrive to fail silently
 failat 255
@@ -37,7 +26,6 @@ failat 21
 ; goto end, if userpackagesdir is not set to 1
 IF NOT "$userpackagesdir" EQ 1 VAL
   echo "USERPACKAGESDIR: device doesn't exist or is not mapped to a directory!" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-  echo "USERPACKAGESDIR: device doesn't exist or is not mapped to a directory!"
   SKIP end
 ENDIF
 
@@ -48,14 +36,16 @@ Execute INSTALLDIR:User-Packages/S/Detect-User-Packages INSTALLDIR:Prefs/User-Pa
 set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
 IF "$userpackagescount" EQ 0 VAL
   echo "No user packages found, skipping user package installation!" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-  echo "No user packages found, skipping user package installation!"
+  SKIP end
 ENDIF
+
+; add user packages to log
+type "INSTALLDIR:Prefs/User-Packages" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
 
 ; create install user packages prefs
 echo "" >INSTALLDIR:Prefs/Install-User-Packages
 
 ; run build install user packages
-echo ""
 Copy >NIL: INSTALLDIR:Prefs/User-Packages T:User-Packages
 Execute INSTALLDIR:User-Packages/S/Build-Install-User-Packages T:User-Packages INSTALLDIR:S/Install-User-Packages INSTALL
 Delete >NIL: T:User-Packages
