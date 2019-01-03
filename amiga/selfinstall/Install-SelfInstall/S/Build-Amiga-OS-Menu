@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-01-02
+; Date: 2019-01-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -469,10 +469,9 @@ echo "echo *"Help*" >>T:amigaosmenu" >>T:_amigaosmenu
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_amigaosoption
 echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-echo "  cls" >>T:_amigaosoption
-echo "  *"INSTALLDIR:Tools/WhichAmiga/WhichAmiga*"" >>T:_amigaosoption
-echo "  echo *"*"" >>T:_amigaosoption
-echo "  ask *"Press ENTER to continue*"" >>T:_amigaosoption
+echo "  *"INSTALLDIR:Tools/WhichAmiga/WhichAmiga*" >T:_whichamiga" >>T:_amigaosoption
+echo "  Lister *"T:_whichamiga*" >NIL:" >>T:_amigaosoption
+echo "  Delete *"T:_whichamiga*" >NIL:" >>T:_amigaosoption
 echo "ENDIF" >>T:_amigaosoption
 echo "" >>T:_amigaosmenu
 echo "echo *"Run WhichAmiga*" >>T:amigaosmenu" >>T:_amigaosmenu
@@ -488,7 +487,20 @@ echo "    RequestChoice *"Error*" *"Detect Amiga OS log doesn't exist!*" *"OK*" 
 echo "  ENDIF" >>T:_amigaosoption
 echo "ENDIF" >>T:_amigaosoption
 echo "" >>T:_amigaosmenu
-echo "echo *"View Detect Amiga OS log*" >>T:amigaosmenu" >>T:_amigaosmenu
+echo "echo *"View detect Amiga OS log*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+; restart detect amiga os log option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  set confirm *`RequestChoice *"Amiga OS Installation*" *"Do you want to restart detect Amiga OS?*" *"Yes|No*"*`" >>T:_amigaosoption
+echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
+echo "    echo *"*" NOLINE >>*"INSTALLDIR:Prefs/Restart-Detect-Amiga-OS*"" >>T:_amigaosoption
+echo "    SKIP end" >>T:_amigaosoption
+echo "  ENDIF" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+echo "" >>T:_amigaosmenu
+echo "echo *"Restart Detect Amiga OS*" >>T:amigaosmenu" >>T:_amigaosmenu
 
 ; continue option
 set menuoption `eval $menuoption + 1`

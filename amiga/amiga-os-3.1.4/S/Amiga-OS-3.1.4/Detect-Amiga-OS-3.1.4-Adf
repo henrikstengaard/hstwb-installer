@@ -7,9 +7,7 @@
 ; AmigaDOS script to detect if Amiga OS 3.1.4 adf files are present.
 
 
-; detect amiga os 3.1.4 adf files
-echo "Amiga OS 3.1.4 adf files in AMIGAOSDIR:"
-
+; add detect amiga os 3.1.4 to log
 echo "Amiga OS 3.1.4 adf" >INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 echo "------------------" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 echo "Detecting Amiga OS 3.1.4 adf files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
@@ -29,13 +27,11 @@ IF NOT WARN
   execute "INSTALLDIR:S/Unmount-Adf"
 
   ; create script to copy amiga os 3.1.4 adf files 
-  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "echo *".*" NOLINE*NExecute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
+  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-314*"" >T:_copy_amiga-os-3.1.4_adfs
 
   ; run copy amiga os 3.1.4 adfs
-  echo "." NOLINE
   Execute T:_copy_amiga-os-3.1.4_adfs
   Delete >NIL: T:_copy_amiga-os-3.1.4_adfs
-  echo ""
 
   ; set amigaos314adf to 0, if one or more Amiga OS 3.1.4 adf files doesn't exist
   set amigaos314adf "1"

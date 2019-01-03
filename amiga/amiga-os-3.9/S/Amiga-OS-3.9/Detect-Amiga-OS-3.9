@@ -6,27 +6,26 @@
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
 
-; detect amiga os 3.9 cd-rom
-echo "Amiga OS 3.9 cd-rom in CD0: and iso file in AMIGAOSDIR:"
 
+; add detect amiga os 3.9 to log
 echo "Amiga OS 3.9" >INSTALLDIR:Temp/Amiga-OS-390.log
 echo "------------" >>INSTALLDIR:Temp/Amiga-OS-390.log
 echo "Detecting Amiga OS 3.9 cd-rom in CD0: and iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
-echo "." NOLINE
 
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255
 
-; set amigaos39cd to 1, if "CD0:" device exists
+; set amigaos39cd to 1 and run disk change, if "CD0:" device exists
 set amigaos39cd "0"
 DiskInDrive >NIL: CD0:
 IF $RC EQ 0 VAL
   set amigaos39cd "1"
+
+  ; disk change CD0: device to detect changed directories and files
+  DiskChange CD0:
 ELSE
   echo "CD0: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
 ENDIF
-
-echo "." NOLINE
 
 ; set amigaosdir to 1, if "AMIGAOSDIR:" device exists
 set amigaosdir "0"
@@ -45,8 +44,6 @@ failat 21
 set amigaos39iso "0"
 set checkamigaos39iso "0"
 IF "$amigaosdir" EQ 1 VAL
-  echo "." NOLINE
-
   ; find and sort amiga os 3.9 iso files in amigaosdir:
   echo "" NOLINE >T:_amigaos39isofiles
   fsearch "AMIGAOSDIR:" PAT amigaos39.iso >>T:_amigaos39isofiles1
@@ -86,8 +83,7 @@ ENDIF
 ; ----------------
 LAB amigaos39iso
 
-echo "." NOLINE
-
+; mount amiga os 3.9 iso file
 echo "Mounting Amiga OS 3.9 iso file" >>INSTALLDIR:Temp/Amiga-OS-390.log
 Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso"
 wait 5
@@ -198,16 +194,10 @@ ENDIF
 ; boing bags
 ; ----------
 
-echo ""
-
 ; goto end, if amigaosdir device doesn't exist
 IF "$amigaosdir" EQ 0 VAL
   SKIP end
 ENDIF
-
-; detect amiga os 3.9 boing bag files in amigaosdir: device
-echo "Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:"
-echo "." NOLINE
 
 echo "" >>INSTALLDIR:Temp/Amiga-OS-390.log
 echo "Detecting Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
@@ -244,4 +234,5 @@ ENDIF
 ; ---
 LAB end
 
-echo ""
+; run unmount iso
+execute "INSTALLDIR:S/Unmount-Iso"

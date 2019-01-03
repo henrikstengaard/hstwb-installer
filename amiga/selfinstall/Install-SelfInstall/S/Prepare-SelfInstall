@@ -31,6 +31,16 @@ echo "Continue will detect Amiga OS."
 echo ""
 ask "Press ENTER to continue"
 
+
+; detect amiga os
+; ---------------
+LAB detectamigaos
+
+; delete restart detect amiga os prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Restart-Detect-Amiga-OS"
+  Delete >NIL: "INSTALLDIR:Prefs/Restart-Detect-Amiga-OS"
+ENDIF
+
 ; detect amiga os
 cls 
 echo "*e[32m" NOLINE
@@ -50,11 +60,14 @@ ENDIF
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255
 
-; set amigaosdir to 1, if "AMIGAOSDIR:" device exists
+; set amigaosdir to 1 and run disk change, if "AMIGAOSDIR:" device exists
 set amigaosdir "0"
 DiskInDrive >NIL: AMIGAOSDIR:
 IF $RC EQ 0 VAL
   set amigaosdir "1"
+
+  ; disk change AMIGAOSDIR: device to detect changed directories and files
+  DiskChange AMIGAOSDIR:
 ELSE
   echo "*e[1mAMIGAOSDIR*e[0m: Not present! Skip detecting"
   echo "Amiga OS 3.9 iso, Amiga 3.1.4 or 3.1 adf files and"
@@ -66,19 +79,31 @@ failat 21
 
 ; run detect amiga os 3.9, if it exists
 IF EXISTS "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
-  execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9"
+  ; detect amiga os 3.9 message
+  echo "Amiga OS 3.9 cd-rom, iso and Boing bag files..."
+
+  ; run detect amiga os 3.9
+  set dummy "`execute "INSTALLDIR:S/Amiga-OS-3.9/Detect-Amiga-OS-3.9" >NIL:`"
 ENDIF
 
 ; run detect amiga os 3.1.4 and 3.1 adf, if AMIGAOSDIR: device name exists
 IF $amigaosdir EQ 1 VAL
   ; run detect amiga os 3.1.4 adf, if it exists
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
-    execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"
+    ; detect amiga os 3.1.4 adf message
+    echo "Amiga OS 3.1.4 adf files..."
+
+    ; run detect amiga os 3.1.4 adf
+    set dummy "`execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Amiga-OS-3.1.4-Adf"`"
   ENDIF
 
   ; run detect amiga os 3.1 adf, if it exists
   IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
-    execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"
+    ; detect amiga os 3.1 adf message
+    echo "Amiga OS 3.1 adf files..."
+
+    ; run detect amiga os 3.1 adf
+    set dummy "`execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-Amiga-OS-3.1-Adf"`"
   ENDIF
 ENDIF
 
@@ -104,10 +129,15 @@ IF EXISTS INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 ENDIF
 
 ; build amiga os menu
-execute INSTALLDIR:S/Build-Amiga-OS-Menu INSTALLDIR:Temp/Amiga-OS-Menu
+set dummy "`execute INSTALLDIR:S/Build-Amiga-OS-Menu INSTALLDIR:Temp/Amiga-OS-Menu`"
 
 ; run amiga os menu
-execute INSTALLDIR:Temp/Amiga-OS-Menu
+set dummy "`execute INSTALLDIR:Temp/Amiga-OS-Menu`"
+
+; goto detect amiga os, if restart detect amiga os prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Restart-Detect-Amiga-OS"
+  SKIP BACK detectamigaos
+ENDIF
 
 
 ; detect kickstart
