@@ -456,6 +456,27 @@ ENDIF
 set menuoption `eval $menuoption + 1`
 echo "echo *"--------------------------------------------------*" >>T:amigaosmenu" >>T:_amigaosmenu
 
+; help option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  Lister *"INSTALLDIR:Help/Amiga-OS-Installation.txt*" >NIL:" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+echo "" >>T:_amigaosmenu
+echo "echo *"Help*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+; run which amiga option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  cls" >>T:_amigaosoption
+echo "  *"INSTALLDIR:Tools/WhichAmiga/WhichAmiga*"" >>T:_amigaosoption
+echo "  echo *"*"" >>T:_amigaosoption
+echo "  ask *"Press ENTER to continue*"" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+echo "" >>T:_amigaosmenu
+echo "echo *"Run WhichAmiga*" >>T:amigaosmenu" >>T:_amigaosmenu
+
 ; view detect amiga os log option
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_amigaosoption
@@ -469,22 +490,22 @@ echo "ENDIF" >>T:_amigaosoption
 echo "" >>T:_amigaosmenu
 echo "echo *"View Detect Amiga OS log*" >>T:amigaosmenu" >>T:_amigaosmenu
 
-; confirm amiga os installation option
+; continue option
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_amigaosoption
 echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to install**N*$amigaosname?*" *"Yes|No*"*`" >>T:_amigaosoption
+echo "  set confirm *`RequestChoice *"Amiga OS Installation*" *"Do you want to continue with installation of**N*$amigaosname?*" *"Yes|No*"*`" >>T:_amigaosoption
 echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
 echo "    SKIP amigaosinstall" >>T:_amigaosoption
 echo "  ENDIF" >>T:_amigaosoption
 echo "ENDIF" >>T:_amigaosoption
 echo "" >>T:_amigaosmenu
-echo "echo *"Confirm install *$amigaosname*" >>T:amigaosmenu" >>T:_amigaosmenu
+echo "echo *"Continue with *$amigaosname*" >>T:amigaosmenu" >>T:_amigaosmenu
 
 ; show amiga os installation menu
 echo "" >>T:_amigaosmenu
 echo "set amigaosoption *"*"" >>T:_amigaosmenu
-echo "set amigaosoption *"*`RequestList TITLE=*"Select Amiga OS installation*" LISTFILE=*"T:amigaosmenu*" WIDTH=640 LINES=24*`*"" >>T:_amigaosmenu
+echo "set amigaosoption *"*`RequestList TITLE=*"Amiga OS Installation*" LISTFILE=*"T:amigaosmenu*" WIDTH=640 LINES=24*`*"" >>T:_amigaosmenu
 
 ; add amiga os options to amiga os menu
 echo "" >>T:_amigaosmenu

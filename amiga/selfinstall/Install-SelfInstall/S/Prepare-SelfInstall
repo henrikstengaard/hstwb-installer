@@ -84,7 +84,7 @@ ENDIF
 
 echo "Done"
 echo ""
-echo "Continue will show Select Amiga OS installation menu."
+echo "Continue will show 'Amiga OS Installation' menu."
 echo ""
 ask "Press ENTER to continue"
 
@@ -189,7 +189,7 @@ type INSTALLDIR:Prefs/User-Packages
 
 echo "Done"
 echo ""
-echo "Continue will show user packages menu."
+echo "Continue will show 'Detected User Packages' menu."
 echo ""
 ask "Press ENTER to continue"
 
@@ -211,7 +211,7 @@ echo "Continue with $userpackagescount user package(s)" >>"T:_user-packages-menu
 
 ; show user packages menu
 set userpackagesoption ""
-set userpackagesoption "`RequestList TITLE="User Packages" LISTFILE="T:_user-packages-menu" WIDTH=640 LINES=24`"
+set userpackagesoption "`RequestList TITLE="Detected User Packages" LISTFILE="T:_user-packages-menu" WIDTH=640 LINES=24`"
 Delete >NIL: "T:_user-packages-menu"
 
 ; set initial menu option
@@ -224,7 +224,7 @@ ENDIF
 ; help option
 set menuoption `eval $menuoption + 2`
 IF "$userpackagesoption" EQ $menuoption VAL
-  Lister "INSTALLDIR:Help/User-Packages.txt" >NIL:
+  Lister "INSTALLDIR:Help/Detected-User-Packages.txt" >NIL:
 ENDIF
 
 ; show detect user packages log option
@@ -240,7 +240,7 @@ ENDIF
 ; restart detect user packages option
 set menuoption `eval $menuoption + 1`
 IF "$userpackagesoption" EQ $menuoption VAL
-  set confirm "`RequestChoice "User Packages" "Do you want to restart detect user packages?" "Yes|No"`"
+  set confirm "`RequestChoice "Detected User Packages" "Do you want to restart detect user packages?" "Yes|No"`"
   IF "$confirm" EQ 1 VAL
     SKIP BACK detectuserpackages
   ENDIF
@@ -249,7 +249,7 @@ ENDIF
 ; confirm user packages and continue option
 set menuoption `eval $menuoption + 1`
 IF "$userpackagesoption" EQ $menuoption VAL
-  set confirm "`RequestChoice "User Packages" "Do you want to continue with $userpackagescount user packages?" "Yes|No"`"
+  set confirm "`RequestChoice "Detected User Packages" "Do you want to continue with $userpackagescount user packages?" "Yes|No"`"
   IF "$confirm" EQ 1 VAL
     ; add detect user packages to log
     type "INSTALLDIR:Temp/Detect-User-Packages.log" >>SYS:hstwb-installer.log

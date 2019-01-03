@@ -1,0 +1,19 @@
+Amiga OS Installation Help
+--------------------------
+
+Amiga OS Installation shows valid Amiga OS installations
+detected, which can be installed. HstWB Installer
+supports Amiga OS 3.9, 3.1.4 and 3.1. Each detected
+Amiga OS installation is indicated by "Install" or "Skip"
+and the highest version of Amiga OS detected is selected
+by default. The Amiga OS installations that wasn't
+detected are indicated with "N/A" for not available.
+
+It's only possible to select one Amiga OS installation
+to install, so selecting another Amiga OS installation
+than currently selected will automatically deselect the
+previous selected Amiga OS Installation changing it from
+"Install" to "Skip".
+
+When correct Amiga OS is selected, then then select
+"Continue with Amiga OS ..." to continue self install.

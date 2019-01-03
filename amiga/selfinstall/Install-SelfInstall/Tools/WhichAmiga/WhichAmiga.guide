@@ -1,0 +1,589 @@
+@DATABASE WhichAmiga.guide
+@AUTHOR "Harry Sintonen"
+@(c) "Copyright © PitPlane Productions"
+@$VER: WhichAmiga.guide 1.3.3 (10.5.99)
+@COMMENT
+@COMMENT  Right border at 62, no word wrap.
+@COMMENT
+@COMMENT Hands off dudes and dudettes!
+@COMMENT
+@WORDWRAP
+@MASTER WhichAmiga.guide
+@INDEX Main
+@NODE Main "WhichAmiga Guide"
+                                                   10-May-1999
+Documentation for
+                      @{u}@{b}  WhichAmiga 1.3.3  @{ub}@{uu}
+
+          Copyright © 1995-1999 PitPlane Productions
+               Composed by Harry "Piru" Sintonen
+
+       IMPORTANT! Please read @{"copyrights" LINK Copyrights}, @{"disclaimer" LINK Disclaimer} and
+           @{"license" LINK License} parts of this document before use.
+
+   @{"  " LINK Copyrights   0}  Copyrights		© © ©
+   @{"  " LINK Introduction 0}  Introduction		@{b}What is@{ub} WhichAmiga?
+   @{"  " LINK Package      0}  Package			What's included?
+   @{"  " LINK About        0}  About			Some words about WhichAmiga.
+   @{"  " LINK Features     0}  Features			!!
+   @{"  " LINK Requirements 0}  Requirements		What is required.
+   @{"  " LINK Installation 0}  Installation		How can I do it?
+   @{"  " LINK Usage        0}  Usage			Really?
+   @{"  " LINK Notes        0}  Important notes		Please read.
+   @{"  " LINK Future       0}  Future			Things to do...
+   @{"  " LINK License      0}  License			FreeWare!
+   @{"  " LINK Disclaimer   0}  Disclaimer		"It's not my fault!"
+   @{"  " LINK History      0}  History			What has happened.
+@ENDNODE
+@NODE Introduction "What is WhichAmiga anyway?"
+
+     @{b}INTRODUCTION@{ub}
+
+WhichAmiga is yet another ShowConfig like tool, except it's highly sophisticated and is capable of determining which Amiga model you're running.
+
+See WhichAmiga package @{"features" LINK Features} and @{"requirements" LINK Requirements}.
+@ENDNODE
+@NODE About "About WhichAmiga"
+
+     @{b}ABOUT WhichAmiga@{ub}
+
+@{b}WhichAmiga package software and documentation are Copyright © 1995-1999 PitPlane Productions. All Rights Reserved.@{ub}
+
+WhichAmiga package is FreeWare. See @{"license" LINK License}.
+
+If you have any suggestions or remarks about this program, or if you find any bugs, please let me know.
+
+Probably the best way to reach me is IRC:
+
+	@{b}IRC:@{ub}		Piru (#AmigaFIN, #amycoders, #amiga)
+
+Write to the following address (for @{"bug-reports" LINK BugReports}, comments etc.):
+
+	@{b}e-Mail:@{ub}		sintonen@st.jyu.fi
+			(sintonen@silmu.st.jyu.fi)
+
+	@{b}WWW:@{ub}		http://www.jyu.fi/~sintonen/
+
+			http://www.jyu.fi/~sintonen/AmigaPrograms.html
+			Latest beta release of WhichAmiga
+			should be found here.
+
+	@{b}SnailMail:@{ub}	@{"Harry Sintonen" LINK xyz}
+			Vaasankatu 8 A 12
+			40100 Jyväskylä
+			Finland - Europe
+@ENDNODE
+@NODE xyz "Hmm"
+
+     @{b}GREAT!!@{ub}
+
+Hmm... I think I'm above average programmer... I use mostly AmigaE and Assembler (DevPac) in my programmes. Sometimes I also use C and C++. I'm also quite good ARexx/CLI script writer. I love CygnusEd. I really hate GoldED!! What else? That's about it... :)
+
+Oh, my Amiga's configuration?
+
+Well, it's a good old A1200 put into 200W mini tower case, 3.1 GB and 2.6 GB IDE hard disks, 20x IDE CD-ROM (with selfmade idefix hardware), 4.3 GB and 2.1 GB SCSI hard disks. Blizzard PPC Power Board equipped with 240 MHz 603e and 50 MHz 68060, and two 32 MB 60ns SIMMs (total 64 MB fast), 10Mbit PCMCIA ethernet ($80 PC-card + PCMCIA reset hack), Micronik scandoubler for AGA, BlizzardVision PPC 8 MB graphics card (Permedia 2), JUSTer® loudspeakers and finally SALORA Multigraph 445G 21" monitor. Quite ok system, no? :-)
+
+And of course good old A500 (in 1001 pieces nowadays), few external drives and other stuff in my closet. ;)
+@ENDNODE
+@NODE Features "Features"
+
+     @{b}FEATURES@{ub}
+
+- This package is free! (see @{"license" LINK License})
+
+- WhichAmiga is 100% assembler!
+
+- Recognizes following Amiga models: Amiga 1000, old Amiga 500, Amiga 500, Amiga 500+, Amiga 600, Amiga 1200, Amiga 1400, Amiga 2000, Amiga 2000+, Amiga 2500, Amiga 3000, Amiga 3000UX, Amiga 3000 Tower, Amiga 4000, Amiga 4000 Tower, CD³², CDTV and MacroSystems' DraCo (Amiga-clone). They aren't all tested, though... ;)
+· Amiga 1500(+) isn't really separate Amiga model, it's Amiga 2000(+) with two floppy drives. Amiga 1500(+)'s were sold in GB.
+
+- Recognizes UAE emulated Amiga.
+
+- Recognizes following CPU models: 68000, 68010, 68EC020, 68020, 68EC030, 68030, 68EC040, 68LC040, 68040, 68EC060, 68LC060 and 68060.
+
+- Calculates clock frequency for 68k CPU. Should now always work on 040 and 060 (1.3.x).
+
+- Recognizes following PowerPC CPU models: 602, 603, 604, 603e, 603p and 604e. Also shows PowerPC processor clock speed, revision and bus clock speed.
+
+- Recognizes following FPU models: 68881, 68882, 68040 internal and 68060 internal.
+
+- Recognizes following MMU models: 68851, 68030 internal, 68040 internal and 68060 internal.
+
+- Recognizes following custom chips (both PAL and NTSC): OCS Agnus, Fat Agnus, Fatter Agnus (1MB), Super Agnus (2MB), AGA Alice (rev 0-2/3-4), OCS Denise, ECS Denise, AGA Lisa, AAA Lisa, Paula 8364, Akiko, Ramsey, Gary and Gayle. Chips' revision information is displayed if available.
+
+- Correctly recognizes old Denise 8362 (that has no valid DeniseID/LisaID register) and Agnus 8361/8367 (buggy blitter wait) chips.
+
+- Recognizes following graphics boards: 1600-GX, A2410, Altais Card, Blackbox, CyberVision 64, CyberVision 64/3D, CyberVision PPC, Domino, EGS Spectrum, Firecracker 24, GDA-1, Horizon, Impact Vision 24, Merlin, Picasso II, Picasso IV, Piccolo, PiccoloSD-64, Rainbow III, Rembrandt, Resolver, Retina Z2, Retina Z3, Visiona, Vivid-24 and Voyager.
+
+- Recognizes following sound cards: Delfina DSP, Delfina LITE, Maestro, MaestroPro, Prelude, Toccata, ToccataPro and Wavetools.
+
+- WhichAmiga works with programs that use MMU: Enforcer, CPU FASTROM, VMM and GigaMem are tested ones. WhichAmiga executable can be loaded into virtual memory.
+
+- WhichAmiga peeks original ROM chip version, even if ROM is rekicked with MMU. Following kickstart ROM versions are recognised: 1.0, 1.1 NTSC, 1.1 PAL, 1.2, 1.3, 1.4 beta, 2.0 beta, 2.04, 2.05, 3.0, 3.1 and 3.2.
+
+- If boards.library is found WhichAmiga lists all expansion boards on system.
+
+- Tested with:
+
+      Amiga 4000  50M/5.0G, 68060 @ 50MHz
+      Amiga 4000       30M, 68060 @ 50MHz
+      Amiga 4000       30M, 68040 @ 40MHz
+      Amiga 4000/030   14M, 68EC030 @ 25MHz
+      Amiga 3000       18M, 68030 @ 25MHz
+      Amiga 1200 66MB/12GB, 68060 @ 50MHz / 603e@240MHz
+      Amiga 1200     18 MB, 68060 @ 50MHz
+      Amiga 1200 10/850 MB, 68060 @ 50MHz
+      Amiga 1200  4/160 MB, 68020 @ 14MHz
+       Amiga 500  ECS 2.05, 68000 @  7MHz
+       Amiga 500  OCS  1.3, 68010 @  7MHz
+@ENDNODE
+@NODE Requirements "Requirements"
+
+     @{b}REQUIREMENTS@{ub}
+
+WhichAmiga requires Amiga computer with Kickstart 1.1 or better. WhichAmiga should work with any Amiga hardware. WhichAmiga should work with DraCo, too.
+
+MultiView is highly recommended because this guide file uses \@WORDWRAP.
+
+If you have @{b}boards.library@{ub} available, WhichAmiga will list all expansion boards present. boards.library isn't required, though.
+@ENDNODE
+@NODE Installation "WhichAmiga installation"
+
+     @{b}INSTALLATION@{ub}
+
+Simple. Just drag whole WhichAmiga drawer where you want it.
+@ENDNODE
+@NODE Notes "Important notes"
+
+     @{b}NOTES@{ub}
+
+If WhichAmiga fails (read: crashes :), start it with any parameter. It will then get into debug mode and output some strange data whilst running. You should tell me what was the last output from WhichAmiga before it crashed.
+
+WhichAmiga has few Enforcer hits that can't be removed. These should never show up, though. WhichAmiga disables Enforcer when needed. ;-)
+
+WhichAmiga should correctly recognize 68030 and 68EC030, even if 68EC030 has a defective MMU (MMU instructions are working, but MMU is not) or 68030 MMU is currently in use (Enforcer, CPU FASTROM, VMM, Gigamem etc). It does its job by running MMU with simple MMU-table and by causing some address faults. Luckily no 68EC040 or 68EC060 are sold with defective MMU (As far as I know, all EC040 and EC060 models have MMU instructions disabled correctly), and no special testing is needed as with 68030/68EC030.
+
+You can get wrong Amiga model, if you have unexpanded Amiga 2000(+). WhichAmiga may incorrectly claim it's Amiga 500(+).
+
+On DraCo computers, WhichAmiga always says that CPU clock frequency is 50MHz. This is due to some compatibility tricks.
+
+To tell you the truth, WhichAmiga can fail in many configurations... That's mainly because I don't have possibility to test 'em all... If WhichAmiga fails, please report it to @{"me" LINK About}!
+
+If you have any accurate information about new Amiga models/compatibles (DraCo, new PowerPC based Amigas or if you have any neat tricks for example to determine difference between Amiga 500 and Amiga 2000, or between Amiga 3000 and Amiga 3000T, then please, please contact @{"me" LINK About}!
+
+I would also appreciate if some could send me information (how to detect, manu/prod id) about following hardware devices:
+
+	@{b}Graphics boards and expansions@{ub}
+
+	           A500 A600 A1000 A2000 A3000 A4000 CDTV
+	Harlequin		       x     x      x
+	OpalVision		       x     x      x
+	AVideo12      x		 x     x		  x
+	AVideo24      x		 x     x		  x
+	DCTV	      x    x     x     x     x      x    x
+	HAM-E	      x    x     x     x     x      x    x
+
+	+EGS-110 and EGS Graffiti.
+
+	@{b}Sound cards@{ub}
+
+	-
+
+	@{b}Emulator boards@{ub}
+
+	ATOnce
+	EMC 486SLC
+	GVP 286
+
+	@{b}Miscellaneous@{ub}
+
+	Lola L1500 PAL Genlock
+	WACOM, wireless digi.tablet
+
+	Amiga emulators (like Frodo)
+
+Send manufacturer and product IDs (for all versions of the product!) if board uses AUTOCONFIG(TM) or assembler source to check it otherwise. Also, information about other new (1995+) hardware devices is gracefully accepted.
+@ENDNODE
+@NODE Future "Future: Things to come -- or not!"
+
+     @{b}TO DO@{ub}
+
+- Fix bugs (there are some!).
+
+- Add CGFX4 BlizzardVision PPC to gfxboard list (I think it has separate ID then...).
+
+- Fix FPU MHz calculation and enable it.
+
+- Add WarpOS support (boo!).
+
+- Add support for possible new Amiga models or clones.
+
+- Add support for SuperIO (if it exists!) and Buster (Zorro-III DMA controller) chips.
+
+- Add support for some graphics boards (EGS-110, EGS Graffiti, Harlequin and OpalVision).
+@ENDNODE
+@NODE Package "The Package"
+
+     @{b}PACKAGE@{ub}
+
+WhichAmiga 1.3.3 distribution package contains following files:
+
+  WhichAmiga			The main executable
+  WhichAmiga.ASM		The source code
+  WhichAmiga.guide		This AmigaGuide document
+  WhichAmiga.guide.info		Icon for the Guide
+  WhichAmiga.readme		Aminet std readme file
+
+@{b}No additional files (including BBS adds) may be included!@{ub}
+@ENDNODE
+@NODE Usage "How do I use WhichAmiga?"
+
+     @{b}USAGE@{ub}
+
+WhichAmiga's usage is @{b}really@{ub} simple: Run it from CLI/Shell or doubleclick its icon. In either way, you should see similar output.
+
+See @{"sample run" LINK Sample}. You can test WhichAmiga by clicking @{"here" SYSTEM "WhichAmiga >CON:10/10/620/230/<- Click here to close window/CLOSE/AUTO/WAIT"}.
+@ENDNODE
+@NODE Sample "Sample run on my Amiga 1200"
+@COMMENT ASPECTFONT xen.font 8
+
+     @{b}SAMPLE RUN@{ub}
+
+@{fg shine}7·Ram Disk:WhichAmiga>@{fg text} WhichAmiga
+WhichAmiga 1.3.3 (2.5.99)
+Written by Harry "Piru" Sintonen. Copyright © 1995-1999 PitPlane Productions.
+
+Evaluating system...
+Central Processing Unit: MC68060 50.0 MHz (rev 5)
+ 1 PowerUP Processor(s): PPC 603p 240 MHz (rev 2.1), 60 MHz busclock
+    Floating Point Unit: 68060fpu
+ Memory Management Unit: 68060mmu running
+   Custom graphics chip: AGA Lisa 4203 (rev 0)
+  Custom animation chip: AGA PAL Alice 8374, rev 3-4
+   Other custom chip(s): Paula 8364 (rev 0), Gayle (rev 13)
+        Graphics system: CyberGraphX
+      Graphics board(s): CyberVision PPC
+         Hardware Clock: clock found
+ Max. Chipmem available: 2064 K
+ Max. Fastmem available: 64528 K
+       ROM chip version: 39.106 (Kickstart 3.0)
+  ReKicked ROM, version: 40.68 (Kickstart 3.1)
+      Workbench version: 40.42 (Workbench 3.1)
+       SetPatch version: 43.6
+     Expansion board(s):
+8512/110: Phase 5 Digital Products Blizzard PPC SCSI (@$00F00C38 128k)
+          Blizzard PPC serial number: IDH0071
+
+ Your computer is an Amiga 1200.
+							@{"Explanation" LINK TellMe}
+@ENDNODE
+@NODE TellMe "Explanation of the output"
+
+     @{b}EXPLANATION@{ub}
+
+First of all I get to now that I have revision 5 Motorola 68060 processor running at 50 MHz.
+
+Also I have 240MHz PowerPC 603p (revision 2.1) in my system. This CPU uses 60MHz bus clock.
+
+As I have full 68060 I have FPU and MMU too.
+
+I've got AGA chipset. Lisa and Pal Alice revision 3-4 chips.
+
+Paula 8364 for audio, Gayle (rev 13) handling miscellaneous stuff (Gayle can be found from all AGA machines).
+
+Graphics system is CyberGraphX, and I have CyberVision PPC (actually BlizzardVision PPC but CGFX uses same ID for both) graphics card installed.
+
+Internal hardware clock is there...
+
+Ah, the usual 2 MB of chip memory...
+
+...and 63 megs of (available) fast memory.
+
+Used ROM version is 40.68, that is AmigaOS 3.1. Originally I have Kickstart 3.0.
+
+SetPatch version used is 43.6.
+
+I have Phase 5 Digital Products Blizzard PPC SCSI node in expansion list (BlizzPPC 603e+).
+
+Also my card's serial number is IDH0071.
+
+And finally... WhichAmiga says that my machine is an Amiga 1200. That's right!
+@ENDNODE
+@NODE Copyrights "Copyrights"
+
+     @{b}COPYRIGHTS@{ub}
+
+Amiga is Copyright © 1985-1999 Amiga International, Inc.
+
+Blizzard Turbo Boards are Copyright © phase 5 digital products. All rights reserved.
+
+Enforcer is Copyright © 1992-1998 Michael Sinz.
+
+boards.library is Copyright © @{"Torsten Bach" LINK hellos2bach} <bach@deadline.snafu.de>.
+
+WhichAmiga package is Copyright © 1995-1999 PitPlane Productions.
+
+Products names are trademarks and registered trademarks of their respective companies.
+@ENDNODE
+@NODE hellos2bach "Hellos to Torsten Bach"
+
+     @{b}HELLO!@{ub}
+
+Hello Torsten!! Fine library you have... I use it in WhichAmiga and I bet you can imagine how much easier my life became... ;-)
+@ENDNODE
+@NODE BugReports "About bug-reports"
+
+     @{b}ABOUT BUG-REPORTS@{ub}
+
+When sending in bug reports, please state exactly under what circumstances the bug occurred, what equipment was used and what happened. If possible also try to give me enough information to reproduce the bug. Dumps produced by common debugging tools are welcome. It is very difficult to find bugs when you don't know exactly what happened.
+
+You are strongly encouriged to use included @{"bug-report -form" link BugForm} to report bugs.
+@ENDNODE
+@NODE BugForm "Form for sending bug reports"
+
+     @{b}BUG-REPORT@{ub}
+
+I HAVE FOUND BUG(S) FROM WhichAmiga. I HAVE VERSION _____.
+
+NAME:__________________________________________________
+
+
+ADDRESS:_______________________________________________
+
+
+         _______________________________________________
+
+
+         _______________________________________________
+
+ELECTRONIC ADDRESSES:
+(if any, ie. Internet Email, FidoNet Netmail etc.)
+
+
+         _______________________________________________
+
+MACHINE CONFIGURATION:
+(ie. 500, 600, 1000, 1200, 1400, 1500, 2000, 2500, 3000, 4000, accelerator...)
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+DETAILED DESCRIPTION OF BUG (ENVIRONMENT, ANY DEBUGGING INFORMATION RECEIVED FROM YOUR FAVORITE DEBUGGING TOOLS (ENFORCER etc.), WHAT YOU WERE DOING WHEN BUG OCCURED OR SIMILAR STUFF:
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+ _______________________________________________________
+
+
+
+
+ __________________   __________________________________
+        (Date)                   (Signature)
+@ENDNODE
+@NODE History "History"
+
+     @{b}PROGRAM HISTORY@{ub}
+
+     ==== Version 1.3.3 == May 10th, 1999 =====================
+
+     - PUBLIC SOURCE CODE RELEASE !
+     - Fixed ppc revision display.
+     - Now displays busclock MHz instead of PPL number.
+
+     ==== Version 1.3.2 == Aug 24th, 1998 =====================
+
+     - PUBLIC SOURCE CODE RELEASE !
+     - Added detection for CyberVision PPC graphics card.
+     - Switched back to old MHz calculation routine, this time
+       I only made it use fastmem for 040 and 060. Seems to
+       work.
+
+     ==== Version 1.3.1 == Aug 18th, 1998 =====================
+
+     - PUBLIC SOURCE CODE RELEASE !
+     - Fixed pre-SetPatch 68060 test.
+     - Fixed 68k MHz calculation. Stripped one decimal. ;)
+     - Removed speed compare (it didn't compare real life
+       performance anyways).
+     - Fixed various bugs.
+     - PPC cpu revision in decimal now. Added PPL info.
+     - Added revision display for 68060.
+     - Added Blizzard PPC serial number display.
+
+     ==== Version 1.2.23 = May 13th, 1998 =====================
+
+     - PUBLIC SOURCE CODE RELEASE !
+     - Due the fact that I haven't been able to work on
+       WhichAmiga for ages now, I decided to release the source
+       code for public. You can consider the source code PD,
+       though I would really appreciate if you would credit me
+       for the hard work I've done in these years. The idea is
+       that someone would continue development of WhichAmiga
+       and add features I haven't been able to implement.
+       Anyways, have fun with it!
+     - BTW I'm *not* quitting Amiga ;)
+
+     ==== Version 1.2.22 == Aug 2nd, 1997 =====================
+
+     - Added Delfina LITE sound card.
+     - Fixed retina gxf system test.
+     - Added hardware clock info.
+     - Removed one A500 available board from A2000 only list.
+
+     ==== Version 1.2.19 = Jul 14th, 1997 =====================
+
+     - Fixed Picasso96 graphics system test.
+     - Finally fixed A4000 test!
+     - Thanks a lot to folks on #AmigaFIN for betatesting
+       WhichAmiga (and not kicking/banning me when (if?) their
+       machines crashed ;), namely: Roland, Jozo, angel, vLT,
+       Zuikkis, Rolle and _Duke.
+
+     ==== Version 1.2.16 = Jul 11th, 1997 =====================
+
+     - Added proper UAE detection, Thanks a lot ariap! :)
+     - Added detection for 1600-GX, Altais Card, Kronos/C Ltd
+       A2410, Cybervision64/3D, FireCracker 24 PAL and Picasso
+       IV graphics cards.
+     - Now detects following sound cards: Delfina DSP, Maestro,
+       MaestroPro, Prelude, Toccata, ToccataPro and Wavetools.
+
+     ==== Version 1.2.15 = Jul 10th, 1997 =====================
+
+     - Fixed some typos.
+     - Seems to have some problems with 030 MMU test if MMU
+       isn't used previously. Strange part is that it work on
+       my 030!
+     - A4000 recognization still not fixed. Soon.
+
+     ==== Version 1.2.14 == Jun 4th, 1997 =====================
+
+     - Added support for GigaMem (Max Virtmem).
+     - Doesn't seem to recognize A4000 correctly. Probably
+       Gary revision check is broken. I'll fix this soon.
+
+     ==== Version 1.2.13 == May ???, 1997 =====================
+
+     - Should recognize if run on UAE.
+     - Should recognize Phase5's PowerUP boards.
+
+     ==== Version 1.2.12 = Mar 23rd, 1997 =====================
+
+     - Fixed CloseLibrary(0) -bug on kick 1.x.
+     - First Aminet release soon?
+
+     ==== Version 1.2.11 = Mar 18th, 1997 =====================
+
+     - Added SetPatch version information.
+
+     ==== Version 1.2.10 = Mar 10th, 1997 =====================
+
+     - Fixed some brain damaged code. :P
+
+     ==== Version 1.2.9 == Feb 25th, 1997 =====================
+
+     - Added support for Picasso96 gfx system.
+     - Added debug mode... :)
+
+     ==== Version 1.2.6 === Dec 3rd, 1996 =====================
+
+     - Fixed MMU problems with 68060 and GVP A1200 board.
+
+     ==== Version 1.1 ==== Jun 29th, 1996 =====================
+
+     - Documentation tuned up.
+     - Added support for several graphics boards.
+     - Added support for boards.library.
+     - Added workbench version display.
+
+
+     ==== Version 1.0 ===== Jun 9th, 1996 =====================
+
+     - Almost perfect.
+     - Revision @{"notes" LINK WA10notes} for version 1.0.
+
+
+     ==== Version 0.x ====       1995-1996 ====================
+
+     - @{b}VERY@{ub} much work...
+@ENDNODE
+@NODE WA10notes "WhichAmiga 1.0 revision notes"
+@FONT xen.font 8
+rev	notes
+
+197	Added real 68060 test and fixed MMU codes.
+214	Fixed 68060 test and MMU codes.
+228	Bug?: Sometimes can't disable MMU!?
+275	Fixed MMU code a *lot*! Now display is blanked when display doesn't
+	have 4x bandwidth. Now WhichAmiga works with Enforcer, CPU FASTROM and
+	VMM etc.
+281	Now checks cardslot via hardware.
+282	Added test for stock model Walker.
+301	Added display for Paula, Ramsey, Gary and Gayle. Now checks IDE
+	connection via hardware.
+302-304	Added DraCo support.
+305	A4000 also has Ramsey chip, but no Gary chip! (I guess!)
+309	Now should be 100% HW independent, if needed (DraCo!)
+313	Added display for Akiko.
+328	Really fixed GetAddressBits and moved all VMEM critical code
+	into CODE_C hunk.
+331	Real support for DraCo... It wouldn't have worked...
+333	Fixed CDTV test.
+347	Tried to fix 68040/060 MMU code as much as possible.
+364	A3000 and A4000 have both Ramsey and Gary, A4000 has Ramsey rev $F.
+371	Few things added/fixed.
+377	Fixed bad 040/060 MMU test.
+384	Added very flexible CPU/FPU/MMU support.
+@ENDNODE
+@NODE License "License"
+
+     @{b}LICENSE@{ub}
+
+ @{b}1.@{ub} This license applies to the product called "WhichAmiga", a program for the Amiga computer, published by PitPlane Productions under the concepts of FreeWare, and the accompanying documentation. The terms "Program" and "WhichAmiga" below, refer to this product. The licensee is addressed as "you".
+
+ @{b}2.@{ub} You may copy and distribute verbatim copies of the program's executable code and documentation as you receive it, in any medium, provided that you conspicuously and appropriately publish only the original, unmodified program, with all copyright notices and disclaimers of warranty intact and including all the accompanying documentation, example files and anything else that came with the original.
+
+ @{b}3.@{ub} You may not copy and/or distribute this program without the accompanying documentation and other additional files that came with the original. You may not copy and/or distribute modified versions of this program.
+
+ @{b}4.@{ub} You may not copy, modify, sublicense, distribute or transfer the program except as expressly provided under this license. Any attempt otherwise to copy, modify, sublicense, distribute or transfer the program is void, and will automatically terminate your rights to use the program under this license. However, parties who have received copies, or rights to use copies, from you under this license will not have their licenses terminated so long as such parties remain in full compliance.
+
+ @{b}5.@{ub} By copying, distributing and/or using the program you indicate your acceptance of this license to do so, and all its terms and conditions.
+
+ @{b}6.@{ub} Each time you redistribute the program, the recipient automatically receives a license from the original licensor to copy, distribute and/or use the program subject to these terms and conditions. You may not impose any further restrictions on the recipients' exercise of the rights granted herein.
+
+ @{b}7.@{ub} You may not disassemble, decompile, re-source or otherwise reverse engineer the program.
+
+ @{b}8.@{ub} If you wish to incorporate parts of the program into other programs, write to the author to ask for permission.
+
+ @{b}9.@{ub} You agree to cease distributing the program and data involved if requested to do so by the author.
+
+@{b}10.@{ub} You may charge a fee to recover distribution costs. The fee for diskette distribution may not be more than the cost to obtain a public domain diskette from Fred Fish.
+@ENDNODE
+@NODE Disclaimer "Disclaimer"
+
+     @{b}DISCLAIMER@{ub}
+
+NO GUARANTEE IS GIVEN NOR IMPLIED THAT THIS PROGRAM IS FIT FOR ANY USE. THIS PROGRAM AND THE INFORMATION WITHIN THIS TEXT IS PROVIDED ON "AS IS" BASIS. THE ENTIRE RISK AS TO ITS QUALITY AND PERFORMANCE IS WITH THE USER. SHOULD THE PROGRAM PROVE DEFECTIVE, THE USER (AND NOT THE AUTHOR) ASSUMES THE ENTIRE COST OF ALL NECCESSARY DAMAGES. IN NO EVENT WILL THE AUTHOR BE LIABLE FOR DIRECT, INDIRECT, INCIDENTAL OR CONSEQUENTIAL DAMAGES RESULTING FROM ANY DEFECT IN THE PROGRAM. THE AUTHOR RESERVES THE RIGHT TO MAKE CHANGES TO THE SOFTWARE OR DOCUMENTATION WITHOUT NOTICE.
+@ENDNODE
