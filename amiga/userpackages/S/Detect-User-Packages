@@ -5,22 +5,11 @@
 ; Detect User Packages
 ; --------------------
 ;
-; Date: 2019-01-03
+; Date: 2019-01-04
 ; Author: Henrik Noerfjand Stengaard
-
-echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
 
 ; create empty user packages file
 echo "" NOLINE >"{userpackagesfile}"
-
-; goto end, if USERPACKAGESDIR: device name doesn't exist
-Assign >NIL: EXISTS USERPACKAGESDIR:
-IF WARN
-  SKIP end
-ENDIF 
-
-; disk change USERPACKAGESDIR: device to detect changed directories and files
-DiskChange USERPACKAGESDIR:
 
 ; list directories in USERPACKAGESDIR:
 list "USERPACKAGESDIR:" DIRS LFORMAT="%n" >T:_userpackages1
@@ -52,8 +41,6 @@ SKIP BACK next
 ; end
 ; ---
 LAB end
-
-echo "Done"
 
 ; Delete temp files, if they exist
 IF EXISTS T:_userpackages

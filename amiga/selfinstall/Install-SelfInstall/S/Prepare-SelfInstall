@@ -1,7 +1,7 @@
 ; Prepare Self Install
 ; --------------------
 ;
-; Date: 2019-01-03
+; Date: 2019-01-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to prepare self install by detecting precense of CD drive,
@@ -196,102 +196,12 @@ execute INSTALLDIR:Temp/Kickstart-Menu
 
 ; detect user packages
 ; --------------------
-LAB detectuserpackages
-
-echo "" NOLINE >"INSTALLDIR:Temp/Detect-User-Packages.log"
-echo "Detect user packages" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-echo "--------------------" >>"INSTALLDIR:Temp/Detect-User-Packages.log"
-
-cls 
-echo "*e[32m" NOLINE
-echo "Detect user packages"
-echo "*e[0m*e[1m" NOLINE
-echo "--------------------"
-echo "*e[0m" NOLINE
-echo ""
-echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
 
 ; run detect user packages
-set dummy "`execute INSTALLDIR:S/Detect-User-Packages`"
-
-; list detected user packages
-type INSTALLDIR:Prefs/User-Packages
-
-echo "Done"
-echo ""
-echo "Continue will show 'Detected User Packages' menu."
-echo ""
-ask "Press ENTER to continue"
-
-; build detect user packages menu
-LAB userpackagesmenu
-
-set userpackagescount `wc -l <INSTALLDIR:Prefs/User-Packages`
-IF "$userpackagescount" GT 0 VAL
-  Copy >NIL: "INSTALLDIR:Prefs/User-Packages" "T:_user-packages-menu"
-ELSE
-  echo "No user packages detected!" >"T:_user-packages-menu"
-ENDIF
-
-echo "--------------------------------------------------" >>"T:_user-packages-menu"
-echo "Help" >>"T:_user-packages-menu"
-echo "Show detect user packages log" >>"T:_user-packages-menu"
-echo "Restart detect user packages" >>"T:_user-packages-menu"
-echo "Continue with $userpackagescount user package(s)" >>"T:_user-packages-menu"
-
-; show user packages menu
-set userpackagesoption ""
-set userpackagesoption "`RequestList TITLE="Detected User Packages" LISTFILE="T:_user-packages-menu" WIDTH=640 LINES=24`"
-Delete >NIL: "T:_user-packages-menu"
-
-; set initial menu option
-IF "$userpackagescount" GT 0 VAL
-  set menuoption "$userpackagescount"
-ELSE
-  set menuoption "1"
-ENDIF
-
-; help option
-set menuoption `eval $menuoption + 2`
-IF "$userpackagesoption" EQ $menuoption VAL
-  Lister "INSTALLDIR:Help/Detected-User-Packages.txt" >NIL:
-ENDIF
-
-; show detect user packages log option
-set menuoption `eval $menuoption + 1`
-IF "$userpackagesoption" EQ $menuoption VAL
-  IF EXISTS "INSTALLDIR:Temp/Detect-User-Packages.log"
-    Lister "INSTALLDIR:Temp/Detect-User-Packages.log" >NIL:
-  ELSE
-    RequestChoice "Error" "Detect User Packages log doesn't exist!" "OK" >NIL:
-  ENDIF
-ENDIF
-
-; restart detect user packages option
-set menuoption `eval $menuoption + 1`
-IF "$userpackagesoption" EQ $menuoption VAL
-  set confirm "`RequestChoice "Detected User Packages" "Do you want to restart detect user packages?" "Yes|No"`"
-  IF "$confirm" EQ 1 VAL
-    SKIP BACK detectuserpackages
-  ENDIF
-ENDIF
-
-; confirm user packages and continue option
-set menuoption `eval $menuoption + 1`
-IF "$userpackagesoption" EQ $menuoption VAL
-  set confirm "`RequestChoice "Detected User Packages" "Do you want to continue with $userpackagescount user packages?" "Yes|No"`"
-  IF "$confirm" EQ 1 VAL
-    ; add detect user packages to log
-    type "INSTALLDIR:Temp/Detect-User-Packages.log" >>SYS:hstwb-installer.log
-
-    SKIP selfinstallready
-  ENDIF
-ENDIF
-
-SKIP BACK userpackagesmenu
+Execute "INSTALLDIR:S/Detect-User-Packages"
 
 
-; Self install ready
+; self install ready
 ; ------------------
 LAB selfinstallready
 cls 
