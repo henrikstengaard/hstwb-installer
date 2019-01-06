@@ -1,15 +1,13 @@
 ; Detect Kickstart Rom
 ; --------------------
 ;
-; Date: 2018-12-29
+; Date: 2019-01-06
 ; Author: Henrik Noerfjand Stengaard
 ;
-; AmigaDOS script to detect if Kickstart rom files are present.
+; AmigaDOS script to detect if Cloanto Amiga Forever and original Kickstart rom files are present.
 
 
-; detect kickstart rom files
-echo "Kickstart rom files in KICKSTARTDIR:"
-
+; add detect kickstart to log
 echo "Kickstart rom" >INSTALLDIR:Temp/Kickstart-Rom.log
 echo "-------------" >>INSTALLDIR:Temp/Kickstart-Rom.log
 echo "Detecting Kickstart rom files in KICKSTARTDIR:..." >>INSTALLDIR:Temp/Kickstart-Rom.log
@@ -20,12 +18,11 @@ IF NOT EXISTS "INSTALLDIR:Temp/Kickstart/"
 ENDIF
 
 ; create script to copy kickstart rom files 
-List KICKSTARTDIR: PAT=#? ALL FILES LFORMAT "echo *".*" NOLINE*NExecute INSTALLDIR:S/Kickstart/Copy-Kickstart-Rom *"%p%n*" *"INSTALLDIR:Temp/Kickstart*"" >T:_copy_kickstart_roms
+List KICKSTARTDIR: PAT=#? ALL FILES LFORMAT "Execute INSTALLDIR:S/Kickstart/Copy-Kickstart-Rom *"%p%n*" *"INSTALLDIR:Temp/Kickstart*"" >T:_copy_kickstart_roms
 
 ; run copy kickstart roms
 Execute T:_copy_kickstart_roms
 Delete >NIL: T:_copy_kickstart_roms
-echo ""
 
 ; create prefs, if kickstart 1.2 (33.180) a500 rom is present
 set kick33180a500 "0"

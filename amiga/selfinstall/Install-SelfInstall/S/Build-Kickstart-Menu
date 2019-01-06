@@ -5,7 +5,7 @@
 ; Build Kickstart Menu
 ; --------------------
 ;
-; Date: 2018-12-29
+; Date: 2019-01-06
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -349,6 +349,16 @@ echo "echo *" : Original Kickstart 3.1 (40.068) A4000 rom file*" >>T:kickstartme
 set menuoption `eval $menuoption + 1`
 echo "echo *"--------------------------------------------------*" >>T:kickstartmenu" >>T:_kickstartmenu
 
+; help option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartoption
+echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+echo "  Lister *"INSTALLDIR:Help/Kickstart-Installation.txt*" >NIL:" >>T:_kickstartoption
+echo "  SKIP BACK kickstartmenu" >>T:_kickstartoption
+echo "ENDIF" >>T:_kickstartoption
+echo "" >>T:_kickstartmenu
+echo "echo *"Help*" >>T:kickstartmenu" >>T:_kickstartmenu
+
 ; view detect kickstart log option
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_kickstartoption
@@ -362,6 +372,19 @@ echo "  SKIP BACK kickstartmenu" >>T:_kickstartoption
 echo "ENDIF" >>T:_kickstartoption
 echo "" >>T:_kickstartmenu
 echo "echo *"View Detect Kickstart log*" >>T:kickstartmenu" >>T:_kickstartmenu
+
+; restart detect kickstart option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_kickstartoption
+echo "IF *"*$kickstartoption*" EQ $menuoption VAL" >>T:_kickstartoption
+echo "  set confirm *`RequestChoice *"Kickstart installation*" *"Do you want to restart detect kickstart?*" *"Yes|No*"*`" >>T:_kickstartoption
+echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_kickstartoption
+echo "    echo *"*" NOLINE >>*"INSTALLDIR:Prefs/Restart-Detect-Kickstart*"" >>T:_kickstartoption
+echo "    SKIP end" >>T:_kickstartoption
+echo "  ENDIF" >>T:_kickstartoption
+echo "ENDIF" >>T:_kickstartoption
+echo "" >>T:_kickstartmenu
+echo "echo *"Restart Detect Kickstart*" >>T:kickstartmenu" >>T:_kickstartmenu
 
 ; confirm kickstart installation option
 set menuoption `eval $menuoption + 1`
@@ -379,7 +402,7 @@ echo "echo *"Confirm install *$kickstartromcount Kickstart rom file(s)*" >>T:kic
 ; show kickstart installation menu
 echo "" >>T:_kickstartmenu
 echo "set kickstartoption *"*"" >>T:_kickstartmenu
-echo "set kickstartoption *"*`RequestList TITLE=*"Select Kickstart installation*" LISTFILE=*"T:kickstartmenu*" WIDTH=640 LINES=24*`*"" >>T:_kickstartmenu
+echo "set kickstartoption *"*`RequestList TITLE=*"Kickstart installation*" LISTFILE=*"T:kickstartmenu*" WIDTH=640 LINES=24*`*"" >>T:_kickstartmenu
 
 ; add kickstart options to kickstart menu
 echo "" >>T:_kickstartmenu

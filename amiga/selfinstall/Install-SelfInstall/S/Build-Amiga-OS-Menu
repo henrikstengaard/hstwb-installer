@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-01-03
+; Date: 2019-01-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -489,11 +489,11 @@ echo "ENDIF" >>T:_amigaosoption
 echo "" >>T:_amigaosmenu
 echo "echo *"View detect Amiga OS log*" >>T:amigaosmenu" >>T:_amigaosmenu
 
-; restart detect amiga os log option
+; restart detect amiga os option
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_amigaosoption
 echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-echo "  set confirm *`RequestChoice *"Amiga OS Installation*" *"Do you want to restart detect Amiga OS?*" *"Yes|No*"*`" >>T:_amigaosoption
+echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to restart detect Amiga OS?*" *"Yes|No*"*`" >>T:_amigaosoption
 echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
 echo "    echo *"*" NOLINE >>*"INSTALLDIR:Prefs/Restart-Detect-Amiga-OS*"" >>T:_amigaosoption
 echo "    SKIP end" >>T:_amigaosoption
@@ -506,7 +506,7 @@ echo "echo *"Restart Detect Amiga OS*" >>T:amigaosmenu" >>T:_amigaosmenu
 set menuoption `eval $menuoption + 1`
 echo "" >>T:_amigaosoption
 echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-echo "  set confirm *`RequestChoice *"Amiga OS Installation*" *"Do you want to continue with installation of**N*$amigaosname?*" *"Yes|No*"*`" >>T:_amigaosoption
+echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to continue with installation of**N*$amigaosname?*" *"Yes|No*"*`" >>T:_amigaosoption
 echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
 echo "    SKIP amigaosinstall" >>T:_amigaosoption
 echo "  ENDIF" >>T:_amigaosoption
@@ -517,7 +517,7 @@ echo "echo *"Continue with *$amigaosname*" >>T:amigaosmenu" >>T:_amigaosmenu
 ; show amiga os installation menu
 echo "" >>T:_amigaosmenu
 echo "set amigaosoption *"*"" >>T:_amigaosmenu
-echo "set amigaosoption *"*`RequestList TITLE=*"Amiga OS Installation*" LISTFILE=*"T:amigaosmenu*" WIDTH=640 LINES=24*`*"" >>T:_amigaosmenu
+echo "set amigaosoption *"*`RequestList TITLE=*"Amiga OS installation*" LISTFILE=*"T:amigaosmenu*" WIDTH=640 LINES=24*`*"" >>T:_amigaosmenu
 
 ; add amiga os options to amiga os menu
 echo "" >>T:_amigaosmenu

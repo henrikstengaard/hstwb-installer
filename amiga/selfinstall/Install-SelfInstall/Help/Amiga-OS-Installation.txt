@@ -1,7 +1,7 @@
-Amiga OS Installation Help
+Amiga OS installation help
 --------------------------
 
-Amiga OS Installation shows valid Amiga OS installations
+Amiga OS installation shows valid Amiga OS installations
 detected, which can be installed. HstWB Installer
 supports Amiga OS 3.9, 3.1.4 and 3.1. Each detected
 Amiga OS installation is indicated by "Install" or "Skip"
