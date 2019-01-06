@@ -2,33 +2,31 @@
 .BRA {
 .KET }
 
-; Prepare User Packages
-; ---------------------
+; Build Install User Packages
+; ---------------------------
 ;
-; Date: 2019-01-02
+; Date: 2019-01-06
 ; Author: Henrik Noerfjand Stengaard
 
-; Fail, if USERPACKAGESDIR: assign doesn't exist
+; fail, if USERPACKAGESDIR: assign doesn't exist
 Assign >NIL: EXISTS USERPACKAGESDIR:
 IF WARN
   echo "Error: Assign USERPACKAGESDIR: doesn't exist!"
   quit 20
 ENDIF
 
-; Fail, if INSTALLDIR: assign doesn't exist
+; fail, if INSTALLDIR: assign doesn't exist
 Assign >NIL: EXISTS INSTALLDIR:
 IF WARN
   echo "Error: Assign INSTALLDIR: doesn't exist!"
   quit 20
 ENDIF
 
-; Fail, if user packages file doesn't exist
+; fail, if user packages file doesn't exist
 IF NOT EXISTS "{userpackages}"
   echo "Error: User packages file '{userpackages}' doesn't exist!"
   quit 20
 ENDIF
-
-echo "*e[1mBuilding user packages menu for installation...*e[0m"
 
 set menuindex 1
 
@@ -513,8 +511,6 @@ echo "" >>"{installuserpackages}"
 echo "; Delete temp files" >>"{installuserpackages}"
 
 type T:_deletetemp >>"{installuserpackages}"
-
-echo "Done"
 
 
 ; End

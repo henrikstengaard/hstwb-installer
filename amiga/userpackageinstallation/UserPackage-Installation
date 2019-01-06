@@ -1,9 +1,21 @@
 ; User Package Installation
 ; -------------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2019-01-02
+; Date: 2019-01-06
 ;
 ; AmigaDOS script to list user packages and build install user packages to select and install user packages.
+
+
+; fail, if userpackagesdir: device exists
+Assign >NIL: USERPACKAGESDIR: EXISTS
+IF $RC EQ 0 VAL
+  echo "*e[1mError: USERPACKAGESDIR: device exists! Remove existing"
+  echo "USERPACKAGESDIR: device and run user package installation"
+  echo "again.*e[0m"
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP end
+ENDIF
 
 ; add assigns and set environment variables for user package installation
 set userpackagesdir "`CD`"
@@ -13,28 +25,34 @@ Assign C: "INSTALLDIR:C" ADD
 Assign SYSTEMDIR: SYS:
 SetEnv TZ MST7
 
-; copy reqtools prefs to env, if it doesn't exist
-IF NOT EXISTS "ENV:ReqTools.prefs"
-  copy >NIL: "INSTALLDIR:Env/ReqTools.prefs" "ENV:"
-ENDIF
+echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
 
 ; run detect user packages
 Execute INSTALLDIR:S/Detect-User-Packages T:User-Packages
 
+echo "Done"
+
 ; Check if user packages contains any user packages
 set userpackagescount `wc -l <T:User-Packages`
 IF $userpackagescount GT 0 VAL
-  ; run build install user packages
   echo ""
+  echo "*e[1mBuilding user packages menu for installation...*e[0m"
+
+  ; set stack
+  stack 16384
+
+  ; run build install user packages
   Execute INSTALLDIR:S/Build-Install-User-Packages T:User-Packages T:Install-User-Packages
   Delete >NIL: T:User-Packages
+
+  echo "Done"
 
   ; run install user packages
   Execute T:Install-User-Packages
   Delete >NIL: T:Install-User-Packages
 ELSE
   echo ""
-  echo "*e[1mNo user packages found!*e[22m"
+  echo "*e[1mNo user packages detected!*e[22m"
 ENDIF
 
 ; remove assigns for user package installation
@@ -42,3 +60,7 @@ Assign USERPACKAGESDIR: "$userpackagesdir" REMOVE
 Assign C: "INSTALLDIR:C" REMOVE
 Assign INSTALLDIR: "$userpackagesdir" REMOVE
 Assign SYSTEMDIR: SYS: REMOVE
+
+; end
+; ---
+LAB end
