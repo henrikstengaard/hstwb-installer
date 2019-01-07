@@ -1,7 +1,7 @@
 ; Detect Amiga OS
 ; ---------------
 ;
-; Date: 2019-01-06
+; Date: 2019-01-07
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -29,6 +29,7 @@ set md5only `RequestChoice "Amiga OS adf detection" "Do you want use MD5 only or
 IF "$md5only" EQ 1 VAL
   echo "" NOLINE >INSTALLDIR:Prefs/MD5-Only
 ENDIF
+
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255
 
@@ -81,9 +82,8 @@ ENDIF
 
 echo "Done"
 echo ""
-echo "Continue will show 'Amiga OS installation' menu."
-echo ""
-ask "Press ENTER to continue"
+echo "Starting 'Amiga OS installation' menu."
+Wait 2
 
 ; create detect amiga os log
 echo "" NOLINE >INSTALLDIR:Temp/Detect-Amiga-OS.log
