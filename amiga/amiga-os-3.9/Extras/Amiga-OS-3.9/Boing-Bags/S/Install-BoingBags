@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2018-12-31
+; Date: 2019-01-07
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
@@ -9,11 +9,6 @@
 
 ; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
-
-; add amiga os 3.9 boing bags installation to log file
-echo "" >>SYS:hstwb-installer.log
-echo "Amiga OS 3.9 Boing Bags installation" >>SYS:hstwb-installer.log
-echo "------------------------------------" >>SYS:hstwb-installer.log
 
 ; amiga os 3.9 boing bags installation message
 cls
@@ -32,17 +27,6 @@ IF WARN
   echo "*e[1mERROR: Boing Bags installation requires Amiga OS 3.9!*e[22m"
   SKIP end
 ENDIF
-
-; goto end, if assign hstwb installer doesn't exist
-IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "ERROR: Assign hstwb installer doesn't exist!" >>SYS:hstwb-installer.log
-
-  echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
-  SKIP end
-ENDIF
-
-; run assign hstwb installer
-execute S:Assign-HstWB-Installer
 
 ; goto end, if device INSTALLDIR: doesn't exist
 Assign >>SYS:hstwb-installer.log EXISTS INSTALLDIR:

@@ -1900,9 +1900,10 @@ function RunInstall($hstwb)
     $hstwbInstallerAssignsIniFile = Join-Path $packagesPrefsDir -ChildPath 'Assigns.ini'
     WriteAmigaTextLines $hstwbInstallerAssignsIniFile $assignsIniLines
 
-    # update version in startup sequence files
+    # update version in files
     $startupSequenceFiles = @()
     $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'WBStartup-*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
     
     # write hstwb installer log file
@@ -2430,9 +2431,10 @@ function RunBuildSelfInstall($hstwb)
     Copy-Item -Path $prefsDir $selfInstallDir -recurse -force
 
 
-    # update version in startup sequence files
+    # update version in files
     $startupSequenceFiles = @()
     $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'WBStartup-*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
 
     # write hstwb installer log file
