@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-01-02
+# Date:   2019-01-07
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1902,7 +1902,7 @@ function RunInstall($hstwb)
 
     # update version in startup sequence files
     $startupSequenceFiles = @()
-    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
     
     # write hstwb installer log file
@@ -2432,7 +2432,7 @@ function RunBuildSelfInstall($hstwb)
 
     # update version in startup sequence files
     $startupSequenceFiles = @()
-    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
 
     # write hstwb installer log file
