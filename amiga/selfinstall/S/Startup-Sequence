@@ -1,13 +1,13 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2018-05-23
+; Date: 2019-01-09
 ; Author: Henrik Noerfjand Stengaard
 
 
 FailAt 21
 
-; Load patched scsi.device v43.45, if it exists
+; load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
   ; Load scsi.device, if current loaded scsi.device is less than v43.45
   Version >NIL: "scsi.device" 43 45
@@ -16,18 +16,16 @@ IF EXISTS DEVS:scsi.device
   ENDIF
 ENDIF
 
-
-; Add alias
+; add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
-
-; Copy hstwb installer log to sys dir, if it exists
+; copy hstwb installer log to sys dir, if it exists
 IF EXISTS INSTALLDIR:hstwb-installer.log
   Copy >NIL: INSTALLDIR:hstwb-installer.log SYS:hstwb-installer.log
 ENDIF
 
 
-; Startup message
+; startup message
 cls 
 echo "*e[32m" NOLINE
 echo "HstWB Installer v[$VersionText]"
@@ -37,16 +35,15 @@ echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running build self install."
 
-
-; Set stack
+; set stack
 stack 16384
 
-; Set failat to 255 for DiskInDrive to fail silently
+; set failat to 255 for DiskInDrive to fail silently
 failat 255
 
 set amigaos39 "1"
 
-; Goto load system files, if CD0: is not present
+; goto load system files, if CD0: is not present
 DiskInDrive >NIL: CD0:
 IF WARN
   ; Set failat to 21
@@ -55,7 +52,7 @@ IF WARN
   SKIP loadsystemfiles
 ENDIF
 
-; Goto load system files, if AmigaOS3.9: is not present
+; goto load system files, if AmigaOS3.9: is not present
 DiskInDrive >NIL: AmigaOS3.9:
 IF WARN
   ; Set failat to 21
@@ -64,10 +61,10 @@ IF WARN
   SKIP loadsystemfiles
 ENDIF
 
-; Set failat to 21
+; set failat to 21
 failat 21
 
-; Goto load system files, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+; goto load system files, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
 IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
   set amigaos39 "0"
 ENDIF
@@ -77,7 +74,7 @@ ENDIF
 ; -----------------
 LAB loadsystemfiles
 
-; Load basic commands resident
+; load basic commands resident
 echo ""
 IF "$amigaos39" EQ 1 VAL
   echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom...*e[0m"
@@ -122,8 +119,7 @@ Assign ENV: RAM:Env
 Assign T: RAM:
 SetEnv TZ MST7
 
-
-; Fail, if assign hstwb installer doesn't exist
+; fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
   echo "" >INSTALLDIR:Error
   echo "Error: assign hstwb installer doesn't exist!"
@@ -131,8 +127,7 @@ IF NOT EXISTS S:Assign-HstWB-Installer
 ENDIF
 execute S:Assign-HstWB-Installer
 
-
-; Load commands resident 
+; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
 Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
 Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
@@ -146,49 +141,54 @@ echo ""
 echo "*e[1mBuilding self install*e[0m"
 echo "Copying boot scripts and tools..."
 copy >NIL: "INSTALLDIR:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
-IF NOT EXISTS "SYSTEMDIR:Prefs/Env-Archive"
+
+; delete all from prefs env archive directory, if it doesn't exist. otherwise create it
+IF EXISTS "SYSTEMDIR:Prefs/Env-Archive"
+  Delete >NIL: "SYSTEMDIR:Prefs/Env-Archive/#?" ALL
+ELSE
   MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive"
 ENDIF
+
+; copy prefs env archive directory to system dir
 copy >NIL: "INSTALLDIR:Prefs/Env-Archive" "SYSTEMDIR:Prefs/Env-Archive" ALL
 
-
-; Create install directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Install/"
+; delete all from install directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Install/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Install/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Install"
 ENDIF
 
-
-; Copy self install scripts and tools
+; copy self install scripts and tools
 echo "Copying self install scripts and tools..."
 copy >NIL: "INSTALLDIR:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
 
-
-; Create packages directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Packages/"
+; delete all from packages directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Packages/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Packages/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Packages"
 ENDIF
 
-
-; Copy Packages
+; copy Packages
 echo "Copying packages..."
 copy >NIL: "PACKAGESDIR:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 
-
-; Create licenses directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Licenses/"
+; delete all from licenses directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Licenses/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Licenses/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Licenses"
 ENDIF
 
-; Copy licenses
+; copy licenses
 echo "Copying licenses..."
 copy >NIL: "INSTALLDIR:Licenses" TO "HSTWBINSTALLERDIR:Licenses/" ALL
 
-
-; Create install complete prefs
+; create install complete prefs
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
-
-; Done
+; done
 echo "Done"
 echo ""
 echo "Installation is now complete."
@@ -202,7 +202,8 @@ ask "Press ENTER to continue"
 echo ""
 
 
-; End
+; end
+; ---
 LAB end
 echo "UAE will quit in 10 seconds..."
 wait 10
