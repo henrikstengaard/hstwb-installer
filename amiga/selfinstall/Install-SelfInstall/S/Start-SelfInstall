@@ -424,7 +424,7 @@ ELSE
 ENDIF
 
 ; copy default prefs to prefs directory
-Copy "INSTALLDIR:Prefs/Default/#?" "INSTALLDIR:Prefs" ALL
+Copy >NIL: "INSTALLDIR:Prefs/Default/#?" "INSTALLDIR:Prefs" ALL
 
 ; run prepare self install
 execute "INSTALLDIR:S/Prepare-SelfInstall"
