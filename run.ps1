@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-01-07
+# Date:   2019-01-09
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1558,6 +1558,12 @@ function RunTest($hstwb)
 # run install
 function RunInstall($hstwb)
 {
+    # disables until setup has been updated with amiga os 3.1.4 support
+    Write-Host ""
+    Write-Host "Install mode is currently disabled until Amiga OS 3.1.4 support has been added to HstWB Installer Setup." -ForegroundColor Yellow
+    Write-Host "Please use build self install mode to build a self install image with Amiga OS 3.1.4 support." -ForegroundColor Yellow
+    return
+
     # print preparing install message
     Write-Host ""
     Write-Host "Preparing install..."
