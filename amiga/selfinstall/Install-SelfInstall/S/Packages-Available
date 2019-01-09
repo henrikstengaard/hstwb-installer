@@ -1,0 +1,60 @@
+; Packages available
+; ------------------
+;
+; Date: 2019-01-09
+; Author: Henrik Noerfjand Stengaard
+
+
+; goto end, if install packages prefs doesn't exist
+IF NOT EXISTS "INSTALLDIR:Prefs/Install-Packages"
+  SKIP end
+ENDIF
+
+; packages available message
+cls 
+echo "*e[32m" NOLINE
+echo "Packages available"
+echo "*e[0m*e[1m" NOLINE
+echo "------------------"
+echo "*e[0m" NOLINE
+
+; packages menu
+; ------------------
+LAB packagesmenu
+
+; packages count
+set packagescount `wc -l <INSTALLDIR:Prefs/Packages`
+
+; packages menu
+Copy >NIL: "INSTALLDIR:Prefs/Packages" "T:_packages-menu"
+echo "--------------------------------------------------" >>"T:_packages-menu"
+echo "Help" >>"T:_packages-menu"
+echo "Continue with $packagescount package(s) available" >>"T:_packages-menu"
+
+; show packages available menu
+set packagesoption ""
+set packagesoption "`RequestList TITLE="Packages available" LISTFILE="T:_packages-menu" WIDTH=640 LINES=24`"
+Delete >NIL: "T:_packages-menu"
+
+; set initial menu option
+set menuoption "$packagescount"
+
+; help option
+set menuoption `eval $menuoption + 2`
+IF "$packagesoption" EQ $menuoption VAL
+  Lister "INSTALLDIR:Help/Packages-Available.txt" >NIL:
+  SKIP BACK packagesmenu
+ENDIF
+
+; continue option
+set menuoption `eval $menuoption + 1`
+IF "$packagesoption" EQ $menuoption VAL
+  SKIP end
+ENDIF
+
+SKIP BACK packagesmenu
+
+
+; end
+; ---
+LAB end

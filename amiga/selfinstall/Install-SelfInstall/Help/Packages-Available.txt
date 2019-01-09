@@ -1,0 +1,14 @@
+Packages available help
+-----------------------
+
+Packages available shows packages that can be installed,
+when Amiga OS and Kickstart installation is complete. These
+packages have copied to this the self install image, when
+the self install image was build.
+
+Packages available only shows packages available before
+starting self install. Packages can be selected and
+installed later during self install.
+
+Select "Continue with [x] package(s) available" to
+continue self install.

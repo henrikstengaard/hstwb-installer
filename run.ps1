@@ -2338,6 +2338,15 @@ function RunBuildSelfInstall($hstwb)
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
+        # build packages prefs list
+        $packagesPrefsList = @()
+        $packagesPrefsList += $installPackages | Where-Object { $hstwb.Packages.ContainsKey($_) } | ForEach-Object { $hstwb.Packages[$_].FullName }
+        $packagesPrefsList += ''
+    
+        # create packages prefs file
+        $packagesPrefsFile = Join-Path $prefsDir -ChildPath 'Packages'
+        WriteAmigaTextLines $packagesPrefsFile $packagesPrefsList
+
         # create install packages prefs file
         $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
