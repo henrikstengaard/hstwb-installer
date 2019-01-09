@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2018-12-12
+; Date: 2019-01-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -40,6 +40,9 @@ ELSE
   ; run install amiga os 3.1.4 adf
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Disk"
 ENDIF 
+
+; create amiga os 3.1.4 prefs
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4
 
 echo ""
 echo "Amiga OS 3.1.4 installation is complete."
