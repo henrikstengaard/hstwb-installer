@@ -1,7 +1,7 @@
 ; Start Self Install
 ; ------------------
 ;
-; Date: 2019-01-07
+; Date: 2019-01-09
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -60,44 +60,44 @@ echo "   Workbench adf file."
 echo "3. DF0-DF3: Amiga OS 3.1.4 or 3.1 Workbench disk"
 echo "   inserted in any floppy device."
 echo ""
-echo "Loading Amiga OS system files can be restarted,"
-echo "if Amiga OS 3.9, 3.1.4 or 3.1 was not detected."
-echo ""
 echo "Continue will start loading Amiga OS system files."
 echo ""
 ask "Press ENTER to continue"
 
 
-; load amiga os system files
+; load amiga os
+; -------------
+LAB loadamigaos
+
+; load amiga os system files message
 cls 
 echo "*e[32m" NOLINE
-echo "Load Amiga OS system files"
+echo "Amiga OS system files"
 echo "*e[0m*e[1m" NOLINE
-echo "--------------------------"
+echo "---------------------"
 echo "*e[0m" NOLINE
 echo ""
 echo "*e[1mLoading Amiga OS system files:*e[0m"
 echo "Amiga OS 3.9 cd-rom in CD0:..."
-
 
 ; set failat to 255 for diskindrive to fail silently
 failat 255
 
 ; goto find amiga os adf, if CD0: device is not present
 DiskInDrive >NIL: CD0:
-IF WARN
+IF NOT $RC EQ 0 VAL
   ; set failat to 21
   failat 21
-  echo "Skip, CD0: device is not present!"
+
   SKIP amigaosadf
 ENDIF
 
 ; goto find amiga os adf, if AmigaOS3.9: device is not present
 DiskInDrive >NIL: AmigaOS3.9:
-IF WARN
+IF NOT $RC EQ 0 VAL
   ; set failat to 21
   failat 21
-  echo "Skip, Amiga OS 3.9 cd-rom is not present!"
+
   SKIP amigaosadf
 ENDIF
 
@@ -105,8 +105,7 @@ ENDIF
 failat 21
 
 ; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
-IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
-  echo "Skip, Amiga OS 3.9 cd-rom is not present!"
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
   SKIP amigaosadf
 ENDIF
 
@@ -119,7 +118,6 @@ SKIP loadsystemfiles
 ; ------------
 LAB amigaosadf
 
-echo ""
 echo "Amiga OS 3.1.4 or 3.1 Workbench adf file in AMIGAOSDIR:..."
 
 ; set failat to 255 for diskindrive to fail silently
@@ -127,10 +125,10 @@ failat 255
 
 ; goto amiga os disk, if AMIGAOSDIR: device is not present
 DiskInDrive >NIL: AMIGAOSDIR:
-IF WARN
+IF NOT $RC EQ 0 VAL
   ; set failat to 21
   failat 21
-  echo "Skip, AMIGAOSDIR: device is not present!"
+
   SKIP amigaosdisk
 ENDIF
 
@@ -153,8 +151,6 @@ Copy >NIL: "RAM:_adffiles2" "RAM:_adffiles"
 
 ; goto amiga os disk, if no valid amiga os 3.1.4 or 3.1 workbench adf was detected
 IF "$adffile" EQ ""
-  echo "Skip, Amiga OS 3.1.4 or 3.1 Workbench adf file is not"
-  echo "present!"
   SKIP amigaosdisk
 ENDIF
 
@@ -165,20 +161,16 @@ IF NOT $filesize EQ 901120 VAL
 ENDIF
 
 ; find amiga os 3.1.4 workbench disk volume name in adf file
-set amigaos314 "0"
 FSearch >RAM:_amigaos314volume "$adffile" TXT="Workbench3.1.4"
 set amigaos314volume `wc -l <RAM:_amigaos314volume`
 IF $amigaos314volume GT 0 VAL
-  set amigaos314 "1"
   SKIP adflist
 ENDIF
 
 ; find amiga os 3.1 workbench disk volume name in adf file
-set amigaos310 "0"
 FSearch >RAM:_amigaos310volume "$adffile" TXT="Workbench3.1"
 set amigaos310volume `wc -l <RAM:_amigaos310volume`
 IF $amigaos310volume GT 0 VAL
-  set amigaos310 "1"
   SKIP adflist
 ENDIF
 
@@ -227,6 +219,7 @@ ENDIF
 ; extract amiga os adf
 ; --------------------
 
+; adf file
 echo "$adffile"
 
 ; create temp amiga os workbench directory, if it doesn't exist
@@ -246,16 +239,30 @@ SKIP loadsystemfiles
 ; -------------
 LAB amigaosdisk
 
+echo "*e[1mNo Amiga OS system files detected!*e[0m"
+Wait SECS=2
+
+; restart load amiga os system files
+LAB restartamigaos
+set restart `RequestChoice "Amiga OS system files" "Amiga OS system files could not be loaded from*NAmiga OS 3.9 cd-rom in CD0: device, Amiga OS 3.1.4*Nor 3.1 Workbench adf file in AMIGAOSDIR: device.*N*NDo you want to restart load Amiga OS system files?" "Help|Yes|No"`
+IF "$restart" EQ 1 VAL
+  Lister "INSTALLDIR:Help/Amiga-OS-System-Files.txt" >NIL:
+  SKIP BACK restartamigaos
+ENDIF
+IF "$restart" EQ 2 VAL
+  SKIP BACK loadamigaos
+ENDIF
+
+
+; load amiga os system files from floppy device
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS system files"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
 echo ""
-echo "Amiga OS system files could not be loaded from Amiga OS 3.9"
-echo "cd-rom, Amiga OS 3.1.4 or 3.1 Workbench adf file."
-echo ""
-echo "To retry loading Amiga OS system files, change Amiga OS 3.9"
-echo "cd-rom, Amiga OS 3.1.4 or 3.1 Workbench adf files and"
-echo "restart to retry loading Amiga OS system files."
-echo ""
-echo "Otherwise, Amiga OS system files will now be loaded from"
-echo "floppy device."
+echo "Amiga OS system files will now be loaded from floppy device."
 
 ; insert workbench disk
 LAB insertworkbenchdisk
@@ -329,7 +336,7 @@ IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
 ENDIF 
 
 echo "Loading Amiga OS system files from Workbench disk in"
-echo "floppy device $floppydevice:"
+echo "floppy device $floppydevice:..."
 set systemfilesdir "$floppydevice:c"
 
 
@@ -337,7 +344,7 @@ set systemfilesdir "$floppydevice:c"
 ; -----------------
 LAB loadsystemfiles
 
-; load system files resident
+; load amiga os system files resident
 resident "$systemfilesdir/Assign" PURE
 resident "$systemfilesdir/Copy" PURE
 resident "$systemfilesdir/Delete" PURE
@@ -362,7 +369,6 @@ SetEnv TZ MST7
 echo "Done"
 echo ""
 ask "Press ENTER to continue"
-
 
 ; fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer

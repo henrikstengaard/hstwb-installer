@@ -1,0 +1,27 @@
+Amiga OS system files help
+--------------------------
+
+Amiga OS system files are required by HstWB Installer
+and can be loaded from Amiga OS 3.9 cd-rom, Amiga OS
+3.1.4 or 3.1 Workbench adf files or floppy disks.
+
+Amiga OS system files are loaded from devices in the
+following order:
+1. CD0: CD drive with Amiga OS 3.9 cd-rom.
+2. AMIGAOSDIR: Directory with Amiga OS 3.1.4 or 3.1
+   Workbench adf files.
+3. DF0-DF3: Amiga OS 3.1.4 or 3.1 Workbench disk
+   inserted in any floppy device.
+
+A requester with an option to restart load Amiga OS
+system files will be shown, if load Amiga OS system
+files doesn't detect Amiga OS 3.9 cd-rom, Amiga OS
+3.1.4 or 3.1 Workbench adf files.
+
+Restarting load Amiga OS system files can be used to
+retry by first changing Amiga OS 3.9 cd-rom in CD0:
+device, Amiga OS 3.1.4 or 3.1 Workbench adf files in
+AMIGAOSDIR: device and select 'Yes'.
+
+To load Amiga OS system files from Amiga OS 3.1.4 or
+3.1 Workbench floppy device DF0-DF3:, select 'No'.
