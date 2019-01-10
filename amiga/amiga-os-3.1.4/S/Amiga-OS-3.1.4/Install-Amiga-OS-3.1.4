@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2019-01-09
+; Date: 2019-01-10
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -16,8 +16,13 @@ echo "---------------------------"
 echo "*e[0m" NOLINE 
 echo ""
 
-; glow icons and screenmode
+; glow icons
 setenv glowicons `RequestChoice "Install Glow Icons" "Do you want to install Amiga OS 3.1.4 GlowIcons?" "Yes|No"`
+IF "$glowicons" EQ 1 VAL
+  echo "$glowicons" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+ENDIF
+
+; screenmode
 IF "$palmonitor" EQ 1 VAL
   setenv screenmode `RequestChoice "Update Screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Yes|No"`
 ELSE
