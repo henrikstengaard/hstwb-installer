@@ -1,7 +1,7 @@
 ; Install Storage
 ; ---------------
 ;
-; Date: 2018-12-12
+; Date: 2019-01-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 storage floppy disk or adf file.
@@ -22,9 +22,10 @@ ELSE
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/NTSC.info" "SYSTEMDIR:Devs/Monitors" CLONE  
 ENDIF
 
-; copy glowicons to temp directory, if glow icons have been selected
-IF "$glowicons" EQ 1 VAL
-  MakeDir >NIL: "SYSTEMDIR:Temp"
-  MakeDir >NIL: "SYSTEMDIR:Temp/glowicons"
-  Copy >NIL: "$amigaosdisk:glowicons" "SYSTEMDIR:Temp/glowicons" ALL CLONE
+; create glow icons directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Icons/GlowIcons"
+  MakePath >NIL: "SYSTEMDIR:Icons/GlowIcons"
 ENDIF
+
+; copy glow icons to icons directory
+Copy >NIL: "$amigaosdisk:glowicons" "SYSTEMDIR:Icons/GlowIcons" ALL CLONE

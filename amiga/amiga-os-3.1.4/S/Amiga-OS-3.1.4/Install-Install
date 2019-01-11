@@ -1,7 +1,7 @@
 ; Install Install
 ; ---------------
 ;
-; Date: 2018-12-12
+; Date: 2019-01-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -112,10 +112,9 @@ Protect >NIL: "SYSTEMDIR:C/Execute" ph add
 
 ; copy glowicons to system directory, if glow icons have been selected
 IF "$glowicons" EQ 1 VAL
-  IF EXISTS "SYSTEMDIR:Temp/glowicons"
+  IF EXISTS "SYSTEMDIR:Icons/GlowIcons"
     echo "Installing glow icons..."
-    Copy >NIL: "SYSTEMDIR:Temp/glowicons" "SYSTEMDIR:" ALL CLONE
-    Delete >NIL: "SYSTEMDIR:Temp/glowicons" ALL
+    Copy >NIL: "SYSTEMDIR:Icons/GlowIcons" "SYSTEMDIR:" ALL CLONE
   ENDIF
 ENDIF
 

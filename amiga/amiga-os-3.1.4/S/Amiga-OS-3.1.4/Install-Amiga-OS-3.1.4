@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2019-01-10
+; Date: 2019-01-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -45,6 +45,23 @@ ELSE
   ; run install amiga os 3.1.4 adf
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Disk"
 ENDIF 
+
+; install amiga os 3.1.4 icon pack, if prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack"
+  ; install amiga os 3.1.4 from adf files message
+  echo ""
+  echo "*e[1mInstall Amiga OS 3.1.4 support files:*e[0m"
+
+  ; amiga os 3.1.4 icon pack message
+  echo "Amiga OS 3.1.4 Icon Pack..."
+
+  IF NOT EXISTS "SYSTEMDIR:Icons/"
+    MakePath >NIL: SYSTEMDIR:Icons
+  ENDIF
+  lha -q -m1 x "INSTALLDIR:Temp/Amiga-OS-314/amiga-os-314-iconpack.lha" "SYSTEMDIR:Icons/"
+
+  echo "Done"
+ENDIF
 
 ; create amiga os 3.1.4 prefs
 echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4
