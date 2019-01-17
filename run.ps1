@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-01-09
+# Date:   2019-01-17
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1168,7 +1168,7 @@ function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 
 
 # build fs-uae install harddrives config text
-function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
+function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $userPackagesDir, $boot)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $boot
@@ -1201,10 +1201,8 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallHarddriveIndex]', [int]$harddriveIndex + 1)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesHarddriveIndex]', [int]$harddriveIndex + 2)
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Trim()
     
     # return winuae image and install harddrives config
@@ -1213,7 +1211,7 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
 
 
 # build fs-uae self install harddrives config text
-function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $userPackagesDir)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
@@ -1238,10 +1236,8 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kicksta
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOSHarddriveIndex]', [int]$harddriveIndex + 1)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir.Replace('\', '/'))
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartHarddriveIndex]', [int]$harddriveIndex + 2)
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Trim()
 
     # return fs-uae image and self install harddrives config
@@ -1339,7 +1335,7 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
 
 
 # build winuae install harddrives config text
-function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
+function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $userPackagesDir, $boot)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $boot
@@ -1372,11 +1368,9 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$InstallUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
 
     # return winuae image and install harddrives config
@@ -1385,7 +1379,7 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
 
 
 # build winuae self install harddrives config text
-function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $userPackagesDir)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
@@ -1410,11 +1404,9 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickst
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartUaehfIndex]', [int]$uaehfIndex + 2)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Trim()
 
     # return winuae image and self install harddrives config
@@ -1579,7 +1571,6 @@ function RunInstall($hstwb)
     $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
     $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
     $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
-    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
     $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
 
     # create temp workbench path
@@ -1600,13 +1591,7 @@ function RunInstall($hstwb)
         mkdir $tempPackagesDir | Out-Null
     }
 
-    # create temp os39 path
-    if(!(test-path -path $tempOs39Dir))
-    {
-        mkdir $tempOs39Dir | Out-Null
-    }
-    
-    # create temp os39 path
+    # create temp user packages path
     if(!(test-path -path $tempUserPackagesDir))
     {
         mkdir $tempUserPackagesDir | Out-Null
@@ -1846,14 +1831,11 @@ function RunInstall($hstwb)
         $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
         Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
 
-        #
-        $os39Dir = $amigaOs39IsoDir
         $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
     }
     else
     {
         $amigaOs39IsoFileName = ''
-        $os39Dir = $tempOs39Dir
         $isoFile = ''
     }
 
@@ -1967,7 +1949,7 @@ function RunInstall($hstwb)
         InstallHstwbInstallerFsUaeTheme $hstwb
 
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
 
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -1990,7 +1972,7 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
     
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -2061,7 +2043,7 @@ function RunInstall($hstwb)
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -2084,7 +2066,7 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config with boot
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
@@ -2179,13 +2161,6 @@ function RunBuildSelfInstall($hstwb)
     if(!(test-path -path $tempPackagesDir))
     {
         mkdir $tempPackagesDir | Out-Null
-    }
-
-    # create temp os39 dir
-    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
-    if(!(test-path -path $tempOs39Dir))
-    {
-        mkdir $tempOs39Dir | Out-Null
     }
 
     # create temp user packages dir
@@ -2471,13 +2446,6 @@ function RunBuildSelfInstall($hstwb)
         mkdir $imageKickstartDir | Out-Null
     }
 
-    # create os39 directory in image directory, if it doesn't exist
-    $imageOs39Dir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "os39"
-    if (!(Test-Path -Path $imageOs39Dir))
-    {
-        mkdir $imageOs39Dir | Out-Null
-    }
-    
     # create userpackages directory in image directory, if it doesn't exist
     $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "userpackages"
     if (!(Test-Path -Path $imageUserPackagesDir))
@@ -2506,7 +2474,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
 
 
     # replace hstwb installer uae winuae configuration placeholders
@@ -2526,7 +2494,7 @@ function RunBuildSelfInstall($hstwb)
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageOs39Dir $imageUserPackagesDir
+    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
     
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
@@ -2556,7 +2524,7 @@ function RunBuildSelfInstall($hstwb)
         InstallHstwbInstallerFsUaeTheme $hstwb
 
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
 
         # read fs-uae hstwb installer config file
         $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
@@ -2579,7 +2547,7 @@ function RunBuildSelfInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
     
         # read winuae hstwb installer config file
         $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
