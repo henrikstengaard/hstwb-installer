@@ -8,28 +8,28 @@ The scripts are written in both Powershell and Python for cross platform support
 of Windows, macOS and Linux and it comes with extra files so they can easily be
 run directly from Windows Explorer, macOS Finder and Ubuntu Files.
 
-Self install directories "workbench", "kickstart", "os39" and "userpackages"
-are created, if HstWB Image Setup detects UAE and FS-UAE config files has
-harddrives configured for self install. Files for self install files are
-prepared by detecting and installing Workbench 3.1 adf and Kickstart rom
-files in "workbench", "kickstart" directories from Cloanto Amiga Forever,
-if it's installed or cd/dvd-rom iso is mounted.
+Self install directories "amigaos", "kickstart" and "userpackages" are created,
+if HstWB Image Setup detects UAE and FS-UAE config files has harddrives
+configured for self install. Files for self install files are prepared by
+detecting and installing Amiga OS 3.1 adf and Kickstart rom files in "amigaos",
+"kickstart" directories from Cloanto Amiga Forever, if it's installed or
+cd/dvd-rom iso is mounted.
 
 Files for Amiga OS 3.9 and user packages installation must be prepared manually
-by manually copying files to self install directories "os39" and "userpackages".
-If HstWB Image Setup is unable to detect Cloanto Amiga Forever, then self
-install directories "workbench" and "kickstart" must also be prepared manually
-by copying files.
+by manually copying files to self install directories "amigaos" and
+"userpackages". If HstWB Image Setup is unable to detect Cloanto Amiga Forever,
+then self install directories "amigaos" and "kickstart" must also be prepared
+manually by copying files.
 
 Self install directories must contain following:
-- "workbench": Directory with Workbench 3.1 adf files.
+- "workbench": Directory with Amiga OS 3.9 iso, Boing Bag 1 & 2 lha,
+  Amiga OS 3.1.4 or 3.1 adf files.
 - "kickstart": Directory with Kickstart rom files.
-- "os39": Directory with Amiga OS 3.9 iso and Boing Bag 1 & 2 files.
 - "userpackages": Directory with user packages.
 
 Each self install directory is validated to indicate, if required files 
-for installation of Workbench 3.1, Kickstart roms, Amiga OS 3.9 and
-user packages are present.
+for installation of Amiga OS 3.9, 3.1.4, 3.1, Kickstart roms and user packages
+are present.
 
 UAE and FS-UAE config files are prepared by patching harddrive paths to same
 path as config files and install UAE and FS-UAE config files in WinUAE and
