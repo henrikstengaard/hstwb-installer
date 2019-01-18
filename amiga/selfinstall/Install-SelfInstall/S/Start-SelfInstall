@@ -1,12 +1,13 @@
 ; Start Self Install
 ; ------------------
 ;
-; Date: 2019-01-09
+; Date: 2019-01-18
 ; Author: Henrik Noerfjand Stengaard
 
 
-; set floppy device to none (used for eject disk)
-set floppydevice ""
+; clear screen
+cls
+
 
 ; fail, if exec.library is less than v40
 Version >NIL: exec.library 40
@@ -16,9 +17,84 @@ IF WARN
 ENDIF
 
 
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; set floppy device to DF0: and goto detect install disk, if disk is present in DF0: device
+DiskInDrive >NIL: DF0:
+IF $RC EQ 0
+  set floppydevice "DF0"
+  SKIP detectinstalldisk
+ENDIF
+
+; set floppy device to DF1: and goto detect install disk, if disk is present in DF1: device
+DiskInDrive >NIL: DF1:
+IF $RC EQ 0
+  set floppydevice "DF1"
+  SKIP detectinstalldisk
+ENDIF
+
+; set floppy device to DF2: and goto detect install disk, if disk is present in DF2: device
+DiskInDrive >NIL: DF2:
+IF $RC EQ 0
+  set floppydevice "DF2"
+  SKIP detectinstalldisk
+ENDIF
+
+; set floppy device to DF3: and goto detect install disk, if disk is present in DF3: device
+DiskInDrive >NIL: DF3:
+IF $RC EQ 0
+  set floppydevice "DF3"
+  SKIP detectinstalldisk
+ENDIF
+
+SKIP welcome
+
+
+; detect install disk
+; -------------------
+LAB detectinstalldisk
+
+; set failat to 21
+FailAt 21
+
+; goto welcome, if workbench.library doesn't exist on floppy device
+IF NOT EXISTS "$floppydevice:Libs/workbench.library"
+  SKIP welcome
+ENDIF
+
+echo "*e[32m" NOLINE
+echo "HstWB Installer"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Copying Icon.library and Workbench.library from $floppydevice:..."
+
+; create sys libs directory and copy icon.library and workbench.library
+MakePath >NIL: "SYS:Libs"
+Copy >NIL: "$floppydevice:Libs/Workbench.library" "SYS:Libs"
+Copy >NIL: "SYS:Libs/Workbench.library" "INSTALLDIR:Libs"
+Copy >NIL: "$floppydevice:Libs/Icon.library" "SYS:Libs"
+Copy >NIL: "SYS:Libs/Icon.library" "INSTALLDIR:Libs"
+
+echo "Done"
+Wait SECS=2
+
+
+; welcome
+; -------
+LAB welcome
+
+; set failat to 21
+FailAt 21
+
+; set floppy device
+set floppydevice ""
+
 ; welcome message
 ; ---------------
-cls 
+cls
 echo "*e[32m" NOLINE
 echo "HstWB Installer"
 echo "*e[0m*e[1m" NOLINE
