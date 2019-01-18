@@ -6,5 +6,5 @@ C:                   INSTALLDIR:C               A
 Devs:                INSTALLDIR:Devs            A
 L:                   INSTALLDIR:L               A
 Libs:                INSTALLDIR:Libs            A
-Prefs:               INSTALLDIR:Prefs           A
+Prefs:               INSTALLDIR:Prefs
 S:                   INSTALLDIR:S               A
