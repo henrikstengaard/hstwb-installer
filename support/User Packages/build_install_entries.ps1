@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-05-20
+# Date:   2019-02-28
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -751,7 +751,7 @@ function BuildInstallEntries()
         }
         elseif ($userPackageFile -match '\.lzx$')
         {
-            $installEntryLines.Add(("{0}  unlzx -m e ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
+            $installEntryLines.Add(("{0}  unlzx -m x ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
         }
         $installEntryLines.Add("{0}ENDIF" -f $paddingText)
 
