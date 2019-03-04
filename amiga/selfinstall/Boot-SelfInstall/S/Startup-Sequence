@@ -1,14 +1,24 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2019-01-18
+; Date: 2019-03-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
 
 
+; add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
 ; set failat to 21
 FailAt 21
+
+; fail, if exec.library is less than v40
+Version >NIL: exec.library 40
+IF WARN
+  echo "*e[1mError: HstWB Installer requires minimum Kickstart 3.1 rom!*e[0m"
+  SKIP fail
+ENDIF
 
 ; load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
@@ -19,21 +29,527 @@ IF EXISTS DEVS:scsi.device
   ENDIF
 ENDIF
 
-; add alias
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+; set floppy device to empty
+set floppydevice "DF0"
 
 ; set stack
 stack 16384
 
-; add assigns from S:AssignList using assplus
+; add assigns from S:AssignList using AssPlus
 MakePath >NIL: RAM:Env
 AssPlus >NIL:
 
+
+; create hstwbinstalldir temp directory, if it doesn't exist. otherwise delete all files from hstwbinstalldir temp directory
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Temp"
+ELSE
+  Delete >NIL: "HSTWBINSTALLERDIR:Temp/#?" ALL
+ENDIF
+
+; create installdir temp directory, if it doesn't exist. otherwise delete all files from installdir temp directory
+IF NOT EXISTS "INSTALLDIR:Temp/"
+  MakePath >NIL: "INSTALLDIR:Temp"
+ELSE
+  Delete >NIL: "INSTALLDIR:Temp/#?" ALL
+ENDIF
+
+; create install prefs directory, if it doesn't exist. otherwise delete all files from install prefs directory
+IF NOT EXISTS "INSTALLDIR:Prefs/"
+  MakePath >NIL: "INSTALLDIR:Prefs/Default"
+ELSE
+  Delete >NIL: "INSTALLDIR:Prefs/~(Default)#?" ALL
+ENDIF
+
+; copy default prefs to prefs directory
+Copy >NIL: "INSTALLDIR:Prefs/Default/#?" "INSTALLDIR:Prefs" ALL
+
+
+; welcome message
+; ---------------
+cls
+echo "*e[32m" NOLINE
+echo "HstWB Installer v[$VersionText]"
+echo "*e[0m*e[1m" NOLINE
+echo "-----------------[$VersionDashes]"
+echo "*e[0m" NOLINE
+echo ""
+echo "Welcome to HstWB Installer, an installer which automates"
+echo "installation of Amiga OS 3.9, 3.1.4, 3.1, Kickstart roms"
+echo "and packages with additional content."
+echo ""
+echo "As Amiga OS 3.9, 3.1.4, 3.1 and Kickstart roms are still"
+echo "under license and sold commercially, these are not"
+echo "included and must be provided during installation process."
+echo ""
+echo "Cloanto Amiga Forever Plus Edition contains both"
+echo "Amiga OS 3.1 and Kickstart roms and can be bought from"
+echo "https://www.amigaforever.com."
+echo ""
+echo "Amiga OS 3.9 can be bought from either http://www.vesalia.de"
+echo "or http://www.amigakit.com/."
+echo ""
+ask "Press ENTER to continue"
+
+
+; amiga os system files message
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS system files"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Amiga OS system files are required for the"
+echo "installation process and will load these from"
+echo "either Amiga OS 3.9, 3.1.4 or 3.1:"
+echo "1. CD0: CD drive with Amiga OS 3.9 cd-rom."
+echo "2. AMIGAOSDIR: Directory with Amiga OS 3.1.4 or 3.1"
+echo "   Workbench adf file."
+echo "3. DF0-DF3: Amiga OS 3.1.4 or 3.1 Workbench disk"
+echo "   inserted in any floppy device."
+echo ""
+echo "Continue will start loading Amiga OS system files."
+echo ""
+ask "Press ENTER to continue"
+
+
+; load amiga os
+; -------------
+LAB loadamigaos
+
+; load amiga os system files message
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS system files"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "*e[1mLoading Amiga OS system files:*e[0m"
+echo "Amiga OS 3.9 cd-rom in CD0:..."
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; goto find amiga os adf, if CD0: device is not present
+DiskInDrive >NIL: CD0:
+IF NOT $RC EQ 0 VAL
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosadf
+ENDIF
+
+; goto find amiga os adf, if AmigaOS3.9: device is not present
+DiskInDrive >NIL: AmigaOS3.9:
+IF NOT $RC EQ 0 VAL
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosadf
+ENDIF
+
+; set failat to 21
+failat 21
+
+; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
+  SKIP amigaosadf
+ENDIF
+
+; load system files from amiga os 3.9 emergency boot
+set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
+SKIP loadsystemfiles
+
+
+; amiga os adf
+; ------------
+LAB amigaosadf
+
+set amigaos314 "0"
+
+echo "Amiga OS 3.1.4 or 3.1 adfs file in AMIGAOSDIR:..."
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; goto amiga os disk, if AMIGAOSDIR: device is not present
+DiskInDrive >NIL: AMIGAOSDIR:
+IF NOT $RC EQ 0 VAL
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosdisk
+ENDIF
+
+; set failat to 21
+failat 21
+
+; set detected adf files empty
+set workbenchadffile ""
+set installadffile ""
+
+; find adf files in AMIGAOSDIR:
+FSearch >RAM:_adffiles "AMIGAOSDIR:" PAT="#?.adf"
+
+; next adf file
+LAB nextadffile
+
+; get next adf file from first line of adf files
+set adffile ""
+set adffile `sed "1q;d" "RAM:_adffiles"` 
+
+; delete first line from adf files
+sed "1d" "RAM:_adffiles" >"RAM:_adffiles2"
+Copy >NIL: "RAM:_adffiles2" "RAM:_adffiles" 
+
+; goto verify adf files, if no valid amiga os 3.1.4 or 3.1 workbench adf was detected
+IF "$adffile" EQ ""
+  SKIP verifyadffiles
+ENDIF
+
+; goto next adf file, if file size is not 901120 bytes
+set filesize `wc -c <"$adffile"`
+IF NOT $filesize EQ 901120 VAL
+  SKIP BACK nextadffile
+ENDIF
+
+; goto next adf file, if xadunfile doesn't return error code 0
+xadUnFile >RAM:_adflist "$adffile" DIMG LIST
+IF NOT $RC EQ 0
+  SKIP BACK nextadffile
+ENDIF
+
+; find amiga os 3.1.4 or 3.1 workbench disk, if workbench disk is not set
+set detectworkbench "0"
+IF "$workbenchadffile" EQ ""
+  ; find amiga os 3.1.4 workbench disk volume name in adf file
+  IF NOT "`FSearch "$adffile" TXT="Workbench3.1.4"`" EQ ""
+    set detectworkbench "1"
+    set amigaos314 "1"
+  ENDIF
+
+  ; find amiga os 3.1 workbench disk volume name in adf file
+  IF NOT "`FSearch "$adffile" TXT="Workbench3.1"`" EQ ""
+    set detectworkbench "1"
+  ENDIF
+ENDIF
+
+; detect workbench
+IF $detectworkbench EQ 1 VAL
+  ; goto detect install, if adf doesn't contain which file
+  IF "`FSearch RAM:_adflist TXT="C/Which"`" EQ ""
+    SKIP detectinstall
+  ENDIF
+
+  ; goto detect install, if adf doesn't contain assign file
+  IF "`FSearch RAM:_adflist TXT="C/Assign"`" EQ ""
+    SKIP detectinstall
+  ENDIF
+
+  ; goto detect install, if adf doesn't contain datatypes.library file
+  IF "`FSearch RAM:_adflist TXT="Libs/datatypes.library"`" EQ ""
+    SKIP detectinstall
+  ENDIF
+
+  ; goto detect install, if adf doesn't contain cli file
+  IF "`FSearch RAM:_adflist TXT="System/CLI"`" EQ ""
+    SKIP detectinstall
+  ENDIF
+
+  ; goto detect install, if adf doesn't contain shell.info file
+  IF "`FSearch RAM:_adflist TXT="System/Shell.info"`" EQ ""
+    SKIP detectinstall
+  ENDIF 
+
+  ; workbench adf file
+  set workbenchadffile "$adffile"
+  echo "$workbenchadffile"
+ENDIF
+
+; detect install
+LAB detectinstall
+
+; find amiga os 3.1.4 install disk volume name in adf file
+IF NOT "`FSearch "$adffile" TXT="Install3.1.4"`" EQ ""
+  ; goto next adf file, if adf doesn't contain "C/AmigaModel" file
+  IF "`FSearch RAM:_adflist TXT="C/AmigaModel"`" EQ ""
+    SKIP BACK nextadffile
+  ENDIF 
+
+  ; goto next adf file, if adf doesn't contain "HDToolBox" file
+  IF "`FSearch RAM:_adflist TXT="HDTools/HDToolBox"`" EQ ""
+    SKIP BACK nextadffile
+  ENDIF 
+
+  ; goto next adf file, if adf doesn't contain "FastFileSystem" file
+  IF "`FSearch RAM:_adflist TXT="L/FastFileSystem"`" EQ ""
+    SKIP BACK nextadffile
+  ENDIF 
+
+  ; goto next adf file, if adf doesn't contain "Workbench.library" file
+  IF "`FSearch RAM:_adflist TXT="Libs/Workbench.library"`" EQ ""
+    SKIP BACK nextadffile
+  ENDIF 
+
+  ; goto next adf file, if adf doesn't contain "Icon.library" file
+  IF "`FSearch RAM:_adflist TXT="Libs/Icon.library"`" EQ ""
+    SKIP BACK nextadffile
+  ENDIF 
+
+  ; install adf file
+  set installadffile "$adffile"
+  echo "$installadffile"
+ENDIF
+
+; goto verify af files, if workbench and install adf files are defined
+IF NOT "$workbenchadffile" EQ ""
+  IF $amigaos314 EQ 1 VAL
+    IF NOT "$installadffile" EQ ""
+      SKIP verifyadffiles
+    ENDIF
+  ELSE
+    SKIP verifyadffiles
+  ENDIF
+ENDIF
+
+; goto next adf file
+SKIP BACK nextadffile
+
+
+; verify adf files
+; ----------------
+
+LAB verifyadffiles
+
+; create temp directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Temp"
+ENDIF
+
+; goto amiga os disk, if workbench adf file is not set
+IF "$workbenchadffile" EQ ""
+  SKIP amigaosdisk
+ENDIF
+
+; create temp amiga os workbench directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Temp/Workbench"
+ENDIF
+
+; extract files from amiga os workbench adf
+xadUnFile >NIL: "$workbenchadffile" "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench" DIMG OVERWRITE
+
+; set system files dir
+set systemfilesdir "HSTWBINSTALLERDIR:Temp/Amiga-OS-Workbench/C"
+
+; goto amiga os disk, if amiga os 3.1.4 install adf file is not set
+IF $amigaos314 EQ 1 VAL
+  IF "$installadffile" EQ ""
+    SKIP amigaosdisk
+  ENDIF
+ELSE
+  SKIP loadsystemfiles 
+ENDIF
+
+; create temp amiga os install directory, if it doesn't exist
+IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install"
+  MakePath >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install"
+ENDIF
+
+; extract files from amiga os install adf
+xadUnFile >NIL: "$installadffile" "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install" DIMG OVERWRITE
+
+; create sys libs directory, if it doesn't exist
+IF NOT EXISTS "SYS:Libs"
+  MakePath >NIL: "SYS:Libs"
+ENDIF
+
+; copy "AmigaModel" to temp, if it exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/C/AmigaModel"
+  Copy >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/C/AmigaModel" "HSTWBINSTALLERDIR:Temp"
+  "HSTWBINSTALLERDIR:Temp/AmigaModel" >"INSTALLDIR:Prefs/AmigaModel"
+ELSE
+  echo "*e[1mError: The file "C/AmigaModel" doesn't exist in Amiga OS 3.1.4 Install adf!*e[0m"
+  SKIP fail
+ENDIF
+
+; copy workbench.library to sys and installdir libs, if workbench.library exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/Libs/Workbench.library"
+  Copy >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/Libs/Workbench.library" "SYS:Libs"
+  Copy >NIL: "SYS:Libs/Workbench.library" "INSTALLDIR:Libs"
+ELSE
+  echo "*e[1mError: The file "Libs/Workbench.library" doesn't exist in Amiga OS 3.1.4 Install adf!*e[0m"
+  SKIP fail
+ENDIF
+
+; copy icon.library to sys and installdir libs, if icon.library exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/Libs/Icon.library"
+  Copy >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/Libs/Icon.library" "SYS:Libs"
+  Copy >NIL: "SYS:Libs/Icon.library" "INSTALLDIR:Libs"
+ELSE
+  echo "*e[1mError: The file "Libs/Icon.library" doesn't exist in Amiga OS 3.1.4 Install adf!*e[0m"
+  SKIP fail
+ENDIF
+
+; goto load system files
+SKIP loadsystemfiles 
+
+
+; amiga os disk
+; -------------
+LAB amigaosdisk
+
+echo "*e[1mNo Amiga OS system files detected!*e[0m"
+Wait SECS=2
+
+; restart load amiga os system files
+LAB restartamigaos
+set restart `RequestChoice "Amiga OS system files" "Amiga OS system files could not be loaded from*NAmiga OS 3.9 cd-rom in CD0: device, Amiga OS 3.1.4*Nor 3.1 Workbench adf file in AMIGAOSDIR: device.*N*NDo you want to restart load Amiga OS system files?" "Help|Yes|No"`
+IF "$restart" EQ 1 VAL
+  Lister "INSTALLDIR:Help/Amiga-OS-System-Files.txt" >NIL:
+  SKIP BACK restartamigaos
+ENDIF
+IF "$restart" EQ 2 VAL
+  SKIP BACK loadamigaos
+ENDIF
+
+
+; load amiga os system files from floppy device
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS system files"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "Amiga OS system files will now be loaded from floppy device."
+
+; insert workbench disk
+LAB insertworkbenchdisk
+echo ""
+echo "Please insert Amiga OS 3.1.4 or 3.1 Workbench disk in any"
+echo "floppy device."
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; goto check verify workbench disk, if disk is present in DF0: device
+DiskInDrive >NIL: DF0:
+IF NOT WARN
+  set floppydevice "DF0"
+  SKIP verifyworkbenchdisk
+ENDIF
+
+; goto check verify workbench disk, if disk is present in DF1: device
+DiskInDrive >NIL: DF1:
+IF NOT WARN
+  set floppydevice "DF1"
+  SKIP verifyworkbenchdisk
+ENDIF
+
+; goto check verify workbench disk, if disk is present in DF2: device
+DiskInDrive >NIL: DF2:
+IF NOT WARN
+  set floppydevice "DF2"
+  SKIP verifyworkbenchdisk
+ENDIF
+
+; verify workbench disk, if disk is present in DF3: device, if not go back to insert workbench disk
+DiskInDrive >NIL: DF3:
+IF NOT WARN
+  set floppydevice "DF3"
+ELSE
+  echo "No disk is inserted in any floppy device!"
+  SKIP insertworkbenchdisk back
+ENDIF
+
+; verify workbench disk
+LAB verifyworkbenchdisk
+failat 21
+
+IF NOT EXISTS $floppydevice:C/Which
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP insertworkbenchdisk back
+ENDIF
+IF NOT EXISTS $floppydevice:C/Assign
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP insertworkbenchdisk back
+ENDIF
+IF NOT EXISTS $floppydevice:Libs/datatypes.library
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/CLI
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT EXISTS $floppydevice:System/Shell.info
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP BACK insertworkbenchdisk
+ENDIF
+IF NOT "`$floppydevice:c/which $floppydevice:`" EQ "Workbench3.1:"
+  echo "Workbench disk in floppy device $floppydevice: is not valid!"
+  SKIP insertworkbenchdisk back
+ENDIF 
+
+echo "Loading Amiga OS system files from Workbench disk in"
+echo "floppy device $floppydevice:..."
+set systemfilesdir "$floppydevice:c"
+
+
+; load system files
+; -----------------
+LAB loadsystemfiles
+
+; load amiga os system files resident
+resident "$systemfilesdir/Assign" PURE
+resident "$systemfilesdir/Copy" PURE
+resident "$systemfilesdir/Delete" PURE
+resident "$systemfilesdir/DiskChange" PURE
+resident "$systemfilesdir/Eval" PURE
+resident "$systemfilesdir/Execute" PURE
+resident "$systemfilesdir/List" PURE
+resident "$systemfilesdir/Rename" PURE
+resident "$systemfilesdir/MakeDir" PURE
+resident "$systemfilesdir/Protect" PURE
+resident "$systemfilesdir/Search" PURE 
+resident "$systemfilesdir/Wait" PURE 
+resident "$systemfilesdir/Which" PURE 
+resident "$systemfilesdir/Mount" PURE
+resident "$systemfilesdir/Type" PURE
+resident "$systemfilesdir/RequestChoice" PURE
+resident "$systemfilesdir/Version" PURE
+
+MakeDir RAM:Clipboards RAM:ENV/Sys
+SetEnv TZ MST7
+
+echo "Done"
+echo ""
+ask "Press ENTER to continue"
+
+
 ; mount kingcon
 Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
-Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
+Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON
 
 ; run start-selfinstall in new kingcon shell
-; newshell window kcon: will cause kickstart 3.1.4 to show a requester to insert disk with "Libs/workbench.library"
 NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall"
 EndShell
+
+SKIP end
+
+
+; fail
+LAB fail
+echo ""
+echo "Installation failed."
+quit
+
+
+; end
+LAB end
