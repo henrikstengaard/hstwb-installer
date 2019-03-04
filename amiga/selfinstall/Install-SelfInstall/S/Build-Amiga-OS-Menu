@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-01-11
+; Date: 2019-03-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -38,9 +38,21 @@ IF EXISTS T:_iconpackinstall
   Delete >NIL: T:_iconpackinstall
 ENDIF
 
+; set default install to amiga os 3.1.4 model, if amiga model prefs exists
+IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
+  set amigamodel "`type "INSTALLDIR:Prefs/AmigaModel"`"
+  echo "Amiga OS 3.1.4 $amigamodel from adf files" >T:_amigaosname
+  echo "Amiga-OS-314-$amigamodel-ADF" >T:_amigaosinstall
+  echo "0" >T:_amigaos39
+  echo "0" >T:_boingbaginstall
+  echo "1" >T:_amigaos314
+  echo "0" >T:_iconpackinstall
+ENDIF
+
 echo "set amigaosname *"Amiga OS from floppy disks*"" >T:_amigaosfloppydisk
 echo "set amigaosinstall *"Amiga-OS-Disk*"" >>T:_amigaosfloppydisk
 echo "set amigaos39 *"0*"" >>T:_amigaosfloppydisk
+echo "set amigaos314 *"0*"" >>T:_amigaosfloppydisk
 echo "set boingbaginstall *"0*"" >>T:_amigaosfloppydisk
 echo "set iconpackinstall *"0*"" >>T:_iconpackinstall
 
@@ -53,13 +65,15 @@ echo "echo *"*" NOLINE >T:amigaosmenu" >>T:_amigaosmenu
 ; amiga os 3.9 cd
 set menuoption `eval $menuoption + 1`
 IF EXISTS INSTALLDIR:Prefs/Amiga-OS-390-CD
-  ; set default install amiga os 3.9 from cd
-  echo "Amiga OS 3.9 from cd-rom" >T:_amigaosname
-  echo "Amiga-OS-390-CD" >T:_amigaosinstall
-  echo "1" >T:_amigaos39
-  echo "0" >T:_boingbaginstall
-  echo "0" >T:_amigaos314
-  echo "0" >T:_iconpackinstall
+  ; set default install amiga os 3.9 from cd, if not set
+  IF NOT EXISTS "T:_amigaosinstall"
+    echo "Amiga OS 3.9 from cd-rom" >T:_amigaosname
+    echo "Amiga-OS-390-CD" >T:_amigaosinstall
+    echo "1" >T:_amigaos39
+    echo "0" >T:_boingbaginstall
+    echo "0" >T:_amigaos314
+    echo "0" >T:_iconpackinstall
+  ENDIF
 
   echo "" >>T:_amigaosmenu
   echo "IF *"*$amigaosinstall*" EQ *"Amiga-OS-390-CD*"" >>T:_amigaosmenu

@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1.4 Adf
 ; -------------------------
 ;
-; Date: 2019-01-03
+; Date: 2019-03-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1.4 adf files are present.
@@ -10,6 +10,10 @@
 ; add detect amiga os 3.1.4 to log
 echo "Amiga OS 3.1.4 adf" >INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 echo "------------------" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
+  echo "Amiga Model Detected = " NOLINE >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  type "INSTALLDIR:Prefs/AmigaModel" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+ENDIF
 echo "Detecting Amiga OS 3.1.4 adf files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 
 ; create amiga os 3.1.4 installdir temp directory, if it doesn't exist
