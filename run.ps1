@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-04
+# Date:   2019-03-11
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -586,7 +586,6 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
                 $packagesMenuScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $dependencyPackage.Name)
                 $packagesMenuScriptLines += "      ENDIF"
                 $packagesMenuScriptLines += "    ENDIF"
-                
             }
 
             # add script lines to show package dependency warning, if selected packages has dependencies to it
