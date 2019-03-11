@@ -1,2 +1,35 @@
 Package installation help
 -------------------------
+
+Package installation shows packages that can be
+installed. The packages can install anything from
+Workbench enhancements, libraries & devices, software,
+icons to applies updates to Startup-Sequence and
+Amiga OS system files.
+
+The list of packages is based on selected packages
+filtering and will only list packages for the
+selected Amiga OS. The package filtering can be
+changed by selecting 'Select package filtering'.
+
+Select a package to switch it between 'Install' and
+'Skip'. This indicates weither the package will be
+installed or skipped. Packages with (*) indicates
+that the package has dependencies to other packages,
+which will also be selected, if the package is set
+to be installed. A warning will be shown, if a
+package is set to be skipped and other packages has
+dependencies to it.
+
+All packages can be set to be installed by selecting
+'Install all packages' or set to be skipped by
+selecting 'Skip all packages'.
+
+Select 'View readme' to view packages readme guide
+with further information each package.
+
+Select 'Edit assigns' to change directories where
+packages are installed.
+
+Select "Start package installation" to installation
+of packages set to be installed.

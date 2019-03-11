@@ -1,2 +1,19 @@
 Select package filtering help
 -----------------------------
+
+Select package filtering lists different Amiga OS
+versions that is supported by the packages. Some 
+packages only work with specific versions of Amiga OS,
+while others may work for any Amiga OS version.
+Installing a package on an unsupported Amiga OS may
+cause either Amiga OS or the package to not work
+properly.
+
+By default the package installation will auto-detect
+the Amiga OS version installed and select it as
+package filtering. In case the auto-detected Amiga OS
+version failed or selected a wrong Amiga OS version,
+please manually select correct Amiga OS version.
+
+Select 'Auto-detect Amiga OS version' to reset package
+filtering to default.
