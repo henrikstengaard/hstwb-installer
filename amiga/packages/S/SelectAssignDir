@@ -1,8 +1,8 @@
-; Select assign dir
+; select assign dir
 ; -----------------
 LAB selectassigndir
 
-; Set assign dir to SYS:, if not defined
+; set assign dir to SYS:, if not defined
 IF "$assigndir" eq ""
   set assigndir "SYS:"
 ELSE
@@ -17,24 +17,24 @@ ELSE
   ENDIF
 ENDIF
 
-; Set assign dir to SYS:, if assign dir doesn't exist
+; set assign dir to SYS:, if assign dir doesn't exist
 IF NOT EXISTS "$assigndir"
   set assigndir "SYS:"
 ENDIF
 
-; Show select dir for assign dialog"
+; show select dir for assign dialog"
 set newassigndir ""
 set newassigndir `REQUESTFILE DRAWER "$assigndir" TITLE "Select '$assignname' assign" NOICONS DRAWERSONLY`
 
-; Return, if select dir for assign dialog is cancelled"
+; return, if select dir for assign dialog is cancelled"
 IF "$newassigndir" eq ""
   SKIP $returnlab
 ENDIF
 
-; Write new assign dir for assign id
+; write new assign dir for assign id
 echo "$newassigndir" >"T:$assignid"
 
-; Strip tailing slash from assign dir
+; strip tailing slash from assign dir
 sed "s/\/$//" "T:$assignid" >"T:_assigndir"
 copy >NIL: "T:_assigndir" "T:$assignid"
 delete >NIL: "T:_assigndir"

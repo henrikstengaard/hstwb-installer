@@ -1,0 +1,60 @@
+; detect amiga os
+; ---------------
+LAB detectamigaos
+
+; set amiga os version to 'All'
+set amigaosversion "All"'
+
+; get amiga os from amiga os prefs, if it exists
+IF EXISTS "SYSTEMDIR:Prefs/AmigaOS"
+  set amigaosversion "`type "SYSTEMDIR:Prefs/AmigaOS"`"
+  SKIP resetpackages
+ENDIF
+
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  ; set amiga os version to 3.1.4, if workbench.library file is equal or greater than v45.194
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 194 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1.4"
+    SKIP resetpackages
+  ENDIF
+
+  ; set amiga os version to 3.9, if workbench.library file is equal or greater than v45.102
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 102 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.9"
+    SKIP resetpackages
+  ENDIF
+
+  ; set amiga os version to 3.1, if workbench.library file is equal or greater than v40.5
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 40 5 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1"
+  ENDIF
+ELSE
+  ; set amiga os version to 3.1.4, if loaded workbench.library is equal or greater than v45.194
+  Version >NIL: "workbench.library" 45 194
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1.4"
+    SKIP resetpackages
+  ENDIF
+
+  ; set amiga os version to 3.9, if loaded workbench.library is equal or greater than v45.102
+  Version >NIL: "workbench.library" 45 102
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.9"
+    SKIP resetpackages
+  ENDIF
+
+  ; set amiga os version to 3.1, if loaded workbench.library is equal or greater than v40.5
+  Version >NIL: "workbench.library" 40 5
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1"
+    SKIP resetpackages
+  ENDIF
+ENDIF
+
+; show auto-detect amiga os version warning
+RequestChoice "Auto-detect Amiga OS version" "WARNING: Package installation could not auto-detect*NAmiga OS version and has set Amiga OS package*Nfiltering to all Amiga OS versions.*NThis means that not all packages may work*Ncorrectly with the Amiga OS installed.*NUse *"Select package filtering*" to*Nshow only packages that matches the*NAmiga OS installed." "OK"
+
+SKIP resetpackages
