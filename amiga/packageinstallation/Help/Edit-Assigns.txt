@@ -30,13 +30,15 @@ typically use the 'SystemDir' assign to update
 Startup-Sequence, prefs, install icons or tools.
 
 Select an assign 'AssignName:' to change it's
-directory. A directory requester will be shown
+directory. A directory requester will be shown,
 which can be used browse to and select another
 directory for the assign.
 
 Select 'Reset assigns' to reset assigns to 
 directories used for previous installation of
-the package.
+the packages. If any package haven't been
+installed previously, it will use default
+directories configured for each package.
 
 Select 'Default assigns' to set assigns to default
 directories configured for each package.
