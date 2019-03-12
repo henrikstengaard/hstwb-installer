@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-11
+# Date:   2019-03-12
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -523,7 +523,7 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packagesMenuScriptLines += "echo ""Help"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Install all packages"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Skip all packages"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""View Readme"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""View readme"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Edit assigns"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Start package installation"" >>T:packagesmenu"
 
@@ -1024,7 +1024,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $viewReadmeMenuLines += 'echo "Back" >>T:viewreadmemenu'
             $viewReadmeMenuLines += ''
             $viewReadmeMenuLines += 'set viewreadmemenu ""'
-            $viewReadmeMenuLines += 'set viewreadmemenu "`RequestList TITLE="View Readme" LISTFILE="T:viewreadmemenu" WIDTH=640 LINES=24`"'
+            $viewReadmeMenuLines += 'set viewreadmemenu "`RequestList TITLE="View readme" LISTFILE="T:viewreadmemenu" WIDTH=640 LINES=24`"'
             $viewReadmeMenuLines += 'delete >NIL: T:viewreadmemenu'
             $viewReadmeMenuLines += $viewReadmeOptionLines
 
