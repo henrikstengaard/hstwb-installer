@@ -543,7 +543,7 @@ function ValidateAmigaOsSet($hstwb, $amigaOsSetName)
             }
         }
 
-    $present = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' -and $_.File }).Count
+    $present = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.File }).Count
     $required = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' }).Count
     $total = $amigaOsSetEntriesIndex.Values.Count
 
