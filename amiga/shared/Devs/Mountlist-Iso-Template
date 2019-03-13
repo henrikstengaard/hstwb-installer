@@ -1,5 +1,5 @@
 FCD0:
-Unit           = "[$AmigaOS39IsoFile]"
+Unit           = "[$IsoFile]"
 Device         = INSTALLDIR:Devs/filedisk.device
 FileSystem     = INSTALLDIR:L/AmiCDFS
 Flags          = 0
