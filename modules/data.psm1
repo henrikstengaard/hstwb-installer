@@ -578,9 +578,9 @@ function UiAmigaOsSetInfo($hstwb, $amigaOsSetName)
 function UpdateAmigaOsEntries($hstwb)
 {
     # fail
-    if (!(Test-Path -Path $hstwb.Paths.AmigaOsSetsFile))
+    if (!(Test-Path -Path $hstwb.Paths.AmigaOsEntriesFile))
     {
-        throw ("Amiga OS entries file '{0}' doesn't exist" -f $hstwb.Paths.AmigaOsSetsFile)
+        throw ("Amiga OS entries file '{0}' doesn't exist" -f $hstwb.Paths.AmigaOsEntriesFile)
     }
 
     # set empty amiga os entries
@@ -594,7 +594,7 @@ function UpdateAmigaOsEntries($hstwb)
 
     # read amiga os entries
     $amigaOsEntries = @()
-    $amigaOsEntries += Import-Csv -Delimiter ';' $hstwb.Paths.AmigaOsSetsFile | Where-Object { $_.Name -and $_.Name -ne '' }
+    $amigaOsEntries += Import-Csv -Delimiter ';' $hstwb.Paths.AmigaOsEntriesFile | Where-Object { $_.Name -and $_.Name -ne '' }
 
     # add priority to sets based on their order
     $set = ''

@@ -3051,7 +3051,7 @@ function Fail($hstwb, $message)
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$amigaOsSetsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Sets\amiga-os-sets.csv")
+$amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $fsUaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("fs-uae")
@@ -3092,7 +3092,7 @@ try
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
             'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'AmigaOsSetsFile' = $amigaOsSetsFile;
+            'AmigaOsEntriesFile' = $amigaOsEntriesFile;
             'AmigaPath' = $amigaPath;
             'WinuaePath' = $winuaePath;
             'FsUaePath' = $fsUaePath;
@@ -3124,37 +3124,14 @@ try
     {
         throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
     }
-
-    # read amiga os sets
-    if (Test-Path -Path $amigaOsSetsFile)
-    {
-        $amigaOsSets = @()
-        $amigaOsSets += Import-Csv -Delimiter ';' $amigaOsSetsFile
-
-        $set = ''
-        $priority = 0
-        foreach ($amigaOsEntry in $amigaOsSets)
-        {
-            if ($set -ne $amigaOsEntry.Set)
-            {
-                $priority++
-                $set = $amigaOsEntry.Set
-            }
-
-            $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
-        }
-
-        $hstwb.AmigaOsSets = $amigaOsSets
-    }
-    else
-    {
-        throw ("Amiga OS sets file '{0}' doesn't exist" -f $amigaOsSetsFile)
-    }
     
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
     
+    # update amiga os entries
+    UpdateAmigaOsEntries $hstwb
+
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     

@@ -1251,7 +1251,7 @@ function ResetSettings($hstwb)
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$amigaOsSetsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Sets\amiga-os-sets.csv")
+$amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
@@ -1305,7 +1305,7 @@ try
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
             'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'AmigaOsSetsFile' = $amigaOsSetsFile;
+            'AmigaOsEntriesFile' = $amigaOsEntriesFile;
             'ImagesPath' = $imagesPath;
             'PackagesPath' = $packagesPath;
             'SettingsFile' = $settingsFile;
