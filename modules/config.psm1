@@ -637,24 +637,24 @@ function ValidateSettings($settings)
         return $false
     }
 
-    # fail, if InstallWorkbench parameter doesn't exist in settings file or is not valid
-    if (!$settings.Workbench.InstallWorkbench -or $settings.Workbench.InstallWorkbench -notmatch '(Yes|No)')
+    # fail, if install amiga os parameter doesn't exist in settings file or is not valid
+    if (!$settings.AmigaOs.InstallAmigaOs -or $settings.AmigaOs.InstallAmigaOs -notmatch '(Yes|No)')
     {
-        Write-Host "Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        Write-Host "Error: InstallAmigaOs parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
         return $false
     }
 
-    # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Workbench.WorkbenchAdfDir -or ($settings.Workbench.WorkbenchAdfDir -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfDir)))
+    # fail, if amiga os dir parameter doesn't exist in settings file or directory doesn't exist
+    if (!$settings.AmigaOs.AmigaOsDir -or ($settings.AmigaOs.AmigaOsDir -match '^.+$' -and !(test-path -path $settings.AmigaOs.AmigaOsDir)))
     {
-        Write-Host "Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+        Write-Host "Error: AmigaOsDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
     }
 
-    # fail, if WorkbenchAdfSet parameter doesn't exist settings file or it's not defined
-    if (!$settings.Workbench.WorkbenchAdfSet -or $settings.Workbench.WorkbenchAdfSet -eq '')
+    # fail, if amiga os set parameter doesn't exist settings file or it's not defined
+    if (!$settings.AmigaOs.AmigaOsSet -or $settings.AmigaOs.AmigaOsSet -eq '')
     {
-        Write-Host "Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+        Write-Host "Error: AmigaOsSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
         return $false
     }
 
