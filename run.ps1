@@ -1788,8 +1788,9 @@ function RunInstall($hstwb)
 
     # set temp install and packages dir
     $tempInstallDir = Join-Path $hstwb.Paths.TempPath -ChildPath "install"
-    $tempAmigaOsDir = Join-Path $tempInstallDir -ChildPath "AmigaOS"
-    $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
+    $tempInstallTempDir = Join-Path $tempInstallDir -ChildPath "Temp"
+    $tempAmigaOsDir = Join-Path $tempInstallTempDir -ChildPath "Amiga-OS"
+    $tempKickstartDir = Join-Path $tempInstallTempDir -ChildPath "Kickstart"
     $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
     $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
 
@@ -1889,45 +1890,76 @@ function RunInstall($hstwb)
 
 
     # prepare install amiga os
-    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes' -and ($hstwb.AmigaOsSets | Where-Object { $_.File }).Count -gt 0)
+    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
-        #
-        $amigaOs39Iso = Where-Object { $_.File -and $_.FileName -match '$amigaos3\.9\.iso$' } | Select-Object -First 1
+        $amigaOsSetEntries = @()
+        $amigaOsSetEntries = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    
+        # find amiga os 3.9 iso in amiga os set
+        $amigaOs39Iso = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amigaos3\.9\.iso$' } | Select-Object -First 1
         if ($amigaOs39Iso)
         {
             # create install amiga os 3.9 prefs file
-            $installAmigaOs39PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
-            Set-Content $installAmigaOs39PrefsFile -Value ""
+            $installAmigaOs390PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
+            Set-Content $installAmigaOs390PrefsFile -Value ""
 
-            # Install-Amiga-OS-390-BB1
-            # Install-Amiga-OS-390-BB2
+            for ($i = 1; $i -gt 2; $i++)
+            {
+                # find boing bag 3.9 update lha in amiga os set
+                $boingbagLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match ('^boingbag39-{0}\.lha$' -f $i) } | Select-Object -First 1
+                if (!$boingbagLha)
+                {
+                    break
+                }
+    
+                # create install boing bag prefs file
+                $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB{0}' -f $i)
+                Set-Content $installBoingBagPrefsFile -Value ""
+            }
         }
 
-        #
-        $amigaOs314ModulesAdf = $hstwb.AmigaOsSets | Where-Object { $_.File -and $_.FileName -match '$amiga-os-314-modules-[^-\.]+\.adf$' } | Select-Object -First 1
+        # find amiga os 3.1.4 modules adf in amiga os set
+        $amigaOs314ModulesAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-modules-[^\-\.]+\.adf$' } | Select-Object -First 1
         if ($amigaOs314ModulesAdf)
         {
-            $amigaOs314ModulesModel = $amigaOs314ModulesAdf.FileName | Select-String -Pattern '$amiga-os-314-modules-([^-\.]+\).adf$' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
-
-            # create install amiga os 3.1.4 prefs file
-            $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesModel.ToUpper())
+            # create install amiga os 3.1.4 adf prefs file
+            $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
             Set-Content $installAmigaOs314PrefsFile -Value ""
 
-            # Install-Amiga-OS-314-IconPack
+            # find amiga os 3.1.4 icon pack lha in amiga os set
+            $amigaOs314IconPackLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-iconpack\.lha$' } | Select-Object -First 1
+            if ($amigaOs314ModulesAdf)
+            {
+                # create install amiga os 3.1.4 icon pack prefs file
+                $installAmigaOs314IconPackLhaPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-314-IconPack'
+                Set-Content $installAmigaOs314IconPackLhaPrefsFile -Value ""
+            }
         }
 
-        #
-        $amigaOs31Adf = Where-Object { $_.File -and $_.FileName -match '$amiga-os-310-[^-\.]+\.adf$' } | Select-Object -First 1
+        # create install amiga os 3.1 prefs, if amiga os set entries contain amiga os 3.1 adf files
+        $amigaOs31Adf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-310-[^\-\.]+\.adf$' } | Select-Object -First 1
         if ($amigaOs31Adf)
         {
             # create install amiga os 3.1 prefs file
-            $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
-            Set-Content $installWorkbenchFile -Value ""
+            $installAmigaOs310PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
+            Set-Content $installAmigaOs310PrefsFile -Value ""
         }
 
-        # copy amiga os files to temp install dir
-        #Write-Host "Copying Amiga OS files to temp install dir"
-        #$hstwb.AmigaOsSets | Where-Object { $_.File -and $_.CopyFile -eq 'True' } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $_.Filename) -Force }
+        # copy amiga os set entries to temp install dir
+        $amigaOsSetEntriesFirstIndex = @{}
+        foreach($amigaOsSetEntry in $amigaOsSetEntries)
+        {
+            if ($amigaOsSetEntriesFirstIndex.ContainsKey($amigaOsSetEntry.Name))
+            {
+                continue
+            }
+
+            $amigaOsSetEntriesFirstIndex[$amigaOsSetEntry.Name] = $true
+
+            $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+            Copy-Item -Literalpath $bestMatchingAmigaOsSetEntry.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename) -Force
+        }    
     }
 
 
@@ -2266,7 +2298,11 @@ function RunInstall($hstwb)
     # print start emulator message
     Write-Host ""
     Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Emulator)
-    
+
+    Write-Host "Examine temp dir!"
+    Read-Host
+    return
+
     # start emulator to run install
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
 

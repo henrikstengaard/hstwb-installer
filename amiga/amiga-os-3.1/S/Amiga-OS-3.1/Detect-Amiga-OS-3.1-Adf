@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1 Adf
 ; -----------------------
 ;
-; Date: 2019-01-03
+; Date: 2019-03-13
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1 adf files are present.
@@ -12,9 +12,9 @@ echo "Amiga OS 3.1 adf" >INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 echo "----------------" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 echo "Detecting Amiga OS 3.1 adf files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 
-; create amiga os 3.1 installdir temp directory, if it doesn't exist
-IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/"
-  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS-310"
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
 ENDIF
 
 ; create install amiga os 3.1 adf prefs, if AMIGAOSDIR: exists and amiga os 3.1 adf files are present
@@ -27,7 +27,7 @@ IF NOT WARN
   execute "INSTALLDIR:S/Unmount-Adf"
 
   ; create script to copy amiga os 3.1 adf files 
-  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-310*"" >T:_copy_amiga-os-3.1_adfs
+  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1/Copy-Amiga-OS-3.1-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS*"" >T:_copy_amiga-os-3.1_adfs
 
   ; run copy amiga os 3.1 adfs
   Execute T:_copy_amiga-os-3.1_adfs
@@ -35,27 +35,27 @@ IF NOT WARN
 
   ; set amigaos310adf to 0, if one or more amiga os 3.1 adf files doesn't exist
   set amigaos310adf "1"
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-workbench.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-workbench.adf"
     echo "Amiga OS 3.1 Workbench adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-locale.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-locale.adf"
     echo "Amiga OS 3.1 Locale adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-extras.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-extras.adf"
     echo "Amiga OS 3.1 Extras adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-fonts.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-fonts.adf"
     echo "Amiga OS 3.1 Fonts adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-storage.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-storage.adf"
     echo "Amiga OS 3.1 Storage adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
-  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS-310/amiga-os-310-install.adf"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-install.adf"
     echo "Amiga OS 3.1 Install adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
     set amigaos310adf "0"
   ENDIF
