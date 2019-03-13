@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-07-04
+# Date:   2019-03-13
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -117,17 +117,16 @@ function MainMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Main Menu" @("Configure Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure User Packages", "Configure Emulator", "Configure Installer", "Run Installer", "Reset Settings", "Exit")
+        $choice = Menu $hstwb "Main Menu" @("Configure Installer", "Configure Image", "Configure Amiga OS", "Configure Kickstart", "Configure Packages", "Configure User Packages", "Configure Emulator", "Run Installer", "Reset Settings", "Exit")
         switch ($choice)
         {
+            "Configure Installer" { ConfigureInstaller $hstwb }
             "Configure Image" { ConfigureImageMenu $hstwb }
-            "Configure Workbench" { ConfigureWorkbenchMenu $hstwb }
-            "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu $hstwb }
+            "Configure Amiga OS" { ConfigureAmigaOsMenu $hstwb }
             "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
             "Configure Packages" { ConfigurePackagesMenu $hstwb }
             "Configure User Packages" { ConfigureUserPackagesMenu $hstwb }
             "Configure Emulator" { ConfigureEmulatorMenu $hstwb }
-            "Configure Installer" { ConfigureInstaller $hstwb }
             "Run Installer" { RunInstaller $hstwb }
             "Reset Settings" { ResetSettings $hstwb }
         }
@@ -451,182 +450,177 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 }
 
 
-# configure workbench menu
-function ConfigureWorkbenchMenu($hstwb)
+# configure amiga os menu
+function ConfigureAmigaOsMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Dir", "Select Workbench Adf Set", "Back") 
+        $choice = Menu $hstwb "Configure Amiga OS Menu" @("Switch Install Amiga OS", "Change Amiga OS dir", "Select Amiga OS set", "View Amiga Os set files", "Back") 
         switch ($choice)
         {
-            "Switch Install Workbench" { SwitchInstallWorkbench $hstwb }
-            "Change Workbench Adf Dir" { ChangeWorkbenchAdfDir $hstwb }
-            "Select Workbench Adf Set" { SelectWorkbenchAdfSet $hstwb }
+            "Switch Install Amiga OS" { SwitchInstallAmigaOs $hstwb }
+            "Change Amiga OS dir" { ChangeAmigaOsDir $hstwb }
+            "Select Amiga OS set" { SelectAmigaOsSet $hstwb }
+            "View Amiga Os set files" { ViewAmigaOsSetFiles $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
 
-# switch install workbench
-function SwitchInstallWorkbench($hstwb)
+# switch install amiga os
+function SwitchInstallAmigaOs($hstwb)
 {
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes')
+    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
-        $hstwb.Settings.Workbench.InstallWorkbench = 'No'
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = 'No'
     }
     else
     {
-        $hstwb.Settings.Workbench.InstallWorkbench = 'Yes'
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = 'Yes'
     }
     Save $hstwb
 }
 
 
-# change workbench adf dir
-function ChangeWorkbenchAdfDir($hstwb)
+# change amiga os adf dir
+function ChangeAmigaOsDir($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $defaultWorkbenchAdfPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\adf"
+        $defaultAmigaOsPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\adf"
     }
     else
     {
-        $defaultWorkbenchAdfPath = ${Env:USERPROFILE}
+        $defaultAmigaOsPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfDir) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfDir }
-    $newWorkbenchAdfDir = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
+    $path = if (!$hstwb.Settings.AmigaOs.AmigaOsDir) { $defaultAmigaOsPath } else { $hstwb.Settings.AmigaOs.AmigaOsDir }
+    $newAmigaOsDir = FolderBrowserDialog "Select Amiga OS Directory" $path $false
 
-    if ($newWorkbenchAdfDir -and $newWorkbenchAdfDir -ne '')
+    if ($newAmigaOsDir -and $newAmigaOsDir -ne '')
     {
-        # set new workbench adf dir
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = $newWorkbenchAdfDir
+        # set new amiga os dir
+        $hstwb.Settings.AmigaOs.AmigaOsDir = $newAmigaOsDir
 
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # update amiga os entries
+        UpdateAmigaOsEntries $hstwb
+
+        # find best matching amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+
+        # ui amiga os set info
+        UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+        # save settings
         Save $hstwb
     }
 }
 
-
-# select workbench adf set
-function SelectWorkbenchAdfSet($hstwb)
+# select amiga os set
+function SelectAmigaOsSet($hstwb)
 {
-    # get workbench name padding
-    $workbenchNamePadding = ($hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    $amigaOsSetNames = $hstwb.AmigaOsSets | ForEach-Object { $_.Set } | Get-Unique
 
-    # get workbench rom sets
-    $workbenchAdfSets = $hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
+    $amigaOsSetOptions = @()
 
-    foreach($workbenchAdfSet in $workbenchAdfSets)
+    foreach($amigaOsSetName in $amigaOsSetNames)
     {
-        # get workbench adf set hashes
-        $workbenchAdfSetHashes = @()
-        $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
+        $amigaOsSetResult = ValidateAmigaOsSet $hstwb $amigaOsSetName
 
-        $workbenchAdfSetFiles = @()
-        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
-        $workbenchAdfSetComplete = ($workbenchAdfSetFiles.Count -eq $workbenchAdfSetHashes.Count)
-        
-        Write-Host ""
-        if ($workbenchAdfSetComplete)
-        {
-            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Green"
-        }
-        else
-        {
-            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Yellow"
-        }
+        $amigaOsSetInfo = FormatAmigaOsSetInfo $amigaOsSetName $amigaOsSetResult.Required $amigaOsSetResult.Present $amigaOsSetResult.Total
 
-        foreach($workbenchAdfSetHash in $workbenchAdfSetHashes)
-        {
-            Write-Host (("  {0,-" + $workbenchNamePadding + "} : ") -f $workbenchAdfSetHash.Name) -NoNewline -foregroundcolor "Gray"
-            if ($workbenchAdfSetHash.File)
-            {
-                Write-Host ("'" + $workbenchAdfSetHash.File + "'") -foregroundcolor "Green"
-            }
-            else
-            {
-                Write-Host "Not found!" -foregroundcolor "Red"
-            }
+        $amigaOsSetOptions += @{
+            'Text' = $amigaOsSetInfo.Text;
+            'Color' = $amigaOsSetInfo.Color;
+            'Value' = $amigaOsSetName
         }
+    }
+
+    $amigaOsSetOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
     }
 
     Write-Host ""
-    $choise = EnterChoice "Enter Workbench Adf Set" ($workbenchAdfSets += "Back")
+    $choise = EnterChoiceColor "Enter Amiga OS set" $amigaOsSetOptions
 
-    if ($choise -ne 'Back')
+    if ($choise -and $choise.Value -ne 'Back')
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = $choise
+        $hstwb.UI.AmigaOs.AmigaOsSetInfo = $choise
+
+        $hstwb.Settings.AmigaOs.AmigaOsSet = $choise.Value
         Save $hstwb
     }
 }
 
-
-# configure amiga os 3.9 menu
-function ConfigureAmigaOS39Menu($hstwb)
+# view amiga os set files
+function ViewAmigaOsSetFiles($hstwb)
 {
-    do
+    Write-Host ""
+
+    # show warning, if maiga os set is not selected
+    if (!$hstwb.Settings.AmigaOs.AmigaOsSet -or $hstwb.Settings.AmigaOs.AmigaOsSet -eq '')
     {
-        $choice = Menu $hstwb "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Switch Install Boing Bags", "Change Amiga OS 3.9 Iso File", "Back") 
-        switch ($choice)
+        Write-Host 'Amiga OS set is not selected!' -ForegroundColor 'Yellow'
+        Write-Host ''
+        Write-Host 'Press enter to continue'
+        Read-Host
+        return
+    }
+
+    $amigaOsSetEntries = @()
+    $amigaOsSetEntries = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+
+    if ($hstwb.UI.AmigaOs.AmigaOsSetInfo.Color)
+    {
+        Write-Host $hstwb.UI.AmigaOs.AmigaOsSetInfo.Text -ForegroundColor $hstwb.UI.AmigaOs.AmigaOsSetInfo.Color
+    }
+    else
+    {
+        Write-Host $hstwb.UI.AmigaOs.AmigaOsSetInfo.Text
+    }
+
+    # get name padding
+    $namePadding = ($amigaOsSetEntries | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+
+    $amigaOsSetEntriesFirstIndex = @{}
+
+    # list amiga os set entries
+    foreach($amigaOsSetEntry in $amigaOsSetEntries)
+    {
+        if ($amigaOsSetEntriesFirstIndex.ContainsKey($amigaOsSetEntry.Name))
         {
-            "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 $hstwb }
-            "Switch Install Boing Bags" { SwitchInstallBoingBags $hstwb }
-            "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile $hstwb }
+            continue
+        }
+
+        $amigaOsSetEntriesFirstIndex[$amigaOsSetEntry.Name] = $true
+
+        $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+        Write-Host (("  {0,-" + $namePadding + "} : ") -f $bestMatchingAmigaOsSetEntry.Name) -NoNewline -Foregroundcolor "Gray"
+        if ($bestMatchingAmigaOsSetEntry.File)
+        {
+            Write-Host ("'" + $bestMatchingAmigaOsSetEntry.File + "'") -NoNewline -Foregroundcolor "Green"
+            Write-Host (' (Match {0}' -f $bestMatchingAmigaOsSetEntry.MatchType) -NoNewline
+            if ($bestMatchingAmigaOsSetEntry.Comment -and $bestMatchingAmigaOsSetEntry.Comment -ne '')
+            {
+                Write-Host ('. {0}' -f $bestMatchingAmigaOsSetEntry.Comment) -NoNewline
+            }
+            Write-Host ")"
+        }
+        else
+        {
+            Write-Host "Not found!" -Foregroundcolor "Red"
         }
     }
-    until ($choice -eq 'Back')
 
+    # continue
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
-
-
-# switch install amiga os 3.9
-function SwitchInstallAmigaOS39($hstwb)
-{
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes')
-    {
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-    }
-    else
-    {
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
-    }
-    Save $hstwb
-}
-
-
-# switch install boing bags
-function SwitchInstallBoingBags($hstwb)
-{
-    if ($hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
-    {
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
-    }
-    else
-    {
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
-    }
-    Save $hstwb
-}
-
-
-# change amiga os 3.9 iso file
-function ChangeAmigaOS39IsoFile($hstwb)
-{
-    $path = if (!$hstwb.Settings.AmigaOS39.AmigaOS39IsoFile) { ${Env:USERPROFILE} } else { $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile }
-    $newPath = OpenFileDialog "Select Amiga OS 3.9 iso file" $path "Iso Files|*.iso|All Files|*.*"
-
-    if ($newPath -and $newPath -ne '')
-    {
-        $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile = $newPath
-        Save $hstwb
-    }
-}
-
 
 # configure kickstart menu
 function ConfigureKickstartMenu($hstwb)
@@ -1204,7 +1198,18 @@ function ChangeInstallerMode($hstwb)
 
     if ($choice -ne 'Back')
     {
+        # set installer mode
         $hstwb.Settings.Installer.Mode = $installerMode
+
+        # update amiga os entries
+        UpdateAmigaOsEntries $hstwb
+
+        # find best matching amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+
+        # ui amiga os set info
+        UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
         Save $hstwb
     }
 }
@@ -1246,7 +1251,7 @@ function ResetSettings($hstwb)
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$amigaOsSetsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Sets\amiga-os-sets.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
@@ -1300,7 +1305,7 @@ try
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
             'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'AmigaOsSetsFile' = $amigaOsSetsFile;
             'ImagesPath' = $imagesPath;
             'PackagesPath' = $packagesPath;
             'SettingsFile' = $settingsFile;
@@ -1311,7 +1316,11 @@ try
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
         'Packages' = ReadPackages $packagesPath;
         'Settings' = $settings;
-        'Assigns' = $assigns
+        'Assigns' = $assigns;
+        'UI' = @{
+            'AmigaOs' = @{}
+        };
+        'AmigaOsSets' = @()
     }
 
     # read kickstart rom hashes
@@ -1326,28 +1335,19 @@ try
         throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
     }
 
-    # read workbench adf hashes
-    if (Test-Path -Path $workbenchAdfHashesFile)
-    {
-        $workbenchAdfHashes = @()
-        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
-    }
-    else
-    {
-        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
-    }
-
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
         
+    # update amiga os entries
+    UpdateAmigaOsEntries $hstwb
+
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     $hstwb.Emulators = FindEmulators
     
-    # find workbench adfs
-    FindWorkbenchAdfs $hstwb
+    # find amiga os files
+    FindAmigaOsFiles $hstwb
 
     # find kickstart roms
     FindKickstartRoms $hstwb
@@ -1360,19 +1360,22 @@ try
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
     if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
     {
-        # set new kickstart rom set and save
+        # set new kickstart rom set
         $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
     }
 
-    # find best matching workbench adf set, if workbench adf set doesn't exist
-    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    # find best matching amiga os set, if amiga os set doesn't exist
+    if (($hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # set new amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
     }
 
     # save settings and assigns
     Save $hstwb
+
+    # ui amiga os set info
+    UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
 
     # show main menu
     MainMenu $hstwb

@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-28
+# Date:   2019-03-13
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -66,38 +66,32 @@ function WriteIniFile($iniFile, $ini)
 function DefaultSettings($settings)
 {
     $settings.Image = @{}
-    $settings.Workbench = @{}
-    $settings.AmigaOS39 = @{}
+    $settings.AmigaOs = @{}
     $settings.Kickstart = @{}
     $settings.Winuae = @{}
     $settings.Packages = @{}
     $settings.Installer = @{}
     $settings.Emulator = @{}
     $settings.UserPackages = @{}
-    
-    $settings.Workbench.InstallWorkbench = 'Yes'
+
     $settings.Kickstart.InstallKickstart = 'Yes'
     $settings.Packages.InstallPackages = ''
     $settings.Installer.Mode = 'Install'
     
-    $settings.AmigaOS39.InstallAmigaOS39 = 'No'
-
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $workbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
-        if (test-path -path $workbenchAdfPath)
+        $amigaOsDir = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
+        if (test-path -path $amigaOsDir)
         {
-            $settings.Workbench.WorkbenchAdfDir = $workbenchAdfPath
-            $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
+            $settings.AmigaOs.AmigaOsDir = $amigaOsDir
         }
 
         $kickstartRomDir = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
         if (test-path -path $kickstartRomDir)
         {
             $settings.Kickstart.KickstartRomDir = $kickstartRomDir
-            $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
         }
     }
 
@@ -261,12 +255,10 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.UserPackages = @{}
     }
     
-    # create amiga os 3.9 section in settings, if it doesn't exist
-    if (!($hstwb.Settings.AmigaOS39))
+    # remove amiga os 3.9 section in settings, if it exist
+    if ($hstwb.Settings.AmigaOS39)
     {
-        $hstwb.Settings.AmigaOS39 = @{}
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
+        $hstwb.Settings.Remove('AmigaOS39')
     }
     
     # set default image dir, if image dir doesn't exist
@@ -289,12 +281,30 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.Remove('WinUAE')
     }
 
-    # upgrade workbench adf path to workbench adf dir
-    if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
+    # add amiga os settings, if it doesn't exist
+    if (!$hstwb.Settings.AmigaOs)
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
-        $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
+        $hstwb.Settings.AmigaOs = @{}
     }
+
+    if ($hstwb.Settings.Workbench)
+    {
+        # upgrade workbench adf path to workbench adf dir
+        if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
+        {
+            $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
+            $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
+        }
+
+        # upgrade workbench to amiga os
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = $hstwb.Settings.Workbench.InstallWorkbench
+        $hstwb.Settings.AmigaOs.AmigaOsDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
+        $hstwb.Settings.AmigaOs.AmigaOsSet = $hstwb.Settings.Workbench.WorkbenchAdfSet
+
+        # remove workbench settings
+        $hstwb.Settings.Remove('Workbench')
+    }
+
 
     # upgrade kickstart rom path to kickstart rom dir
     if ($hstwb.Settings.Kickstart.KickstartRomPath)

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-12
+# Date:   2019-03-13
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1776,12 +1776,6 @@ function RunTest($hstwb)
 # run install
 function RunInstall($hstwb)
 {
-    # disables until setup has been updated with amiga os 3.1.4 support
-    Write-Host ""
-    Write-Host "Install mode is currently disabled until Amiga OS 3.1.4 support has been added to HstWB Installer Setup." -ForegroundColor Yellow
-    Write-Host "Please use build self install mode to build a self install image with Amiga OS 3.1.4 support." -ForegroundColor Yellow
-    return
-
     # print preparing install message
     Write-Host ""
     Write-Host "Preparing install..."
@@ -1794,15 +1788,15 @@ function RunInstall($hstwb)
 
     # set temp install and packages dir
     $tempInstallDir = Join-Path $hstwb.Paths.TempPath -ChildPath "install"
-    $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
+    $tempAmigaOsDir = Join-Path $tempInstallDir -ChildPath "AmigaOS"
     $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
     $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
     $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
 
-    # create temp workbench path
-    if(!(test-path -path $tempWorkbenchDir))
+    # create temp amiga os path
+    if(!(test-path -path $tempAmigaOsDir))
     {
-        mkdir $tempWorkbenchDir | Out-Null
+        mkdir $tempAmigaOsDir | Out-Null
     }
 
     # create temp kickstart path
@@ -1852,9 +1846,17 @@ function RunInstall($hstwb)
     $amigaSharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
 
-    # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
-    Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
+    # copy amiga os 3.9 to install directory
+    $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.9")
+    Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
+
+    # copy amiga os 3.1.4 to install directory
+    $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
+    Copy-Item -Path "$amigaOs314Dir\*" $tempInstallDir -recurse -force
+
+    # copy amiga os 3.1 to install directory
+    $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
+    Copy-Item -Path "$amigaOs31Dir\*" $tempInstallDir -recurse -force
 
     # copy kickstart to install directory
     $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
@@ -1886,16 +1888,46 @@ function RunInstall($hstwb)
     Set-Content $uaePrefsFile -Value ""
 
 
-    # prepare install workbench
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and ($hstwb.WorkbenchAdfHashes | Where-Object { $_.File }).Count -gt 0)
+    # prepare install amiga os
+    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes' -and ($hstwb.AmigaOsSets | Where-Object { $_.File }).Count -gt 0)
     {
-        # create install workbench prefs file
-        $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
-        Set-Content $installWorkbenchFile -Value ""
-        
-        # copy workbench adf set files to temp install dir
-        Write-Host "Copying Workbench adf files to temp install dir"
-        $hstwb.WorkbenchAdfHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempWorkbenchDir -ChildPath $_.Filename) -Force }
+        #
+        $amigaOs39Iso = Where-Object { $_.File -and $_.FileName -match '$amigaos3\.9\.iso$' } | Select-Object -First 1
+        if ($amigaOs39Iso)
+        {
+            # create install amiga os 3.9 prefs file
+            $installAmigaOs39PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
+            Set-Content $installAmigaOs39PrefsFile -Value ""
+
+            # Install-Amiga-OS-390-BB1
+            # Install-Amiga-OS-390-BB2
+        }
+
+        #
+        $amigaOs314ModulesAdf = $hstwb.AmigaOsSets | Where-Object { $_.File -and $_.FileName -match '$amiga-os-314-modules-[^-\.]+\.adf$' } | Select-Object -First 1
+        if ($amigaOs314ModulesAdf)
+        {
+            $amigaOs314ModulesModel = $amigaOs314ModulesAdf.FileName | Select-String -Pattern '$amiga-os-314-modules-([^-\.]+\).adf$' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
+
+            # create install amiga os 3.1.4 prefs file
+            $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesModel.ToUpper())
+            Set-Content $installAmigaOs314PrefsFile -Value ""
+
+            # Install-Amiga-OS-314-IconPack
+        }
+
+        #
+        $amigaOs31Adf = Where-Object { $_.File -and $_.FileName -match '$amiga-os-310-[^-\.]+\.adf$' } | Select-Object -First 1
+        if ($amigaOs31Adf)
+        {
+            # create install amiga os 3.1 prefs file
+            $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
+            Set-Content $installWorkbenchFile -Value ""
+        }
+
+        # copy amiga os files to temp install dir
+        #Write-Host "Copying Amiga OS files to temp install dir"
+        #$hstwb.AmigaOsSets | Where-Object { $_.File -and $_.CopyFile -eq 'True' } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $_.Filename) -Force }
     }
 
 
@@ -2029,8 +2061,10 @@ function RunInstall($hstwb)
 
     $installAmigaOs39Reboot = $false
     $installBoingBagsReboot = $false
+    $amigaOs39IsoFile = ''
+    $amigaOs39IsoFileName = ''
     
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+    if ($hstwb.Paths.IsoFile)
     {
         $installAmigaOs39Reboot = $true
 
@@ -2040,13 +2074,14 @@ function RunInstall($hstwb)
 
 
         # get amiga os 3.9 directory and filename
-        $amigaOs39IsoDir = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Parent
-        $amigaOs39IsoFileName = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Leaf
+        $amigaOs39IsoFile = $hstwb.Paths.IsoFile
+        $amigaOs39IsoDir = Split-Path $hstwb.Paths.IsoFile -Parent
+        $amigaOs39IsoFileName = Split-Path $hstwb.Paths.IsoFile -Leaf
 
 
         $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
 
-        if ((Test-Path $boingBag1File) -and $hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
+        if (Test-Path $boingBag1File)
         {
             $installBoingBagsReboot = $true
             $installBoingBagsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-BoingBags'
@@ -2056,23 +2091,17 @@ function RunInstall($hstwb)
         # copy amiga os 3.9 dir
         $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
         Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
-
-        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
-    }
-    else
-    {
-        $amigaOs39IsoFileName = ''
-        $isoFile = ''
     }
 
 
-    # read mountlist
-    $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
-    $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
+    # read mountlist iso template
+    $mountlistIsoTemplateFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist-Iso-Template"
+    $mountlistAmigaOs39Iso = [System.IO.File]::ReadAllText($mountlistIsoTemplateFile)
 
-    # update and write mountlist
-    $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
-    $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
+    # write mountlist amiga os 3.9 iso
+    $mountlistAmigaOs39IsoFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist-AmigaOS39-Iso"
+    $mountlistAmigaOs39Iso = $mountlistAmigaOs39Iso.Replace('[$IsoFile]', $amigaOs39IsoFileName)
+    [System.IO.File]::WriteAllText($mountlistAmigaOs39IsoFile, $mountlistAmigaOs39Iso)
 
     # create packages prefs directory
     $packagesPrefsDir = Join-Path $prefsDir -ChildPath "Packages"
@@ -2136,6 +2165,7 @@ function RunInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $winuaeRunHarddrivesConfigText)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
 
@@ -2153,6 +2183,7 @@ function RunInstall($hstwb)
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -2184,8 +2215,9 @@ function RunInstall($hstwb)
         # replace hstwb installer fs-uae configuration placeholders
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2207,8 +2239,9 @@ function RunInstall($hstwb)
         # replace winuae hstwb installer config placeholders
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile)
     
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -2279,7 +2312,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2302,7 +2335,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile)
 
         # write winuae hstwb installer config file to temp dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -3018,7 +3051,7 @@ function Fail($hstwb, $message)
 
 # resolve paths
 $kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$amigaOsSetsFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Sets\amiga-os-sets.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $fsUaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("fs-uae")
@@ -3059,7 +3092,7 @@ try
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
             'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'AmigaOsSetsFile' = $amigaOsSetsFile;
             'AmigaPath' = $amigaPath;
             'WinuaePath' = $winuaePath;
             'FsUaePath' = $fsUaePath;
@@ -3074,7 +3107,10 @@ try
         };
         'Packages' = ReadPackages $packagesPath;
         'Settings' = ReadIniFile $settingsFile;
-        'Assigns' = ReadIniFile $assignsFile
+        'Assigns' = ReadIniFile $assignsFile;
+        'UI' = @{
+            'AmigaOs' = @{}
+        }
     }
 
     # read kickstart rom hashes
@@ -3089,16 +3125,30 @@ try
         throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
     }
 
-    # read workbench adf hashes
-    if (Test-Path -Path $workbenchAdfHashesFile)
+    # read amiga os sets
+    if (Test-Path -Path $amigaOsSetsFile)
     {
-        $workbenchAdfHashes = @()
-        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
+        $amigaOsSets = @()
+        $amigaOsSets += Import-Csv -Delimiter ';' $amigaOsSetsFile
+
+        $set = ''
+        $priority = 0
+        foreach ($amigaOsEntry in $amigaOsSets)
+        {
+            if ($set -ne $amigaOsEntry.Set)
+            {
+                $priority++
+                $set = $amigaOsEntry.Set
+            }
+
+            $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
+        }
+
+        $hstwb.AmigaOsSets = $amigaOsSets
     }
     else
     {
-        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
+        throw ("Amiga OS sets file '{0}' doesn't exist" -f $amigaOsSetsFile)
     }
     
     # upgrade settings and assigns
@@ -3108,8 +3158,8 @@ try
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     
-    # find workbench adfs
-    FindWorkbenchAdfs $hstwb
+    # find amiga os files
+    FindAmigaOsFiles $hstwb
 
     # find kickstart roms
     FindKickstartRoms $hstwb
@@ -3122,19 +3172,22 @@ try
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
     if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
     {
-        # set new kickstart rom set and save
+        # set new kickstart rom set
         $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
     }
 
-    # find best matching workbench adf set, if workbench adf set doesn't exist
-    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    # find best matching amiga os set, if amiga os set doesn't exist
+    if (($hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # set new amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
     }
     
     # save settings and assigns
     Save $hstwb
+
+    # ui amiga os set info
+    UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
 
     # set and validate emulator, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
@@ -3181,10 +3234,10 @@ try
     $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
     $hstwb.KickstartRomHashes = $kickstartRomSetHashes
     
-    # change workbench adf hashes to workbench adf set hashes
-    $workbenchAdfSetHashes = @()
-    $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
-    $hstwb.WorkbenchAdfHashes = $workbenchAdfSetHashes
+    # filter amiga os sets to only contain amiga os set defined in settings
+    $amigaOsSet = @()
+    $amigaOsSet += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    $hstwb.AmigaOsSets = $amigaOsSet
 
     # fail, if kickstart rom hashes is empty 
     if ($hstwb.KickstartRomHashes.Count -eq 0)
@@ -3192,10 +3245,10 @@ try
         Fail ("Kickstart rom set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't exist!")
     }
     
-    # fail, if workbench adf hashes is empty 
-    if ($hstwb.WorkbenchAdfHashes.Count -eq 0)
+    # fail, if amiga os sets is empty 
+    if ($hstwb.AmigaOsSets.Count -eq 0)
     {
-        Fail ("Workbench adf set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
+        Fail ("Amiga OS set '" + $hstwb.Settings.AmigaOs.AmigaOsSet + "' doesn't exist!")
     }
 
     # print title and settings
@@ -3235,55 +3288,65 @@ try
         }
 
 
-        $amigaOS39Iso = $false
-        $workbench31Adf = $false
-        
-        if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -match 'Yes')
+        $amigaOs39IsoFile = $null
+        $amigaOs314WorkbenchAdfFile = $null
+        $amigaOs314InstallAdfFile = $null
+        $amigaOs310WorkbenchAdfFile = $null
+
+        $hstwb.Paths.IsoFile = ''
+        $hstwb.Paths.WorkbenchAdfFile = ''
+        $hstwb.Paths.InstallAdfFile = ''
+
+        # find workbench adf, if installing amiga os and amiga os 3.9 iso is not present
+        if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
         {
-            if ($hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -and (Test-Path -Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile))
+            # find amiga os 3.1 workbench adf
+            $amigaOs39Iso = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
+
+            if ($amigaOs39Iso)
             {
-                $amigaOS39Iso = $true
-                Write-Host ("Using Amiga OS 3.9 iso file for loading Workbench system files: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+                $amigaOs39IsoFile = $amigaOs39Iso.File
+                $hstwb.Paths.IsoFile = $amigaOs39IsoFile
+                Write-Host ("Using Amiga OS 3.9 Iso file for loading Amiga OS system files: '{0}'" -f $amigaOS39IsoFile)
             }
             else
             {
-                Fail $hstwb ("Amiga OS 3.9 iso file '{0}' doesn't exist!" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+                # find amiga os 3.1.4 workbench adf
+                $amigaOs314WorkbenchAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
+                if ($amigaOs314WorkbenchAdf)
+                {
+                    $amigaOs314WorkbenchAdfFile = $amigaOs314WorkbenchAdf.File
+
+                    # find amiga os 3.1.4 install adf
+                    $amigaOs314InstallAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
+                    if ($amigaOs314InstallAdf)
+                    {
+                        $amigaOs314InstallAdfFile = $amigaOs314InstallAdf.File
+                        $hstwb.Paths.WorkbenchAdfFile = $amigaOs314WorkbenchAdfFile
+                        $hstwb.Paths.InstallAdfFile = $amigaOs314InstallAdfFile
+                        Write-Host ("Using Amiga OS 3.1.4 Workbench and Install Disk adf files for loading Amiga OS system files: '{0}', '{1}'" -f $amigaOs314WorkbenchAdfFile, $amigaOs314InstallAdfFile)
+                    }
+                }
+                else
+                {
+                    # find amiga os 3.1 workbench adf
+                    $amigaOs310WorkbenchAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+                    if ($amigaOs310WorkbenchAdf)
+                    {
+                        $amigaOs310WorkbenchAdfFile = $amigaOs310WorkbenchAdf.File
+                        $hstwb.Paths.WorkbenchAdfFile = $amigaOs310WorkbenchAdfFile
+                        Write-Host ("Using Amiga OS 3.1 Workbench Disk adf file for loading Amiga OS system files: '{0}'" -f $amigaOs310WorkbenchAdfFile)
+                    }
+                }
             }
         }
 
-        # find and set workbench adf set hashes, if installing workbench
-        if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
+        # fail, if any of amiga os 3.9 iso file, amiga os 3.1.4 workbench and install disk adf files or amiga os 3.1 workbench disk adf file aren't present
+        if (!$hstwb.Paths.IsoFile -and !$hstwb.Paths.WorkbenchAdfFile -and !$hstwb.Paths.InstallAdfFile)
         {
-                # find workbench 3.1 workbench disk
-            $workbenchAdfHash = $hstwb.WorkbenchAdfHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-            
-            if ($workbenchAdfHash)
-            {
-                $workbench31Adf = $true
-
-                # set workbench adf file
-                $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
-
-                # print workbench adf hash file
-                Write-Host ("Using Workbench 3.1 Workbench Disk adf file for loading Workbench system files: '" + $workbenchAdfHash.File + "'")
-            }
-            else
-            {
-                Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
-            }
-        }
-        else
-        {
-            $hstwb.Paths.WorkbenchAdfFile = ''
-        }
-
-        # fail, if neither amiga os 3.9 iso file or workbench 3.1 adf file is present
-        if (!$amigaOS39Iso -and !$workbench31Adf)
-        {
-            Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
+            Fail $hstwb "Amiga OS 3.9 iso file, Amiga OS 3.1.4 Workbench and Install Disk adf files, or Amiga OS 3.1 Workbench Disk adf file is required to run HstWB Installer!"
         }
     }
-
 
     # create temp path
     if(!(test-path -path $hstwb.Paths.TempPath))

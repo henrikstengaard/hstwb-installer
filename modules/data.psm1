@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-04-03
+# Date:   2019-03-13
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -285,10 +285,16 @@ function ExtractFilesFromZipFile($zipFile, $pattern, $outputDir)
 # calculate md5 hash from file
 function CalculateMd5FromFile($file)
 {
-	$md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-	return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
+    try
+    {
+        $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+        return [System.BitConverter]::ToString($md5.ComputeHash([System.IO.File]::ReadAllBytes($file))).ToLower().Replace('-', '')
+    }
+    catch
+    {
+        throw ('Failed to read MD5 from file ''{0}'': {1}' -f $file, $_.ErrorDetails.Message)
+    }
 }
-
 
 # calculate md5 hash from text
 function CalculateMd5FromText($text)
@@ -342,83 +348,125 @@ function FindMatchingFileHashes($hashes, $path)
         }
 
         $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value $file -Force
+        $hash | Add-Member -MemberType NoteProperty -Name 'MatchType' -Value 'MD5' -Force
+        $hash | Add-Member -MemberType NoteProperty -Name 'MatchRank' -Value '1' -Force
     }
 }
 
 
+function ReadBytes($bytes, $offset, $length)
+{
+	$newBytes = New-Object 'byte[]' $length
+	[Array]::Copy($bytes, $offset, $newBytes, 0, $length)
+	return $newBytes
+}
+
 # read string from bytes
 function ReadString($bytes, $offset, $length)
 {
-	$stringBytes = New-Object 'byte[]' $length 
-	[Array]::Copy($bytes, $offset, $stringBytes, 0, $length)
+    $stringBytes = ReadBytes $bytes $offset $length
 	$iso88591 = [System.Text.Encoding]::GetEncoding("ISO-8859-1");
 	return $iso88591.GetString($stringBytes)
 }
 
 
-# read adf disk name
-function ReadAdfDiskName($bytes)
+# read adf volume name
+function ReadAdfVolumeName($bytes)
 {
-    # read disk name from offset 0x6E1B0
-    $diskNameOffset = 0x6E1B0
-    $diskNameLength = $bytes[$diskNameOffset]
+    # read volume name from offset 0x6E1B0
+    $volumeNameOffset = 0x6E1B0
+    $volumeNameLength = $bytes[$volumeNameOffset]
 
-    ReadString $bytes ($diskNameOffset + 1) $diskNameLength
+    ReadString $bytes ($volumeNameOffset + 1) $volumeNameLength
 }
 
 
-# find matching workbench adfs
-function FindMatchingWorkbenchAdfs($hashes, $path)
+# find matching amiga os adfs
+function FindMatchingAmigaOsEntriesByAdfVolumeName($amigaOsEntries, $dir)
 {
-    $adfFiles = Get-ChildItem -Path $path -filter *.adf
+    $adfFiles = Get-ChildItem -Path $dir -filter *.adf
 
-    $validWorkbenchAdfFiles = @()
+    $validAdfFiles = @()
 
     foreach ($adfFile in $adfFiles)
     {
         # read adf bytes
         $adfBytes = [System.IO.File]::ReadAllBytes($adfFile.FullName)
 
-        if ($adfBytes.Count -eq 901120)
+        if ($adfBytes.Count -ne 901120)
         {
-            $diskName = ReadAdfDiskName $adfBytes
-            $validWorkbenchAdfFiles += @{ "DiskName" = $diskName; "File" = $adfFile.FullName }
+            continue
         }
+
+        $magicBytes = ReadBytes $adfBytes 0 4
+
+        # DOS1
+        if ($magicBytes[0] -ne 68 -and $magicBytes[1] -ne 79 -and $magicBytes[2] -ne 83 -and $magicBytes[3] -ne 1)
+        {
+            continue
+        }
+    
+        $volumeName = ReadAdfVolumeName $adfBytes
+        $validAdfFiles += @{ "VolumeName" = $volumeName; "File" = $adfFile.FullName }
     }
 
-
-    # find files with matching disk names
-    foreach($hash in ($hashes | Where-Object { $_.DiskName -ne '' -and !$_.File }))
+    # find matching amiga os entries by volume name, which doesn't already have a file defined
+    foreach($amigaOsEntry in ($amigaOsEntries | Where-Object { $_.VolumeName -ne '' -and !$_.File }))
     {
-        $matchingWorkbenchAdfFile = $validWorkbenchAdfFiles | Where-Object { $_.DiskName -eq $hash.DiskName } | Select-Object -First 1
+        $matchingAmigaOsAdfFile = $validAdfFiles | Where-Object { $_.VolumeName -eq $amigaOsEntry.VolumeName } | Select-Object -First 1
 
-        $workbenchAdfFile = $null 
+        $amigaOsAdfFile = $null 
 
-        if ($matchingWorkbenchAdfFile)
+        if ($matchingAmigaOsAdfFile)
         {
-            $workbenchAdfFile = $matchingWorkbenchAdfFile.File
+            $amigaOsAdfFile = $matchingAmigaOsAdfFile.File
         }
 
-        $hash | Add-Member -MemberType NoteProperty -Name 'File' -Value $workbenchAdfFile -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'File' -Value $amigaOsAdfFile -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchType' -Value 'VolumeName' -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchRank' -Value '2' -Force
+    }
+}
+
+function FindMatchingAmigaOsEntriesByFileName($amigaOsEntries, $dir)
+{
+    $files = Get-ChildItem -Path $dir -Recurse
+
+    # find matching amiga os entries by filename, which doesn't already have a file defined
+    foreach($amigaOsEntry in ($amigaOsEntries | Where-Object { $_.Filename -ne '' -and !$_.File }))
+    {
+        $matchingFile = $files | Where-Object { $_.Name -eq $amigaOsEntry.Filename } | Select-Object -First 1
+
+        if (!$matchingFile)
+        {
+            continue
+        }
+
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'File' -Value $matchingFile.FullName -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchType' -Value 'FileName' -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchRank' -Value '3' -Force
     }
 }
 
 
-# find workbench adfs
-function FindWorkbenchAdfs($hstwb)
+# find amiga os files
+function FindAmigaOsFiles($hstwb)
 {
-    # reset workbench adf dir, if it doesn't exist
-    if (!$hstwb.Settings.Workbench.WorkbenchAdfDir -or !(Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
+    # reset amiga os dir, if it doesn't exist
+    if (!$hstwb.Settings.AmigaOs.AmigaOsDir -or !(Test-Path -Path $hstwb.Settings.AmigaOs.AmigaOsDir))
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = ''
+        $hstwb.Settings.AmigaOs.AmigaOsDir = ''
         return
     }
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
+    FindMatchingFileHashes $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
     
-    # find files with disk names matching workbench adf hashes
-    FindMatchingWorkbenchAdfs $hstwb.WorkbenchAdfHashes $hstwb.Settings.Workbench.WorkbenchAdfDir
+    # find matching amiga os entries by adf volume name
+    FindMatchingAmigaOsEntriesByAdfVolumeName $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
+
+    # find matching amiga os entries by filename
+    FindMatchingAmigaOsEntriesByFileName $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
 }
 
 
@@ -460,29 +508,110 @@ function FindBestMatchingKickstartRomSet($hstwb)
 }
 
 
-# find best matching workbench adf set
-function FindBestMatchingWorkbenchAdfSet($hstwb)
+# find best matching amiga os adf set
+function FindBestMatchingAmigaOsSet($hstwb)
 {
-    # find workbench adfs
-    FindWorkbenchAdfs $hstwb
+    # find amiga os files
+    FindAmigaOsFiles $hstwb
 
     # get workbench rom sets
     $workbenchAdfSets = @()
-    $workbenchAdfSets += $hstwb.WorkbenchAdfHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+    $workbenchAdfSets += $hstwb.AmigaOsSets | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
 
     # count matching workbench adf hashes for each set
     $workbenchAdfSetCount = @{}
     foreach($workbenchAdfSet in $workbenchAdfSets)
     {
         $workbenchAdfSetFiles = @()
-        $workbenchAdfSetFiles += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }
+        $workbenchAdfSetFiles += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }
         $workbenchAdfSetCount.Set_Item($workbenchAdfSet, $workbenchAdfSetFiles.Count)
     }
 
     # get new workbench adf set, which has highest number of matching workbench adf hashes
-    return $workbenchAdfSets | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
+    return $workbenchAdfSets | Where-Object { $workbenchAdfSetCount.Get_Item($_) -gt 0 } | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
 }
 
+# validate amiga os set
+function ValidateAmigaOsSet($hstwb, $amigaOsSetName)
+{
+    $amigaOsSetEntriesIndex = @{}
+    $hstwb.AmigaOsSets | `
+        Where-Object { $_.Set -eq $amigaOsSetName } | `
+        ForEach-Object { 
+            if (!$amigaOsSetEntriesIndex.ContainsKey($_.Name.ToLower()) -or !$amigaOsSetEntriesIndex[$_.Name.ToLower()].File) { 
+                $amigaOsSetEntriesIndex[$_.Name.ToLower()] = $_
+            }
+        }
+
+    $present = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' -and $_.File }).Count
+    $required = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' }).Count
+    $total = $amigaOsSetEntriesIndex.Values.Count
+
+    return @{
+        'Present' = $present;
+        'Required' = $required;
+        'Total' = $total
+    }
+}
+
+function FormatAmigaOsSetInfo($amigaOsSetName, $required, $present, $total)
+{
+    $color = $null
+    if ($present -gt 0)
+    {
+        $color = if ($present -ge $required) { 'Green' } else { 'Yellow' }
+    }
+
+    return @{
+        'Text' = ("'{0}' ({1}/{2})" -f $amigaOsSetName, $present, $total);
+        'Color' = $color
+    }
+}
+
+function UiAmigaOsSetInfo($hstwb, $amigaOsSetName)
+{
+    $result = ValidateAmigaOsSet $hstwb $amigaOsSetName
+    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatAmigaOsSetInfo $amigaOsSetName $result.Required $result.Present $result.Total
+}
+
+# update amiga os entries
+function UpdateAmigaOsEntries($hstwb)
+{
+    # fail
+    if (!(Test-Path -Path $hstwb.Paths.AmigaOsSetsFile))
+    {
+        throw ("Amiga OS entries file '{0}' doesn't exist" -f $hstwb.Paths.AmigaOsSetsFile)
+    }
+
+    # set empty amiga os entries
+    $hstwb.AmigaOsSets = @()
+
+    # set amiga os entries empty, if installer mode is set to install or build self install
+    if ($hstwb.Settings.Installer.Mode -notmatch "^(Install|BuildSelfInstall)$")
+    {
+        return
+    }
+
+    # read amiga os entries
+    $amigaOsEntries = @()
+    $amigaOsEntries += Import-Csv -Delimiter ';' $hstwb.Paths.AmigaOsSetsFile | Where-Object { $_.Name -and $_.Name -ne '' }
+
+    # add priority to sets based on their order
+    $set = ''
+    $priority = 0
+    foreach ($amigaOsEntry in $amigaOsEntries)
+    {
+        if ($set -ne $amigaOsEntry.Set)
+        {
+            $priority++
+            $set = $amigaOsEntry.Set
+        }
+
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
+    }
+
+    $hstwb.AmigaOsSets = $amigaOsEntries
+}
 
 # sort packages to install
 function SortPackageNames($hstwb)
@@ -564,29 +693,25 @@ function BuildInstallLog($hstwb)
     $installLogLines.Add("- Assigns File: '{0}'" -f $hstwb.Paths.AssignsFile)
     $installLogLines.Add('Image')
     $installLogLines.Add("- Image Dir: '{0}'" -f $hstwb.Settings.Image.ImageDir)
-    $installLogLines.Add('Workbench')
-    $installLogLines.Add("- Install Workbench: '{0}'" -f $hstwb.Settings.Workbench.InstallWorkbench)
-    $installLogLines.Add("- Workbench Adf Dir: '{0}'" -f $hstwb.Settings.Workbench.WorkbenchAdfDir)
+    $installLogLines.Add('Amiga OS')
+    $installLogLines.Add("- Install Amiga OS: '{0}'" -f $hstwb.Settings.AmigaOs.InstallAmigaOs)
+    $installLogLines.Add("- Amiga OS dir: '{0}'" -f $hstwb.Settings.AmigaOs.AmigaOsDir)
     
-    $workbenchAdfSetHashes = @() 
-    $workbenchAdfSetFiles = @()
-    if ($hstwb.Settings.Workbench.WorkbenchAdfSet -notmatch '^$')
+    $amigaOsSet = @() 
+    $amigaOsSetFiles = @()
+    if ($hstwb.Settings.AmigaOs.AmigaOsSet -notmatch '^$')
     {
-        $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
-        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
+        $amigaOsSet += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+        $amigaOsSetFiles += $amigaOsSet | Where-Object { $_.File }
     }
 
-    $installLogLines.Add(("- Workbench Adf Set: '{0}' ({1}/{2})" -f $hstwb.Settings.Workbench.WorkbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count))
+    $installLogLines.Add(("- Amiga OS set: '{0}' ({1}/{2})" -f $hstwb.Settings.AmigaOs.AmigaOsSet, $amigaOsSetFiles.Count, $workbenchAdfSetHashes.Count))
 
-    for ($i = 0; $i -lt $workbenchAdfSetFiles.Count; $i++)
+    for ($i = 0; $i -lt $amigaOsSetFiles.Count; $i++)
     {
-        $installLogLines.Add(("- Workbench Adf File {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $workbenchAdfSetFiles.Count, $workbenchAdfSetFiles[$i].Filename, $workbenchAdfSetFiles[$i].File))     
+        $installLogLines.Add(("- Amiga OS set file {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $amigaOsSetFiles.Count, $amigaOsSetFiles[$i].Filename, $amigaOsSetFiles[$i].File))     
     }
 
-    $installLogLines.Add('Amiga OS 3.9')
-    $installLogLines.Add("- Install Amiga OS 3.9: '{0}'" -f $hstwb.Settings.AmigaOS39.InstallAmigaOS39)
-    $installLogLines.Add("- Install Boing Bags: '{0}'" -f $hstwb.Settings.AmigaOS39.InstallBoingBags)
-    $installLogLines.Add("- Amiga OS 3.9 Iso File: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
     $installLogLines.Add('Kickstart')
     $installLogLines.Add("- Install Kickstart: '{0}'" -f $hstwb.Settings.Kickstart.InstallKickstart)
     $installLogLines.Add("- Kickstart Rom Dir: '{0}'" -f $hstwb.Settings.Kickstart.KickstartRomDir)
