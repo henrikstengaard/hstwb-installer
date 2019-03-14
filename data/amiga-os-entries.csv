@@ -1,8 +1,8 @@
 Name;Required;Set;Model;Md5Hash;VolumeName;Filename;CopyFile;Comment
-Amiga OS 3.9 Iso;True;Amiga OS 3.9;;e32a107e68edfc9b28a2fe075e32e5f6;;amigaos3.9.iso;False;Haage & Partner
-Amiga OS 3.9 Iso;True;Amiga OS 3.9;;3cb96e77d922a4f8eb696e525a240448;;amigaos3.9.iso;False;Haage & Partner
-Boing Bag 1 update for Amiga OS 3.9;False;Amiga OS 3.9;;71353d4aeb9af1f129545618d013a8c8;;boingbag39-1.lha;True;Haage & Partner
-Boing Bag 2 update for Amiga OS 3.9;False;Amiga OS 3.9;;fd45d24bb408203883a4c9a56e968e28;;boingbag39-2.lha;True;Haage & Partner
+Amiga OS 3.9 Iso;True;Amiga OS 3.9;;e32a107e68edfc9b28a2fe075e32e5f6;;amigaos3.9.iso;False;Amiga, Inc. and Haage & Partner
+Amiga OS 3.9 Iso;True;Amiga OS 3.9;;3cb96e77d922a4f8eb696e525a240448;;amigaos3.9.iso;False;Amiga, Inc. and Haage & Partner
+Boing Bag 1 for Amiga OS 3.9;False;Amiga OS 3.9;;71353d4aeb9af1f129545618d013a8c8;;boingbag39-1.lha;True;Amiga, Inc. and Haage & Partner
+Boing Bag 2 for Amiga OS 3.9;False;Amiga OS 3.9;;fd45d24bb408203883a4c9a56e968e28;;boingbag39-2.lha;True;Amiga, Inc. and Haage & Partner
 
 Amiga OS 3.1.4 Extras Disk;True;Amiga OS 3.1.4 A500;A500;988ddad5106d5b846be57b711d878b4c;Extras3.1.4;amiga-os-314-extras.adf;True;Hyperion Entertainment
 Amiga OS 3.1.4 Fonts Disk;True;Amiga OS 3.1.4 A500;A500;27a7af42777a43a06f8d9d8e74226e56;Fonts;amiga-os-314-fonts.adf;True;Hyperion Entertainment
