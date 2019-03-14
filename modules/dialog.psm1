@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-13
+# Date:   2019-03-14
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -46,8 +46,8 @@ function PrintSettings($hstwb)
         Write-Host ("'" + $hstwb.Settings.Image.ImageDir + "'")
     }
 
-    # show amiga os for installer modes: install and build self install
-    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall)$")
+    # show amiga os for installer modes: install
+    if ($hstwb.Settings.Installer.Mode -match "^Install$")
     {
         Write-Host "Amiga OS"
         Write-Host "  Install Amiga OS      : " -NoNewline -foregroundcolor "Gray"
@@ -136,7 +136,7 @@ function PrintSettings($hstwb)
     }
 
     # show user packages packages for installer modes: install, build self install and build package installation
-    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|BuildUserPackageInstallation)$")
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildUserPackageInstallation)$")
     {
         Write-Host "User Packages"
         Write-Host "  User Packages Dir     : " -NoNewline -foregroundcolor "Gray"
