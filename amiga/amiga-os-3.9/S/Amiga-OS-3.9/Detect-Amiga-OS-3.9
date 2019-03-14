@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.9
 ; -------------------
 ;
-; Date: 2019-03-13
+; Date: 2019-03-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
@@ -11,6 +11,11 @@
 echo "Amiga OS 3.9" >INSTALLDIR:Temp/Amiga-OS-390.log
 echo "------------" >>INSTALLDIR:Temp/Amiga-OS-390.log
 echo "Detecting Amiga OS 3.9 cd-rom in CD0: and iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
+ENDIF
 
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255
@@ -209,22 +214,25 @@ frsort <T:_boingbagfiles1 >T:_boingbagfiles
 ; set boing bags
 set boingbags `wc -l <T:_boingbagfiles` 
 
-echo "$boingbags Boing Bag file(s) detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
-
 ; create amiga os 3.9 boing bag prefs, if amiga os 3.9 boing bag files exists
 IF NOT "$boingbags" EQ 0 VAL
-  search >NIL: "T:_boingbagfiles" "BoingBag39-1.lha"
+  search "T:_boingbagfiles" "BoingBag39-1.lha" NONUM >T:_boingbag1file
   IF $RC EQ 0 VAL
+    set boingbag1file `sed "1q;d" "T:_boingbag1file"`
     echo "Amiga OS 3.9 Boing Bag 1 detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
-    echo "BoingBag39-1.lha" >>INSTALLDIR:Temp/Amiga-OS-390.log
+    echo "'$boingbag1file'" >>INSTALLDIR:Temp/Amiga-OS-390.log
 
     echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-BB1
-    search >NIL: "T:_boingbagfiles" "BoingBag39-2.lha"
+    Copy >NIL: "$boingbag1file" "INSTALLDIR:Temp/Amiga-OS"
+
+    search "T:_boingbagfiles" "BoingBag39-2.lha" NONUM >T:_boingbag2file
     IF $RC EQ 0 VAL
+      set boingbag2file `sed "1q;d" "T:_boingbag2file"`
       echo "Amiga OS 3.9 Boing Bag 2 detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
-      echo "BoingBag39-2.lha" >>INSTALLDIR:Temp/Amiga-OS-390.log
+      echo "'$boingbag2file'" >>INSTALLDIR:Temp/Amiga-OS-390.log
 
       echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-BB2
+      Copy >NIL: "$boingbag2file" "INSTALLDIR:Temp/Amiga-OS"
     ENDIF
   ENDIF
 ENDIF
