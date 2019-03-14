@@ -2543,9 +2543,14 @@ function RunBuildSelfInstall($hstwb)
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
-    # copy package installation help to install directory
-    $packageInstallationHelpDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packageinstallation\Help")
-    Copy-Item -Path "$packageInstallationHelpDir\*" "$tempInstallDir\Install-SelfInstall\Help" -recurse -force
+    # copy package installation help to packages directory
+    $packageInstallationHelpDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath 'packageinstallation\Help'
+    $tempPackageHelpDir = Join-Path $tempPackagesDir -ChildPath 'Help'
+    if(!(test-path -path $tempPackageHelpDir))
+    {
+        mkdir $tempPackageHelpDir | Out-Null
+    }
+    Copy-Item -Path "$packageInstallationHelpDir\*" "$tempPackageHelpDir" -recurse -force
     
     # copy amiga os 3.9 to install directory
     $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.9")
