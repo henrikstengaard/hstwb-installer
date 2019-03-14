@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-13
+# Date:   2019-03-14
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -514,21 +514,27 @@ function FindBestMatchingAmigaOsSet($hstwb)
     # find amiga os files
     FindAmigaOsFiles $hstwb
 
-    # get workbench rom sets
-    $workbenchAdfSets = @()
-    $workbenchAdfSets += $hstwb.AmigaOsSets | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+    # get amiga os set names
+    $amigaOsSetNames = @()
+    $amigaOsSetNames += $hstwb.AmigaOsSets | Where-Object { $_.Set } | ForEach-Object { $_.Set } | Get-Unique
 
-    # count matching workbench adf hashes for each set
-    $workbenchAdfSetCount = @{}
-    foreach($workbenchAdfSet in $workbenchAdfSets)
+    # validate amiga os sets
+    $amigaOsSetResults = @()
+    foreach ($amigaOsSetName in $amigaOsSetNames)
     {
-        $workbenchAdfSetFiles = @()
-        $workbenchAdfSetFiles += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $workbenchAdfSet -and $_.File }
-        $workbenchAdfSetCount.Set_Item($workbenchAdfSet, $workbenchAdfSetFiles.Count)
+        $amigaOsSetResults += ValidateAmigaOsSet $hstwb $amigaOsSetName
     }
 
-    # get new workbench adf set, which has highest number of matching workbench adf hashes
-    return $workbenchAdfSets | Where-Object { $workbenchAdfSetCount.Get_Item($_) -gt 0 } | Sort-Object @{expression={$workbenchAdfSetCount.Get_Item($_)};Ascending=$false} | Select-Object -First 1
+    # get best matching amiga os set, which has highest number of files that are required ordered by amiga os entries
+    $bestMatchingAmigaOsSetResult = $amigaOsSetResults | Where-Object { $_.FilesRequired -ge $_.EntriesRequired } | Select-Object -First 1
+
+    # return empty, if best matching amiga os set is not set
+    if (!$bestMatchingAmigaOsSetResult)
+    {
+        return ''
+    }
+
+    return $bestMatchingAmigaOsSetResult.AmigaOsSetName
 }
 
 # validate amiga os set
@@ -543,27 +549,35 @@ function ValidateAmigaOsSet($hstwb, $amigaOsSetName)
             }
         }
 
-    $present = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.File }).Count
-    $required = ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' }).Count
-    $total = $amigaOsSetEntriesIndex.Values.Count
+    $entries = 0
+    $entriesRequired = 0
+    $files = 0
+    $filesRequired = 0
+
+    $entries += $amigaOsSetEntriesIndex.Values.Count
+    $entriesRequired += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' }).Count
+    $files += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.File } ).Count
+    $filesRequired += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' -and $_.File }).Count
 
     return @{
-        'Present' = $present;
-        'Required' = $required;
-        'Total' = $total
+        'AmigaOsSetName' = $AmigaOsSetName;
+        'Entries' = $entries;
+        'EntriesRequired' = $entriesRequired;
+        'Files' = $files;
+        'FilesRequired' = $filesRequired
     }
 }
 
-function FormatAmigaOsSetInfo($amigaOsSetName, $required, $present, $total)
+function FormatAmigaOsSetInfo($amigaOsSetResult)
 {
     $color = $null
-    if ($present -gt 0)
+    if ($amigaOsSetResult.Files -gt 0)
     {
-        $color = if ($present -ge $required) { 'Green' } else { 'Yellow' }
+        $color = if ($amigaOsSetResult.FilesRequired -ge $amigaOsSetResult.EntriesRequired) { 'Green' } else { 'Red' }
     }
 
     return @{
-        'Text' = ("'{0}' ({1}/{2})" -f $amigaOsSetName, $present, $total);
+        'Text' = ("'{0}' ({1}/{2})" -f $amigaOsSetResult.AmigaOsSetName, $amigaOsSetResult.Files, $amigaOsSetResult.Entries);
         'Color' = $color
     }
 }
@@ -571,7 +585,7 @@ function FormatAmigaOsSetInfo($amigaOsSetName, $required, $present, $total)
 function UiAmigaOsSetInfo($hstwb, $amigaOsSetName)
 {
     $result = ValidateAmigaOsSet $hstwb $amigaOsSetName
-    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatAmigaOsSetInfo $amigaOsSetName $result.Required $result.Present $result.Total
+    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatAmigaOsSetInfo $result
 }
 
 # update amiga os entries

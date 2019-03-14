@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-13
+# Date:   2019-03-14
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -3172,9 +3172,11 @@ try
     $hstwb.UserPackages = DetectUserPackages $hstwb
     
     # find amiga os files
+    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
     FindAmigaOsFiles $hstwb
 
     # find kickstart roms
+    Write-Host "Finding Kickstart sets in Kickstart dir..."
     FindKickstartRoms $hstwb
         
     # update packages and assigns
