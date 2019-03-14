@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2019-03-05
+; Date: 2019-03-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -39,6 +39,10 @@ stack 16384
 MakePath >NIL: RAM:Env
 AssPlus >NIL:
 
+; create temp systemdir directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Temp/"
+  MakePath >NIL: "SYSTEMDIR:Temp"
+ENDIF
 
 ; create hstwbinstalldir temp directory, if it doesn't exist. otherwise delete all files from hstwbinstalldir temp directory
 IF NOT EXISTS "HSTWBINSTALLERDIR:Temp/"
@@ -713,10 +717,10 @@ IF NOT EXISTS "$floppydevice:Libs/Icon.library"
 ENDIF
 
 ; log
-echo "Loading Amiga OS system files from Amiga OS 3.1" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+echo "Loading Amiga OS system files from Amiga OS 3.1.4" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 echo "Install disk in floppy device $floppydevice:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
-echo "Loading Amiga OS system files from Amiga OS 3.1"
+echo "Loading Amiga OS system files from Amiga OS 3.1.4"
 echo "Install disk in floppy device $floppydevice:..."
 
 ; create sys libs directory, if it doesn't exist

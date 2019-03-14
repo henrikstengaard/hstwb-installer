@@ -1695,6 +1695,44 @@ function ShowLargeHarddriveWarning($hstwb)
     Write-Host "It's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem." -ForegroundColor "Yellow"
 }
 
+# patch assign list
+function PatchAssignList($hstwb, $assignListFile)
+{
+    # fail, if assign list doesn't exist
+    if (!(Test-Path $assignListFile))
+    {
+        throw ('Assign list file ''{0}'' doesn''t exist!' -f $assignListFile)
+    }
+
+    # read assign list lines and exclude empty lines
+    $assignListLines = @()
+    $assignListLines += Get-Content $assignListFile | Where-Object { $_ -notmatch '^\s*$' }
+
+    # replace placeholders in assign list lines
+    for ($i = 0; $i -lt $assignListLines.Count; $i++)
+    {
+        $assignListLines[$i] = $assignListLines[$i].Replace('[$HstwbInstallerDir]', $hstwb.Assigns.Global.HstWBInstallerDir)
+    }
+
+    foreach ($assignName in $hstwb.Assigns.Global.keys)
+    {
+        # skip, if assign name is 'HstWBInstallerDir'
+        if ($assignName -match 'HstWBInstallerDir')
+        {
+            continue
+        }
+
+        # get assign dir
+        $assignDir = $hstwb.Assigns.Global[$assignName]
+
+        $assignListLines += ("{0}: {1}" -f $assignName, $assignDir)
+    }
+
+    $assignListLines += ''
+
+    # write assing list
+    WriteAmigaTextLines $assignListFile $assignListLines
+}
 
 # run test
 function RunTest($hstwb)
@@ -1875,7 +1913,6 @@ function RunInstall($hstwb)
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
     Copy-Item -Path "$amigaUserPackagesDir\*" $tempInstallDir -recurse -force
 
-
     # create prefs directory
     $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
     if(!(test-path -path $prefsDir))
@@ -1889,6 +1926,10 @@ function RunInstall($hstwb)
     Set-Content $uaePrefsFile -Value ""
 
 
+    $installAmigaOs39Reboot = $false
+    $installBoingBagsReboot = $false
+    $isoFile = ''
+
     # prepare install amiga os
     if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
@@ -1899,11 +1940,17 @@ function RunInstall($hstwb)
         $amigaOs39Iso = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amigaos3\.9\.iso$' } | Select-Object -First 1
         if ($amigaOs39Iso)
         {
+            # set iso file to amiga os 3.9 iso file
+            $isoFile = $amigaOs39Iso.File
+
+            # set install to reboot for amiga os 3.9 installation
+            $installAmigaOs39Reboot = $true
+
             # create install amiga os 3.9 prefs file
             $installAmigaOs390PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
             Set-Content $installAmigaOs390PrefsFile -Value ""
 
-            for ($i = 1; $i -gt 2; $i++)
+            for ($i = 1; $i -le 2; $i++)
             {
                 # find boing bag 3.9 update lha in amiga os set
                 $boingbagLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match ('^boingbag39-{0}\.lha$' -f $i) } | Select-Object -First 1
@@ -1911,7 +1958,10 @@ function RunInstall($hstwb)
                 {
                     break
                 }
-    
+
+                # set install to reboot for boing bag installation
+                $installBoingBagsReboot = $true
+                
                 # create install boing bag prefs file
                 $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB{0}' -f $i)
                 Set-Content $installBoingBagPrefsFile -Value ""
@@ -1956,9 +2006,16 @@ function RunInstall($hstwb)
 
             $amigaOsSetEntriesFirstIndex[$amigaOsSetEntry.Name] = $true
 
-            $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+            # find best matching amiga os set entry to copy
+            $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name -and $_.CopyFile -eq 'True' -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
 
-            Copy-Item -Literalpath $bestMatchingAmigaOsSetEntry.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename) -Force
+            # skip, if best matching amiga os set entry doesn't exist
+            if (!$bestMatchingAmigaOsSetEntry)
+            {
+                continue
+            }
+
+            Copy-Item $bestMatchingAmigaOsSetEntry.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename) -Force
         }    
     }
 
@@ -1991,6 +2048,10 @@ function RunInstall($hstwb)
     # find packages to install
     $installPackages = FindPackagesToInstall $hstwb
 
+
+    # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "S\AssignList"
+    PatchAssignList $hstwb $assignListFile
 
     # build assign hstwb installers script lines
     $assignHstwbInstallerScriptLines = BuildAssignHstwbInstallerScriptLines $hstwb $true
@@ -2090,50 +2151,6 @@ function RunInstall($hstwb)
         WriteAmigaTextLines $userPackagesFile $installUserPackageNames 
     }
 
-
-    $installAmigaOs39Reboot = $false
-    $installBoingBagsReboot = $false
-    $amigaOs39IsoFile = ''
-    $amigaOs39IsoFileName = ''
-    
-    if ($hstwb.Paths.IsoFile)
-    {
-        $installAmigaOs39Reboot = $true
-
-        # create install amiga os 3.9 prefs file
-        $installAmigaOs39File = Join-Path $prefsDir -ChildPath 'Install-AmigaOS3.9'
-        Set-Content $installAmigaOs39File -Value ""
-
-
-        # get amiga os 3.9 directory and filename
-        $amigaOs39IsoFile = $hstwb.Paths.IsoFile
-        $amigaOs39IsoDir = Split-Path $hstwb.Paths.IsoFile -Parent
-        $amigaOs39IsoFileName = Split-Path $hstwb.Paths.IsoFile -Leaf
-
-
-        $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
-
-        if (Test-Path $boingBag1File)
-        {
-            $installBoingBagsReboot = $true
-            $installBoingBagsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-BoingBags'
-            Set-Content $installBoingBagsPrefsFile -Value ""
-        }
-
-        # copy amiga os 3.9 dir
-        $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
-        Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
-    }
-
-
-    # read mountlist iso template
-    $mountlistIsoTemplateFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist-Iso-Template"
-    $mountlistAmigaOs39Iso = [System.IO.File]::ReadAllText($mountlistIsoTemplateFile)
-
-    # write mountlist amiga os 3.9 iso
-    $mountlistAmigaOs39IsoFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist-AmigaOS39-Iso"
-    $mountlistAmigaOs39Iso = $mountlistAmigaOs39Iso.Replace('[$IsoFile]', $amigaOs39IsoFileName)
-    [System.IO.File]::WriteAllText($mountlistAmigaOs39IsoFile, $mountlistAmigaOs39Iso)
 
     # create packages prefs directory
     $packagesPrefsDir = Join-Path $prefsDir -ChildPath "Packages"
@@ -2249,7 +2266,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2273,7 +2290,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
     
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -2298,10 +2315,6 @@ function RunInstall($hstwb)
     # print start emulator message
     Write-Host ""
     Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Emulator)
-
-    Write-Host "Examine temp dir!"
-    Read-Host
-    return
 
     # start emulator to run install
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
@@ -2348,7 +2361,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2371,7 +2384,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $amigaOs39IsoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
 
         # write winuae hstwb installer config file to temp dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -2529,6 +2542,10 @@ function RunBuildSelfInstall($hstwb)
     $sharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+    # copy package installation help to install directory
+    $packageInstallationHelpDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packageinstallation\Help")
+    Copy-Item -Path "$packageInstallationHelpDir\*" "$tempInstallDir\Install-SelfInstall\Help" -recurse -force
     
     # copy amiga os 3.9 to install directory
     $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.9")
@@ -2567,21 +2584,13 @@ function RunBuildSelfInstall($hstwb)
 
 
     # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "S\AssignList"
+    PatchAssignList $hstwb $assignListFile
+
+    # patch assign list
     $assignListFile = Join-Path $tempInstallDir -ChildPath "Boot-SelfInstall\S\AssignList"
-    if (Test-Path $assignListFile)
-    {
-        # read assign list lines
-        $assignListLines = Get-Content $assignListFile
+    PatchAssignList $hstwb $assignListFile
 
-        # replace placeholders in assign list lines
-        for ($i = 0; $i -lt $assignListLines.Count; $i++)
-        {
-            $assignListLines[$i] = $assignListLines[$i].Replace('[$HstwbInstallerDir]', $hstwb.Assigns.Global.HstWBInstallerDir)
-        }
-
-        # write assing list
-        WriteAmigaTextLines $assignListFile $assignListLines
-    }
 
 
     # build assign hstwb installers script lines
@@ -2762,8 +2771,6 @@ function RunBuildSelfInstall($hstwb)
 
     
 
-    
-
     # read winuae hstwb installer config file
     $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
@@ -2776,6 +2783,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
     
@@ -2794,6 +2802,7 @@ function RunBuildSelfInstall($hstwb)
     # replace hstwb installer fs-uae configuration placeholders
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -2802,14 +2811,6 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
-
-    # set amiga os 3.9 iso file
-    $isoFile = ''
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-    {
-        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
-    }
-
 
     #
     $emulatorArgs = ''
@@ -2828,8 +2829,9 @@ function RunBuildSelfInstall($hstwb)
         # replace hstwb installer fs-uae configuration placeholders
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2851,8 +2853,9 @@ function RunBuildSelfInstall($hstwb)
         # replace winuae hstwb installer config placeholders
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
         
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -3322,7 +3325,6 @@ try
             {
                 $amigaOs39IsoFile = $amigaOs39Iso.File
                 $hstwb.Paths.IsoFile = $amigaOs39IsoFile
-                Write-Host ("Using Amiga OS 3.9 Iso file for loading Amiga OS system files: '{0}'" -f $amigaOS39IsoFile)
             }
             else
             {
@@ -3339,7 +3341,6 @@ try
                         $amigaOs314InstallAdfFile = $amigaOs314InstallAdf.File
                         $hstwb.Paths.WorkbenchAdfFile = $amigaOs314WorkbenchAdfFile
                         $hstwb.Paths.InstallAdfFile = $amigaOs314InstallAdfFile
-                        Write-Host ("Using Amiga OS 3.1.4 Workbench and Install Disk adf files for loading Amiga OS system files: '{0}', '{1}'" -f $amigaOs314WorkbenchAdfFile, $amigaOs314InstallAdfFile)
                     }
                 }
                 else
@@ -3350,7 +3351,6 @@ try
                     {
                         $amigaOs310WorkbenchAdfFile = $amigaOs310WorkbenchAdf.File
                         $hstwb.Paths.WorkbenchAdfFile = $amigaOs310WorkbenchAdfFile
-                        Write-Host ("Using Amiga OS 3.1 Workbench Disk adf file for loading Amiga OS system files: '{0}'" -f $amigaOs310WorkbenchAdfFile)
                     }
                 }
             }
