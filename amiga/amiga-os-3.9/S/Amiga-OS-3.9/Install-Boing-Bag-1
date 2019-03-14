@@ -1,7 +1,7 @@
 ; Install Boing Bag 1
 ; -------------------
 ;
-; Date: 2019-01-08
+; Date: 2019-03-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bag 1.
@@ -20,7 +20,7 @@ echo "*e[1mInstalling Boing Bag 1*e[0m"
 
 ; extract boing bag 1
 echo "Extracting..."
-INSTALLDIR:C/lha -m1 x "AMIGAOSDIR:BoingBag39-1.lha" "SYS:T/BoingBags/" >>SYS:hstwb-installer.log
+INSTALLDIR:C/lha -m1 x "INSTALLDIR:Temp/Amiga-OS/BoingBag39-1.lha" "SYS:T/BoingBags/" >>SYS:hstwb-installer.log
 echo "Installing..."
 
 ; run boing bag 1 updater

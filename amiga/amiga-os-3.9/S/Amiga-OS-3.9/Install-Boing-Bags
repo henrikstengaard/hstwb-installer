@@ -1,7 +1,7 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2019-01-08
+; Date: 2019-03-14
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
@@ -63,22 +63,13 @@ IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
   wait 5
 ENDIF
 
-; goto end, if device AMIGAOSDIR: doesn't exist
-Assign >>SYS:hstwb-installer.log EXISTS AMIGAOSDIR:
-IF WARN
-  echo "Device AMIGAOSDIR: doesn't exist!" >>SYS:hstwb-installer.log
-
-  echo "*e[1mERROR: Device AMIGAOSDIR: doesn't exist!*e[22m"
-  SKIP end
-ENDIF
-
 ; goto end, if boing bag 1 file doesn't exist
-IF NOT EXISTS "AMIGAOSDIR:BoingBag39-1.lha"
-  echo "ERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in device AMIGAOSDIR:.!" >>SYS:hstwb-installer.log
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/BoingBag39-1.lha"
+  echo "ERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist!" >>SYS:hstwb-installer.log
   echo "Skipping Amiga OS 3.9 Boing Bags installation!" >>SYS:hstwb-installer.log
 
-  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist in"
-  echo "device AMIGAOSDIR:. Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
+  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist."
+  echo "Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
   SKIP end
 ENDIF
 
@@ -101,7 +92,7 @@ makedir >>SYS:hstwb-installer.log SYS:T/BoingBags
 execute INSTALLDIR:S/Amiga-OS-3.9/Install-Boing-Bag-1
 
 ; goto complete, if boing bag 2 file doesn't exist
-IF NOT EXISTS "AMIGAOSDIR:BoingBag39-2.lha"
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/BoingBag39-2.lha"
   SKIP complete
 ENDIF
 
@@ -128,8 +119,7 @@ Assign >>SYS:hstwb-installer.log Prefs: INSTALLDIR:Prefs REMOVE
 Delete >>SYS:hstwb-installer.log SYS:T/BoingBags ALL
 
 ; delete install boing bags scripts from systemdir
-Delete >>SYS:hstwb-installer.log SYS:S/Install-BoingBags
-Delete >>SYS:hstwb-installer.log SYS:WBStartup/Start-Install-BoingBags#?
+Delete >>SYS:hstwb-installer.log SYS:WBStartup/WBStartup-Install-BoingBags#?
 
 ; replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
 IF EXISTS INSTALLDIR:Prefs/Install-Packages
