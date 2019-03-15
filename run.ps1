@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-14
+# Date:   2019-03-15
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -715,8 +715,8 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     {
         $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\S\Detect-AmigaOS")
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += ''
         $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\S\SelectAssignDir")
+        $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
     }
     
@@ -785,6 +785,30 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $installPackageScript.Package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
         }
         $amigaOsVersions = @("All") + ($amigaOsVersionsIndex.Keys | Sort-Object -Descending)
+
+
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; verify amiga os'
+        $installPackagesScriptLines += '; ---------------'
+        $installPackagesScriptLines += 'LAB verifyamigaos'
+        $installPackagesScriptLines += ''
+
+        foreach ($amigaOsVersion in ($amigaOsVersions | Where-Object { $_ -notmatch 'All' }))
+        {
+            $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+            $installPackagesScriptLines += '  SKIP resetpackages'
+            $installPackagesScriptLines += 'ENDIF'
+        }
+
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; set amiga os version to ''All'''
+        $installPackagesScriptLines += 'set amigaosversion "All"'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; show auto-detect amiga os version warning'
+        $installPackagesScriptLines += 'RequestChoice "Auto-detect Amiga OS version" "WARNING: Package installation could not auto-detect*NAmiga OS version or the detected Amiga OS version*Ndoesn''t have any packages filtering.*NAmiga OS package filtering is therefore set*Nto all Amiga OS versions.*NThis means that not all packages may work*Ncorrectly with the Amiga OS installed.*NUse *"Select package filtering*" to*Nshow only packages that matches the*NAmiga OS installed." "OK"'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP resetpackages'
 
 
 
