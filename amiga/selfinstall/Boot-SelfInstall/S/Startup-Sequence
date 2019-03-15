@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2019-03-14
+; Date: 2019-03-15
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -108,8 +108,8 @@ echo "Amiga OS system files are required for the"
 echo "installation process and will load these from"
 echo "either Amiga OS 3.9, 3.1.4 or 3.1:"
 echo "1. CD0: CD drive with Amiga OS 3.9 cd-rom."
-echo "2. AMIGAOSDIR: Directory with Amiga OS 3.1.4 or 3.1"
-echo "   Workbench adf file."
+echo "2. AMIGAOSDIR: Directory with Amiga OS 3.9 iso file,"
+echo "   Amiga OS 3.1.4 or 3.1 Workbench adf file."
 echo "3. DF0-DF3: Amiga OS 3.1.4 or 3.1 Workbench disk"
 echo "   inserted in any floppy device."
 echo ""
@@ -155,7 +155,7 @@ IF NOT $RC EQ 0 VAL
   ; set failat to 21
   failat 21
 
-  SKIP amigaosadf
+  SKIP amigaosiso
 ENDIF
 
 ; goto find amiga os adf, if AmigaOS3.9: device is not present
@@ -163,6 +163,103 @@ DiskInDrive >NIL: AmigaOS3.9:
 IF NOT $RC EQ 0 VAL
   ; log
   echo "Amiga OS 3.9 cd-rom is not present in CD0: device" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosiso
+ENDIF
+
+; set failat to 21
+failat 21
+
+; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
+  SKIP amigaosiso
+ENDIF
+
+; load system files from amiga os 3.9 emergency boot
+set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
+SKIP loadsystemfiles
+
+
+; amiga os iso
+; ------------
+LAB amigaosiso
+
+; log
+echo "Amiga OS 3.9 iso in file in AMIGAOSDIR:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+echo "Amiga OS 3.9 iso in file in AMIGAOSDIR:..."
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; goto amiga os disk, if AMIGAOSDIR: device is not present
+DiskInDrive >NIL: AMIGAOSDIR:
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "AMIGAOSDIR: device is not present" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosdisk
+ENDIF
+
+; set failat to 21
+failat 21
+
+; find amiga os 3.9 iso files in AMIGAOSDIR: device
+FSearch >RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos39.iso"
+FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos3.9.iso"
+FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amiga-os-390.iso"
+
+; get first iso file from iso files
+set isofile ""
+set isofile `sed "1q;d" "RAM:_isofiles"` 
+
+; log
+echo "$isofile" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+; create mountlist for iso file
+Copy "INSTALLDIR:Devs/Mountlist-Iso-Template" "T:Mountlist-Iso" >NIL:
+rep "T:Mountlist-Iso" "[*$IsoFile]" "$isofile"
+
+; mount fcd0: device using mountlist
+Mount FCD0: FROM "T:Mountlist-Iso"
+Wait SECS=5
+
+; goto end, if mount failed
+IF NOT $RC EQ 0 VAL
+  ; delete mountlist iso
+  Erase >NIL: "T:Mountlist-Iso" TIMES=0
+
+  SKIP amigaosadf
+ENDIF
+
+; delete mountlist iso
+Erase >NIL: "T:Mountlist-Iso" TIMES=0
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; goto end, if fcd0: device is not present
+DiskInDrive >NIL: FCD0:
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "FCD0: device is not present" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  ; set failat to 21
+  failat 21
+
+  SKIP amigaosadf
+ENDIF
+
+; goto find amiga os adf, if AmigaOS3.9: device is not present
+DiskInDrive >NIL: AmigaOS3.9:
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "Amiga OS 3.9 cd-rom is not present in FCD0: device" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
   ; set failat to 21
   failat 21
@@ -177,6 +274,11 @@ failat 21
 IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
   SKIP amigaosadf
 ENDIF
+
+; log
+echo "Amiga OS 3.9 iso detected" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+echo "$isofile"
 
 ; load system files from amiga os 3.9 emergency boot
 set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
@@ -643,6 +745,9 @@ MakeDir RAM:Clipboards RAM:ENV/Sys
 SetEnv TZ MST7
 
 echo "Done"
+
+; run unmount iso
+execute "INSTALLDIR:S/Unmount-Iso"
 
 ; goto start self install, if floppy device is empty
 IF "$floppydevice" EQ ""
