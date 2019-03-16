@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-14
+# Date:   2019-03-16
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -46,8 +46,8 @@ function PrintSettings($hstwb)
         Write-Host ("'" + $hstwb.Settings.Image.ImageDir + "'")
     }
 
-    # show amiga os for installer modes: install
-    if ($hstwb.Settings.Installer.Mode -match "^Install$")
+    # show amiga os for installer modes: install and build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall)$")
     {
         Write-Host "Amiga OS"
         Write-Host "  Install Amiga OS      : " -NoNewline -foregroundcolor "Gray"
@@ -103,7 +103,6 @@ function PrintSettings($hstwb)
     # show packages for installer modes: install, build self install and build package installation
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|BuildPackageInstallation)$")
     {
-        Write-Host "Packages"
 
         # get install packages
         $installPackageNames = @{}
@@ -111,6 +110,12 @@ function PrintSettings($hstwb)
         {
             $installPackageNames.Set_Item($hstwb.Settings.Packages[$installPackageKey].ToLower(), $true)
         }
+
+        Write-Host "Packages"
+        Write-Host "  Packages Filtering    : " -NoNewline -foregroundcolor "Gray"
+        $packageFiltering = if ($hstwb.Settings.Packages.PackageFiltering -eq 'All') { 'All Amiga OS versions' } else { 'Amiga OS {0}' -f $hstwb.Settings.Packages.PackageFiltering }
+        $packageFilteringCount = (SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering }).Count
+        Write-Host ("'{0}' ({1}/{2} packages)" -f $packageFiltering, $packageFilteringCount, $hstwb.Packages.Count)
 
         $packageNames = @()
         $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
@@ -254,13 +259,21 @@ function EnterChoiceColor($prompt, $options, $returnIndex = $false)
     for ($i = 0; $i -lt $options.Count; $i++)
     {
         Write-Host (("{0," + $optionPadding + "}: ") -f ($i + 1)) -NoNewline -foregroundcolor "Gray"
-        if ($options[$i].Color)
+
+        if ($options[$i].Text)
         {
-            Write-Host $options[$i].Text -ForegroundColor $options[$i].Color
+            if ($options[$i].Color)
+            {
+                Write-Host $options[$i].Text -ForegroundColor $options[$i].Color
+            }
+            else
+            {
+                Write-Host $options[$i].Text
+            }
         }
         else
         {
-            Write-Host $options[$i].Text
+            Write-Host $options[$i]
         }
     }
     Write-Host ""

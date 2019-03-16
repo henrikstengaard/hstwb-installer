@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-13
+# Date:   2019-03-16
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -457,6 +457,19 @@ function DetectUserPackages($hstwb)
 # update packages
 function UpdatePackages($hstwb)
 {
+    # build amiga os versions
+    $amigaOsVersionsIndex = @{}
+    foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+    {
+        $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+    }
+
+    # reset package filtering to all amiga os versions, if package filtering is not defined or doesn't match packages amiga os versions
+    if (!$hstwb.Settings.Packages.PackageFiltering -or !$amigaOsVersionsIndex.ContainsKey($hstwb.Settings.Packages.PackageFiltering))
+    {
+        $hstwb.Settings.Packages.PackageFiltering = 'All'
+    }
+
     # get and remove install packages
     $installPackageNames = @()
     foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))

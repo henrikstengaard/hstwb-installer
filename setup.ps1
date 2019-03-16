@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-14
+# Date:   2019-03-16
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -108,7 +108,7 @@ function Menu($hstwb, $title, $options, $returnIndex = $false)
     Write-Host $title -foregroundcolor "Cyan"
     Write-Host ""
 
-    return EnterChoice "Enter choice" $options $returnIndex
+    return EnterChoiceColor "Enter choice" $options $returnIndex
 }
 
 
@@ -753,38 +753,59 @@ function ConfigurePackagesMenu($hstwb)
     until ($choice -eq 'Back')
 }
 
+function SelectPackageFiltering($hstwb)
+{
+    # build amiga os versions
+    $amigaOsVersionsIndex = @{}
+    foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+    {
+        $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+    }
+    $amigaOsVersions = $amigaOsVersionsIndex.Keys | Sort-Object -Descending
+
+    # build amiga os version options
+    $amigaOsVersionOptions = @()
+    $amigaOsVersionOptions += @{ 'Text' = 'All Amiga OS versions'; 'Value' = 'All' }
+    $amigaOsVersionOptions += $amigaOsVersions | ForEach-Object { @{ 'Text' = ('Amiga OS {0}' -f $_); 'Value' = $_ } }
+    $amigaOsVersionOptions += @{ 'Text' = 'Back'; 'Value' = 'Back' }
+
+    do
+    {
+        $choice = Menu $hstwb "Select Package Filtering" $amigaOsVersionOptions
+
+        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select Package Filtering" ("Warning! Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{0}'?" -f $choice.Text)))
+        {
+            # remove install packages from packages
+            foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
+            {
+                $hstwb.Settings.Packages.Remove($installPackageKey)
+            }
+
+            $hstwb.Settings.Packages.PackageFiltering = $choice.Value
+            Save $hstwb
+
+            break
+        }
+    } until ($choice.Value -eq 'Back')
+}
 
 # select packages menu
 function SelectPackagesMenu($hstwb)
 {
     # get package names sorted
     $packageNames = @()
-    $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
+    $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
 
     # get install packages
-    $installPackages = @{}
-    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
-    {
-        $installPackages.Set_Item($hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower()), $true)
-    }
+    $packageNamesInstallIndex = @{}
+    $hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' } | ForEach-Object { $packageNamesInstallIndex[$hstwb.Settings.Packages[$_]] = $true }
 
     # build available and install packages indexes
-    $packageNamesFormattedMap = @{}
-    $packageNamesMap = @{}
-    $installPackagesMap = @{}
     $dependencyPackageNamesIndex = @{}
 
     foreach ($packageName in $packageNames)
     {
         $package = $hstwb.Packages[$packageName]
-
-        $hasDependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
-        
-        $packageNameFormatted = "{0}{1}" -f $package.FullName, $hasDependenciesIndicator
-
-        $packageNamesFormattedMap.Set_Item($packageNameFormatted, $packageName)
-        $packageNamesMap.Set_Item($packageName, $packageNameFormatted)
-        $installPackagesMap.Set_Item($packageName, $package.Name)
 
         if ($package.Dependencies)
         {
@@ -809,32 +830,66 @@ function SelectPackagesMenu($hstwb)
     do
     {
         # build package options
-        $packageOptions = @('Select all', 'Deselect all')
-        $packageOptions += $packageNames | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $packageNamesMap.Get_Item($_)) } else { ("+ " + $packageNamesMap.Get_Item($_)) } }
-        $packageOptions += "Back"
+        $packageOptions = @(
+            @{ 'Text' = 'Select Package Filtering'; 'Value' = 'select-package-filtering' },
+            @{ 'Text' = 'Install all packages'; 'Value' = 'install-all-packages' },
+            @{ 'Text' = 'Skip all packages'; 'Value' = 'skip-all-packages' }
+        )
+
+        foreach ($packageName in $packageNames)
+        {
+            $package = $hstwb.Packages[$packageName]
+            $dependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
+        
+            $packageNameFormatted = "{0}{1}" -f $package.FullName, $dependenciesIndicator
+    
+            $installPackage = $packageNamesInstallIndex.ContainsKey($packageName)
+
+            $packageOptions += @{
+                'Text' = if ($installPackage) { ("Install : {0}" -f $packageNameFormatted) } else { ("Skip    : " + $packageNameFormatted) };
+                'Value' = $packageName;
+                'Color' = if ($installPackage) { 'Green' } else { $null }
+            }
+        }
+
+        $packageOptions += @{
+            'Text' = 'Back';
+            'Value' = 'back'
+        }
 
         $choice = Menu $hstwb "Select Packages Menu" $packageOptions
 
         $addPackageNames = @()
         $removePackageNames = @()
         
-        if ($choice -eq 'Select all')
+        if ($choice.Value -eq 'select-package-filtering')
+        {
+            SelectPackageFiltering $hstwb
+
+            # get package names sorted
+            $packageNames = @()
+            $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
+
+            # get install packages
+            $packageNamesInstallIndex = @{}
+            $hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' } | ForEach-Object { $packageNamesInstallIndex[$hstwb.Settings.Packages[$_]] = $true }
+        }
+        elseif ($choice.Value -eq 'install-all-packages')
         {
             $addPackageNames += $packageNames
         }
-        elseif ($choice -eq 'Deselect all')
+        elseif ($choice.Value -eq 'skip-all-packages')
         {
-            $removePackageNames += $installPackages.Keys
+            $removePackageNames += $packageNamesInstallIndex.Keys
         }
-        elseif ($choice -ne 'Back')
+        elseif ($choice.Value -ne 'back')
         {
-            $packageNameFormatted = $choice -replace '^(\+|\-) ', ''
-            $packageName = $packageNamesFormattedMap.Get_Item($packageNameFormatted)
+            $packageName = $choice.Value
 
             # deselect package, if it's already selected. otherwise deselect package
-            if ($installPackages.ContainsKey($packageName))
+            if ($packageNamesInstallIndex.ContainsKey($packageName))
             {
-                $deselectPackage = $true
+                $skipPackage = $true
 
                 # show package dependency warning, if package has dependencies
                 if ($dependencyPackageNamesIndex.ContainsKey($packageName))
@@ -844,16 +899,16 @@ function SelectPackagesMenu($hstwb)
 
                     # list selected package names that has dependencies to package
                     $dependencyPackageNames = @()
-                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
+                    $dependencyPackageNames += $dependencyPackageNamesIndex[$packageName] | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
                     # show package dependency warning
-                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
+                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and skipping it may cause issues when installing packages.`r`n`r`nAre you sure you want to skip package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
                     {
-                        $deselectPackage = $false
+                        $skipPackage = $false
                     }
                 }
 
-                if ($deselectPackage)
+                if ($skipPackage)
                 {
                     $removePackageNames += $packageName
                 }
@@ -869,17 +924,14 @@ function SelectPackagesMenu($hstwb)
         {
             foreach($packageName in $removePackageNames)
             {
-                if (!$installPackages.ContainsKey($packageName))
+                if (!$packageNamesInstallIndex.ContainsKey($packageName))
                 {
                     continue
                 }
 
-                # get package
-                $package = $hstwb.Packages[$packageName]
-            
-                $installPackages.Remove($packageName)
+                $packageNamesInstallIndex.Remove($packageName)
                 
-                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Name) } | Select-Object -First 1
+                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like $packageName } | Select-Object -First 1
 
                 if ($packageAssignsKey)
                 {
@@ -888,12 +940,11 @@ function SelectPackagesMenu($hstwb)
             }
         }
 
-
         if ($addPackageNames.Count -gt 0)
         {
             foreach($packageName in $addPackageNames)
             {
-                if ($installPackages.ContainsKey($packageName))
+                if ($packageNamesInstallIndex.ContainsKey($packageName))
                 {
                     continue
                 }
@@ -905,19 +956,19 @@ function SelectPackagesMenu($hstwb)
                 
                 if ($package.Dependencies.Count -gt 0)
                 {
-                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package | ForEach-Object { $_.ToLower() }
+                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package
                 }
 
                 $selectedPackageNames += $packageName
 
                 foreach($selectedPackageName in $selectedPackageNames)
                 {
-                    if ($installPackages.ContainsKey($selectedPackageName))
+                    if ($packageNamesInstallIndex.ContainsKey($selectedPackageName))
                     {
                         continue
                     }
 
-                    $installPackages.Set_Item($selectedPackageName, $true)
+                    $packageNamesInstallIndex.Set_Item($selectedPackageName, $true)
 
                     # get selected package
                     $selectedPackage = $hstwb.Packages[$selectedPackageName]
@@ -949,7 +1000,7 @@ function SelectPackagesMenu($hstwb)
 
             # build and set new install packages
             $newInstallPackages = @()
-            $newInstallPackages += $packageNames | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $installPackagesMap.Get_Item($_) }
+            $newInstallPackages += $packageNames | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
             # add install packages to packages
             for($i = 0; $i -lt $newInstallPackages.Count; $i++)
@@ -960,7 +1011,7 @@ function SelectPackagesMenu($hstwb)
             Save $hstwb            
         }
     }
-    until ($choice -eq 'Back')
+    until ($choice.Value -eq 'back')
 }
 
 
@@ -1379,6 +1430,9 @@ try
 
     # save settings and assigns
     Save $hstwb
+
+    Write-Host "Done"
+    Start-Sleep -m 200
 
     # ui amiga os set info
     UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
