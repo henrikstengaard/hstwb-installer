@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-16
+# Date:   2019-03-18
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -114,7 +114,7 @@ function PrintSettings($hstwb)
         Write-Host "Packages"
         Write-Host "  Packages Filtering    : " -NoNewline -foregroundcolor "Gray"
         $packageFiltering = if ($hstwb.Settings.Packages.PackageFiltering -eq 'All') { 'All Amiga OS versions' } else { 'Amiga OS {0}' -f $hstwb.Settings.Packages.PackageFiltering }
-        $packageFilteringCount = (SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering }).Count
+        $packageFilteringCount = (SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or !$hstwb.Packages[$_].AmigaOsVersions -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering }).Count
         Write-Host ("'{0}' ({1}/{2} packages)" -f $packageFiltering, $packageFilteringCount, $hstwb.Packages.Count)
 
         $packageNames = @()

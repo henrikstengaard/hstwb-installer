@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-16
+# Date:   2019-03-18
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -794,7 +794,7 @@ function SelectPackagesMenu($hstwb)
 {
     # get package names sorted
     $packageNames = @()
-    $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
+    $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or !$hstwb.Packages[$_].AmigaOsVersions -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
 
     # get install packages
     $packageNamesInstallIndex = @{}
@@ -868,7 +868,7 @@ function SelectPackagesMenu($hstwb)
 
             # get package names sorted
             $packageNames = @()
-            $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
+            $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or !$hstwb.Packages[$_].AmigaOsVersions -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
 
             # get install packages
             $packageNamesInstallIndex = @{}
