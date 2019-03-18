@@ -765,8 +765,19 @@ function SelectPackageFiltering($hstwb)
 
     # build amiga os version options
     $amigaOsVersionOptions = @()
-    $amigaOsVersionOptions += @{ 'Text' = 'All Amiga OS versions'; 'Value' = 'All' }
-    $amigaOsVersionOptions += $amigaOsVersions | ForEach-Object { @{ 'Text' = ('Amiga OS {0}' -f $_); 'Value' = $_ } }
+    $amigaOsVersionColor = if ('All' -eq $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }
+    $amigaOsVersionOptions += @{ 'Text' = 'All Amiga OS versions'; 'Value' = 'All'; 'Color' = $amigaOsVersionColor }
+    
+    foreach ($amigaOsVersion in $amigaOsVersions)
+    {
+        $amigaOsVersionColor = if ($amigaOsVersion -eq $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }
+        $amigaOsVersionOptions += @{
+            'Text' = ('Amiga OS {0}' -f $amigaOsVersion);
+            'Value' = $amigaOsVersion;
+            'Color' = $amigaOsVersionColor
+        }
+    }
+    #$amigaOsVersionOptions += $amigaOsVersions | ForEach-Object { @{ 'Text' = ('Amiga OS {0}' -f $_); 'Value' = $_; 'Color' = (if ($_ -and $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }) } }
     $amigaOsVersionOptions += @{ 'Text' = 'Back'; 'Value' = 'Back' }
 
     do
