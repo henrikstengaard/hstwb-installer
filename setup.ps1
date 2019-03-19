@@ -555,6 +555,28 @@ function SelectAmigaOsSet($hstwb)
         $hstwb.UI.AmigaOs.AmigaOsSetInfo = $choise
 
         $hstwb.Settings.AmigaOs.AmigaOsSet = $choise.Value
+
+        # build amiga os versions
+        $amigaOsVersionsIndex = @{}
+        foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+        {
+            $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+        }
+        $amigaOsVersions = $amigaOsVersionsIndex.Keys | Sort-Object -Descending
+
+        # get first amiga os entry for amiga os set
+        $amigaOsEntry = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+        
+        # set package filtering to amiga os entry's amiga os version, if it's defined and matches one of amiga os versions present in packages. otherwise set package filtering to all
+        if ($amigaOsEntry -and $amigaOsEntry.AmigaOsVersion -and $amigaOsVersions -contains $amigaOsEntry.AmigaOsVersion)
+        {
+            $hstwb.Settings.Packages.PackageFiltering = $amigaOsEntry.AmigaOsVersion
+        }
+        else
+        {
+            $hstwb.Settings.Packages.PackageFiltering = 'All'
+        }
+
         Save $hstwb
     }
 }
