@@ -806,7 +806,17 @@ function SelectPackageFiltering($hstwb)
     {
         $choice = Menu $hstwb "Select Package Filtering" $amigaOsVersionOptions
 
-        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select Package Filtering" ("Warning! Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{0}'?" -f $choice.Text)))
+        # get first amiga os entry for amiga os set
+        $amigaOsEntry = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+
+        # add package filtering warning, if package filtering doesn't match amiga os version for amiga os set
+        $amigaOsVersionWarning = ''
+        if ($hstwb.Settings.Installer.Mode -eq "Install" -and $amigaOsEntry -and $amigaOsEntry.AmigaOsVersion -ne $choice.Value)
+        {
+            $amigaOsVersionWarning = ("Selected package filtering '{0}' doesn't match Amiga OS set 'Amiga OS {1}'. This will show packages that are not supported by selected Amiga OS and packages might not work correctly and could result in corrupt or incorrect installation.`r`n`r`n" -f $choice.Text, $amigaOsEntry.AmigaOsVersion)
+        }
+
+        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select Package Filtering" ("{0}Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{1}'?" -f $amigaOsVersionWarning, $choice.Text) "Warning"))
         {
             # remove install packages from packages
             foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
