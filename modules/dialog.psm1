@@ -132,7 +132,7 @@ function PrintSettings($hstwb)
                 $installPackages += $package.FullName
             }
 
-            Write-Host ("'" + ($installPackages -Join ', ') + "'")
+            Write-Host ("'{0}' ({1}/{2} packages)" -f ($installPackages -Join ', '), $installPackageNames.Count, $packageFilteringCount)
         }
         else
         {
@@ -167,7 +167,7 @@ function PrintSettings($hstwb)
         Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
         if ($installUserPackageNames.Count -gt 0)
         {
-            Write-Host ("'" + (($installUserPackageNames | Sort-Object) -Join ', ') + "'")
+            Write-Host ("'{0}' ({1}/{2} packages)" -f ($installUserPackageNames -Join ', '), $installUserPackageNames.Count, $hstwb.UserPackages.Count)
         }
         else
         {
