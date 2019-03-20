@@ -1282,22 +1282,49 @@ function ConfigureInstaller($hstwb)
 # change installer mode
 function ChangeInstallerMode($hstwb)
 {
-    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Build User Package Installation", "Test", "Back")
-
-    $installerMode = ''
-    switch ($choice)
-    {
-        "Test" { $installerMode = "Test" }
-        "Install" { $installerMode = "Install" }
-        "Build Self Install" { $installerMode = "BuildSelfInstall" }
-        "Build Package Installation" { $installerMode = "BuildPackageInstallation" }
-        "Build User Package Installation" { $installerMode = "BuildUserPackageInstallation" }
+    # installer mode options
+    $installerModeOptions = @()
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Test') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Test';
+        'Value' = 'Test';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Install') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Install';
+        'Value' = 'Install';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildSelfInstall') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build Self Install';
+        'Value' = 'BuildSelfInstall';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildPackageInstallation') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build Package Installation';
+        'Value' = 'BuildPackageInstallation';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildUserPackageInstallation') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build User Package Installation';
+        'Value' = 'BuildUserPackageInstallation';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
     }
 
-    if ($choice -ne 'Back')
+    $choice = Menu $hstwb "Change Installer Mode" $installerModeOptions
+
+    if ($choice.Value -ne 'Back')
     {
         # set installer mode
-        $hstwb.Settings.Installer.Mode = $installerMode
+        $hstwb.Settings.Installer.Mode = $choice.Value
 
         # update amiga os entries
         UpdateAmigaOsEntries $hstwb
