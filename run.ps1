@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-16
+# Date:   2019-03-20
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1958,7 +1958,7 @@ function RunInstall($hstwb)
     if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
         $amigaOsSetEntries = @()
-        $amigaOsSetEntries = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+        $amigaOsSetEntries = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
     
         # find amiga os 3.9 iso in amiga os set
         $amigaOs39Iso = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amigaos3\.9\.iso$' } | Select-Object -First 1
@@ -3226,7 +3226,7 @@ try
     }
 
     # find best matching amiga os set, if amiga os set doesn't exist
-    if (($hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
+    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
         # set new amiga os set
         $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
@@ -3287,8 +3287,8 @@ try
     
     # filter amiga os sets to only contain amiga os set defined in settings
     $amigaOsSet = @()
-    $amigaOsSet += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
-    $hstwb.AmigaOsSets = $amigaOsSet
+    $amigaOsSet += $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    $hstwb.AmigaOsEntries = $amigaOsSet
 
     # fail, if kickstart rom hashes is empty 
     if ($hstwb.KickstartRomHashes.Count -eq 0)
@@ -3296,8 +3296,8 @@ try
         Fail ("Kickstart rom set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't exist!")
     }
     
-    # fail, if amiga os sets is empty 
-    if ($hstwb.AmigaOsSets.Count -eq 0)
+    # fail, if amiga os entries is empty 
+    if ($hstwb.AmigaOsEntries.Count -eq 0)
     {
         Fail ("Amiga OS set '" + $hstwb.Settings.AmigaOs.AmigaOsSet + "' doesn't exist!")
     }
@@ -3352,7 +3352,7 @@ try
         if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
         {
             # find amiga os 3.1 workbench adf
-            $amigaOs39Iso = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
+            $amigaOs39Iso = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
 
             if ($amigaOs39Iso)
             {
@@ -3362,13 +3362,13 @@ try
             else
             {
                 # find amiga os 3.1.4 workbench adf
-                $amigaOs314WorkbenchAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
+                $amigaOs314WorkbenchAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
                 if ($amigaOs314WorkbenchAdf)
                 {
                     $amigaOs314WorkbenchAdfFile = $amigaOs314WorkbenchAdf.File
 
                     # find amiga os 3.1.4 install adf
-                    $amigaOs314InstallAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
+                    $amigaOs314InstallAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
                     if ($amigaOs314InstallAdf)
                     {
                         $amigaOs314InstallAdfFile = $amigaOs314InstallAdf.File
@@ -3379,7 +3379,7 @@ try
                 else
                 {
                     # find amiga os 3.1 workbench adf
-                    $amigaOs310WorkbenchAdf = $hstwb.AmigaOsSets | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+                    $amigaOs310WorkbenchAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
                     if ($amigaOs310WorkbenchAdf)
                     {
                         $amigaOs310WorkbenchAdfFile = $amigaOs310WorkbenchAdf.File

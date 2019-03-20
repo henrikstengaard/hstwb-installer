@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-18
+# Date:   2019-03-20
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -525,7 +525,7 @@ function ChangeAmigaOsDir($hstwb)
 # select amiga os set
 function SelectAmigaOsSet($hstwb)
 {
-    $amigaOsSetNames = $hstwb.AmigaOsSets | ForEach-Object { $_.Set } | Get-Unique
+    $amigaOsSetNames = $hstwb.AmigaOsEntries | ForEach-Object { $_.Set } | Get-Unique
 
     $amigaOsSetOptions = @()
 
@@ -565,7 +565,7 @@ function SelectAmigaOsSet($hstwb)
         $amigaOsVersions = $amigaOsVersionsIndex.Keys | Sort-Object -Descending
 
         # get first amiga os entry for amiga os set
-        $amigaOsEntry = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
         
         # set package filtering to amiga os entry's amiga os version, if it's defined and matches one of amiga os versions present in packages. otherwise set package filtering to all
         if ($amigaOsEntry -and $amigaOsEntry.AmigaOsVersion -and $amigaOsVersions -contains $amigaOsEntry.AmigaOsVersion)
@@ -597,7 +597,7 @@ function ViewAmigaOsSetFiles($hstwb)
     }
 
     $amigaOsSetEntries = @()
-    $amigaOsSetEntries = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    $amigaOsSetEntries = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
 
     if ($hstwb.UI.AmigaOs.AmigaOsSetInfo.Color)
     {
@@ -807,7 +807,7 @@ function SelectPackageFiltering($hstwb)
         $choice = Menu $hstwb "Select Package Filtering" $amigaOsVersionOptions
 
         # get first amiga os entry for amiga os set
-        $amigaOsEntry = $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
 
         # add package filtering warning, if package filtering doesn't match amiga os version for amiga os set
         $amigaOsVersionWarning = ''
@@ -1492,7 +1492,7 @@ try
     }
 
     # find best matching amiga os set, if amiga os set doesn't exist
-    if (($hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
+    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
         # set new amiga os set
         $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb

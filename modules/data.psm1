@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-14
+# Date:   2019-03-20
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -460,13 +460,13 @@ function FindAmigaOsFiles($hstwb)
     }
 
     # find files with hashes matching workbench adf hashes
-    FindMatchingFileHashes $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
+    FindMatchingFileHashes $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsDir
     
     # find matching amiga os entries by adf volume name
-    FindMatchingAmigaOsEntriesByAdfVolumeName $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
+    FindMatchingAmigaOsEntriesByAdfVolumeName $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsDir
 
     # find matching amiga os entries by filename
-    FindMatchingAmigaOsEntriesByFileName $hstwb.AmigaOsSets $hstwb.Settings.AmigaOs.AmigaOsDir
+    FindMatchingAmigaOsEntriesByFileName $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsDir
 }
 
 
@@ -516,7 +516,7 @@ function FindBestMatchingAmigaOsSet($hstwb)
 
     # get amiga os set names
     $amigaOsSetNames = @()
-    $amigaOsSetNames += $hstwb.AmigaOsSets | Where-Object { $_.Set } | ForEach-Object { $_.Set } | Get-Unique
+    $amigaOsSetNames += $hstwb.AmigaOsEntries | Where-Object { $_.Set } | ForEach-Object { $_.Set } | Get-Unique
 
     # validate amiga os sets
     $amigaOsSetResults = @()
@@ -541,7 +541,7 @@ function FindBestMatchingAmigaOsSet($hstwb)
 function ValidateAmigaOsSet($hstwb, $amigaOsSetName)
 {
     $amigaOsSetEntriesIndex = @{}
-    $hstwb.AmigaOsSets | `
+    $hstwb.AmigaOsEntries | `
         Where-Object { $_.Set -eq $amigaOsSetName } | `
         ForEach-Object { 
             if (!$amigaOsSetEntriesIndex.ContainsKey($_.Name.ToLower()) -or !$amigaOsSetEntriesIndex[$_.Name.ToLower()].File) { 
@@ -598,7 +598,7 @@ function UpdateAmigaOsEntries($hstwb)
     }
 
     # set empty amiga os entries
-    $hstwb.AmigaOsSets = @()
+    $hstwb.AmigaOsEntries = @()
 
     # set amiga os entries empty, if installer mode is set to install or build self install
     if ($hstwb.Settings.Installer.Mode -notmatch "^(Install|BuildSelfInstall)$")
@@ -624,7 +624,7 @@ function UpdateAmigaOsEntries($hstwb)
         $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
     }
 
-    $hstwb.AmigaOsSets = $amigaOsEntries
+    $hstwb.AmigaOsEntries = $amigaOsEntries
 }
 
 # sort packages to install
@@ -715,7 +715,7 @@ function BuildInstallLog($hstwb)
     $amigaOsSetFiles = @()
     if ($hstwb.Settings.AmigaOs.AmigaOsSet -notmatch '^$')
     {
-        $amigaOsSet += $hstwb.AmigaOsSets | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+        $amigaOsSet += $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
         $amigaOsSetFiles += $amigaOsSet | Where-Object { $_.File }
     }
 
