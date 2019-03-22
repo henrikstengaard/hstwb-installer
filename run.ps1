@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-20
+# Date:   2019-03-22
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1952,7 +1952,6 @@ function RunInstall($hstwb)
 
     $installAmigaOs39Reboot = $false
     $installBoingBagsReboot = $false
-    $isoFile = ''
 
     # prepare install amiga os
     if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
@@ -1964,9 +1963,6 @@ function RunInstall($hstwb)
         $amigaOs39Iso = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amigaos3\.9\.iso$' } | Select-Object -First 1
         if ($amigaOs39Iso)
         {
-            # set iso file to amiga os 3.9 iso file
-            $isoFile = $amigaOs39Iso.File
-
             # set install to reboot for amiga os 3.9 installation
             $installAmigaOs39Reboot = $true
 
@@ -2019,6 +2015,9 @@ function RunInstall($hstwb)
             Set-Content $installAmigaOs310PrefsFile -Value ""
         }
 
+        # write copying amiga os files to temp install dir
+        Write-Host "Copying Amiga OS files to temp install dir"
+
         # copy amiga os set entries to temp install dir
         $amigaOsSetEntriesFirstIndex = @{}
         foreach($amigaOsSetEntry in $amigaOsSetEntries)
@@ -2043,30 +2042,41 @@ function RunInstall($hstwb)
         }    
     }
 
-
     # prepare install kickstart
-    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and ($hstwb.KickstartRomHashes | Where-Object { $_.File }).Count -gt 0 )
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and ($hstwb.KickstartEntries | Where-Object { $_.File }).Count -gt 0 )
     {
+        $kickstartSetEntries = @()
+        $kickstartSetEntries = $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+
+        # copy kickstart files to temp install dir
+        Write-Host "Copying Kickstart files to temp install dir"
+
+        # copy amiga os set entries to temp install dir
+        $kickstartSetEntriesFirstIndex = @{}
+        foreach($kickstartSetEntry in $kickstartSetEntries)
+        {
+            if ($kickstartSetEntriesFirstIndex.ContainsKey($kickstartSetEntry.Name))
+            {
+                continue
+            }
+
+            $kickstartSetEntriesFirstIndex[$kickstartSetEntry.Name] = $true
+
+            # find best matching kickstart set entry to copy
+            $bestMatchingKickstartSetEntry = $kickstartSetEntries | Where-Object { $_.Name -eq $kickstartSetEntry.Name -and $_.CopyFile -eq 'True' -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+            # skip, if best matching kickstart set entry doesn't exist
+            if (!$bestMatchingKickstartSetEntry)
+            {
+                continue
+            }
+
+            Copy-Item $bestMatchingKickstartSetEntry.File -Destination (Join-Path $tempKickstartDir -ChildPath $bestMatchingKickstartSetEntry.Filename) -Force
+        }    
+
         # create install kickstart prefs file
         $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
         Set-Content $installKickstartFile -Value ""
-        
-        # copy kickstart rom set files to temp install dir
-        Write-Host "Copying Kickstart rom files to temp install dir"
-
-        $hstwb.KickstartRomHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempKickstartDir -ChildPath $_.Filename) -Force }
-
-        # get first kickstart rom hash
-        $installKickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.File } | Select-Object -First 1
-
-        # kickstart rom key
-        $installKickstartRomKeyFile = Join-Path (Split-Path $installKickstartRomHash.File -Parent) -ChildPath "rom.key"
-
-        # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
-        if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
-        {
-            Copy-Item -Literalpath $installKickstartRomKeyFile -Destination (Join-Path -Path $tempKickstartDir -ChildPath "rom.key") -Force
-        }
     }
 
     # find packages to install
@@ -2290,7 +2300,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2314,7 +2324,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
     
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -2385,7 +2395,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2408,7 +2418,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
 
         # write winuae hstwb installer config file to temp dir
         $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
@@ -3104,13 +3114,13 @@ function Save($hstwb)
 # fail
 function Fail($hstwb, $message)
 {
+    Write-Error $message
+    Write-Host ""
     if(test-path -path $hstwb.Paths.TempPath)
     {
         Remove-Item -Recurse -Force $hstwb.Paths.TempPath
     }
 
-    Write-Error $message
-    Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
     exit 1
@@ -3118,7 +3128,7 @@ function Fail($hstwb, $message)
 
 
 # resolve paths
-$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
+$kickstartEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\kickstart-entries.csv")
 $amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
@@ -3161,7 +3171,7 @@ try
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
-            'KickstartRomHashesFile' = $kickstartRomHashesFile;
+            'KickstartEntriesFile' = $kickstartEntriesFile;
             'AmigaOsEntriesFile' = $amigaOsEntriesFile;
             'AmigaPath' = $amigaPath;
             'WinuaePath' = $winuaePath;
@@ -3183,24 +3193,15 @@ try
         }
     }
 
-    # read kickstart rom hashes
-    if (Test-Path -Path $kickstartRomHashesFile)
-    {
-        $kickstartRomHashes = @()
-        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-        $hstwb.KickstartRomHashes = $kickstartRomHashes
-    }
-    else
-    {
-        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
-    }
-    
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
     
     # update amiga os entries
     UpdateAmigaOsEntries $hstwb
+
+    # update kickstart entries
+    UpdateKickstartEntries $hstwb
 
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
@@ -3209,9 +3210,9 @@ try
     Write-Host "Finding Amiga OS sets in Amiga OS dir..."
     FindAmigaOsFiles $hstwb
 
-    # find kickstart roms
+    # find kickstart files
     Write-Host "Finding Kickstart sets in Kickstart dir..."
-    FindKickstartRoms $hstwb
+    FindKickstartFiles $hstwb
         
     # update packages and assigns
     UpdatePackages $hstwb
@@ -3219,10 +3220,10 @@ try
     UpdateAssigns $hstwb
         
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    if (($hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
     {
         # set new kickstart rom set
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
     }
 
     # find best matching amiga os set, if amiga os set doesn't exist
@@ -3281,25 +3282,25 @@ try
     }
 
     # change kickstart rom hashes to kickstart rom set hashes
-    $kickstartRomSetHashes = @()
-    $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
-    $hstwb.KickstartRomHashes = $kickstartRomSetHashes
+    # $kickstartRomSetHashes = @()
+    # $kickstartRomSetHashes += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+    # $hstwb.KickstartEntries = $kickstartRomSetHashes
     
     # filter amiga os sets to only contain amiga os set defined in settings
-    $amigaOsSet = @()
-    $amigaOsSet += $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
-    $hstwb.AmigaOsEntries = $amigaOsSet
+    # $amigaOsSet = @()
+    # $amigaOsSet += $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    # $hstwb.AmigaOsEntries = $amigaOsSet
 
-    # fail, if kickstart rom hashes is empty 
-    if ($hstwb.KickstartRomHashes.Count -eq 0)
+    # fail, if installer mode is install, build self install or test and kickstart entries is empty 
+    if ($settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$" -and $hstwb.KickstartEntries.Count -eq 0)
     {
-        Fail ("Kickstart rom set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't exist!")
+        Fail ("Kickstart entries is empty!")
     }
     
-    # fail, if amiga os entries is empty 
-    if ($hstwb.AmigaOsEntries.Count -eq 0)
+    # fail, if installer mode is install and amiga os entries is empty 
+    if ($settings.Installer.Mode -match "^Install$" -and $hstwb.AmigaOsEntries.Count -eq 0)
     {
-        Fail ("Amiga OS set '" + $hstwb.Settings.AmigaOs.AmigaOsSet + "' doesn't exist!")
+        Fail ("Amiga OS entries is empty!")
     }
 
     # print title and settings
@@ -3312,15 +3313,15 @@ try
     Write-Host ""
         
     # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
-    if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
         # find kickstart 3.1 a1200 rom
-        $kickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+        $kickstartRomHash = $hstwb.KickstartEntries | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
 
         # fail, if kickstart rom hash doesn't exist
         if (!$kickstartRomHash)
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
         }
 
         # set kickstart rom file
@@ -3335,7 +3336,7 @@ try
         # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
         if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartSet + "' doesn't have rom.key!")
         }
 
 
@@ -3395,6 +3396,10 @@ try
             Fail $hstwb "Amiga OS 3.9 iso file, Amiga OS 3.1.4 Workbench and Install Disk adf files, or Amiga OS 3.1 Workbench Disk adf file is required to run HstWB Installer!"
         }
     }
+
+    Write-host $hstwb.Paths.IsoFile
+    Write-Host $hstwb.Paths.WorkbenchAdfFile
+    Write-Host $hstwb.Paths.InstallAdfFile
 
     # create temp path
     if(!(test-path -path $hstwb.Paths.TempPath))

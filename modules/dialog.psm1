@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-18
+# Date:   2019-03-22
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -14,9 +14,9 @@ function PrintSettings($hstwb)
     $kickstartRomSetComplete = $false
     $kickstartRomSetHashes = @() 
     $kickstartRomSetFiles = @()
-    if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+    if ($hstwb.Settings.Kickstart.KickstartSet -notmatch '^$')
     {
-        $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
+        $kickstartRomSetHashes += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
         $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
 
         $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
@@ -79,19 +79,19 @@ function PrintSettings($hstwb)
         Write-Host "Kickstart"
         Write-Host "  Install Kickstart     : " -NoNewline -foregroundcolor "Gray"
         Write-Host ("'" + $hstwb.Settings.Kickstart.InstallKickstart + "'")
-        Write-Host "  Kickstart Rom Dir     : " -NoNewline -foregroundcolor "Gray"
-        Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartRomDir + "'")
-        Write-Host "  Kickstart Rom Set     : " -NoNewline -foregroundcolor "Gray"
+        Write-Host "  Kickstart dir         : " -NoNewline -foregroundcolor "Gray"
+        Write-Host ("'" + $hstwb.Settings.Kickstart.KickstartDir + "'")
+        Write-Host "  Kickstart set         : " -NoNewline -foregroundcolor "Gray"
     
-        if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+        if ($hstwb.Settings.Kickstart.KickstartSet -notmatch '^$' -and $hstwb.UI.Kickstart.KickstartSetInfo)
         {
-            if ($kickstartRomSetComplete)
+            if ($hstwb.UI.Kickstart.KickstartSetInfo.Color)
             {
-                Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Green"
+                Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text -ForegroundColor $hstwb.UI.Kickstart.KickstartSetInfo.Color
             }
             else
             {
-                Write-Host ("'{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Yellow"
+                Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text
             }
         }
         else

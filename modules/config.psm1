@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-16
+# Date:   2019-03-22
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -311,6 +311,20 @@ function UpgradeSettings($hstwb)
     {
         $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
         $hstwb.Settings.Kickstart.Remove('KickstartRomPath')
+    }
+
+    # upgrade kickstart rom dir to kickstart dir
+    if ($hstwb.Settings.Kickstart.KickstartRomDir)
+    {
+        $hstwb.Settings.Kickstart.KickstartDir = $hstwb.Settings.Kickstart.KickstartRomDir
+        $hstwb.Settings.Kickstart.Remove('KickstartRomDir')
+    }
+
+    # upgrade kickstart rom set to kickstart set
+    if ($hstwb.Settings.Kickstart.KickstartRomSet)
+    {
+        $hstwb.Settings.Kickstart.KickstartSet = $hstwb.Settings.Kickstart.KickstartRomSet
+        $hstwb.Settings.Kickstart.Remove('KickstartRomSet')
     }
 
     # upgrade install packages
@@ -643,6 +657,13 @@ function ValidateAssigns($assigns)
 # validate settings
 function ValidateSettings($settings)
 {
+    # fail, if Mode parameter doesn't exist in settings file or is not valid
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|BuildUserPackageInstallation|Test)')
+    {
+        Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        return $false
+    }
+
     # fail, if ImageDir directory doesn't exist for installer modes other than 'BuildPackageInstallation'
     if ($settings.Installer.Mode -notmatch '(BuildPackageInstallation|BuildUserPackageInstallation)' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
@@ -650,53 +671,52 @@ function ValidateSettings($settings)
         return $false
     }
 
-    # fail, if install amiga os parameter doesn't exist in settings file or is not valid
-    if (!$settings.AmigaOs.InstallAmigaOs -or $settings.AmigaOs.InstallAmigaOs -notmatch '(Yes|No)')
+    if ($settings.Installer.Mode -match 'Install')
     {
-        Write-Host "Error: InstallAmigaOs parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
+        # fail, if install amiga os parameter doesn't exist in settings file or is not valid
+        if (!$settings.AmigaOs.InstallAmigaOs -or $settings.AmigaOs.InstallAmigaOs -notmatch '(Yes|No)')
+        {
+            Write-Host "Error: InstallAmigaOs parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if amiga os dir parameter doesn't exist in settings file or directory doesn't exist
+        if (!$settings.AmigaOs.AmigaOsDir -or ($settings.AmigaOs.AmigaOsDir -match '^.+$' -and !(test-path -path $settings.AmigaOs.AmigaOsDir)))
+        {
+            Write-Host "Error: AmigaOsDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if amiga os set parameter doesn't exist settings file or it's not defined
+        if (!$settings.AmigaOs.AmigaOsSet -or $settings.AmigaOs.AmigaOsSet -eq '')
+        {
+            Write-Host "Error: AmigaOsSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
+        if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
+        {
+            Write-Host "Error: InstallKickstart parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if KickstartSet parameter doesn't exist in settings file or it's not defined
+        if (!$settings.Kickstart.KickstartSet -or $settings.Kickstart.KickstartSet -eq '')
+        {
+            Write-Host "Error: KickstartSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+            return $false
+        }
     }
 
-    # fail, if amiga os dir parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.AmigaOs.AmigaOsDir -or ($settings.AmigaOs.AmigaOsDir -match '^.+$' -and !(test-path -path $settings.AmigaOs.AmigaOsDir)))
+    if ($settings.Installer.Mode -match '(Install|BuildSelfInstall|Test)')
     {
-        Write-Host "Error: AmigaOsDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if amiga os set parameter doesn't exist settings file or it's not defined
-    if (!$settings.AmigaOs.AmigaOsSet -or $settings.AmigaOs.AmigaOsSet -eq '')
-    {
-        Write-Host "Error: AmigaOsSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
-    if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
-    {
-        Write-Host "Error: InstallKickstart parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Kickstart.KickstartRomDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
-    {
-        Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if KickstartRomSet parameter doesn't exist in settings file or it's not defined
-    if (!$settings.Kickstart.KickstartRomSet -or $settings.Kickstart.KickstartRomSet -eq '')
-    {
-        Write-Host "Error: KickstartRomSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|BuildUserPackageInstallation|Test)')
-    {
-        Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
+        # fail, if KickstartDir parameter doesn't exist in settings file or directory doesn't exist
+        if (!$settings.Kickstart.KickstartDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
+        {
+            Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+            return $false
+        }
     }
 
     return $true

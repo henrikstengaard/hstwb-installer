@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-20
+# Date:   2019-03-22
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -353,7 +353,6 @@ function FindMatchingFileHashes($hashes, $path)
     }
 }
 
-
 function ReadBytes($bytes, $offset, $length)
 {
 	$newBytes = New-Object 'byte[]' $length
@@ -464,42 +463,39 @@ function FindAmigaOsFiles($hstwb)
     
     # find matching amiga os entries by adf volume name
     FindMatchingAmigaOsEntriesByAdfVolumeName $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsDir
-
-    # find matching amiga os entries by filename
-    FindMatchingAmigaOsEntriesByFileName $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsDir
 }
 
 
 # find kickstart roms
-function FindKickstartRoms($hstwb)
+function FindKickstartFiles($hstwb)
 {
     # reset kickstart rom dir, if it doesn't exist
-    if (!$hstwb.Settings.Kickstart.KickstartRomDir -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomDir))
+    if (!$hstwb.Settings.Kickstart.KickstartDir -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartDir))
     {
-        $hstwb.Settings.Kickstart.KickstartRomDir = ''
+        $hstwb.Settings.Kickstart.KickstartDir = ''
     }
 
     # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $hstwb.KickstartRomHashes $hstwb.Settings.Kickstart.KickstartRomDir
+    FindMatchingFileHashes $hstwb.KickstartEntries $hstwb.Settings.Kickstart.KickstartDir
 }
 
 
-# find best matching kickstart rom set
-function FindBestMatchingKickstartRomSet($hstwb)
+# find best matching kickstart set
+function FindBestMatchingKickstartSet($hstwb)
 {
-    # find kickstart roms
-    FindKickstartRoms $hstwb
+    # find kickstart files
+    FindKickstartFiles $hstwb
 
     # get kickstart rom sets
     $kickstartRomSets = @()
-    $kickstartRomSets += $hstwb.KickstartRomHashes | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
+    $kickstartRomSets += $hstwb.KickstartEntries | Sort-Object @{expression={$_.Priority};Ascending=$false} | ForEach-Object { $_.Set } | Get-Unique
         
     # count matching kickstart rom hashes for each set
     $kickstartRomSetCount = @{}
     foreach($kickstartRomSet in $kickstartRomSets)
     {
         $kickstartRomSetFiles = @()
-        $kickstartRomSetFiles += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet -and $_.File }
+        $kickstartRomSetFiles += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $kickstartRomSet -and $_.File }
         $kickstartRomSetCount.Set_Item($kickstartRomSet, $kickstartRomSetFiles.Count)
     }
 
@@ -522,7 +518,7 @@ function FindBestMatchingAmigaOsSet($hstwb)
     $amigaOsSetResults = @()
     foreach ($amigaOsSetName in $amigaOsSetNames)
     {
-        $amigaOsSetResults += ValidateAmigaOsSet $hstwb $amigaOsSetName
+        $amigaOsSetResults += ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
     }
 
     # get best matching amiga os set, which has highest number of files that are required ordered by amiga os entries
@@ -534,76 +530,99 @@ function FindBestMatchingAmigaOsSet($hstwb)
         return ''
     }
 
-    return $bestMatchingAmigaOsSetResult.AmigaOsSetName
+    return $bestMatchingAmigaOsSetResult.SetName
 }
 
-# validate amiga os set
-function ValidateAmigaOsSet($hstwb, $amigaOsSetName)
+# validate set
+function ValidateSet($entries, $setName)
 {
-    $amigaOsSetEntriesIndex = @{}
-    $hstwb.AmigaOsEntries | `
-        Where-Object { $_.Set -eq $amigaOsSetName } | `
+    $entriesIndex = @{}
+    $entries | `
+        Where-Object { $_.Set -eq $setName } | `
         ForEach-Object { 
-            if (!$amigaOsSetEntriesIndex.ContainsKey($_.Name.ToLower()) -or !$amigaOsSetEntriesIndex[$_.Name.ToLower()].File) { 
-                $amigaOsSetEntriesIndex[$_.Name.ToLower()] = $_
+            if (!$entriesIndex.ContainsKey($_.Name.ToLower()) -or !$entriesIndex[$_.Name.ToLower()].File) { 
+                $entriesIndex[$_.Name.ToLower()] = $_
             }
         }
 
-    $entries = 0
+    $entriesTotal = 0
     $entriesRequired = 0
-    $files = 0
+    $filesTotal = 0
     $filesRequired = 0
 
-    $entries += $amigaOsSetEntriesIndex.Values.Count
-    $entriesRequired += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' }).Count
-    $files += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.File } ).Count
-    $filesRequired += ($amigaOsSetEntriesIndex.Values | Where-Object { $_.Required -eq 'True' -and $_.File }).Count
+    $entriesTotal += $entriesIndex.Values.Count
+    $entriesRequired = @()
+    $entriesRequired += $entriesIndex.Values | Where-Object { $_.Required -eq 'True' }
+    $filesTotal = @()
+    $filesTotal += $entriesIndex.Values | Where-Object { $_.File -and $_.File -ne '' }
+    $filesRequired = @()
+    $filesRequired += $entriesIndex.Values | Where-Object { $_.Required -eq 'True' -and $_.File }
 
     return @{
-        'AmigaOsSetName' = $AmigaOsSetName;
-        'Entries' = $entries;
-        'EntriesRequired' = $entriesRequired;
-        'Files' = $files;
-        'FilesRequired' = $filesRequired
+        'SetName' = $setName;
+        'Entries' = $entriesTotal;
+        'EntriesRequired' = $entriesRequired.Count;
+        'Files' = $filesTotal.Count;
+        'FilesRequired' = $filesRequired.Count
     }
 }
 
-function FormatAmigaOsSetInfo($amigaOsSetResult)
+function FormatSetInfo($result)
 {
     $color = $null
-    if ($amigaOsSetResult.Files -gt 0)
+    if ($result.Files -gt 0)
     {
-        $color = if ($amigaOsSetResult.FilesRequired -ge $amigaOsSetResult.EntriesRequired) { 'Green' } else { 'Red' }
+        $color = if ($result.FilesRequired -ge $result.EntriesRequired) { 'Green' } else { 'Red' }
     }
 
     return @{
-        'Text' = ("'{0}' ({1}/{2})" -f $amigaOsSetResult.AmigaOsSetName, $amigaOsSetResult.Files, $amigaOsSetResult.Entries);
+        'Text' = ("'{0}' ({1}/{2})" -f $result.SetName, $result.Files, $result.Entries);
+        'Color' = $color
+    }
+}
+
+function FormatKickstartSetInfo($result)
+{
+    $color = 'Red'
+    if ($result.Files -gt 0)
+    {
+        $color = if ($result.FilesRequired -ge $result.EntriesRequired) { 'Green' } else { 'Yellow' }
+    }
+
+    return @{
+        'Text' = ("'{0}' ({1}/{2})" -f $result.SetName, $result.Files, $result.Entries);
         'Color' = $color
     }
 }
 
 function UiAmigaOsSetInfo($hstwb, $amigaOsSetName)
 {
-    $result = ValidateAmigaOsSet $hstwb $amigaOsSetName
-    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatAmigaOsSetInfo $result
+    $result = ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
+    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatSetInfo $result
+}
+
+function UiKickstartSetInfo($hstwb, $kickstartSetName)
+{
+    $result = ValidateSet $hstwb.KickstartEntries $kickstartSetName
+    $hstwb.UI.Kickstart.KickstartSetInfo = FormatKickstartSetInfo $result
 }
 
 # update amiga os entries
 function UpdateAmigaOsEntries($hstwb)
 {
+    # set empty amiga os entries
+    $hstwb.AmigaOsEntries = @()
+
+    # return, if installer mode is set to install or build self install
+    if ($hstwb.Settings.Installer.Mode -notmatch "^(Install|BuildSelfInstall)$")
+    {
+        return
+    }
+
     # fail
     if (!(Test-Path -Path $hstwb.Paths.AmigaOsEntriesFile))
     {
         throw ("Amiga OS entries file '{0}' doesn't exist" -f $hstwb.Paths.AmigaOsEntriesFile)
-    }
-
-    # set empty amiga os entries
-    $hstwb.AmigaOsEntries = @()
-
-    # set amiga os entries empty, if installer mode is set to install or build self install
-    if ($hstwb.Settings.Installer.Mode -notmatch "^(Install|BuildSelfInstall)$")
-    {
-        return
     }
 
     # read amiga os entries
@@ -624,7 +643,48 @@ function UpdateAmigaOsEntries($hstwb)
         $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
     }
 
+    # set amiga os entries
     $hstwb.AmigaOsEntries = $amigaOsEntries
+}
+
+# update kickstart entries
+function UpdateKickstartEntries($hstwb)
+{
+    # set empty kickstart entries
+    $hstwb.KickstartEntries = @()
+
+    # return, if installer mode is set to test, install or build self install
+    if ($hstwb.Settings.Installer.Mode -notmatch "^(Test|Install|BuildSelfInstall)$")
+    {
+        return
+    }
+
+    # fail, if kickstart entries file doesn't exist
+    if (!(Test-Path -Path $hstwb.Paths.KickstartEntriesFile))
+    {
+        throw ("Kickstart entries file '{0}' doesn't exist" -f $hstwb.Paths.KickstartEntriesFile)
+    }
+
+    # read kickstart entries
+    $kickstartEntries = @()
+    $kickstartEntries += Import-Csv -Delimiter ';' $hstwb.Paths.KickstartEntriesFile | Where-Object { $_.Name -and $_.Name -ne '' }
+
+    # add priority to sets based on their order
+    $set = ''
+    $priority = 0
+    foreach ($kickstartEntry in $kickstartEntries)
+    {
+        if ($set -ne $kickstartEntry.Set)
+        {
+            $priority++
+            $set = $kickstartEntry.Set
+        }
+
+        $kickstartEntry | Add-Member -MemberType NoteProperty -Name 'Priority' -Value $priority
+    }
+
+    # set kickstart entries
+    $hstwb.KickstartEntries = $kickstartEntries
 }
 
 # sort packages to install
@@ -728,21 +788,21 @@ function BuildInstallLog($hstwb)
 
     $installLogLines.Add('Kickstart')
     $installLogLines.Add("- Install Kickstart: '{0}'" -f $hstwb.Settings.Kickstart.InstallKickstart)
-    $installLogLines.Add("- Kickstart Rom Dir: '{0}'" -f $hstwb.Settings.Kickstart.KickstartRomDir)
+    $installLogLines.Add("- Kickstart dir: '{0}'" -f $hstwb.Settings.Kickstart.KickstartDir)
 
     $kickstartRomSetHashes = @() 
     $kickstartRomSetFiles = @()
-    if ($hstwb.Settings.Kickstart.KickstartRomSet -notmatch '^$')
+    if ($hstwb.Settings.Kickstart.KickstartSet -notmatch '^$')
     {
-        $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
+        $kickstartRomSetHashes += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
         $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
     }
 
-    $installLogLines.Add(("- Kickstart Rom Set: '{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count))
+    $installLogLines.Add(("- Kickstart set: '{0}' ({1}/{2})" -f $hstwb.Settings.Kickstart.KickstartSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count))
 
     for ($i = 0; $i -lt $kickstartRomSetFiles.Count; $i++)
     {
-        $installLogLines.Add(("- Kickstart Rom File {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $kickstartRomSetFiles.Count, $kickstartRomSetFiles[$i].Filename, $kickstartRomSetFiles[$i].File))     
+        $installLogLines.Add(("- Kickstart set file {0}/{1}: '{2}' = '{3}'" -f ($i + 1), $kickstartRomSetFiles.Count, $kickstartRomSetFiles[$i].Filename, $kickstartRomSetFiles[$i].File))     
     }
     
     $installLogLines.Add('Packages')

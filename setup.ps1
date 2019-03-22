@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-20
+# Date:   2019-03-22
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -531,9 +531,9 @@ function SelectAmigaOsSet($hstwb)
 
     foreach($amigaOsSetName in $amigaOsSetNames)
     {
-        $amigaOsSetResult = ValidateAmigaOsSet $hstwb $amigaOsSetName
+        $amigaOsSetResult = ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
 
-        $amigaOsSetInfo = FormatAmigaOsSetInfo $amigaOsSetResult
+        $amigaOsSetInfo = FormatSetInfo $amigaOsSetResult
 
         $amigaOsSetOptions += @{
             'Text' = $amigaOsSetInfo.Text;
@@ -653,12 +653,13 @@ function ConfigureKickstartMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Dir", "Select Kickstart Rom Set", "Back") 
+        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart dir", "Select Kickstart set", "View Kickstart set files", "Back") 
         switch ($choice)
         {
             "Switch Install Kickstart" { SwitchInstallKickstart $hstwb }
-            "Change Kickstart Rom Dir" { ChangeKickstartRomDir $hstwb }
-            "Select Kickstart Rom Set" { SelectKickstartRomSet $hstwb }
+            "Change Kickstart dir" { ChangeKickstartDir $hstwb }
+            "Select Kickstart set" { SelectKickstartSet $hstwb }
+            "View Kickstart set files" { ViewKickstartSetFiles $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -680,86 +681,157 @@ function SwitchInstallKickstart($hstwb)
 }
 
 
-# change kickstart rom dir
-function ChangeKickstartRomDir($hstwb)
+# get default kickstart dir
+function GetDefaultKickstartDir()
 {
-    $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
-    if ($amigaForeverDataPath)
+    if (${Env:AMIGAFOREVERDATA} -and (Test-Path ${Env:AMIGAFOREVERDATA}))
     {
-        $defaultKickstartRomDir = Join-Path $amigaForeverDataPath -ChildPath "Shared\rom"
+        $amigaForeverDataSharedRomDir = Join-Path ${Env:AMIGAFOREVERDATA} -ChildPath "Shared\rom"
+        if (Test-Path $amigaForeverDataSharedRomDir)
+        {
+            return $amigaForeverDataSharedRomDir
+        }
+    }
+
+    return ${Env:USERPROFILE}
+}
+
+# change kickstart dir
+function ChangeKickstartDir($hstwb)
+{
+    $kickstartDir = if ($hstwb.Settings.Kickstart.KickstartDir -and (Test-Path $hstwb.Settings.Kickstart.KickstartDir)) { $hstwb.Settings.Kickstart.KickstartDir } else { GetDefaultKickstartDir }
+    $newKickstartDir = FolderBrowserDialog "Select Kickstart Directory" $kickstartDir $false
+
+    if ($newKickstartDir -and $newKickstartDir -ne '')
+    {
+        # set new kickstart rom dir
+        $hstwb.Settings.Kickstart.KickstartDir = $newKickstartDir
+
+        # update kickstart entries
+        UpdateKickstartEntries $hstwb
+
+        # find kickstart files
+        Write-Host "Finding Kickstart sets in Kickstart dir..."
+        FindKickstartFiles $hstwb
+
+        # set new kickstart rom set and save
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+
+        # ui kickstart set info
+        UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
+
+        Save $hstwb
+    }
+}
+
+# select kickstart set
+function SelectKickstartSet($hstwb)
+{
+    $kickstartSetNames = @()
+    $kickstartSetNames += $hstwb.KickstartEntries | ForEach-Object { $_.Set } | Get-Unique
+
+    $kickstartSetOptions = @()
+    foreach($kickstartSetName in $kickstartSetNames)
+    {
+        $kickstartSetResult = ValidateSet $hstwb.KickstartEntries $kickstartSetName
+
+        $kickstartSetInfo = FormatKickstartSetInfo $kickstartSetResult
+
+        $kickstartSetOptions += @{
+            'Text' = $kickstartSetInfo.Text;
+            'Color' = $kickstartSetInfo.Color;
+            'Value' = $kickstartSetName
+        }
+    }
+
+    $kickstartSetOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
+    }
+
+    $choise = Menu $hstwb "Enter Kickstart set" $kickstartSetOptions
+
+    if ($choise.Value -ne 'Back')
+    {
+        # set ui kickstart set info
+        $hstwb.UI.Kickstart.KickstartSetInfo = $choise
+
+        # set kickstart set
+        $hstwb.Settings.Kickstart.KickstartSet = $choise.Value
+
+        # save settings
+        Save $hstwb
+    }
+}
+
+# view kickstart set files
+function ViewKickstartSetFiles($hstwb)
+{
+    Write-Host ""
+
+    # show warning, if kickstart set is not selected
+    if (!$hstwb.Settings.Kickstart.KickstartSet -or $hstwb.Settings.Kickstart.KickstartSet -eq '')
+    {
+        Write-Host 'Kickstart set is not selected!' -ForegroundColor 'Yellow'
+        Write-Host ''
+        Write-Host 'Press enter to continue'
+        Read-Host
+        return
+    }
+
+    # get kickstart set entries
+    $kickstartSetEntries = @()
+    $kickstartSetEntries = $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+
+    # show kickstart set info
+    if ($hstwb.UI.Kickstart.KickstartSetInfo.Color)
+    {
+        Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text -ForegroundColor $hstwb.UI.Kickstart.KickstartSetInfo.Color
     }
     else
     {
-        $defaultKickstartRomDir = ${Env:USERPROFILE}
+        Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text
     }
+    
+    # get name padding
+    $namePadding = ($kickstartSetEntries | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
-    $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomDir } else { $hstwb.Settings.Kickstart.KickstartRomDir }
-    $newKickstartRomDir = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
+    $kickstartSetEntriesFirstIndex = @{}
 
-    if ($newKickstartRomDir -and $newKickstartRomDir -ne '')
+    # list amiga os set entries
+    foreach($kickstartSetEntry in $kickstartSetEntries)
     {
-        # set new kickstart rom dir
-        $hstwb.Settings.Kickstart.KickstartRomDir = $newKickstartRomDir
-        
-        # set new kickstart rom set and save
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
-        Save $hstwb
-    }
-}
-
-
-# select kickstart rom path
-function SelectKickstartRomSet($hstwb)
-{
-    # get kickstart name padding
-    $kickstartNamePadding = ($hstwb.KickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
-
-    # get kickstart rom sets
-    $kickstartRomSets = $hstwb.KickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
-
-    foreach($kickstartRomSet in $kickstartRomSets)
-    {
-        # get kickstart rom set hashes
-        $kickstartRomSetHashes = $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
-        
-        $kickstartRomSetFiles = @()
-        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
-        $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
-
-        Write-Host ""
-        if ($kickstartRomSetComplete)
+        if ($kickstartSetEntriesFirstIndex.ContainsKey($kickstartSetEntry.Name))
         {
-            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Green"
+            continue
+        }
+
+        $kickstartSetEntriesFirstIndex[$kickstartSetEntry.Name] = $true
+
+        $bestMatchingKickstartSetEntry = $kickstartSetEntries | Where-Object { $_.Name -eq $kickstartSetEntry.Name } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+        Write-Host (("  {0,-" + $namePadding + "} : ") -f $bestMatchingKickstartSetEntry.Name) -NoNewline -Foregroundcolor "Gray"
+        if ($bestMatchingKickstartSetEntry.File)
+        {
+            Write-Host ("'" + $bestMatchingKickstartSetEntry.File + "'") -NoNewline -Foregroundcolor "Green"
+            Write-Host (' (Match {0}' -f $bestMatchingKickstartSetEntry.MatchType) -NoNewline
+            if ($bestMatchingKickstartSetEntry.Comment -and $bestMatchingKickstartSetEntry.Comment -ne '')
+            {
+                Write-Host ('. {0}' -f $bestMatchingKickstartSetEntry.Comment) -NoNewline
+            }
+            Write-Host ")"
         }
         else
         {
-            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Yellow"
-        }
-
-        foreach($kickstartRomSetHash in $kickstartRomSetHashes)
-        {
-            Write-Host (("  {0,-" + $kickstartNamePadding + "} : ") -f $kickstartRomSetHash.Name) -NoNewline -foregroundcolor "Gray"
-            if ($kickstartRomSetHash.File)
-            {
-                Write-Host ("'" + $kickstartRomSetHash.File + "'") -foregroundcolor "Green"
-            }
-            else
-            {
-                Write-Host "Not found!" -foregroundcolor "Red"
-            }
+            Write-Host "Not found!" -Foregroundcolor "Red"
         }
     }
 
+    # continue
     Write-Host ""
-    $choise = EnterChoice "Enter Kickstart Rom Set" ($kickstartRomSets += "Back")
-
-    if ($choise -ne 'Back')
-    {
-        $hstwb.Settings.Kickstart.KickstartRomSet = $choise
-        Save $hstwb
-    }
+    Write-Host "Press enter to continue"
+    Read-Host
 }
-
 
 # configure user packages menu
 function ConfigurePackagesMenu($hstwb)
@@ -775,7 +847,8 @@ function ConfigurePackagesMenu($hstwb)
     until ($choice -eq 'Back')
 }
 
-function SelectPackageFiltering($hstwb)
+# select package filtering menu
+function SelectPackageFilteringMenu($hstwb)
 {
     # build amiga os versions
     $amigaOsVersionsIndex = @{}
@@ -804,7 +877,7 @@ function SelectPackageFiltering($hstwb)
 
     do
     {
-        $choice = Menu $hstwb "Select Package Filtering" $amigaOsVersionOptions
+        $choice = Menu $hstwb "Select Package Filtering Menu" $amigaOsVersionOptions
 
         # get first amiga os entry for amiga os set
         $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
@@ -907,7 +980,7 @@ function SelectPackagesMenu($hstwb)
         
         if ($choice.Value -eq 'select-package-filtering')
         {
-            SelectPackageFiltering $hstwb
+            SelectPackageFilteringMenu $hstwb
 
             # get package names sorted
             $packageNames = @()
@@ -1284,12 +1357,6 @@ function ChangeInstallerMode($hstwb)
 {
     # installer mode options
     $installerModeOptions = @()
-    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Test') { "Green" } else { $null }
-    $installerModeOptions += @{
-        'Text' = 'Test';
-        'Value' = 'Test';
-        'Color' = $installerModeOptionColor
-    }
     $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Install') { "Green" } else { $null }
     $installerModeOptions += @{
         'Text' = 'Install';
@@ -1312,6 +1379,12 @@ function ChangeInstallerMode($hstwb)
     $installerModeOptions += @{
         'Text' = 'Build User Package Installation';
         'Value' = 'BuildUserPackageInstallation';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Test') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Test';
+        'Value' = 'Test';
         'Color' = $installerModeOptionColor
     }
     $installerModeOptions += @{
@@ -1375,7 +1448,7 @@ function ResetSettings($hstwb)
 
 
 # resolve paths
-$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
+$kickstartEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\kickstart-entries.csv")
 $amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
@@ -1429,7 +1502,7 @@ try
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
-            'KickstartRomHashesFile' = $kickstartRomHashesFile;
+            'KickstartEntriesFile' = $kickstartEntriesFile;
             'AmigaOsEntriesFile' = $amigaOsEntriesFile;
             'ImagesPath' = $imagesPath;
             'PackagesPath' = $packagesPath;
@@ -1443,21 +1516,10 @@ try
         'Settings' = $settings;
         'Assigns' = $assigns;
         'UI' = @{
-            'AmigaOs' = @{}
+            'AmigaOs' = @{};
+            'Kickstart' = @{}
         };
         'AmigaOsSets' = @()
-    }
-
-    # read kickstart rom hashes
-    if (Test-Path -Path $kickstartRomHashesFile)
-    {
-        $kickstartRomHashes = @()
-        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-        $hstwb.KickstartRomHashes = $kickstartRomHashes
-    }
-    else
-    {
-        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
     }
 
     # upgrade settings and assigns
@@ -1467,6 +1529,9 @@ try
     # update amiga os entries
     UpdateAmigaOsEntries $hstwb
 
+    # update kickstart entries
+    UpdateKickstartEntries $hstwb
+
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     $hstwb.Emulators = FindEmulators
@@ -1475,9 +1540,9 @@ try
     Write-Host "Finding Amiga OS sets in Amiga OS dir..."
     FindAmigaOsFiles $hstwb
 
-    # find kickstart roms
+    # find kickstart files
     Write-Host "Finding Kickstart sets in Kickstart dir..."
-    FindKickstartRoms $hstwb
+    FindKickstartFiles $hstwb
         
     # update packages, user packages and assigns
     UpdatePackages $hstwb
@@ -1485,10 +1550,10 @@ try
     UpdateAssigns $hstwb
 
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    if (($hstwb.KickstartEntries | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
     {
         # set new kickstart rom set
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
     }
 
     # find best matching amiga os set, if amiga os set doesn't exist
@@ -1506,6 +1571,9 @@ try
 
     # ui amiga os set info
     UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+    # ui kickstart set info
+    UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
 
     # show main menu
     MainMenu $hstwb
