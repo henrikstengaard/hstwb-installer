@@ -7,17 +7,17 @@
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
 
+Using module .\modules\packages.psm1
+
 Param(
 	[Parameter(Mandatory=$false)]
 	[string]$settingsDir
 )
 
-
 Import-Module (Resolve-Path('modules\version.psm1')) -Force
 Import-Module (Resolve-Path('modules\config.psm1')) -Force
 Import-Module (Resolve-Path('modules\dialog.psm1')) -Force
 Import-Module (Resolve-Path('modules\data.psm1')) -Force
-
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
@@ -838,10 +838,11 @@ function ConfigurePackagesMenu($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Packages Menu" @("Select Packages Menu", "Back") 
+        $choice = Menu $hstwb "Configure Packages Menu" @("Select Packages Menu", "Update Packages Menu", "Back") 
         switch ($choice)
         {
             "Select Packages Menu" { SelectPackagesMenu $hstwb }
+            "Update Packages Menu" { UpdatePackagesMenu $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -1130,6 +1131,49 @@ function SelectPackagesMenu($hstwb)
     until ($choice.Value -eq 'back')
 }
 
+# update packages menu
+function UpdatePackagesMenu($hstwb)
+{
+    do
+    {
+        $choice = Menu $hstwb "Update Packages Menu" @("Update packages list", "Download latest prerelease packages", "Download latest packages", "Back") 
+        switch ($choice)
+        {
+            "Update packages list" { }
+            "Download latest prerelease packages" { DownloadLatestPackages $hstwb $true }
+            "Download latest packages" { DownloadLatestPackages $hstwb $false }
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+# download latest packages
+function DownloadLatestPackages($hstwb, $prerelease)
+{
+    $prereleaseText = if ($prerelease) { 'prerelease ' } else { '' }
+    if (!(ConfirmDialog ("Download latest {0}packages" -f $prereleaseText) ("Are you sure you want to download latest {0}packages?" -f $prereleaseText)))
+    {
+        return
+    }
+
+    Write-Host ''
+    Write-Host 'Downloading packages...' -ForegroundColor 'Yellow'
+
+    # read packages list file
+    $packagesList = Get-Content $hstwb.Paths.PackagesListFile -Raw | ConvertFrom-Json
+
+    # download packages
+    $packageManager = [PackageManager]::new($hstwb.Paths.PackagesPath)
+    $packageManager.DownloadPackages($packagesList.Packages, $prerelease)
+
+    # read packages
+    $hstwb.Packages = ReadPackages $hstwb.Paths.PackagesPath;
+
+    Write-Host 'Done' -ForegroundColor 'Green'
+    Write-Host ''
+    Write-Host "Press enter to continue"
+    Read-Host
+}
 
 # configure user packages menu
 function ConfigureUserPackagesMenu($hstwb)
@@ -1450,6 +1494,7 @@ function ResetSettings($hstwb)
 # resolve paths
 $kickstartEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\kickstart-entries.csv")
 $amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
+$hstwbPackagesListFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\hstwb-packages.json")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
@@ -1504,6 +1549,7 @@ try
         'Paths' = @{
             'KickstartEntriesFile' = $kickstartEntriesFile;
             'AmigaOsEntriesFile' = $amigaOsEntriesFile;
+            'PackagesListFile' = $hstwbPackagesListFile
             'ImagesPath' = $imagesPath;
             'PackagesPath' = $packagesPath;
             'SettingsFile' = $settingsFile;
