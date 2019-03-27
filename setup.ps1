@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-22
+# Date:   2019-03-27
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -163,16 +163,16 @@ function ExistingImageDirectory($hstwb)
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    $newPath = FolderBrowserDialog "Select existing image directory" $path $false
+    $newImageDir = FolderBrowserDialog "Select existing image directory" $defaultImageDir $false
 
-    # return, if newpath is not defined
-    if (!$newPath -or $newPath -eq '')
+    # return, if new image directory is not defined
+    if (!$newImageDir -or $newImageDir -eq '')
     {
         return
     }
 
     # read hstwb image json file
-    $hstwbImageJsonFile = Join-Path -Path $newPath -ChildPath 'hstwb-image.json' 
+    $hstwbImageJsonFile = Join-Path -Path $newImageDir -ChildPath 'hstwb-image.json' 
 
     # return, if hstwb image json file doesn't exist
     if (!(Test-Path -Path $hstwbImageJsonFile))
@@ -193,7 +193,7 @@ function ExistingImageDirectory($hstwb)
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog 'Large harddrive' ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newPath) 'Warning'
+        $confirm = ConfirmDialog 'Large harddrive' ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newImageDir) 'Warning'
         if (!$confirm)
         {
             return
@@ -201,7 +201,7 @@ function ExistingImageDirectory($hstwb)
     }
 
     # save new image directory
-    $hstwb.Settings.Image.ImageDir = $newPath
+    $hstwb.Settings.Image.ImageDir = $newImageDir
     Save $hstwb
 }
 
@@ -272,7 +272,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     $newImageDirectoryPath = FolderBrowserDialog ("Select new image directory for '{0}'" -f $image.Name) $defaultImageDir $true
 
     # return, if new image directory path is null
-    if ($newImageDirectoryPath -eq $null)
+    if ($null -eq $newImageDirectoryPath)
     {
         return
     }
