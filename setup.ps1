@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-27
+# Date:   2019-03-28
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1151,7 +1151,7 @@ function UpdatePackagesMenu($hstwb)
 function DownloadLatestPackages($hstwb, $prerelease)
 {
     $prereleaseText = if ($prerelease) { 'prerelease ' } else { '' }
-    if (!(ConfirmDialog ("Download latest {0}packages" -f $prereleaseText) ("Are you sure you want to download latest {0}packages?" -f $prereleaseText)))
+    if (!(ConfirmDialog ("Download latest {0}packages" -f $prereleaseText) ("Do you want to download latest {0}packages?" -f $prereleaseText)))
     {
         return
     }
@@ -1558,7 +1558,7 @@ try
             'SettingsDir' = $settingsDir
         };
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
-        'Packages' = ReadPackages $packagesPath;
+        'Packages' = (ReadPackages $packagesPath | Where-Object { $_ });
         'Settings' = $settings;
         'Assigns' = $assigns;
         'UI' = @{
@@ -1571,7 +1571,14 @@ try
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
-        
+
+    # download packages, if download packages doesn't exist or is set to false
+    if (!$hstwb.Settings.Packages.DownloadPackages -or $hstwb.Settings.Packages.DownloadPackages -match 'true')
+    {
+        $hstwb.Settings.Packages.DownloadPackages = 'false'
+        DownloadLatestPackages $hstwb $false
+    }
+
     # update amiga os entries
     UpdateAmigaOsEntries $hstwb
 
