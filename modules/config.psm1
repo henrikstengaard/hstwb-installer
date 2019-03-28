@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-22
+# Date:   2019-03-28
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -468,8 +468,8 @@ function DetectUserPackages($hstwb)
 }
 
 
-# update packages
-function UpdatePackages($hstwb)
+# update install packages
+function UpdateInstallPackages($hstwb)
 {
     # build amiga os versions
     $amigaOsVersionsIndex = @{}
@@ -507,8 +507,8 @@ function UpdatePackages($hstwb)
 }
 
 
-# update user packages
-function UpdateUserPackages($hstwb)
+# update install user packages
+function UpdateInstallUserPackages($hstwb)
 {
     # get and remove install user packages
     $installUserPackageNames = @()

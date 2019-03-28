@@ -112,39 +112,39 @@ function Menu($hstwb, $title, $options, $returnIndex = $false)
 }
 
 
-# main menu
-function MainMenu($hstwb)
+# main
+function Main($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Main Menu" @("Configure Installer", "Configure Image", "Configure Amiga OS", "Configure Kickstart", "Configure Packages", "Configure User Packages", "Configure Emulator", "Run Installer", "Reset Settings", "Exit")
+        $choice = Menu $hstwb "Main" @("Configure Installer", "Configure image", "Configure Amiga OS", "Configure Kickstart", "Configure packages", "Configure user packages", "Configure emulator", "Run Installer", "Reset settings", "Exit")
         switch ($choice)
         {
             "Configure Installer" { ConfigureInstaller $hstwb }
-            "Configure Image" { ConfigureImageMenu $hstwb }
-            "Configure Amiga OS" { ConfigureAmigaOsMenu $hstwb }
-            "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
-            "Configure Packages" { ConfigurePackagesMenu $hstwb }
-            "Configure User Packages" { ConfigureUserPackagesMenu $hstwb }
-            "Configure Emulator" { ConfigureEmulatorMenu $hstwb }
+            "Configure image" { ConfigureImage $hstwb }
+            "Configure Amiga OS" { ConfigureAmigaOs $hstwb }
+            "Configure Kickstart" { ConfigureKickstart $hstwb }
+            "Configure packages" { ConfigurePackages $hstwb }
+            "Configure user packages" { ConfigureUserPackages $hstwb }
+            "Configure emulator" { ConfigureEmulator $hstwb }
             "Run Installer" { RunInstaller $hstwb }
-            "Reset Settings" { ResetSettings $hstwb }
+            "Reset settings" { ResetSettings $hstwb }
         }
     }
     until ($choice -eq 'Exit')
 }
 
 
-# configure image menu
-function ConfigureImageMenu($hstwb)
+# configure image
+function ConfigureImage($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
+        $choice = Menu $hstwb "Configure image" @("Existing image directory", "Create image directory from image template", "Back") 
         switch ($choice)
         {
-            "Existing Image Directory" { ExistingImageDirectory $hstwb }
-            "Create Image Directory From Image Template" { CreateImageDirectoryFromImageTemplateMenu $hstwb }
+            "Existing image directory" { ExistingImageDirectory $hstwb }
+            "Create image directory from image template" { CreateImageDirectoryFromImageTemplate $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -206,8 +206,8 @@ function ExistingImageDirectory($hstwb)
 }
 
 
-# create image directory menu
-function CreateImageDirectoryFromImageTemplateMenu($hstwb)
+# create image directory from image template
+function CreateImageDirectoryFromImageTemplate($hstwb)
 {
     # get images sorted naturally
     $images = $hstwb.Images | Sort-Object @{expression={ [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(20) }) };Ascending=$true}
@@ -219,7 +219,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     
 
     # create image directory from image template
-    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions $true
+    $choice = Menu $hstwb "Create image directory from image template" $imageTemplateOptions $true
 
     if ($choice -eq 'Back')
     {
@@ -450,15 +450,15 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 }
 
 
-# configure amiga os menu
-function ConfigureAmigaOsMenu($hstwb)
+# configure amiga os
+function ConfigureAmigaOs($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Amiga OS Menu" @("Switch Install Amiga OS", "Change Amiga OS dir", "Select Amiga OS set", "View Amiga Os set files", "Back") 
+        $choice = Menu $hstwb "Configure Amiga OS" @("Switch install Amiga OS", "Change Amiga OS dir", "Select Amiga OS set", "View Amiga Os set files", "Back") 
         switch ($choice)
         {
-            "Switch Install Amiga OS" { SwitchInstallAmigaOs $hstwb }
+            "Switch install Amiga OS" { SwitchInstallAmigaOs $hstwb }
             "Change Amiga OS dir" { ChangeAmigaOsDir $hstwb }
             "Select Amiga OS set" { SelectAmigaOsSet $hstwb }
             "View Amiga Os set files" { ViewAmigaOsSetFiles $hstwb }
@@ -497,7 +497,7 @@ function ChangeAmigaOsDir($hstwb)
     }
 
     $path = if (!$hstwb.Settings.AmigaOs.AmigaOsDir) { $defaultAmigaOsPath } else { $hstwb.Settings.AmigaOs.AmigaOsDir }
-    $newAmigaOsDir = FolderBrowserDialog "Select Amiga OS Directory" $path $false
+    $newAmigaOsDir = FolderBrowserDialog "Select Amiga OS directory" $path $false
 
     if ($newAmigaOsDir -and $newAmigaOsDir -ne '')
     {
@@ -648,15 +648,15 @@ function ViewAmigaOsSetFiles($hstwb)
     Read-Host
 }
 
-# configure kickstart menu
-function ConfigureKickstartMenu($hstwb)
+# configure kickstart
+function ConfigureKickstart($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart dir", "Select Kickstart set", "View Kickstart set files", "Back") 
+        $choice = Menu $hstwb "Configure Kickstart" @("Switch install Kickstart", "Change Kickstart dir", "Select Kickstart set", "View Kickstart set files", "Back") 
         switch ($choice)
         {
-            "Switch Install Kickstart" { SwitchInstallKickstart $hstwb }
+            "Switch install Kickstart" { SwitchInstallKickstart $hstwb }
             "Change Kickstart dir" { ChangeKickstartDir $hstwb }
             "Select Kickstart set" { SelectKickstartSet $hstwb }
             "View Kickstart set files" { ViewKickstartSetFiles $hstwb }
@@ -700,7 +700,7 @@ function GetDefaultKickstartDir()
 function ChangeKickstartDir($hstwb)
 {
     $kickstartDir = if ($hstwb.Settings.Kickstart.KickstartDir -and (Test-Path $hstwb.Settings.Kickstart.KickstartDir)) { $hstwb.Settings.Kickstart.KickstartDir } else { GetDefaultKickstartDir }
-    $newKickstartDir = FolderBrowserDialog "Select Kickstart Directory" $kickstartDir $false
+    $newKickstartDir = FolderBrowserDialog "Select Kickstart directory" $kickstartDir $false
 
     if ($newKickstartDir -and $newKickstartDir -ne '')
     {
@@ -833,23 +833,23 @@ function ViewKickstartSetFiles($hstwb)
     Read-Host
 }
 
-# configure user packages menu
-function ConfigurePackagesMenu($hstwb)
+# configure user packages
+function ConfigurePackages($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Packages Menu" @("Select Packages Menu", "Update Packages Menu", "Back") 
+        $choice = Menu $hstwb "Configure packages" @("Select packages", "Update packages", "Back") 
         switch ($choice)
         {
-            "Select Packages Menu" { SelectPackagesMenu $hstwb }
-            "Update Packages Menu" { UpdatePackagesMenu $hstwb }
+            "Select packages" { SelectPackages $hstwb }
+            "Update packages" { UpdatePackages $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
-# select package filtering menu
-function SelectPackageFilteringMenu($hstwb)
+# select package filtering
+function SelectPackageFiltering($hstwb)
 {
     # build amiga os versions
     $amigaOsVersionsIndex = @{}
@@ -878,7 +878,7 @@ function SelectPackageFilteringMenu($hstwb)
 
     do
     {
-        $choice = Menu $hstwb "Select Package Filtering Menu" $amigaOsVersionOptions
+        $choice = Menu $hstwb "Select package filtering" $amigaOsVersionOptions
 
         # get first amiga os entry for amiga os set
         $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
@@ -890,7 +890,7 @@ function SelectPackageFilteringMenu($hstwb)
             $amigaOsVersionWarning = ("Selected package filtering '{0}' doesn't match Amiga OS set 'Amiga OS {1}'. This will show packages that are not supported by selected Amiga OS and packages might not work correctly and could result in corrupt or incorrect installation.`r`n`r`n" -f $choice.Text, $amigaOsEntry.AmigaOsVersion)
         }
 
-        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select Package Filtering" ("{0}Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{1}'?" -f $amigaOsVersionWarning, $choice.Text) "Warning"))
+        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select package filtering" ("{0}Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{1}'?" -f $amigaOsVersionWarning, $choice.Text) "Warning"))
         {
             # remove install packages from packages
             foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
@@ -906,8 +906,8 @@ function SelectPackageFilteringMenu($hstwb)
     } until ($choice.Value -eq 'Back')
 }
 
-# select packages menu
-function SelectPackagesMenu($hstwb)
+# select packages
+function SelectPackages($hstwb)
 {
     # get package names sorted
     $packageNames = @()
@@ -948,7 +948,7 @@ function SelectPackagesMenu($hstwb)
     {
         # build package options
         $packageOptions = @(
-            @{ 'Text' = 'Select Package Filtering'; 'Value' = 'select-package-filtering' },
+            @{ 'Text' = 'Select package filtering'; 'Value' = 'select-package-filtering' },
             @{ 'Text' = 'Install all packages'; 'Value' = 'install-all-packages' },
             @{ 'Text' = 'Skip all packages'; 'Value' = 'skip-all-packages' }
         )
@@ -974,14 +974,14 @@ function SelectPackagesMenu($hstwb)
             'Value' = 'back'
         }
 
-        $choice = Menu $hstwb "Select Packages Menu" $packageOptions
+        $choice = Menu $hstwb "Select packages" $packageOptions
 
         $addPackageNames = @()
         $removePackageNames = @()
         
         if ($choice.Value -eq 'select-package-filtering')
         {
-            SelectPackageFilteringMenu $hstwb
+            SelectPackageFiltering $hstwb
 
             # get package names sorted
             $packageNames = @()
@@ -1131,12 +1131,12 @@ function SelectPackagesMenu($hstwb)
     until ($choice.Value -eq 'back')
 }
 
-# update packages menu
-function UpdatePackagesMenu($hstwb)
+# update packages
+function UpdatePackages($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Update Packages Menu" @("Update packages list", "Download latest prerelease packages", "Download latest packages", "Back") 
+        $choice = Menu $hstwb "Update packages" @("Update packages list", "Download latest prerelease packages", "Download latest packages", "Back") 
         switch ($choice)
         {
             "Update packages list" { }
@@ -1175,16 +1175,16 @@ function DownloadLatestPackages($hstwb, $prerelease)
     Read-Host
 }
 
-# configure user packages menu
-function ConfigureUserPackagesMenu($hstwb)
+# configure user packages
+function ConfigureUserPackages($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure User Packages Menu" @("Change User Packages Dir", "Select User Packages Menu", "Back") 
+        $choice = Menu $hstwb "Configure user packages" @("Change user packages dir", "Select user packages", "Back") 
         switch ($choice)
         {
-            "Change User Packages Dir" { ChangeUserPackagesDir $hstwb }
-            "Select User Packages Menu" { SelectUserPackagesMenu $hstwb }
+            "Change user packages dir" { ChangeUserPackagesDir $hstwb }
+            "Select user packages" { SelectUserPackages $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -1195,7 +1195,7 @@ function ConfigureUserPackagesMenu($hstwb)
 function ChangeUserPackagesDir($hstwb)
 {
     $path = if (!$hstwb.Settings.UserPackages.UserPackagesDir) { ${Env:USERPROFILE} } else { $hstwb.Settings.UserPackages.UserPackagesDir }
-    $newPath = FolderBrowserDialog "Select User Packages Directory" $path $false
+    $newPath = FolderBrowserDialog "Select user packages directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
@@ -1213,8 +1213,8 @@ function ChangeUserPackagesDir($hstwb)
 }
 
 
-# select user packages menu
-function SelectUserPackagesMenu($hstwb)
+# select user packages
+function SelectUserPackages($hstwb)
 {
     # get user packages
     $userPackageNames = $hstwb.UserPackages.keys | Sort-Object @{expression={$_};Ascending=$true}
@@ -1244,7 +1244,7 @@ function SelectUserPackagesMenu($hstwb)
         $userPackageOptions += $userPackageNames | ForEach-Object { if ($installUserPackages.ContainsKey($_)) { ("- " + $userPackageNamesMap.Get_Item($_)) } else { ("+ " + $userPackageNamesMap.Get_Item($_)) } }
         $userPackageOptions += "Back"
 
-        $choice = Menu $hstwb "Select User Packages Menu" $userPackageOptions
+        $choice = Menu $hstwb "Select user packages" $userPackageOptions
 
 
         $addUserPackageNames = @()
@@ -1325,23 +1325,23 @@ function SelectUserPackagesMenu($hstwb)
 }
 
 
-# configure emulator menu
-function ConfigureEmulatorMenu($hstwb)
+# configure emulator
+function ConfigureEmulator($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb 'Configure Emulator Menu' @('Select Emulator Menu', 'Back')
+        $choice = Menu $hstwb 'Configure emulator' @('Select emulator', 'Back')
         switch ($choice)
         {
-            'Select Emulator Menu' { SelectEmulatorMenu $hstwb }
+            'Select emulator' { SelectEmulator $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
 
-# select emulator menu
-function SelectEmulatorMenu($hstwb)
+# select emulator
+function SelectEmulator($hstwb)
 {
     $emulators = @{}
     $hstwb.Emulators | ForEach-Object { $emulators.Set_Item(('{0} ({1})' -f $_.Name,$_.File), $_.File ) }
@@ -1353,7 +1353,7 @@ function SelectEmulatorMenu($hstwb)
     $options += 'Custom, select emulator .exe file'
     $options += 'Back'
     
-    $choice = Menu $hstwb "Select Emulator Menu" $options 
+    $choice = Menu $hstwb "Select emulator" $options 
 
     if ($choice -eq 'Custom, select emulator .exe file')
     {
@@ -1386,10 +1386,10 @@ function ConfigureInstaller($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Installer" @("Change Installer Mode", "Back") 
+        $choice = Menu $hstwb "Configure Installer" @("Change Installer mode", "Back") 
         switch ($choice)
         {
-            "Change Installer Mode" { ChangeInstallerMode $hstwb }
+            "Change Installer mode" { ChangeInstallerMode $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -1598,8 +1598,8 @@ try
     FindKickstartFiles $hstwb
         
     # update packages, user packages and assigns
-    UpdatePackages $hstwb
-    UpdateUserPackages $hstwb
+    UpdateInstallPackages $hstwb
+    UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
 
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
@@ -1628,8 +1628,8 @@ try
     # ui kickstart set info
     UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
 
-    # show main menu
-    MainMenu $hstwb
+    # show main
+    Main $hstwb
 }
 catch
 {
