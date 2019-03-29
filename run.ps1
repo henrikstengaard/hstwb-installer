@@ -2236,9 +2236,14 @@ function RunInstall($hstwb)
     $installLogLines = BuildInstallLog $hstwb
     WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
     
-    
-    # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+
+    # read winuae hstwb installer model config file
+    $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+    if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae run harddrives config
@@ -2246,7 +2251,7 @@ function RunInstall($hstwb)
 
     # replace hstwb installer configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $winuaeRunHarddrivesConfigText)
@@ -2256,15 +2261,21 @@ function RunInstall($hstwb)
     $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
     [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
     
+
     # read fs-uae hstwb installer config file
-    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+    $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+    if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae install harddrives config
     $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb
     
     # replace hstwb installer fs-uae configuration placeholders
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
@@ -2292,11 +2303,11 @@ function RunInstall($hstwb)
         $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
 
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
@@ -2304,7 +2315,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -2316,18 +2327,18 @@ function RunInstall($hstwb)
         $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
     
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
     
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
     
         # write winuae hstwb installer config file to temp install dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
         # emulator args for winuae
@@ -2388,7 +2399,7 @@ function RunInstall($hstwb)
         $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
@@ -2399,7 +2410,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -2411,7 +2422,7 @@ function RunInstall($hstwb)
         $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
         # replace winuae hstwb installer config placeholders
@@ -2421,7 +2432,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
 
         # write winuae hstwb installer config file to temp dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
         # emulator args for winuae
@@ -2809,14 +2820,17 @@ function RunBuildSelfInstall($hstwb)
     Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
 
     
-
-    # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+    # read winuae hstwb installer model config file
+    $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+    if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
     $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
     # build winuae self install harddrives config
     $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
-
 
     # replace hstwb installer uae winuae configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
@@ -2832,7 +2846,12 @@ function RunBuildSelfInstall($hstwb)
 
 
     # read fs-uae hstwb installer config file
-    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+    $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+    if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
     $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
     # build fs-uae self install harddrives config
@@ -2862,7 +2881,7 @@ function RunBuildSelfInstall($hstwb)
         $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
 
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
@@ -2874,7 +2893,7 @@ function RunBuildSelfInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -2886,7 +2905,7 @@ function RunBuildSelfInstall($hstwb)
         $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
     
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
     
         # replace winuae hstwb installer config placeholders
@@ -2897,7 +2916,7 @@ function RunBuildSelfInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
         
         # write winuae hstwb installer config file to temp install dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
     
         # emulator args for winuae
@@ -3311,33 +3330,46 @@ try
     Write-Host ""
     PrintSettings $hstwb
     Write-Host ""
-        
-    # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
+
+    # find workbench 3.1 adf and kickstart entry, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
-        # find kickstart 3.1 a1200 rom
-        $kickstartRomHash = $hstwb.KickstartEntries | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
+        # models
+        $models = @('A1200', 'A500')
 
-        # fail, if kickstart rom hash doesn't exist
-        if (!$kickstartRomHash)
+        # get kickstart entry for running hstwb installer
+        $kickstartEntry = $null
+        foreach ($model in $models)
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+            # get first run supported kickstart entry for model with detected file
+            $kickstartEntry = $hstwb.KickstartEntries | Where-Object { $_.RunSupported -match 'true' -and $_.Model -match $model -and $_.File } | Select-Object -First 1
+
+            if ($kickstartEntry)
+            {
+                break;
+            }
         }
 
-        # set kickstart rom file
-        $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
+        # fail, if kickstart entry doesn't exist
+        if (!$kickstartEntry)
+        {
+            Fail $hstwb ("Kickstart directory doesn't have {0} Kickstart rom file!" -f ($models -join '/'))
+        }
 
-        # print kickstart rom hash file
-        Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
+        # set kickstart entry
+        $hstwb.Paths.KickstartEntry = $kickstartEntry
 
         # kickstart rom key
-        $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
+        $kickstartRomKeyFile = Join-Path (Split-Path $kickstartEntry.File -Parent) -ChildPath 'rom.key'
 
-        # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
-        if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
+        # fail, if kickstart entry is encrypted and kickstart rom key file doesn't exist
+        if ($kickstartEntry.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartSet + "' doesn't have rom.key!")
+            Fail $hstwb ("Kickstart rom key file '{0}' doesn't exist!" -f $kickstartRomKeyFile)
         }
+
+        # print kickstart entry
+        Write-Host ("Kickstart: {0} '{1}'" -f $kickstartEntry.Name, $kickstartEntry.File)
 
 
         $amigaOs39IsoFile = $null
@@ -3396,10 +3428,6 @@ try
             Fail $hstwb "Amiga OS 3.9 iso file, Amiga OS 3.1.4 Workbench and Install Disk adf files, or Amiga OS 3.1 Workbench Disk adf file is required to run HstWB Installer!"
         }
     }
-
-    Write-host $hstwb.Paths.IsoFile
-    Write-Host $hstwb.Paths.WorkbenchAdfFile
-    Write-Host $hstwb.Paths.InstallAdfFile
 
     # create temp path
     if(!(test-path -path $hstwb.Paths.TempPath))
