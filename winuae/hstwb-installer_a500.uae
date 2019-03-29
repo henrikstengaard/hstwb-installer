@@ -1,4 +1,4 @@
-; HstWB Installer A1200 WinUAE configuration
+; HstWB Installer A500 WinUAE configuration
 
 config_description=
 config_hardware=true
@@ -121,14 +121,13 @@ gfx_filter=no
 immediate_blits=false
 ntsc=false
 genlock=false
-chipset=aga
+chipset=ocs
 chipset_refreshrate=49.920410
 collision_level=full
-chipset_compatible=A1200
+chipset_compatible=A500
 rtc=MSM6242B
-ksmirror_a8=true
-ide=a600/a1200
-pcmcia=true
+resetwarning=false
+cia_todbug=true
 fastmem_size=8
 mem25bit_size=0
 a3000mem_size=0
@@ -143,9 +142,8 @@ gfxcard_hardware_sprite=true
 chipmem_size=4
 cpu_speed=max
 cpu_throttle=0.0
-cpu_type=68020/68881
-cpu_model=68030
-fpu_model=68882
+cpu_type=68ec020
+cpu_model=68020
 cpu_compatible=true
 cpu_24bit_addressing=false
 cpu_cycle_exact=false

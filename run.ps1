@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-28
+# Date:   2019-03-29
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -1773,12 +1773,18 @@ function RunTest($hstwb)
         $fsUaeHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
         
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+        if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -1796,12 +1802,18 @@ function RunTest($hstwb)
         $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
 
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+        if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
         # replace winuae test config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeImageHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
     
@@ -2403,8 +2415,9 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -2426,8 +2439,9 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
 
@@ -3331,7 +3345,7 @@ try
     PrintSettings $hstwb
     Write-Host ""
 
-    # find workbench 3.1 adf and kickstart entry, is install mode is test, install or build self install
+    # find kickstart entry, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
         # models
@@ -3370,8 +3384,11 @@ try
 
         # print kickstart entry
         Write-Host ("Kickstart: {0} '{1}'" -f $kickstartEntry.Name, $kickstartEntry.File)
+    }
 
-
+    # find amiga os 3.9 iso, amiga os 3.1.4 or 3.1 workbench and install adf entries, is install mode is install or build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall)$")
+    {
         $amigaOs39IsoFile = $null
         $amigaOs314WorkbenchAdfFile = $null
         $amigaOs314InstallAdfFile = $null
