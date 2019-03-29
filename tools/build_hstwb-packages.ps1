@@ -1,10 +1,9 @@
-# Build Release
-# -------------
+# Build Packages List
+# -------------------
+# Author: Henrik Noerfjand Stengaard
+# Date:   2019-03-29
 #
 # A powershell script to build HstWB packages from HstWB repositories.
-#
-# Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-27
 
 
 Param(
@@ -12,16 +11,18 @@ Param(
 	[string]$githubAccessToken
 )
 
-Class PackagesMetadata
+Class PackagesList
 {
     [string]$Date
     [string]$Description
+    [string]$Url
     [array]$Packages
 
-    PackagesMetadata($date, $description, $packages)
+    PackagesList($date, $description, $url, $packages)
     {
         $this.Date = $date
         $this.Description = $description
+        $this.Url = $url
         $this.Packages = $packages
     }
 }
@@ -142,13 +143,14 @@ $repositoriesMetadata = Get-Content $hstwbRepositoriesJsonFile -Raw | ConvertFro
 # get packages from hstwb repositories
 $packages = $packageManager.GetPackages($repositoriesMetadata.Repositories)
 
-# create packages metadata with date and packages
-$packagesMetadata = [PackagesMetadata]::new(
+# create packages list with date, description, url and packages
+$packagesList = [PackagesList]::new(
     (Get-Date -format "yyyy-MM-dd HH:mm:ss"),
     'HstWB packages',
+    'https://hstwb.firstrealize.com/data/hstwb-packages.json',
     $packages
 )
 
 # write hstwb packages json file
-$hstwbPackagesJson = $packagesMetadata | ConvertTo-Json -Depth 4
+$hstwbPackagesJson = $packagesList | ConvertTo-Json -Depth 4
 Set-Content -Path $hstwbPackagesJsonFile -Value $hstwbPackagesJson -NoNewline
