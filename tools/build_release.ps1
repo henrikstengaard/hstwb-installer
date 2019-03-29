@@ -4,7 +4,7 @@
 # A powershell script to build HstWB Installer portable zip and msi installer releases.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-06-27
+# Date:   2019-03-29
 
 # Requirements:
 # - Pandoc
@@ -17,16 +17,23 @@
 # msiexec /i hstwb-installer.msi /L*V "install.log"
 
 
+Param(
+	[Parameter(Mandatory=$false)]
+	[switch]$packages
+)
+
+
 Import-Module (Resolve-Path('..\modules\version.psm1')) -Force
 Import-Module (Resolve-Path('..\modules\config.psm1')) -Force
 Import-Module (Resolve-Path('..\modules\data.psm1')) -Force
 
 
 # convert markdown to html
-function ConvertMarkdownToHtml($pandocFile, $githubPandocFile, $markdownFile, $htmlFile)
+function ConvertMarkdownToHtml($pandocFile, $githubPandocFile, $title, $markdownFile, $htmlFile)
 {
 	# build readme html from readme markdown using pandoc
-	$pandocArgs = "-f markdown_github -c ""$githubPandocFile"" -t html5 ""$markdownFile"" -o ""$htmlFile"""
+	#$pandocArgs = "-f markdown_github -c ""$githubPandocFile"" -t html5 ""$markdownFile"" -o ""$htmlFile"""
+	$pandocArgs = "-s --metadata pagetitle=""$title"" -f gfm --css=""github-pandoc.css"" -t html5 ""$markdownFile"" -o ""$htmlFile"""
 	$pandocProcess = Start-Process $pandocFile -ArgumentList $pandocArgs -WorkingDirectory (Split-Path $markdownFile -Parent) -Wait -NoNewWindow -PassThru
 	
 	if ($pandocProcess.ExitCode -ne 0)
@@ -40,8 +47,8 @@ function ConvertMarkdownToHtml($pandocFile, $githubPandocFile, $markdownFile, $h
 	$html = [System.IO.File]::ReadAllText($htmlFile)
 
 	# embed github pandoc css and remove stylesheet link
-	$html = $html -replace '<style[^<>]+>(.*?)</style>', "<style type=""text/css"">`$1`r`n$githubPandocCss</style>" -replace '<link\s+rel="stylesheet"\s+href="github-pandoc.css">', ''
-	[System.IO.File]::WriteAllText($htmlFile, $html)
+	$html = $html -replace '</head>', "<style type=""text/css"">$githubPandocCss</style>`r`n</head>" -replace '<link\s+rel="stylesheet"\s+href="github-pandoc.css"\s*/>', ''
+	[System.IO.File]::WriteAllText($htmlFile, $html)	
 }
 
 
@@ -56,14 +63,17 @@ $wixToolsetLightFile = Join-Path $wixToolsetDir -ChildPath 'light.exe'
 $rootDir = Resolve-Path '..'
 $releaseDir = Join-Path $rootDir -ChildPath '.release'
 $buildDir = Join-Path $releaseDir -ChildPath '.build'
-$components = @("Amiga", "Fonts", "Fs-Uae", "Images", "Kickstart", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae", "Workbench" )
+$components = @("Amiga", "Data", "Fonts", "Fs-Uae", "Images", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae")
+$packagesText = if ($packages) { ' with packages' } else { '' }
+$packagesFileName = if ($packages) { '_packages' } else { '' }
 
 
 Write-Output "Build Release"
 Write-Output "-------------"
 Write-Output ""
-Write-Output ("Release: 'HstWB Installer v{0}'"-f $hstwbInstallerVersion.ToLower())
 
+Write-Output ("Release: 'HstWB Installer v{0}'{1}" -f $hstwbInstallerVersion.ToLower(), $packagesText)
+		
 # fail, if pandoc file doesn't exist
 if (!(Test-Path -path $pandocFile))
 {
@@ -127,17 +137,21 @@ foreach($component in $components)
 	Copy-Item -Path $componentDir -Recurse -Destination $buildDir
 }
 
-
-# copy packages
-Write-Output "- Copying packages files..."
-
-$packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
-$packageFiles = @()
-$packageFiles += Get-ChildItem $packagesPath\* -Include *.zip
-
+# create packages build directory
 $buildPackagesPath = Join-Path $buildDir -ChildPath 'Packages'
 mkdir -Path $buildPackagesPath | Out-Null
-$packageFiles | ForEach-Object { Copy-Item -Path $_.FullName -Destination $buildPackagesPath }
+
+# copy packages
+if ($packages)
+{
+	Write-Output "- Copying packages files..."
+
+	$packagesPath = Join-Path -Path $rootDir -ChildPath 'Packages'
+	$packageFiles = @()
+	$packageFiles += Get-ChildItem $packagesPath\* -Include *.zip
+
+	$packageFiles | ForEach-Object { Copy-Item -Path $_.FullName -Destination $buildPackagesPath }
+}
 
 
 # build readme
@@ -149,89 +163,87 @@ $readmeMarkdownLines += ""
 $readmeMarkdownLines += "This page gives an overview of readme for HstWB Installer and packages."
 $readmeMarkdownLines += ""
 $readmeMarkdownLines += "Readme for HstWB Installer:"
-$readmeMarkdownLines += "* [HstWB Installer](HstWB Installer/readme.html)"
+$readmeMarkdownLines += "* [HstWB Installer](hstwb-installer/readme.html)"
 
 $readmeDir = Join-Path $buildDir -ChildPath 'Readme'
 mkdir -Path $readmeDir | Out-Null
 
-$hstwbInstallerReadmeDir = Join-Path $readmeDir -ChildPath 'HstWB Installer'
+$hstwbInstallerReadmeDir = Join-Path $readmeDir -ChildPath 'hstwb-installer'
 mkdir -Path $hstwbInstallerReadmeDir | Out-Null
 
 # build readme html from readme markdown using pandoc
-$hstwbInstallerReadmeMarkdownFile = Resolve-Path '..\README.md'
-$hstwbInstallerReadmeHtmlFile = Join-Path $hstwbInstallerReadmeDir -ChildPath 'README.html'
+$hstwbInstallerReadmeMarkdownFile = Resolve-Path '..\readme.md'
+$hstwbInstallerReadmeHtmlFile = Join-Path $hstwbInstallerReadmeDir -ChildPath 'readme.html'
 
 # read github pandoc css and html
-ConvertMarkdownToHtml $pandocFile $githubPandocFile $hstwbInstallerReadmeMarkdownFile $hstwbInstallerReadmeHtmlFile
-
-# copy screenshots for readme
-$screenshotsDir = Join-Path -Path $rootDir -ChildPath 'Screenshots'
-Copy-Item $screenshotsDir -Destination $hstwbInstallerReadmeDir -Recurse
-
-
-# extract read html files from packages
-Write-Output "- Extracting readme html files from packages..."
-
-# Copy packages readme and screenshots
-$packagesReadmeDir = Join-Path $readmeDir -ChildPath 'Packages'
-mkdir -Path $packagesReadmeDir | Out-Null
+ConvertMarkdownToHtml $pandocFile $githubPandocFile 'HstWB Installer' $hstwbInstallerReadmeMarkdownFile $hstwbInstallerReadmeHtmlFile
 
 # add package readme line, if packages are present
 if ($packageFiles.Count -gt 0)
 {
+	# extract read html files from packages
+	Write-Output "- Extracting readme html files from packages..."
+
+	# Copy packages readme and screenshots
+	$packagesReadmeDir = Join-Path $readmeDir -ChildPath 'packages'
+	mkdir -Path $packagesReadmeDir | Out-Null
+
 	$readmeMarkdownLines += ""
 	$readmeMarkdownLines += "Readme for package(s):"
-}
 
-foreach($packageFile in $packageFiles)
-{
-	# skip, if package doesn't a readme.html file
-	if (!(ZipFileContains $packageFile.FullName 'readme.html'))
+	foreach($packageFile in $packageFiles)
 	{
-		continue
-	}
-
-	# read hstwb package json text file from package file
-	$packageJsonText = ReadZipEntryTextFile $packageFile.FullName 'hstwb-package.json$'
-
-	# return, if hstwb package json text file doesn't exist
-	if (!$packageJsonText)
-	{
-		Fail ("Package '{0}' doesn't contain 'hstwb-package.json' file" -f $packageFile.FullName)
-	}
-
-	# read hstwb package json text
-	$package = $packageJsonText | ConvertFrom-Json
+		# skip, if package doesn't a readme.html file
+		if (!(ZipFileContains $packageFile.FullName 'readme.html'))
+		{
+			continue
+		}
 	
-	# fail, if package name doesn't exist
-	if (!$package.Name -or $package.Name -eq '')
-	{
-		Fail ("Package '{0}' doesn't have a valid name" -f $packageFile.FullName)
+		# read hstwb package json text file from package file
+		$packageJsonText = ReadZipEntryTextFile $packageFile.FullName 'hstwb-package.json$'
+	
+		# return, if hstwb package json text file doesn't exist
+		if (!$packageJsonText)
+		{
+			Fail ("Package '{0}' doesn't contain 'hstwb-package.json' file" -f $packageFile.FullName)
+		}
+	
+		# read hstwb package json text
+		$package = $packageJsonText | ConvertFrom-Json
+		
+		# fail, if package name doesn't exist
+		if (!$package.Name -or $package.Name -eq '')
+		{
+			Fail ("Package '{0}' doesn't have a valid name" -f $packageFile.FullName)
+		}
+	
+		# package name
+		$packageName = $package.Name.ToLower() -replace ' ', '-'
+	
+		# create package readme directory
+		$packageReadmeDir = Join-Path $packagesReadmeDir -ChildPath $packageName
+		mkdir -Path $packageReadmeDir | Out-Null
+	
+		# extract readme and screenshot files from package
+		ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.(png|jpg))' $packageReadmeDir
+
+		# package readme file
+		$packageReadmeFile = Get-ChildItem $packageReadmeDir -Filter 'readme.html' | Select-Object -First 1
+
+		# add package readme to readme markdown
+		$packageReadmeDirIndex = $packageReadmeDir.IndexOf($readmeDir) + $readmeDir.Length + 1
+		$packagesReadmeRelativeDir = $packageReadmeDir.Substring($packageReadmeDirIndex, $packageReadmeDir.Length - $packageReadmeDirIndex)
+		$readmeMarkdownLines += "* [{0}]({1}/{2})" -f $package.Name, $packagesReadmeRelativeDir.Replace("\", "/"), $packageReadmeFile.Name
 	}
-
-	# package name
-	$packageName = $package.Name
-
-	# create package readme directory
-	$packageReadmeDir = Join-Path $packagesReadmeDir -ChildPath $packageName
-	mkdir -Path $packageReadmeDir | Out-Null
-
-	# extract readme and screenshot files from package
-	ExtractFilesFromZipFile $packageFile.FullName '(readme.html|screenshots[\\/][^\.]+\.(png|jpg))' $packageReadmeDir
-
-	# add package readme to readme markdown
-	$packageReadmeDirIndex = $packageReadmeDir.IndexOf($readmeDir) + $readmeDir.Length + 1
-	$packagesReadmeRelativeDir = $packageReadmeDir.Substring($packageReadmeDirIndex, $packageReadmeDir.Length - $packageReadmeDirIndex)
-	$readmeMarkdownLines += "* [{0}]({1}/README.html)" -f $packageName, $packagesReadmeRelativeDir.Replace("\", "/")
 }
 
 # write readme markdown file
-$readmeMarkdownFile = Join-Path $buildDir -ChildPath 'README.md'
+$readmeMarkdownFile = Join-Path $buildDir -ChildPath 'readme.md'
 Set-Content -path $readmeMarkdownFile -Value $readmeMarkdownLines -Encoding UTF8
 
 # convert readme markdown file to html
-$readmeHtmlFile = Join-Path $readmeDir -ChildPath 'README.html'
-ConvertMarkdownToHtml $pandocFile $githubPandocFile $readmeMarkdownFile $readmeHtmlFile
+$readmeHtmlFile = Join-Path $readmeDir -ChildPath 'readme.html'
+ConvertMarkdownToHtml $pandocFile $githubPandocFile 'Readme' $readmeMarkdownFile $readmeHtmlFile
 
 Write-Output "Done."
 Write-Output ("Successfully build HstWB Installer directory '{0}'." -f $buildDir)
@@ -241,11 +253,11 @@ Write-Output ""
 # build portable release
 # ----------------------
 
-$portableZipFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}_portable.zip" -f $hstwbInstallerVersion.ToLower())
+$portableZipFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}{1}_portable.zip" -f $hstwbInstallerVersion.ToLower(), $packagesFileName)
 
 Write-Output "Build portable zip release"
 Write-Output "--------------------------"
-Write-Output "- Building portable zip release..."
+Write-Output ("- Building portable zip release{0}..." -f $packagesText)
 
 # compress package directory
 [System.IO.Compression.ZipFile]::CreateFromDirectory($buildDir, $portableZipFile, 'Optimal', $false)
@@ -261,7 +273,10 @@ Write-Output "Build msi release"
 Write-Output "-----------------"
 Write-Output "- Building wxs components from directories..."
 
-$components += "Packages"
+if ($packages)
+{
+	$components += "Packages"
+}
 
 $wixToolsetHeatArgsComponents = @()
 
@@ -275,7 +290,8 @@ $wixToolsetHeatArgsComponents | ForEach-Object { Start-Process $wixToolsetHeatFi
 # copy wix files
 Write-Output "- Copying wix files..."
 
-Copy-Item -Path (Resolve-Path '..\wix\*') -Recurse -Destination $buildDir
+Copy-Item -Path (Resolve-Path '..\wix\license.rtf') -Recurse -Destination $buildDir
+Copy-Item -Path (Resolve-Path ('..\wix\hstwb-installer{0}.wxs' -f $packagesFileName)) -Recurse -Destination $buildDir
 
 # update year in license rtf file
 $licenseRtfFile = Join-Path $buildDir -ChildPath 'license.rtf'
@@ -287,7 +303,8 @@ $licenseRtfText = [System.IO.File]::ReadAllText($licenseRtfFile) -replace 'Copyr
 Write-Output "- Compiling wxs files..."
 Write-Output ""
 
-$wixToolsetCandleArgs = ('-dVersion="' + ($hstwbInstallerVersion -replace '-[^\-]+$', '') + '" -dAmigaDir="Amiga" -dFontsDir="Fonts" -dFsUaeDir="Fs-Uae" -dImagesDir="Images" -dKickstartDir="Kickstart" -dLicensesDir="Licenses" -dModulesDir="Modules" -dPackagesDir="Packages" -dReadmeDir="Readme" -dScriptsDir="Scripts" -dSupportDir="Support" -dWinuaeDir="Winuae" -dWorkbenchDir="Workbench" "*.wxs"')
+$packagesDirectoryArg = if ($packages) { ' -dPackagesDir="Packages"' } else { '' }
+$wixToolsetCandleArgs = ('-dVersion="{0}" -dAmigaDir="Amiga" -dDataDir="Data" -dFontsDir="Fonts" -dFsUaeDir="Fs-Uae" -dImagesDir="Images" -dLicensesDir="Licenses" -dModulesDir="Modules" -dReadmeDir="Readme" -dScriptsDir="Scripts" -dSupportDir="Support" -dWinuaeDir="Winuae"{1} "*.wxs"' -f ($hstwbInstallerVersion -replace '-[^\-]+$', ''), $packagesDirectoryArg)
 $candleProcess = Start-Process $wixToolsetCandleFile -ArgumentList $wixToolsetCandleArgs -WorkingDirectory $buildDir -Wait -NoNewWindow -PassThru
 
 if ($candleProcess.ExitCode -ne 0)
@@ -298,7 +315,7 @@ if ($candleProcess.ExitCode -ne 0)
 
 
 # link wixobj files
-$msiFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}_setup.msi" -f $hstwbInstallerVersion.ToLower())
+$msiFile = Join-Path $releaseDir -ChildPath ("hstwb-installer_{0}{1}_setup.msi" -f $hstwbInstallerVersion.ToLower(), $packagesFileName)
 Write-Output "- Linking wixobj files..."
 Write-Output ""
 

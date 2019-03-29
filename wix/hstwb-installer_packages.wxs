@@ -42,6 +42,7 @@
       <Directory Id="ImagesComponentDir"/>
       <Directory Id="LicensesComponentDir"/>
       <Directory Id="ModulesComponentDir"/>
+      <Directory Id="PackagesComponentDir"/>
       <Directory Id="ReadmeComponentDir"/>
       <Directory Id="ScriptsComponentDir"/>
       <Directory Id="SupportComponentDir"/>
@@ -86,6 +87,9 @@
       <ComponentGroupRef Id="WinuaeComponentGroup"/>
       <Feature Id="Images" Title="Images" Level="1">
         <ComponentGroupRef Id="ImagesComponentGroup"/>
+      </Feature>
+      <Feature Id="Packages" Title="Packages" Level="1">
+        <ComponentGroupRef Id="PackagesComponentGroup"/>
       </Feature>
     </Feature>
     <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />

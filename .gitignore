@@ -7,6 +7,7 @@ hstwb-installer*.zip
 *.wxs
 *.log
 !hstwb-installer.wxs
+!hstwb-installer_packages.wxs
 /packages/
 /.output/
 /.release/
