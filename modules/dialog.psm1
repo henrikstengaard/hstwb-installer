@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-22
+# Date:   2019-03-29
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -167,7 +167,7 @@ function PrintSettings($hstwb)
         Write-Host "  Install User Packages : " -NoNewline -foregroundcolor "Gray"
         if ($installUserPackageNames.Count -gt 0)
         {
-            Write-Host ("'{0}' ({1}/{2} packages)" -f ($installUserPackageNames -Join ', '), $installUserPackageNames.Count, $hstwb.UserPackages.Count)
+            Write-Host ("'{0}' ({1}/{2} packages)" -f (($installUserPackageNames | Sort-Object) -Join ', '), $installUserPackageNames.Count, $hstwb.UserPackages.Count)
         }
         else
         {
