@@ -1,6 +1,7 @@
 {
     "Date":  "2019-03-27 13:25:27",
     "Description":  "HstWB packages",
+    "Url": "https://hstwb.firstrealize.com/data/hstwb-packages.json",
     "Packages":  [
                      {
                          "Name":  "bestwb-package",

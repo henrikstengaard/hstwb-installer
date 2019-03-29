@@ -1139,12 +1139,38 @@ function UpdatePackages($hstwb)
         $choice = Menu $hstwb "Update packages" @("Update packages list", "Download latest prerelease packages", "Download latest packages", "Back") 
         switch ($choice)
         {
-            "Update packages list" { }
+            "Update packages list" { UpdatePackagesList $hstwb }
             "Download latest prerelease packages" { DownloadLatestPackages $hstwb $true }
             "Download latest packages" { DownloadLatestPackages $hstwb $false }
         }
     }
     until ($choice -eq 'Back')
+}
+
+# update packages list
+function UpdatePackagesList($hstwb)
+{
+    # read packages list file
+    $packagesList = Get-Content $hstwb.Paths.PackagesListFile -Raw | ConvertFrom-Json
+
+    Write-Host ''
+    Write-Host 'Downloading packages list...' -ForegroundColor 'Yellow'
+
+    try
+    {
+        Write-Host $packagesList.Url -ForegroundColor 'Yellow'
+        $newPackagesList = Invoke-WebRequest $packagesList.Url
+        Set-Content $hstwb.Paths.PackagesListFile -Value $newPackagesList
+        Write-Host 'Done' -ForegroundColor 'Yellow'
+    }
+    catch
+    {
+        Write-Host ("Failed to download packages list: {0}" -f $_.Exception.Message) -ForegroundColor 'Red'
+    }
+
+    Write-Host ''
+    Write-Host "Press enter to continue"
+    Read-Host
 }
 
 # download latest packages
@@ -1169,7 +1195,7 @@ function DownloadLatestPackages($hstwb, $prerelease)
     # read packages
     $hstwb.Packages = ReadPackages $hstwb.Paths.PackagesPath;
 
-    Write-Host 'Done' -ForegroundColor 'Green'
+    Write-Host 'Done' -ForegroundColor 'Yellow'
     Write-Host ''
     Write-Host "Press enter to continue"
     Read-Host

@@ -1,6 +1,7 @@
 {
     "Date":  "2019-03-27 13:19:00",
     "Description": "HstWB package repositories for building HstWB packages",
+    "Url": "https://hstwb.firstrealize.com/data/hstwb-repositories.json",
     "Repositories": [
         {
             "Type": "github",
