@@ -1,4 +1,5 @@
-# HstWB Installer A1200 FS-UAE configuration
+# Name: HstWB Installer A1200 FS-UAE configuration
+# Model: A1200
 
 [fs-uae]
 amiga_model = A1200/020

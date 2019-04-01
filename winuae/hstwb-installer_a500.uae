@@ -1,4 +1,5 @@
-; HstWB Installer A500 WinUAE configuration
+; Name: HstWB Installer A500 WinUAE configuration
+; Model: A500
 
 config_description=
 config_hardware=true

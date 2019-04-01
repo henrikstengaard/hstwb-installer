@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-01-18
+# Date:   2019-04-01
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -229,10 +229,28 @@ def get_winuae_config_dir():
     
     return None
 
+# read model from config file
+def read_model_from_config_file( \
+    config_file):
+    """Read model from config file"""
+
+    model = None
+
+    # read lines from config file
+    with open(config_file) as _f:
+        for line in _f:
+            # parse model, if line matches model
+            model_match = re.search(r'^(;|#)\s+Model:\s+(A\d+)', line, re.I)
+            if model_match:
+                model = model_match.group(2)
+                break
+    
+    return model
+
 # patch uae config file
 def patch_uae_config_file( \
     uae_config_file, \
-    a1200_kickstart_rom_file, \
+    kickstart_file, \
     amiga_os_39_iso_file, \
     amiga_os_dir, \
     kickstart_dir, \
@@ -253,6 +271,10 @@ def patch_uae_config_file( \
     uae_config_lines = []
     with open(uae_config_file) as _f:
         for line in _f:
+            # skip line, if it's empty
+            if re.search(r'^\s*$', line):
+                continue
+
             uae_config_lines.append(line)
 
     # patch uae config lines
@@ -260,14 +282,20 @@ def patch_uae_config_file( \
         line = uae_config_lines[i]
 
         # patch cd image 0 file
-        if re.search(r'^cdimage0\s*=', line, re.I) and amiga_os_39_iso_file:
+        if re.search(r'^cdimage0\s*=', line, re.I):
+            amiga_os_39_iso_file_formatted = ''
+            if amiga_os_39_iso_file != None:
+                amiga_os_39_iso_file_formatted = amiga_os_39_iso_file.replace('\\', '\\\\')
             line = 'cdimage0={0}\n'.format(
-                re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), amiga_os_39_iso_file.replace('\\', '\\\\')))
+                re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), amiga_os_39_iso_file_formatted))
 
         # patch kickstart rom file
-        if re.search(r'^kickstart_rom_file\s*=', line, re.I) and a1200_kickstart_rom_file:
+        if re.search(r'^kickstart_rom_file\s*=', line, re.I):
+            kickstart_file_formatted = ''
+            if kickstart_file != None:
+                kickstart_file_formatted = kickstart_file.replace('\\', '\\\\')
             line = 'kickstart_rom_file={0}\n'.format(
-                re.sub(r'[\\/]', os.sep.replace('\\', '\\\\'), a1200_kickstart_rom_file.replace('\\', '\\\\')))
+                re.sub(r'[\\/]', os.sep.replace('\\', '\\\\'), kickstart_file_formatted))
 
         # patch hardfile2 path
         hardfile2_device_match = re.search(r'^hardfile2=[^,]*,([^:]*)', line, re.I)
@@ -310,7 +338,7 @@ def patch_uae_config_file( \
 # patch fs-uae config file
 def patch_fsuae_config_file( \
     fsuae_config_file, \
-    a1200_kickstart_rom_file, \
+    kickstart_file, \
     amiga_os_39_iso_file, \
     amiga_os_dir, \
     kickstart_dir, \
@@ -332,8 +360,8 @@ def patch_fsuae_config_file( \
     fsuae_config_lines = []
     with open(fsuae_config_file) as _f:
         for line in _f:
-            # skip line, if it contains floppy_image
-            if re.search(r'^floppy_image_\d+', line):
+            # skip line, if it's empty or contains floppy_image
+            if re.search(r'^\s*$', line) or re.search(r'^floppy_image_\d+', line):
                 continue
 
             # add hard drive label, if it matches
@@ -348,18 +376,24 @@ def patch_fsuae_config_file( \
         line = fsuae_config_lines[i]
 
         # patch cdrom drive 0
-        if re.search(r'^cdrom_drive_0\s*=', line) and amiga_os_39_iso_file:
+        if re.search(r'^cdrom_drive_0\s*=', line):
+            amiga_os_39_iso_file_formatted = ''
+            if amiga_os_39_iso_file != None:
+                amiga_os_39_iso_file_formatted = amiga_os_39_iso_file.replace('\\', '/')
             line = 'cdrom_drive_0 = {0}\n'.format(
-                amiga_os_39_iso_file.replace('\\', '/'))
+                amiga_os_39_iso_file_formatted)
 
         # patch logs dir
         if re.search(r'^logs_dir\s*=', line):
             line = 'logs_dir = {0}\n'.format(fsuae_config_dir.replace('\\', '/'))
 
         # patch kickstart file
-        if re.search(r'^kickstart_file\s*=', line) and a1200_kickstart_rom_file:
+        if re.search(r'^kickstart_file\s*=', line):
+            kickstart_file_formatted = ''
+            if kickstart_file != None:
+                kickstart_file_formatted = kickstart_file.replace('\\', '/')
             line = 'kickstart_file = {0}\n'.format(
-                a1200_kickstart_rom_file.replace('\\', '/'))
+                kickstart_file_formatted)
 
         # patch hard drives
         hard_drive_match = re.match(
@@ -388,7 +422,6 @@ def patch_fsuae_config_file( \
 
     # add adf files to fs-uae config lines as swappable floppies
     if len(adf_files) > 0:
-        fsuae_config_lines.append('\n')
         for i in range(0, len(adf_files)):
             fsuae_config_lines.append(
                 'floppy_image_{0} = {1}\n'.format(i, adf_files[i].replace('\\', '/')))
@@ -400,54 +433,57 @@ def patch_fsuae_config_file( \
 
 # valid amiga os 3.1 md5 entries
 valid_amiga_os_31_md5_entries = [
-    { 'Md5': 'c1c673eba985e9ab0888c5762cfa3d8f', 'Filename': 'workbench31extras.adf', 'Name': 'Workbench 3.1, Extras Disk (Cloanto Amiga Forever 2016)' },
-    { 'Md5': '6fae8b94bde75497021a044bdbf51abc', 'Filename': 'workbench31fonts.adf', 'Name': 'Workbench 3.1, Fonts Disk (Cloanto Amiga Forever 2016)' },
-    { 'Md5': 'd6aa4537586bf3f2687f30f8d3099c99', 'Filename': 'workbench31install.adf', 'Name': 'Workbench 3.1, Install Disk (Cloanto Amiga Forever 2016)' },
-    { 'Md5': 'b53c9ff336e168643b10c4a9cfff4276', 'Filename': 'workbench31locale.adf', 'Name': 'Workbench 3.1, Locale Disk (Cloanto Amiga Forever 2016)' },
-    { 'Md5': '4fa1401aeb814d3ed138f93c54a5caef', 'Filename': 'workbench31storage.adf', 'Name': 'Workbench 3.1, Storage Disk (Cloanto Amiga Forever 2016)' },
-    { 'Md5': '590c42a69675d6970df350e200fe25dc', 'Filename': 'workbench31workbench.adf', 'Name': 'Workbench 3.1, Workbench Disk (Cloanto Amiga Forever 2016)' },
+    { 'Md5': 'c1c673eba985e9ab0888c5762cfa3d8f', 'Filename': 'amiga-os-310-extras.adf', 'Name': 'Amiga OS 3.1 Extras Disk, Cloanto Amiga Forever 2016' },
+    { 'Md5': '6fae8b94bde75497021a044bdbf51abc', 'Filename': 'amiga-os-310-fonts.adf', 'Name': 'Amiga OS 3.1 Fonts Disk, Cloanto Amiga Forever 2016' },
+    { 'Md5': 'd6aa4537586bf3f2687f30f8d3099c99', 'Filename': 'amiga-os-310-install.adf', 'Name': 'Amiga OS 3.1 Install Disk, Cloanto Amiga Forever 2016' },
+    { 'Md5': 'b53c9ff336e168643b10c4a9cfff4276', 'Filename': 'amiga-os-310-locale.adf', 'Name': 'Amiga OS 3.1 Locale Disk, Cloanto Amiga Forever 2016' },
+    { 'Md5': '4fa1401aeb814d3ed138f93c54a5caef', 'Filename': 'amiga-os-310-storage.adf', 'Name': 'Amiga OS 3.1 Storage Disk, Cloanto Amiga Forever 2016' },
+    { 'Md5': '590c42a69675d6970df350e200fe25dc', 'Filename': 'amiga-os-310-workbench.adf', 'Name': 'Amiga OS 3.1 Workbench Disk, Cloanto Amiga Forever 2016' },
 
-    { 'Md5': 'c5be06daf40d4c3ace4eac874d9b48b1', 'Filename': 'workbench31install.adf', 'Name': 'Workbench 3.1, Install Disk (Cloanto Amiga Forever 7)' },
-    { 'Md5': 'e7b3a83df665a85e7ec27306a152b171', 'Filename': 'workbench31workbench.adf', 'Name': 'Workbench 3.1, Workbench Disk (Cloanto Amiga Forever 7)' }
+    { 'Md5': 'c5be06daf40d4c3ace4eac874d9b48b1', 'Filename': 'amiga-os-310-install.adf', 'Name': 'Amiga OS 3.1 Install Disk, Cloanto Amiga Forever 7' },
+    { 'Md5': 'e7b3a83df665a85e7ec27306a152b171', 'Filename': 'amiga-os-310-workbench.adf', 'Name': 'Amiga OS 3.1 Workbench Disk, Cloanto Amiga Forever 7' }
 ]
 
 # valid amiga os 3.1.4 adf md5 entries
 valid_amiga_os_314_md5_entries = [
-    { 'Md5': '988ddad5106d5b846be57b711d878b4c', 'Filename': 'amiga-os-314-extras.adf', 'Name': 'Amiga OS 3.1.4, Extras Disk' },
-    { 'Md5': '27a7af42777a43a06f8d9d8e74226e56', 'Filename': 'amiga-os-314-fonts.adf', 'Name': 'Amiga OS 3.1.4, Fonts Disk' },
-    { 'Md5': '7e9b5ec9cf89d9aae771cd1b708792d9', 'Filename': 'amiga-os-314-install.adf', 'Name': 'Amiga OS 3.1.4, Install Disk' },
-    { 'Md5': '4007bfe06b5b51af981a3fa52c51f54a', 'Filename': 'amiga-os-314-locale.adf', 'Name': 'Amiga OS 3.1.4, Locale Disk' },
-    { 'Md5': '372215cd27888d65a95db92b6513e702', 'Filename': 'amiga-os-314-storage.adf', 'Name': 'Amiga OS 3.1.4, Storage Disk' },
-    { 'Md5': '05a7469fd903744aa5f53741765bf668', 'Filename': 'amiga-os-314-workbench.adf', 'Name': 'Amiga OS 3.1.4, Workbench Disk' },
-    { 'Md5': '8a3824e64dbe2c8327d5995188d5fdd3', 'Filename': 'amiga-os-314-modules-a500.adf', 'Name': 'Amiga OS 3.1.4, Modules A500 Disk (1st release)' },
-    { 'Md5': '2065c8850b5ba97099c3ff2672221e3f', 'Filename': 'amiga-os-314-modules-a500.adf', 'Name': 'Amiga OS 3.1.4, Modules A500 Disk (2nd release)' },
-    { 'Md5': 'c5a96c56ee5a7e2ca639c755d89dda36', 'Filename': 'amiga-os-314-modules-a600.adf', 'Name': 'Amiga OS 3.1.4, Modules A600 Disk (1st release)' },
-    { 'Md5': '4e095037af1da015c09ed26e3e107f50', 'Filename': 'amiga-os-314-modules-a600.adf', 'Name': 'Amiga OS 3.1.4, Modules A600 Disk (2nd release)' },
-    { 'Md5': 'b201f0b45c5748be103792e03f938027', 'Filename': 'amiga-os-314-modules-a2000.adf', 'Name': 'Amiga OS 3.1.4, Modules A2000 Disk (1st release)' },
-    { 'Md5': 'b8d09ea3369ac538c3920c515ba76e86', 'Filename': 'amiga-os-314-modules-a2000.adf', 'Name': 'Amiga OS 3.1.4, Modules A2000 Disk (2nd release)' },
-    { 'Md5': '2797193dc7b7daa233abe1bcfee9d5a1', 'Filename': 'amiga-os-314-modules-a1200.adf', 'Name': 'Amiga OS 3.1.4, Modules A1200 Disk (1st release)' },
-    { 'Md5': 'd170f8c11d1eb52f12643e0f13b44886', 'Filename': 'amiga-os-314-modules-a1200.adf', 'Name': 'Amiga OS 3.1.4, Modules A1200 Disk (2nd release)' },
-    { 'Md5': '60263124ea2c5f1831a3af639d085a28', 'Filename': 'amiga-os-314-modules-a3000.adf', 'Name': 'Amiga OS 3.1.4, Modules A3000 Disk (1st release)' },
-    { 'Md5': '7d20dc438e802e41def3694d2be59f0f', 'Filename': 'amiga-os-314-modules-a4000d.adf', 'Name': 'Amiga OS 3.1.4, Modules A4000D Disk (1st release)' },
-    { 'Md5': '68fb2ca4b81daeaf140d35dc7a63d143', 'Filename': 'amiga-os-314-modules-a4000t.adf', 'Name': 'Amiga OS 3.1.4, Modules A4000T Disk (1st release)' }
+    { 'Md5': '988ddad5106d5b846be57b711d878b4c', 'Filename': 'amiga-os-314-extras.adf', 'Name': 'Amiga OS 3.1.4 Extras Disk, Hyperion Entertainment' },
+    { 'Md5': '27a7af42777a43a06f8d9d8e74226e56', 'Filename': 'amiga-os-314-fonts.adf', 'Name': 'Amiga OS 3.1.4 Fonts Disk, Hyperion Entertainment' },
+    { 'Md5': '7e9b5ec9cf89d9aae771cd1b708792d9', 'Filename': 'amiga-os-314-install.adf', 'Name': 'Amiga OS 3.1.4 Install Disk, Hyperion Entertainment' },
+    { 'Md5': '4007bfe06b5b51af981a3fa52c51f54a', 'Filename': 'amiga-os-314-locale.adf', 'Name': 'Amiga OS 3.1.4 Locale Disk, Hyperion Entertainment' },
+    { 'Md5': '372215cd27888d65a95db92b6513e702', 'Filename': 'amiga-os-314-storage.adf', 'Name': 'Amiga OS 3.1.4 Storage Disk, Hyperion Entertainment' },
+    { 'Md5': '05a7469fd903744aa5f53741765bf668', 'Filename': 'amiga-os-314-workbench.adf', 'Name': 'Amiga OS 3.1.4 Workbench Disk, Hyperion Entertainment' },
+    { 'Md5': '8a3824e64dbe2c8327d5995188d5fdd3', 'Filename': 'amiga-os-314-modules-a500.adf', 'Name': 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': '2065c8850b5ba97099c3ff2672221e3f', 'Filename': 'amiga-os-314-modules-a500.adf', 'Name': 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment 2nd release' },
+    { 'Md5': 'c5a96c56ee5a7e2ca639c755d89dda36', 'Filename': 'amiga-os-314-modules-a600.adf', 'Name': 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': '4e095037af1da015c09ed26e3e107f50', 'Filename': 'amiga-os-314-modules-a600.adf', 'Name': 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment 2nd release' },
+    { 'Md5': 'b201f0b45c5748be103792e03f938027', 'Filename': 'amiga-os-314-modules-a2000.adf', 'Name': 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': 'b8d09ea3369ac538c3920c515ba76e86', 'Filename': 'amiga-os-314-modules-a2000.adf', 'Name': 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment 2nd release' },
+    { 'Md5': '2797193dc7b7daa233abe1bcfee9d5a1', 'Filename': 'amiga-os-314-modules-a1200.adf', 'Name': 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': 'd170f8c11d1eb52f12643e0f13b44886', 'Filename': 'amiga-os-314-modules-a1200.adf', 'Name': 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment 2nd release' },
+    { 'Md5': '60263124ea2c5f1831a3af639d085a28', 'Filename': 'amiga-os-314-modules-a3000.adf', 'Name': 'Amiga OS 3.1.4 Modules A3000 Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': '7d20dc438e802e41def3694d2be59f0f', 'Filename': 'amiga-os-314-modules-a4000d.adf', 'Name': 'Amiga OS 3.1.4 Modules A4000D Disk, Hyperion Entertainment 1st release' },
+    { 'Md5': '68fb2ca4b81daeaf140d35dc7a63d143', 'Filename': 'amiga-os-314-modules-a4000t.adf', 'Name': 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment 1st release' }
 ]
 
 # valid kickstart md5 entries
 valid_kickstart_md5_entries = [
-    { 'Md5': 'c56ca2a3c644d53e780a7e4dbdc6b699', 'Filename': 'kick33180.A500', 'Encrypted': True, 'Name': 'Kickstart 1.2, 33.180, A500 Rom (Cloanto Amiga Forever 7/2016)' },
-    { 'Md5': '89160c06ef4f17094382fc09841557a6', 'Filename': 'kick34005.A500', 'Encrypted': True, 'Name': 'Kickstart 1.3, 34.5, A500 Rom (Cloanto Amiga Forever 7/2016)' },
-    { 'Md5': 'c3e114cd3b513dc0377a4f5d149e2dd9', 'Filename': 'kick40063.A600', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.063, A600 Rom (Cloanto Amiga Forever 7/2016)' },
-    { 'Md5': 'dc3f5e4698936da34186d596c53681ab', 'Filename': 'kick40068.A1200', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.068, A1200 Rom (Cloanto Amiga Forever 7/2016)' },
-    { 'Md5': '8b54c2c5786e9d856ce820476505367d', 'Filename': 'kick40068.A4000', 'Encrypted': True, 'Name': 'Kickstart 3.1, 40.068, A4000 Rom (Cloanto Amiga Forever 7/2016)' },
+    { 'Md5': '8b54c2c5786e9d856ce820476505367d', 'Filename': 'kick40068.A4000', 'Encrypted': True, 'Name': 'Kickstart 3.1 40.068 A4000 Rom, Cloanto Amiga Forever 7/2016', 'Model': 'A4000', 'ConfigSupported': False },
+    { 'Md5': 'dc3f5e4698936da34186d596c53681ab', 'Filename': 'kick40068.A1200', 'Encrypted': True, 'Name': 'Kickstart 3.1 40.068 A1200 Rom, Cloanto Amiga Forever 7/2016', 'Model': 'A1200', 'ConfigSupported': True },
+    { 'Md5': 'c3e114cd3b513dc0377a4f5d149e2dd9', 'Filename': 'kick40063.A600', 'Encrypted': True, 'Name': 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Cloanto Amiga Forever 7/2016', 'Model': 'A500', 'ConfigSupported': True },
+    { 'Md5': '89160c06ef4f17094382fc09841557a6', 'Filename': 'kick34005.A500', 'Encrypted': True, 'Name': 'Kickstart 1.3 34.5 A500 Rom, Cloanto Amiga Forever 7/2016', 'Model': 'A500', 'ConfigSupported': False },
+    { 'Md5': 'c56ca2a3c644d53e780a7e4dbdc6b699', 'Filename': 'kick33180.A500', 'Encrypted': True, 'Name': 'Kickstart 1.2 33.180 A500 Rom, Cloanto Amiga Forever 7/2016', 'Model': 'A500', 'ConfigSupported': False },
 
-    { 'Md5': '6de08cd5c5efd926d0a7643e8fb776fe', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4, 46.143, A1200 Rom (Original, 1st release)' },
-    { 'Md5': '79bfe8876cd5abe397c50f60ea4306b9', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4, 46.143, A1200 Rom (Original, 2nd release)' },
+    { 'Md5': '9bdedde6a4f33555b4a270c8ca53297d', 'Filename': 'kick40068.A4000', 'Encrypted': False, 'Name': 'Kickstart 3.1 40.068 A4000 Rom, Dump of original Amiga Kickstart', 'Model': 'A4000', 'ConfigSupported': False },
+    { 'Md5': '646773759326fbac3b2311fd8c8793ee', 'Filename': 'kick40068.A1200', 'Encrypted': False, 'Name': 'Kickstart 3.1 40.068 A1200 Rom, Dump of original Amiga Kickstart', 'Model': 'A1200', 'ConfigSupported': True },
+    { 'Md5': 'e40a5dfb3d017ba8779faba30cbd1c8e', 'Filename': 'kick40063.A600', 'Encrypted': False, 'Name': 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Dump of original Amiga Kickstart', 'Model': 'A500', 'ConfigSupported': True },
+    { 'Md5': '82a21c1890cae844b3df741f2762d48d', 'Filename': 'kick34005.A500', 'Encrypted': False, 'Name': 'Kickstart 1.3 34.5 A500 Rom, Dump of original Amiga Kickstart', 'Model': 'A500', 'ConfigSupported': False },
+    { 'Md5': '85ad74194e87c08904327de1a9443b7a', 'Filename': 'kick33180.A500', 'Encrypted': False, 'Name': 'Kickstart 1.2 33.180 A500 Rom, Dump of original Amiga Kickstart', 'Model': 'A500', 'ConfigSupported': False },
 
-    { 'Md5': '85ad74194e87c08904327de1a9443b7a', 'Filename': 'kick33180.A500', 'Encrypted': False, 'Name': 'Kickstart 1.2, 33.180, A500 Rom (Original)' },
-    { 'Md5': '82a21c1890cae844b3df741f2762d48d', 'Filename': 'kick34005.A500', 'Encrypted': False, 'Name': 'Kickstart 1.3, 34.5, A500 Rom (Original)' },
-    { 'Md5': 'e40a5dfb3d017ba8779faba30cbd1c8e', 'Filename': 'kick40063.A600', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.063, A600 Rom (Original)' },
-    { 'Md5': '646773759326fbac3b2311fd8c8793ee', 'Filename': 'kick40068.A1200', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.068, A1200 Rom (Original)' },
-    { 'Md5': '9bdedde6a4f33555b4a270c8ca53297d', 'Filename': 'kick40068.A4000', 'Encrypted': False, 'Name': 'Kickstart 3.1, 40.068, A4000 Rom (Original)' }
+    { 'Md5': '6de08cd5c5efd926d0a7643e8fb776fe', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment 1st release', 'Model': 'A1200', 'ConfigSupported': True },
+    { 'Md5': '79bfe8876cd5abe397c50f60ea4306b9', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment 2nd release', 'Model': 'A1200', 'ConfigSupported': True },
+
+    { 'Md5': '7fe1eb0ba2b767659bf547bfb40d67c4', 'Filename': 'kick.a500.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment 1st release', 'Model': 'A500', 'ConfigSupported': True },
+    { 'Md5': '61c5b9931555b8937803505db868d5a8', 'Filename': 'kick.a500.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment 2nd release', 'Model': 'A500', 'ConfigSupported': True }
 ]
 
 # valid amiga os 3.9 md5 entries
@@ -526,7 +562,7 @@ print '-----------------'
 print 'HstWB Image Setup'
 print '-----------------'
 print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2019-01-18'
+print 'Date: 2019-04-01'
 print ''
 print 'Install dir \'{0}\''.format(install_dir)
 
@@ -841,7 +877,6 @@ if self_install:
 
 
 # find files for patching, if uae or fs-uae config files are present
-a1200_kickstart_rom_file = None
 amiga_os_39_iso_file = None
 if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
     # print files for patching
@@ -850,30 +885,10 @@ if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
     print '------------------'
     print 'Finding A1200 Kickstart rom and Amiga OS 3.9 iso files...'
 
-    # find a1200 kickstart rom file, if kickstart dir is defined and exists
-    if kickstart_dir != None and os.path.isdir(kickstart_dir):
-        # find first a1200 kickstart rom md5 files
-        a1200_kickstart_rom_md5_files = []
-        for md5_file in get_md5_files_from_dir(kickstart_dir):
-            if md5_file.md5_hash in valid_kickstart_md5_index and re.search(r'(kick40068\.a1200|kick\.a1200\.46\.143)', valid_kickstart_md5_index[md5_file.md5_hash]['Filename'], re.I):
-                a1200_kickstart_rom_md5_files.append(md5_file)
-
-        # sort a1200 kickstart rom md5 files by filename
-        a1200_kickstart_rom_md5_files = sorted(a1200_kickstart_rom_md5_files, key=lambda x: valid_kickstart_md5_index[x.md5_hash]['Filename'])
-
-        # get first a1200 kickstart rom md5 file
-        a1200_kickstart_rom_md5_file = None
-        if len(a1200_kickstart_rom_md5_files) >= 0:
-            a1200_kickstart_rom_md5_file = a1200_kickstart_rom_md5_files[0]
-
-        # find a1200 kickstart 3.1 rom file
-        if a1200_kickstart_rom_md5_file != None:
-            # fail, if a1200 kickstart rom entry is encrypted and rom key file doesn't exist
-            rom_key_file = os.path.join(kickstart_dir, 'rom.key')
-            if valid_kickstart_md5_index[a1200_kickstart_rom_md5_file.md5_hash]['Encrypted'] and not os.path.isfile(rom_key_file):
-                print 'Error: Amiga Forever rom key file \'{0}\' doesn\'t exist'.format(rom_key_file)
-                exit(1)
-            a1200_kickstart_rom_file = a1200_kickstart_rom_md5_file.full_filename
+    # add kickstart files to kickstart index
+    for md5_file in get_md5_files_from_dir(kickstart_dir):
+        if md5_file.md5_hash in valid_kickstart_md5_index:
+            valid_kickstart_md5_index[md5_file.md5_hash]['File'] = md5_file.full_filename
 
     # find amiga os 3.9 iso file, if amiga os dir is defined and exists
     if amiga_os_dir != None and os.path.isdir(amiga_os_dir):
@@ -882,8 +897,8 @@ if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
         amiga_os_39_md5_files = get_md5_files_from_dir(amiga_os_dir)
         for md5_file in amiga_os_39_md5_files:
             if ((md5_file.md5_hash in valid_amiga_os_39_md5_index and 
-                re.search(r'amigaos3\.9\.iso', valid_amiga_os_39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
-                re.search(r'(\\|//)?amigaos3\.9\.iso$', md5_file.full_filename, re.I)):
+                re.search(r'amigaos3\.?9\.iso', valid_amiga_os_39_md5_index[md5_file.md5_hash]['Filename'], re.I)) or 
+                re.search(r'(\\|//)?amigaos3\.?9\.iso$', md5_file.full_filename, re.I)):
                 amiga_amiga_os_39_iso_md5_files.append(md5_file)
 
         # sort amiga os39 md5 files by matching md5, then filename
@@ -891,12 +906,6 @@ if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
 
         if len(amiga_amiga_os_39_iso_md5_files) >= 1:
             amiga_amiga_os_39_iso_file = amiga_amiga_os_39_iso_md5_files[0].full_filename
-
-    # print a1200 kickstart rom file, if it's defined
-    if a1200_kickstart_rom_file != None:
-        print '- Using A1200 Kickstart rom file \'{0}\''.format(a1200_kickstart_rom_file)
-    else:
-        print '- No A1200 Kickstart rom file detected'
 
     # print amiga os39 iso file, if it's defined
     if amiga_os_39_iso_file != None:
@@ -907,9 +916,7 @@ if len(uae_config_files) > 0 or len(fsuae_config_files) > 0:
     print 'Done'
 
 
-# get full path for a1200 kickstart rom file, amiga os39 iso file, workbench, kickstart, os39 and user packages dir, if they are defined
-if a1200_kickstart_rom_file != None:
-    a1200_kickstart_rom_file = os.path.realpath(a1200_kickstart_rom_file)
+# get full path for amiga os39 iso file, workbench, kickstart, os39 and user packages dir, if they are defined
 if amiga_os_39_iso_file != None:
     amiga_os_39_iso_file = os.path.realpath(amiga_os_39_iso_file)
 if amiga_os_dir != None:
@@ -934,10 +941,31 @@ if len(uae_config_files) > 0:
 
     print '- {0} UAE configuration files \'{1}\''.format(len(uae_config_files), ', '.join(uae_config_files))    
     for uae_config_file in uae_config_files:
+        kickstart_file = None
+
+        # read model from uae config file
+        model = read_model_from_config_file(
+            os.path.realpath(uae_config_file))
+
+        # get kickstart file for model, if model is defined. otherwise set model to unknown
+        if model:
+            for k, v in valid_kickstart_md5_index.items():
+                if re.search(model, v['Model']) and v['ConfigSupported'] and 'File' in v:
+                    # set kickstart file
+                    kickstart_file = v['File']
+        else:
+            model = 'unknown'
+
+        if kickstart_file:
+            print '- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(uae_config_file, kickstart_file, model)
+            kickstart_file = os.path.realpath(kickstart_file)
+        else:
+            print '- \'{0}\'. No Kickstart file for {1} model in configuration file!'.format(uae_config_file, model)
+
         # patch uae config file
         patch_uae_config_file(
             os.path.realpath(uae_config_file),
-            a1200_kickstart_rom_file,
+            kickstart_file,
             amiga_os_39_iso_file,
             amiga_os_dir,
             kickstart_dir,
@@ -964,12 +992,33 @@ if len(fsuae_config_files) > 0:
     if fsuae_install_dir != None:
         print '- FS-UAE install dir \'{0}\''.format(fsuae_install_dir)
 
-    print '- {0} FS-UAE configuration files \'{1}\''.format(len(fsuae_config_files), ', '.join(fsuae_config_files))
+    print '- {0} FS-UAE configuration files'.format(len(fsuae_config_files))
     for fsuae_config_file in fsuae_config_files:
+        kickstart_file = None
+
+        # read model from fs-uae config file
+        model = read_model_from_config_file(
+            os.path.realpath(fsuae_config_file))
+
+        # get kickstart file for model, if model is defined. otherwise set model to unknown
+        if model:
+            for k, v in valid_kickstart_md5_index.items():
+                if re.search(model, v['Model']) and v['ConfigSupported'] and 'File' in v:
+                    # set kickstart file
+                    kickstart_file = v['File']
+        else:
+            model = 'unknown'
+
+        if kickstart_file:
+            print '- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(fsuae_config_file, kickstart_file, model)
+            kickstart_file = os.path.realpath(kickstart_file)
+        else:
+            print '- \'{0}\'. No Kickstart file for {1} model!'.format(fsuae_config_file, model)
+
         # patch fs-uae config file
         patch_fsuae_config_file(
             os.path.realpath(fsuae_config_file),
-            a1200_kickstart_rom_file,
+            kickstart_file,
             amiga_os_39_iso_file,
             amiga_os_dir,
             kickstart_dir,

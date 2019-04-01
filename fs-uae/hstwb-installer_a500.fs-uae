@@ -1,4 +1,5 @@
-# HstWB Installer A500 FS-UAE configuration
+# Name: HstWB Installer A500 FS-UAE configuration
+# Model: A500
 
 [fs-uae]
 amiga_model = A500/512K
