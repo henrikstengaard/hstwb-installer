@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-03-05
+; Date: 2019-04-01
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -38,14 +38,16 @@ IF EXISTS T:_iconpackinstall
   Delete >NIL: T:_iconpackinstall
 ENDIF
 
-; set default install to amiga os 3.1.4 model, if amiga model prefs exists
+; set default install to amiga os 3.1.4 model, if amiga model prefs and amiga os 3.1.4 adf prefs exists
 IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
   set amigamodel "`type "INSTALLDIR:Prefs/AmigaModel"`"
-  echo "Amiga OS 3.1.4 $amigamodel from adf files" >T:_amigaosname
-  echo "Amiga-OS-314-$amigamodel-ADF" >T:_amigaosinstall
-  echo "0" >T:_amigaos39
-  echo "0" >T:_boingbaginstall
-  echo "1" >T:_amigaos314
+  IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-314-$amigamodel-ADF"
+    echo "Amiga OS 3.1.4 $amigamodel from adf files" >T:_amigaosname
+    echo "Amiga-OS-314-$amigamodel-ADF" >T:_amigaosinstall
+    echo "0" >T:_amigaos39
+    echo "0" >T:_boingbaginstall
+    echo "1" >T:_amigaos314
+  ENDIF
 ENDIF
 
 echo "set amigaosname *"Amiga OS from floppy disks*"" >T:_amigaosfloppydisk
