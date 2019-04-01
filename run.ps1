@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-29
+# Date:   2019-04-01
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2304,6 +2304,27 @@ function RunInstall($hstwb)
     Copy-Item -Path "$hstwbImageSetupDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
     
 
+    # set iso file, if iso entry exists
+    $isoFile = ''
+    if ($hstwb.Paths.IsoEntry -and $hstwb.Paths.IsoEntry.File)
+    {
+        $isoFile = $hstwb.Paths.IsoEntry.File
+    }
+
+    # set workbench adf file, if workbench adf entry entry exists
+    $workbenchAdfFile = ''
+    if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
+    {
+        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+    }
+
+    # set install adf file, if install adf entry entry exists
+    $installAdfFile = ''
+    if ($hstwb.Paths.InstallAdfEntry -and $hstwb.Paths.InstallAdfEntry.File)
+    {
+        $installAdfFile = $hstwb.Paths.InstallAdfEntry.File
+    }
+
     #
     $emulatorArgs = ''
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
@@ -2320,10 +2341,10 @@ function RunInstall($hstwb)
 
         # replace hstwb installer fs-uae configuration placeholders
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2344,10 +2365,10 @@ function RunInstall($hstwb)
     
         # replace winuae hstwb installer config placeholders
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $hstwb.Paths.InstallAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
     
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
@@ -2419,7 +2440,7 @@ function RunInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2443,7 +2464,7 @@ function RunInstall($hstwb)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
 
         # write winuae hstwb installer config file to temp dir
         $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
@@ -2848,7 +2869,7 @@ function RunBuildSelfInstall($hstwb)
 
     # replace hstwb installer uae winuae configuration placeholders
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
     $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
@@ -2872,7 +2893,7 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
     
     # replace hstwb installer fs-uae configuration placeholders
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
     $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
@@ -2883,6 +2904,19 @@ function RunBuildSelfInstall($hstwb)
     $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
     [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     
+    # set iso file, if amiga os 3.9 iso entry exists
+    $isoFile = ''
+    if ($hstwb.Paths.IsoEntry -and $hstwb.Paths.IsoEntry.File)
+    {
+        $isoFile = $hstwb.Paths.IsoEntry.File
+    }
+
+    # set workbench adf file, if workbench adf entry entry exists
+    $workbenchAdfFile = ''
+    if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
+    {
+        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+    }
 
     #
     $emulatorArgs = ''
@@ -2899,11 +2933,11 @@ function RunBuildSelfInstall($hstwb)
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
@@ -2923,11 +2957,11 @@ function RunBuildSelfInstall($hstwb)
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
     
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $hstwb.Paths.IsoFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
         
         # write winuae hstwb installer config file to temp install dir
         $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
@@ -3383,64 +3417,57 @@ try
         }
 
         # print kickstart entry
-        Write-Host ("Kickstart: {0} '{1}'" -f $kickstartEntry.Name, $kickstartEntry.File)
+        Write-Host ("Kickstart rom: {0} '{1}'" -f $kickstartEntry.Name, $kickstartEntry.File)
     }
 
     # find amiga os 3.9 iso, amiga os 3.1.4 or 3.1 workbench and install adf entries, is install mode is install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall)$")
     {
-        $amigaOs39IsoFile = $null
-        $amigaOs314WorkbenchAdfFile = $null
-        $amigaOs314InstallAdfFile = $null
-        $amigaOs310WorkbenchAdfFile = $null
-
-        $hstwb.Paths.IsoFile = ''
-        $hstwb.Paths.WorkbenchAdfFile = ''
-        $hstwb.Paths.InstallAdfFile = ''
-
         # find workbench adf, if installing amiga os and amiga os 3.9 iso is not present
         if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
         {
-            # find amiga os 3.1 workbench adf
-            $amigaOs39Iso = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
+            # find amiga os 3.9 iso entry
+            $isoEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
 
-            if ($amigaOs39Iso)
+            if ($isoEntry)
             {
-                $amigaOs39IsoFile = $amigaOs39Iso.File
-                $hstwb.Paths.IsoFile = $amigaOs39IsoFile
+                $hstwb.Paths.IsoEntry = $isoEntry
+
+                # print amiga os 3.9 iso entry
+                Write-Host ("Amiga OS 3.9 iso: {0} '{1}'" -f $isoEntry.Name, $isoEntry.File)
             }
             else
             {
-                # find amiga os 3.1.4 workbench adf
-                $amigaOs314WorkbenchAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
-                if ($amigaOs314WorkbenchAdf)
-                {
-                    $amigaOs314WorkbenchAdfFile = $amigaOs314WorkbenchAdf.File
+                # find amiga os 3.1.4 workbench adf entry
+                $amigaOs314WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
+                $amigaOs314InstallAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
 
-                    # find amiga os 3.1.4 install adf
-                    $amigaOs314InstallAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
-                    if ($amigaOs314InstallAdf)
-                    {
-                        $amigaOs314InstallAdfFile = $amigaOs314InstallAdf.File
-                        $hstwb.Paths.WorkbenchAdfFile = $amigaOs314WorkbenchAdfFile
-                        $hstwb.Paths.InstallAdfFile = $amigaOs314InstallAdfFile
-                    }
+                if ($amigaOs314WorkbenchAdfEntry -and $amigaOs314InstallAdfEntry)
+                {
+                    $hstwb.Paths.WorkbenchAdfEntry = $amigaOs314WorkbenchAdfEntry
+                    $hstwb.Paths.InstallAdfEntry = $amigaOs314InstallAdfEntry
+
+                    # print amiga os 3.1.4 workbench adf entry
+                    Write-Host ("Amiga OS 3.1.4 Workbench adf: {0} '{1}'" -f $amigaOs314WorkbenchAdfEntry.Name, $amigaOs314WorkbenchAdfEntry.File)
+                    Write-Host ("Amiga OS 3.1.4 Install adf: {0} '{1}'" -f $amigaOs314InstallAdfEntry.Name, $amigaOs314InstallAdfEntry.File)
                 }
                 else
                 {
-                    # find amiga os 3.1 workbench adf
-                    $amigaOs310WorkbenchAdf = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-                    if ($amigaOs310WorkbenchAdf)
+                    # find amiga os 3.1 workbench adf entry
+                    $amigaOs310WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+                    if ($amigaOs310WorkbenchAdfEntry)
                     {
-                        $amigaOs310WorkbenchAdfFile = $amigaOs310WorkbenchAdf.File
-                        $hstwb.Paths.WorkbenchAdfFile = $amigaOs310WorkbenchAdfFile
+                        $hstwb.Paths.WorkbenchAdfEntry = $amigaOs310WorkbenchAdfEntry
+
+                        # print amiga os 3.1 workbench adf entry
+                        Write-Host ("Amiga OS 3.1 Workbench adf: {0} '{1}'" -f $amigaOs310WorkbenchAdfEntry.Name, $amigaOs310WorkbenchAdfEntry.File)
                     }
                 }
             }
         }
 
-        # fail, if any of amiga os 3.9 iso file, amiga os 3.1.4 workbench and install disk adf files or amiga os 3.1 workbench disk adf file aren't present
-        if (!$hstwb.Paths.IsoFile -and !$hstwb.Paths.WorkbenchAdfFile -and !$hstwb.Paths.InstallAdfFile)
+        # fail, if iso, or workbench adf entries doesn't exist
+        if (!$hstwb.Paths.IsoEntry -and !$hstwb.Paths.WorkbenchAdfEntry)
         {
             Fail $hstwb "Amiga OS 3.9 iso file, Amiga OS 3.1.4 Workbench and Install Disk adf files, or Amiga OS 3.1 Workbench Disk adf file is required to run HstWB Installer!"
         }
