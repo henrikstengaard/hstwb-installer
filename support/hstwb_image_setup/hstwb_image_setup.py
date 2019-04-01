@@ -190,18 +190,19 @@ def find_valid_amiga_files_dir(_dir):
             return os.path.join(_dir, amiga_files_dir)
     return None
 
-# get fsuae config dir
-def get_fsuae_config_dir():
-    """Get FS-UAE config dir"""
+# get fsuae dir
+def get_fsuae_dir():
+    """Get FS-UAE dir"""
 
     user_home_dir = os.path.expanduser('~')
     directories = [os.path.join(user_home_dir, _f) for _f in os.listdir(user_home_dir) \
         if os.path.isdir(os.path.join(user_home_dir, _f))]
 
     for directory in directories:
-        fsuae_config_dir = os.path.join(directory, os.path.join('FS-UAE', 'Configurations'))
+        fsuae_dir = os.path.join(directory, 'FS-UAE')
+        fsuae_config_dir = os.path.join(fsuae_dir, 'Configurations')
         if os.path.isdir(fsuae_config_dir):
-            return fsuae_config_dir
+            return fsuae_dir
 
     return None
 
@@ -523,7 +524,7 @@ kickstart_dir = None
 user_packages_dir = None
 amiga_forever_data_dir = None
 uae_install_dir = None
-fsuae_install_dir = None
+fsuae_dir = None
 patch_only = False
 self_install = False
 
@@ -547,9 +548,9 @@ for i in range(0, len(sys.argv)):
     # uae install dir argument
     elif (i + 1 < len(sys.argv) and re.search(r'--uaeinstalldir', sys.argv[i])):
         uae_install_dir = sys.argv[i + 1]
-    # fs-uae install dir argument
-    elif (i + 1 < len(sys.argv) and re.search(r'--fsuaeinstalldir', sys.argv[i])):
-        fsuae_install_dir = sys.argv[i + 1]
+    # fs-uae dir argument
+    elif (i + 1 < len(sys.argv) and re.search(r'--fsuaedir', sys.argv[i])):
+        fsuae_dir = sys.argv[i + 1]
     # patch only argument
     elif (re.search(r'--patchonly', sys.argv[i])):
         patch_only = True
@@ -575,9 +576,9 @@ if (install_dir != None and not os.path.isdir(install_dir)):
 if uae_install_dir == None and sys.platform == "win32":
     uae_install_dir = get_winuae_config_dir()
 
-# set fs-uae install directory to detected fs-uae config directory, if fs-uae install directory is not defined
-if fsuae_install_dir == None:
-    fsuae_install_dir = get_fsuae_config_dir()
+# set fs-uae directory to detected fs-uae config directory, if fs-uae directory is not defined
+if fsuae_dir == None:
+    fsuae_dir = get_fsuae_dir()
 
 # get uae config files from install directory
 uae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
@@ -988,9 +989,19 @@ if len(fsuae_config_files) > 0:
     print '--------------------'
     print 'Patching and installing FS-UAE configuration files...'
 
-    # print fs-uae install directory, if it exists
-    if fsuae_install_dir != None:
-        print '- FS-UAE install dir \'{0}\''.format(fsuae_install_dir)
+    # fs-uae config dir
+    fsuae_config_dir = None
+
+    # print fs-uae directory, if it exists
+    if fsuae_dir != None:
+        print '- FS-UAE dir \'{0}\''.format(fsuae_dir)
+
+        # fs-uae configuration directory
+        fsuae_config_dir = os.path.join(fsuae_dir, 'Configurations')
+
+        # create fs-uae configuration directory, if it doesn't exist
+        if not os.path.exists(fsuae_config_dir):
+            os.makedirs(fsuae_config_dir)
 
     print '- {0} FS-UAE configuration files'.format(len(fsuae_config_files))
     for fsuae_config_file in fsuae_config_files:
@@ -1025,9 +1036,26 @@ if len(fsuae_config_files) > 0:
             user_packages_dir)
 
         # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
-        if fsuae_install_dir != None:
+        if fsuae_config_dir != None:
             shutil.copyfile(
                 fsuae_config_file, 
-                os.path.join(fsuae_install_dir, os.path.basename(fsuae_config_file)))
+                os.path.join(fsuae_config_dir, os.path.basename(fsuae_config_file)))
+
+    # install fs-uae hstwb installer theme
+    hstwb_installer_fsuae_theme_dir = os.path.join(os.path.join(os.path.join(install_dir, 'fs-uae'), 'themes'), 'hstwb-installer')
+    if fsuae_dir != None and os.path.exists(hstwb_installer_fsuae_theme_dir):
+        # create hstwb installer fs-uae configuration directory, if it doesn't exist
+        hstwb_installer_fsuae_theme_dir_installed = os.path.join(os.path.join(fsuae_dir, 'themes'), 'hstwb-installer')
+        if not os.path.exists(hstwb_installer_fsuae_theme_dir_installed):
+            os.makedirs(hstwb_installer_fsuae_theme_dir_installed)
+
+        # copy hstwb installer fs-uae theme directory
+        for filename in os.listdir(unicode(hstwb_installer_fsuae_theme_dir, 'utf-8')):
+            source_file = os.path.join(hstwb_installer_fsuae_theme_dir, filename) 
+            shutil.copyfile(
+                source_file, 
+                os.path.join(hstwb_installer_fsuae_theme_dir_installed, filename))
+
+        print '- HstWB Installer FS-UAE theme installed'
 
     print 'Done'

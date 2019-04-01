@@ -33,7 +33,7 @@ Param(
 	[Parameter(Mandatory=$false)]
     [string]$uaeInstallDir,
 	[Parameter(Mandatory=$false)]
-    [string]$fsuaeInstallDir,
+    [string]$fsuaeDir,
 	[Parameter(Mandatory=$false)]
     [switch]$patchOnly,
 	[Parameter(Mandatory=$false)]
@@ -103,20 +103,20 @@ function FindValidAmigaFilesDir($dir)
     return $amigaFiles.FullName
 }
 
-# get fsuae config dir
-function GetFsuaeConfigDir()
+# get fsuae dir
+function GetFsuaeDir()
 {
     # get fs-uae config directory from my documents directory
-    $fsuaeConfigurations = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | `
+    $fsuaeConfigurationsDir = Get-ChildItem -Path ([System.Environment]::GetFolderPath("MyDocuments")) -Recurse | `
         Where-Object { $_.PSIsContainer -and $_.FullName -match 'FS-UAE\\Configurations$' } | `
         Select-Object -First 1
 
-    if (!$fsuaeConfigurations)
+    if (!$fsuaeConfigurationsDir)
     {
         return $null
     }
 
-    return $fsuaeConfigurations.FullName
+    return Split-Path $fsuaeConfigurationsDir.FullName -Parent
 }
 
 # get winuae config dir
@@ -485,10 +485,10 @@ if (!$uaeInstallDir)
     $uaeInstallDir = GetWinuaeConfigDir
 }
 
-# set fs-uae install directory to detected fs-uae config directory, if fs-uae install directory is not defined
-if (!$fsuaeInstallDir)
+# set fs-uae directory to detected fs-uae directory, if fs-uae directory is not defined
+if (!$fsuaeDir)
 {
-    $fsuaeInstallDir = GetFsuaeConfigDir
+    $fsuaeDir = GetFsuaeDir
 }
 
 # get uae config files from install directory
@@ -963,11 +963,24 @@ if ($fsuaeConfigFiles.Count -gt 0)
     Write-Output "FS-UAE configuration"
     Write-Output "--------------------"
 
-    # write fs-uae install directory, if it exists
-    if ($fsuaeInstallDir)
+    # fs-uae config dir
+    $fsuaeConfigDir = $null
+
+    # write fs-uae directory, if it exists
+    if ($fsuaeDir)
     {
-        Write-Output ('- FS-UAE install dir ''{0}''' -f $fsuaeInstallDir)
+        Write-Output ('- FS-UAE dir ''{0}''' -f $fsuaeDir)
+
+        # fs-uae configuration directory
+        $fsuaeConfigDir = Join-Path $fsuaeDir -ChildPath 'Configurations'
+
+        # create fs-uae configuration directory, if it doesn't exist
+        if (!(Test-Path $fsuaeConfigDir))
+        {
+            mkdir -Path $fsuaeConfigDir | Out-Null
+        }
     }
+
 
     Write-Output ('- {0} FS-UAE configuration files' -f $fsuaeConfigFiles.Count)
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
@@ -1006,10 +1019,20 @@ if ($fsuaeConfigFiles.Count -gt 0)
         PatchFsuaeConfigFile $fsuaeConfigFile.FullName $kickstartFile $amigaOs39IsoFile $amigaOsDir $kickstartDir $userPackagesDir
 
         # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
-        if ($fsuaeInstallDir)
+        if ($fsuaeConfigDir)
         {
-            Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeInstallDir -Force
+            Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeConfigDir -Force
         }
     }
+
+    # install fs-uae hstwb installer theme
+    $hstwbInstallerFsUaeThemeDir = Join-Path $installDir -ChildPath 'fs-uae\themes\hstwb-installer'
+    if ($fsuaeDir -and (Test-Path $hstwbInstallerFsUaeThemeDir))
+    {
+        $hstwbInstallerFsUaeThemeDirInstalled = Join-Path $fsuaeDir -ChildPath 'themes\hstwb-installer'
+        Copy-Item $hstwbInstallerFsUaeThemeDir -Destination (Split-Path $hstwbInstallerFsUaeThemeDirInstalled -Parent) -Recurse -Force
+        Write-Output '- HstWB Installer FS-UAE theme installed'
+    }
+
     Write-Output "Done"
 }

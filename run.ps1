@@ -1956,6 +1956,15 @@ function RunInstall($hstwb)
         mkdir $prefsDir | Out-Null
     }
 
+    # copy hstwb installer theme for fs-uae
+    $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'
+    if (!(Test-Path -Path $imageFsuaeThemeDir))
+    {
+        mkdir $imageFsuaeThemeDir | Out-Null
+    }
+    $fsuaeThemeDir = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, 'theme\hstwb-installer')
+    Copy-Item -Path "$fsuaeThemeDir\*" $imageFsuaeThemeDir -include *.png, *.conf -force
+
 
     # create uae prefs file
     $uaePrefsFile = Join-Path $prefsDir -ChildPath 'UAE'
@@ -2873,7 +2882,16 @@ function RunBuildSelfInstall($hstwb)
     $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
     Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
 
-    
+    # copy hstwb installer theme for fs-uae
+    $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'
+    if (!(Test-Path -Path $imageFsuaeThemeDir))
+    {
+        mkdir $imageFsuaeThemeDir | Out-Null
+    }
+    $fsuaeThemeDir = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, 'theme\hstwb-installer')
+    Copy-Item -Path "$fsuaeThemeDir\*" $imageFsuaeThemeDir -include *.png, *.conf -force
+
+
     foreach ($model in $hstwb.Models)
     {
         # read winuae hstwb installer model config file
