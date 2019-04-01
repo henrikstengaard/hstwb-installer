@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2019-03-15
+; Date: 2019-04-01
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -214,9 +214,17 @@ FSearch >RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos39.iso"
 FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos3.9.iso"
 FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amiga-os-390.iso"
 
+; goto amiga os adf, if no iso files are present
+IF "`wc -l <RAM:_isofiles`" EQ 0 VAL
+  ; log
+  echo "No Amiga OS 3.9 iso file is present in AMIGAOSDIR:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  SKIP amigaosadf
+ENDIF
+
 ; get first iso file from iso files
 set isofile ""
-set isofile `sed "1q;d" "RAM:_isofiles"` 
+set isofile `sed "1q;d" "RAM:_isofiles"`
 
 ; log
 echo "$isofile" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
@@ -229,7 +237,7 @@ rep "T:Mountlist-Iso" "[*$IsoFile]" "$isofile"
 Mount FCD0: FROM "T:Mountlist-Iso"
 Wait SECS=5
 
-; goto end, if mount failed
+; goto amiga os adf, if mount failed
 IF NOT $RC EQ 0 VAL
   ; delete mountlist iso
   Erase >NIL: "T:Mountlist-Iso" TIMES=0
@@ -243,7 +251,7 @@ Erase >NIL: "T:Mountlist-Iso" TIMES=0
 ; set failat to 255 for diskindrive to fail silently
 failat 255
 
-; goto end, if fcd0: device is not present
+; goto amiga os adf, if fcd0: device is not present
 DiskInDrive >NIL: FCD0:
 IF NOT $RC EQ 0 VAL
   ; log
@@ -290,12 +298,12 @@ SKIP loadsystemfiles
 LAB amigaosadf
 
 ; log
-echo "Amiga OS 3.1.4 or 3.1 adfs file in AMIGAOSDIR:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+echo "Amiga OS 3.1.4 or 3.1 adf files in AMIGAOSDIR:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
 set amigaos314 "0"
 
 ; log
-echo "Amiga OS 3.1.4 or 3.1 adfs file in AMIGAOSDIR:..."
+echo "Amiga OS 3.1.4 or 3.1 adf files in AMIGAOSDIR:..."
 
 ; set failat to 255 for diskindrive to fail silently
 failat 255
