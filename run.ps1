@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-04-01
+# Date:   2019-04-03
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -3314,7 +3314,8 @@ try
         'Settings' = ReadIniFile $settingsFile;
         'Assigns' = ReadIniFile $assignsFile;
         'UI' = @{
-            'AmigaOs' = @{}
+            'AmigaOs' = @{};
+            'Kickstart' = @{}
         }
     }
 
@@ -3365,6 +3366,9 @@ try
 
     # ui amiga os set info
     UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+    # ui kickstart set info
+    UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
 
     # set and validate emulator, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")

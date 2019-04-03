@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-29
+# Date:   2019-04-03
 #
 # A powershell module for HstWB Installer with dialog functions.
 
@@ -10,18 +10,6 @@
 # print settings
 function PrintSettings($hstwb)
 {
-    # get kickstart rom set complete, hashes and files
-    $kickstartRomSetComplete = $false
-    $kickstartRomSetHashes = @() 
-    $kickstartRomSetFiles = @()
-    if ($hstwb.Settings.Kickstart.KickstartSet -notmatch '^$')
-    {
-        $kickstartRomSetHashes += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
-        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
-
-        $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
-    }
-
     Write-Host "Settings"
     Write-Host "  Settings File         : " -NoNewline -foregroundcolor "Gray"
     Write-Host ("'" + $hstwb.Paths.SettingsFile + "'")
