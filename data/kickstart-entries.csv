@@ -1,10 +1,17 @@
 Name;Required;Set;Model;RunSupported;Md5Hash;Encrypted;Filename;CopyFile;Comment
-Kickstart 3.1 (40.068) (A4000) Rom;False;Kickstart Cloanto Amiga Forever;A4000;False;8b54c2c5786e9d856ce820476505367d;Yes;kick40068.A4000;True;Cloanto Amiga Forever 7/2016
-Kickstart 3.1 (40.068) (A1200) Rom;False;Kickstart Cloanto Amiga Forever;A1200;True;dc3f5e4698936da34186d596c53681ab;Yes;kick40068.A1200;True;Cloanto Amiga Forever 7/2016
-Kickstart 3.1 (40.063) (A600) Rom;False;Kickstart Cloanto Amiga Forever;A500;True;c3e114cd3b513dc0377a4f5d149e2dd9;Yes;kick40063.A600;True;Cloanto Amiga Forever 7/2016
-Kickstart 1.3 (34.5) (A500) Rom;True;Kickstart Cloanto Amiga Forever;A500;False;89160c06ef4f17094382fc09841557a6;Yes;kick34005.A500;True;Cloanto Amiga Forever 7/2016
-Kickstart 1.2 (33.180) (A500) Rom;False;Kickstart Cloanto Amiga Forever;A500;False;c56ca2a3c644d53e780a7e4dbdc6b699;Yes;kick33180.A500;True;Cloanto Amiga Forever 7/2016
-Kickstart Rom Key;True;Kickstart Cloanto Amiga Forever;;False;6678bb9630b65883585dda9ff63174b6;No;rom.key;True;Cloanto Amiga Forever 7/2016
+Kickstart 3.1 (40.068) (A4000) Rom;False;Kickstart Cloanto Amiga Forever 8;A4000;False;151cce9d7aa9a36a835ec2f78853125b;Yes;kick40068.A4000;True;Cloanto Amiga Forever 8
+Kickstart 3.1 (40.068) (A1200) Rom;False;Kickstart Cloanto Amiga Forever 8;A1200;True;43efffafb382528355bb4cdde9fa9ce7;Yes;kick40068.A1200;True;Cloanto Amiga Forever 8
+Kickstart 3.1 (40.063) (A600) Rom;False;Kickstart Cloanto Amiga Forever 8;A500;True;85a45066a0aebf9ec5870591b6ddcc52;Yes;kick40063.A600;True;Cloanto Amiga Forever 8
+Kickstart 1.3 (34.5) (A500) Rom;True;Kickstart Cloanto Amiga Forever 8;A500;False;189fd22ec463a9375f2ea63045ed6315;Yes;kick34005.A500;True;Cloanto Amiga Forever 8
+Kickstart 1.2 (33.180) (A500) Rom;False;Kickstart Cloanto Amiga Forever 8;A500;False;d59262012424ee5ddc5aadab9cb57cad;Yes;kick33180.A500;True;Cloanto Amiga Forever 8
+Kickstart Rom Key;True;Kickstart Cloanto Amiga Forever 8;;False;69f3435483bbf39f686d9168bff37f2f;No;rom.key;True;Cloanto Amiga Forever 8
+
+Kickstart 3.1 (40.068) (A4000) Rom;False;Kickstart Cloanto Amiga Forever 7/2016;A4000;False;8b54c2c5786e9d856ce820476505367d;Yes;kick40068.A4000;True;Cloanto Amiga Forever 7/2016
+Kickstart 3.1 (40.068) (A1200) Rom;False;Kickstart Cloanto Amiga Forever 7/2016;A1200;True;dc3f5e4698936da34186d596c53681ab;Yes;kick40068.A1200;True;Cloanto Amiga Forever 7/2016
+Kickstart 3.1 (40.063) (A600) Rom;False;Kickstart Cloanto Amiga Forever 7/2016;A500;True;c3e114cd3b513dc0377a4f5d149e2dd9;Yes;kick40063.A600;True;Cloanto Amiga Forever 7/2016
+Kickstart 1.3 (34.5) (A500) Rom;True;Kickstart Cloanto Amiga Forever 7/2016;A500;False;89160c06ef4f17094382fc09841557a6;Yes;kick34005.A500;True;Cloanto Amiga Forever 7/2016
+Kickstart 1.2 (33.180) (A500) Rom;False;Kickstart Cloanto Amiga Forever 7/2016;A500;False;c56ca2a3c644d53e780a7e4dbdc6b699;Yes;kick33180.A500;True;Cloanto Amiga Forever 7/2016
+Kickstart Rom Key;True;Kickstart Cloanto Amiga Forever 7/2016;;False;6678bb9630b65883585dda9ff63174b6;No;rom.key;True;Cloanto Amiga Forever 7/2016
 
 Kickstart 3.1 (40.068) (A4000) Rom;False;Kickstart Original;A4000;False;9bdedde6a4f33555b4a270c8ca53297d;No;kick40068.A4000;True;Dump of original Amiga Kickstart
 Kickstart 3.1 (40.068) (A1200) Rom;False;Kickstart Original;A1200;True;646773759326fbac3b2311fd8c8793ee;No;kick40068.A1200;True;Dump of original Amiga Kickstart

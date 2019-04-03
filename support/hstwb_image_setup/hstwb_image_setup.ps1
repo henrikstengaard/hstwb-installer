@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-04-01
+# Date:   2019-04-03
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -392,6 +392,12 @@ $validAmigaOs314Md5Entries = @(
 
 # valid kickstart rom md5 entries
 $validKickstartMd5Entries = @(
+    @{ 'Md5' = '151cce9d7aa9a36a835ec2f78853125b'; 'Filename' = 'kick40068.A4000'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.068 A4000 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A4000'; 'ConfigSupported' = $false },
+    @{ 'Md5' = '43efffafb382528355bb4cdde9fa9ce7'; 'Filename' = 'kick40068.A1200'; 'Encrypted '= $true; 'Name' = 'Kickstart 3.1 40.068 A1200 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '85a45066a0aebf9ec5870591b6ddcc52'; 'Filename' = 'kick40063.A600'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '189fd22ec463a9375f2ea63045ed6315'; 'Filename' = 'kick34005.A500'; 'Encrypted' = $true; 'Name' = 'Kickstart 1.3 34.5 A500 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A500'; 'ConfigSupported' = $false },
+    @{ 'Md5' = 'd59262012424ee5ddc5aadab9cb57cad'; 'Filename' = 'kick33180.A500'; 'Encrypted' = $true; 'Name' = 'Kickstart 1.2 33.180 A500 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A500'; 'ConfigSupported' = $false },
+
     @{ 'Md5' = '8b54c2c5786e9d856ce820476505367d'; 'Filename' = 'kick40068.A4000'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.068 A4000 Rom, Cloanto Amiga Forever 7/2016'; 'Model' = 'A4000'; 'ConfigSupported' = $false },
     @{ 'Md5' = 'dc3f5e4698936da34186d596c53681ab'; 'Filename' = 'kick40068.A1200'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.068 A1200 Rom, Cloanto Amiga Forever 7/2016'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     @{ 'Md5' = 'c3e114cd3b513dc0377a4f5d149e2dd9'; 'Filename' = 'kick40063.A600'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Cloanto Amiga Forever 7/2016'; 'Model' = 'A500'; 'ConfigSupported' = $true },
@@ -470,7 +476,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-04-01"
+Write-Output "Date: 2019-04-03"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
