@@ -1,7 +1,7 @@
 ; Install Kickstart Rom
 ; ---------------------
 ;
-; Date: 2018-12-29
+; Date: 2019-04-04
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -20,70 +20,78 @@ IF NOT EXISTS "SYSTEMDIR:Devs/Kickstarts/"
   MakePath >NIL: "SYSTEMDIR:Devs/Kickstarts"
 ENDIF
 
-; copy cloanto amiga forever kickstart 1.2 (33.180) a500 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick33180-A500-Rom
-  echo "Cloanto Amiga Forever Kickstart 1.2 (33.180) A500 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick33180.A500" "SYSTEMDIR:Devs/Kickstarts/kick33180.A500"
-ENDIF
 
-; copy cloanto amiga forever kickstart 1.3 (34.5) a500 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick34005-A500-Rom
-  echo "Cloanto Amiga Forever Kickstart 1.3 (34.5) A500..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick34005.A500" "SYSTEMDIR:Devs/Kickstarts/kick34005.A500"
-ENDIF
+; kickstart cloanto amiga forever
+; -------------------------------
 
-; copy cloanto amiga forever kickstart 3.1 (40.063) a600 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick40063-A600-Rom
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.063) A600 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick40063.A600" "SYSTEMDIR:Devs/Kickstarts/kick40063.A600"
-ENDIF
-
-; copy cloanto amiga forever kickstart 3.1 (40.068) a1200 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick40068-A1200-Rom
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.068) A1200 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick40068.A1200" "SYSTEMDIR:Devs/Kickstarts/kick40068.A1200"
-ENDIF
-
-; copy cloanto amiga forever kickstart 3.1 (40.068) a4000 rom, if prefs exists
+; copy kickstart 3.1 40.068 a4000 rom, cloanto amiga forever, if prefs exists
 IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick40068-A4000-Rom
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.068) A4000 rom..."
+  echo "Kickstart 3.1 40.068 A4000 rom, Cloanto Amiga Forever..."
   Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick40068.A4000" "SYSTEMDIR:Devs/Kickstarts/kick40068.A4000"
 ENDIF
 
-; copy cloanto amiga forever kickstart rom key, if prefs exists
+; copy kickstart 3.1 40.068 a1200 rom, cloanto amiga forever, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick40068-A1200-Rom
+  echo "Kickstart 3.1 40.068 A1200 rom, Cloanto Amiga Forever..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick40068.A1200" "SYSTEMDIR:Devs/Kickstarts/kick40068.A1200"
+ENDIF
+
+; copy kickstart 3.1 40.063 a600 rom, cloanto amiga forever, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick40063-A600-Rom
+  echo "Kickstart 3.1 40.063 A600 rom, Cloanto Amiga Forever..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick40063.A600" "SYSTEMDIR:Devs/Kickstarts/kick40063.A600"
+ENDIF
+
+; copy kickstart 1.3 34.5 a500 rom, cloanto amiga forever, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick34005-A500-Rom
+  echo "Kickstart 1.3 34.5 A500 rom, Cloanto Amiga Forever..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick34005.A500" "SYSTEMDIR:Devs/Kickstarts/kick34005.A500"
+ENDIF
+
+; copy kickstart 1.2 33.180 a500 rom, cloanto amiga forever, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-AF-Kick33180-A500-Rom
+  echo "Kickstart 1.2 33.180 A500 rom, Cloanto Amiga Forever..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-kick33180.A500" "SYSTEMDIR:Devs/Kickstarts/kick33180.A500"
+ENDIF
+
+; copy kickstart rom key, cloanto amiga forever, if prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Install-AF-Rom-Key"
-  echo "Cloanto Amiga Forever Kickstart rom key..."
+  echo "Kickstart rom key, Cloanto Amiga Forever..."
   Copy >NIL: "INSTALLDIR:Temp/Kickstart/af-rom.key" "SYSTEMDIR:Devs/Kickstarts/rom.key"
 ENDIF
 
-; copy original kickstart 1.2 (33.180) a500 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-Kick33180-A500-Rom
-  echo "Original Kickstart 1.2 (33.180) A500 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick33180.A500" "SYSTEMDIR:Devs/Kickstarts"
+
+; kickstart original
+; ------------------
+
+; copy kickstart 3.1 40.068 a4000 rom, original, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-Kick40068-A4000-Rom
+  echo "Kickstart 3.1 (40.068) A4000 rom, Original..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick40068.A4000" "SYSTEMDIR:Devs/Kickstarts"
 ENDIF
 
-; copy original kickstart 1.3 (34.5) a500 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-Kick34005-A500-Rom
-  echo "Original Kickstart 1.3 (34.5) A500 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick34005.A500" "SYSTEMDIR:Devs/Kickstarts"
-ENDIF
-
-; copy original kickstart 3.1 (40.063) a600 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-Kick40063-A600-Rom
-  echo "Original Kickstart 3.1 (40.063) A600 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick40063.A600" "SYSTEMDIR:Devs/Kickstarts"
-ENDIF
-
-; copy original kickstart 3.1 (40.068) a1200 rom, if prefs exists
+; copy kickstart 3.1 40.068 a1200 rom, original, if prefs exists
 IF EXISTS INSTALLDIR:Prefs/Install-Kick40068-A1200-Rom
-  echo "Original Kickstart 3.1 (40.068) A1200 rom..."
+  echo "Kickstart 3.1 40.068 A1200 rom, Original..."
   Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick40068.A1200" "SYSTEMDIR:Devs/Kickstarts"
 ENDIF
 
-; copy original kickstart 3.1 (40.068) a4000 rom, if prefs exists
-IF EXISTS INSTALLDIR:Prefs/Install-Kick40068-A4000-Rom
-  echo "Original Kickstart 3.1 (40.068) A4000 rom..."
-  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick40068.A4000" "SYSTEMDIR:Devs/Kickstarts"
+; copy kickstart 3.1 40.063 a600 rom, original, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-Kick40063-A600-Rom
+  echo "Kickstart 3.1 40.063 A600 rom, Original..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick40063.A600" "SYSTEMDIR:Devs/Kickstarts"
+ENDIF
+
+; copy kickstart 1.3 34.5 a500 rom, original, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-Kick34005-A500-Rom
+  echo "Kickstart 1.3 34.5 A500 rom, Original..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick34005.A500" "SYSTEMDIR:Devs/Kickstarts"
+ENDIF
+
+; copy kickstart 1.2 33.180 a500 rom, original, if prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-Kick33180-A500-Rom
+  echo "Kickstart 1.2 33.180 A500 rom, Original..."
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart/kick33180.A500" "SYSTEMDIR:Devs/Kickstarts"
 ENDIF
 
 

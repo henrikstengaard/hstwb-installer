@@ -5,7 +5,7 @@
 ; Copy Kickstart Rom
 ; ------------------
 ;
-; Date: 2018-12-29
+; Date: 2019-04-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Kickstart rom files.
@@ -53,89 +53,133 @@ Delete >NIL: T:_md5
 echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Kickstart-Rom.log
 
 
-; md5
-; ---
+; kickstart cloanto amiga forever 8 md5
+; -------------------------------------
 
-; copy cloanto amiga forever kickstart 1.2 (33.180) a500 rom, if file md5 matches
-IF $md5 eq "c56ca2a3c644d53e780a7e4dbdc6b699"
-  echo "Cloanto Amiga Forever Kickstart 1.2 (33.180) A500 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "af-kick33180.A500"
-  SKIP copyromfile
-ENDIF
-
-; copy cloanto amiga forever kickstart 1.3 (34.5) a500 rom, if file md5 matches
-IF $md5 eq "89160c06ef4f17094382fc09841557a6"
-  echo "Cloanto Amiga Forever Kickstart 1.3 (34.5) A500 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "af-kick34005.A500"
-  SKIP copyromfile
-ENDIF
-
-; copy cloanto amiga forever kickstart 3.1 (40.063) a600 rom, if file md5 matches
-IF $md5 eq "c3e114cd3b513dc0377a4f5d149e2dd9"
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.063) A600 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "af-kick40063.A600"
-  SKIP copyromfile
-ENDIF
-
-; copy cloanto amiga forever kickstart 3.1 (40.068) a1200 rom, if file md5 matches
-IF $md5 eq "dc3f5e4698936da34186d596c53681ab"
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.068) A1200 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "af-kick40068.A1200"
-  SKIP copyromfile
-ENDIF
-
-; copy cloanto amiga forever kickstart 3.1 (40.068) a4000 rom, if file md5 matches
-IF $md5 eq "8b54c2c5786e9d856ce820476505367d"
-  echo "Cloanto Amiga Forever Kickstart 3.1 (40.068) A4000 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+; copy kickstart 3.1 40.068 a4000 rom, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "151cce9d7aa9a36a835ec2f78853125b"
+  echo "Kickstart 3.1 40.068 A4000 rom, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
   set kickstartromfile "af-kick40068.A4000"
   SKIP copyromfile
 ENDIF
 
-; copy cloanto amiga forever kickstart rom key, if it exists
-echo "{file}" NOLINE >T:_kickstartromfile
-search >NIL: T:_kickstartromfile "rom.key"
-IF $RC EQ 0 VAL
-  Copy >NIL: "$escapedfile" TO "INSTALLDIR:Temp/rom.key"
-  search >NIL: "INSTALLDIR:Temp/rom.key" "CLOANTO (R) AMIGA FOREVER (TM) ROM KEY FILE"
-  IF $RC EQ 0 VAL
-    echo "Cloanto Amiga Forever Kickstart rom key detected" >>INSTALLDIR:Temp/Kickstart-Rom.log
-    set kickstartromfile "af-rom.key"
-    SKIP copyromfile
-  ENDIF
-ENDIF
-
-; copy original kickstart 1.2 (33.180) a500 rom, if file md5 matches
-IF $md5 eq "85ad74194e87c08904327de1a9443b7a"
-  echo "Original Kickstart 1.2 (33.180) A500 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "kick33180.A500"
+; copy kickstart 3.1 40.068 a1200 rom, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "43efffafb382528355bb4cdde9fa9ce7"
+  echo "Kickstart 3.1 40.068 A1200 rom, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick40068.A1200"
   SKIP copyromfile
 ENDIF
 
-; copy original kickstart 1.3 (34.5) a500 rom, if file md5 matches
-IF $md5 eq "82a21c1890cae844b3df741f2762d48d"
-  echo "Original Kickstart 1.3 (34.5) A500 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "kick34005.A500"
+; copy kickstart 3.1 40.063 a600 rom, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "85a45066a0aebf9ec5870591b6ddcc52"
+  echo "Kickstart 3.1 40.063 A600 rom, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick40063.A600"
   SKIP copyromfile
 ENDIF
 
-; copy original kickstart 3.1 (40.063) a600 rom, if file md5 matches
-IF $md5 eq "e40a5dfb3d017ba8779faba30cbd1c8e"
-  echo "Original Kickstart 3.1 (40.063) A600 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "kick40063.A600"
+; copy kickstart 1.3 34.5 a500 rom, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "189fd22ec463a9375f2ea63045ed6315"
+  echo "Kickstart 1.3 34.5 A500 rom, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick34005.A500"
   SKIP copyromfile
 ENDIF
 
-; copy original kickstart 3.1 (40.068) a1200 rom, if file md5 matches
+; copy kickstart 1.2 33.180 a500 rom, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "d59262012424ee5ddc5aadab9cb57cad"
+  echo "Kickstart 1.2 33.180 A500 rom, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick33180.A500"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart rom key, cloanto amiga forever 8, if file md5 matches
+IF $md5 eq "69f3435483bbf39f686d9168bff37f2f"
+  echo "Kickstart Rom Key, Cloanto Amiga Forever 8 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-rom.key"
+  SKIP copyromfile
+ENDIF
+
+
+; kickstart cloanto amiga forever 7/2016 md5
+; -------------------------------------------
+
+; copy kickstart 3.1 40.068 a4000 rom, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "8b54c2c5786e9d856ce820476505367d"
+  echo "Kickstart 3.1 40.068 A4000 rom, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick40068.A4000"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 3.1 40.068 a1200 rom, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "dc3f5e4698936da34186d596c53681ab"
+  echo "Kickstart 3.1 40.068 A1200 rom, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick40068.A1200"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 3.1 40.063 a600 rom, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "c3e114cd3b513dc0377a4f5d149e2dd9"
+  echo "Kickstart 3.1 40.063 A600 rom, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick40063.A600"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 1.3 34.5 a500 rom, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "89160c06ef4f17094382fc09841557a6"
+  echo "Kickstart 1.3 34.5 A500 rom, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick34005.A500"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 1.2 33.180 a500 rom, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "c56ca2a3c644d53e780a7e4dbdc6b699"
+  echo "Kickstart 1.2 33.180 A500 rom, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "af-kick33180.A500"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart rom key, cloanto amiga forever 7/2016, if file md5 matches
+IF $md5 eq "6678bb9630b65883585dda9ff63174b6"
+  echo "Kickstart Rom Key, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "rom.key"
+  SKIP copyromfile
+ENDIF
+
+
+; kickstart original md5
+; ----------------------
+
+; copy kickstart 3.1 40.068 a4000 rom, original, if file md5 matches
+IF $md5 eq "9bdedde6a4f33555b4a270c8ca53297d"
+  echo "Kickstart 3.1 40.068 A4000 rom, Original detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "kick40068.A4000"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 3.1 40.068 a1200 rom, original, if file md5 matches
 IF $md5 eq "646773759326fbac3b2311fd8c8793ee"
-  echo "Original Kickstart 3.1 (40.068) A1200 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  echo "Kickstart 3.1 40.068 A1200 rom, Original detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
   set kickstartromfile "kick40068.A1200"
   SKIP copyromfile
 ENDIF
 
-; copy original kickstart 3.1 (40.068) a4000 rom, if file md5 matches
-IF $md5 eq "9bdedde6a4f33555b4a270c8ca53297d"
-  echo "Original Kickstart 3.1 (40.068) A4000 rom detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "kick40068.A4000"
+; copy kickstart 3.1 40.063 a600 rom, original, if file md5 matches
+IF $md5 eq "e40a5dfb3d017ba8779faba30cbd1c8e"
+  echo "Kickstart 3.1 40.063 A600 rom, Original detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "kick40063.A600"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 1.3 34.5 a500 rom, original, if file md5 matches
+IF $md5 eq "82a21c1890cae844b3df741f2762d48d"
+  echo "Kickstart 1.3 34.5 A500 rom, Original detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "kick34005.A500"
+  SKIP copyromfile
+ENDIF
+
+; copy kickstart 1.2 33.180 a500 rom, original, if file md5 matches
+IF $md5 eq "85ad74194e87c08904327de1a9443b7a"
+  echo "Kickstart 1.2 33.180 A500 rom, Original detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
+  set kickstartromfile "kick33180.A500"
   SKIP copyromfile
 ENDIF
 
