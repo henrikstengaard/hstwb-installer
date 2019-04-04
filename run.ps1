@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-04-03
+# Date:   2019-04-04
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -854,7 +854,8 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $packagesMenuScriptLines += ('LAB {0}' -f $amigaOsMenuId)
 
             $amigaOsVersionPackageScripts = @()
-            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
+
+            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or !$_.Package.AmigaOsVersions -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions.Count -gt 0 -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
 
             # build reset, install all and skip all packages
             foreach ($packageScript in $amigaOsVersionPackageScripts)
@@ -1012,7 +1013,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         foreach ($amigaOsVersion in $amigaOsVersions)
         {
             $amigaOsVersionPackageScripts = @()
-            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
+            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or !$_.Package.AmigaOsVersions -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions.Count -gt 0 -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
 
             $viewReadmeMenuId = CalculateMd5FromText ("ViewReadmeMenu:{0}" -f $amigaOsVersion)
             $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
@@ -1102,7 +1103,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $editAssignsMenuOptionLines = @()
     
             $assignSectionNames = @('Global')
-            $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' -and $hstwb.Assigns[$_].Count -gt 0 -and ($amigaOsVersion -eq 'All' -or ($hstwb.Packages[$_.ToLower()].AmigaOsVersions -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions -contains $amigaOsVersion)) } | Sort-Object
+            $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' -and $hstwb.Assigns[$_].Count -gt 0 -and ($amigaOsVersion -eq 'All' -or !$hstwb.Packages[$_.ToLower()].AmigaOsVersions -or ($hstwb.Packages[$_.ToLower()].AmigaOsVersions -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions.Count -gt 0 -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions -contains $amigaOsVersion)) } | Sort-Object
 
             foreach($assignSectionName in $assignSectionNames)
             {
