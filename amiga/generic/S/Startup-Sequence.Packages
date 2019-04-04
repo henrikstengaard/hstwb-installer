@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2019-03-23
+; Date: 2019-04-04
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -22,19 +22,16 @@ ENDIF
 
 ; run setpatch, if setpatch exists
 IF EXISTS C:SetPatch
-  ; set noromupdate to 1, if version is equal or greater than v44.13 (amiga os 3.9)
+  ; check if version is equal or greater than v44.13 (amiga os 3.9)
   Version >NIL: C:SetPatch 44 13 FILE
   IF $RC EQ 0 VAL
-    set noromupdate "1"
-    ; set noromupdate to 0, if version is equal or greater than v45.15 (amiga os 3.1.4)
+    ; run setpatch quit, if version is equal or greater than v45.15 (amiga os 3.1.4). otherwise run setpatch noromupdate quiet
     Version >NIL: C:SetPatch 45 15 FILE
-      set noromupdate "0"
+    IF $RC EQ 0 VAL
+      C:SetPatch QUIET
+    ELSE
+      C:SetPatch NOROMUPDATE QUIET
     ENDIF
-  ENDIF
-  
-  ; run setpatch with noromupdate argument, if noromupdate is set to 1
-  IF $noromupdate EQ 1 VAL
-    C:SetPatch NOROMUPDATE QUIET
   ELSE
     C:SetPatch QUIET
   ENDIF
