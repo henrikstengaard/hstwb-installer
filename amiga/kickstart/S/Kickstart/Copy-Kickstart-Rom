@@ -140,7 +140,7 @@ ENDIF
 ; copy kickstart rom key, cloanto amiga forever 7/2016, if file md5 matches
 IF $md5 eq "6678bb9630b65883585dda9ff63174b6"
   echo "Kickstart Rom Key, Cloanto Amiga Forever 7/2016 detected using MD5" >>INSTALLDIR:Temp/Kickstart-Rom.log
-  set kickstartromfile "rom.key"
+  set kickstartromfile "af-rom.key"
   SKIP copyromfile
 ENDIF
 
