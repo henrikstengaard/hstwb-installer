@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-04-03
+# Date:   2019-06-07
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -205,6 +205,11 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                 {
                     Join-Path $uaeConfigDir -ChildPath (Split-Path $hardfilePath -Leaf)
                 }
+
+                if (!$hardfilePath -or !(Test-Path $hardfilePath))
+                {
+                    throw ("Hardfile2 path '{0}' doesn't exist" -f $hardfilePath)
+                }
                 
                 $line = $line -replace '^(hardfile2=[^,]*,[^,:]*:)[^,]*', "`$1$hardfilePath"
             }
@@ -214,7 +219,17 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
         if ($line -match '^uaehf\d+=')
         {
             $uaehfDevice = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,([^,:]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
-            $uaehfPath = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+            
+            $uaehfIsDir = $false
+            if ($line -match '^uaehf\d+=dir')
+            {
+                $uaehfIsDir = $true
+                $uaehfPath = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+            }
+            else
+            {
+                $uaehfPath = $line | Select-String -Pattern '^uaehf\d+=[^,]*,[^,]*,[^,:]*:"?([^,"]*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+            }
             
             if ($uaehfDevice -and $uaehfPath)
             {
@@ -227,7 +242,19 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                     (Join-Path $uaeConfigDir -ChildPath (Split-Path ($uaehfPath.Replace('\\', '\')) -Leaf)).Replace('\', '\\')
                 }
                 
-                $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                if (!$uaehfPath -or !(Test-Path $uaehfPath))
+                {
+                    throw ("Uaehf path '{0}' doesn't exist" -f $uaehfPath)
+                }
+                
+                if ($uaehfIsDir)
+                {
+                    $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                }
+                else
+                {
+                    $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                }
             }
         }
         
@@ -247,7 +274,12 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                 {
                     Join-Path $uaeConfigDir -ChildPath (Split-Path $filesystemPath -Leaf)
                 }
-                
+
+                if (!$filesystemPath -or !(Test-Path $filesystemPath))
+                {
+                    throw ("Filesystem2 path '{0}' doesn't exist" -f $filesystemPath)
+                }
+
                 $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$filesystemPath"
             }
         }
@@ -321,6 +353,11 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $kickstartFile, $amigaOs39IsoFil
                     'kickstartdir' { $kickstartDir }
                     'userpackagesdir' { $userPackagesDir }
                     default { Join-Path $fsuaeConfigDir -ChildPath (Split-Path $harddrivePath -Leaf) }
+                }
+
+                if (!$harddrivePath -or !(Test-Path $harddrivePath))
+                {
+                    throw ("Harddrive path '{0}' doesn't exist" -f $harddrivePath)
                 }
 
                 $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
@@ -526,23 +563,32 @@ if (!$patchOnly -and $configFilesHasSelfInstallDirs)
     $selfInstall = $true
 }
 
-# set install directories, if self install is true
-if ($selfInstall)
+# set default amiga os dir, if it's not defined
+if (!$amigaOsDir)
 {
     $amigaOsDir = Join-Path $installDir -ChildPath "amigaos"
-    $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
-    $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
-
-    # create self install directories, if they don't exist
-    foreach ($dir in @($amigaOsDir, $kickstartDir, $userPackagesDir))
-    {
-        if (!(Test-Path -Path $dir))
-        {
-            mkdir $dir | Out-Null
-        }
-    }
 }
 
+# set default kickstart dir, if it's not defined
+if (!$kickstartDir)
+{
+    $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
+}
+
+# set default user packages dir, if it's not defined
+if (!$userPackagesDir)
+{
+    $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
+}
+
+# create self install directories, if they don't exist
+foreach ($dir in @($amigaOsDir, $kickstartDir, $userPackagesDir))
+{
+    if (!(Test-Path -Path $dir))
+    {
+        mkdir $dir | Out-Null
+    }
+}
 
 # autodetect amiga forever data dir, if it's not defined
 if (!$amigaForeverDataDir)
@@ -551,21 +597,9 @@ if (!$amigaForeverDataDir)
     $amigaForeverDataDir = FindAmigaForeverDataDirFromMediaWindows
 
     # get amiga forever data dir from environment variable, if no amiga forever data dir was detected from media
-    if (!$amigaForeverDataDir -and ${Env:AMIGAFOREVERDATA} -ne $null)
+    if (!$amigaForeverDataDir -and $null -ne ${Env:AMIGAFOREVERDATA})
     {
         $amigaForeverDataDir = ${Env:AMIGAFOREVERDATA}
-    }
-    
-    # set kickstart dir to amiga forever data dir, if self install is false and amiga forever data shared rom dir exists
-    if (!$selfInstall -and $amigaForeverDataDir)
-    {
-        $sharedDir = Join-Path $amigaForeverDataDir -ChildPath 'Shared'
-        $sharedRomDir = Join-Path $sharedDir -ChildPath "rom"
-        
-        if (!$kickstartDir -and (Test-Path $sharedRomDir))
-        {
-            $kickstartDir = $sharedRomDir
-        }
     }
 }
 
