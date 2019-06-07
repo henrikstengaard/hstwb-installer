@@ -213,6 +213,20 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                 
                 $line = $line -replace '^(hardfile2=[^,]*,[^,:]*:)[^,]*', "`$1$hardfilePath"
             }
+
+            $fileSystemPath = $line | Select-String -Pattern ',([^,]*),uae$' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+
+            if ($fileSystemPath -and $fileSystemPath -ne '')
+            {
+                $fileSystemPath = Join-Path $uaeConfigDir -ChildPath (Split-Path $fileSystemPath -Leaf)
+
+                if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
+                {
+                    throw ("Hardfile2 filesystem path '{0}' doesn't exist" -f $fileSystemPath)
+                }
+
+                $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
+            }
         }
 
         # patch uaehf to current directory
@@ -255,6 +269,20 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                 {
                     $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
                 }
+            }
+
+            $fileSystemPath = $line | Select-String -Pattern ',([^,]*),uae$' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+
+            if ($fileSystemPath -and $fileSystemPath -ne '')
+            {
+                $fileSystemPath = Join-Path $uaeConfigDir -ChildPath (Split-Path $fileSystemPath -Leaf)
+
+                if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
+                {
+                    throw ("Uaehf filesystem path '{0}' doesn't exist" -f $fileSystemPath)
+                }
+
+                $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
             }
         }
         
@@ -357,11 +385,30 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $kickstartFile, $amigaOs39IsoFil
 
                 if (!$harddrivePath -or !(Test-Path $harddrivePath))
                 {
-                    throw ("Harddrive path '{0}' doesn't exist" -f $harddrivePath)
+                    throw ("Hard drive path '{0}' doesn't exist" -f $harddrivePath)
                 }
 
                 $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
             }
+        }
+
+        # patch hard drive file system path
+        if ($line -match '^hard_drive_\d+_file_system\s*=')
+        {
+            # get file system path
+            $fileSystemPath = $line | Select-String -Pattern '^hard_drive_\d+_file_system\s*=\s*(.*)' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
+
+            if ($fileSystemPath)
+            {
+                $fileSystemPath = Join-Path $fsuaeConfigDir -ChildPath (Split-Path $fileSystemPath -Leaf)
+            }
+
+            if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
+            {
+                throw ("Hard drive file system path '{0}' doesn't exist" -f $fileSystemPath)
+            }
+
+            $line = $line -replace '^(^hard_drive_\d+_file_system\s*=\s*).*', ("`$1{0}" -f $fileSystemPath.Replace('\', '/'))
         }
 
         # update line, if it's changed

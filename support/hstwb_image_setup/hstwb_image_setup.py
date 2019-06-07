@@ -311,6 +311,15 @@ def patch_uae_config_file( \
             line = re.sub(r'^(hardfile2=[^,]*,[^,:]*:)[^,]+', 
                 '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile_path.replace('\\', '\\\\'))), line, 0, re.I)
 
+            hardfile2_file_system_path_match = re.search(r',([^,]*),uae$', line, re.I)
+            if hardfile2_file_system_path_match and hardfile2_file_system_path_match.group(1) != '':
+                hardfile2_file_system_path = os.path.join(uae_config_dir, os.path.basename(hardfile2_file_system_path_match.group(1)))
+                if hardfile2_file_system_path == None or not os.path.exists(hardfile2_file_system_path):
+                    print 'Error: Hardfile2 filesystem path \'{0}\' doesn\'t exist'.format(hardfile2_file_system_path)
+                    exit(1)
+                line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
+                    '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile2_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
+
         # patch uaehf path
         uaehf_device_match = re.search(r'^uaehf\d+=[^,]*,[^,]*,([^,:]*)', line, re.I)
 
@@ -334,6 +343,15 @@ def patch_uae_config_file( \
             else:
                 line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]+', 
                     '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
+
+            uaehf_file_system_path_match = re.search(r',([^,]*),uae$', line, re.I)
+            if uaehf_file_system_path_match and uaehf_file_system_path_match.group(1) != '':
+                uaehf_file_system_path = os.path.join(uae_config_dir, os.path.basename(uaehf_file_system_path_match.group(1)))
+                if uaehf_file_system_path == None or not os.path.exists(uaehf_file_system_path):
+                    print 'Error: Uaehf filesystem path \'{0}\' doesn\'t exist'.format(uaehf_file_system_path)
+                    exit(1)
+                line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
+                    '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # patch filesystem2 path
         filesystem2_device_match = re.search(r'^filesystem2=[^,]*,[^,:]*:([^:]*)', line, re.I)
@@ -433,6 +451,20 @@ def patch_fsuae_config_file( \
                 line = re.sub(
                     r'^(hard_drive_\d+\s*=\s*).*', \
                     '\\1{0}'.format(hard_drive_path), line)
+
+        # patch hard drive file system path
+        hard_drive_file_system_match = re.match(
+            r'^hard_drive_\d+_file_system\s*=\s*(.*)', line, re.M|re.I)
+        if hard_drive_file_system_match:
+            hard_drive_file_system_path = os.path.join(
+                fsuae_config_dir,
+                os.path.basename(hard_drive_file_system_match.group(1))).replace('\\', '/')
+            if hard_drive_file_system_path == None or not os.path.exists(hard_drive_file_system_path):
+                print 'Error: Hard drive file system path \'{0}\' doesn\'t exist'.format(hard_drive_file_system_path)
+                exit(1)
+            line = re.sub(
+                r'^(^hard_drive_\d+_file_system\s*=\s*).*', \
+                '\\1{0}'.format(hard_drive_file_system_path), line)
 
         # update line, if it's changed
         if line != fsuae_config_lines[i]:
