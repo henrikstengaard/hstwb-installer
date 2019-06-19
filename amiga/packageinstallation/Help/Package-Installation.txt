@@ -14,16 +14,31 @@ changed by selecting 'Select package filtering'.
 
 Select a package to switch it between 'Install' and
 'Skip'. This indicates weither the package will be
-installed or skipped. Packages with (*) indicates
-that the package has dependencies to other packages,
-which will also be selected, if the package is set
-to be installed. A warning will be shown, if a
-package is set to be skipped and other packages has
+installed or skipped.
+
+Packages with package dependency legend (!) indicates
+that the package has dependencies to other packages.
+When switching a package with package dependency
+legends to 'Install', all package dependencies will
+be switched to 'Install'. A warning will be shown, if a
+package is switched to 'Skip' and other packages has
 dependencies to it.
 
-All packages can be set to be installed by selecting
-'Install all packages' or set to be skipped by
-selecting 'Skip all packages'.
+Packages with identical content legend (=) indicates
+that these packages will install the same kind of
+content and overwrite each other. Therefore only one
+of these can be installed, so when switching a
+package with content legends to 'Install', all other
+packages with same content legends will be switched
+to 'Skip'. Packages with identical content can be
+switched to 'Install' by switching
+'Ignore identical content' from 'No' to 'Yes'. Then
+a warning will be shown, if a package with identical
+content legends is set to be installed.
+
+All packages can be switched to 'Install' by selecting
+'Install all packages' or set to 'Skip' by selecting
+'Skip all packages'.
 
 Select 'View readme' to view packages readme guide
 with further information each package.

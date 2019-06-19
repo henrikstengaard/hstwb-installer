@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-04-04
+# Date:   2019-06-19
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -508,6 +508,65 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packagesMenuScriptLines += "echo ""Select package filtering: `$amigaostext"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
 
+    $contentIdPackages = @{}
+    
+    foreach ($installPackageScript in $installPackageScripts)
+    {
+        if (!$installPackageScript.Package.ContentIds)
+        {
+            continue
+        }
+
+        foreach($contentId in ($installPackageScript.Package.ContentIds | ForEach-Object { $_.ToLower() }))
+        {
+            if (!$contentIdPackages.ContainsKey($contentId))
+            {
+                $contentIdPackages[$contentId] = @()
+            }
+
+            if (($contentIdPackages[$contentId] | Where-Object { $_.Id -eq $installPackageScript.Package.Id }).Count -gt 0)
+            {
+                continue
+            }
+
+            $contentIdPackages[$contentId] += $installPackageScript.Package
+        }
+    }
+
+    $identicalContentIdLegends = @{}
+    $packageIdenticalContentIds = @{}
+
+    foreach($contentId in ($contentIdPackages.keys | Sort-Object))
+    {
+        if ($contentIdPackages[$contentId].Count -lt 2)
+        {
+            continue
+        }
+
+        if (!$identicalContentIdLegends.ContainsKey($contentId))
+        {
+            $identicalContentIdLegends[$contentId] = $identicalContentIdLegends.keys.Count + 1
+        }
+
+        foreach($package in $contentIdPackages[$contentId])
+        {
+            if (!$packageIdenticalContentIds.ContainsKey($package.Id))
+            {
+                $packageIdenticalContentIds[$package.Id] = @()
+            }
+
+            if ($packageIdenticalContentIds[$package.Id] -contains $identicalContentIdLegends[$contentId])
+            {
+                continue
+            }
+
+            $packageIdenticalContentIds[$package.Id] += $identicalContentIdLegends[$contentId]
+        }
+    }
+
+    $packageDependenciesLegends = @{}
+    $packageDependenciesIndex = @{}
+
     foreach ($installPackageScript in $installPackageScripts)
     {
         $packagesMenuScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
@@ -515,12 +574,32 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
         $packagesMenuScriptLines += "ELSE"
         $packagesMenuScriptLines += "  echo ""Skip   "" NOLINE >>T:packagesmenu"
         $packagesMenuScriptLines += "ENDIF"
-        $hasDependenciesIndicator = if ($installPackageScript.Package.Dependencies.Count -gt 0) { ' (**)' } else { '' }
-        $packagesMenuScriptLines += ("echo "" : {0}{1}"" >>T:packagesmenu" -f $installPackageScript.Package.FullName, $hasDependenciesIndicator)
+
+        $legends = @()
+        if ($installPackageScript.Package.Dependencies.Count -gt 0)
+        {
+            $packageDependenciesIndex[$installPackageScript.Package.Id]
+            if (!$packageDependenciesLegends.ContainsKey($installPackageScript.Package.Id))
+            {
+                $packageDependenciesLegends[$installPackageScript.Package.Id] = $packageDependenciesLegends.keys.Count + 1
+            }
+    
+            $legends += '!{0}' -f $packageDependenciesLegends[$installPackageScript.Package.Id]
+            $packageDependenciesIndex[$installPackageScript.Package.Id] = GetDependencyPackageNames $hstwb $installPackageScript.Package
+        }
+
+        if ($packageIdenticalContentIds.ContainsKey($installPackageScript.Package.Id))
+        {
+            $legends += $packageIdenticalContentIds[$installPackageScript.Package.Id] | ForEach-Object { '={0}' -f $_}
+        }
+
+        $legendsFormatted = if ($legends.Count -gt 0) { (' ({0})' -f ($legends -join ', ')) } else { '' }
+        $packagesMenuScriptLines += ("echo "" : {0}{1}"" >>T:packagesmenu" -f $installPackageScript.Package.FullName, $legendsFormatted)
     }
 
     $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Help"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Legends (!), (=)"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Install all packages"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""Skip all packages"" >>T:packagesmenu"
     $packagesMenuScriptLines += "echo ""View readme"" >>T:packagesmenu"
@@ -547,6 +626,7 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
     $packagesMenuScriptLines += "  SKIP packagefilteringmenu"
     $packagesMenuScriptLines += "ENDIF"
+
 
     $packageMenuOption++
     foreach($installPackageScript in $installPackageScripts)
@@ -611,12 +691,36 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
         {
             $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
 
-            $packagesMenuScriptLines += ("    ; Select dependency package '{0}'" -f $dependencyPackage.FullName)
+            $packagesMenuScriptLines += ("    ; Install dependency package '{0}'" -f $dependencyPackage.FullName)
             $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
         }
         
-        $packagesMenuScriptLines += ("    ; Select package '{0}'" -f $installPackageScript.Package.FullName)
+        $packagesMenuScriptLines += ("    ; Install package '{0}'" -f $installPackageScript.Package.FullName)
         $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
+
+        $identicalContentIds = @()
+        if ($installPackageScript.Package.ContentIds)
+        {
+            $identicalContentIds += (Compare-Object -ReferenceObject ($contentIdPackages.keys | ForEach-Object { $_.ToString() }) -DifferenceObject $installPackageScript.Package.ContentIds -includeEqual -ExcludeDifferent).InputObject
+        }
+
+        # skip packages with identical content id's
+        if ($identicalContentIds.Count -gt 0)
+        {
+            $packages = $identicalContentIds | ForEach-Object { $contentIdPackages[$_] } | Where-Object { $_.Id -ne $installPackageScript.Package.Id -and $dependencyPackageNames -notcontains $_.Name } | Sort-Object -Property Id -Unique
+
+            foreach($package in $packages)
+            {
+                $packageIdenticalContentIds = @()
+                $packageIdenticalContentIds += (Compare-Object -ReferenceObject $installPackageScript.Package.ContentIds -DifferenceObject $package.ContentIds -includeEqual -ExcludeDifferent).InputObject | Sort-Object
+
+                $packagesMenuScriptLines += ("    ; Skip package '{0}' with identical content id '{1}'" -f $package.FullName, ($packageIdenticalContentIds -join ', '))
+                $packagesMenuScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
+                $packagesMenuScriptLines += ("      delete >NIL: ""T:{0}""" -f $package.Id)
+                $packagesMenuScriptLines += "    ENDIF"
+            }
+        }
+
         $packagesMenuScriptLines += "  ENDIF"
         $packagesMenuScriptLines += "ENDIF"
     }
@@ -631,6 +735,48 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packagesMenuScriptLines += '  ELSE'
     $packagesMenuScriptLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Package-Installation.txt'' doesn''t exist!"'
     $packagesMenuScriptLines += '  ENDIF'
+    $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += '; legends option'
+    $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
+    $packagesMenuScriptLines += '  echo "Legends" >T:packageinstallationlegends.txt'
+    $packagesMenuScriptLines += '  echo "-------" >>T:packageinstallationlegends.txt'
+    $packagesMenuScriptLines += '  echo "Description for legends in package installation." >>T:packageinstallationlegends.txt'
+
+    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
+    if ($packageDependenciesLegends.Count -gt 0)
+    {
+        $packagesMenuScriptLines += ('echo "{0} package dependencies legends:" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegends.Count)
+
+        foreach($packageDependenciesLegend in ($packageDependenciesLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuScriptLines += ('echo "!{0}: Package has package dependencies ''{1}''" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegend.Value, ($packageDependenciesIndex[$packageDependenciesLegend.Name] -join ', '))
+        }
+    }
+    else
+    {
+        $packagesMenuScriptLines += 'echo "No package dependencies legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
+    if ($identicalContentIdLegends.Count -gt 0)
+    {
+        $packagesMenuScriptLines += ('echo "{0} identical content legends:" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegends.Count)
+
+        foreach($identicalContentIdLegend in ($identicalContentIdLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuScriptLines += ('echo "={0}: Packages has identical content id ''{1}''" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegend.Value, $identicalContentIdLegend.Name)
+        }
+    }
+    else
+    {
+        $packagesMenuScriptLines += 'echo "No identical content legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuScriptLines += '  Lister "T:packageinstallationlegends.txt" >NIL:'
+    $packagesMenuScriptLines += '  delete >NIL: "T:packageinstallationlegends.txt"'
     $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
     $packagesMenuScriptLines += "ENDIF"
 
@@ -3116,7 +3262,7 @@ function RunBuildPackageInstallation($hstwb)
     Write-Host "Building package installation to '$outputPackageInstallationPath'..."    
 
     # extract packages to temp packages dir
-    ExtractPackages $hstwb $installPackages $outputPackageInstallationPath
+    # ExtractPackages $hstwb $installPackages $outputPackageInstallationPath
     
     # build install package script lines
     $packageInstallationScriptLines = @()
@@ -3340,7 +3486,7 @@ try
     # find kickstart files
     Write-Host "Finding Kickstart sets in Kickstart dir..."
     FindKickstartFiles $hstwb
-        
+
     # update packages and assigns
     UpdateInstallPackages $hstwb
     UpdateInstallUserPackages $hstwb
