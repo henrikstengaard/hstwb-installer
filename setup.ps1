@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-29
+# Date:   2019-06-20
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -919,6 +919,7 @@ function SelectPackages($hstwb)
 
     # build available and install packages indexes
     $dependencyPackageNamesIndex = @{}
+    $contentIdPackages = @{}
 
     foreach ($packageName in $packageNames)
     {
@@ -941,6 +942,24 @@ function SelectPackages($hstwb)
     
                 $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
             }
+        }
+
+        if ($package.ContentIds)
+        {
+            foreach($contentId in ($package.ContentIds | ForEach-Object { $_.ToLower() }))
+            {
+                if (!$contentIdPackages.ContainsKey($contentId))
+                {
+                    $contentIdPackages[$contentId] = @()
+                }
+    
+                if (($contentIdPackages[$contentId] | Where-Object { $_.Id -eq $package.Id }).Count -gt 0)
+                {
+                    continue
+                }
+    
+                $contentIdPackages[$contentId] += $package
+            }            
         }
     }
 
@@ -1003,7 +1022,7 @@ function SelectPackages($hstwb)
         {
             $packageName = $choice.Value
 
-            # deselect package, if it's already selected. otherwise deselect package
+            # skip package, if it's set to install. otherwise deselect package
             if ($packageNamesInstallIndex.ContainsKey($packageName))
             {
                 $skipPackage = $true
@@ -1032,7 +1051,28 @@ function SelectPackages($hstwb)
             }
             else
             {
+                # add package
                 $addPackageNames += $packageName
+
+                # get package
+                $package = $hstwb.Packages[$packageName]
+
+                $identicalContentIds = @()
+                if ($hstwb.Settings.Installer.Mode -eq "Install" -and $package.ContentIds)
+                {
+                    $identicalContentIds += (Compare-Object -ReferenceObject ($contentIdPackages.keys | ForEach-Object { $_.ToString() }) -DifferenceObject $package.ContentIds -includeEqual -ExcludeDifferent).InputObject
+                }
+
+                if ($identicalContentIds.Count -gt 0)
+                {
+                    $dependencyPackageNames = @()
+                    if ($dependencyPackageNamesIndex.ContainsKey($packageName))
+                    {
+                        $dependencyPackageNames += $dependencyPackageNamesIndex[$packageName] | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
+                    }
+
+                    $removePackageNames += $identicalContentIds | ForEach-Object { $contentIdPackages[$_] } | Where-Object { $_.Id -ne $package.Id -and $dependencyPackageNames -notcontains $_.Name } | Sort-Object -Property Id -Unique | ForEach-Object { $_.Name }
+                }        
             }         
         }
 
@@ -1466,6 +1506,15 @@ function ChangeInstallerMode($hstwb)
 
     if ($choice.Value -ne 'Back')
     {
+        # set ignore identical content to false
+        $hstwb.IgnoreIdenticalContent = $false
+
+        # remove install packages, if installer mode is changed
+        if ($hstwb.Settings.Installer.Mode -ne $choice.Value)
+        {
+            RemoveInstallPackages $hstwb
+        }
+
         # set installer mode
         $hstwb.Settings.Installer.Mode = $choice.Value
 

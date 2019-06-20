@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-28
+# Date:   2019-06-20
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -467,6 +467,16 @@ function DetectUserPackages($hstwb)
     return $userPackages
 }
 
+# remove install packages
+function RemoveInstallPackages($hstwb)
+{
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
+    {
+        $hstwb.Settings.Packages.Remove($installPackageKey)
+    }
+
+    UpdateAssigns $hstwb     
+}
 
 # update install packages
 function UpdateInstallPackages($hstwb)
