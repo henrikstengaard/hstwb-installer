@@ -30,11 +30,7 @@ content and overwrite each other. Therefore only one
 of these can be installed, so when switching a
 package with content legends to 'Install', all other
 packages with same content legends will be switched
-to 'Skip'. Packages with identical content can be
-switched to 'Install' by switching
-'Ignore identical content' from 'No' to 'Yes'. Then
-a warning will be shown, if a package with identical
-content legends is set to be installed.
+to 'Skip'.
 
 All packages can be switched to 'Install' by selecting
 'Install all packages' or set to 'Skip' by selecting
