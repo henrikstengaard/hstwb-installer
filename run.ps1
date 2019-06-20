@@ -3262,7 +3262,7 @@ function RunBuildPackageInstallation($hstwb)
     Write-Host "Building package installation to '$outputPackageInstallationPath'..."    
 
     # extract packages to temp packages dir
-    # ExtractPackages $hstwb $installPackages $outputPackageInstallationPath
+    ExtractPackages $hstwb $installPackages $outputPackageInstallationPath
     
     # build install package script lines
     $packageInstallationScriptLines = @()
