@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-19
+# Date:   2019-06-20
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -743,7 +743,7 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
     $packagesMenuScriptLines += '  echo "Legends" >T:packageinstallationlegends.txt'
     $packagesMenuScriptLines += '  echo "-------" >>T:packageinstallationlegends.txt'
-    $packagesMenuScriptLines += '  echo "Description for legends in package installation." >>T:packageinstallationlegends.txt'
+    $packagesMenuScriptLines += '  echo "Description for legends this package installation." >>T:packageinstallationlegends.txt'
 
     $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
     if ($packageDependenciesLegends.Count -gt 0)
