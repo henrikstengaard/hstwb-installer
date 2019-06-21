@@ -1,0 +1,10 @@
+All: Free
+
+Clean:
+	delete Free *.lib *.o *.lnk
+	smake
+
+Free: Free.o
+   sc link Free.o to Free CPU=68000 opt nostkchk MATH=standard
+
+Free.o: Free.c
