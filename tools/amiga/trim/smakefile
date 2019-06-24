@@ -1,0 +1,10 @@
+All: Trim
+
+Clean:
+	delete Trim *.lib *.o *.lnk
+	smake
+
+Trim: Trim.o
+   sc link Trim.o to Trim CPU=68000 opt nostkchk MATH=standard
+
+Trim.o: Trim.c
