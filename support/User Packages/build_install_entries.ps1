@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-02-28
+# Date:   2019-06-24
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -263,7 +263,7 @@ function FindEntries()
     )
     
     $files = @()
-    $files += Get-ChildItem -Path $userPackageDir -Recurse -Include *.lha, *.lzx | Sort-Object @{expression={$_.FullName};Ascending=$true}
+    $files += Get-ChildItem -Path $userPackageDir -Recurse -Include *.lha, *.lzx, .zip | Sort-Object @{expression={$_.FullName};Ascending=$true}
     
     $entries = New-Object System.Collections.Generic.List[System.Object]
     
@@ -412,6 +412,8 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; reset")
 
+    $userPackageInstallLines.Add("set devicereqfreemb ""50""")
+    $userPackageInstallLines.Add("set stopinstallation ""0""")
     $userPackageInstallLines.Add("set entriessetid ""1""")
 
     $allHardwares = @()
@@ -678,6 +680,8 @@ function BuildInstallEntries()
 {
     Param(
         [Parameter(Mandatory=$true)]
+        [string]$userPackageName,
+        [Parameter(Mandatory=$true)]
         [array]$entries,
         [Parameter(Mandatory=$true)]
         [string]$userPackagePath,
@@ -745,14 +749,10 @@ function BuildInstallEntries()
         $paddingText = " " * $padding
 
         $installEntryLines.Add(("{0}IF EXISTS ""{1}""" -f $paddingText, $userPackageFile))
-        if ($userPackageFile -match '\.lha$')
-        {
-            $installEntryLines.Add(("{0}  lha -m1 x ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
-        }
-        elseif ($userPackageFile -match '\.lzx$')
-        {
-            $installEntryLines.Add(("{0}  unlzx -m x ""{1}"" ""`$entrydir/""" -f $paddingText, $userPackageFileEscaped))
-        }
+        $installEntryLines.Add(("{0}  Execute INSTALLDIR:S/InstallEntry ""{1}"" ""{2}"" ""{3}""" -f $paddingText, $userPackageName, $indexName, $userPackageFileEscaped))
+        $installEntryLines.Add(("{0}  IF ""`$stopinstallation"" EQ 1 VAL" -f $paddingText))
+        $installEntryLines.Add(("{0}    SKIP end" -f $paddingText))
+        $installEntryLines.Add(("{0}  ENDIF" -f $paddingText))
         $installEntryLines.Add("{0}ENDIF" -f $paddingText)
 
         if ($multiLanguages)
@@ -765,6 +765,9 @@ function BuildInstallEntries()
     foreach($installEntryFilename in $installEntryLinesIndex.keys)
     {
         $installEntryLines = $installEntryLinesIndex[$installEntryFilename]
+        $installEntryLines.Add("")
+        $installEntryLines.Add("; end")
+        $installEntryLines.Add("LAB end")
         $installEntryLines.Add("")
 
         $installEntryFile = Join-Path $installEntriesDir -ChildPath $installEntryFilename
@@ -796,6 +799,9 @@ function BuildInstallEntries()
                     $installEntriesLines.Add(("    echo ""*e[1mInstalling {0}, {1}, {2}...*e[0m""" -f $indexName, $hardware.ToUpper(), $language.ToUpper()))
                     $installEntriesLines.Add("    wait 1")
                     $installEntriesLines.Add(("    Execute ""USERPACKAGEDIR:{0}/{1}""" -f $userPackagePath, $installEntryFilenameIndex[$indexName][$hardware][$language]))
+                    $installEntriesLines.Add(("    IF ""`$stopinstallation"" EQ 1 VAL" -f $paddingText))
+                    $installEntriesLines.Add(("      SKIP end" -f $paddingText))
+                    $installEntriesLines.Add(("    ENDIF" -f $paddingText))
                     $installEntriesLines.Add("  ENDIF")
                 }
             }
@@ -805,7 +811,10 @@ function BuildInstallEntries()
     }
 
     $installEntriesLines.Add("")
-    
+    $installEntriesLines.Add("; end")
+    $installEntriesLines.Add("LAB end")
+    $installEntriesLines.Add("")
+
     # write install entries file
     $installEntriesFile = Join-Path $installEntriesDir -ChildPath 'Install-Entries'
     WriteTextLinesForAmiga $installEntriesFile $installEntriesLines.ToArray()
@@ -847,7 +856,7 @@ Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2018-05-20"
+Write-Output "Date: 2019-06-24"
 Write-Output ""
 
 # resolve paths
@@ -949,7 +958,7 @@ foreach($userPackageDir in $userPackageDirs)
         }
 
         # build install entries
-        BuildInstallEntries $entriesSet.Entries ("Install/{0}" -f $entriesSet.Name) $installEntriesDir
+        BuildInstallEntries $userPackageName $entriesSet.Entries ("Install/{0}" -f $entriesSet.Name) $installEntriesDir
 
         # write entries list
         $entriesListFile = Join-Path -Path $userPackageDir.FullName -ChildPath ("entries-{0}.csv" -f $entriesSet.Name.ToLower())
