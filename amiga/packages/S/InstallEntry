@@ -5,7 +5,7 @@
 ; Install Entry
 ; -------------
 ;
-; Date: 2019-06-24
+; Date: 2019-06-25
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -46,7 +46,6 @@ SKIP end
 
 LAB lhaentry
 set lhaentry "1"
-echo "lha"
 lha l "{entryfile}" >T:_lhalist
 set lhalines `wc -l <T:_lhalist`
 sed "`eval "$lhalines-1"`q;d" T:_lhalist >T:_lhasize
@@ -58,7 +57,6 @@ SKIP devicefreespace
 
 LAB lzxentry
 set lzxentry "1"
-echo "lzx"
 unlzx l "{entryfile}" >T:_lzxlist
 set lzxlines `wc -l <T:_lzxlist`
 sed "`eval "$lzxlines-3"`q;d" T:_lzxlist >T:_lzxsize
@@ -70,7 +68,6 @@ SKIP devicefreespace
 
 LAB zipentry
 set zipentry "1"
-echo "zip"
 unzip -l "{entryfile}" >T:_ziplist
 set ziplines `wc -l <T:_ziplist`
 sed "`eval "$ziplines"`q;d" T:_ziplist >T:_zipsize
