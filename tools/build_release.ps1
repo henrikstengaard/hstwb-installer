@@ -19,7 +19,9 @@
 
 Param(
 	[Parameter(Mandatory=$false)]
-	[switch]$packages
+	[switch]$packages,
+	[Parameter(Mandatory=$false)]
+	[switch]$msi
 )
 
 
@@ -82,7 +84,7 @@ if (!(Test-Path -path $pandocFile))
 }
 
 # fail, if wix toolset directory doesn't exist
-if (!(Test-Path -path $wixToolsetDir))
+if ($msi -and !(Test-Path -path $wixToolsetDir))
 {
 	Write-Error "Error: WiX Toolset directory '$wixToolsetDir' doesn't exist!"
 	exit 1
@@ -264,11 +266,16 @@ Write-Output ("- Building portable zip release{0}..." -f $packagesText)
 
 Write-Output "Done."
 Write-Output ("Successfully build portable zip release file '{0}'." -f $portableZipFile)
-Write-Output ""
 
+
+if (!$msi)
+{
+	exit
+}
 
 # build msi release
 # -----------------
+Write-Output ""
 Write-Output "Build msi release"
 Write-Output "-----------------"
 Write-Output "- Building wxs components from directories..."
