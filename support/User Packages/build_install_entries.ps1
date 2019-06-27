@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-24
+# Date:   2019-06-27
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -412,7 +412,7 @@ function BuildUserPackageInstall()
     $userPackageInstallLines.Add("")
     $userPackageInstallLines.Add("; reset")
 
-    $userPackageInstallLines.Add("set devicereqfreemb ""50""")
+    $userPackageInstallLines.Add("set devicereqfreemb ""100""")
     $userPackageInstallLines.Add("set stopinstallation ""0""")
     $userPackageInstallLines.Add("set entriessetid ""1""")
 
@@ -856,7 +856,7 @@ Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-06-24"
+Write-Output "Date: 2019-06-27"
 Write-Output ""
 
 # resolve paths

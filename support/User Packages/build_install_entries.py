@@ -5,7 +5,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-26
+# Date:   2019-06-27
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -359,7 +359,7 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
     user_package_install_lines.append("")
     user_package_install_lines.append("; reset")
 
-    user_package_install_lines.append("set devicereqfreemb \"50\"")
+    user_package_install_lines.append("set devicereqfreemb \"100\"")
     user_package_install_lines.append("set stopinstallation \"0\"")
     user_package_install_lines.append("set entriessetid \"1\"")
 
@@ -751,7 +751,7 @@ print("---------------------")
 print("Build Install Entries")
 print("---------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2019-06-26")
+print("Date: 2019-06-27")
 print("")
 
 # print usage and exit, if arguments are not defined
