@@ -1,0 +1,21 @@
+User packages available help
+----------------------------
+
+User packages available shows valid user packages detected
+in USERPACKAGESDIR: device. A valid user package must have
+a "_installdir" file indicating default drawer to install
+the user package to. User packages available only shows
+user packages available before starting self install. User
+packages can be selected and installed later during self
+install.
+
+Select "Show detect user packages log" to examine details
+about detected user packages.
+
+If one or more user packages are not detected, user
+packages can be changed and detect user packages can
+be restarted by selecting "Restart detect user package".
+
+If detected user packages are as expected, then select
+"Continue with [x] user package(s) available" to continue
+self install.

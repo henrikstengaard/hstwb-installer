@@ -1,0 +1,94 @@
+; Install Boing Bag 1
+; -------------------
+;
+; Date: 2019-03-14
+; Author: Henrik Noerfjand Stengaard
+;
+; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bag 1.
+
+
+; install boing bag 1
+; -------------------
+
+; add amiga os 3.9 boing bag 1 installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 Boing Bag 1 installation" >>SYS:hstwb-installer.log
+echo "-------------------------------------" >>SYS:hstwb-installer.log
+
+echo ""
+echo "*e[1mInstalling Boing Bag 1*e[0m"
+
+; extract boing bag 1
+echo "Extracting..."
+INSTALLDIR:C/lha -m1 x "INSTALLDIR:Temp/Amiga-OS/BoingBag39-1.lha" "SYS:T/BoingBags/" >>SYS:hstwb-installer.log
+echo "Installing..."
+
+; run boing bag 1 updater
+SYS:T/BoingBags/BoingBag3.9-1/C/Updater SYS:T/BoingBags/BoingBag3.9-1/AmigaOS-Update "SYS:"
+
+; set some protection bits 
+protect SYS:C/LoadMonDrvs +prwed
+protect SYS:C/LoadResource +prwed
+protect SYS:C/MakeDir +prwed
+protect SYS:C/MakeLink +prwed
+protect SYS:C/SetEnv +prwed
+protect SYS:C/WBInfo +prwed
+protect SYS:C/WBRun +prwed
+
+protect SYS:S/Start-Amplifier.rexx +srwed
+protect SYS:S/Startup-Sequence-BB3.9-1 +srwed
+protect SYS:S/Stream-Amplifier.rexx +srwed
+
+; install warpup 5.1
+IF EXISTS "SYS:T/BoingBags/BoingBag3.9-1/PowerPC/powerpc.library"
+  IF EXISTS "SYS:Libs/powerpc.library"
+    Copy >>SYS:hstwb-installer.log "SYS:T/BoingBags/BoingBag3.9-1/PowerPC/powerpc.library" "SYS:Libs"
+  ENDIF
+ENDIF
+
+IF EXISTS "SYS:T/BoingBags/BoingBag3.9-1/PowerPC/warp.library"
+  IF EXISTS "SYS:Libs/warp.library"
+    Copy >>SYS:hstwb-installer.log "SYS:T/BoingBags/BoingBag3.9-1/PowerPC/warp.library" "SYS:Libs"
+  ENDIF
+ENDIF
+
+; install locale catalogs
+execute "INSTALLDIR:S/Amiga-OS-3.9/Copy-Locale" "SYS:T/BoingBags/BoingBag3.9-1/Locale/Catalogs" "SYS:Locale/Catalogs"
+
+IF EXISTS "SYS:Internet/AWeb3SE/Catalogs"
+  execute "INSTALLDIR:S/Amiga-OS-3.9/Copy-Locale" "SYS:T/BoingBags/BoingBag3.9-1/Locale/AWeb3SE/Catalogs" "SYS:Internet/AWeb3SE/Catalogs"
+ENDIF
+
+; rename internet directory and files
+IF EXISTS "SYS:Internet"
+  IF EXISTS "SYS:Internet/GenesisRA"
+    IF EXISTS "SYS:Internet/GenesisRA/Genesis"
+      Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisRA/Genesis" "SYS:Internet/GenesisRA/GenesisMUI"
+      Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisRA/Genesis.info" "SYS:Internet/GenesisRA/GenesisMUI.info"
+    ENDIF
+
+    Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisRA" "SYS:Internet/Genesis"
+    Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisRA.info" "SYS:Internet/Genesis.info"
+  ENDIF
+
+  IF EXISTS "SYS:Internet/GenesisWizardRA"
+    IF EXISTS "SYS:Internet/GenesisWizardRA/GenesisWizard"
+      Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisWizardRA/GenesisWizard" "SYS:Internet/GenesisWizardRA/GenesisWizardMUI"
+      Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisWizardRA/GenesisWizard.info" "SYS:Internet/GenesisWizardRA/GenesisWizardMUI.info"
+    ENDIF
+
+    Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisWizardRA" "SYS:Internet/GenesisWizard"
+    Rename >>SYS:hstwb-installer.log "SYS:Internet/GenesisWizardRA.info" "SYS:Internet/GenesisWizard.info"
+  ENDIF
+
+  Copy >>SYS:hstwb-installer.log "SYS:T/BoingBags/BoingBag3.9-1/Internet" "SYS:Internet" ALL
+ENDIF
+
+; done message
+echo "Done" >>SYS:hstwb-installer.log
+echo "Done"
+
+
+; end
+; ---
+LAB end

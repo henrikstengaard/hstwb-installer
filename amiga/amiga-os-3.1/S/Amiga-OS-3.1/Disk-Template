@@ -1,0 +1,105 @@
+.KEY disk/a,noprompt/s
+.BRA {
+.KET }
+
+; Disk Template
+; -------------
+;
+; Date: 2018-12-09
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to template to install amiga os 3.1 from floppy disk
+; "disk" argument defines amiga os 3.1 disk to install.
+
+
+; quit, if detect disk doesn't exist
+IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Detect-{disk}"
+  echo "*e[1mError: Detect Amiga OS 3.1 {disk} doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; quit, if install disk doesn't exist
+IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1/Install-{disk}"
+  echo "*e[1mError: Install Amiga OS 3.1 {disk} doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; goto no prompt, if no prompt switch is enabled
+set noprompt "0"
+IF NOT "{noprompt}" EQ ""
+  set noprompt "1"
+  SKIP noprompt
+ENDIF
+
+
+; insert disk
+; -----------
+LAB insertdisk
+echo ""
+echo "Please insert Amiga OS 3.1 {disk} disk in any"
+echo "floppy device."
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+LAB noprompt
+
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; goto detect disk, if disk is present in DF0: device
+DiskInDrive >NIL: DF0:
+IF $RC EQ 0 VAL
+  setenv amigaosdisk "DF0"
+  SKIP detectdisk
+ENDIF
+
+; goto detect disk, if disk is present in DF1: device
+DiskInDrive >NIL: DF1:
+IF $RC EQ 0 VAL
+  setenv amigaosdisk "DF1"
+  SKIP detectdisk
+ENDIF
+
+; goto detect disk, if disk is present in DF2: device
+DiskInDrive >NIL: DF2:
+IF $RC EQ 0 VAL
+  setenv amigaosdisk "DF2"
+  SKIP detectdisk
+ENDIF
+
+; goto insert disk, if disk not is present in DF3: device
+DiskInDrive >NIL: DF3:
+IF NOT $RC EQ 0 VAL
+  ; set check first to 0, if check first is 1. otherwise show no disk is inserted
+  IF "$noprompt" EQ 1 VAL
+    set noprompt "0"
+  ELSE
+    echo "No disk is inserted in any floppy device!"
+  ENDIF
+  SKIP BACK insertdisk
+ENDIF
+
+; set amigaosdisk to df3: floppy device
+setenv amigaosdisk "DF3"
+
+
+; detect disk
+; -----------
+LAB detectdisk
+
+; set failat to 21
+failat 21
+
+; goto insert disk, if disk is not valid
+IF NOT "`Execute "INSTALLDIR:S/Amiga-OS-3.1/Detect-{disk}"`" EQ ""
+  echo "Amiga OS 3.1 {disk} disk in $amigaosdisk: floppy device"
+  echo "is not valid!"
+  SKIP BACK insertdisk
+ENDIF
+
+; run install amiga os 3.1 disk
+echo "Installing Amiga OS 3.1 {disk} from $amigaosdisk:"
+echo "floppy device..."
+Execute "INSTALLDIR:S/Amiga-OS-3.1/Install-{disk}"
+echo "Done"

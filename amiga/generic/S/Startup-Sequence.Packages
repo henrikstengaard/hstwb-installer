@@ -1,17 +1,17 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2018-05-23
+; Date: 2019-04-04
 ; Author: Henrik Noerfjand Stengaard
 
 
-; Set stack
+; set stack
 stack 16384
 
-; Set failat
-FailAt 21
+; set failat to 21
+failat 21
 
-; Load patched scsi.device v43.45, if it exists
+; load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
   ; Load scsi.device, if current loaded scsi.device version is less than v43.45
   Version >NIL: "scsi.device" 43 45
@@ -20,13 +20,20 @@ IF EXISTS DEVS:scsi.device
   ENDIF
 ENDIF
 
-; Run setpatch quiet, if setpatch exists. Use noromupdate, if version is equal or greater than v44.13
+; run setpatch, if setpatch exists
 IF EXISTS C:SetPatch
+  ; check if version is equal or greater than v44.13 (amiga os 3.9)
   Version >NIL: C:SetPatch 44 13 FILE
-  IF WARN
-    C:SetPatch QUIET
+  IF $RC EQ 0 VAL
+    ; run setpatch quit, if version is equal or greater than v45.15 (amiga os 3.1.4). otherwise run setpatch noromupdate quiet
+    Version >NIL: C:SetPatch 45 15 FILE
+    IF $RC EQ 0 VAL
+      C:SetPatch QUIET
+    ELSE
+      C:SetPatch NOROMUPDATE QUIET
+    ENDIF
   ELSE
-    C:SetPatch NOROMUPDATE QUIET
+    C:SetPatch QUIET
   ENDIF
 ENDIF
 
@@ -39,7 +46,7 @@ C:MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
 Assign ENV: RAM:Env
 C:Copy ENVARC:~(#?.info) ENV: ALL QUIET
 
-; Load commands resident
+; load commands resident
 Resident >NIL: C:Assign PURE
 Resident >NIL: C:Execute PURE
 
@@ -53,65 +60,36 @@ Assign >NIL: LIBS: SYS:Classes ADD
 Assign >NIL: HELP: LOCALE:Help DEFER
 
 
-; Add alias
+; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
 
-
-; Timezone for unzip
+; set timezone for unzip
 SetEnv TZ MST7
 
-; Data types required for multiview and update screenmode
+; data types required for multiview and update screenmode
 C:AddDataTypes REFRESH QUIET
 
-
-; Paths
+; set paths
 Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
 
-
-; Startup clear screen
-cls
-
-
-; Fail, if assign hstwb installer doesn't exist
+; goto fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
-  echo "Error: assign hstwb installer doesn't exist!"
+  echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
   SKIP fail
 ENDIF
 
-
-; Run Assign-HstWB-Installer
-execute S:Assign-HstWB-Installer
-
-
-; Replace startup-sequence with workbench startup-sequence, if it exists
-IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
-  Copy >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench SYSTEMDIR:S/Startup-Sequence
-  Delete >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench
-ENDIF
+; run assign-hstwb-installer
+Execute S:Assign-HstWB-Installer
 
 
-; TODO: Causes intuition attempted to reset workbench screen errors, when installing ClassicWB packages
-; TODO: Find way of getting max colors for workbench for screenshots in readme
-;IF EXISTS INSTALLDIR:Prefs/Self-Install
-;  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
-;    Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
-;  ENDIF
-;  Copy >NIL: INSTALLDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
-;  C:IPrefs
-;  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
-;  Delete >NIL:SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
-;ENDIF
-
-
-; Add assigns to installdir
+; add assigns to installdir
 Assign >NIL: C: INSTALLDIR:C ADD
 Assign >NIL: Devs: INSTALLDIR:Devs ADD
 Assign >NIL: L: INSTALLDIR:L ADD
 Assign >NIL: Libs: INSTALLDIR:Libs ADD
 Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
 
-
-; Load commands resident 
+; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
 Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
 Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
@@ -120,92 +98,10 @@ Resident >NIL: "INSTALLDIR:C/LhA" PURE
 Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
+; mount kingcon
+Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
+Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
 
-; Run install packages
-cls
-IF EXISTS INSTALLDIR:Prefs/Install-Packages
-  execute INSTALLDIR:S/Install-Packages
-ENDIF
-
-
-; Run install user packages
-cls
-IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
-  Execute INSTALLDIR:S/Install-User-Packages
-ENDIF
-
-
-; Replace startup-sequence with workbench startup-sequence
-IF EXISTS S:Startup-Sequence.Workbench
-  Delete >NIL: S:Startup-Sequence
-  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
-ENDIF
-
-
-; Remove assigns from installdir
-Assign >NIL: C: INSTALLDIR:C REMOVE
-Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
-Assign >NIL: L: INSTALLDIR:L REMOVE
-Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
-Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
-
-
-; Set use to 1, if use prefs exists
-set uae "0"
-IF EXISTS INSTALLDIR:Prefs/UAE
-  set uae "1"
-ENDIF
-
-
-; Package installation complete
-cls
-echo "*e[32m" NOLINE
-echo "Package Installation Complete"
-echo "*e[0m*e[1m" NOLINE
-echo "-----------------------------"
-echo "*e[0m" NOLINE
-echo ""
-echo "HstWB Installer has completed package"
-echo "installation and system is now ready for use."
-echo ""
-
-; Copy hstwb installer log to install dir, if it exists
-IF EXISTS SYS:hstwb-installer.log
-  Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
-ENDIF
-
-; Run install cleanup
-execute INSTALLDIR:S/Install-Cleanup
-
-echo "Please wait 10 seconds before restarting to allow file"
-echo "system to write changes to disk. Continue will reboot"
-echo "the system in 10 seconds."
-echo ""
-
-; Quit UAE or reboot message
-IF $uae EQ 1 VAL
-  echo "Continue will quit UAE in 10 seconds."
-ELSE
-  echo "Continue will reboot system in 10 seconds."
-ENDIF
-
-echo ""
-ask "Press ENTER to continue"
-
-
-; End
-; ---
-LAB end
-
-echo ""
-
-; Quit UAE, if UAE is used. Otherwise reboot
-IF $uae EQ 1 VAL
-  echo "UAE will quit in 10 seconds..."
-  wait 10
-  UAEquit >NIL:
-ELSE
-  echo "System will reboot in 10 seconds..."
-  wait 10
-  Reboot >NIL:
-ENDIF
+; run start install packages in new kingcon shell
+NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+EndShell

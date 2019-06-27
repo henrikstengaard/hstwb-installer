@@ -1,0 +1,119 @@
+; Start Self Install
+; ------------------
+;
+; Date: 2019-03-04
+; Author: Henrik Noerfjand Stengaard
+
+
+; clear screen
+cls
+
+; fail, if HSTWBINSTALLERDIR: device doesn't exist
+Assign >NIL: EXISTS HSTWBINSTALLERDIR:
+IF WARN
+  echo "*e[1mError: Self install HSTWBINSTALLERDIR: device doesn't exist!*e[0m"
+  SKIP fail
+ENDIF
+
+; fail, if INSTALLDIR: device doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF WARN
+  echo "*e[1mError: Self install INSTALLDIR: device doesn't exist!*e[0m"
+  SKIP fail
+ENDIF
+
+; load commands resident 
+Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
+Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
+Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
+Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
+Resident >NIL: "INSTALLDIR:C/LhA" PURE
+Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
+Resident >NIL: "INSTALLDIR:C/UnZip" PURE
+
+
+; run prepare self install
+execute "INSTALLDIR:S/Prepare-SelfInstall"
+
+; run remove self install
+execute "INSTALLDIR:S/Remove-SelfInstall"
+
+; run install start
+execute "INSTALLDIR:S/Install-Start"
+
+
+; eject disk
+; ----------
+LAB ejectdisk
+
+; show eject disk message, if floppy device is set
+IF NOT "$floppydevice" EQ ""
+  cls
+  echo "*e[32m" NOLINE
+  echo "Eject disk"
+  echo "*e[0m*e[1m" NOLINE
+  echo "----------"
+  echo "*e[22m" NOLINE
+  echo ""
+  echo "A system reboot is required for installation process"
+  echo "to continue and any floppy disks must be ejected."
+  echo ""
+  echo "Please eject disk from $floppydevice:"
+  echo ""
+  ask "Press ENTER to continue"
+ENDIF
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; check if disk is present in floppy device DF0:, if present go back to eject disk
+DiskInDrive DF0:
+IF $RC EQ 0 VAL
+  set floppydevice "DF0"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF1:, if present go back to eject disk
+DiskInDrive DF1:
+IF $RC EQ 0 VAL
+  set floppydevice "DF1"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF2:, if present go back to eject disk
+DiskInDrive DF2:
+IF $RC EQ 0 VAL
+  set floppydevice "DF2"
+  SKIP ejectdisk back
+ENDIF
+
+; check if disk is present in floppy device DF3:, if present go back to eject disk
+DiskInDrive DF3:
+IF $RC EQ 0 VAL
+  set floppydevice "DF3"
+  SKIP ejectdisk back
+ENDIF
+
+; set failat to 21
+failat 21
+
+
+; self install complete
+; ---------------------
+LAB selfinstallcomplete
+
+; run Install-Complete
+execute "INSTALLDIR:S/Install-Complete"
+
+SKIP end
+
+
+; fail
+LAB fail
+echo ""
+echo "Installation failed."
+quit
+
+
+; end
+LAB end

@@ -2,7 +2,7 @@
 # --------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-01-29
+# Date:   2019-03-29
 #
 # A powershell script to launch HstWB Installer and ensure HstWB Installer for first time use.
 
@@ -64,7 +64,7 @@ function Assigns($assignsFile)
 function ShowReadme()
 {
     $readmeDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('Readme')
-    $readmeFile = Join-Path $readmeDir -ChildPath 'README.html'
+    $readmeFile = Join-Path $readmeDir -ChildPath 'readme.html'
 
     if (Test-Path -Path $readmeFile)
     {
@@ -84,7 +84,7 @@ function ShowSupportFiles()
 
 function ShowWebsite()
 {
-    Start-Process "http://hstwb.firstrealize.com/"
+    Start-Process "https://hstwb.firstrealize.com/"
 }
 
 function ShowSourceCode()

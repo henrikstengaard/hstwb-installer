@@ -1,13 +1,26 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2018-05-23
+; Date: 2019-03-14
 ; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script for HstWB Installer self install
 
 
+; add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
+; set failat to 21
 FailAt 21
 
-; Load patched scsi.device v43.45, if it exists
+; fail, if exec.library is less than v40
+Version >NIL: exec.library 40
+IF WARN
+  echo "*e[1mError: HstWB Installer requires minimum Kickstart 3.1 rom!*e[0m"
+  SKIP fail
+ENDIF
+
+; load patched scsi.device v43.45, if it exists
 IF EXISTS DEVS:scsi.device
   ; Load scsi.device, if current loaded scsi.device is less than v43.45
   Version >NIL: "scsi.device" 43 45
@@ -16,18 +29,26 @@ IF EXISTS DEVS:scsi.device
   ENDIF
 ENDIF
 
+; set stack
+stack 16384
 
-; Add alias
-Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+; add assigns from S:AssignList using AssPlus
+MakePath >NIL: RAM:Env
+AssPlus >NIL:
 
+; create temp systemdir directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Temp/"
+  MakePath >NIL: "SYSTEMDIR:Temp"
+ENDIF
 
-; Copy hstwb installer log to sys dir, if it exists
+; copy hstwb installer log to system dir, if it exists
 IF EXISTS INSTALLDIR:hstwb-installer.log
-  Copy >NIL: INSTALLDIR:hstwb-installer.log SYS:hstwb-installer.log
+  Copy >NIL: INSTALLDIR:hstwb-installer.log SYSTEMDIR:hstwb-installer.log
 ENDIF
 
 
-; Startup message
+; startup message
+; ---------------
 cls 
 echo "*e[32m" NOLINE
 echo "HstWB Installer v[$VersionText]"
@@ -36,94 +57,125 @@ echo "-----------------[$VersionDashes]"
 echo "*e[0m" NOLINE
 echo ""
 echo "HstWB Installer is now running build self install."
+echo ""
+echo "*e[1mLoading Amiga OS system files:*e[0m"
+echo "Amiga OS 3.9 cd-rom in CD0:..."
 
-
-; Set stack
-stack 16384
-
-; Set failat to 255 for DiskInDrive to fail silently
+; set failat to 255 for diskindrive to fail silently
 failat 255
 
-set amigaos39 "1"
-
-; Goto load system files, if CD0: is not present
+; goto find amiga os disk, if CD0: device is not present
 DiskInDrive >NIL: CD0:
-IF WARN
-  ; Set failat to 21
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "CD0: device is not present" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
+
+  ; set failat to 21
   failat 21
-  set amigaos39 "0"
-  SKIP loadsystemfiles
+
+  SKIP amigaosdisk
 ENDIF
 
-; Goto load system files, if AmigaOS3.9: is not present
+; goto find amiga os disk, if AmigaOS3.9: device is not present
 DiskInDrive >NIL: AmigaOS3.9:
-IF WARN
-  ; Set failat to 21
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "Amiga OS 3.9 cd-rom is not present in CD0: device" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
+
+  ; set failat to 21
   failat 21
-  set amigaos39 "0"
-  SKIP loadsystemfiles
+
+  SKIP amigaosdisk
 ENDIF
 
-; Set failat to 21
+; set failat to 21
 failat 21
 
-; Goto load system files, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
-IF NOT EXISTS AmigaOS3.9:EMERGENCY-BOOT
-  set amigaos39 "0"
+; goto find amiga os disk, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
+  SKIP amigaosdisk
 ENDIF
 
+; load system files from amiga os 3.9 emergency boot cd-rom
+set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
+SKIP loadsystemfiles
 
-; Load system files
+
+; amiga os disk
+; -------------
+LAB amigaosdisk
+
+; log
+echo "Amiga OS 3.1.4 or 3.1 Workbench disk in DF0:" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
+echo "Amiga OS 3.1.4 or 3.1 Workbench disk in DF0:..."
+
+; set failat to 255 for diskindrive to fail silently
+failat 255
+
+; fail, if DF0: device is not present
+DiskInDrive >NIL: DF0:
+IF NOT $RC EQ 0 VAL
+  ; log
+  echo "Device DF0: is not present" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
+
+  echo "*e[1mERROR: Device DF0: is not present!*e[0m"
+
+  ; set failat to 21
+  failat 21
+
+  SKIP fail
+ENDIF
+
+; set failat to 21
+failat 21
+
+; fail, if which doesn't exist in device DF0:
+IF NOT EXISTS "DF0:C/Which"
+  ; log
+  echo "Amiga OS 3.1.4 or 3.1 Workbench disk in floppy device DF0: is not valid" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
+
+  echo "*e[1mERROR: Amiga OS 3.1.4 or 3.1 Workbench disk in floppy device"
+  echo "DF0: is not valid!*e[0m"
+
+  SKIP fail
+ENDIF
+
+; load system files from amiga os 3.1.4 or 3.1 workbench disk in DF0: device
+set systemfilesdir "DF0:C"
+
+
+; load system files
 ; -----------------
 LAB loadsystemfiles
 
-; Load basic commands resident
-echo ""
-IF "$amigaos39" EQ 1 VAL
-  echo "*e[1mLoading Workbench system files from Amiga OS 3.9 CD-Rom...*e[0m"
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Assign" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Copy" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Delete" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Eval" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Execute" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Rename" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/MakeDir" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Protect" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Search" PURE 
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Wait" PURE 
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Which" PURE 
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Mount" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Type" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/RequestChoice" PURE
-  resident "AmigaOS3.9:EMERGENCY-BOOT/C/Version" PURE
-ELSE
-  echo "*e[1mLoading Workbench system files from Workbench 3.1 disk...*e[0m"
-  "DF0:C/AddBuffers" >NIL: DF0: 200
-  resident "DF0:C/Assign" PURE
-  resident "DF0:C/Copy" PURE
-  resident "DF0:C/Delete" PURE
-  resident "DF0:C/Eval" PURE
-  resident "DF0:C/Execute" PURE
-  resident "DF0:C/Rename" PURE
-  resident "DF0:C/MakeDir" PURE
-  resident "DF0:C/Protect" PURE
-  resident "DF0:C/Search" PURE 
-  resident "DF0:C/Wait" PURE 
-  resident "DF0:C/Which" PURE 
-  resident "DF0:C/Mount" PURE
-  resident "DF0:C/Type" PURE
-  resident "DF0:C/RequestChoice" PURE
-  resident "DF0:C/Version" PURE
-ENDIF
-echo "Done"
+; log
+echo "Loading Amiga OS system files from '$systemfilesdir'" >>SYSTEMDIR:Temp/Amiga-OS-System-Files.log
 
-MakeDir RAM:Clipboards RAM:ENV RAM:ENV/Sys
-Assign ENV: RAM:Env
-Assign T: RAM:
+; load amiga os system files resident
+resident "$systemfilesdir/Assign" PURE
+resident "$systemfilesdir/Copy" PURE
+resident "$systemfilesdir/Delete" PURE
+resident "$systemfilesdir/DiskChange" PURE
+resident "$systemfilesdir/Eval" PURE
+resident "$systemfilesdir/Execute" PURE
+resident "$systemfilesdir/List" PURE
+resident "$systemfilesdir/Rename" PURE
+resident "$systemfilesdir/MakeDir" PURE
+resident "$systemfilesdir/Protect" PURE
+resident "$systemfilesdir/Search" PURE 
+resident "$systemfilesdir/Wait" PURE 
+resident "$systemfilesdir/Which" PURE 
+resident "$systemfilesdir/Mount" PURE
+resident "$systemfilesdir/Type" PURE
+resident "$systemfilesdir/RequestChoice" PURE
+resident "$systemfilesdir/Version" PURE
+
+MakeDir RAM:Clipboards RAM:ENV/Sys
 SetEnv TZ MST7
 
+echo "Done"
 
-; Fail, if assign hstwb installer doesn't exist
+; fail, if assign hstwb installer doesn't exist
 IF NOT EXISTS S:Assign-HstWB-Installer
   echo "" >INSTALLDIR:Error
   echo "Error: assign hstwb installer doesn't exist!"
@@ -131,8 +183,7 @@ IF NOT EXISTS S:Assign-HstWB-Installer
 ENDIF
 execute S:Assign-HstWB-Installer
 
-
-; Load commands resident 
+; load commands resident 
 Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
 Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
 Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
@@ -146,49 +197,54 @@ echo ""
 echo "*e[1mBuilding self install*e[0m"
 echo "Copying boot scripts and tools..."
 copy >NIL: "INSTALLDIR:Boot-SelfInstall/" TO "SYSTEMDIR:" ALL
-IF NOT EXISTS "SYSTEMDIR:Prefs/Env-Archive"
+
+; delete all from prefs env archive directory, if it doesn't exist. otherwise create it
+IF EXISTS "SYSTEMDIR:Prefs/Env-Archive"
+  Delete >NIL: "SYSTEMDIR:Prefs/Env-Archive/#?" ALL
+ELSE
   MakePath >NIL: "SYSTEMDIR:Prefs/Env-Archive"
 ENDIF
+
+; copy prefs env archive directory to system dir
 copy >NIL: "INSTALLDIR:Prefs/Env-Archive" "SYSTEMDIR:Prefs/Env-Archive" ALL
 
-
-; Create install directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Install/"
+; delete all from install directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Install/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Install/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Install"
 ENDIF
 
-
-; Copy self install scripts and tools
+; copy self install scripts and tools
 echo "Copying self install scripts and tools..."
 copy >NIL: "INSTALLDIR:Install-SelfInstall" TO "HSTWBINSTALLERDIR:Install/" ALL
 
-
-; Create packages directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Packages/"
+; delete all from packages directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Packages/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Packages/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Packages"
 ENDIF
 
-
-; Copy Packages
+; copy Packages
 echo "Copying packages..."
 copy >NIL: "PACKAGESDIR:" TO "HSTWBINSTALLERDIR:Packages/" ALL
 
-
-; Create licenses directory, if it doesn't exist
-IF NOT EXISTS "HSTWBINSTALLERDIR:Licenses/"
+; delete all from licenses directory, if it doesn't exist. otherwise create it
+IF EXISTS "HSTWBINSTALLERDIR:Licenses/"
+  Delete >NIL: "HSTWBINSTALLERDIR:Licenses/#?" ALL
+ELSE
   MakePath >NIL: "HSTWBINSTALLERDIR:Licenses"
 ENDIF
 
-; Copy licenses
+; copy licenses
 echo "Copying licenses..."
 copy >NIL: "INSTALLDIR:Licenses" TO "HSTWBINSTALLERDIR:Licenses/" ALL
 
-
-; Create install complete prefs
+; create install complete prefs
 echo "" >INSTALLDIR:Prefs/Install-Complete
 
-
-; Done
+; done
 echo "Done"
 echo ""
 echo "Installation is now complete."
@@ -202,7 +258,8 @@ ask "Press ENTER to continue"
 echo ""
 
 
-; End
+; end
+; ---
 LAB end
 echo "UAE will quit in 10 seconds..."
 wait 10

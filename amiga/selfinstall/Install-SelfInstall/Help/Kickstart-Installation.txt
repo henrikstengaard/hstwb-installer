@@ -1,0 +1,29 @@
+Kickstart installation help
+---------------------------
+
+Kickstart installation shows valid kickstart installations
+detected in KICKSTARTDIR: device, which can be installed.
+HstWB Installer supports both Cloanto Amiga Forever
+kickstart rom files and dumps of original kickstart rom
+files.
+
+Kickstart installations are mostly used for running demos
+and games from harddrive using WHDLoad. It's recommended
+to have at least Kickstart 1.3 (34.5) A500 rom installed
+to run most demos and games. Some packages also install
+accelerator card tools like BlitzKick or ACATune, which
+can utilize maprom functionality to map kickstart rom
+files as if the kickstart rom is installed in the Amiga.
+
+The detection process examines file md5 checksums to
+identify valid kickstart installations. Each detected
+Kickstart installation is indicated by "Install". Kickstart
+installations that wasn't detected are indicated with "N/A"
+for not available.
+
+Installing one or more Cloanto Amiga Forever requires
+rom key is also installed.
+
+When correct Kickstart installations are selected, then
+select "Continue with Kickstart..." to continue self
+install.

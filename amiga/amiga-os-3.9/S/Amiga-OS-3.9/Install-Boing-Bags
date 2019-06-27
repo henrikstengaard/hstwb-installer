@@ -1,0 +1,207 @@
+; Install Boing Bags Script
+; -------------------------
+;
+; Date: 2019-03-14
+; Author: Henrik Noerfjand Stengaard 
+;
+; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
+
+
+; add amiga os 3.9 boing bags installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 Boing Bags installation" >>SYS:hstwb-installer.log
+echo "------------------------------------" >>SYS:hstwb-installer.log
+
+; amiga os 3.9 boing bags installation message
+cls
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.9 Boing Bags installation"
+echo "*e[0m*e[1m" NOLINE
+echo "------------------------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+; goto end, if version.library is not version 45 (Amiga OS 3.9)
+Version >>SYS:hstwb-installer.log "SYS:Libs/version.library" 45 FILE
+IF WARN
+  echo "ERROR: Boing Bags installation requires Amiga OS 3.9!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Boing Bags installation requires Amiga OS 3.9!*e[22m"
+  SKIP end
+ENDIF
+
+; goto end, if device INSTALLDIR: doesn't exist
+Assign >>SYS:hstwb-installer.log EXISTS INSTALLDIR:
+IF WARN
+  echo "ERROR: Device INSTALLDIR: doesn't exist!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Device INSTALLDIR: doesn't exist!*e[22m"
+  SKIP end
+ENDIF
+
+; add assigns to installdir
+Assign >>SYS:hstwb-installer.log C: INSTALLDIR:C ADD
+Assign >>SYS:hstwb-installer.log Devs: INSTALLDIR:Devs ADD
+Assign >>SYS:hstwb-installer.log L: INSTALLDIR:L ADD
+Assign >>SYS:hstwb-installer.log Libs: INSTALLDIR:Libs ADD
+Assign >>SYS:hstwb-installer.log Prefs: INSTALLDIR:Prefs ADD
+
+; load commands resident 
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/MakePath" PURE 
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/Reboot" PURE 
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/TotalReset" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UAEquit" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/LhA" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UNLZX" PURE
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:C/UnZip" PURE
+
+; mount amiga os 3.9 iso, if amiga os 3.9 iso prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  echo "Mounting Amiga OS 3.9 iso file" >>SYS:hstwb-installer.log
+
+  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso"
+  wait 5
+ENDIF
+
+; goto end, if boing bag 1 file doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/BoingBag39-1.lha"
+  echo "ERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist!" >>SYS:hstwb-installer.log
+  echo "Skipping Amiga OS 3.9 Boing Bags installation!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Boing bags 1 file 'BoingBag39-1.lha' doesn't exist."
+  echo "Skipping Amiga OS 3.9 Boing Bags installation!*e[22m"
+  SKIP end
+ENDIF
+
+; goto end, if device AmigaOS3.9: doesn't exist
+Assign >>SYS:hstwb-installer.log EXISTS AmigaOS3.9:
+IF WARN
+  echo ""
+  echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
+  SKIP end
+ENDIF
+
+
+; boing bag 1
+; -----------
+
+; create temp boing bags directory
+makedir >>SYS:hstwb-installer.log SYS:T/BoingBags
+
+; run install boing bag 1
+execute INSTALLDIR:S/Amiga-OS-3.9/Install-Boing-Bag-1
+
+; goto complete, if boing bag 2 file doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/BoingBag39-2.lha"
+  SKIP complete
+ENDIF
+
+
+; boing bag 2
+; -----------
+
+; run install boing bag 2
+execute INSTALLDIR:S/Amiga-OS-3.9/Install-Boing-Bag-2
+
+
+; complete
+; --------
+LAB complete
+
+; remove assigns from installdir
+Assign >>SYS:hstwb-installer.log C: INSTALLDIR:C REMOVE
+Assign >>SYS:hstwb-installer.log Devs: INSTALLDIR:Devs REMOVE
+Assign >>SYS:hstwb-installer.log L: INSTALLDIR:L REMOVE
+Assign >>SYS:hstwb-installer.log Libs: INSTALLDIR:Libs REMOVE
+Assign >>SYS:hstwb-installer.log Prefs: INSTALLDIR:Prefs REMOVE
+
+; delete temp boing bags directory
+Delete >>SYS:hstwb-installer.log SYS:T/BoingBags ALL
+
+; delete install boing bags scripts from systemdir
+Delete >>SYS:hstwb-installer.log SYS:WBStartup/WBStartup-Install-BoingBags#?
+
+; replace workbench startup-sequence with packages startup-sequence, if install packages prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  Rename >>SYS:hstwb-installer.log SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+  Copy >>SYS:hstwb-installer.log INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+ENDIF
+
+echo ""
+echo "Amiga OS 3.9 Boing Bags installation is complete."
+echo ""
+
+
+; reboot message
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  echo "HstWB Installer has completed installation of"
+  echo "Amiga OS 3.9 Boing Bags and will now reboot to"
+  echo "start package installation."
+ELSE
+  echo "HstWB Installer has completed installation of"
+  echo "Amiga OS 3.9 Boing Bags and system is now"
+  echo "ready for use."
+ENDIF
+echo ""
+
+
+; set uae to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
+
+
+; set installpackages to 1, if install packages prefs exists
+set installpackages "0"
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  set installpackages "1"
+ENDIF
+
+; set installpackages to 1, if install user packages prefs exists
+IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+  set installpackages "1"
+ENDIF
+
+; run install cleanup, if install packages is 0
+IF "$installpackages" EQ 0 VAL
+  execute INSTALLDIR:S/Install-Cleanup
+ENDIF
+
+
+echo "Please let the system wait 10 seconds before continuing"
+echo "to allow file system to write changes to disk." 
+
+
+; Reboot system, if install packages prefs exist
+IF $installpackages EQ 1 VAL
+  echo ""
+  ask "Press ENTER to continue"
+  echo ""
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  TotalReset >>SYS:hstwb-installer.log
+ENDIF
+
+
+; End
+; ---
+LAB end
+
+echo ""
+ask "Press ENTER to continue"
+echo ""
+
+
+; Quit uae, if uae is used. Otherwise reboot
+IF $uae EQ 1 VAL
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  UAEquit >>SYS:hstwb-installer.log
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  TotalReset >>SYS:hstwb-installer.log
+ENDIF
+
+ENDSHELL

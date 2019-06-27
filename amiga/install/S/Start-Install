@@ -1,0 +1,61 @@
+; Start Install
+; ---------------
+;
+; Date: 2019-03-14
+; Author: Henrik Noerfjand Stengaard
+
+; clear screen
+cls
+
+; fail, if INSTALLDIR: device doesn't exist
+Assign >NIL: EXISTS INSTALLDIR:
+IF WARN
+  echo "*e[1mError: Self install INSTALLDIR: device doesn't exist!*e[0m"
+  SKIP fail
+ENDIF
+
+; copy hstwb installer packages prefs
+IF EXISTS INSTALLDIR:Prefs/Packages/Packages.ini
+  MakePath >NIL: SYSTEMDIR:Prefs/HstWB-Installer/Packages
+  copy >NIL: INSTALLDIR:Prefs/Packages/Packages.ini SYSTEMDIR:Prefs/HstWB-Installer/Packages/Packages.ini
+ENDIF
+
+; copy hstwb installer assigns prefs
+IF EXISTS INSTALLDIR:Prefs/Packages/Assigns.ini
+  MakePath >NIL: SYSTEMDIR:Prefs/HstWB-Installer/Packages
+  copy >NIL: INSTALLDIR:Prefs/Packages/Assigns.ini SYSTEMDIR:Prefs/HstWB-Installer/Packages/Assigns.ini
+ENDIF
+
+; load commands resident 
+Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
+Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
+Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
+Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
+Resident >NIL: "INSTALLDIR:C/LhA" PURE
+Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
+Resident >NIL: "INSTALLDIR:C/UnZip" PURE
+
+
+; run prepare install
+execute "INSTALLDIR:S/Prepare-Install"
+
+; run install start
+execute "INSTALLDIR:S/Install-Start"
+
+; run install complete
+execute "INSTALLDIR:S/Install-Complete"
+
+SKIP end
+
+
+; fail
+; ----
+LAB fail
+echo ""
+echo "Installation failed."
+quit
+
+
+; end
+; ---
+LAB end

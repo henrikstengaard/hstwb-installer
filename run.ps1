@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-07-04
+# Date:   2019-06-20
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -495,6 +495,360 @@ function BuildDefaultAssignsScriptLines($hstwb)
 }
 
 
+function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $installPackageScripts)
+{
+    $packagesMenuScriptLines = @()
+
+    $packagesMenuScriptLines += "echo """" NOLINE >T:packagesmenu"
+    $packagesMenuScriptLines += 'IF "$amigaosversion" EQ "All"'
+    $packagesMenuScriptLines += '  set amigaostext "All Amiga OS versions"'
+    $packagesMenuScriptLines += 'ELSE'
+    $packagesMenuScriptLines += '  set amigaostext "Amiga OS $amigaosversion"'
+    $packagesMenuScriptLines += 'ENDIF'
+    $packagesMenuScriptLines += "echo ""Select package filtering: `$amigaostext"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
+
+    $contentIdPackages = @{}
+    
+    foreach ($installPackageScript in $installPackageScripts)
+    {
+        if (!$installPackageScript.Package.ContentIds)
+        {
+            continue
+        }
+
+        foreach($contentId in ($installPackageScript.Package.ContentIds | ForEach-Object { $_.ToLower() }))
+        {
+            if (!$contentIdPackages.ContainsKey($contentId))
+            {
+                $contentIdPackages[$contentId] = @()
+            }
+
+            if (($contentIdPackages[$contentId] | Where-Object { $_.Id -eq $installPackageScript.Package.Id }).Count -gt 0)
+            {
+                continue
+            }
+
+            $contentIdPackages[$contentId] += $installPackageScript.Package
+        }
+    }
+
+    $identicalContentIdLegends = @{}
+    $packageIdenticalContentIds = @{}
+
+    foreach($contentId in ($contentIdPackages.keys | Sort-Object))
+    {
+        if ($contentIdPackages[$contentId].Count -lt 2)
+        {
+            continue
+        }
+
+        if (!$identicalContentIdLegends.ContainsKey($contentId))
+        {
+            $identicalContentIdLegends[$contentId] = $identicalContentIdLegends.keys.Count + 1
+        }
+
+        foreach($package in $contentIdPackages[$contentId])
+        {
+            if (!$packageIdenticalContentIds.ContainsKey($package.Id))
+            {
+                $packageIdenticalContentIds[$package.Id] = @()
+            }
+
+            if ($packageIdenticalContentIds[$package.Id] -contains $identicalContentIdLegends[$contentId])
+            {
+                continue
+            }
+
+            $packageIdenticalContentIds[$package.Id] += $identicalContentIdLegends[$contentId]
+        }
+    }
+
+    $packageDependenciesLegends = @{}
+    $packageDependenciesIndex = @{}
+
+    foreach ($installPackageScript in $installPackageScripts)
+    {
+        $packagesMenuScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+        $packagesMenuScriptLines += "  echo ""Install"" NOLINE >>T:packagesmenu"
+        $packagesMenuScriptLines += "ELSE"
+        $packagesMenuScriptLines += "  echo ""Skip   "" NOLINE >>T:packagesmenu"
+        $packagesMenuScriptLines += "ENDIF"
+
+        $legends = @()
+        if ($installPackageScript.Package.Dependencies.Count -gt 0)
+        {
+            $packageDependenciesIndex[$installPackageScript.Package.Id]
+            if (!$packageDependenciesLegends.ContainsKey($installPackageScript.Package.Id))
+            {
+                $packageDependenciesLegends[$installPackageScript.Package.Id] = $packageDependenciesLegends.keys.Count + 1
+            }
+    
+            $legends += '!{0}' -f $packageDependenciesLegends[$installPackageScript.Package.Id]
+            $packageDependenciesIndex[$installPackageScript.Package.Id] = GetDependencyPackageNames $hstwb $installPackageScript.Package
+        }
+
+        if ($packageIdenticalContentIds.ContainsKey($installPackageScript.Package.Id))
+        {
+            $legends += $packageIdenticalContentIds[$installPackageScript.Package.Id] | ForEach-Object { '={0}' -f $_}
+        }
+
+        $legendsFormatted = if ($legends.Count -gt 0) { (' ({0})' -f ($legends -join ', ')) } else { '' }
+        $packagesMenuScriptLines += ("echo "" : {0}{1}"" >>T:packagesmenu" -f $installPackageScript.Package.FullName, $legendsFormatted)
+    }
+
+    $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Help"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Legends (!), (=)"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Install all packages"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Skip all packages"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""View readme"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Edit assigns"" >>T:packagesmenu"
+    $packagesMenuScriptLines += "echo ""Start package installation"" >>T:packagesmenu"
+
+    if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
+    {
+        $packagesMenuScriptLines += "echo ""Quit"" >>T:packagesmenu"
+    }
+    else
+    {
+        $packagesMenuScriptLines += "echo ""Skip package installation"" >>T:packagesmenu"
+    }
+
+    $packagesMenuScriptLines += ""
+    $packagesMenuScriptLines += "set packagesmenu """""
+    $packagesMenuScriptLines += "set packagesmenu ""``RequestList TITLE=""Package installation"" LISTFILE=""T:packagesmenu"" WIDTH=640 LINES=24``"""
+    $packagesMenuScriptLines += "delete >NIL: T:packagesmenu"
+
+    $packageMenuOption = 1
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; select package filtering option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  SKIP packagefilteringmenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+
+    $packageMenuOption++
+    foreach($installPackageScript in $installPackageScripts)
+    {
+        $package = $installPackageScript.Package
+
+        $packageMenuOption++
+        $packagesMenuScriptLines += ""
+        $packagesMenuScriptLines += ("; install package menu '{0}' option" -f $package.FullName)
+        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuScriptLines += "  ; skip package, if set to install. otherwise set package to install"
+        $packagesMenuScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+
+        $packageName = $installPackageScript.Package.Name.ToLower()
+
+        # show package dependency warning, if package has dependencies
+        if ($dependencyPackageNamesIndex.ContainsKey($packageName))
+        {
+            $packagesMenuScriptLines += "    set showdependencywarning ""0"""
+            $packagesMenuScriptLines += "    set dependencypackagenames """""
+            
+            # list selected package names that has dependencies to package
+            $dependencyPackageNames = @()
+            $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName)
+
+            foreach($dependencyPackageName in $dependencyPackageNames)
+            {
+                $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
+
+                # add script lines to set show dependency warning, if dependency package is selected
+                $packagesMenuScriptLines += ("    ; set show dependency warning, if package '{0}' is set to install" -f $dependencyPackage.FullName)
+                $packagesMenuScriptLines += ("    IF EXISTS ""T:{0}""" -f $dependencyPackage.Id)
+                $packagesMenuScriptLines += "      set showdependencywarning ""1"""
+                $packagesMenuScriptLines += "      IF ""`$dependencypackagenames"" EQ """""
+                $packagesMenuScriptLines += ("        set dependencypackagenames ""{0}""" -f $dependencyPackage.Name)
+                $packagesMenuScriptLines += "      ELSE"
+                $packagesMenuScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $dependencyPackage.Name)
+                $packagesMenuScriptLines += "      ENDIF"
+                $packagesMenuScriptLines += "    ENDIF"
+            }
+
+            # add script lines to show package dependency warning, if selected packages has dependencies to it
+            $packagesMenuScriptLines += "    set skippackage ""1"""
+            $packagesMenuScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
+            $packagesMenuScriptLines += ("      set skippackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Name)
+            $packagesMenuScriptLines += "    ENDIF"
+            $packagesMenuScriptLines += "    IF `$skippackage EQ 1 VAL"
+            $packagesMenuScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
+            $packagesMenuScriptLines += "    ENDIF"
+        }
+        else
+        {
+            # deselect package, if no other packages has dependencies to it
+            $packagesMenuScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
+        }
+
+        $packagesMenuScriptLines += "  ELSE"
+
+        $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package | ForEach-Object { $_.ToLower() }
+
+        foreach($dependencyPackageName in $dependencyPackageNames)
+        {
+            $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
+
+            $packagesMenuScriptLines += ("    ; Install dependency package '{0}'" -f $dependencyPackage.FullName)
+            $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
+        }
+        
+        $packagesMenuScriptLines += ("    ; Install package '{0}'" -f $installPackageScript.Package.FullName)
+        $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
+
+        $identicalContentIds = @()
+        if ($installPackageScript.Package.ContentIds)
+        {
+            $identicalContentIds += (Compare-Object -ReferenceObject ($contentIdPackages.keys | ForEach-Object { $_.ToString() }) -DifferenceObject $installPackageScript.Package.ContentIds -includeEqual -ExcludeDifferent).InputObject
+        }
+
+        # skip packages with identical content id's
+        if ($identicalContentIds.Count -gt 0)
+        {
+            $packages = $identicalContentIds | ForEach-Object { $contentIdPackages[$_] } | Where-Object { $_.Id -ne $installPackageScript.Package.Id -and $dependencyPackageNames -notcontains $_.Name } | Sort-Object -Property Id -Unique
+
+            foreach($package in $packages)
+            {
+                $packageIdenticalContentIds = @()
+                $packageIdenticalContentIds += (Compare-Object -ReferenceObject $installPackageScript.Package.ContentIds -DifferenceObject $package.ContentIds -includeEqual -ExcludeDifferent).InputObject | Sort-Object
+
+                $packagesMenuScriptLines += ("    ; Skip package '{0}' with identical content id '{1}'" -f $package.FullName, ($packageIdenticalContentIds -join ', '))
+                $packagesMenuScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
+                $packagesMenuScriptLines += ("      delete >NIL: ""T:{0}""" -f $package.Id)
+                $packagesMenuScriptLines += "    ENDIF"
+            }
+        }
+
+        $packagesMenuScriptLines += "  ENDIF"
+        $packagesMenuScriptLines += "ENDIF"
+    }
+
+    # install packages option and skip back to install packages menu 
+    $packageMenuOption += 2
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; help option'
+    $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
+    $packagesMenuScriptLines += '  IF EXISTS "PACKAGESDIR:Help/Package-Installation.txt"'
+    $packagesMenuScriptLines += '    Lister "PACKAGESDIR:Help/Package-Installation.txt" >NIL:'
+    $packagesMenuScriptLines += '  ELSE'
+    $packagesMenuScriptLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Package-Installation.txt'' doesn''t exist!"'
+    $packagesMenuScriptLines += '  ENDIF'
+    $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += '; legends option'
+    $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
+    $packagesMenuScriptLines += '  echo "Legends" >T:packageinstallationlegends.txt'
+    $packagesMenuScriptLines += '  echo "-------" >>T:packageinstallationlegends.txt'
+    $packagesMenuScriptLines += '  echo "Description for legends this package installation." >>T:packageinstallationlegends.txt'
+
+    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
+    if ($packageDependenciesLegends.Count -gt 0)
+    {
+        $packagesMenuScriptLines += ('echo "{0} package dependencies legends:" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegends.Count)
+
+        foreach($packageDependenciesLegend in ($packageDependenciesLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuScriptLines += ('echo "!{0}: Package has package dependencies ''{1}''" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegend.Value, ($packageDependenciesIndex[$packageDependenciesLegend.Name] -join ', '))
+        }
+    }
+    else
+    {
+        $packagesMenuScriptLines += 'echo "No package dependencies legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
+    if ($identicalContentIdLegends.Count -gt 0)
+    {
+        $packagesMenuScriptLines += ('echo "{0} identical content legends:" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegends.Count)
+
+        foreach($identicalContentIdLegend in ($identicalContentIdLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuScriptLines += ('echo "={0}: Packages has identical content id ''{1}''" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegend.Value, $identicalContentIdLegend.Name)
+        }
+    }
+    else
+    {
+        $packagesMenuScriptLines += 'echo "No identical content legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuScriptLines += '  Lister "T:packageinstallationlegends.txt" >NIL:'
+    $packagesMenuScriptLines += '  delete >NIL: "T:packageinstallationlegends.txt"'
+    $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; install all packages option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  SKIP installallpackages"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; skip all packages option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  SKIP skipallpackages"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; view readme option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  SKIP viewreadmemenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; edit assigns option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  SKIP editassignsmenu"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ''
+    $packagesMenuScriptLines += '; install packages option'
+    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuScriptLines += "  set selectedpackagescount 0"
+    foreach ($installPackageScript in $installPackageScripts)
+    {
+        $packagesMenuScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+        $packagesMenuScriptLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
+        $packagesMenuScriptLines += "  ENDIF"
+    }
+    $packagesMenuScriptLines += "  set confirm ``RequestChoice ""Start package installation"" ""Do you want to install `$selectedpackagescount package(s)?"" ""Yes|No""``"
+    $packagesMenuScriptLines += "  IF ""`$confirm"" EQ ""1"""
+    $packagesMenuScriptLines += "    SKIP installpackages"
+    $packagesMenuScriptLines += "  ENDIF"
+    $packagesMenuScriptLines += "ENDIF"
+
+    $packageMenuOption++
+    $packagesMenuScriptLines += ""
+    if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
+    {
+        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuScriptLines += "  SKIP end"
+        $packagesMenuScriptLines += "ENDIF"
+    }
+    else
+    {
+        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuScriptLines += "  set confirm ``RequestChoice ""Skip package installation"" ""Do you want to skip package installation?"" ""Yes|No""``"
+        $packagesMenuScriptLines += "  IF ""`$confirm"" EQ ""1"""
+        $packagesMenuScriptLines += "    SKIP end"
+        $packagesMenuScriptLines += "  ENDIF"
+        $packagesMenuScriptLines += "ENDIF"
+    }
+
+    $packagesMenuScriptLines += ""
+    $packagesMenuScriptLines += "SKIP BACK installpackagesmenu"
+    
+    return $packagesMenuScriptLines
+}
+
 # build install packages script lines
 function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 {
@@ -505,13 +859,14 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
     # append skip reset settings or install packages depending on installer mode
     if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
-        $installPackagesScriptLines += "SKIP resetpackages"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ""
+        $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\S\Detect-AmigaOS")
+        $installPackagesScriptLines += ''
         $installPackagesScriptLines += Get-Content (Join-Path $hstwb.Paths.AmigaPath -ChildPath "packages\S\SelectAssignDir")
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
     }
     
-    # globl assigns
+    # global assigns
     $globalAssigns = $hstwb.Assigns.Get_Item('Global')
 
     # build global package assigns
@@ -540,6 +895,7 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
 
     if (($hstwb.Settings.Installer.Mode -eq "BuildSelfInstall" -or $hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation") -and $installPackages.Count -gt 0)
     {
+        # build dependency package names index
         $dependencyPackageNamesIndex = @{}
 
         foreach ($packageName in $hstwb.Packages.Keys)
@@ -568,410 +924,451 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             }
         }
 
-        $resetPackagesScriptLines = @()
-        $selectAllPackagesScriptLines = @()
-        $deselectAllPackagesScriptLines = @()
-
-        # build reset, select all and deselect all packages
-        foreach ($installPackageScript in $installPackageScripts)
+        # build amiga os versions
+        $amigaOsVersionsIndex = @{}
+        foreach ($installPackageScript in ($installPackageScripts | Where-Object { $_.Package.AmigaOsVersions }))
         {
-            $resetPackagesScriptLines += ''
-            $resetPackagesScriptLines += ("; Reset package '{0}'" -f $installPackageScript.Package.FullName)
-            $resetPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-            $resetPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
-            $resetPackagesScriptLines += "ENDIF"
+            $installPackageScript.Package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+        }
+        $amigaOsVersions = @("All") + ($amigaOsVersionsIndex.Keys | Sort-Object -Descending)
 
-            $selectAllPackagesScriptLines += ''
-            $selectAllPackagesScriptLines += ("; Select package '{0}'" -f $installPackageScript.Package.FullName)
-            $selectAllPackagesScriptLines += ("IF NOT EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-            $selectAllPackagesScriptLines += ("  echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
-            $selectAllPackagesScriptLines += "ENDIF"
 
-            $deselectAllPackagesScriptLines += ''
-            $deselectAllPackagesScriptLines += ("; Deselect package '{0}'" -f $installPackageScript.Package.FullName)
-            $deselectAllPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-            $deselectAllPackagesScriptLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
-            $deselectAllPackagesScriptLines += "ENDIF"
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; verify amiga os'
+        $installPackagesScriptLines += '; ---------------'
+        $installPackagesScriptLines += 'LAB verifyamigaos'
+        $installPackagesScriptLines += ''
+
+        foreach ($amigaOsVersion in ($amigaOsVersions | Where-Object { $_ -notmatch 'All' }))
+        {
+            $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+            $installPackagesScriptLines += '  SKIP resetpackages'
+            $installPackagesScriptLines += 'ENDIF'
         }
 
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; set amiga os version to ''All'''
+        $installPackagesScriptLines += 'set amigaosversion "All"'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; show auto-detect amiga os version warning'
+        $installPackagesScriptLines += 'RequestChoice "Auto-detect Amiga OS version" "WARNING: Package installation could not auto-detect*NAmiga OS version or the detected Amiga OS version*Ndoesn''t have any packages filtering.*NAmiga OS package filtering is therefore set*Nto all Amiga OS versions.*NThis means that not all packages may work*Ncorrectly with the Amiga OS installed.*NUse *"Select package filtering*" to*Nshow only packages that matches the*NAmiga OS installed." "OK"'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP resetpackages'
+
+
+
+        $packagesMenuScriptLines = @()
+
+        $resetPackagesLines = @()
+
+        foreach($installPackageScript in $installPackageScripts)
+        {
+            $resetPackagesLines += ("; Reset package '{0}'" -f $installPackageScript.Package.FullName)
+            $resetPackagesLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+            $resetPackagesLines += ("  delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
+            $resetPackagesLines += "ENDIF"
+        }
+    
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Install packages menu'
+        $installPackagesScriptLines += '; ---------------------'
+        $installPackagesScriptLines += 'LAB installpackagesmenu'
+        $installPackagesScriptLines += ''
+
+        $installAllPackagesLines = @()
+        $skipAllPackagesLines = @()
+        
+        foreach ($amigaOsVersion in $amigaOsVersions)
+        {
+            $amigaOsMenuId = CalculateMd5FromText ("AmigaOsMenu:{0}" -f $amigaOsVersion)
+            $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+            $installPackagesScriptLines += ('  SKIP {0}' -f $amigaOsMenuId)
+            $installPackagesScriptLines += 'ENDIF'
+
+            $installAllPackagesLines += ''
+            $installAllPackagesLines += ('; install all packages ''{0}''' -f $amigaOsVersion)
+            $installAllPackagesLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+
+            $skipAllPackagesLines += ''
+            $skipAllPackagesLines += ('; skip all packages ''{0}''' -f $amigaOsVersion)
+            $skipAllPackagesLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+
+            $packagesMenuScriptLines += ""
+            $packagesMenuScriptLines += ('; amiga os menu ''{0}''' -f $amigaOsVersion)
+            $packagesMenuScriptLines += ('LAB {0}' -f $amigaOsMenuId)
+
+            $amigaOsVersionPackageScripts = @()
+
+            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or !$_.Package.AmigaOsVersions -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions.Count -gt 0 -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
+
+            # build reset, install all and skip all packages
+            foreach ($packageScript in $amigaOsVersionPackageScripts)
+            {
+                $installAllPackagesLines += ("  ; install package '{0}'" -f $packageScript.Package.FullName)
+                $installAllPackagesLines += ("  IF NOT EXISTS ""T:{0}""" -f $packageScript.Package.Id)
+                $installAllPackagesLines += ("    echo """" NOLINE >""T:{0}""" -f $packageScript.Package.Id)
+                $installAllPackagesLines += "  ENDIF"
+
+                $skipAllPackagesLines += ("  ; skip package '{0}'" -f $packageScript.Package.FullName)
+                $skipAllPackagesLines += ("  IF EXISTS ""T:{0}""" -f $packageScript.Package.Id)
+                $skipAllPackagesLines += ("    delete >NIL: ""T:{0}""" -f $packageScript.Package.Id)
+                $skipAllPackagesLines += "  ENDIF"
+            }
+
+            $installAllPackagesLines += 'ENDIF'
+            $skipAllPackagesLines += 'ENDIF'
+
+            $packagesMenuScriptLines += BuildPackagesMenuScriptLines $hstwb $dependencyPackageNamesIndex $amigaOsVersionPackageScripts
+        }
+
+        $installPackagesScriptLines += $packagesMenuScriptLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; select package filtering'
+        $installPackagesScriptLines += '; ------------------------'
+        $installPackagesScriptLines += 'LAB packagefilteringmenu'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'echo "" NOLINE >T:packagefilteringmenu'
+
+        $selectPackageFilteringLines = @()
+        $selectPackageFilteringOption = 0
+        foreach ($amigaOsVersion in $amigaOsVersions)
+        {
+            $amigaOsVersionText = if ($amigaOsVersion -eq "All") { "All Amiga OS versions" } else { ("Amiga OS {0}" -f $amigaOsVersion) }
+            $installPackagesScriptLines += ('echo "{0}" >>T:packagefilteringmenu' -f $amigaOsVersionText)
+
+            $selectPackageFilteringOption++
+            $selectPackageFilteringLines += ''
+            $selectPackageFilteringLines += ('; select package filtering option ''{0}''' -f $selectPackageFilteringOption)
+            $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+            $selectPackageFilteringLines += ('  set confirm `RequestChoice "Select package filtering" "Do you want to filter packages for*N''{0}''?*N*NThis will reset selected packages and changed assigns." "Yes|No"`' -f $amigaOsVersionText)
+            $selectPackageFilteringLines += '  IF "$confirm" EQ "1"'
+            $selectPackageFilteringLines += '    set amigaosversion "{0}"' -f $amigaOsVersion
+            $selectPackageFilteringLines += '    SKIP resetpackages'
+            $selectPackageFilteringLines += '  ENDIF'
+            $selectPackageFilteringLines += '  SKIP BACK packagefilteringmenu'
+            $selectPackageFilteringLines += 'ENDIF'
+        }
+
+        $selectPackageFilteringOption += 2
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; help option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  IF EXISTS "PACKAGESDIR:Help/Select-Package-Filtering.txt"'
+        $selectPackageFilteringLines += '    Lister "PACKAGESDIR:Help/Select-Package-Filtering.txt" >NIL:'
+        $selectPackageFilteringLines += '  ELSE'
+        $selectPackageFilteringLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Select-Package-Filtering.txt'' doesn''t exist!"'
+        $selectPackageFilteringLines += '  ENDIF'
+        $selectPackageFilteringLines += "  SKIP BACK packagefilteringmenu"
+        $selectPackageFilteringLines += "ENDIF"
+
+        $selectPackageFilteringOption++
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; detect amiga os version option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  set confirm `RequestChoice "Auto-detect Amiga OS version" "Do you want to auto-detect Amiga OS version?*N*NThis will reset selected packages and changed assigns." "Yes|No"`'
+        $selectPackageFilteringLines += '  IF "$confirm" EQ "1"'
+        $selectPackageFilteringLines += '    SKIP BACK detectamigaos'
+        $selectPackageFilteringLines += '  ENDIF'
+        $selectPackageFilteringLines += '  SKIP BACK packagefilteringmenu'
+        $selectPackageFilteringLines += 'ENDIF'
+
+        $selectPackageFilteringOption++
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; back option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  SKIP BACK installpackagesmenu'
+        $selectPackageFilteringLines += 'ENDIF'
+
+        $installPackagesScriptLines += 'echo "============================================================" >>T:packagefilteringmenu'
+        $installPackagesScriptLines += 'echo "Help" >>T:packagefilteringmenu'
+        $installPackagesScriptLines += 'echo "Auto-detect Amiga OS version" >>T:packagefilteringmenu'
+        $installPackagesScriptLines += 'echo "Back" >>T:packagefilteringmenu'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'set packagefilteringmenu ""'
+        $installPackagesScriptLines += 'set packagefilteringmenu "`RequestList TITLE="Select package filtering" LISTFILE="T:packagefilteringmenu" WIDTH=640 LINES=24`"'
+        $installPackagesScriptLines += "delete >NIL: T:packagefilteringmenu"
+        $installPackagesScriptLines += $selectPackageFilteringLines
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'SKIP BACK packagefilteringmenu'
+        
         # add reset packages and assigns script lines
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Reset packages'
+        $installPackagesScriptLines += '; reset packages'
         $installPackagesScriptLines += '; --------------'
         $installPackagesScriptLines += 'LAB resetpackages'
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += $resetPackagesScriptLines
+        $installPackagesScriptLines += $resetPackagesLines
         $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += 'SKIP installpackagesmenu'
+        $installPackagesScriptLines += 'SKIP BACK installpackagesmenu'
 
         # reset assigns
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Reset assigns'
+        $installPackagesScriptLines += '; reset assigns'
         $installPackagesScriptLines += '; -------------'
         $installPackagesScriptLines += 'LAB resetassigns'
         $installPackagesScriptLines += BuildResetAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += 'SKIP editassignsmenu'
+        $installPackagesScriptLines += 'SKIP BACK editassignsmenu'
 
         # default assigns
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Default assigns'
+        $installPackagesScriptLines += '; default assigns'
         $installPackagesScriptLines += '; ---------------'
         $installPackagesScriptLines += 'LAB defaultassigns'
         $installPackagesScriptLines += BuildDefaultAssignsScriptLines $hstwb
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += 'SKIP editassignsmenu'
+        $installPackagesScriptLines += 'SKIP BACK editassignsmenu'
 
         # add select all packages script lines
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Select all packages'
+        $installPackagesScriptLines += '; install all packages'
         $installPackagesScriptLines += '; -------------------'
-        $installPackagesScriptLines += 'LAB selectallpackages'
-        $installPackagesScriptLines += $selectAllPackagesScriptLines
+        $installPackagesScriptLines += 'LAB installallpackages'
+        $installPackagesScriptLines += $installAllPackagesLines
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += 'SKIP installpackagesmenu'
+        $installPackagesScriptLines += 'SKIP BACK installpackagesmenu'
 
         # add deselect all packages script lines
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += '; Deselect all packages'
-        $installPackagesScriptLines += '; ---------------------'
-        $installPackagesScriptLines += 'LAB deselectallpackages'
-        $installPackagesScriptLines += $deselectAllPackagesScriptLines
+        $installPackagesScriptLines += '; skip all packages'
+        $installPackagesScriptLines += '; -----------------'
+        $installPackagesScriptLines += 'LAB skipallpackages'
+        $installPackagesScriptLines += $skipAllPackagesLines
         $installPackagesScriptLines += ''
-        $installPackagesScriptLines += 'SKIP installpackagesmenu'
-
-        # install packages menu label
-        $installPackagesScriptLines += ''
-        $installPackagesScriptLines += ''
-        $installPackagesScriptLines += "; Install packages menu"
-        $installPackagesScriptLines += "; ---------------------"
-        $installPackagesScriptLines += "LAB installpackagesmenu"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "echo """" NOLINE >T:installpackagesmenu"
-
-        # add package options to menu
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-            $installPackagesScriptLines += "  echo ""Install"" NOLINE >>T:installpackagesmenu"
-            $installPackagesScriptLines += "ELSE"
-            $installPackagesScriptLines += "  echo ""Skip   "" NOLINE >>T:installpackagesmenu"
-            $installPackagesScriptLines += "ENDIF"
-            $hasDependenciesIndicator = if ($installPackageScript.Package.Dependencies.Count -gt 0) { ' (**)' } else { '' }
-            $installPackagesScriptLines += ("echo "" : {0}{1}"" >>T:installpackagesmenu" -f $installPackageScript.Package.FullName, $hasDependenciesIndicator)
-        }
-
-        # add install package option and show install packages menu
-        $installPackagesScriptLines += "echo ""============================================================"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Install all packages"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Skip all packages"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""View Readme"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Edit assigns"" >>T:installpackagesmenu"
-        $installPackagesScriptLines += "echo ""Start package installation"" >>T:installpackagesmenu"
-
-        if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
-        {
-            $installPackagesScriptLines += "echo ""Quit"" >>T:installpackagesmenu"
-        }
-        else
-        {
-            $installPackagesScriptLines += "echo ""Skip package installation"" >>T:installpackagesmenu"
-        }
-
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "set installpackagesmenu """""
-        $installPackagesScriptLines += "set installpackagesmenu ""``RequestList TITLE=""Package installation"" LISTFILE=""T:installpackagesmenu"" WIDTH=640 LINES=24``"""
-        $installPackagesScriptLines += "delete >NIL: T:installpackagesmenu"
-
-        # switch package options
-        for($i = 0; $i -lt $installPackageScripts.Count; $i++)
-        {
-            $installPackageScript = $installPackageScripts[$i]
-
-            $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("; Install package menu '{0}' option" -f $package.FullName)
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += "  ; deselect package, if it's selected. Otherwise select package"
-            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-
-            $packageName = $installPackageScript.Package.Name.ToLower()
-
-            # show package dependency warning, if package has dependencies
-            if ($dependencyPackageNamesIndex.ContainsKey($packageName))
-            {
-                $installPackagesScriptLines += "    set showdependencywarning ""0"""
-                $installPackagesScriptLines += "    set dependencypackagenames """""
-                
-                # list selected package names that has dependencies to package
-                $dependencyPackageNames = @()
-                $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName)
-
-                foreach($dependencyPackageName in $dependencyPackageNames)
-                {
-                    $package = $hstwb.Packages[$dependencyPackageName]
-
-                    # add script lines to set show dependency warning, if dependency package is selected
-                    $installPackagesScriptLines += ("    ; Set show dependency warning, if package '{0}' is selected" -f $package.FullName)
-                    $installPackagesScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
-                    $installPackagesScriptLines += "      set showdependencywarning ""1"""
-                    $installPackagesScriptLines += "      IF ""`$dependencypackagenames"" EQ """""
-                    $installPackagesScriptLines += ("        set dependencypackagenames ""{0}""" -f $package.Name)
-                    $installPackagesScriptLines += "      ELSE"
-                    $installPackagesScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $package.Name)
-                    $installPackagesScriptLines += "      ENDIF"
-                    $installPackagesScriptLines += "    ENDIF"
-                    
-                }
-
-                # add script lines to show package dependency warning, if selected packages has dependencies to it
-                $installPackagesScriptLines += "    set deselectpackage ""1"""
-                $installPackagesScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
-                $installPackagesScriptLines += ("      set deselectpackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Name)
-                $installPackagesScriptLines += "    ENDIF"
-                $installPackagesScriptLines += "    IF `$deselectpackage EQ 1 VAL"
-                $installPackagesScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
-                $installPackagesScriptLines += "    ENDIF"
-            }
-            else
-            {
-                # deselect package, if no other packages has dependencies to it
-                $installPackagesScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
-            }
-
-            $installPackagesScriptLines += "  ELSE"
-
-            $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package | ForEach-Object { $_.ToLower() }
-
-            foreach($dependencyPackageName in $dependencyPackageNames)
-            {
-                $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
-
-                $installPackagesScriptLines += ("    ; Select dependency package '{0}'" -f $dependencyPackage.FullName)
-                $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
-            }
-            
-            $installPackagesScriptLines += ("    ; Select package '{0}'" -f $installPackageScript.Package.FullName)
-            $installPackagesScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
-            $installPackagesScriptLines += "  ENDIF"
-            $installPackagesScriptLines += "ENDIF"
-        }
-
-        # install packages option and skip back to install packages menu 
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 2) + """")
-        $installPackagesScriptLines += "  SKIP BACK selectallpackages"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 3) + """")
-        $installPackagesScriptLines += "  SKIP BACK deselectallpackages"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 4) + """")
-        $installPackagesScriptLines += "  SKIP viewreadmemenu"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 5) + """")
-        $installPackagesScriptLines += "  SKIP editassignsmenu"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 6) + """")
-        $installPackagesScriptLines += "  set selectedpackagescount 0"
-        foreach ($installPackageScript in $installPackageScripts)
-        {
-            $installPackagesScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-            $installPackagesScriptLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
-            $installPackagesScriptLines += "  ENDIF"
-        }
-        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Start package installation"" ""Do you want to install `$selectedpackagescount package(s)?"" ""Yes|No""``"
-        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
-        $installPackagesScriptLines += "    SKIP installpackages"
-        $installPackagesScriptLines += "  ENDIF"
-        $installPackagesScriptLines += "ENDIF"
-
-        $installPackagesScriptLines += ""
-        if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
-        {
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 7) + """")
-            $installPackagesScriptLines += "  SKIP end"
-            $installPackagesScriptLines += "ENDIF"
-        }
-        else
-        {
-            $installPackagesScriptLines += ("IF ""`$installpackagesmenu"" eq """ + ($installPackageScripts.Count + 7) + """")
-            $installPackagesScriptLines += "  set confirm ``RequestChoice ""Skip package installation"" ""Do you want to skip package installation?"" ""Yes|No""``"
-            $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
-            $installPackagesScriptLines += "    SKIP end"
-            $installPackagesScriptLines += "  ENDIF"
-            $installPackagesScriptLines += "ENDIF"
-        }
-
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "SKIP BACK installpackagesmenu"
+        $installPackagesScriptLines += 'SKIP BACK installpackagesmenu'
 
 
         # view readme
         # -----------
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "; View readme menu"
-        $installPackagesScriptLines += "; ----------------"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "LAB viewreadmemenu"
-        $installPackagesScriptLines += "echo """" NOLINE >T:viewreadmemenu"
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; view readme menu'
+        $installPackagesScriptLines += '; ----------------'
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += 'LAB viewreadmemenu'
 
-        # add package options to view readme menu
-        foreach ($installPackageScript in $installPackageScripts)
+        $viewReadmeMenuLines = @()
+        foreach ($amigaOsVersion in $amigaOsVersions)
         {
-            $installPackagesScriptLines += ("echo ""{0}"" >>T:viewreadmemenu" -f $installPackageScript.Package.FullName)
+            $amigaOsVersionPackageScripts = @()
+            $amigaOsVersionPackageScripts += $installPackageScripts | Where-Object { $amigaOsVersion -eq 'All' -or !$_.Package.AmigaOsVersions -or ($_.Package.AmigaOsVersions -and $_.Package.AmigaOsVersions.Count -gt 0 -and $_.Package.AmigaOsVersions -contains $amigaOsVersion) }
+
+            $viewReadmeMenuId = CalculateMd5FromText ("ViewReadmeMenu:{0}" -f $amigaOsVersion)
+            $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+            $installPackagesScriptLines += ('  SKIP {0}' -f $viewReadmeMenuId)
+            $installPackagesScriptLines += 'ENDIF'
+
+            $viewReadmeMenuLines += ''
+            $viewReadmeMenuLines += ('; view readme menu ''{0}''' -f $amigaOsVersion)
+            $viewReadmeMenuLines += ('LAB {0}' -f $viewReadmeMenuId)
+            $viewReadmeMenuLines += 'echo "" NOLINE >T:viewreadmemenu'
+            
+            $viewReadmeOptionIndex = 0
+            $viewReadmeOptionLines = @()
+            foreach ($amigaOsVersionPackageScript in $amigaOsVersionPackageScripts)
+            {
+                $viewReadmeMenuLines += ("echo ""{0}"" >>T:viewreadmemenu" -f $amigaOsVersionPackageScript.Package.FullName)
+
+                $viewReadmeOptionIndex++
+                $viewReadmeOptionLines += ''
+                $viewReadmeOptionLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
+                $viewReadmeOptionLines += ('  IF EXISTS "PACKAGESDIR:{0}/README.guide"' -f $amigaOsVersionPackageScript.Package.Id)
+                $viewReadmeOptionLines += ('    cd "PACKAGESDIR:{0}"' -f $amigaOsVersionPackageScript.Package.Id)
+                $viewReadmeOptionLines += '    multiview README.guide'
+                $viewReadmeOptionLines += '    cd "PACKAGESDIR:"'
+                $viewReadmeOptionLines += '  ELSE'
+                $viewReadmeOptionLines += ('    REQUESTCHOICE "No Readme" "Package ''{0}'' doesn''t have a readme file!" "OK" >NIL:' -f $amigaOsVersionPackageScript.Package.FullName)
+                $viewReadmeOptionLines += '  ENDIF'
+                $viewReadmeOptionLines += 'ENDIF'
+            }
+
+            $viewReadmeMenuLines += 'echo "============================================================" >>T:viewreadmemenu'
+            $viewReadmeMenuLines += 'echo "Help" >>T:viewreadmemenu'
+            $viewReadmeMenuLines += 'echo "Back" >>T:viewreadmemenu'
+            $viewReadmeMenuLines += ''
+            $viewReadmeMenuLines += 'set viewreadmemenu ""'
+            $viewReadmeMenuLines += 'set viewreadmemenu "`RequestList TITLE="View readme" LISTFILE="T:viewreadmemenu" WIDTH=640 LINES=24`"'
+            $viewReadmeMenuLines += 'delete >NIL: T:viewreadmemenu'
+            $viewReadmeMenuLines += $viewReadmeOptionLines
+
+            $viewReadmeOptionIndex += 2
+            $viewReadmeMenuLines += ''
+            $viewReadmeMenuLines += '; help option'
+            $viewReadmeMenuLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
+            $viewReadmeMenuLines += '  IF EXISTS "PACKAGESDIR:Help/View-Readme.txt"'
+            $viewReadmeMenuLines += '    Lister "PACKAGESDIR:Help/View-Readme.txt" >NIL:'
+            $viewReadmeMenuLines += '  ELSE'
+            $viewReadmeMenuLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/View-Readme.txt'' doesn''t exist!"'
+            $viewReadmeMenuLines += '  ENDIF'
+            $viewReadmeMenuLines += "  SKIP BACK viewreadmemenu"
+            $viewReadmeMenuLines += "ENDIF"
+
+            $viewReadmeOptionIndex++
+            $viewReadmeMenuLines += ''
+            $viewReadmeMenuLines += '; back option'
+            $viewReadmeMenuLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
+            $viewReadmeMenuLines += '  SKIP BACK installpackagesmenu'
+            $viewReadmeMenuLines += 'ENDIF'
+            $viewReadmeMenuLines += ''
+            $viewReadmeMenuLines += 'SKIP BACK viewreadmemenu'
         }
 
-        # add back option to view readme menu
-        $installPackagesScriptLines += "echo ""============================================================"" >>T:viewreadmemenu"
-        $installPackagesScriptLines += "echo ""Back"" >>T:viewreadmemenu"
-
-        $installPackagesScriptLines += "set viewreadmemenu """""
-        $installPackagesScriptLines += "set viewreadmemenu ""``RequestList TITLE=""View Readme"" LISTFILE=""T:viewreadmemenu"" WIDTH=640 LINES=24``"""
-        $installPackagesScriptLines += "delete >NIL: T:viewreadmemenu"
-
-        # switch package options
-        for($i = 0; $i -lt $installPackageScripts.Count; $i++)
-        {
-            $installPackageScript = $installPackageScripts[$i]
-
-            $installPackagesScriptLines += ""
-            $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($i + 1) + """")
-            $installPackagesScriptLines += ("  IF EXISTS ""PACKAGESDIR:{0}/README.guide""" -f $installPackageScript.Package.Id)
-            $installPackagesScriptLines += ("    cd ""PACKAGESDIR:{0}""" -f $installPackageScript.Package.Id)
-            $installPackagesScriptLines += "    multiview README.guide"
-            $installPackagesScriptLines += "    cd ""PACKAGESDIR:"""
-            $installPackagesScriptLines += "  ELSE"
-            $installPackagesScriptLines += ("    REQUESTCHOICE ""No Readme"" ""Package '{0}' doesn't have a readme file!"" ""OK"" >NIL:" -f $installPackageScript.Package.FullName)
-            $installPackagesScriptLines += "  ENDIF"
-            $installPackagesScriptLines += "ENDIF"
-        }
-
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$viewreadmemenu"" eq """ + ($installPackageScripts.Count + 2) + """")
-        $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "SKIP BACK viewreadmemenu"
+        $installPackagesScriptLines += $viewReadmeMenuLines
 
 
         # edit assigns
         # ------------
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "; Edit assigns menu"
-        $installPackagesScriptLines += ";------------------"
-        $installPackagesScriptLines += "LAB editassignsmenu"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "echo """" NOLINE >T:editassignsmenu"
+        $installPackagesScriptLines += ''
+        $installPackagesScriptLines += '; Edit assigns menu'
+        $installPackagesScriptLines += ';------------------'
+        $installPackagesScriptLines += 'LAB editassignsmenu'
+        $installPackagesScriptLines += ''
 
-        $assignSectionNames = @('Global')
-        $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' } | Sort-Object
-
-
-        $editAssignsMenuOption = 0
-        $editAssignsMenuOptionScriptLines = @()
-
-        foreach($assignSectionName in $assignSectionNames)
+        $editAssignsMenuLines = @()
+        foreach ($amigaOsVersion in $amigaOsVersions)
         {
-            # add menu option to show assign section name
-            $installPackagesScriptLines += ("echo ""| {0} |"" >>T:editassignsmenu" -f $assignSectionName)
+            $editAssignsMenuId = CalculateMd5FromText ("EditAssignsMenu:{0}" -f $amigaOsVersion)
+            $installPackagesScriptLines += ('IF "$amigaosversion" EQ "{0}"' -f $amigaOsVersion)
+            $installPackagesScriptLines += ('  SKIP {0}' -f $editAssignsMenuId)
+            $installPackagesScriptLines += 'ENDIF'
 
-            # increase menu option
-            $editAssignsMenuOption += 1
+            $editAssignsMenuLines += ''
+            $editAssignsMenuLines += ('; edit assigns menu ''{0}''' -f $amigaOsVersion)
+            $editAssignsMenuLines += ('LAB {0}' -f $editAssignsMenuId)
+            $editAssignsMenuLines += 'echo "" NOLINE >T:editassignsmenu'
 
-            # get section assigns
-            $sectionAssigns = $hstwb.Assigns[$assignSectionName]
+            $editAssignsMenuOption = 0
+            $editAssignsMenuOptionLines = @()
+    
+            $assignSectionNames = @('Global')
+            $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' -and $hstwb.Assigns[$_].Count -gt 0 -and ($amigaOsVersion -eq 'All' -or !$hstwb.Packages[$_.ToLower()].AmigaOsVersions -or ($hstwb.Packages[$_.ToLower()].AmigaOsVersions -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions.Count -gt 0 -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions -contains $amigaOsVersion)) } | Sort-Object
 
-            foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+            foreach($assignSectionName in $assignSectionNames)
             {
-                # skip hstwb installer assign name for global assigns
-                if ($assignSectionName -like 'Global' -and $assignName -like 'HstWBInstallerDir')
-                {
-                    continue
-                }
-
+                # add menu option to show assign section name
+                $editAssignsMenuLines += ("echo ""| {0} |"" >>T:editassignsmenu" -f $assignSectionName)
+    
                 # increase menu option
-                $editAssignsMenuOption++
-
-                $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
-                $assignDir = $sectionAssigns[$assignName]
-
-                # add menu option showing and editing assign witnin section
-                $installPackagesScriptLines += ""
-                $installPackagesScriptLines += ("IF EXISTS ""T:{0}""" -f $assignId)
-                $installPackagesScriptLines += ("  echo ""{0}: = '``type ""T:{1}""``'"" >>T:editassignsmenu" -f $assignName, $assignId)
-                $installPackagesScriptLines += "ELSE"
-                $installPackagesScriptLines += ("  Assign >NIL: EXISTS ""{0}""" -f $assignDir)
-                $installPackagesScriptLines += "  IF WARN"
-                $installPackagesScriptLines += ("    echo ""{0}: = ?"" >>T:editassignsmenu" -f $assignName)
-                $installPackagesScriptLines += "  ELSE"
-                $installPackagesScriptLines += ("    echo ""{0}: = '{1}'"" >>T:editassignsmenu" -f $assignName, $assignDir)
-                $installPackagesScriptLines += "  ENDIF"
-                $installPackagesScriptLines += "ENDIF"
-
-                $editAssignsMenuOptionScriptLines += ""
-                $editAssignsMenuOptionScriptLines += ("IF ""`$editassignsmenu"" eq """ + $editAssignsMenuOption + """")
-                $editAssignsMenuOptionScriptLines += ("  set assignid ""{0}""" -f $assignId)
-                $editAssignsMenuOptionScriptLines += ("  set assignname ""{0}""" -f $assignName)
-                $editAssignsMenuOptionScriptLines += ("  IF EXISTS ""T:{0}""" -f $assignId)
-                $editAssignsMenuOptionScriptLines += ("    set assigndir ""``type ""T:{0}""``""" -f $assignId)
-                $editAssignsMenuOptionScriptLines += "  ELSE"
-                $editAssignsMenuOptionScriptLines += ("    set assigndir ""{0}""" -f $assignDir)
-                $editAssignsMenuOptionScriptLines += "  ENDIF"
-                $editAssignsMenuOptionScriptLines += "  set returnlab ""editassignsmenu"""
-                $editAssignsMenuOptionScriptLines += "  SKIP BACK selectassigndir"
-                $editAssignsMenuOptionScriptLines += "ENDIF"
+                $editAssignsMenuOption += 1
+    
+                # get section assigns
+                $sectionAssigns = $hstwb.Assigns[$assignSectionName]
+    
+                foreach ($assignName in ($sectionAssigns.keys | Sort-Object))
+                {
+                    # skip hstwb installer assign name for global assigns
+                    if ($assignSectionName -like 'Global' -and $assignName -like 'HstWBInstallerDir')
+                    {
+                        continue
+                    }
+    
+                    # increase menu option
+                    $editAssignsMenuOption++
+    
+                    $assignId = CalculateMd5FromText (("{0}.{1}" -f $assignSectionName, $assignName).ToLower())
+                    $assignDir = $sectionAssigns[$assignName]
+    
+                    # add menu option showing and editing assign witnin section
+                    $editAssignsMenuLines += ""
+                    $editAssignsMenuLines += ("IF EXISTS ""T:{0}""" -f $assignId)
+                    $editAssignsMenuLines += ("  echo ""{0}: = '``type ""T:{1}""``'"" >>T:editassignsmenu" -f $assignName, $assignId)
+                    $editAssignsMenuLines += "ELSE"
+                    $editAssignsMenuLines += ("  Assign >NIL: EXISTS ""{0}""" -f $assignDir)
+                    $editAssignsMenuLines += "  IF WARN"
+                    $editAssignsMenuLines += ("    echo ""{0}: = ?"" >>T:editassignsmenu" -f $assignName)
+                    $editAssignsMenuLines += "  ELSE"
+                    $editAssignsMenuLines += ("    echo ""{0}: = '{1}'"" >>T:editassignsmenu" -f $assignName, $assignDir)
+                    $editAssignsMenuLines += "  ENDIF"
+                    $editAssignsMenuLines += "ENDIF"
+    
+                    $editAssignsMenuOptionLines += ""
+                    $editAssignsMenuOptionLines += ("IF ""`$editassignsmenu"" eq """ + $editAssignsMenuOption + """")
+                    $editAssignsMenuOptionLines += ("  set assignid ""{0}""" -f $assignId)
+                    $editAssignsMenuOptionLines += ("  set assignname ""{0}""" -f $assignName)
+                    $editAssignsMenuOptionLines += ("  IF EXISTS ""T:{0}""" -f $assignId)
+                    $editAssignsMenuOptionLines += ("    set assigndir ""``type ""T:{0}""``""" -f $assignId)
+                    $editAssignsMenuOptionLines += "  ELSE"
+                    $editAssignsMenuOptionLines += ("    set assigndir ""{0}""" -f $assignDir)
+                    $editAssignsMenuOptionLines += "  ENDIF"
+                    $editAssignsMenuOptionLines += "  set returnlab ""editassignsmenu"""
+                    $editAssignsMenuOptionLines += "  SKIP BACK selectassigndir"
+                    $editAssignsMenuOptionLines += "ENDIF"
+                }
             }
+
+            # add back option to view readme menu
+            $editAssignsMenuLines += "echo ""============================================================"" >>T:editassignsmenu"
+            $editAssignsMenuLines += "echo ""Help"" >>T:editassignsmenu"
+            $editAssignsMenuLines += "echo ""Reset assigns"" >>T:editassignsmenu"
+            $editAssignsMenuLines += "echo ""Default assigns"" >>T:editassignsmenu"
+            $editAssignsMenuLines += "echo ""Back"" >>T:editassignsmenu"
+            $editAssignsMenuLines += ""
+            $editAssignsMenuLines += "set editassignsmenu """""
+            $editAssignsMenuLines += "set editassignsmenu ""``RequestList TITLE=""Edit assigns"" LISTFILE=""T:editassignsmenu"" WIDTH=640 LINES=24``"""
+            $editAssignsMenuLines += "delete >NIL: T:editassignsmenu"
+            $editAssignsMenuLines += $editAssignsMenuOptionLines
+
+            # add back option to edit assigns menu
+            $editAssignsMenuOption += 2
+            $editAssignsMenuLines += ''
+            $editAssignsMenuLines += '; help option'
+            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuLines += '  IF EXISTS "PACKAGESDIR:Help/Edit-Assigns.txt"'
+            $editAssignsMenuLines += '    Lister "PACKAGESDIR:Help/Edit-Assigns.txt" >NIL:'
+            $editAssignsMenuLines += '  ELSE'
+            $editAssignsMenuLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Edit-Assigns.txt'' doesn''t exist!"'
+            $editAssignsMenuLines += '  ENDIF'
+            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuLines += "ENDIF"
+
+            $editAssignsMenuOption++
+            $editAssignsMenuLines += ''
+            $editAssignsMenuLines += '; reset assigns option'
+            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to reset assigns?"" ""Yes|No""``"
+            $editAssignsMenuLines += "  IF ""`$confirm"" EQ ""1"""
+            $editAssignsMenuLines += "    SKIP BACK resetassigns"
+            $editAssignsMenuLines += "  ENDIF"
+            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuLines += "ENDIF"
+
+            $editAssignsMenuOption++
+            $editAssignsMenuLines += ''
+            $editAssignsMenuLines += '; default assigns option'
+            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to use default assigns?"" ""Yes|No""``"
+            $editAssignsMenuLines += "  IF ""`$confirm"" EQ ""1"""
+            $editAssignsMenuLines += "    SKIP BACK defaultassigns"
+            $editAssignsMenuLines += "  ENDIF"
+            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuLines += "ENDIF"
+
+            $editAssignsMenuOption++
+            $editAssignsMenuLines += ''
+            $editAssignsMenuLines += '; back option'
+            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuLines += "  SKIP BACK installpackagesmenu"
+            $editAssignsMenuLines += "ENDIF"
+            $editAssignsMenuLines += ""
+            $editAssignsMenuLines += "SKIP BACK editassignsmenu"
         }
 
-        # add back option to view readme menu
-        $installPackagesScriptLines += "echo ""============================================================"" >>T:editassignsmenu"
-        $installPackagesScriptLines += "echo ""Reset assigns"" >>T:editassignsmenu"
-        $installPackagesScriptLines += "echo ""Default assigns"" >>T:editassignsmenu"
-        $installPackagesScriptLines += "echo ""Back"" >>T:editassignsmenu"
-
-        $installPackagesScriptLines += "set editassignsmenu """""
-        $installPackagesScriptLines += "set editassignsmenu ""``RequestList TITLE=""Edit assigns"" LISTFILE=""T:editassignsmenu"" WIDTH=640 LINES=24``"""
-        $installPackagesScriptLines += "delete >NIL: T:editassignsmenu"
-
-        # add edit assigns menu options script lines
-        $editAssignsMenuOptionScriptLines | ForEach-Object { $installPackagesScriptLines += $_ }
-
-        # add back option to edit assigns menu
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 2) + """")
-        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to reset assigns?"" ""Yes|No""``"
-        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
-        $installPackagesScriptLines += "    SKIP BACK resetassigns"
-        $installPackagesScriptLines += "  ENDIF"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 3) + """")
-        $installPackagesScriptLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to use default assigns?"" ""Yes|No""``"
-        $installPackagesScriptLines += "  IF ""`$confirm"" EQ ""1"""
-        $installPackagesScriptLines += "    SKIP BACK defaultassigns"
-        $installPackagesScriptLines += "  ENDIF"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += ("IF ""`$editassignsmenu"" eq """ + ($editAssignsMenuOption + 4) + """")
-        $installPackagesScriptLines += "  SKIP BACK installpackagesmenu"
-        $installPackagesScriptLines += "ENDIF"
-        $installPackagesScriptLines += ""
-        $installPackagesScriptLines += "SKIP BACK editassignsmenu"
+        $installPackagesScriptLines += $editAssignsMenuLines
     }
 
     # install packages
     # ----------------
-    $installPackagesScriptLines += ""
-    $installPackagesScriptLines += "; Install packages"
+    $installPackagesScriptLines += ''
+    $installPackagesScriptLines += ''
+    $installPackagesScriptLines += "; install packages"
     $installPackagesScriptLines += "; ----------------"
     $installPackagesScriptLines += "LAB installpackages"
     $installPackagesScriptLines += ''
@@ -1168,7 +1565,7 @@ function BuildFsUaeHarddrivesConfigText($hstwb, $disableBootableHarddrives)
 
 
 # build fs-uae install harddrives config text
-function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
+function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $userPackagesDir, $boot)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $boot
@@ -1201,10 +1598,8 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$InstallHarddriveIndex]', [int]$harddriveIndex + 1)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir.Replace('\', '/'))
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$PackagesHarddriveIndex]', [int]$harddriveIndex + 2)
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
-    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
+    $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeHarddrivesConfigText = $fsUaeHarddrivesConfigText.Trim()
     
     # return winuae image and install harddrives config
@@ -1213,7 +1608,7 @@ function BuildFsUaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir
 
 
 # build fs-uae self install harddrives config text
-function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $userPackagesDir)
 {
     # build fs-uae image harddrives config
     $fsUaeImageHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
@@ -1234,14 +1629,12 @@ function BuildFsUaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kicks
     $fsUaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($fsUaeSelfInstallHarddrivesConfigFile)
 
     # replace winuae self install harddrives placeholders
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchHarddriveIndex]', [int]$harddriveIndex + 1)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsDir]', $amigaOsDir.Replace('\', '/'))
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsHarddriveIndex]', [int]$harddriveIndex + 1)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir.Replace('\', '/'))
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$KickstartHarddriveIndex]', [int]$harddriveIndex + 2)
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$Os39HarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir.Replace('\', '/'))
-    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 4)
+    $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesHarddriveIndex]', [int]$harddriveIndex + 3)
     $fsUaeSelfInstallHarddrivesConfigText = $fsUaeSelfInstallHarddrivesConfigText.Trim()
 
     # return fs-uae image and self install harddrives config
@@ -1339,7 +1732,7 @@ function BuildWinuaeImageHarddrivesConfigText($hstwb, $disableBootableHarddrives
 
 
 # build winuae install harddrives config text
-function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $os39Dir, $userPackagesDir, $boot)
+function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDir, $userPackagesDir, $boot)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $boot
@@ -1372,11 +1765,9 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$InstallUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesDir]', $packagesDir)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$PackagesUaehfIndex]', [int]$uaehfIndex + 2)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
-    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
     $winuaeInstallHarddrivesConfigText = $winuaeInstallHarddrivesConfigText.Trim()
 
     # return winuae image and install harddrives config
@@ -1385,7 +1776,7 @@ function BuildWinuaeInstallHarddrivesConfigText($hstwb, $installDir, $packagesDi
 
 
 # build winuae self install harddrives config text
-function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kickstartDir, $os39Dir, $userPackagesDir)
+function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $amigaOsDir, $kickstartDir, $userPackagesDir)
 {
     # build winuae image harddrives config
     $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
@@ -1406,15 +1797,13 @@ function BuildWinuaeSelfInstallHarddrivesConfigText($hstwb, $workbenchDir, $kick
     $winuaeSelfInstallHarddrivesConfigText = [System.IO.File]::ReadAllText($winuaeSelfInstallHarddrivesConfigFile)
 
     # replace winuae self install harddrives placeholders
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchDir]', $workbenchDir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$WorkbenchUaehfIndex]', [int]$uaehfIndex + 1)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsDir]', $amigaOsDir)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$AmigaOsUaehfIndex]', [int]$uaehfIndex + 1)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartDir]', $kickstartDir)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$KickstartUaehfIndex]', [int]$uaehfIndex + 2)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39Dir]', $os39Dir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Os39UaehfIndex]', [int]$uaehfIndex + 3)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesDir]', $userPackagesDir)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 4)
-    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 5)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$UserPackagesUaehfIndex]', [int]$uaehfIndex + 3)
+    $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Replace('[$Cd0UaehfIndex]', [int]$uaehfIndex + 4)
     $winuaeSelfInstallHarddrivesConfigText = $winuaeSelfInstallHarddrivesConfigText.Trim()
 
     # return winuae image and self install harddrives config
@@ -1477,6 +1866,44 @@ function ShowLargeHarddriveWarning($hstwb)
     Write-Host "It's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem." -ForegroundColor "Yellow"
 }
 
+# patch assign list
+function PatchAssignList($hstwb, $assignListFile)
+{
+    # fail, if assign list doesn't exist
+    if (!(Test-Path $assignListFile))
+    {
+        throw ('Assign list file ''{0}'' doesn''t exist!' -f $assignListFile)
+    }
+
+    # read assign list lines and exclude empty lines
+    $assignListLines = @()
+    $assignListLines += Get-Content $assignListFile | Where-Object { $_ -notmatch '^\s*$' }
+
+    # replace placeholders in assign list lines
+    for ($i = 0; $i -lt $assignListLines.Count; $i++)
+    {
+        $assignListLines[$i] = $assignListLines[$i].Replace('[$HstwbInstallerDir]', $hstwb.Assigns.Global.HstWBInstallerDir)
+    }
+
+    foreach ($assignName in $hstwb.Assigns.Global.keys)
+    {
+        # skip, if assign name is 'HstWBInstallerDir'
+        if ($assignName -match 'HstWBInstallerDir')
+        {
+            continue
+        }
+
+        # get assign dir
+        $assignDir = $hstwb.Assigns.Global[$assignName]
+
+        $assignListLines += ("{0}: {1}" -f $assignName, $assignDir)
+    }
+
+    $assignListLines += ''
+
+    # write assing list
+    WriteAmigaTextLines $assignListFile $assignListLines
+}
 
 # run test
 function RunTest($hstwb)
@@ -1493,12 +1920,18 @@ function RunTest($hstwb)
         $fsUaeHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb $false
         
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+        if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -1516,12 +1949,18 @@ function RunTest($hstwb)
         $winuaeImageHarddrivesConfigText = BuildWinuaeImageHarddrivesConfigText $hstwb $false
 
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+        if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
         # replace winuae test config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeImageHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
     
@@ -1570,16 +2009,16 @@ function RunInstall($hstwb)
 
     # set temp install and packages dir
     $tempInstallDir = Join-Path $hstwb.Paths.TempPath -ChildPath "install"
-    $tempWorkbenchDir = Join-Path $tempInstallDir -ChildPath "Workbench"
-    $tempKickstartDir = Join-Path $tempInstallDir -ChildPath "Kickstart"
+    $tempInstallTempDir = Join-Path $tempInstallDir -ChildPath "Temp"
+    $tempAmigaOsDir = Join-Path $tempInstallTempDir -ChildPath "Amiga-OS"
+    $tempKickstartDir = Join-Path $tempInstallTempDir -ChildPath "Kickstart"
     $tempPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "packages"
-    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
     $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
 
-    # create temp workbench path
-    if(!(test-path -path $tempWorkbenchDir))
+    # create temp amiga os path
+    if(!(test-path -path $tempAmigaOsDir))
     {
-        mkdir $tempWorkbenchDir | Out-Null
+        mkdir $tempAmigaOsDir | Out-Null
     }
 
     # create temp kickstart path
@@ -1594,13 +2033,7 @@ function RunInstall($hstwb)
         mkdir $tempPackagesDir | Out-Null
     }
 
-    # create temp os39 path
-    if(!(test-path -path $tempOs39Dir))
-    {
-        mkdir $tempOs39Dir | Out-Null
-    }
-    
-    # create temp os39 path
+    # create temp user packages path
     if(!(test-path -path $tempUserPackagesDir))
     {
         mkdir $tempUserPackagesDir | Out-Null
@@ -1635,9 +2068,17 @@ function RunInstall($hstwb)
     $amigaSharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$amigaSharedDir\*" $tempInstallDir -recurse -force
 
-    # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
-    Copy-Item -Path "$amigaWorkbenchDir\*" $tempInstallDir -recurse -force
+    # copy amiga os 3.9 to install directory
+    $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.9")
+    Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
+
+    # copy amiga os 3.1.4 to install directory
+    $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
+    Copy-Item -Path "$amigaOs314Dir\*" $tempInstallDir -recurse -force
+
+    # copy amiga os 3.1 to install directory
+    $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
+    Copy-Item -Path "$amigaOs31Dir\*" $tempInstallDir -recurse -force
 
     # copy kickstart to install directory
     $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
@@ -1655,7 +2096,6 @@ function RunInstall($hstwb)
     $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
     Copy-Item -Path "$amigaUserPackagesDir\*" $tempInstallDir -recurse -force
 
-
     # create prefs directory
     $prefsDir = [System.IO.Path]::Combine($tempInstallDir, "Prefs")
     if(!(test-path -path $prefsDir))
@@ -1663,53 +2103,157 @@ function RunInstall($hstwb)
         mkdir $prefsDir | Out-Null
     }
 
+    # copy hstwb installer theme for fs-uae
+    $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'
+    if (!(Test-Path -Path $imageFsuaeThemeDir))
+    {
+        mkdir $imageFsuaeThemeDir | Out-Null
+    }
+    $fsuaeThemeDir = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, 'theme\hstwb-installer')
+    Copy-Item -Path "$fsuaeThemeDir\*" $imageFsuaeThemeDir -include *.png, *.conf -force
+
 
     # create uae prefs file
     $uaePrefsFile = Join-Path $prefsDir -ChildPath 'UAE'
     Set-Content $uaePrefsFile -Value ""
 
 
-    # prepare install workbench
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and ($hstwb.WorkbenchAdfHashes | Where-Object { $_.File }).Count -gt 0)
+    $installAmigaOs39Reboot = $false
+    $installBoingBagsReboot = $false
+
+    # prepare install amiga os
+    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
-        # create install workbench prefs file
-        $installWorkbenchFile = Join-Path $prefsDir -ChildPath 'Install-Workbench'
-        Set-Content $installWorkbenchFile -Value ""
-        
-        # copy workbench adf set files to temp install dir
-        Write-Host "Copying Workbench adf files to temp install dir"
-        $hstwb.WorkbenchAdfHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempWorkbenchDir -ChildPath $_.Filename) -Force }
+        $amigaOsSetEntries = @()
+        $amigaOsSetEntries = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    
+        # find amiga os 3.9 iso in amiga os set
+        $amigaOs39Iso = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amigaos3\.9\.iso$' } | Select-Object -First 1
+        if ($amigaOs39Iso)
+        {
+            # set install to reboot for amiga os 3.9 installation
+            $installAmigaOs39Reboot = $true
+
+            # create install amiga os 3.9 prefs file
+            $installAmigaOs390PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
+            Set-Content $installAmigaOs390PrefsFile -Value ""
+
+            for ($i = 1; $i -le 2; $i++)
+            {
+                # find boing bag 3.9 update lha in amiga os set
+                $boingbagLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match ('^boingbag39-{0}\.lha$' -f $i) } | Select-Object -First 1
+                if (!$boingbagLha)
+                {
+                    break
+                }
+
+                # set install to reboot for boing bag installation
+                $installBoingBagsReboot = $true
+                
+                # create install boing bag prefs file
+                $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB{0}' -f $i)
+                Set-Content $installBoingBagPrefsFile -Value ""
+            }
+        }
+
+        # find amiga os 3.1.4 modules adf in amiga os set
+        $amigaOs314ModulesAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-modules-[^\-\.]+\.adf$' } | Select-Object -First 1
+        if ($amigaOs314ModulesAdf)
+        {
+            # create install amiga os 3.1.4 adf prefs file
+            $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
+            Set-Content $installAmigaOs314PrefsFile -Value ""
+
+            # find amiga os 3.1.4 icon pack lha in amiga os set
+            $amigaOs314IconPackLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-iconpack\.lha$' } | Select-Object -First 1
+            if ($amigaOs314IconPackLha)
+            {
+                # create install amiga os 3.1.4 icon pack prefs file
+                $installAmigaOs314IconPackLhaPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-314-IconPack'
+                Set-Content $installAmigaOs314IconPackLhaPrefsFile -Value ""
+            }
+        }
+
+        # create install amiga os 3.1 prefs, if amiga os set entries contain amiga os 3.1 adf files
+        $amigaOs31Adf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-310-[^\-\.]+\.adf$' } | Select-Object -First 1
+        if ($amigaOs31Adf)
+        {
+            # create install amiga os 3.1 prefs file
+            $installAmigaOs310PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
+            Set-Content $installAmigaOs310PrefsFile -Value ""
+        }
+
+        # write copying amiga os files to temp install dir
+        Write-Host "Copying Amiga OS files to temp install dir"
+
+        # copy amiga os set entries to temp install dir
+        $amigaOsSetEntriesFirstIndex = @{}
+        foreach($amigaOsSetEntry in $amigaOsSetEntries)
+        {
+            if ($amigaOsSetEntriesFirstIndex.ContainsKey($amigaOsSetEntry.Name))
+            {
+                continue
+            }
+
+            $amigaOsSetEntriesFirstIndex[$amigaOsSetEntry.Name] = $true
+
+            # find best matching amiga os set entry to copy
+            $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name -and $_.CopyFile -eq 'True' -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+            # skip, if best matching amiga os set entry doesn't exist
+            if (!$bestMatchingAmigaOsSetEntry)
+            {
+                continue
+            }
+
+            Copy-Item $bestMatchingAmigaOsSetEntry.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename) -Force
+        }    
     }
 
-
     # prepare install kickstart
-    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and ($hstwb.KickstartRomHashes | Where-Object { $_.File }).Count -gt 0 )
+    if ($hstwb.Settings.Kickstart.InstallKickstart -eq 'Yes' -and ($hstwb.KickstartEntries | Where-Object { $_.File }).Count -gt 0 )
     {
+        $kickstartSetEntries = @()
+        $kickstartSetEntries = $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+
+        # copy kickstart files to temp install dir
+        Write-Host "Copying Kickstart files to temp install dir"
+
+        # copy amiga os set entries to temp install dir
+        $kickstartSetEntriesFirstIndex = @{}
+        foreach($kickstartSetEntry in $kickstartSetEntries)
+        {
+            if ($kickstartSetEntriesFirstIndex.ContainsKey($kickstartSetEntry.Name))
+            {
+                continue
+            }
+
+            $kickstartSetEntriesFirstIndex[$kickstartSetEntry.Name] = $true
+
+            # find best matching kickstart set entry to copy
+            $bestMatchingKickstartSetEntry = $kickstartSetEntries | Where-Object { $_.Name -eq $kickstartSetEntry.Name -and $_.CopyFile -eq 'True' -and $_.File } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+            # skip, if best matching kickstart set entry doesn't exist
+            if (!$bestMatchingKickstartSetEntry)
+            {
+                continue
+            }
+
+            Copy-Item $bestMatchingKickstartSetEntry.File -Destination (Join-Path $tempKickstartDir -ChildPath $bestMatchingKickstartSetEntry.Filename) -Force
+        }    
+
         # create install kickstart prefs file
         $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
         Set-Content $installKickstartFile -Value ""
-        
-        # copy kickstart rom set files to temp install dir
-        Write-Host "Copying Kickstart rom files to temp install dir"
-
-        $hstwb.KickstartRomHashes | Where-Object { $_.File } | ForEach-Object { Copy-Item -Literalpath $_.File -Destination (Join-Path $tempKickstartDir -ChildPath $_.Filename) -Force }
-
-        # get first kickstart rom hash
-        $installKickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.File } | Select-Object -First 1
-
-        # kickstart rom key
-        $installKickstartRomKeyFile = Join-Path (Split-Path $installKickstartRomHash.File -Parent) -ChildPath "rom.key"
-
-        # copy kickstart rom key file to temp install dir, if kickstart roms are encrypted
-        if ($installKickstartRomHash.Encrypted -eq 'Yes' -and (test-path -path $installKickstartRomKeyFile))
-        {
-            Copy-Item -Literalpath $installKickstartRomKeyFile -Destination (Join-Path -Path $tempKickstartDir -ChildPath "rom.key") -Force
-        }
     }
 
     # find packages to install
     $installPackages = FindPackagesToInstall $hstwb
 
+
+    # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "S\AssignList"
+    PatchAssignList $hstwb $assignListFile
 
     # build assign hstwb installers script lines
     $assignHstwbInstallerScriptLines = BuildAssignHstwbInstallerScriptLines $hstwb $true
@@ -1729,7 +2273,7 @@ function RunInstall($hstwb)
     {
         $installPackagesReboot = $true
 
-        # create install packages prefs file
+        # create install packages system prefs file
         $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
 
@@ -1810,56 +2354,6 @@ function RunInstall($hstwb)
     }
 
 
-    $installAmigaOs39Reboot = $false
-    $installBoingBagsReboot = $false
-    
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-    {
-        $installAmigaOs39Reboot = $true
-
-        # create install amiga os 3.9 prefs file
-        $installAmigaOs39File = Join-Path $prefsDir -ChildPath 'Install-AmigaOS3.9'
-        Set-Content $installAmigaOs39File -Value ""
-
-
-        # get amiga os 3.9 directory and filename
-        $amigaOs39IsoDir = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Parent
-        $amigaOs39IsoFileName = Split-Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -Leaf
-
-
-        $boingBag1File = Join-Path $amigaOs39IsoDir -ChildPath 'BoingBag39-1.lha'
-
-        if ((Test-Path $boingBag1File) -and $hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
-        {
-            $installBoingBagsReboot = $true
-            $installBoingBagsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-BoingBags'
-            Set-Content $installBoingBagsPrefsFile -Value ""
-        }
-
-        # copy amiga os 3.9 dir
-        $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
-        Copy-Item -Path "$amigaOs39Dir\*" $tempInstallDir -recurse -force
-
-        #
-        $os39Dir = $amigaOs39IsoDir
-        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
-    }
-    else
-    {
-        $amigaOs39IsoFileName = ''
-        $os39Dir = $tempOs39Dir
-        $isoFile = ''
-    }
-
-
-    # read mountlist
-    $mountlistFile = Join-Path -Path $tempInstallDir -ChildPath "Devs\Mountlist"
-    $mountlistText = [System.IO.File]::ReadAllText($mountlistFile)
-
-    # update and write mountlist
-    $mountlistText = $mountlistText.Replace('[$OS39IsoFileName]', $amigaOs39IsoFileName)
-    $mountlistText = [System.IO.File]::WriteAllText($mountlistFile, $mountlistText)
-
     # create packages prefs directory
     $packagesPrefsDir = Join-Path $prefsDir -ChildPath "Packages"
     if(!(test-path -path $packagesPrefsDir))
@@ -1900,57 +2394,111 @@ function RunInstall($hstwb)
     $hstwbInstallerAssignsIniFile = Join-Path $packagesPrefsDir -ChildPath 'Assigns.ini'
     WriteAmigaTextLines $hstwbInstallerAssignsIniFile $assignsIniLines
 
-    # update version in startup sequence files
+    # update version in files
     $startupSequenceFiles = @()
-    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'WBStartup-*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
     
     # write hstwb installer log file
     $installLogLines = BuildInstallLog $hstwb
     WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
     
-    
-    # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
-    $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
-    # build winuae run harddrives config
-    $winuaeRunHarddrivesConfigText = BuildWinuaeRunHarddrivesConfigText $hstwb
+    foreach ($model in $hstwb.Models)
+    {
+        # read winuae hstwb installer model config file
+        $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $model.ToLower()
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+        if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
+        $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
-    # replace hstwb installer configuration placeholders
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $winuaeRunHarddrivesConfigText)
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
+        # build winuae run harddrives config
+        $winuaeRunHarddrivesConfigText = BuildWinuaeRunHarddrivesConfigText $hstwb
 
-    # write hstwb installer configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
-    [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
-    
-    # read fs-uae hstwb installer config file
-    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
-    $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
+        # replace hstwb installer configuration placeholders
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $winuaeRunHarddrivesConfigText)
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
 
-    # build fs-uae install harddrives config
-    $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb
-    
-    # replace hstwb installer fs-uae configuration placeholders
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
-    
-    # write hstwb installer fs-uae configuration file to image dir
-    $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
-    [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
-    
+        # write hstwb installer configuration file to image dir
+        $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $winuaeHstwbInstallerFileName
+        [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
+        
+
+        # read fs-uae hstwb installer config file
+        $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $model.ToLower()
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+        if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+        }
+        $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
+
+        # build fs-uae install harddrives config
+        $hstwbInstallerFsUaeInstallHarddrivesConfigText = BuildFsUaeHarddrivesConfigText $hstwb
+        
+        # replace hstwb installer fs-uae configuration placeholders
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeInstallHarddrivesConfigText)
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
+        
+        # write hstwb installer fs-uae configuration file to image dir
+        $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $fsUaeHstwbInstallerFileName
+        [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
+    }    
+
+    # set and verify winuae hstwb installer model config file
+    $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+    if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
+
+    # set and verify fs-uae hstwb installer config file
+    $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+    if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
+
 
     # copy hstwb image setup to image dir
     $hstwbImageSetupDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "hstwb_image_setup")
     Copy-Item -Path "$hstwbImageSetupDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
     
+
+    # set iso file, if iso entry exists
+    $isoFile = ''
+    if ($hstwb.Paths.IsoEntry -and $hstwb.Paths.IsoEntry.File)
+    {
+        $isoFile = $hstwb.Paths.IsoEntry.File
+    }
+
+    # set workbench adf file, if workbench adf entry entry exists
+    $workbenchAdfFile = ''
+    if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
+    {
+        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+    }
+
+    # set install adf file, if install adf entry entry exists
+    $installAdfFile = ''
+    if ($hstwb.Paths.InstallAdfEntry -and $hstwb.Paths.InstallAdfEntry.File)
+    {
+        $installAdfFile = $hstwb.Paths.InstallAdfEntry.File
+    }
 
     #
     $emulatorArgs = ''
@@ -1960,21 +2508,22 @@ function RunInstall($hstwb)
         InstallHstwbInstallerFsUaeTheme $hstwb
 
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
 
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -1983,20 +2532,21 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $true
     
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
     
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
     
         # write winuae hstwb installer config file to temp install dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
         # emulator args for winuae
@@ -2018,7 +2568,7 @@ function RunInstall($hstwb)
     # print start emulator message
     Write-Host ""
     Write-Host ("Starting emulator '{0}' to run install..." -f $hstwb.Emulator)
-    
+
     # start emulator to run install
     $emulatorProcess = Start-Process $hstwb.Settings.Emulator.EmulatorFile $emulatorArgs -Wait -NoNewWindow
 
@@ -2054,21 +2604,22 @@ function RunInstall($hstwb)
     if ($hstwb.Settings.Emulator.EmulatorFile -match 'fs-uae\.exe$')
     {
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -2077,20 +2628,21 @@ function RunInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config with boot
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $os39Dir $userPackagesDir $false
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $userPackagesDir $false
         
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
 
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
 
         # write winuae hstwb installer config file to temp dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
 
         # emulator args for winuae
@@ -2174,13 +2726,6 @@ function RunBuildSelfInstall($hstwb)
         mkdir $tempPackagesDir | Out-Null
     }
 
-    # create temp os39 dir
-    $tempOs39Dir = Join-Path $hstwb.Paths.TempPath -ChildPath "os39"
-    if(!(test-path -path $tempOs39Dir))
-    {
-        mkdir $tempOs39Dir | Out-Null
-    }
-
     # create temp user packages dir
     $tempUserPackagesDir = Join-Path $hstwb.Paths.TempPath -ChildPath "userpackages"
     if(!(test-path -path $tempUserPackagesDir))
@@ -2222,6 +2767,13 @@ function RunBuildSelfInstall($hstwb)
     $amigaSelfInstallBuildDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "selfinstall")
     Copy-Item -Path "$amigaSelfInstallBuildDir\*" $tempInstallDir -recurse -force
 
+    # create install self install directory
+    $installSelfInstallDir = Join-Path $tempInstallDir -ChildPath 'Install-SelfInstall'
+    if(!(test-path -path $installSelfInstallDir))
+    {
+        mkdir $installSelfInstallDir | Out-Null
+    }
+
     # copy generic to install directory
     $amigaGenericDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "generic")
     Copy-Item -Path "$amigaGenericDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
@@ -2245,15 +2797,28 @@ function RunBuildSelfInstall($hstwb)
     $sharedDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "shared")
     Copy-Item -Path "$sharedDir\*" $tempInstallDir -recurse -force
     Copy-Item -Path "$sharedDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+    # copy package installation help to packages directory
+    $packageInstallationHelpDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath 'packageinstallation\Help'
+    $tempPackageHelpDir = Join-Path $tempPackagesDir -ChildPath 'Help'
+    if(!(test-path -path $tempPackageHelpDir))
+    {
+        mkdir $tempPackageHelpDir | Out-Null
+    }
+    Copy-Item -Path "$packageInstallationHelpDir\*" "$tempPackageHelpDir" -recurse -force
     
     # copy amiga os 3.9 to install directory
-    $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amigaos3.9")
+    $amigaOs39Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.9")
     Copy-Item -Path "$amigaOs39Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
-    
-    # copy workbench to install directory
-    $amigaWorkbenchDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "workbench")
-    Copy-Item -Path "$amigaWorkbenchDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
+    # copy amiga os 3.1.4 to install directory
+    $amigaOs314Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1.4")
+    Copy-Item -Path "$amigaOs314Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+
+    # copy amiga os 3.1 to install directory
+    $amigaOs31Dir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "amiga-os-3.1")
+    Copy-Item -Path "$amigaOs31Dir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    
     # copy kickstart to install directory
     $amigaKickstartDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "kickstart")
     Copy-Item -Path "$amigaKickstartDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
@@ -2262,14 +2827,30 @@ function RunBuildSelfInstall($hstwb)
     $amigaPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "packages")
     Copy-Item -Path "$amigaPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
 
-    # copy amiga user packages dir
-    $amigaUserPackagesDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackages")
-    Copy-Item -Path "$amigaUserPackagesDir\*" "$tempInstallDir\Install-SelfInstall" -recurse -force
+    # create self install user packages dir
+    $selfInstallUserPackagesDir = Join-Path $installSelfInstallDir -ChildPath 'User-Packages'
+    if(!(test-path -path $selfInstallUserPackagesDir))
+    {
+        mkdir $selfInstallUserPackagesDir | Out-Null
+    }
 
+    # copy user packages dir
+    $amigaUserPackagesDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath 'userpackages'
+    Copy-Item -Path "$amigaUserPackagesDir\*" $selfInstallUserPackagesDir -recurse -force
 
     # create self install prefs file
-    $uaePrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
-    Set-Content $uaePrefsFile -Value ""
+    $selfInstallPrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
+    Set-Content $selfInstallPrefsFile -Value ""
+
+
+    # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "S\AssignList"
+    PatchAssignList $hstwb $assignListFile
+
+    # patch assign list
+    $assignListFile = Join-Path $tempInstallDir -ChildPath "Boot-SelfInstall\S\AssignList"
+    PatchAssignList $hstwb $assignListFile
+
 
 
     # build assign hstwb installers script lines
@@ -2296,6 +2877,15 @@ function RunBuildSelfInstall($hstwb)
     # extract packages and write install packages script, if there's packages to install
     if ($installPackages.Count -gt 0)
     {
+        # build packages prefs list
+        $packagesPrefsList = @()
+        $packagesPrefsList += $installPackages | Where-Object { $hstwb.Packages.ContainsKey($_) } | ForEach-Object { $hstwb.Packages[$_].FullName }
+        $packagesPrefsList += ''
+    
+        # create packages prefs file
+        $packagesPrefsFile = Join-Path $prefsDir -ChildPath 'Packages'
+        WriteAmigaTextLines $packagesPrefsFile $packagesPrefsList
+
         # create install packages prefs file
         $installPackagesFile = Join-Path $prefsDir -ChildPath 'Install-Packages'
         Set-Content $installPackagesFile -Value ""
@@ -2376,14 +2966,29 @@ function RunBuildSelfInstall($hstwb)
     $removeHstwbInstallerScriptFile = [System.IO.Path]::Combine($tempInstallDir, "Install-SelfInstall\S\Remove-HstWBInstaller")
     WriteAmigaTextLines $removeHstwbInstallerScriptFile $removeHstwbInstallerScriptLines 
 
+    # create default directory
+    $defaultDir = Join-Path $tempInstallDir -ChildPath "Default"
+    if(!(test-path -path $defaultDir))
+    {
+        mkdir $defaultDir | Out-Null
+    }
+
+    # copy prefs directory to default prefs directory
+    Copy-Item -Path "$prefsDir\*" $defaultDir -recurse -force
+
+    # move default directory to prefs directory
+    $defaultPrefsDir = Join-Path $prefsDir -ChildPath "Default"
+    Move-Item -Path $defaultDir -Destination $defaultPrefsDir
 
     # copy prefs to install self install
     $selfInstallDir = Join-Path $tempInstallDir -ChildPath "Install-SelfInstall"
     Copy-Item -Path $prefsDir $selfInstallDir -recurse -force
 
-    # update version in startup sequence files
+
+    # update version in files
     $startupSequenceFiles = @()
-    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'Startup-Sequence*.*' -Recurse
+    $startupSequenceFiles += Get-ChildItem -Path $tempInstallDir -Filter 'WBStartup-*.*' -Recurse
     $startupSequenceFiles | ForEach-Object { UpdateVersionAmigaTextFile $_.FullName $hstwb.Version }
 
     # write hstwb installer log file
@@ -2391,26 +2996,11 @@ function RunBuildSelfInstall($hstwb)
     WriteAmigaTextLines $tempHstwbInstallerLogFile $installLogLines
 
 
-    # hstwb uae run workbench dir
-    $workbenchDir = ''
-    if ($hstwb.Settings.Workbench.WorkbenchAdfDir -and (Test-Path -Path $hstwb.Settings.Workbench.WorkbenchAdfDir))
+    # create amiga os directory in image directory, if it doesn't exist
+    $imageAmigaOsDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "amigaos"
+    if (!(Test-Path -Path $imageAmigaOsDir))
     {
-        $workbenchDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
-    }
-    
-    # hstwb uae kickstart dir
-    $kickstartDir = ''
-    if ($hstwb.Settings.Kickstart.KickstartRomDir -and (Test-Path -Path $hstwb.Settings.Kickstart.KickstartRomDir))
-    {
-        $kickstartDir = $hstwb.Settings.Kickstart.KickstartRomDir
-    }
-
-
-    # create workbench directory in image directory, if it doesn't exist
-    $imageWorkbenchDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "workbench"
-    if (!(Test-Path -Path $imageWorkbenchDir))
-    {
-        mkdir $imageWorkbenchDir | Out-Null
+        mkdir $imageAmigaOsDir | Out-Null
     }
 
     # create kickstart directory in image directory, if it doesn't exist
@@ -2420,13 +3010,6 @@ function RunBuildSelfInstall($hstwb)
         mkdir $imageKickstartDir | Out-Null
     }
 
-    # create os39 directory in image directory, if it doesn't exist
-    $imageOs39Dir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "os39"
-    if (!(Test-Path -Path $imageOs39Dir))
-    {
-        mkdir $imageOs39Dir | Out-Null
-    }
-    
     # create userpackages directory in image directory, if it doesn't exist
     $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "userpackages"
     if (!(Test-Path -Path $imageUserPackagesDir))
@@ -2446,56 +3029,98 @@ function RunBuildSelfInstall($hstwb)
     $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
     Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
 
-    
-
-    
-
-    # read winuae hstwb installer config file
-    $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
-    $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
-
-    # build winuae self install harddrives config
-    $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
-
-
-    # replace hstwb installer uae winuae configuration placeholders
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
-    $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
-    
-    # write hstwb installer uae winuae configuration file to image dir
-    $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.uae"
-    [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
-
-
-    # read fs-uae hstwb installer config file
-    $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
-    $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
-
-    # build fs-uae self install harddrives config
-    $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $workbenchDir $kickstartDir $imageOs39Dir $imageUserPackagesDir
-    
-    # replace hstwb installer fs-uae configuration placeholders
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
-    $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
-    
-    # write hstwb installer fs-uae configuration file to image dir
-    $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "hstwb-installer.fs-uae"
-    [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
-    
-
-    # set amiga os 3.9 iso file
-    $isoFile = ''
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes' -and $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
+    # copy hstwb installer theme for fs-uae
+    $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'
+    if (!(Test-Path -Path $imageFsuaeThemeDir))
     {
-        $isoFile = $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile
+        mkdir $imageFsuaeThemeDir | Out-Null
+    }
+    $fsuaeThemeDir = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, 'theme\hstwb-installer')
+    Copy-Item -Path "$fsuaeThemeDir\*" $imageFsuaeThemeDir -include *.png, *.conf -force
+
+
+    foreach ($model in $hstwb.Models)
+    {
+        # read winuae hstwb installer model config file
+        $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $model.ToLower()
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+        if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $model)
+        }
+        $hstwbInstallerUaeWinuaeConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
+
+        # build winuae self install harddrives config
+        $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText = BuildWinuaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
+
+        # replace hstwb installer uae winuae configuration placeholders
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('use_gui=no', 'use_gui=yes')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$KickstartRomFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$InstallAdfFile]', '')
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$Harddrives]', $hstwbInstallerWinuaeSelfInstallHarddrivesConfigText)
+        $hstwbInstallerUaeWinuaeConfigText = $hstwbInstallerUaeWinuaeConfigText.Replace('[$IsoFile]', '')
+        
+        # write hstwb installer uae winuae configuration file to image dir
+        $hstwbInstallerUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $winuaeHstwbInstallerFileName
+        [System.IO.File]::WriteAllText($hstwbInstallerUaeConfigFile, $hstwbInstallerUaeWinuaeConfigText)
+
+
+        # read fs-uae hstwb installer config file
+        $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $model.ToLower()
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+        if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+        {
+            Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $model)
+        }
+        $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
+
+        # build fs-uae self install harddrives config
+        $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText = BuildFsUaeSelfInstallHarddrivesConfigText $hstwb $imageAmigaOsDir $imageKickstartDir $imageUserPackagesDir
+        
+        # replace hstwb installer fs-uae configuration placeholders
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $hstwbInstallerFsUaeSelfInstallHarddrivesConfigText)
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
+        
+        # write hstwb installer fs-uae configuration file to image dir
+        $hstwbInstallerFsUaeConfigFile = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath $fsUaeHstwbInstallerFileName
+        [System.IO.File]::WriteAllText($hstwbInstallerFsUaeConfigFile, $fsUaeHstwbInstallerConfigText)
     }
 
+
+    # set and verify winuae hstwb installer model config file
+    $winuaeHstwbInstallerFileName = "hstwb-installer_{0}.uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
+    if (!(Test-Path $winuaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("WinUAE configuration file '{0}' doesn't exist for model '{1}'" -f $winuaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
+
+    # set and verify fs-uae hstwb installer config file
+    $fsUaeHstwbInstallerFileName = "hstwb-installer_{0}.fs-uae" -f $hstwb.Paths.KickstartEntry.Model.ToLower()
+    $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
+    if (!(Test-Path $fsUaeHstwbInstallerConfigFile))
+    {
+        Fail $hstwb ("FS-UAE configuration file '{0}' doesn't exist for model '{1}'" -f $fsUaeHstwbInstallerConfigFile, $hstwb.Paths.KickstartEntry.Model)
+    }
+
+    # set iso file, if amiga os 3.9 iso entry exists
+    $isoFile = ''
+    if ($hstwb.Paths.IsoEntry -and $hstwb.Paths.IsoEntry.File)
+    {
+        $isoFile = $hstwb.Paths.IsoEntry.File
+    }
+
+    # set workbench adf file, if workbench adf entry entry exists
+    $workbenchAdfFile = ''
+    if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
+    {
+        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+    }
 
     #
     $emulatorArgs = ''
@@ -2505,21 +3130,22 @@ function RunBuildSelfInstall($hstwb)
         InstallHstwbInstallerFsUaeTheme $hstwb
 
         # build fs-uae install harddrives config
-        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
+        $fsUaeInstallHarddrivesConfigText = BuildFsUaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
 
         # read fs-uae hstwb installer config file
-        $fsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.FsUaePath, "hstwb-installer.fs-uae")
+        $fsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.FsUaePath -ChildPath $fsUaeHstwbInstallerFileName
         $fsUaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($fsUaeHstwbInstallerConfigFile)
 
         # replace hstwb installer fs-uae configuration placeholders
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile.Replace('\', '/'))
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
         
         # write fs-uae hstwb installer config file to temp dir
-        $tempFsUaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.fs-uae")
+        $tempFsUaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.fs-uae"
         [System.IO.File]::WriteAllText($tempFsUaeHstwbInstallerConfigFile, $fsUaeHstwbInstallerConfigText)
     
         # emulator args for fs-uae
@@ -2528,20 +3154,21 @@ function RunBuildSelfInstall($hstwb)
     elseif ($hstwb.Settings.Emulator.EmulatorFile -match '(winuae\.exe|winuae64\.exe)$')
     {
         # build winuae install harddrives config
-        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempOs39Dir $tempUserPackagesDir $true
+        $winuaeInstallHarddrivesConfigText = BuildWinuaeInstallHarddrivesConfigText $hstwb $tempInstallDir $tempPackagesDir $tempUserPackagesDir $true
     
         # read winuae hstwb installer config file
-        $winuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.WinuaePath, "hstwb-installer.uae")
+        $winuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.WinuaePath -ChildPath $winuaeHstwbInstallerFileName
         $winuaeHstwbInstallerConfigText = [System.IO.File]::ReadAllText($winuaeHstwbInstallerConfigFile)
     
         # replace winuae hstwb installer config placeholders
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartRomFile)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $hstwb.Paths.WorkbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile)
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
         
         # write winuae hstwb installer config file to temp install dir
-        $tempWinuaeHstwbInstallerConfigFile = [System.IO.Path]::Combine($hstwb.Paths.TempPath, "hstwb-installer.uae")
+        $tempWinuaeHstwbInstallerConfigFile = Join-Path $hstwb.Paths.TempPath -ChildPath "hstwb-installer.uae"
         [System.IO.File]::WriteAllText($tempWinuaeHstwbInstallerConfigFile, $winuaeHstwbInstallerConfigText)
     
         # emulator args for winuae
@@ -2758,13 +3385,13 @@ function Save($hstwb)
 # fail
 function Fail($hstwb, $message)
 {
+    Write-Error $message
+    Write-Host ""
     if(test-path -path $hstwb.Paths.TempPath)
     {
         Remove-Item -Recurse -Force $hstwb.Paths.TempPath
     }
 
-    Write-Error $message
-    Write-Host ""
     Write-Host "Press enter to continue"
     Read-Host
     exit 1
@@ -2772,8 +3399,8 @@ function Fail($hstwb, $message)
 
 
 # resolve paths
-$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$kickstartEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\kickstart-entries.csv")
+$amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $winuaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("winuae")
 $fsUaePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("fs-uae")
@@ -2796,6 +3423,8 @@ $host.ui.RawUI.WindowTitle = "HstWB Installer Run v{0}" -f (HstwbInstallerVersio
 
 try
 {
+    Write-Host "Starting HstWB Installer Run..."
+
     # fail, if settings file doesn't exist
     if (!(test-path -path $settingsFile))
     {
@@ -2813,8 +3442,8 @@ try
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
-            'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'KickstartEntriesFile' = $kickstartEntriesFile;
+            'AmigaOsEntriesFile' = $amigaOsEntriesFile;
             'AmigaPath' = $amigaPath;
             'WinuaePath' = $winuaePath;
             'FsUaePath' = $fsUaePath;
@@ -2827,69 +3456,66 @@ try
             'SettingsDir' = $settingsDir;
             'SupportPath' = $supportPath
         };
+        'Models' = @('A1200', 'A500');
         'Packages' = ReadPackages $packagesPath;
         'Settings' = ReadIniFile $settingsFile;
-        'Assigns' = ReadIniFile $assignsFile
+        'Assigns' = ReadIniFile $assignsFile;
+        'UI' = @{
+            'AmigaOs' = @{};
+            'Kickstart' = @{}
+        }
     }
 
-    # read kickstart rom hashes
-    if (Test-Path -Path $kickstartRomHashesFile)
-    {
-        $kickstartRomHashes = @()
-        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-        $hstwb.KickstartRomHashes = $kickstartRomHashes
-    }
-    else
-    {
-        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
-    }
-
-    # read workbench adf hashes
-    if (Test-Path -Path $workbenchAdfHashesFile)
-    {
-        $workbenchAdfHashes = @()
-        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
-    }
-    else
-    {
-        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
-    }
-    
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
     
+    # update amiga os entries
+    UpdateAmigaOsEntries $hstwb
+
+    # update kickstart entries
+    UpdateKickstartEntries $hstwb
+
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     
-    # find workbench adfs
-    FindWorkbenchAdfs $hstwb
+    # find amiga os files
+    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
+    FindAmigaOsFiles $hstwb
 
-    # find kickstart roms
-    FindKickstartRoms $hstwb
-        
+    # find kickstart files
+    Write-Host "Finding Kickstart sets in Kickstart dir..."
+    FindKickstartFiles $hstwb
+
     # update packages and assigns
-    UpdatePackages $hstwb
-    UpdateUserPackages $hstwb
+    UpdateInstallPackages $hstwb
+    UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
         
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    if (($hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
     {
-        # set new kickstart rom set and save
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+        # set new kickstart rom set
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
     }
 
-    # find best matching workbench adf set, if workbench adf set doesn't exist
-    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    # find best matching amiga os set, if amiga os set doesn't exist
+    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # set new amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
     }
     
     # save settings and assigns
     Save $hstwb
+
+    Write-Host "Done"
+
+    # ui amiga os set info
+    UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+    # ui kickstart set info
+    UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
 
     # set and validate emulator, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
@@ -2932,25 +3558,25 @@ try
     }
 
     # change kickstart rom hashes to kickstart rom set hashes
-    $kickstartRomSetHashes = @()
-    $kickstartRomSetHashes += $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartRomSet }
-    $hstwb.KickstartRomHashes = $kickstartRomSetHashes
+    # $kickstartRomSetHashes = @()
+    # $kickstartRomSetHashes += $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+    # $hstwb.KickstartEntries = $kickstartRomSetHashes
     
-    # change workbench adf hashes to workbench adf set hashes
-    $workbenchAdfSetHashes = @()
-    $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }
-    $hstwb.WorkbenchAdfHashes = $workbenchAdfSetHashes
+    # filter amiga os sets to only contain amiga os set defined in settings
+    # $amigaOsSet = @()
+    # $amigaOsSet += $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    # $hstwb.AmigaOsEntries = $amigaOsSet
 
-    # fail, if kickstart rom hashes is empty 
-    if ($hstwb.KickstartRomHashes.Count -eq 0)
+    # fail, if installer mode is install, build self install or test and kickstart entries is empty 
+    if ($settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$" -and $hstwb.KickstartEntries.Count -eq 0)
     {
-        Fail ("Kickstart rom set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't exist!")
+        Fail ("Kickstart entries is empty!")
     }
     
-    # fail, if workbench adf hashes is empty 
-    if ($hstwb.WorkbenchAdfHashes.Count -eq 0)
+    # fail, if installer mode is install and amiga os entries is empty 
+    if ($settings.Installer.Mode -match "^Install$" -and $hstwb.AmigaOsEntries.Count -eq 0)
     {
-        Fail ("Workbench adf set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't exist!")
+        Fail ("Amiga OS entries is empty!")
     }
 
     # print title and settings
@@ -2961,84 +3587,97 @@ try
     Write-Host ""
     PrintSettings $hstwb
     Write-Host ""
-        
-    # find workbench 3.1 adf and a1200 kickstart rom file, is install mode is test, install or build self install
-    if ($hstwb.Settings.Installer.Mode -match "^(Test|Install|BuildSelfInstall)$")
-    {
-        # find kickstart 3.1 a1200 rom
-        $kickstartRomHash = $hstwb.KickstartRomHashes | Where-Object { $_.Name -eq 'Kickstart 3.1 (40.068) (A1200) Rom' -and $_.File } | Select-Object -First 1
 
-        # fail, if kickstart rom hash doesn't exist
-        if (!$kickstartRomHash)
+    # find kickstart entry, is install mode is test, install or build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
+    {
+        # get kickstart entry for running hstwb installer
+        $kickstartEntry = $null
+        foreach ($model in $hstwb.Models)
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have Kickstart 3.1 (40.068) (A1200) rom!")
+            # get first run supported kickstart entry for model with detected file
+            $kickstartEntry = $hstwb.KickstartEntries | Where-Object { $_.RunSupported -match 'true' -and $_.Model -match $model -and $_.File } | Select-Object -First 1
+
+            if ($kickstartEntry)
+            {
+                break;
+            }
         }
 
-        # set kickstart rom file
-        $hstwb.Paths.KickstartRomFile = $kickstartRomHash.File
+        # fail, if kickstart entry doesn't exist
+        if (!$kickstartEntry)
+        {
+            Fail $hstwb ("Kickstart directory doesn't have {0} Kickstart rom file!" -f ($models -join '/'))
+        }
 
-        # print kickstart rom hash file
-        Write-Host ("Using Kickstart 3.1 (40.068) (A1200) rom: '" + $kickstartRomHash.File + "'")
+        # set kickstart entry
+        $hstwb.Paths.KickstartEntry = $kickstartEntry
 
         # kickstart rom key
-        $kickstartRomKeyFile = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($kickstartRomHash.File), "rom.key")
+        $kickstartRomKeyFile = Join-Path (Split-Path $kickstartEntry.File -Parent) -ChildPath 'rom.key'
 
-        # fail, if kickstart rom hash is encrypted and kickstart rom key file doesn't exist
-        if ($kickstartRomHash.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
+        # fail, if kickstart entry is encrypted and kickstart rom key file doesn't exist
+        if ($kickstartEntry.Encrypted -eq 'Yes' -and !(test-path -path $kickstartRomKeyFile))
         {
-            Fail $hstwb ("Kickstart set '" + $hstwb.Settings.Kickstart.KickstartRomSet + "' doesn't have rom.key!")
+            Fail $hstwb ("Kickstart rom key file '{0}' doesn't exist!" -f $kickstartRomKeyFile)
         }
 
-
-        $amigaOS39Iso = $false
-        $workbench31Adf = $false
-        
-        if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -match 'Yes')
-        {
-            if ($hstwb.Settings.AmigaOS39.AmigaOS39IsoFile -and (Test-Path -Path $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile))
-            {
-                $amigaOS39Iso = $true
-                Write-Host ("Using Amiga OS 3.9 iso file for loading Workbench system files: '{0}'" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-            }
-            else
-            {
-                Fail $hstwb ("Amiga OS 3.9 iso file '{0}' doesn't exist!" -f $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile)
-            }
-        }
-
-        # find and set workbench adf set hashes, if installing workbench
-        if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes' -and !$amigaOS39Iso)
-        {
-                # find workbench 3.1 workbench disk
-            $workbenchAdfHash = $hstwb.WorkbenchAdfHashes | Where-Object { $_.Name -eq 'Workbench 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-            
-            if ($workbenchAdfHash)
-            {
-                $workbench31Adf = $true
-
-                # set workbench adf file
-                $hstwb.Paths.WorkbenchAdfFile = $workbenchAdfHash.File
-
-                # print workbench adf hash file
-                Write-Host ("Using Workbench 3.1 Workbench Disk adf file for loading Workbench system files: '" + $workbenchAdfHash.File + "'")
-            }
-            else
-            {
-                Fail $hstwb ("Workbench set '" + $hstwb.Settings.Workbench.WorkbenchAdfSet + "' doesn't have Workbench 3.1 Workbench Disk!")
-            }
-        }
-        else
-        {
-            $hstwb.Paths.WorkbenchAdfFile = ''
-        }
-
-        # fail, if neither amiga os 3.9 iso file or workbench 3.1 adf file is present
-        if (!$amigaOS39Iso -and !$workbench31Adf)
-        {
-            Fail $hstwb "Amiga OS 3.9 iso file or Workbench 3.1 adf file is required to run HstWB Installer!"
-        }
+        # print kickstart entry
+        Write-Host ("Kickstart rom: {0} '{1}'" -f $kickstartEntry.Name, $kickstartEntry.File)
     }
 
+    # find amiga os 3.9 iso, amiga os 3.1.4 or 3.1 workbench and install adf entries, is install mode is install or build self install
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall)$")
+    {
+        # find workbench adf, if installing amiga os and amiga os 3.9 iso is not present
+        if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
+        {
+            # find amiga os 3.9 iso entry
+            $isoEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
+
+            if ($isoEntry)
+            {
+                $hstwb.Paths.IsoEntry = $isoEntry
+
+                # print amiga os 3.9 iso entry
+                Write-Host ("Amiga OS 3.9 iso: {0} '{1}'" -f $isoEntry.Name, $isoEntry.File)
+            }
+            else
+            {
+                # find amiga os 3.1.4 workbench adf entry
+                $amigaOs314WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
+                $amigaOs314InstallAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
+
+                if ($amigaOs314WorkbenchAdfEntry -and $amigaOs314InstallAdfEntry)
+                {
+                    $hstwb.Paths.WorkbenchAdfEntry = $amigaOs314WorkbenchAdfEntry
+                    $hstwb.Paths.InstallAdfEntry = $amigaOs314InstallAdfEntry
+
+                    # print amiga os 3.1.4 workbench adf entry
+                    Write-Host ("Amiga OS 3.1.4 Workbench adf: {0} '{1}'" -f $amigaOs314WorkbenchAdfEntry.Name, $amigaOs314WorkbenchAdfEntry.File)
+                    Write-Host ("Amiga OS 3.1.4 Install adf: {0} '{1}'" -f $amigaOs314InstallAdfEntry.Name, $amigaOs314InstallAdfEntry.File)
+                }
+                else
+                {
+                    # find amiga os 3.1 workbench adf entry
+                    $amigaOs310WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+                    if ($amigaOs310WorkbenchAdfEntry)
+                    {
+                        $hstwb.Paths.WorkbenchAdfEntry = $amigaOs310WorkbenchAdfEntry
+
+                        # print amiga os 3.1 workbench adf entry
+                        Write-Host ("Amiga OS 3.1 Workbench adf: {0} '{1}'" -f $amigaOs310WorkbenchAdfEntry.Name, $amigaOs310WorkbenchAdfEntry.File)
+                    }
+                }
+            }
+        }
+
+        # fail, if iso, or workbench adf entries doesn't exist
+        if (!$hstwb.Paths.IsoEntry -and !$hstwb.Paths.WorkbenchAdfEntry)
+        {
+            Fail $hstwb "Amiga OS 3.9 iso file, Amiga OS 3.1.4 Workbench and Install Disk adf files, or Amiga OS 3.1 Workbench Disk adf file is required to run HstWB Installer!"
+        }
+    }
 
     # create temp path
     if(!(test-path -path $hstwb.Paths.TempPath))

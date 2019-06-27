@@ -1,0 +1,44 @@
+Edit assigns help
+-----------------
+
+Edit assigns can be used to change assigns used by
+HstWB Installer and packages to customize where
+packages are installed. A package may have one or
+more assigns that can be changed. If a package
+doesn't have any assigns that can be changed, it
+will not be shown in edit assigns. The list
+represents sections and assigns, where each section
+is represented by '| Section Name |' followed by
+one or more assigns 'AssignName:' within the
+section.
+
+WARNING: It's not recommended to change assigns
+unless you're are sure about what the changed
+assign will do. Please examine the package readme
+carefully before changing it's assigns.
+
+The list of package assigns is based on selected
+packages filtering and will only list packages
+assigns for the selected Amiga OS. The package
+filtering can be changed by selecting 'Back' and
+'Select package filtering'.
+
+The global assigns are used by HstWB Installer and
+has a 'SystemDir' assign, which it set to the
+volume containing the installed Amiga OS. Packages
+typically use the 'SystemDir' assign to update 
+Startup-Sequence, prefs, install icons or tools.
+
+Select an assign 'AssignName:' to change it's
+directory. A directory requester will be shown,
+which can be used browse to and select another
+directory for the assign.
+
+Select 'Reset assigns' to reset assigns to 
+directories used for previous installation of
+the packages. If any package haven't been
+installed previously, it will use default
+directories configured for each package.
+
+Select 'Default assigns' to set assigns to default
+directories configured for each package.

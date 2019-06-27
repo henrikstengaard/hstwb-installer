@@ -1,0 +1,30 @@
+; Amiga OS 3.1 Install
+; ----------------------
+;
+; Date: 2018-12-07
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1 install floppy disk or adf file.
+
+
+Resident >NIL: "$amigaosdisk:C/IconPos" PURE
+MakePath >NIL: "SYSTEMDIR:Tools"
+Copy >NIL: "$amigaosdisk:HDTools/BRU" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/HDBackup" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/HDBackup.help" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/HDToolBox" "SYSTEMDIR:Tools" CLONE
+
+Copy >NIL: "$amigaosdisk:HDTools/HDBackup.info" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/HDToolBox.info" "SYSTEMDIR:Tools" CLONE
+
+Copy >NIL: "$amigaosdisk:HDTools/S/BRUtab" "SYSTEMDIR:S" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/S/HDBackup.config" "SYSTEMDIR:S" CLONE
+Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE
+
+Copy >NIL: "$amigaosdisk:Libs/68040.library" "SYSTEMDIR:Libs" CLONE
+IF EXISTS "$amigaosdisk:Libs/workbench.library"
+  Copy >NIL: "$amigaosdisk:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
+ENDIF
+Copy >NIL: "$amigaosdisk:Update/Disk.info" "SYSTEMDIR:" CLONE
+
+Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE

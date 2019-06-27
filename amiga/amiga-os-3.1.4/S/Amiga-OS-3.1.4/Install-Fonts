@@ -1,0 +1,10 @@
+; Install Fonts
+; -------------
+;
+; Date: 2018-12-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1.4 fonts floppy disk or adf file.
+
+
+Copy >NIL: "$amigaosdisk:#?" "SYSTEMDIR:Fonts" ALL CLONE

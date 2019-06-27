@@ -1,0 +1,32 @@
+Amiga OS installation help
+--------------------------
+
+Amiga OS installation shows valid Amiga OS installations
+detected in AMIGAOSDIR: device, which can be installed.
+HstWB Installer supports Amiga OS 3.9, 3.1.4 and 3.1.
+
+The detection process examines file names and md5
+checksums to identify valid Amiga OS installations.
+Each detected Amiga OS installation is indicated by
+"Install" or "Skip" and the highest version of Amiga OS
+detected is selected by default. The Amiga OS installations
+that wasn't detected are indicated with "N/A" for not
+available.
+
+It's only possible to select one Amiga OS installation
+to install, so selecting another Amiga OS installation
+than currently selected will automatically deselect the
+previous selected Amiga OS Installation changing it from
+"Install" to "Skip".
+
+The detection process mounts iso and adf files requires
+that AMIGAOSDIR: device is added with read/write
+permissions. This is required by filedisk.device used to
+mount files and can also cause these files to be locked
+on the host Windows, macOS or Linux environment when
+running self install through an emulator. If any locked
+needs to be moved or renamed, then please close and
+restart emulator.
+
+When correct Amiga OS installation is selected, then select
+"Continue with Amiga OS ..." to continue self install.

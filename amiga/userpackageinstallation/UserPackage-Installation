@@ -1,11 +1,23 @@
 ; User Package Installation
 ; -------------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2018-04-13
+; Date: 2019-01-06
 ;
-; An AmigaDOS script to find, prepare and install selected user packages.
+; AmigaDOS script to list user packages and build install user packages to select and install user packages.
 
-; Add assigns and set environment variables for user package installation
+
+; fail, if userpackagesdir: device exists
+Assign >NIL: USERPACKAGESDIR: EXISTS
+IF $RC EQ 0 VAL
+  echo "*e[1mError: USERPACKAGESDIR: device exists! Remove existing"
+  echo "USERPACKAGESDIR: device and run user package installation"
+  echo "again.*e[0m"
+  echo ""
+  ask "Press ENTER to continue"
+  SKIP end
+ENDIF
+
+; add assigns and set environment variables for user package installation
 set userpackagesdir "`CD`"
 Assign USERPACKAGESDIR: "$userpackagesdir"
 Assign INSTALLDIR: "$userpackagesdir"
@@ -13,32 +25,42 @@ Assign C: "INSTALLDIR:C" ADD
 Assign SYSTEMDIR: SYS:
 SetEnv TZ MST7
 
-; Copy reqtools prefs to env, if it doesn't exist
-IF NOT EXISTS "ENV:ReqTools.prefs"
-  copy >NIL: "INSTALLDIR:Env/ReqTools.prefs" "ENV:"
-ENDIF
+echo "*e[1mDetecting user packages in USERPACKAGESDIR:*e[0m"
 
-; Run find user packages
-Execute INSTALLDIR:S/Find-User-Packages T:User-Packages
+; run detect user packages
+Execute INSTALLDIR:S/Detect-User-Packages T:User-Packages
+
+echo "Done"
 
 ; Check if user packages contains any user packages
 set userpackagescount `wc -l <T:User-Packages`
 IF $userpackagescount GT 0 VAL
-  ; Run prepare user packages
   echo ""
-  Execute INSTALLDIR:S/Prepare-User-Packages T:User-Packages T:Install-User-Packages
+  echo "*e[1mBuilding user packages menu for installation...*e[0m"
+
+  ; set stack
+  stack 16384
+
+  ; run build install user packages
+  Execute INSTALLDIR:S/Build-Install-User-Packages T:User-Packages T:Install-User-Packages
   Delete >NIL: T:User-Packages
 
-  ; Run install user packages
+  echo "Done"
+
+  ; run install user packages
   Execute T:Install-User-Packages
   Delete >NIL: T:Install-User-Packages
 ELSE
   echo ""
-  echo "*e[1mNo user packages found!*e[22m"
+  echo "*e[1mNo user packages detected!*e[22m"
 ENDIF
 
-; Remove assigns for user package installation
+; remove assigns for user package installation
 Assign USERPACKAGESDIR: "$userpackagesdir" REMOVE
 Assign C: "INSTALLDIR:C" REMOVE
 Assign INSTALLDIR: "$userpackagesdir" REMOVE
 Assign SYSTEMDIR: SYS: REMOVE
+
+; end
+; ---
+LAB end

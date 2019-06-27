@@ -1,0 +1,15 @@
+; Unmount Iso
+; -----------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2019-01-03
+;
+; AmigaDOS script to unmount iso file and remove FCD0: device.
+
+
+; dismount and remove fcd0: device, if device exists
+Assign >NIL: EXISTS "FCD0:"
+IF $RC EQ 0 VAL
+  Assign >NIL: "`Which FCD0:`" dismount remove
+  Assign >NIL: "FCD0:" dismount remove
+ENDIF

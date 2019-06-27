@@ -1,0 +1,55 @@
+; Detect Amiga OS 3.1.4 Storage
+; -----------------------------
+;
+; Date: 2018-12-10
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.1.4 storage floppy disk or adf file.
+
+
+; end, if volume name is not "Storage3.1.4:"
+IF NOT "`Which $amigaosdisk:`" EQ "Storage3.1.4:"
+  SKIP notvalid
+ENDIF
+
+; end, if rad doesn't exist
+IF NOT EXISTS "$amigaosdisk:DosDrivers/RAD"
+  SKIP notvalid
+ENDIF
+
+; end, if glowicons disk.info doesn't exist
+IF NOT EXISTS "$amigaosdisk:glowicons/Disk.info"
+  SKIP notvalid
+ENDIF
+
+; end, if dosdrivers aux doesn't exist
+IF NOT EXISTS "$amigaosdisk:DOSDrivers/AUX"
+  SKIP notvalid
+ENDIF
+
+; end, if dosdrivers aux is greater than v40.2
+Version >NIL: "$amigaosdisk:DOSDrivers/AUX" 40 3 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if dosdrivers aux is less than v40.2
+Version >NIL: "$amigaosdisk:DOSDrivers/AUX" 40 1 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.1.4 Storage is not valid"
+
+
+; end
+; ---
+
+LAB end

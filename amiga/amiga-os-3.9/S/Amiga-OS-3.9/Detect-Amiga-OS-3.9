@@ -1,0 +1,243 @@
+; Detect Amiga OS 3.9
+; -------------------
+;
+; Date: 2019-03-14
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
+
+
+; add detect amiga os 3.9 to log
+echo "Amiga OS 3.9" >INSTALLDIR:Temp/Amiga-OS-390.log
+echo "------------" >>INSTALLDIR:Temp/Amiga-OS-390.log
+echo "Detecting Amiga OS 3.9 cd-rom in CD0: and iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
+ENDIF
+
+; set failat to 255 for DiskInDrive to fail silently
+failat 255
+
+; set amigaos39cd to 1 and run disk change, if "CD0:" device exists
+set amigaos39cd "0"
+DiskInDrive >NIL: CD0:
+IF $RC EQ 0 VAL
+  set amigaos39cd "1"
+
+  ; disk change CD0: device to detect changed directories and files
+  DiskChange CD0:
+ELSE
+  echo "CD0: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+ENDIF
+
+; set amigaosdir to 1, if "AMIGAOSDIR:" device exists
+set amigaosdir "0"
+DiskInDrive >NIL: AMIGAOSDIR:
+IF $RC EQ 0 VAL
+  set amigaosdir "1"
+ELSE
+  echo "AMIGAOSDIR: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+ENDIF
+
+; set failat to 21
+failat 21
+
+
+; detect amiga os 3.9 iso file in amigaosdir: device
+set amigaos39iso "0"
+set checkamigaos39iso "0"
+IF "$amigaosdir" EQ 1 VAL
+  ; find and sort amiga os 3.9 iso files in amigaosdir:
+  echo "" NOLINE >T:_amigaos39isofiles
+  fsearch "AMIGAOSDIR:" PAT amigaos39.iso >>T:_amigaos39isofiles1
+  fsearch "AMIGAOSDIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles1
+  frsort <T:_amigaos39isofiles1 >T:_amigaos39isofiles
+
+  ; get first amiga os 3.9 iso file
+  sed "1q;d" T:_amigaos39isofiles >T:_amigaos39isofile
+  set amigaos39isofile "`type T:_amigaos39isofile`"
+
+  ; create amiga os 3.9 iso prefs, if amiga os 3.9 iso file exists
+  IF NOT "$amigaos39isofile" EQ ""
+    echo "Amiga OS 3.9 iso file" >>INSTALLDIR:Temp/Amiga-OS-390.log
+    echo "'$amigaos39isofile'" >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+    Copy "INSTALLDIR:Devs/Mountlist-Iso-Template" "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso" >NIL:
+    rep "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso" "[*$IsoFile]" "$amigaos39isofile"
+    set amigaos39iso "1"
+    set checkamigaos39iso "1"
+  ELSE
+    echo "Amiga OS 3.9 iso file doesn't exist in AMIGAOSDIR: device!" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  ENDIF
+ENDIF
+
+; goto amiga os 3.9 valid, if amiga 3.9 cd is present
+IF "$amigaos39cd" EQ 1 VAL
+  SKIP amigaos39valid
+ENDIF
+
+; goto end, if amiga os 3.9 iso is not present
+IF "$amigaos39iso" EQ 0 VAL
+  SKIP end
+ENDIF
+
+
+; amiga os 3.9 iso
+; ----------------
+LAB amigaos39iso
+
+; mount amiga os 3.9 iso file
+echo "Mounting Amiga OS 3.9 iso file" >>INSTALLDIR:Temp/Amiga-OS-390.log
+Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso"
+wait 5
+
+set checkamigaos39iso "0"
+
+
+; amiga os 3.9 valid
+; ------------------
+LAB amigaos39valid
+
+; goto end, if "AmigaOS3.9:" device doesn't exist
+Assign >NIL: EXISTS AmigaOS3.9:
+IF NOT $RC EQ 0 VAL
+  echo "AmigaOS3.9: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Workbench3.5" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Workbench3.5"
+  echo "AmigaOS3.9:OS-VERSION3.9/Workbench3.5 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Workbench3.9" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Workbench3.9"
+  echo "AmigaOS3.9:OS-VERSION3.9/Workbench3.9 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/Extras" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/Extras"
+  echo "AmigaOS3.9:OS-VERSION3.9/Extras directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:EMERGENCY-BOOT" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT"
+  echo "AmigaOS3.9:EMERGENCY-BOOT directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS" directory doesn't exist
+IF NOT EXISTS "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS"
+  echo "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
+  IF "$amigaos39iso" EQ 1 VAL
+    IF "$checkamigaos39iso" EQ 1 VAL
+      SKIP BACK amigaos39iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; create amiga os 3.9 cd prefs, if amiga os 3.9 cd is present
+IF "$amigaos39cd" EQ 1 VAL
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-CD
+ELSE
+  ; create amiga os 3.9 iso prefs, if amiga os 3.9 iso is present
+  IF "$amigaos39iso" EQ 1 VAL
+    echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-ISO
+  ENDIF
+ENDIF
+
+
+; boing bags
+; ----------
+
+; goto end, if amigaosdir device doesn't exist
+IF "$amigaosdir" EQ 0 VAL
+  SKIP end
+ENDIF
+
+echo "" >>INSTALLDIR:Temp/Amiga-OS-390.log
+echo "Detecting Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+; find and sort amiga os 3.9 boing bag files
+fsearch "AMIGAOSDIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
+frsort <T:_boingbagfiles1 >T:_boingbagfiles
+
+; set boing bags
+set boingbags `wc -l <T:_boingbagfiles` 
+
+; create amiga os 3.9 boing bag prefs, if amiga os 3.9 boing bag files exists
+IF NOT "$boingbags" EQ 0 VAL
+  search "T:_boingbagfiles" "BoingBag39-1.lha" NONUM >T:_boingbag1file
+  IF $RC EQ 0 VAL
+    set boingbag1file `sed "1q;d" "T:_boingbag1file"`
+    echo "Amiga OS 3.9 Boing Bag 1 detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
+    echo "'$boingbag1file'" >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+    echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-BB1
+    Copy >NIL: "$boingbag1file" "INSTALLDIR:Temp/Amiga-OS"
+
+    search "T:_boingbagfiles" "BoingBag39-2.lha" NONUM >T:_boingbag2file
+    IF $RC EQ 0 VAL
+      set boingbag2file `sed "1q;d" "T:_boingbag2file"`
+      echo "Amiga OS 3.9 Boing Bag 2 detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
+      echo "'$boingbag2file'" >>INSTALLDIR:Temp/Amiga-OS-390.log
+
+      echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-BB2
+      Copy >NIL: "$boingbag2file" "INSTALLDIR:Temp/Amiga-OS"
+    ENDIF
+  ENDIF
+ENDIF
+
+
+; end
+; ---
+LAB end

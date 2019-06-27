@@ -1,0 +1,10 @@
+All: IconPos
+
+Clean:
+	delete IconPos *.lib *.o *.lnk
+	smake
+
+IconPos: IconPos.o
+   sc link IconPos.o to IconPos CPU=68000 opt nostkchk MATH=standard LIB:scm.lib
+
+IconPos.o: IconPos.c

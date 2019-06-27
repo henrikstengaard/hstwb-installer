@@ -1,0 +1,163 @@
+.KEY userpackage/a,indexname/a,entryfile/a
+.BRA {
+.KET }
+
+; Install Entry
+; -------------
+;
+; Date: 2019-06-25
+; Author: Henrik Noerfjand Stengaard
+
+
+set lhaentry "0"
+set lzxentry "0"
+set zipentry "0"
+
+; entry file
+echo "{entryfile}" >T:_entryfile
+
+; goto lha entry, if entry file contains '.lha'
+search >NIL: "T:_entryfile" ".lha"
+IF $RC EQ 0 VAL
+  set islha
+  SKIP lhaentry
+ENDIF
+
+; goto lzx entry, if entry file contains '.lzx'
+search >NIL: "T:_entryfile" ".lzx"
+IF $RC EQ 0 VAL
+  SKIP lzxentry
+ENDIF
+
+; goto zip entry, if entry file contains '.zip'
+search >NIL: "T:_entryfile" ".zip"
+IF $RC EQ 0 VAL
+  SKIP zipentry
+ENDIF
+
+; entry file archive format not supported
+set confirm "`RequestChoice "Error" "Entry file '{entryfile}'*Narchive format is not supported!*N*NDo you want to stop installation?" "Yes|No"`"
+IF "$confirm" EQ 1 VAL
+  set stopinstallation "1"
+  SKIP end
+ENDIF
+SKIP end
+
+
+LAB lhaentry
+set lhaentry "1"
+lha l "{entryfile}" >T:_lhalist
+set lhalines `wc -l <T:_lhalist`
+sed "`eval "$lhalines-1"`q;d" T:_lhalist >T:_lhasize
+trim "`type T:_lhasize`" >T:_lhasize2
+delete >NIL: T:_lhalist
+cut -f 1 -d " " T:_lhasize2 >T:_entrysize
+delete >NIL: T:_lhasize#?
+SKIP devicefreespace
+
+LAB lzxentry
+set lzxentry "1"
+unlzx l "{entryfile}" >T:_lzxlist
+set lzxlines `wc -l <T:_lzxlist`
+sed "`eval "$lzxlines-3"`q;d" T:_lzxlist >T:_lzxsize
+trim "`type T:_lzxsize`" >T:_lzxsize2
+delete >NIL: T:_lzxlist
+cut -f 1 -d " " T:_lzxsize2 >T:_entrysize
+delete >NIL: T:_lzxsize#?
+SKIP devicefreespace
+
+LAB zipentry
+set zipentry "1"
+unzip -l "{entryfile}" >T:_ziplist
+set ziplines `wc -l <T:_ziplist`
+sed "`eval "$ziplines"`q;d" T:_ziplist >T:_zipsize
+trim "`type T:_zipsize`" >T:_zipsize2
+delete >NIL: T:_ziplist
+cut -f 1 -d " " T:_zipsize2 >T:_entrysize
+delete >NIL: T:_zipsize#?
+
+
+; device free space
+; -----------------
+LAB devicefreespace
+
+set entrysizeb `sed "1d;q" T:_entrysize`
+delete >NIL: T:_entrysize
+set entrysizemb `eval "$entrysizeb / 1048576"`
+set devicefreemb `Free "$INSTALLDIR"`
+set devicefreemb `eval "$devicefreemb - $entrysizemb"`
+
+; install entry, if free space after installation is greater than required free space mb
+IF $devicefreemb GT $devicereqfreemb VAL
+  SKIP installentry
+ENDIF
+
+; not enough free space dialog
+RequestChoice >NIL: "Not enough free space" "Current install directory '$INSTALLDIR'*Nhas $devicefreemb MB free space left, which is not enough*Nfree space to complete '{userpackage}'*Ninstallation.*N*NSelect next install directory to*Ncontinue installation of '{userpackage}'.*N*NAfterwards a dialog will show free space on*Nselected install directory for confirmation*Nbefore continuning." "OK"
+
+
+; select install dir
+; ------------------
+LAB selectinstalldir
+
+set newinstalldir ""
+set newinstalldir `REQUESTFILE DRAWER "SYS:" TITLE "Select install directory" NOICONS DRAWERSONLY`
+
+; set installdir to newinstalldir, if newinstalldir is not empty
+IF "$newinstalldir" EQ ""
+  set confirm "`RequestChoice "Select install directory" "No install directory was not selected and*N'{userpackage}' installation will stop.*N*NAre you sure you want to stop installation?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    set stopinstallation "1"
+    SKIP end
+  ENDIF
+  SKIP BACK selectinstalldir
+ENDIF
+
+; get free space 
+set devicefreemb `Free "$newinstalldir"`
+
+
+; continue
+; ------------
+LAB continue
+set continue "0"
+set continue `RequestChoice "'{userpackage}' installation" "Selected install directory '$newinstalldir'*Nhas $devicefreemb MB free space.*N*NDo you want to continue '{userpackage}'*Ninstallation with selected install directory?" "Select install dir|Continue installation|Stop installation"`
+
+IF "$continue" EQ 1 VAL
+  SKIP BACK selectinstalldir
+ENDIF
+IF "$continue" EQ 2 VAL
+  set installdir "$newinstalldir"
+  set entrydir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "{indexname}"`"
+  IF NOT EXISTS "$entrydir"
+    MakePath >NIL: "$entrydir"
+  ENDIF
+  SKIP installentry
+ENDIF
+IF "$continue" EQ 0 VAL
+  set confirm "`RequestChoice "Select install directory" "Are you sure you want to stop installation?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    set stopinstallation "1"
+    SKIP end
+  ENDIF
+ENDIF
+
+SKIP BACK continue
+
+
+; install entry
+; -------------
+LAB installentry
+
+IF $lhaentry EQ 1 VAL
+  lha -m1 x "{entryfile}" "$entrydir/"
+ENDIF
+IF $lzxentry EQ 1 VAL
+  unlzx -m x "{entryfile}" "$entrydir/"
+ENDIF
+IF $zipentry EQ 1 VAL
+  unzip -o -x "{entryfile}" -d "$entrydir/"
+ENDIF
+
+; end
+LAB end

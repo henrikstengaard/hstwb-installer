@@ -5,7 +5,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-11-10
+# Date:   2019-06-27
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -91,7 +91,7 @@ def parse_entry(entry_name):
     unsupported_list = []
 
     # set entry name with filename extension
-    entry_name = re.sub(r'\.(lha|lzx)$', '', entry_name, re.I)
+    entry_name = re.sub(r'\.(lha|lzx|zip)$', '', entry_name, re.I)
 
     pattern_match = True
     while pattern_match:
@@ -250,8 +250,8 @@ def find_entries(user_package_dir):
 
     for root, directories, filenames in os.walk(unicode(user_package_dir, 'utf-8')):
         for filename in filenames:
-            # skip, if filename doesn't end with .lha or .lzx
-            if not (filename.endswith(".lha") or filename.endswith(".lzx")):
+            # skip, if filename doesn't end with .lha, .lzx or .zip
+            if not (filename.endswith(".lha") or filename.endswith(".lzx") or filename.endswith(".zip")):
                 continue
 
             file_full_name = os.path.join(root, filename)
@@ -359,6 +359,8 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
     user_package_install_lines.append("")
     user_package_install_lines.append("; reset")
 
+    user_package_install_lines.append("set devicereqfreemb \"100\"")
+    user_package_install_lines.append("set stopinstallation \"0\"")
     user_package_install_lines.append("set entriessetid \"1\"")
 
     all_hardwares = []
@@ -597,7 +599,7 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
     write_text_lines_for_amiga(user_package_install_file, user_package_install_lines)
 
 # build install entries
-def build_install_entries(entries, user_package_path, install_entries_dir):
+def build_install_entries(user_package_name, entries, user_package_path, install_entries_dir):
     """Build Install Entries"""
 
     # build install entry and filename indexes
@@ -645,11 +647,12 @@ def build_install_entries(entries, user_package_path, install_entries_dir):
         padding_text = " " * padding
 
         install_entry_lines.append(u"{0}IF EXISTS \"{1}\"".format(padding_text, user_package_file))
-        if re.search(r'\.lha$', user_package_file, re.I):
-            install_entry_lines.append(u"{0}  lha -m1 x \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
-        elif re.search(r'\.lzx$', user_package_file, re.I):
-            install_entry_lines.append(u"{0}  unlzx -m x \"{1}\" \"$entrydir/\"".format(padding_text, user_package_file_escaped))
+        install_entry_lines.append("{0}  Execute INSTALLDIR:S/InstallEntry \"{1}\" \"{2}\" \"{3}\"".format(padding_text, user_package_name, index_name, user_package_file_escaped))
+        install_entry_lines.append("{0}  IF \"$stopinstallation\" EQ 1 VAL".format(padding_text))
+        install_entry_lines.append("{0}    SKIP end".format(padding_text))
+        install_entry_lines.append("{0}  ENDIF".format(padding_text))
         install_entry_lines.append("{0}ENDIF".format(padding_text))
+        # user_package_name
 
         if has_multi_languages:
             install_entry_lines.append("ENDIF")
@@ -657,6 +660,10 @@ def build_install_entries(entries, user_package_path, install_entries_dir):
     # write install entry lines files
     for install_entry_filename in install_entry_lines_index.keys():
         install_entry_lines = install_entry_lines_index[install_entry_filename]
+
+        install_entry_lines.append("")
+        install_entry_lines.append("; end")
+        install_entry_lines.append("LAB end")        
 
         install_entry_file = os.path.join(install_entries_dir, install_entry_filename)
         write_text_lines_for_amiga(install_entry_file, install_entry_lines)
@@ -686,10 +693,17 @@ def build_install_entries(entries, user_package_path, install_entries_dir):
                     install_entries_lines.append("    echo \"*e[1mInstalling {0}, {1}, {2}...*e[0m\"".format(index_name, hardware.upper(), language.upper()))
                     install_entries_lines.append("    wait 1")
                     install_entries_lines.append("    Execute \"USERPACKAGEDIR:{0}/{1}\"".format(user_package_path, install_entry_filename_index[index_name][hardware][language]))
+                    install_entries_lines.append("    IF \"$stopinstallation\" EQ 1 VAL")
+                    install_entries_lines.append("      SKIP end")
+                    install_entries_lines.append("    ENDIF")
                     install_entries_lines.append("  ENDIF")
                 
             install_entries_lines.append("ENDIF")
     
+    install_entries_lines.append("")
+    install_entries_lines.append("; end")
+    install_entries_lines.append("LAB end")        
+
     install_entries_file = os.path.join(install_entries_dir, "Install-Entries")
     write_text_lines_for_amiga(install_entries_file, install_entries_lines)
 
@@ -737,7 +751,7 @@ print("---------------------")
 print("Build Install Entries")
 print("---------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2018-05-20")
+print("Date: 2019-06-27")
 print("")
 
 # print usage and exit, if arguments are not defined
@@ -834,7 +848,7 @@ for user_package_dir in user_package_dirs:
             os.makedirs(install_entries_dir)
 
         # build install entries
-        build_install_entries(entries_set.entries, "Install/{0}".format(entries_set.name), install_entries_dir)
+        build_install_entries(user_package_name, entries_set.entries, "Install/{0}".format(entries_set.name), install_entries_dir)
 
         # write entries list
         entries_list_file = os.path.join(user_package_dir, "entries-{0}.csv".format(entries_set.name.lower()))

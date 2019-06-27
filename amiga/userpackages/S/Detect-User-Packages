@@ -1,0 +1,48 @@
+.KEY userpackagesfile/a
+.BRA {
+.KET }
+
+; Detect User Packages
+; --------------------
+;
+; Date: 2019-01-04
+; Author: Henrik Noerfjand Stengaard
+
+; create empty user packages file
+echo "" NOLINE >"{userpackagesfile}"
+
+; list directories in USERPACKAGESDIR:
+list "USERPACKAGESDIR:" DIRS LFORMAT="%n" >T:_userpackages1
+sed "s/\/$//" T:_userpackages1 >T:_userpackages2
+frsort <T:_userpackages2 >T:_userpackages3
+
+; get next user package from user packages
+LAB next
+set userpackage ""
+set userpackage `Execute INSTALLDIR:S/FirstLine T:_userpackages3`
+
+; goto end, if userpackage is empty
+IF "$userpackage" EQ ""
+  SKIP end
+ENDIF
+
+; goto next, if user package dir doesn't contain a _installdir assign file
+IF NOT EXISTS "USERPACKAGESDIR:$userpackage/_installdir"
+  SKIP BACK next
+ENDIF
+
+; print user package and add user package to user packages file
+echo "$userpackage"
+echo "$userpackage" >>"{userpackagesfile}"
+
+SKIP BACK next
+
+
+; end
+; ---
+LAB end
+
+; Delete temp files, if they exist
+IF EXISTS T:_userpackages
+  delete >NIL: T:_userpackages#?
+ENDIF

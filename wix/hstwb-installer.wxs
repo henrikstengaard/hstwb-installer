@@ -36,18 +36,16 @@
     </Directory>
     <DirectoryRef Id="INSTALLDIR">
       <Directory Id="AmigaComponentDir"/>
+      <Directory Id="DataComponentDir"/>
       <Directory Id="FontsComponentDir"/>
       <Directory Id="FsUaeComponentDir"/>
       <Directory Id="ImagesComponentDir"/>
-      <Directory Id="KickstartComponentDir"/>
       <Directory Id="LicensesComponentDir"/>
       <Directory Id="ModulesComponentDir"/>
-      <Directory Id="PackagesComponentDir"/>
       <Directory Id="ReadmeComponentDir"/>
       <Directory Id="ScriptsComponentDir"/>
       <Directory Id="SupportComponentDir"/>
       <Directory Id="WinuaeComponentDir"/>
-      <Directory Id="WorkbenchComponentDir"/>
       <Component Id="ApplicationFiles" Guid="899fd841-1dc6-432f-8390-08ba26e90acc">
         <File Id="install.ps1" Source="install.ps1"/>
         <File Id="launcher.cmd" Source="launcher.cmd"/>
@@ -77,21 +75,17 @@
       <ComponentRef Id="ApplicationFiles"/>
       <ComponentRef Id="ApplicationShortcuts"/>
       <ComponentGroupRef Id="AmigaComponentGroup"/>
+      <ComponentGroupRef Id="DataComponentGroup"/>
       <ComponentGroupRef Id="FontsComponentGroup"/>
       <ComponentGroupRef Id="FsUaeComponentGroup"/>
-      <ComponentGroupRef Id="KickstartComponentGroup"/>
       <ComponentGroupRef Id="LicensesComponentGroup"/>
       <ComponentGroupRef Id="ModulesComponentGroup"/>
       <ComponentGroupRef Id="ReadmeComponentGroup"/>
       <ComponentGroupRef Id="ScriptsComponentGroup"/>
       <ComponentGroupRef Id="SupportComponentGroup"/>
       <ComponentGroupRef Id="WinuaeComponentGroup"/>
-      <ComponentGroupRef Id="WorkbenchComponentGroup"/>
       <Feature Id="Images" Title="Images" Level="1">
         <ComponentGroupRef Id="ImagesComponentGroup"/>
-      </Feature>
-      <Feature Id="Packages" Title="Packages" Level="1">
-        <ComponentGroupRef Id="PackagesComponentGroup"/>
       </Feature>
     </Feature>
     <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />

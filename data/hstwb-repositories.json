@@ -1,0 +1,71 @@
+{
+    "Date":  "2019-03-27 13:19:00",
+    "Description": "HstWB package repositories for building HstWB packages",
+    "Url": "https://hstwb.firstrealize.com/data/hstwb-repositories.json",
+    "Repositories": [
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/bestwb-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/betterwb-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-68k-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-adv-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-advsp-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-full-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-lite-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-os39-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-p96-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-demos-aga-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-demos-ocs-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-games-aga-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-games-ocs-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/hstwb-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/hstwb-mini-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/picasso96-package"
+        }
+    ]
+}

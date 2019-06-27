@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-02-28
+# Date:   2019-06-20
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -66,38 +66,32 @@ function WriteIniFile($iniFile, $ini)
 function DefaultSettings($settings)
 {
     $settings.Image = @{}
-    $settings.Workbench = @{}
-    $settings.AmigaOS39 = @{}
+    $settings.AmigaOs = @{}
     $settings.Kickstart = @{}
     $settings.Winuae = @{}
     $settings.Packages = @{}
     $settings.Installer = @{}
     $settings.Emulator = @{}
     $settings.UserPackages = @{}
-    
-    $settings.Workbench.InstallWorkbench = 'Yes'
+
     $settings.Kickstart.InstallKickstart = 'Yes'
     $settings.Packages.InstallPackages = ''
     $settings.Installer.Mode = 'Install'
     
-    $settings.AmigaOS39.InstallAmigaOS39 = 'No'
-
     # use cloanto amiga forever data directory, if present
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $workbenchAdfPath = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
-        if (test-path -path $workbenchAdfPath)
+        $amigaOsDir = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\adf")
+        if (test-path -path $amigaOsDir)
         {
-            $settings.Workbench.WorkbenchAdfDir = $workbenchAdfPath
-            $settings.Workbench.WorkbenchAdfSet = 'Workbench 3.1 Cloanto Amiga Forever 2016'
+            $settings.AmigaOs.AmigaOsDir = $amigaOsDir
         }
 
         $kickstartRomDir = [System.IO.Path]::Combine($amigaForeverDataPath, "Shared\rom")
         if (test-path -path $kickstartRomDir)
         {
             $settings.Kickstart.KickstartRomDir = $kickstartRomDir
-            $settings.Kickstart.KickstartRomSet = 'Kickstart Cloanto Amiga Forever 2016'
         }
     }
 
@@ -261,12 +255,10 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.UserPackages = @{}
     }
     
-    # create amiga os 3.9 section in settings, if it doesn't exist
-    if (!($hstwb.Settings.AmigaOS39))
+    # remove amiga os 3.9 section in settings, if it exist
+    if ($hstwb.Settings.AmigaOS39)
     {
-        $hstwb.Settings.AmigaOS39 = @{}
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
+        $hstwb.Settings.Remove('AmigaOS39')
     }
     
     # set default image dir, if image dir doesn't exist
@@ -289,18 +281,50 @@ function UpgradeSettings($hstwb)
         $hstwb.Settings.Remove('WinUAE')
     }
 
-    # upgrade workbench adf path to workbench adf dir
-    if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
+    # add amiga os settings, if it doesn't exist
+    if (!$hstwb.Settings.AmigaOs)
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
-        $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
+        $hstwb.Settings.AmigaOs = @{}
     }
+
+    if ($hstwb.Settings.Workbench)
+    {
+        # upgrade workbench adf path to workbench adf dir
+        if ($hstwb.Settings.Workbench.WorkbenchAdfPath)
+        {
+            $hstwb.Settings.Workbench.WorkbenchAdfDir = $hstwb.Settings.Workbench.WorkbenchAdfPath
+            $hstwb.Settings.Workbench.Remove('WorkbenchAdfPath')
+        }
+
+        # upgrade workbench to amiga os
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = $hstwb.Settings.Workbench.InstallWorkbench
+        $hstwb.Settings.AmigaOs.AmigaOsDir = $hstwb.Settings.Workbench.WorkbenchAdfDir
+        $hstwb.Settings.AmigaOs.AmigaOsSet = $hstwb.Settings.Workbench.WorkbenchAdfSet
+
+        # remove workbench settings
+        $hstwb.Settings.Remove('Workbench')
+    }
+
 
     # upgrade kickstart rom path to kickstart rom dir
     if ($hstwb.Settings.Kickstart.KickstartRomPath)
     {
         $hstwb.Settings.Kickstart.KickstartRomDir = $hstwb.Settings.Kickstart.KickstartRomPath
         $hstwb.Settings.Kickstart.Remove('KickstartRomPath')
+    }
+
+    # upgrade kickstart rom dir to kickstart dir
+    if ($hstwb.Settings.Kickstart.KickstartRomDir)
+    {
+        $hstwb.Settings.Kickstart.KickstartDir = $hstwb.Settings.Kickstart.KickstartRomDir
+        $hstwb.Settings.Kickstart.Remove('KickstartRomDir')
+    }
+
+    # upgrade kickstart rom set to kickstart set
+    if ($hstwb.Settings.Kickstart.KickstartRomSet)
+    {
+        $hstwb.Settings.Kickstart.KickstartSet = $hstwb.Settings.Kickstart.KickstartRomSet
+        $hstwb.Settings.Kickstart.Remove('KickstartRomSet')
     }
 
     # upgrade install packages
@@ -443,10 +467,33 @@ function DetectUserPackages($hstwb)
     return $userPackages
 }
 
-
-# update packages
-function UpdatePackages($hstwb)
+# remove install packages
+function RemoveInstallPackages($hstwb)
 {
+    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
+    {
+        $hstwb.Settings.Packages.Remove($installPackageKey)
+    }
+
+    UpdateAssigns $hstwb     
+}
+
+# update install packages
+function UpdateInstallPackages($hstwb)
+{
+    # build amiga os versions
+    $amigaOsVersionsIndex = @{}
+    foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+    {
+        $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+    }
+
+    # reset package filtering to all amiga os versions, if package filtering is not defined or doesn't match packages amiga os versions
+    if (!$hstwb.Settings.Packages.PackageFiltering -or !$amigaOsVersionsIndex.ContainsKey($hstwb.Settings.Packages.PackageFiltering))
+    {
+        $hstwb.Settings.Packages.PackageFiltering = 'All'
+    }
+
     # get and remove install packages
     $installPackageNames = @()
     foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
@@ -470,8 +517,8 @@ function UpdatePackages($hstwb)
 }
 
 
-# update user packages
-function UpdateUserPackages($hstwb)
+# update install user packages
+function UpdateInstallUserPackages($hstwb)
 {
     # get and remove install user packages
     $installUserPackageNames = @()
@@ -620,60 +667,66 @@ function ValidateAssigns($assigns)
 # validate settings
 function ValidateSettings($settings)
 {
+    # fail, if Mode parameter doesn't exist in settings file or is not valid
+    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '^(Install|BuildSelfInstall|BuildPackageInstallation|BuildUserPackageInstallation|Test)$')
+    {
+        Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+        return $false
+    }
+
     # fail, if ImageDir directory doesn't exist for installer modes other than 'BuildPackageInstallation'
-    if ($settings.Installer.Mode -notmatch '(BuildPackageInstallation|BuildUserPackageInstallation)' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
+    if ($settings.Installer.Mode -notmatch '^(BuildPackageInstallation|BuildUserPackageInstallation)$' -and $settings.Image.ImageDir -match '^.+$' -and !(test-path -path $settings.Image.ImageDir))
     {
         Write-Host "Error: ImageDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
         return $false
     }
 
-    # fail, if InstallWorkbench parameter doesn't exist in settings file or is not valid
-    if (!$settings.Workbench.InstallWorkbench -or $settings.Workbench.InstallWorkbench -notmatch '(Yes|No)')
+    if ($settings.Installer.Mode -match '^Install$')
     {
-        Write-Host "Error: InstallWorkbench parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
+        # fail, if install amiga os parameter doesn't exist in settings file or is not valid
+        if (!$settings.AmigaOs.InstallAmigaOs -or $settings.AmigaOs.InstallAmigaOs -notmatch '(Yes|No)')
+        {
+            Write-Host "Error: InstallAmigaOs parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if amiga os dir parameter doesn't exist in settings file or directory doesn't exist
+        if (!$settings.AmigaOs.AmigaOsDir -or ($settings.AmigaOs.AmigaOsDir -match '^.+$' -and !(test-path -path $settings.AmigaOs.AmigaOsDir)))
+        {
+            Write-Host "Error: AmigaOsDir parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if amiga os set parameter doesn't exist settings file or it's not defined
+        if (!$settings.AmigaOs.AmigaOsSet -or $settings.AmigaOs.AmigaOsSet -eq '')
+        {
+            Write-Host "Error: AmigaOsSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
+        if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '^(Yes|No)$')
+        {
+            Write-Host "Error: InstallKickstart parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
+            return $false
+        }
+
+        # fail, if KickstartSet parameter doesn't exist in settings file or it's not defined
+        if (!$settings.Kickstart.KickstartSet -or $settings.Kickstart.KickstartSet -eq '')
+        {
+            Write-Host "Error: KickstartSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
+            return $false
+        }
     }
 
-    # fail, if WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Workbench.WorkbenchAdfDir -or ($settings.Workbench.WorkbenchAdfDir -match '^.+$' -and !(test-path -path $settings.Workbench.WorkbenchAdfDir)))
+    if ($settings.Installer.Mode -match '^(Install|BuildSelfInstall|Test)$')
     {
-        Write-Host "Error: WorkbenchAdfPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if WorkbenchAdfSet parameter doesn't exist settings file or it's not defined
-    if (!$settings.Workbench.WorkbenchAdfSet -or $settings.Workbench.WorkbenchAdfSet -eq '')
-    {
-        Write-Host "Error: WorkbenchAdfSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if InstallKickstart parameter doesn't exist in settings file or is not valid
-    if (!$settings.Kickstart.InstallKickstart -or $settings.Kickstart.InstallKickstart -notmatch '(Yes|No)')
-    {
-        Write-Host "Error: InstallKickstart parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist
-    if (!$settings.Kickstart.KickstartRomDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
-    {
-        Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if KickstartRomSet parameter doesn't exist in settings file or it's not defined
-    if (!$settings.Kickstart.KickstartRomSet -or $settings.Kickstart.KickstartRomSet -eq '')
-    {
-        Write-Host "Error: KickstartRomSet parameter doesn't exist in settings file or it's not defined!" -ForegroundColor "Red"
-        return $false
-    }
-
-    # fail, if Mode parameter doesn't exist in settings file or is not valid
-    if (!$settings.Installer.Mode -or $settings.Installer.Mode -notmatch '(Install|BuildSelfInstall|BuildPackageInstallation|BuildUserPackageInstallation|Test)')
-    {
-        Write-Host "Error: Mode parameter doesn't exist in settings file or is not valid!" -ForegroundColor "Red"
-        return $false
+        # fail, if KickstartDir parameter doesn't exist in settings file or directory doesn't exist
+        if (!$settings.Kickstart.KickstartDir -or ($settings.Kickstart.KickstartRomDir -match '^.+$' -and !(test-path -path $settings.Kickstart.KickstartRomDir)))
+        {
+            Write-Host "Error: KickstartRomPath parameter doesn't exist in settings file or directory doesn't exist!" -ForegroundColor "Red"
+            return $false
+        }
     }
 
     return $true

@@ -1,0 +1,77 @@
+; Detect Kickstart
+; ----------------
+;
+; Date: 2019-01-07
+; Author: Henrik Noerfjand Stengaard
+
+
+; detect kickstart
+; ----------------
+LAB detectkickstart
+
+; delete restart detect kickstart prefs, if it exists
+IF EXISTS "INSTALLDIR:Prefs/Restart-Detect-Kickstart"
+  Delete >NIL: "INSTALLDIR:Prefs/Restart-Detect-Kickstart"
+ENDIF
+
+; detect kickstart message
+cls 
+echo "*e[32m" NOLINE
+echo "Detect Kickstart"
+echo "*e[0m*e[1m" NOLINE
+echo "----------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "*e[1mDetecting Kickstart:*e[0m"
+
+; set failat 255 for diskindrive to fail silently
+failat 255
+
+; set kickstartdir to 1, if "KICKSTARTDIR:" device exists
+set kickstartdir "0"
+DiskInDrive >NIL: KICKSTARTDIR:
+IF $RC EQ 0 VAL
+  set kickstartdir "1"
+
+  ; disk change KICKSTARTDIR: device to detect changed directories and files
+  DiskChange KICKSTARTDIR:
+ELSE
+  echo "*e[KICKSTARTDIR*e[0m: Not present! Skip detecting"
+  echo "Kickstart rom files."
+ENDIF
+
+; set failat to 21
+failat 21
+
+; run detect kickstart rom, if KICKSTARTDIR: device exists
+IF "$kickstartdir" EQ 1 VAL
+  ; run detect kickstart, if it exists
+  IF EXISTS "INSTALLDIR:S/Kickstart/Detect-Kickstart-Rom"
+    ; detect kickstart rom message
+    echo "Kickstart rom files in KICKSTARTDIR:..."
+
+    ; run detect kickstart rom
+    set dummy "`Execute "INSTALLDIR:S/Kickstart/Detect-Kickstart-Rom"`"
+  ENDIF
+ENDIF
+
+echo "Done"
+echo ""
+echo "Starting 'Kickstart installation' menu."
+Wait 2
+
+; create detect kickstart log
+IF EXISTS "INSTALLDIR:Temp/Kickstart-Rom.log"
+  Copy >NIL: "INSTALLDIR:Temp/Kickstart-Rom.log" "INSTALLDIR:Temp/Detect-Kickstart.log"
+ENDIF
+
+; build kickstart menu
+set dummy "`Execute INSTALLDIR:S/Build-Kickstart-Menu INSTALLDIR:Temp/Kickstart-Menu`"
+
+; run kickstart menu
+set dummy "`Execute INSTALLDIR:Temp/Kickstart-Menu`"
+
+; goto detect kickstart, if restart detect kickstart prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Restart-Detect-Kickstart"
+  SKIP BACK detectkickstart
+ENDIF

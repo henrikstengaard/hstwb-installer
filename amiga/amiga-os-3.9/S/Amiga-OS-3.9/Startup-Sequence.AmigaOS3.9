@@ -1,0 +1,103 @@
+; Startup Sequence for Amiga OS 3.9 Installation
+; ----------------------------------------------
+;
+; Date: 2019-04-04
+; Author: Henrik Noerfjand Stengaard
+
+
+; set failat to 21
+failat 21
+
+; load patched scsi.device v43.45, if it exists
+IF EXISTS DEVS:scsi.device
+  ; Load scsi.device, if current loaded scsi.device version is less than v43.45
+  Version >NIL: "scsi.device" 43 45
+  IF WARN
+    LoadModule DEVS:scsi.device
+  ENDIF
+ENDIF
+
+; run setpatch, if setpatch exists
+IF EXISTS C:SetPatch
+  ; check if version is equal or greater than v44.13 (amiga os 3.9)
+  Version >NIL: C:SetPatch 44 13 FILE
+  IF $RC EQ 0 VAL
+    ; run setpatch quit, if version is equal or greater than v45.15 (amiga os 3.1.4). otherwise run setpatch noromupdate quiet
+    Version >NIL: C:SetPatch 45 15 FILE
+    IF $RC EQ 0 VAL
+      C:SetPatch QUIET
+    ELSE
+      C:SetPatch NOROMUPDATE QUIET
+    ENDIF
+  ELSE
+    C:SetPatch QUIET
+  ENDIF
+ENDIF
+
+
+C:Version >NIL:
+C:AddBuffers >NIL: DF0: 15
+
+
+C:MakeDir RAM:T RAM:Clipboards RAM:ENV RAM:ENV/Sys
+Assign ENV: RAM:Env
+C:Copy ENVARC:~(#?.info) ENV: ALL QUIET
+
+; Load commands resident 
+Resident >NIL: C:Assign PURE
+Resident >NIL: C:Execute PURE
+
+Assign >NIL: T: RAM:T
+Assign >NIL: CLIPS: RAM:Clipboards
+Assign >NIL: REXX: S:
+Assign >NIL: PRINTERS: DEVS:Printers
+Assign >NIL: KEYMAPS: DEVS:Keymaps
+Assign >NIL: LOCALE: SYS:Locale
+Assign >NIL: LIBS: SYS:Classes ADD
+Assign >NIL: HELP: LOCALE:Help DEFER
+
+
+; add cls alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+
+; set timezone for unzip
+SetEnv TZ MST7
+
+; data types required for multiview and update screenmode
+C:AddDataTypes REFRESH QUIET
+
+; set paths
+Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs SYS:WBStartup SYS:Tools SYS:Tools/Commodities
+
+; goto fail, if assign hstwb installer doesn't exist
+IF NOT EXISTS S:Assign-HstWB-Installer
+  echo "*e[1mERROR: Assign hstwb installer doesn't exist!*e[22m"
+  SKIP fail
+ENDIF
+
+; run assign-hstwb-installer
+Execute S:Assign-HstWB-Installer
+
+; add assigns to installdir
+Assign >NIL: C: INSTALLDIR:C ADD
+Assign >NIL: Devs: INSTALLDIR:Devs ADD
+Assign >NIL: L: INSTALLDIR:L ADD
+Assign >NIL: Libs: INSTALLDIR:Libs ADD
+Assign >NIL: Prefs: INSTALLDIR:Prefs ADD
+
+; load commands resident 
+Resident >NIL: "INSTALLDIR:C/MakePath" PURE 
+Resident >NIL: "INSTALLDIR:C/Reboot" PURE 
+Resident >NIL: "INSTALLDIR:C/TotalReset" PURE
+Resident >NIL: "INSTALLDIR:C/UAEquit" PURE
+Resident >NIL: "INSTALLDIR:C/LhA" PURE
+Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
+Resident >NIL: "INSTALLDIR:C/UnZip" PURE
+
+; mount kingcon
+Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
+Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
+
+; run start install amiga os 3.9 in new kingcon shell
+NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Amiga-OS-3.9/Start-Install-Amiga-OS-3.9"
+EndShell

@@ -2,22 +2,22 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2018-07-04
+# Date:   2019-06-20
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
+
+Using module .\modules\packages.psm1
 
 Param(
 	[Parameter(Mandatory=$false)]
 	[string]$settingsDir
 )
 
-
 Import-Module (Resolve-Path('modules\version.psm1')) -Force
 Import-Module (Resolve-Path('modules\config.psm1')) -Force
 Import-Module (Resolve-Path('modules\dialog.psm1')) -Force
 Import-Module (Resolve-Path('modules\data.psm1')) -Force
-
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Windows.Forms
@@ -108,44 +108,43 @@ function Menu($hstwb, $title, $options, $returnIndex = $false)
     Write-Host $title -foregroundcolor "Cyan"
     Write-Host ""
 
-    return EnterChoice "Enter choice" $options $returnIndex
+    return EnterChoiceColor "Enter choice" $options $returnIndex
 }
 
 
-# main menu
-function MainMenu($hstwb)
+# main
+function Main($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Main Menu" @("Configure Image", "Configure Workbench", "Configure Amiga OS 3.9", "Configure Kickstart", "Configure Packages", "Configure User Packages", "Configure Emulator", "Configure Installer", "Run Installer", "Reset Settings", "Exit")
+        $choice = Menu $hstwb "Main" @("Configure Installer", "Configure image", "Configure Amiga OS", "Configure Kickstart", "Configure packages", "Configure user packages", "Configure emulator", "Run Installer", "Reset settings", "Exit")
         switch ($choice)
         {
-            "Configure Image" { ConfigureImageMenu $hstwb }
-            "Configure Workbench" { ConfigureWorkbenchMenu $hstwb }
-            "Configure Amiga OS 3.9" { ConfigureAmigaOS39Menu $hstwb }
-            "Configure Kickstart" { ConfigureKickstartMenu $hstwb }
-            "Configure Packages" { ConfigurePackagesMenu $hstwb }
-            "Configure User Packages" { ConfigureUserPackagesMenu $hstwb }
-            "Configure Emulator" { ConfigureEmulatorMenu $hstwb }
             "Configure Installer" { ConfigureInstaller $hstwb }
+            "Configure image" { ConfigureImage $hstwb }
+            "Configure Amiga OS" { ConfigureAmigaOs $hstwb }
+            "Configure Kickstart" { ConfigureKickstart $hstwb }
+            "Configure packages" { ConfigurePackages $hstwb }
+            "Configure user packages" { ConfigureUserPackages $hstwb }
+            "Configure emulator" { ConfigureEmulator $hstwb }
             "Run Installer" { RunInstaller $hstwb }
-            "Reset Settings" { ResetSettings $hstwb }
+            "Reset settings" { ResetSettings $hstwb }
         }
     }
     until ($choice -eq 'Exit')
 }
 
 
-# configure image menu
-function ConfigureImageMenu($hstwb)
+# configure image
+function ConfigureImage($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Image Menu" @("Existing Image Directory", "Create Image Directory From Image Template", "Back") 
+        $choice = Menu $hstwb "Configure image" @("Existing image directory", "Create image directory from image template", "Back") 
         switch ($choice)
         {
-            "Existing Image Directory" { ExistingImageDirectory $hstwb }
-            "Create Image Directory From Image Template" { CreateImageDirectoryFromImageTemplateMenu $hstwb }
+            "Existing image directory" { ExistingImageDirectory $hstwb }
+            "Create image directory from image template" { CreateImageDirectoryFromImageTemplate $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -164,16 +163,16 @@ function ExistingImageDirectory($hstwb)
         $defaultImageDir = ${Env:USERPROFILE}
     }
 
-    $newPath = FolderBrowserDialog "Select existing image directory" $path $false
+    $newImageDir = FolderBrowserDialog "Select existing image directory" $defaultImageDir $false
 
-    # return, if newpath is not defined
-    if (!$newPath -or $newPath -eq '')
+    # return, if new image directory is not defined
+    if (!$newImageDir -or $newImageDir -eq '')
     {
         return
     }
 
     # read hstwb image json file
-    $hstwbImageJsonFile = Join-Path -Path $newPath -ChildPath 'hstwb-image.json' 
+    $hstwbImageJsonFile = Join-Path -Path $newImageDir -ChildPath 'hstwb-image.json' 
 
     # return, if hstwb image json file doesn't exist
     if (!(Test-Path -Path $hstwbImageJsonFile))
@@ -194,7 +193,7 @@ function ExistingImageDirectory($hstwb)
     # show large harddrive warning, if image has large harddrives
     if ($largeHarddrivesPresent)
     {
-        $confirm = ConfirmDialog 'Large harddrive' ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newPath) 'Warning'
+        $confirm = ConfirmDialog 'Large harddrive' ("Image directory '{0}' uses harddrive(s) larger than 4GB and might become corrupt depending on scsi.device and filesystem used.`r`n`r`nIt's recommended to use tools to check and repair harddrive integrity, e.g. pfsdoctor for partitions with PFS\3 filesystem.`r`n`r`nDo you want to use the image?" -f $newImageDir) 'Warning'
         if (!$confirm)
         {
             return
@@ -202,13 +201,13 @@ function ExistingImageDirectory($hstwb)
     }
 
     # save new image directory
-    $hstwb.Settings.Image.ImageDir = $newPath
+    $hstwb.Settings.Image.ImageDir = $newImageDir
     Save $hstwb
 }
 
 
-# create image directory menu
-function CreateImageDirectoryFromImageTemplateMenu($hstwb)
+# create image directory from image template
+function CreateImageDirectoryFromImageTemplate($hstwb)
 {
     # get images sorted naturally
     $images = $hstwb.Images | Sort-Object @{expression={ [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(20) }) };Ascending=$true}
@@ -220,7 +219,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     
 
     # create image directory from image template
-    $choice = Menu $hstwb "Create Image Directory From Image Template Menu" $imageTemplateOptions $true
+    $choice = Menu $hstwb "Create image directory from image template" $imageTemplateOptions $true
 
     if ($choice -eq 'Back')
     {
@@ -273,7 +272,7 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
     $newImageDirectoryPath = FolderBrowserDialog ("Select new image directory for '{0}'" -f $image.Name) $defaultImageDir $true
 
     # return, if new image directory path is null
-    if ($newImageDirectoryPath -eq $null)
+    if ($null -eq $newImageDirectoryPath)
     {
         return
     }
@@ -451,194 +450,216 @@ function CreateImageDirectoryFromImageTemplateMenu($hstwb)
 }
 
 
-# configure workbench menu
-function ConfigureWorkbenchMenu($hstwb)
+# configure amiga os
+function ConfigureAmigaOs($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Workbench Menu" @("Switch Install Workbench", "Change Workbench Adf Dir", "Select Workbench Adf Set", "Back") 
+        $choice = Menu $hstwb "Configure Amiga OS" @("Switch install Amiga OS", "Change Amiga OS dir", "Select Amiga OS set", "View Amiga Os set files", "Back") 
         switch ($choice)
         {
-            "Switch Install Workbench" { SwitchInstallWorkbench $hstwb }
-            "Change Workbench Adf Dir" { ChangeWorkbenchAdfDir $hstwb }
-            "Select Workbench Adf Set" { SelectWorkbenchAdfSet $hstwb }
+            "Switch install Amiga OS" { SwitchInstallAmigaOs $hstwb }
+            "Change Amiga OS dir" { ChangeAmigaOsDir $hstwb }
+            "Select Amiga OS set" { SelectAmigaOsSet $hstwb }
+            "View Amiga Os set files" { ViewAmigaOsSetFiles $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
 
-# switch install workbench
-function SwitchInstallWorkbench($hstwb)
+# switch install amiga os
+function SwitchInstallAmigaOs($hstwb)
 {
-    if ($hstwb.Settings.Workbench.InstallWorkbench -eq 'Yes')
+    if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
     {
-        $hstwb.Settings.Workbench.InstallWorkbench = 'No'
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = 'No'
     }
     else
     {
-        $hstwb.Settings.Workbench.InstallWorkbench = 'Yes'
+        $hstwb.Settings.AmigaOs.InstallAmigaOs = 'Yes'
     }
     Save $hstwb
 }
 
 
-# change workbench adf dir
-function ChangeWorkbenchAdfDir($hstwb)
+# change amiga os adf dir
+function ChangeAmigaOsDir($hstwb)
 {
     $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
     if ($amigaForeverDataPath)
     {
-        $defaultWorkbenchAdfPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\adf"
+        $defaultAmigaOsPath = Join-Path $amigaForeverDataPath -ChildPath "Shared\adf"
     }
     else
     {
-        $defaultWorkbenchAdfPath = ${Env:USERPROFILE}
+        $defaultAmigaOsPath = ${Env:USERPROFILE}
     }
 
-    $path = if (!$hstwb.Settings.Workbench.WorkbenchAdfDir) { $defaultWorkbenchAdfPath } else { $hstwb.Settings.Workbench.WorkbenchAdfDir }
-    $newWorkbenchAdfDir = FolderBrowserDialog "Select Workbench Adf Directory" $path $false
+    $path = if (!$hstwb.Settings.AmigaOs.AmigaOsDir) { $defaultAmigaOsPath } else { $hstwb.Settings.AmigaOs.AmigaOsDir }
+    $newAmigaOsDir = FolderBrowserDialog "Select Amiga OS directory" $path $false
 
-    if ($newWorkbenchAdfDir -and $newWorkbenchAdfDir -ne '')
+    if ($newAmigaOsDir -and $newAmigaOsDir -ne '')
     {
-        # set new workbench adf dir
-        $hstwb.Settings.Workbench.WorkbenchAdfDir = $newWorkbenchAdfDir
+        # set new amiga os dir
+        $hstwb.Settings.AmigaOs.AmigaOsDir = $newAmigaOsDir
 
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # update amiga os entries
+        UpdateAmigaOsEntries $hstwb
+
+        # find amiga os files
+        Write-Host "Finding Amiga OS sets in Amiga OS dir..."
+        FindAmigaOsFiles $hstwb
+
+        # find best matching amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+
+        # ui amiga os set info
+        UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+        # save settings
         Save $hstwb
     }
 }
 
-
-# select workbench adf set
-function SelectWorkbenchAdfSet($hstwb)
+# select amiga os set
+function SelectAmigaOsSet($hstwb)
 {
-    # get workbench name padding
-    $workbenchNamePadding = ($hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+    $amigaOsSetNames = $hstwb.AmigaOsEntries | ForEach-Object { $_.Set } | Get-Unique
 
-    # get workbench rom sets
-    $workbenchAdfSets = $hstwb.WorkbenchAdfHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
+    $amigaOsSetOptions = @()
 
-    foreach($workbenchAdfSet in $workbenchAdfSets)
+    foreach($amigaOsSetName in $amigaOsSetNames)
     {
-        # get workbench adf set hashes
-        $workbenchAdfSetHashes = @()
-        $workbenchAdfSetHashes += $hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $workbenchAdfSet }
+        $amigaOsSetResult = ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
 
-        $workbenchAdfSetFiles = @()
-        $workbenchAdfSetFiles += $workbenchAdfSetHashes | Where-Object { $_.File }
-        $workbenchAdfSetComplete = ($workbenchAdfSetFiles.Count -eq $workbenchAdfSetHashes.Count)
-        
-        Write-Host ""
-        if ($workbenchAdfSetComplete)
-        {
-            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Green"
-        }
-        else
-        {
-            Write-Host ("'{0}' ({1}/{2})" -f $workbenchAdfSet, $workbenchAdfSetFiles.Count, $workbenchAdfSetHashes.Count) -ForegroundColor "Yellow"
-        }
+        $amigaOsSetInfo = FormatSetInfo $amigaOsSetResult
 
-        foreach($workbenchAdfSetHash in $workbenchAdfSetHashes)
-        {
-            Write-Host (("  {0,-" + $workbenchNamePadding + "} : ") -f $workbenchAdfSetHash.Name) -NoNewline -foregroundcolor "Gray"
-            if ($workbenchAdfSetHash.File)
-            {
-                Write-Host ("'" + $workbenchAdfSetHash.File + "'") -foregroundcolor "Green"
-            }
-            else
-            {
-                Write-Host "Not found!" -foregroundcolor "Red"
-            }
+        $amigaOsSetOptions += @{
+            'Text' = $amigaOsSetInfo.Text;
+            'Color' = $amigaOsSetInfo.Color;
+            'Value' = $amigaOsSetName
         }
+    }
+
+    $amigaOsSetOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
     }
 
     Write-Host ""
-    $choise = EnterChoice "Enter Workbench Adf Set" ($workbenchAdfSets += "Back")
+    $choise = EnterChoiceColor "Enter Amiga OS set" $amigaOsSetOptions
 
-    if ($choise -ne 'Back')
+    if ($choise -and $choise.Value -ne 'Back')
     {
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = $choise
+        $hstwb.UI.AmigaOs.AmigaOsSetInfo = $choise
+
+        $hstwb.Settings.AmigaOs.AmigaOsSet = $choise.Value
+
+        # build amiga os versions
+        $amigaOsVersionsIndex = @{}
+        foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+        {
+            $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+        }
+        $amigaOsVersions = $amigaOsVersionsIndex.Keys | Sort-Object -Descending
+
+        # get first amiga os entry for amiga os set
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+        
+        # set package filtering to amiga os entry's amiga os version, if it's defined and matches one of amiga os versions present in packages. otherwise set package filtering to all
+        if ($amigaOsEntry -and $amigaOsEntry.AmigaOsVersion -and $amigaOsVersions -contains $amigaOsEntry.AmigaOsVersion)
+        {
+            $hstwb.Settings.Packages.PackageFiltering = $amigaOsEntry.AmigaOsVersion
+        }
+        else
+        {
+            $hstwb.Settings.Packages.PackageFiltering = 'All'
+        }
+
         Save $hstwb
     }
 }
 
-
-# configure amiga os 3.9 menu
-function ConfigureAmigaOS39Menu($hstwb)
+# view amiga os set files
+function ViewAmigaOsSetFiles($hstwb)
 {
-    do
+    Write-Host ""
+
+    # show warning, if maiga os set is not selected
+    if (!$hstwb.Settings.AmigaOs.AmigaOsSet -or $hstwb.Settings.AmigaOs.AmigaOsSet -eq '')
     {
-        $choice = Menu $hstwb "Configure Amiga OS 3.9 Menu" @("Switch Install Amiga OS 3.9", "Switch Install Boing Bags", "Change Amiga OS 3.9 Iso File", "Back") 
-        switch ($choice)
+        Write-Host 'Amiga OS set is not selected!' -ForegroundColor 'Yellow'
+        Write-Host ''
+        Write-Host 'Press enter to continue'
+        Read-Host
+        return
+    }
+
+    $amigaOsSetEntries = @()
+    $amigaOsSetEntries = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+
+    if ($hstwb.UI.AmigaOs.AmigaOsSetInfo.Color)
+    {
+        Write-Host $hstwb.UI.AmigaOs.AmigaOsSetInfo.Text -ForegroundColor $hstwb.UI.AmigaOs.AmigaOsSetInfo.Color
+    }
+    else
+    {
+        Write-Host $hstwb.UI.AmigaOs.AmigaOsSetInfo.Text
+    }
+
+    # get name padding
+    $namePadding = ($amigaOsSetEntries | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
+
+    $amigaOsSetEntriesFirstIndex = @{}
+
+    # list amiga os set entries
+    foreach($amigaOsSetEntry in $amigaOsSetEntries)
+    {
+        if ($amigaOsSetEntriesFirstIndex.ContainsKey($amigaOsSetEntry.Name))
         {
-            "Switch Install Amiga OS 3.9" { SwitchInstallAmigaOS39 $hstwb }
-            "Switch Install Boing Bags" { SwitchInstallBoingBags $hstwb }
-            "Change Amiga OS 3.9 Iso File" { ChangeAmigaOS39IsoFile $hstwb }
+            continue
+        }
+
+        $amigaOsSetEntriesFirstIndex[$amigaOsSetEntry.Name] = $true
+
+        $bestMatchingAmigaOsSetEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq $amigaOsSetEntry.Name } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+        Write-Host (("  {0,-" + $namePadding + "} : ") -f $bestMatchingAmigaOsSetEntry.Name) -NoNewline -Foregroundcolor "Gray"
+        if ($bestMatchingAmigaOsSetEntry.File)
+        {
+            Write-Host ("'" + $bestMatchingAmigaOsSetEntry.File + "'") -NoNewline -Foregroundcolor "Green"
+            Write-Host (' (Match {0}' -f $bestMatchingAmigaOsSetEntry.MatchType) -NoNewline
+            if ($bestMatchingAmigaOsSetEntry.Comment -and $bestMatchingAmigaOsSetEntry.Comment -ne '')
+            {
+                Write-Host ('. {0}' -f $bestMatchingAmigaOsSetEntry.Comment) -NoNewline
+            }
+            Write-Host ")"
+        }
+        else
+        {
+            Write-Host "Not found!" -Foregroundcolor "Red"
         }
     }
-    until ($choice -eq 'Back')
 
+    # continue
+    Write-Host ""
+    Write-Host "Press enter to continue"
+    Read-Host
 }
 
-
-# switch install amiga os 3.9
-function SwitchInstallAmigaOS39($hstwb)
-{
-    if ($hstwb.Settings.AmigaOS39.InstallAmigaOS39 -eq 'Yes')
-    {
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'No'
-    }
-    else
-    {
-        $hstwb.Settings.AmigaOS39.InstallAmigaOS39 = 'Yes'
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
-    }
-    Save $hstwb
-}
-
-
-# switch install boing bags
-function SwitchInstallBoingBags($hstwb)
-{
-    if ($hstwb.Settings.AmigaOS39.InstallBoingBags -eq 'Yes')
-    {
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'No'
-    }
-    else
-    {
-        $hstwb.Settings.AmigaOS39.InstallBoingBags = 'Yes'
-    }
-    Save $hstwb
-}
-
-
-# change amiga os 3.9 iso file
-function ChangeAmigaOS39IsoFile($hstwb)
-{
-    $path = if (!$hstwb.Settings.AmigaOS39.AmigaOS39IsoFile) { ${Env:USERPROFILE} } else { $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile }
-    $newPath = OpenFileDialog "Select Amiga OS 3.9 iso file" $path "Iso Files|*.iso|All Files|*.*"
-
-    if ($newPath -and $newPath -ne '')
-    {
-        $hstwb.Settings.AmigaOS39.AmigaOS39IsoFile = $newPath
-        Save $hstwb
-    }
-}
-
-
-# configure kickstart menu
-function ConfigureKickstartMenu($hstwb)
+# configure kickstart
+function ConfigureKickstart($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Kickstart Menu" @("Switch Install Kickstart", "Change Kickstart Rom Dir", "Select Kickstart Rom Set", "Back") 
+        $choice = Menu $hstwb "Configure Kickstart" @("Switch install Kickstart", "Change Kickstart dir", "Select Kickstart set", "View Kickstart set files", "Back") 
         switch ($choice)
         {
-            "Switch Install Kickstart" { SwitchInstallKickstart $hstwb }
-            "Change Kickstart Rom Dir" { ChangeKickstartRomDir $hstwb }
-            "Select Kickstart Rom Set" { SelectKickstartRomSet $hstwb }
+            "Switch install Kickstart" { SwitchInstallKickstart $hstwb }
+            "Change Kickstart dir" { ChangeKickstartDir $hstwb }
+            "Select Kickstart set" { SelectKickstartSet $hstwb }
+            "View Kickstart set files" { ViewKickstartSetFiles $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -660,133 +681,249 @@ function SwitchInstallKickstart($hstwb)
 }
 
 
-# change kickstart rom dir
-function ChangeKickstartRomDir($hstwb)
+# get default kickstart dir
+function GetDefaultKickstartDir()
 {
-    $amigaForeverDataPath = ${Env:AMIGAFOREVERDATA}
-    if ($amigaForeverDataPath)
+    if (${Env:AMIGAFOREVERDATA} -and (Test-Path ${Env:AMIGAFOREVERDATA}))
     {
-        $defaultKickstartRomDir = Join-Path $amigaForeverDataPath -ChildPath "Shared\rom"
+        $amigaForeverDataSharedRomDir = Join-Path ${Env:AMIGAFOREVERDATA} -ChildPath "Shared\rom"
+        if (Test-Path $amigaForeverDataSharedRomDir)
+        {
+            return $amigaForeverDataSharedRomDir
+        }
+    }
+
+    return ${Env:USERPROFILE}
+}
+
+# change kickstart dir
+function ChangeKickstartDir($hstwb)
+{
+    $kickstartDir = if ($hstwb.Settings.Kickstart.KickstartDir -and (Test-Path $hstwb.Settings.Kickstart.KickstartDir)) { $hstwb.Settings.Kickstart.KickstartDir } else { GetDefaultKickstartDir }
+    $newKickstartDir = FolderBrowserDialog "Select Kickstart directory" $kickstartDir $false
+
+    if ($newKickstartDir -and $newKickstartDir -ne '')
+    {
+        # set new kickstart rom dir
+        $hstwb.Settings.Kickstart.KickstartDir = $newKickstartDir
+
+        # update kickstart entries
+        UpdateKickstartEntries $hstwb
+
+        # find kickstart files
+        Write-Host "Finding Kickstart sets in Kickstart dir..."
+        FindKickstartFiles $hstwb
+
+        # set new kickstart rom set and save
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+
+        # ui kickstart set info
+        UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
+
+        Save $hstwb
+    }
+}
+
+# select kickstart set
+function SelectKickstartSet($hstwb)
+{
+    $kickstartSetNames = @()
+    $kickstartSetNames += $hstwb.KickstartEntries | ForEach-Object { $_.Set } | Get-Unique
+
+    $kickstartSetOptions = @()
+    foreach($kickstartSetName in $kickstartSetNames)
+    {
+        $kickstartSetResult = ValidateSet $hstwb.KickstartEntries $kickstartSetName
+
+        $kickstartSetInfo = FormatKickstartSetInfo $kickstartSetResult
+
+        $kickstartSetOptions += @{
+            'Text' = $kickstartSetInfo.Text;
+            'Color' = $kickstartSetInfo.Color;
+            'Value' = $kickstartSetName
+        }
+    }
+
+    $kickstartSetOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
+    }
+
+    $choise = Menu $hstwb "Enter Kickstart set" $kickstartSetOptions
+
+    if ($choise.Value -ne 'Back')
+    {
+        # set ui kickstart set info
+        $hstwb.UI.Kickstart.KickstartSetInfo = $choise
+
+        # set kickstart set
+        $hstwb.Settings.Kickstart.KickstartSet = $choise.Value
+
+        # save settings
+        Save $hstwb
+    }
+}
+
+# view kickstart set files
+function ViewKickstartSetFiles($hstwb)
+{
+    Write-Host ""
+
+    # show warning, if kickstart set is not selected
+    if (!$hstwb.Settings.Kickstart.KickstartSet -or $hstwb.Settings.Kickstart.KickstartSet -eq '')
+    {
+        Write-Host 'Kickstart set is not selected!' -ForegroundColor 'Yellow'
+        Write-Host ''
+        Write-Host 'Press enter to continue'
+        Read-Host
+        return
+    }
+
+    # get kickstart set entries
+    $kickstartSetEntries = @()
+    $kickstartSetEntries = $hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }
+
+    # show kickstart set info
+    if ($hstwb.UI.Kickstart.KickstartSetInfo.Color)
+    {
+        Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text -ForegroundColor $hstwb.UI.Kickstart.KickstartSetInfo.Color
     }
     else
     {
-        $defaultKickstartRomDir = ${Env:USERPROFILE}
+        Write-Host $hstwb.UI.Kickstart.KickstartSetInfo.Text
     }
+    
+    # get name padding
+    $namePadding = ($kickstartSetEntries | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
 
-    $path = if (!$hstwb.Settings.Kickstart.KickstartRomDir) { $defaultKickstartRomDir } else { $hstwb.Settings.Kickstart.KickstartRomDir }
-    $newKickstartRomDir = FolderBrowserDialog "Select Kickstart Rom Directory" $path $false
+    $kickstartSetEntriesFirstIndex = @{}
 
-    if ($newKickstartRomDir -and $newKickstartRomDir -ne '')
+    # list amiga os set entries
+    foreach($kickstartSetEntry in $kickstartSetEntries)
     {
-        # set new kickstart rom dir
-        $hstwb.Settings.Kickstart.KickstartRomDir = $newKickstartRomDir
-        
-        # set new kickstart rom set and save
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
-        Save $hstwb
-    }
-}
-
-
-# select kickstart rom path
-function SelectKickstartRomSet($hstwb)
-{
-    # get kickstart name padding
-    $kickstartNamePadding = ($hstwb.KickstartRomHashes | ForEach-Object { $_.Name } | Sort-Object @{expression={$_.Length};Ascending=$false} | Select-Object -First 1).Length
-
-    # get kickstart rom sets
-    $kickstartRomSets = $hstwb.KickstartRomHashes | ForEach-Object { $_.Set } | Sort-Object | Get-Unique
-
-    foreach($kickstartRomSet in $kickstartRomSets)
-    {
-        # get kickstart rom set hashes
-        $kickstartRomSetHashes = $hstwb.KickstartRomHashes | Where-Object { $_.Set -eq $kickstartRomSet }
-        
-        $kickstartRomSetFiles = @()
-        $kickstartRomSetFiles += $kickstartRomSetHashes | Where-Object { $_.File }
-        $kickstartRomSetComplete = ($kickstartRomSetFiles.Count -eq $kickstartRomSetHashes.Count)
-
-        Write-Host ""
-        if ($kickstartRomSetComplete)
+        if ($kickstartSetEntriesFirstIndex.ContainsKey($kickstartSetEntry.Name))
         {
-            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Green"
+            continue
+        }
+
+        $kickstartSetEntriesFirstIndex[$kickstartSetEntry.Name] = $true
+
+        $bestMatchingKickstartSetEntry = $kickstartSetEntries | Where-Object { $_.Name -eq $kickstartSetEntry.Name } | Sort-Object @{expression={$_.MatchRank};Ascending=$true} | Select-Object -First 1
+
+        Write-Host (("  {0,-" + $namePadding + "} : ") -f $bestMatchingKickstartSetEntry.Name) -NoNewline -Foregroundcolor "Gray"
+        if ($bestMatchingKickstartSetEntry.File)
+        {
+            Write-Host ("'" + $bestMatchingKickstartSetEntry.File + "'") -NoNewline -Foregroundcolor "Green"
+            Write-Host (' (Match {0}' -f $bestMatchingKickstartSetEntry.MatchType) -NoNewline
+            if ($bestMatchingKickstartSetEntry.Comment -and $bestMatchingKickstartSetEntry.Comment -ne '')
+            {
+                Write-Host ('. {0}' -f $bestMatchingKickstartSetEntry.Comment) -NoNewline
+            }
+            Write-Host ")"
         }
         else
         {
-            Write-Host ("'{0}' ({1}/{2})" -f $kickstartRomSet, $kickstartRomSetFiles.Count, $kickstartRomSetHashes.Count) -ForegroundColor "Yellow"
-        }
-
-        foreach($kickstartRomSetHash in $kickstartRomSetHashes)
-        {
-            Write-Host (("  {0,-" + $kickstartNamePadding + "} : ") -f $kickstartRomSetHash.Name) -NoNewline -foregroundcolor "Gray"
-            if ($kickstartRomSetHash.File)
-            {
-                Write-Host ("'" + $kickstartRomSetHash.File + "'") -foregroundcolor "Green"
-            }
-            else
-            {
-                Write-Host "Not found!" -foregroundcolor "Red"
-            }
+            Write-Host "Not found!" -Foregroundcolor "Red"
         }
     }
 
+    # continue
     Write-Host ""
-    $choise = EnterChoice "Enter Kickstart Rom Set" ($kickstartRomSets += "Back")
-
-    if ($choise -ne 'Back')
-    {
-        $hstwb.Settings.Kickstart.KickstartRomSet = $choise
-        Save $hstwb
-    }
+    Write-Host "Press enter to continue"
+    Read-Host
 }
 
-
-# configure user packages menu
-function ConfigurePackagesMenu($hstwb)
+# configure user packages
+function ConfigurePackages($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Packages Menu" @("Select Packages Menu", "Back") 
+        $choice = Menu $hstwb "Configure packages" @("Select packages", "Update packages", "Back") 
         switch ($choice)
         {
-            "Select Packages Menu" { SelectPackagesMenu $hstwb }
+            "Select packages" { SelectPackages $hstwb }
+            "Update packages" { UpdatePackages $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
+# select package filtering
+function SelectPackageFiltering($hstwb)
+{
+    # build amiga os versions
+    $amigaOsVersionsIndex = @{}
+    foreach ($package in ($hstwb.Packages.Values | Where-Object { $_.AmigaOsVersions }))
+    {
+        $package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
+    }
+    $amigaOsVersions = $amigaOsVersionsIndex.Keys | Sort-Object -Descending
 
-# select packages menu
-function SelectPackagesMenu($hstwb)
+    # build amiga os version options
+    $amigaOsVersionOptions = @()
+    $amigaOsVersionColor = if ('All' -eq $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }
+    $amigaOsVersionOptions += @{ 'Text' = 'All Amiga OS versions'; 'Value' = 'All'; 'Color' = $amigaOsVersionColor }
+    
+    foreach ($amigaOsVersion in $amigaOsVersions)
+    {
+        $amigaOsVersionColor = if ($amigaOsVersion -eq $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }
+        $amigaOsVersionOptions += @{
+            'Text' = ('Amiga OS {0}' -f $amigaOsVersion);
+            'Value' = $amigaOsVersion;
+            'Color' = $amigaOsVersionColor
+        }
+    }
+    #$amigaOsVersionOptions += $amigaOsVersions | ForEach-Object { @{ 'Text' = ('Amiga OS {0}' -f $_); 'Value' = $_; 'Color' = (if ($_ -and $hstwb.Settings.Packages.PackageFiltering) { 'Green' } else { $null }) } }
+    $amigaOsVersionOptions += @{ 'Text' = 'Back'; 'Value' = 'Back' }
+
+    do
+    {
+        $choice = Menu $hstwb "Select package filtering" $amigaOsVersionOptions
+
+        # get first amiga os entry for amiga os set
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+
+        # add package filtering warning, if package filtering doesn't match amiga os version for amiga os set
+        $amigaOsVersionWarning = ''
+        if ($hstwb.Settings.Installer.Mode -eq "Install" -and $amigaOsEntry -and $amigaOsEntry.AmigaOsVersion -ne $choice.Value)
+        {
+            $amigaOsVersionWarning = ("Selected package filtering '{0}' doesn't match Amiga OS set 'Amiga OS {1}'. This will show packages that are not supported by selected Amiga OS and packages might not work correctly and could result in corrupt or incorrect installation.`r`n`r`n" -f $choice.Text, $amigaOsEntry.AmigaOsVersion)
+        }
+
+        if ($choice.Value -ne 'Back' -and (ConfirmDialog "Select package filtering" ("{0}Changing package filtering will reset install packages.`r`n`r`nAre you sure you want to select package filtering '{1}'?" -f $amigaOsVersionWarning, $choice.Text) "Warning"))
+        {
+            # remove install packages from packages
+            foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
+            {
+                $hstwb.Settings.Packages.Remove($installPackageKey)
+            }
+
+            $hstwb.Settings.Packages.PackageFiltering = $choice.Value
+            Save $hstwb
+
+            break
+        }
+    } until ($choice.Value -eq 'Back')
+}
+
+# select packages
+function SelectPackages($hstwb)
 {
     # get package names sorted
     $packageNames = @()
-    $packageNames += SortPackageNames $hstwb | ForEach-Object { $_.ToLower() }
+    $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or !$hstwb.Packages[$_].AmigaOsVersions -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
 
     # get install packages
-    $installPackages = @{}
-    foreach($installPackageKey in ($hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' }))
-    {
-        $installPackages.Set_Item($hstwb.Settings.Packages.Get_Item($installPackageKey.ToLower()), $true)
-    }
+    $packageNamesInstallIndex = @{}
+    $hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' } | ForEach-Object { $packageNamesInstallIndex[$hstwb.Settings.Packages[$_]] = $true }
 
     # build available and install packages indexes
-    $packageNamesFormattedMap = @{}
-    $packageNamesMap = @{}
-    $installPackagesMap = @{}
     $dependencyPackageNamesIndex = @{}
+    $contentIdPackages = @{}
 
     foreach ($packageName in $packageNames)
     {
         $package = $hstwb.Packages[$packageName]
-
-        $hasDependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
-        
-        $packageNameFormatted = "{0}{1}" -f $package.FullName, $hasDependenciesIndicator
-
-        $packageNamesFormattedMap.Set_Item($packageNameFormatted, $packageName)
-        $packageNamesMap.Set_Item($packageName, $packageNameFormatted)
-        $installPackagesMap.Set_Item($packageName, $package.Name)
 
         if ($package.Dependencies)
         {
@@ -806,37 +943,89 @@ function SelectPackagesMenu($hstwb)
                 $dependencyPackageNamesIndex.Set_Item($dependencyPackageName, $dependencyPackageNames)
             }
         }
+
+        if ($package.ContentIds)
+        {
+            foreach($contentId in ($package.ContentIds | ForEach-Object { $_.ToLower() }))
+            {
+                if (!$contentIdPackages.ContainsKey($contentId))
+                {
+                    $contentIdPackages[$contentId] = @()
+                }
+    
+                if (($contentIdPackages[$contentId] | Where-Object { $_.Id -eq $package.Id }).Count -gt 0)
+                {
+                    continue
+                }
+    
+                $contentIdPackages[$contentId] += $package
+            }            
+        }
     }
 
     do
     {
         # build package options
-        $packageOptions = @('Select all', 'Deselect all')
-        $packageOptions += $packageNames | ForEach-Object { if ($installPackages.ContainsKey($_)) { ("- " + $packageNamesMap.Get_Item($_)) } else { ("+ " + $packageNamesMap.Get_Item($_)) } }
-        $packageOptions += "Back"
+        $packageOptions = @(
+            @{ 'Text' = 'Select package filtering'; 'Value' = 'select-package-filtering' },
+            @{ 'Text' = 'Install all packages'; 'Value' = 'install-all-packages' },
+            @{ 'Text' = 'Skip all packages'; 'Value' = 'skip-all-packages' }
+        )
 
-        $choice = Menu $hstwb "Select Packages Menu" $packageOptions
+        foreach ($packageName in $packageNames)
+        {
+            $package = $hstwb.Packages[$packageName]
+            $dependenciesIndicator = if ($package.Dependencies -and $package.Dependencies.Count -gt 0) { ' (*)' } else { '' }
+        
+            $packageNameFormatted = "{0}{1}" -f $package.FullName, $dependenciesIndicator
+    
+            $installPackage = $packageNamesInstallIndex.ContainsKey($packageName)
+
+            $packageOptions += @{
+                'Text' = if ($installPackage) { ("Install : {0}" -f $packageNameFormatted) } else { ("Skip    : " + $packageNameFormatted) };
+                'Value' = $packageName;
+                'Color' = if ($installPackage) { 'Green' } else { $null }
+            }
+        }
+
+        $packageOptions += @{
+            'Text' = 'Back';
+            'Value' = 'back'
+        }
+
+        $choice = Menu $hstwb "Select packages" $packageOptions
 
         $addPackageNames = @()
         $removePackageNames = @()
         
-        if ($choice -eq 'Select all')
+        if ($choice.Value -eq 'select-package-filtering')
+        {
+            SelectPackageFiltering $hstwb
+
+            # get package names sorted
+            $packageNames = @()
+            $packageNames += SortPackageNames $hstwb | Where-Object { $hstwb.Settings.Packages.PackageFiltering -eq 'All' -or !$hstwb.Packages[$_].AmigaOsVersions -or $hstwb.Packages[$_].AmigaOsVersions -contains $hstwb.Settings.Packages.PackageFiltering } | ForEach-Object { $_.ToLower() }
+
+            # get install packages
+            $packageNamesInstallIndex = @{}
+            $hstwb.Settings.Packages.Keys | Where-Object { $_ -match 'InstallPackage\d+' } | ForEach-Object { $packageNamesInstallIndex[$hstwb.Settings.Packages[$_]] = $true }
+        }
+        elseif ($choice.Value -eq 'install-all-packages')
         {
             $addPackageNames += $packageNames
         }
-        elseif ($choice -eq 'Deselect all')
+        elseif ($choice.Value -eq 'skip-all-packages')
         {
-            $removePackageNames += $installPackages.Keys
+            $removePackageNames += $packageNamesInstallIndex.Keys
         }
-        elseif ($choice -ne 'Back')
+        elseif ($choice.Value -ne 'back')
         {
-            $packageNameFormatted = $choice -replace '^(\+|\-) ', ''
-            $packageName = $packageNamesFormattedMap.Get_Item($packageNameFormatted)
+            $packageName = $choice.Value
 
-            # deselect package, if it's already selected. otherwise deselect package
-            if ($installPackages.ContainsKey($packageName))
+            # skip package, if it's set to install. otherwise deselect package
+            if ($packageNamesInstallIndex.ContainsKey($packageName))
             {
-                $deselectPackage = $true
+                $skipPackage = $true
 
                 # show package dependency warning, if package has dependencies
                 if ($dependencyPackageNamesIndex.ContainsKey($packageName))
@@ -846,23 +1035,44 @@ function SelectPackagesMenu($hstwb)
 
                     # list selected package names that has dependencies to package
                     $dependencyPackageNames = @()
-                    $dependencyPackageNames += $dependencyPackageNamesIndex.Get_Item($packageName) | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
+                    $dependencyPackageNames += $dependencyPackageNamesIndex[$packageName] | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
                     # show package dependency warning
-                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and deselecting it may cause issues when installing packages.`r`n`r`nAre you sure you want to deselect package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
+                    if ($dependencyPackageNames.Count -gt 0 -and !(ConfirmDialog "Package dependency warning" ("Warning! Package(s) '{0}' has a dependency to '{1}' and skipping it may cause issues when installing packages.`r`n`r`nAre you sure you want to skip package '{1}'?" -f ($dependencyPackageNames -join ', '), $package.Name)))
                     {
-                        $deselectPackage = $false
+                        $skipPackage = $false
                     }
                 }
 
-                if ($deselectPackage)
+                if ($skipPackage)
                 {
                     $removePackageNames += $packageName
                 }
             }
             else
             {
+                # add package
                 $addPackageNames += $packageName
+
+                # get package
+                $package = $hstwb.Packages[$packageName]
+
+                $identicalContentIds = @()
+                if ($hstwb.Settings.Installer.Mode -eq "Install" -and $package.ContentIds)
+                {
+                    $identicalContentIds += (Compare-Object -ReferenceObject ($contentIdPackages.keys | ForEach-Object { $_.ToString() }) -DifferenceObject $package.ContentIds -includeEqual -ExcludeDifferent).InputObject
+                }
+
+                if ($identicalContentIds.Count -gt 0)
+                {
+                    $dependencyPackageNames = @()
+                    if ($dependencyPackageNamesIndex.ContainsKey($packageName))
+                    {
+                        $dependencyPackageNames += $dependencyPackageNamesIndex[$packageName] | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
+                    }
+
+                    $removePackageNames += $identicalContentIds | ForEach-Object { $contentIdPackages[$_] } | Where-Object { $_.Id -ne $package.Id -and $dependencyPackageNames -notcontains $_.Name } | Sort-Object -Property Id -Unique | ForEach-Object { $_.Name }
+                }        
             }         
         }
 
@@ -871,17 +1081,14 @@ function SelectPackagesMenu($hstwb)
         {
             foreach($packageName in $removePackageNames)
             {
-                if (!$installPackages.ContainsKey($packageName))
+                if (!$packageNamesInstallIndex.ContainsKey($packageName))
                 {
                     continue
                 }
 
-                # get package
-                $package = $hstwb.Packages[$packageName]
-            
-                $installPackages.Remove($packageName)
+                $packageNamesInstallIndex.Remove($packageName)
                 
-                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like ('*{0}*' -f $package.Name) } | Select-Object -First 1
+                $packageAssignsKey = $hstwb.Assigns.Keys | Where-Object { $_ -like $packageName } | Select-Object -First 1
 
                 if ($packageAssignsKey)
                 {
@@ -890,12 +1097,11 @@ function SelectPackagesMenu($hstwb)
             }
         }
 
-
         if ($addPackageNames.Count -gt 0)
         {
             foreach($packageName in $addPackageNames)
             {
-                if ($installPackages.ContainsKey($packageName))
+                if ($packageNamesInstallIndex.ContainsKey($packageName))
                 {
                     continue
                 }
@@ -907,19 +1113,19 @@ function SelectPackagesMenu($hstwb)
                 
                 if ($package.Dependencies.Count -gt 0)
                 {
-                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package | ForEach-Object { $_.ToLower() }
+                    $selectedPackageNames += GetDependencyPackageNames $hstwb $package
                 }
 
                 $selectedPackageNames += $packageName
 
                 foreach($selectedPackageName in $selectedPackageNames)
                 {
-                    if ($installPackages.ContainsKey($selectedPackageName))
+                    if ($packageNamesInstallIndex.ContainsKey($selectedPackageName))
                     {
                         continue
                     }
 
-                    $installPackages.Set_Item($selectedPackageName, $true)
+                    $packageNamesInstallIndex.Set_Item($selectedPackageName, $true)
 
                     # get selected package
                     $selectedPackage = $hstwb.Packages[$selectedPackageName]
@@ -951,7 +1157,7 @@ function SelectPackagesMenu($hstwb)
 
             # build and set new install packages
             $newInstallPackages = @()
-            $newInstallPackages += $packageNames | Where-Object { $installPackages.ContainsKey($_) } | Foreach-Object { $installPackagesMap.Get_Item($_) }
+            $newInstallPackages += $packageNames | Where-Object { $packageNamesInstallIndex.ContainsKey($_) } | Foreach-Object { $hstwb.Packages[$_].Name }
 
             # add install packages to packages
             for($i = 0; $i -lt $newInstallPackages.Count; $i++)
@@ -962,20 +1168,89 @@ function SelectPackagesMenu($hstwb)
             Save $hstwb            
         }
     }
-    until ($choice -eq 'Back')
+    until ($choice.Value -eq 'back')
 }
 
-
-# configure user packages menu
-function ConfigureUserPackagesMenu($hstwb)
+# update packages
+function UpdatePackages($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure User Packages Menu" @("Change User Packages Dir", "Select User Packages Menu", "Back") 
+        $choice = Menu $hstwb "Update packages" @("Update packages list", "Download latest prerelease packages", "Download latest packages", "Back") 
         switch ($choice)
         {
-            "Change User Packages Dir" { ChangeUserPackagesDir $hstwb }
-            "Select User Packages Menu" { SelectUserPackagesMenu $hstwb }
+            "Update packages list" { UpdatePackagesList $hstwb }
+            "Download latest prerelease packages" { DownloadLatestPackages $hstwb $true }
+            "Download latest packages" { DownloadLatestPackages $hstwb $false }
+        }
+    }
+    until ($choice -eq 'Back')
+}
+
+# update packages list
+function UpdatePackagesList($hstwb)
+{
+    # read packages list file
+    $packagesList = Get-Content $hstwb.Paths.PackagesListFile -Raw | ConvertFrom-Json
+
+    Write-Host ''
+    Write-Host 'Downloading packages list...' -ForegroundColor 'Yellow'
+
+    try
+    {
+        Write-Host $packagesList.Url -ForegroundColor 'Yellow'
+        $newPackagesList = Invoke-WebRequest $packagesList.Url
+        Set-Content $hstwb.Paths.PackagesListFile -Value $newPackagesList
+        Write-Host 'Done' -ForegroundColor 'Yellow'
+    }
+    catch
+    {
+        Write-Host ("Failed to download packages list: {0}" -f $_.Exception.Message) -ForegroundColor 'Red'
+    }
+
+    Write-Host ''
+    Write-Host "Press enter to continue"
+    Read-Host
+}
+
+# download latest packages
+function DownloadLatestPackages($hstwb, $prerelease)
+{
+    $prereleaseText = if ($prerelease) { 'prerelease ' } else { '' }
+    if (!(ConfirmDialog ("Download latest {0}packages" -f $prereleaseText) ("Do you want to download latest {0}packages?" -f $prereleaseText)))
+    {
+        return
+    }
+
+    Write-Host ''
+    Write-Host 'Downloading packages...' -ForegroundColor 'Yellow'
+
+    # read packages list file
+    $packagesList = Get-Content $hstwb.Paths.PackagesListFile -Raw | ConvertFrom-Json
+
+    # download packages
+    $packageManager = [PackageManager]::new($hstwb.Paths.PackagesPath)
+    $packageManager.DownloadPackages($packagesList.Packages, $prerelease)
+
+    # read packages
+    $hstwb.Packages = ReadPackages $hstwb.Paths.PackagesPath;
+
+    Write-Host 'Done' -ForegroundColor 'Yellow'
+    Write-Host ''
+    Write-Host "Press enter to continue"
+    Read-Host
+}
+
+# configure user packages
+function ConfigureUserPackages($hstwb)
+{
+    do
+    {
+        $choice = Menu $hstwb "Configure user packages" @("Change user packages dir", "Select user packages", "Back") 
+        switch ($choice)
+        {
+            "Change user packages dir" { ChangeUserPackagesDir $hstwb }
+            "Select user packages" { SelectUserPackages $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -986,7 +1261,7 @@ function ConfigureUserPackagesMenu($hstwb)
 function ChangeUserPackagesDir($hstwb)
 {
     $path = if (!$hstwb.Settings.UserPackages.UserPackagesDir) { ${Env:USERPROFILE} } else { $hstwb.Settings.UserPackages.UserPackagesDir }
-    $newPath = FolderBrowserDialog "Select User Packages Directory" $path $false
+    $newPath = FolderBrowserDialog "Select user packages directory" $path $false
 
     if ($newPath -and $newPath -ne '')
     {
@@ -1004,58 +1279,58 @@ function ChangeUserPackagesDir($hstwb)
 }
 
 
-# select user packages menu
-function SelectUserPackagesMenu($hstwb)
+# select user packages
+function SelectUserPackages($hstwb)
 {
     # get user packages
     $userPackageNames = $hstwb.UserPackages.keys | Sort-Object @{expression={$_};Ascending=$true}
 
-    # get install packages
-    $installUserPackages = @{}
-    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' }))
-    {
-        $installUserPackages.Set_Item($hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower()), $true)
-    }
-
-    # build user package names maps
-    $userPackageNamesFormattedMap = @{}
-    $userPackageNamesMap = @{}
-    foreach ($userPackageName in $userPackageNames)
-    {
-        $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
-
-        $userPackageNamesFormattedMap.Set_Item($userPackage.Name, $userPackageName)
-        $userPackageNamesMap.Set_Item($userPackageName, $userPackage.Name)
-    }
+    # get user install packages index
+    $userPackageNamesInstallIndex = @{}
+    $hstwb.Settings.UserPackages.Keys | Where-Object { $_ -match 'InstallUserPackage\d+' } | ForEach-Object { $userPackageNamesInstallIndex[$hstwb.Settings.UserPackages[$_]] = $true }
 
     do
     {
         # build user package options
-        $userPackageOptions = @('Select all', 'Deselect all')
-        $userPackageOptions += $userPackageNames | ForEach-Object { if ($installUserPackages.ContainsKey($_)) { ("- " + $userPackageNamesMap.Get_Item($_)) } else { ("+ " + $userPackageNamesMap.Get_Item($_)) } }
-        $userPackageOptions += "Back"
+        $userPackageOptions = @(
+            @{ 'Text' = 'Install all user packages'; 'Value' = 'install-all-user-packages' },
+            @{ 'Text' = 'Skip all user packages'; 'Value' = 'skip-all-user-packages' }
+        )
+        foreach ($userPackageName in $userPackageNames)
+        {
+            $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+            $installUserPackage = $userPackageNamesInstallIndex.ContainsKey($userPackageName)
 
-        $choice = Menu $hstwb "Select User Packages Menu" $userPackageOptions
+            $userPackageOptions += @{
+                'Text' = if ($installUserPackage) { ("Install : {0}" -f $userPackage.Name) } else { ("Skip    : " + $userPackage.Name) };
+                'Value' = $userPackageName;
+                'Color' = if ($installUserPackage) { 'Green' } else { $null }
+            }
+        }
+        $userPackageOptions += @{
+            'Text' = 'Back';
+            'Value' = 'back'
+        }
 
+        $choice = Menu $hstwb "Select user packages" $userPackageOptions
 
         $addUserPackageNames = @()
         $removeUserPackageNames = @()
         
-        if ($choice -eq 'Select all')
+        if ($choice.Value -eq 'install-all-user-packages')
         {
             $addUserPackageNames += $hstwb.UserPackages.Keys
         }
-        elseif ($choice -eq 'Deselect all')
+        elseif ($choice.Value -eq 'skip-all-user-packages')
         {
-            $removeUserPackageNames += $installUserPackages.Keys
+            $removeUserPackageNames += $userPackageNamesInstallIndex.Keys
         }
-        elseif ($choice -ne 'Back')
+        elseif ($choice.Value -ne 'back')
         {
-            $userPackageNameFormatted = $choice -replace '^(\+|\-) ', ''
-            $userPackageName = $userPackageNamesFormattedMap.Get_Item($userPackageNameFormatted)
+            $userPackageName = $choice.Value
 
             # remove user package, if user package exists in install userpackages. otherwise, add user package to install user packages
-            if ($installUserPackages.ContainsKey($userPackageName))
+            if ($userPackageNamesInstallIndex.ContainsKey($userPackageName))
             {
                 $removeUserPackageNames += $userPackageName
             }
@@ -1069,12 +1344,12 @@ function SelectUserPackagesMenu($hstwb)
         {
             foreach($userPackageName in $addUserPackageNames)
             {
-                if ($installUserPackages.ContainsKey($userPackageName))
+                if ($userPackageNamesInstallIndex.ContainsKey($userPackageName))
                 {
                     continue
                 }
     
-                $installUserPackages.Set_Item($userPackageName, $true)
+                $userPackageNamesInstallIndex.Set_Item($userPackageName, $true)
             }
         }
 
@@ -1082,12 +1357,12 @@ function SelectUserPackagesMenu($hstwb)
         {
             foreach($userPackageName in $removeUserPackageNames)
             {
-                if (!$installUserPackages.ContainsKey($userPackageName))
+                if (!$userPackageNamesInstallIndex.ContainsKey($userPackageName))
                 {
                     continue
                 }
     
-                $installUserPackages.Remove($userPackageName)
+                $userPackageNamesInstallIndex.Remove($userPackageName)
             }
         }
 
@@ -1101,7 +1376,7 @@ function SelectUserPackagesMenu($hstwb)
             
             # build and set new install user packages
             $newInstallUserPackages = @()
-            $newInstallUserPackages += $installUserPackages.keys | ForEach-Object { $userPackageNamesMap.Get_Item($_) } | Sort-Object @{expression={$_};Ascending=$true}
+            $newInstallUserPackages += $userPackageNamesInstallIndex.keys | Sort-Object @{expression={$_};Ascending=$true}
 
             # add install user packages to user packages
             for($i = 0; $i -lt $newInstallUserPackages.Count; $i++)
@@ -1112,27 +1387,27 @@ function SelectUserPackagesMenu($hstwb)
             Save $hstwb
         }
     }
-    until ($choice -eq 'Back')
+    until ($choice.Value -eq 'back')
 }
 
 
-# configure emulator menu
-function ConfigureEmulatorMenu($hstwb)
+# configure emulator
+function ConfigureEmulator($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb 'Configure Emulator Menu' @('Select Emulator Menu', 'Back')
+        $choice = Menu $hstwb 'Configure emulator' @('Select emulator', 'Back')
         switch ($choice)
         {
-            'Select Emulator Menu' { SelectEmulatorMenu $hstwb }
+            'Select emulator' { SelectEmulator $hstwb }
         }
     }
     until ($choice -eq 'Back')
 }
 
 
-# select emulator menu
-function SelectEmulatorMenu($hstwb)
+# select emulator
+function SelectEmulator($hstwb)
 {
     $emulators = @{}
     $hstwb.Emulators | ForEach-Object { $emulators.Set_Item(('{0} ({1})' -f $_.Name,$_.File), $_.File ) }
@@ -1144,7 +1419,7 @@ function SelectEmulatorMenu($hstwb)
     $options += 'Custom, select emulator .exe file'
     $options += 'Back'
     
-    $choice = Menu $hstwb "Select Emulator Menu" $options 
+    $choice = Menu $hstwb "Select emulator" $options 
 
     if ($choice -eq 'Custom, select emulator .exe file')
     {
@@ -1177,10 +1452,10 @@ function ConfigureInstaller($hstwb)
 {
     do
     {
-        $choice = Menu $hstwb "Configure Installer" @("Change Installer Mode", "Back") 
+        $choice = Menu $hstwb "Configure Installer" @("Change Installer mode", "Back") 
         switch ($choice)
         {
-            "Change Installer Mode" { ChangeInstallerMode $hstwb }
+            "Change Installer mode" { ChangeInstallerMode $hstwb }
         }
     }
     until ($choice -eq 'Back')
@@ -1190,21 +1465,68 @@ function ConfigureInstaller($hstwb)
 # change installer mode
 function ChangeInstallerMode($hstwb)
 {
-    $choice = Menu $hstwb "Change Installer Mode" @("Install", "Build Self Install", "Build Package Installation", "Build User Package Installation", "Test", "Back")
-
-    $installerMode = ''
-    switch ($choice)
-    {
-        "Test" { $installerMode = "Test" }
-        "Install" { $installerMode = "Install" }
-        "Build Self Install" { $installerMode = "BuildSelfInstall" }
-        "Build Package Installation" { $installerMode = "BuildPackageInstallation" }
-        "Build User Package Installation" { $installerMode = "BuildUserPackageInstallation" }
+    # installer mode options
+    $installerModeOptions = @()
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Install') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Install';
+        'Value' = 'Install';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildSelfInstall') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build Self Install';
+        'Value' = 'BuildSelfInstall';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildPackageInstallation') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build Package Installation';
+        'Value' = 'BuildPackageInstallation';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'BuildUserPackageInstallation') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Build User Package Installation';
+        'Value' = 'BuildUserPackageInstallation';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptionColor = if ($hstwb.Settings.Installer.Mode -eq 'Test') { "Green" } else { $null }
+    $installerModeOptions += @{
+        'Text' = 'Test';
+        'Value' = 'Test';
+        'Color' = $installerModeOptionColor
+    }
+    $installerModeOptions += @{
+        'Text' = 'Back';
+        'Value' = 'Back'
     }
 
-    if ($choice -ne 'Back')
+    $choice = Menu $hstwb "Change Installer Mode" $installerModeOptions
+
+    if ($choice.Value -ne 'Back')
     {
-        $hstwb.Settings.Installer.Mode = $installerMode
+        # set ignore identical content to false
+        $hstwb.IgnoreIdenticalContent = $false
+
+        # remove install packages, if installer mode is changed
+        if ($hstwb.Settings.Installer.Mode -ne $choice.Value)
+        {
+            RemoveInstallPackages $hstwb
+        }
+
+        # set installer mode
+        $hstwb.Settings.Installer.Mode = $choice.Value
+
+        # update amiga os entries
+        UpdateAmigaOsEntries $hstwb
+
+        # find best matching amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+
+        # ui amiga os set info
+        UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
         Save $hstwb
     }
 }
@@ -1245,8 +1567,9 @@ function ResetSettings($hstwb)
 
 
 # resolve paths
-$kickstartRomHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Kickstart\kickstart-rom-hashes.csv")
-$workbenchAdfHashesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("Workbench\workbench-adf-hashes.csv")
+$kickstartEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\kickstart-entries.csv")
+$amigaOsEntriesFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\amiga-os-entries.csv")
+$hstwbPackagesListFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("data\hstwb-packages.json")
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
@@ -1299,8 +1622,9 @@ try
     $hstwb = @{
         'Version' = HstwbInstallerVersion;
         'Paths' = @{
-            'KickstartRomHashesFile' = $kickstartRomHashesFile;
-            'WorkbenchAdfHashesFile' = $workbenchAdfHashesFile;
+            'KickstartEntriesFile' = $kickstartEntriesFile;
+            'AmigaOsEntriesFile' = $amigaOsEntriesFile;
+            'PackagesListFile' = $hstwbPackagesListFile
             'ImagesPath' = $imagesPath;
             'PackagesPath' = $packagesPath;
             'SettingsFile' = $settingsFile;
@@ -1309,73 +1633,78 @@ try
             'SettingsDir' = $settingsDir
         };
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
-        'Packages' = ReadPackages $packagesPath;
+        'Packages' = (ReadPackages $packagesPath | Where-Object { $_ });
         'Settings' = $settings;
-        'Assigns' = $assigns
-    }
-
-    # read kickstart rom hashes
-    if (Test-Path -Path $kickstartRomHashesFile)
-    {
-        $kickstartRomHashes = @()
-        $kickstartRomHashes += (Import-Csv -Delimiter ';' $kickstartRomHashesFile)
-        $hstwb.KickstartRomHashes = $kickstartRomHashes
-    }
-    else
-    {
-        throw ("Kickstart rom data file '{0}' doesn't exist" -f $kickstartRomHashesFile)
-    }
-
-    # read workbench adf hashes
-    if (Test-Path -Path $workbenchAdfHashesFile)
-    {
-        $workbenchAdfHashes = @()
-        $workbenchAdfHashes += (Import-Csv -Delimiter ';' $workbenchAdfHashesFile)
-        $hstwb.WorkbenchAdfHashes = $workbenchAdfHashes
-    }
-    else
-    {
-        throw ("Workbench adf data file '{0}' doesn't exist" -f $workbenchAdfHashesFile)
+        'Assigns' = $assigns;
+        'UI' = @{
+            'AmigaOs' = @{};
+            'Kickstart' = @{}
+        };
+        'AmigaOsSets' = @()
     }
 
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
-        
+
+    # download packages, if download packages doesn't exist or is set to false
+    if (!$hstwb.Settings.Packages.DownloadPackages -or $hstwb.Settings.Packages.DownloadPackages -match 'true')
+    {
+        $hstwb.Settings.Packages.DownloadPackages = 'false'
+        DownloadLatestPackages $hstwb $false
+    }
+
+    # update amiga os entries
+    UpdateAmigaOsEntries $hstwb
+
+    # update kickstart entries
+    UpdateKickstartEntries $hstwb
+
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
     $hstwb.Emulators = FindEmulators
     
-    # find workbench adfs
-    FindWorkbenchAdfs $hstwb
+    # find amiga os files
+    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
+    FindAmigaOsFiles $hstwb
 
-    # find kickstart roms
-    FindKickstartRoms $hstwb
+    # find kickstart files
+    Write-Host "Finding Kickstart sets in Kickstart dir..."
+    FindKickstartFiles $hstwb
         
     # update packages, user packages and assigns
-    UpdatePackages $hstwb
-    UpdateUserPackages $hstwb
+    UpdateInstallPackages $hstwb
+    UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
 
     # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartRomHashes | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartRomSet }).Count -eq 0)
+    if (($hstwb.KickstartEntries | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
     {
-        # set new kickstart rom set and save
-        $hstwb.Settings.Kickstart.KickstartRomSet = FindBestMatchingKickstartRomSet $hstwb
+        # set new kickstart rom set
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
     }
 
-    # find best matching workbench adf set, if workbench adf set doesn't exist
-    if (($hstwb.WorkbenchAdfHashes | Where-Object { $_.Set -eq $hstwb.Settings.Workbench.WorkbenchAdfSet }).Count -eq 0)
+    # find best matching amiga os set, if amiga os set doesn't exist
+    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
     {
-        # set new workbench adf set and save
-        $hstwb.Settings.Workbench.WorkbenchAdfSet = FindBestMatchingWorkbenchAdfSet $hstwb
+        # set new amiga os set
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
     }
 
     # save settings and assigns
     Save $hstwb
 
-    # show main menu
-    MainMenu $hstwb
+    Write-Host "Done"
+    Start-Sleep -m 200
+
+    # ui amiga os set info
+    UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
+
+    # ui kickstart set info
+    UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
+
+    # show main
+    Main $hstwb
 }
 catch
 {

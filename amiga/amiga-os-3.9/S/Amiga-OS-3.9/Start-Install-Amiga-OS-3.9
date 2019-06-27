@@ -1,0 +1,90 @@
+; Start Install Amiga OS 3.9
+; --------------------------
+;
+; Date: 2019-01-07
+; Author: Henrik Noerfjand Stengaard
+
+
+; mount amiga os 3.9 iso, if amiga os 3.9 iso prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  echo "Mounting Amiga OS 3.9 iso file" >>SYS:hstwb-installer.log
+
+  Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS39-Iso"
+  wait 5
+ENDIF
+
+; run install amigs os 3.9
+execute "INSTALLDIR:S/Amiga-OS-3.9/Install-Amiga-OS-3.9"
+
+; replace startup-sequence with workbench startup-sequence
+IF EXISTS S:Startup-Sequence.Workbench
+  Delete >NIL: S:Startup-Sequence
+  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
+ENDIF
+
+; remove assigns from installdir
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
+
+; set use to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
+
+; amiga OS 3.9 installation complete message
+cls
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.9 Installation Complete"
+echo "*e[0m*e[1m" NOLINE
+echo "----------------------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+; amiga os 3.9 boing bags or packages message
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
+  echo "HstWB Installer has completed Amiga OS 3.9 installation and"
+  echo "will reboot system to start installation of Boing Bags in"
+  echo "Amiga OS 3.9."
+ELSE
+  IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    ; Copy assign hstwb installer for installing boing bags
+    Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
+
+    ; Replace workbench startup-sequence with packages startup-sequence
+    Rename >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.Workbench
+    Copy >NIL: INSTALLDIR:S/Startup-Sequence.Packages SYSTEMDIR:S/Startup-Sequence
+
+    echo "HstWB Installer has completed Amiga OS 3.9 installation and"
+    echo "will reboot system to start package installation."
+  ELSE
+    echo "HstWB Installer has completed Amiga OS 3.9 installation and"
+    echo "system is now ready for use."
+  ENDIF
+ENDIF
+echo ""
+
+; copy hstwb installer log to install dir, if it exists
+IF EXISTS SYS:hstwb-installer.log
+  Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
+ENDIF
+
+echo "Please wait 10 seconds before restarting to allow file"
+echo "system to write changes to disk."
+echo ""
+echo "Continue will reboot system in 10 seconds."
+echo ""
+ask "Press ENTER to continue"
+
+
+; end
+; ---
+LAB end
+
+echo ""
+echo "System will reboot in 10 seconds..."
+wait 10
+TotalReset >NIL:

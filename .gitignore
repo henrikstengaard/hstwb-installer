@@ -1,3 +1,4 @@
+.vscode
 hstwb-installer-settings.ini
 hstwb-installer-assigns.ini
 *.msi
@@ -7,6 +8,7 @@ hstwb-installer*.zip
 *.wxs
 *.log
 !hstwb-installer.wxs
+!hstwb-installer_packages.wxs
 /packages/
 /.output/
 /.release/

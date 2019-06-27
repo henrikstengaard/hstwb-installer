@@ -1,0 +1,45 @@
+; Detect Amiga OS 3.1.4 Files
+; ---------------------------
+;
+; Date: 2019-03-13
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect if Amiga OS 3.1.4 support files are present.
+
+
+; add detect amiga os 3.1.4 to log
+echo "Amiga OS 3.1.4 Files" >INSTALLDIR:Temp/Amiga-OS-314-Files.log
+echo "--------------------" >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
+IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
+  echo "Amiga Model Detected = " NOLINE >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
+  type "INSTALLDIR:Prefs/AmigaModel" >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
+ENDIF
+echo "Detecting Amiga OS 3.1.4 support files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
+
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
+ENDIF
+
+; run detect amiga os 3.1.4 files, if amigaosdir: exists and check if all amiga os 3.1.4 support files are present
+Assign >NIL: EXISTS AMIGAOSDIR:
+IF NOT WARN
+  ; create script to copy amiga os 3.1.4 support files 
+  List AMIGAOSDIR: PAT=#?.lha ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.1.4/Copy-Amiga-OS-3.1.4-Files *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS*"" >T:_copy_amiga-os-3.1.4_files
+
+  ; run copy amiga os 3.1.4 files
+  Execute T:_copy_amiga-os-3.1.4_files
+  Delete >NIL: T:_copy_amiga-os-3.1.4_files
+
+  ; create amiga os 3.1.4 icon pack prefs, if amiga os 3.1.4 icon pack lha exist
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-iconpack.lha"
+    echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-314-IconPack
+  ELSE
+    echo "Amiga OS 3.1.4 Icon Pack lha doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
+  ENDIF
+ENDIF
+
+
+; End
+; ---
+LAB end

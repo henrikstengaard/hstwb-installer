@@ -1,0 +1,38 @@
+; Install Workbench
+; -----------------
+;
+; Date: 2018-12-11
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.1.4 workbench floppy disk or adf file.
+
+
+MakeDir >NIL: "SYSTEMDIR:Prefs"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
+MakeDir >NIL: "SYSTEMDIR:Fonts"
+MakeDir >NIL: "SYSTEMDIR:Expansion"
+MakeDir >NIL: "SYSTEMDIR:WBStartup"
+MakeDir >NIL: "SYSTEMDIR:Locale"
+MakeDir >NIL: "SYSTEMDIR:Locale/Catalogs"
+MakeDir >NIL: "SYSTEMDIR:Locale/Languages"
+MakeDir >NIL: "SYSTEMDIR:Locale/Countries"
+MakeDir >NIL: "SYSTEMDIR:Locale/Help"
+MakeDir >NIL: "SYSTEMDIR:Classes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Gadgets"
+MakeDir >NIL: "SYSTEMDIR:Classes/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Images"
+MakeDir >NIL: "SYSTEMDIR:Devs"
+MakeDir >NIL: "SYSTEMDIR:Devs/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Devs/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Devs/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Printers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage"
+MakeDir >NIL: "SYSTEMDIR:Storage/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Printers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Storage/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage/DataTypes"
+
+Copy >NIL: "$amigaosdisk:~(Locale)" SYSTEMDIR: ALL CLONE

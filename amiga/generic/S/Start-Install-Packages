@@ -1,0 +1,110 @@
+; Start Install Packages
+; ----------------------
+;
+; Date: 2019-01-08
+; Author: Henrik Noerfjand Stengaard
+
+
+; replace startup-sequence with workbench startup-sequence, if it exists
+IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
+  Copy >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench SYSTEMDIR:S/Startup-Sequence
+  Delete >NIL: SYSTEMDIR:S/Startup-Sequence.Workbench
+ENDIF
+
+; TODO: Causes intuition attempted to reset workbench screen errors, when installing ClassicWB packages
+; TODO: Find way of getting max colors for workbench for screenshots in readme
+;IF EXISTS INSTALLDIR:Prefs/Self-Install
+;  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
+;    Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
+;  ENDIF
+;  Copy >NIL: INSTALLDIR:Prefs/Env-Archive/Sys/screenmode.prefs SYSTEMDIR:Prefs/Env-Archive/Sys
+;  C:IPrefs
+;  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs
+;  Delete >NIL:SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs.temp
+;ENDIF
+
+; run install packages
+cls
+IF EXISTS INSTALLDIR:Prefs/Install-Packages
+  execute INSTALLDIR:S/Install-Packages
+ENDIF
+
+; run install user packages
+cls
+IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+  Execute INSTALLDIR:S/Install-User-Packages
+ENDIF
+
+; replace startup-sequence with workbench startup-sequence
+IF EXISTS S:Startup-Sequence.Workbench
+  Delete >NIL: S:Startup-Sequence
+  Rename >NIL: S:Startup-Sequence.Workbench S:Startup-Sequence
+ENDIF
+
+; remove assigns from installdir
+Assign >NIL: C: INSTALLDIR:C REMOVE
+Assign >NIL: Devs: INSTALLDIR:Devs REMOVE
+Assign >NIL: L: INSTALLDIR:L REMOVE
+Assign >NIL: Libs: INSTALLDIR:Libs REMOVE
+Assign >NIL: Prefs: INSTALLDIR:Prefs REMOVE
+
+; set use to 1, if use prefs exists
+set uae "0"
+IF EXISTS INSTALLDIR:Prefs/UAE
+  set uae "1"
+ENDIF
+
+
+; package installation complete
+; -----------------------------
+cls
+echo "*e[32m" NOLINE
+echo "Package Installation Complete"
+echo "*e[0m*e[1m" NOLINE
+echo "-----------------------------"
+echo "*e[0m" NOLINE
+echo ""
+echo "HstWB Installer has completed package"
+echo "installation and system is now ready for use."
+echo ""
+
+; copy hstwb installer log to install dir, if it exists
+IF EXISTS SYS:hstwb-installer.log
+  Copy >NIL: SYS:hstwb-installer.log INSTALLDIR:hstwb-installer.log
+ENDIF
+
+; run install cleanup
+execute INSTALLDIR:S/Install-Cleanup
+
+echo "Please wait 10 seconds before restarting to allow file"
+echo "system to write changes to disk. Continue will reboot"
+echo "the system in 10 seconds."
+echo ""
+
+; quit UAE or reboot message
+IF $uae EQ 1 VAL
+  echo "Continue will quit UAE in 10 seconds."
+ELSE
+  echo "Continue will reboot system in 10 seconds."
+ENDIF
+
+echo ""
+ask "Press ENTER to continue"
+
+
+; end
+; ---
+LAB end
+
+echo ""
+
+; quit UAE, if UAE is used. Otherwise reboot
+IF $uae EQ 1 VAL
+  echo "UAE will quit in 10 seconds..."
+  wait 10
+  UAEquit >NIL:
+ELSE
+  echo "System will reboot in 10 seconds..."
+  wait 10
+  TotalReset >NIL:
+ENDIF

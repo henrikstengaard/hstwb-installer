@@ -1,0 +1,265 @@
+; Install Amiga OS 3.9
+; --------------------
+;
+; Date: 2019-01-09
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigsDOS script to automate installation of Amiga OS 3.9.
+;
+; References:
+; https://modelrail.otenko.com/c64amiga/amiga-1200-installing-amigaos-3-9
+; http://elite79.tripod.com/os39uae/
+; http://os.amigaworld.de/index.php?lang=en&page=12
+
+
+; add amiga os 3.9 installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 3.9 installation" >>SYS:hstwb-installer.log
+echo "-------------------------" >>SYS:hstwb-installer.log
+
+; Amiga OS 3.9 installation
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.9 installation"
+echo "*e[0m*e[1m" NOLINE
+echo "-------------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+; goto fail, if device AmigaOS3.9: doesn't exist
+Assign >>SYS:hstwb-installer.log EXISTS AmigaOS3.9:
+IF WARN
+  echo "ERROR: Device AmigaOS3.9: doesn't exist!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Device AmigaOS3.9: doesn't exist!*e[22m"
+  SKIP fail
+ENDIF
+
+; install amiga os 3.9 message
+echo "Installing Amiga OS 3.9" >>SYS:hstwb-installer.log
+echo "*e[1mInstalling Amiga OS 3.9*e[0m"
+
+; copy workbench
+echo "Copying Workbench..." >>SYS:hstwb-installer.log
+echo "Copying Workbench..."
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/Workbench3.5 SYSTEMDIR: ALL
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/Workbench3.9 SYSTEMDIR: ALL
+
+; copy libs
+echo "Copying Libs..." >>SYS:hstwb-installer.log
+echo "Copying Libs..."
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/Extras/Libs/asyncio.library SYSTEMDIR:Libs
+
+; copy backdrops
+echo "Copying Backdrops..." >>SYS:hstwb-installer.log
+echo "Copying Backdrops..."
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/Extras/Backdrops SYSTEMDIR:Prefs/Presets/Backdrops ALL
+
+; copy locale
+echo "Copying Locale..." >>SYS:hstwb-installer.log
+echo "Copying Locale..."
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/LOCALE SYSTEMDIR:Locale ALL
+
+; copy keymaps
+echo "Copying keymaps..." >>SYS:hstwb-installer.log
+echo "Copying keymaps..."
+Copy >>SYS:hstwb-installer.log AmigaOS3.9:OS-VERSION3.9/Workbench3.9/Storage/Keymaps SYSTEMDIR:Devs/Keymaps
+
+; copy 68040.library, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Libs/68040.library"
+  Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68040.library" SYSTEMDIR:Libs
+ENDIF
+
+; copy 68060.library, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Libs/68060.library"
+  Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/Extras/Libs/68060.library" SYSTEMDIR:Libs
+ENDIF
+
+; rename fastfilesystem to old, if it exists
+IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+  Version >>SYS:hstwb-installer.log "SYSTEMDIR:L/FastFileSystem" 40 FILE
+  IF WARN
+    Rename >>SYS:hstwb-installer.log "SYSTEMDIR:L/FastFileSystem" "SYSTEMDIR:L/FastFileSystem-old"
+  ENDIF 
+ENDIF 
+
+; copy fastfilesystem
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/L/FastFileSystem" "SYSTEMDIR:L"
+
+; fix fonts
+echo "Fix fonts..." >>SYS:hstwb-installer.log
+echo "Fix fonts..."
+Assign >>SYS:hstwb-installer.log Fonts: "SYSTEMDIR:Fonts"
+SYSTEMDIR:System/FixFonts
+Assign >>SYS:hstwb-installer.log Fonts: "SYSTEMDIR:Fonts" REMOVE
+
+; copy prefs
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/EMERGENCY-DISK/PREFS/ENV-ARCHIVE/SYS/FONT.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/REACTION.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBCONFIG.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WBPATTERN.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:EMERGENCY-BOOT/PREFS/ENV-ARCHIVE/SYS/WORKBENCH.PREFS" "SYSTEMDIR:Prefs/Env-Archive/Sys"
+
+; copy uae prefs, if it exists in install
+IF EXISTS INSTALLDIR:Prefs/UAE
+  Copy >>SYS:hstwb-installer.log INSTALLDIR:Prefs/UAE SYSTEMDIR:Prefs
+ENDIF
+
+; cleanup
+echo "Cleaning up..." >>SYS:hstwb-installer.log
+echo "Cleaning up..."
+Copy >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/ICONPOS" "INSTALLDIR:Temp/"
+Resident >>SYS:hstwb-installer.log "INSTALLDIR:Temp/ICONPOS" PURE
+
+; update system-device drawer
+"AmigaOS3.9:OS-VERSION3.9/INSTALL-TOOLS/MergeIcons" >>SYS:hstwb-installer.log "AmigaOS3.9:OS-VERSION3.9/Icons/Disk.info" "SYSTEMDIR:Disk.info" FREEPOS
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs" 10 220 DXPOS 50 DYPOS 50 DWIDTH 520 DHEIGHT 240
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Font" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Locale" 80 10
+
+;      (tooltype (dest (tackon target "Prefs/Locale")) (settooltype "MAP" "PROGDIR:WORLDMAP"))
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Pointer" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterPS" 220 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Sound" 290 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ReAction" 360 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/IControl" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Overscan" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Printer" 150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/ScreenMode" 220 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Time" 290 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Workbench" 360 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Input" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Palette" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/PrinterGfx" 150 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Serial" 220 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/WBPattern" 290 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/Presets" 430 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Prefs/CacheCDFS" 360 150
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities" 10 80 DXPOS 40 DYPOS 60 DWIDTH 180 DHEIGHT 100
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/Clock" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Utilities/MultiView" 10 10
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools" 10 150 DXPOS 20 DYPOS 80 DWIDTH 290 DHEIGHT 300
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities" 10 10 DXPOS 80 DYPOS 60 DWIDTH 240 DHEIGHT 240
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Exchange" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/Blanker" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/ClickToFront" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/CrossDOS" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/FKey" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/AutoPoint" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/NoCapsLock" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Commodities/MouseBlanker" 150 80
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/EditPad" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/IconEdit" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrepCard" 220 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Mounter" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/MEmacs" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/ShowConfig" 150 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/CMD" 220 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Calculator" 10 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/HDToolBox" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/KeyShow" 150 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/Lacer" 220 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/GraphicDump" 10 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/InitPrinter" 80 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/PrintFiles" 150 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Tools/FindFile" 220 220
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System" 10 10 DXPOS 50 DYPOS 60 DWIDTH 240 DHEIGHT 180
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/FixFonts" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Format" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/NoFastMem" 150 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/RexxMast" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Shell" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:System/Intellifont" 150 80
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs" 80 10 DXPOS 80 DYPOS 77 DWIDTH 180 DHEIGHT 230
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Datatypes" 10 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/DosDrivers" 10 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/KeyMaps" 80 10
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Monitors" 80 80
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Devs/Printers" 10 150
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage" 80 80 DXPOS 480 DYPOS 77 DWIDTH 180 DHEIGHT 230
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Datatypes" 10 10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/DosDrivers" 10 80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/KeyMaps" 80 10 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors" 80 80 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Printers" 10 150 DXPOS 480 DYPOS 77 DWIDTH 107 DHEIGHT 199
+
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:WBStartup" 80 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Expansion" 80 150
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Trashcan" 160 220
+ICONPOS >>SYS:hstwb-installer.log "SYSTEMDIR:Disk" DXPOS 50 DYPOS 50 DWIDTH 250 DHEIGHT 310
+
+; copy pal or ntsc screenmode prefs
+INSTALLDIR:C/paltest >T:_paltest
+search >>SYS:hstwb-installer.log T:_paltest "PAL  (256/512 lines)"
+IF $RC EQ 0 VAL
+  echo "Copying PAL monitor and screensmode" >>SYS:hstwb-installer.log
+  Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
+  Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+  Copy >>SYS:hstwb-installer.log INSTALLDIR:Extras/Amiga-OS-3.9/Prefs/ScreenMode_PAL_640x512.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs
+ELSE
+  echo "Copying NTSC monitor and screensmode" >>SYS:hstwb-installer.log
+  Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/NTSC" "SYSTEMDIR:Devs/Monitors" CLONE 
+  Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Storage/Monitors/NTSC.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+  Copy >>SYS:hstwb-installer.log INSTALLDIR:Extras/Amiga-OS-3.9/Prefs/ScreenMode_NTSC_640x400.prefs SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs
+ENDIF
+
+; copy install amiga os 3.9 to systemdir and update startup sequence to load patch scsi.device, if install amiga os 3.9 boing bags 1 prefs exist
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
+  echo "Copying amiga os 3.9 boing bags installation" >>SYS:hstwb-installer.log
+  ; copy assign hstwb installer and amiga os 3.9 boing bags
+  Copy >>SYS:hstwb-installer.log "INSTALLDIR:S/Assign-HstWB-Installer" "SYSTEMDIR:S"
+  Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/S" "SYSTEMDIR:S" ALL
+  Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/WBStartup" "SYSTEMDIR:WBStartup" ALL
+
+  ; update startup sequence with loadmodule patched scsi.device
+  echo "FailAt 21" >>T:Startup-Sequence
+  echo "" >>T:Startup-Sequence
+  echo "; Load patched scsi.device v43.45, if it exists" >T:Startup-Sequence
+  echo "IF EXISTS DEVS:scsi.device" >>T:Startup-Sequence
+  echo "  ; Load scsi.device, if current loaded scsi.device is less than v43.45" >>T:Startup-Sequence
+  echo "  Version >>SYS:hstwb-installer.log *"scsi.device*" 43 45" >>T:Startup-Sequence
+  echo "  IF WARN" >>T:Startup-Sequence
+  echo "    LoadModule DEVS:scsi.device" >>T:Startup-Sequence
+  echo "  ENDIF" >>T:Startup-Sequence
+  echo "ENDIF" >>T:Startup-Sequence
+  echo "" >>T:Startup-Sequence
+  Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
+  Copy >>SYS:hstwb-installer.log T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
+ENDIF
+
+; create amiga os 3.9 prefs
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.9
+
+; done message
+echo "Done" >>SYS:hstwb-installer.log
+echo "Done"
+echo ""
+echo "Amiga OS 3.9 installation is complete."
+
+SKIP end
+
+
+; fail
+; ----
+LAB fail
+
+echo ""
+echo "Amiga OS 3.9 installation failed and has stopped"
+echo "installation process."
+quit
+
+
+; end
+; ---
+LAB end
+
+echo ""
+ask "Press ENTER to continue"

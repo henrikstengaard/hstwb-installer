@@ -1,0 +1,20 @@
+FDF0:
+	Unit = "[$AdfFile]"
+	Device = INSTALLDIR:Devs/filedisk.device
+	Flags = 0
+	Surfaces = 2
+	BlocksPerTrack = 11
+	Reserved = 2
+	Mask = 0x7ffffffc
+	MaxTransfer = 0x0001fe00
+	Interleave = 0
+	LowCyl = 0
+	HighCyl = 79
+	Buffers = 5
+	BufMemType = 1
+	StackSize = 4096
+	Priority = 5
+	GlobVec = -1
+	Activate = 1
+	Baud = 0
+#
