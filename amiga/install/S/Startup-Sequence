@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2019-03-14
+; Date: 2019-07-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer install
@@ -35,6 +35,11 @@ stack 16384
 ; add assigns from S:AssignList using AssPlus
 MakePath >NIL: RAM:Env
 AssPlus >NIL:
+
+; create temp systemdir directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Temp/"
+  MakePath >NIL: "SYSTEMDIR:Temp"
+ENDIF
 
 ; copy hstwb installer log to system dir, if it exists
 IF EXISTS INSTALLDIR:hstwb-installer.log

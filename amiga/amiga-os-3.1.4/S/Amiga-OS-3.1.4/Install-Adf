@@ -1,14 +1,14 @@
 ; Install Adf
 ; -----------
 ;
-; Date: 2019-03-13
+; Date: 2019-07-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files.
 
 
-; set amigaosdisk to fdf0: device
-setenv amigaosdisk "FDF0"
+; set amigaosdisk to ff0: device
+setenv amigaosdisk "ff0"
 
 ; copy amiga os 3.1.4 modules a500, if install prefs and adf file exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A500-ADF"

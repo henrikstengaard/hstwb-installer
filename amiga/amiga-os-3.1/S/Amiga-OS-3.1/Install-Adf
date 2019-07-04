@@ -1,53 +1,29 @@
 ; Install Adf
 ; -----------
 ;
-; Date: 2019-03-13
+; Date: 2019-07-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1 from adf files.
 
 
-; set amigaosdisk to fdf0: device
-setenv amigaosdisk "FDF0"
-
-
-; workbench adf
-; -------------
+; set amigaosdisk to ff0: device
+setenv amigaosdisk "ff0"
 
 ; run adf template for amiga os 3.1 workbench adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Workbench" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-workbench.adf"
 
-
-; locale adf
-; ----------
-
 ; run adf template for amiga os 3.1 locale adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Locale" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-locale.adf"
-
-
-; extras adf
-; ----------
 
 ; run adf template for amiga os 3.1 extras adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Extras" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-extras.adf"
 
-
-; fonts adf
-; ---------
-
 ; run adf template for amiga os 3.1 fonts adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Fonts" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-fonts.adf"
 
-
-; install adf
-; -----------
-
 ; run adf template for amiga os 3.1 install adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Install" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-install.adf"
-
-
-; storage adf
-; -----------
 
 ; run adf template for amiga os 3.1 storage adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1/Adf-Template" "Storage" "INSTALLDIR:Temp/Amiga-OS/amiga-os-310-storage.adf"
