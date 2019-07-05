@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-20
+# Date:   2019-07-05
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2239,12 +2239,17 @@ function RunInstall($hstwb)
                 continue
             }
 
+            # create install kickstart prefs file
+            $installKickstartEntryFile = Join-Path $prefsDir -ChildPath $bestMatchingKickstartSetEntry.PrefsFile
+            Set-Content $installKickstartEntryFile -Value ""
+
+
             Copy-Item $bestMatchingKickstartSetEntry.File -Destination (Join-Path $tempKickstartDir -ChildPath $bestMatchingKickstartSetEntry.Filename) -Force
         }    
 
-        # create install kickstart prefs file
-        $installKickstartFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart'
-        Set-Content $installKickstartFile -Value ""
+        # create install kickstart rom prefs file
+        $installKickstartRomFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart-Rom'
+        Set-Content $installKickstartRomFile -Value ""
     }
 
     # find packages to install
