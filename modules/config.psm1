@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-20
+# Date:   2019-07-12
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -506,7 +506,8 @@ function UpdateInstallPackages($hstwb)
     $installPackageIndex = 0;
     foreach($installPackageName in $installPackageNames)
     {
-        if (!$hstwb.Packages.ContainsKey($installPackageName))
+        # skip, if package doesn't exist or package filtering is not all and package doesn't support amiga os version
+        if (!$hstwb.Packages.ContainsKey($installPackageName) -or ($hstwb.Settings.Packages.PackageFiltering -ne 'All' -and $hstwb.Packages[$installPackageName].AmigaOsVersions -and $hstwb.Packages[$installPackageName].AmigaOsVersions -notcontains $hstwb.Settings.Packages.PackageFiltering))
         {
             continue
         }

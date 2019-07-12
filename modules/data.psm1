@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-22
+# Date:   2019-07-12
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -531,6 +531,24 @@ function FindBestMatchingAmigaOsSet($hstwb)
     }
 
     return $bestMatchingAmigaOsSetResult.SetName
+}
+
+# update package filtering
+function UpdatePackageFiltering($hstwb)
+{
+    $amigaOsVersion = 'All'
+
+    if ($hstwb.Settings.AmigaOs.AmigaOsSet)
+    {
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+
+        if ($amigaOsEntry -and $amigaOsEntry.AmigaOsVersion)
+        {
+            $amigaOsVersion = $amigaOsEntry.AmigaOsVersion
+        }
+    }
+
+    $hstwb.Settings.Packages.PackageFiltering = $amigaOsVersion
 }
 
 # validate set
