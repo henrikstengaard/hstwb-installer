@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-07-05
+# Date:   2019-07-20
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2163,6 +2163,15 @@ function RunInstall($hstwb)
             # create install amiga os 3.1.4 adf prefs file
             $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
             Set-Content $installAmigaOs314PrefsFile -Value ""
+
+            # find amiga os 3.1.4.1 update adf in amiga os set
+            $amigaOs3141UpdateAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-3141-update\.adf$' } | Select-Object -First 1
+            if ($amigaOs3141UpdateAdf)
+            {
+                # create install amiga os 3.1.4.1 update adf prefs file
+                $installAmigaOs3141UpdateAdfPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-3141-ADF'
+                Set-Content $installAmigaOs3141UpdateAdfPrefsFile -Value ""
+            }
 
             # find amiga os 3.1.4 icon pack lha in amiga os set
             $amigaOs314IconPackLha = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-iconpack\.lha$' } | Select-Object -First 1

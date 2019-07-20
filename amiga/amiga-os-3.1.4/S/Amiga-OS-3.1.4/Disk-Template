@@ -1,11 +1,11 @@
-.KEY disk/a,noprompt/s
+.KEY disk/a,label/a,noprompt/s
 .BRA {
 .KET }
 
 ; Disk Template
 ; -------------
 ;
-; Date: 2018-12-11
+; Date: 2019-07-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to template to install amiga os 3.1.4 from floppy disk
@@ -14,13 +14,13 @@
 
 ; quit, if detect disk doesn't exist
 IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-{disk}"
-  echo "*e[1mError: Detect Amiga OS 3.1.4 {disk} doesn't exist!*e[0m"
+  echo "*e[1mError: Detect {label} doesn't exist!*e[0m"
   quit 20
 ENDIF
 
 ; quit, if install disk doesn't exist
 IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Install-{disk}"
-  echo "*e[1mError: Install Amiga OS 3.1.4 {disk} doesn't exist!*e[0m"
+  echo "*e[1mError: Install {label} doesn't exist!*e[0m"
   quit 20
 ENDIF
 
@@ -36,7 +36,7 @@ ENDIF
 ; -----------
 LAB insertdisk
 echo ""
-echo "Please insert Amiga OS 3.1.4 {disk} disk in any"
+echo "Please insert {label} disk in any"
 echo "floppy device."
 echo ""
 ask "Press ENTER to continue"
@@ -93,13 +93,13 @@ failat 21
 
 ; goto insert disk, if disk is not valid
 IF NOT "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-{disk}"`" EQ ""
-  echo "Amiga OS 3.1.4 {disk} disk in $amigaosdisk: floppy device"
+  echo "{label} disk in $amigaosdisk: floppy device"
   echo "is not valid!"
   SKIP BACK insertdisk
 ENDIF
 
 ; run install amiga os 3.1.4 disk
-echo "Installing Amiga OS 3.1.4 {disk} from $amigaosdisk:"
+echo "Installing {label} from $amigaosdisk:"
 echo "floppy device..."
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-{disk}"
 echo "Done"

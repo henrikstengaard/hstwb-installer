@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1.4 Adf
 ; -----------------------
 ;
-; Date: 2018-12-29
+; Date: 2019-07-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
@@ -177,6 +177,13 @@ IF "$md5" eq "7e9b5ec9cf89d9aae771cd1b708792d9"
   SKIP copyadffile
 ENDIF
 
+; copy amiga os 3.1.4.1 update adf, if file md5 matches
+IF "$md5" eq "62e7580b5f0c20e2162029fcd4783aaa"
+  echo "Amiga OS 3.1.4.1 Update adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-3141-update.adf"
+  SKIP copyadffile
+ENDIF
+
 ; goto end, if md5 only prefs exists
 IF EXISTS INSTALLDIR:Prefs/MD5-Only
   SKIP end
@@ -251,6 +258,13 @@ ENDIF
 IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Modules"`" EQ ""
   echo "Amiga OS 3.1.4 Modules $modulesname adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
   set adffilename "amiga-os-314-modules-$modulesfile.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4.1 update file, if extras adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Update3141"`" EQ ""
+  echo "Amiga OS 3.1.4.1 Update adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-3141-update.adf"
   SKIP copyadffile
 ENDIF
 

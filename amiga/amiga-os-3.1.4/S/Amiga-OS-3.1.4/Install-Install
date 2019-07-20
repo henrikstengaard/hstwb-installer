@@ -1,7 +1,7 @@
 ; Install Install
 ; ---------------
 ;
-; Date: 2019-01-11
+; Date: 2019-07-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -43,27 +43,26 @@ ENDIF
 Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE
 
 
-Assign C: SYSTEMDIR:C
-Path C:
+Assign C: SYSTEMDIR:C ADD
 
 IF EXISTS SYSTEMDIR:S
-  Assign S: SYSTEMDIR:S
+  Assign S: SYSTEMDIR:S ADD
 ENDIF
 
 IF EXISTS SYSTEMDIR:L
-  Assign L: SYSTEMDIR:L
+  Assign L: SYSTEMDIR:L ADD
 ENDIF
 
 IF EXISTS SYSTEMDIR:Libs
-  Assign LIBS: SYSTEMDIR:Libs
+  Assign LIBS: SYSTEMDIR:Libs ADD
 ENDIF
 
 IF EXISTS SYSTEMDIR:Devs
-  Assign DEVS: SYSTEMDIR:Devs
+  Assign DEVS: SYSTEMDIR:Devs ADD
 ENDIF
 
 IF EXISTS SYSTEMDIR:Fonts
-  Assign Fonts: SYSTEMDIR:Fonts
+  Assign Fonts: SYSTEMDIR:Fonts ADD
 ENDIF
 
 IF EXISTS SYSTEMDIR:Prefs/Env-Archive
@@ -77,8 +76,6 @@ Assign >NIL: NEWWB: SYSTEMDIR:
 
 ; Clean up
 ; --------
-
-echo "Cleaning up icons..."
 
 Resident "$amigaosdisk:C/IconPos" PURE
 

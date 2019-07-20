@@ -1,7 +1,7 @@
 ; Amiga OS 3.1 Storage
 ; ----------------------
 ;
-; Date: 2018-12-26
+; Date: 2019-07-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1 storage floppy disk or adf file.
@@ -27,7 +27,6 @@ ENDIF
 ; clean up
 ; --------
 
-echo "Cleaning up..."
 IconPos >NIL: "SYSTEMDIR:Prefs"     12 20
 IconPos >NIL: "SYSTEMDIR:Prefs/Printer"  160 48
 
