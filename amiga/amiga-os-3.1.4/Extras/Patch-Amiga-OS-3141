@@ -1,0 +1,209 @@
+; Patch Amiga OS 3.1.4.1
+; ----------------------
+;
+; Date: 2019-07-21
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to patch Amiga OS 3.1.4.1 files for Kickstart 3.1.4 or Kickstart 3.1.
+
+
+set systemdir "SYS"
+
+; skip to patch for kickstart 3.1.4, if expansion.library is v45 or higher
+Version >NIL: "expansion.library" 45
+IF $RC EQ 0 VAL
+  SKIP patchkickstart314
+ENDIF
+
+; skip to patch for kickstart 3.1
+SKIP patchkickstart31
+
+
+; patch for kickstart 3.1.4
+; -------------------------
+LAB patchkickstart314
+
+; skip end, if amiga os 3.1.4 is patched to kickstart 3.1.4
+IF EXISTS "$systemdir:Prefs/AmigaOS-314-Kickstart-314"
+  SKIP end
+ENDIF
+
+; delete prefs
+Delete >NIL: "$systemdir:Prefs/AmigaOS-314-Kickstart-31"
+
+IF EXISTS "$systemdir:L/Shell-Seg"
+  protect >NIL: "$systemdir:L/Shell-Seg" "-p"
+ENDIF
+IF EXISTS "$systemdir:L/FastFileSystem"
+  protect >NIL: "$systemdir:L/FastFileSystem" "-p"
+ENDIF
+IF EXISTS "$systemdir:L/Ram-Handler"
+  protect >NIL: "$systemdir:L/Ram-Handler" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/audio.device"
+  protect >NIL: "$systemdir:DEVS/audio.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/console.device"
+  protect >NIL: "$systemdir:DEVS/console.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/input.device"
+  protect >NIL: "$systemdir:DEVS/input.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/gameport.device"
+  protect >NIL: "$systemdir:DEVS/gameport.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/keyboard.device"
+  protect >NIL: "$systemdir:DEVS/keyboard.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/ramdrive.device"
+  protect >NIL: "$systemdir:DEVS/ramdrive.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/trackdisk.device"
+  protect >NIL: "$systemdir:DEVS/trackdisk.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/timer.device"
+  protect >NIL: "$systemdir:DEVS/timer.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/carddisk.device"
+  protect >NIL: "$systemdir:DEVS/carddisk.device" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/exec.library"
+  protect >NIL: "$systemdir:LIBS/exec.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/layers.library"
+  protect >NIL: "$systemdir:LIBS/layers.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/graphics.library"
+  protect >NIL: "$systemdir:LIBS/graphics.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/workbench.library"
+  protect >NIL: "$systemdir:LIBS/workbench.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/icon.library"
+  protect >NIL: "$systemdir:LIBS/icon.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/utility.library"
+  protect >NIL: "$systemdir:LIBS/utility.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/mathffp.library"
+  protect >NIL: "$systemdir:LIBS/mathffp.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/mathieeesingbas.library"
+  protect >NIL: "$systemdir:LIBS/mathieeesingbas.library" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/battclock.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/battclock.resource" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/card.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/card.resource" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/FileSystem.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/FileSystem.resource" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/modules/syscheck"
+  protect >NIL: "$systemdir:LIBS/modules/syscheck" "-p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/modules/bootmenu"
+  protect >NIL: "$systemdir:LIBS/modules/bootmenu" "-p"
+ENDIF
+
+; write prefs amiga os 3.1.4 is patched to kickstart 3.1.4
+echo "" NOLINE >"$systemdir:Prefs/AmigaOS-314-Kickstart-314"
+
+SKIP end
+
+
+; patch for kickstart 3.1
+; -----------------------
+LAB patchkickstart31
+
+; skip end, if amiga os 3.1.4 is patched to kickstart 3.1
+IF EXISTS "$systemdir:Prefs/AmigaOS-314-Kickstart-31"
+  SKIP end
+ENDIF
+
+; delete prefs
+Delete >NIL: "$systemdir:Prefs/AmigaOS-314-Kickstart-314"
+
+IF EXISTS "$systemdir:L/Shell-Seg"
+  protect >NIL: "$systemdir:L/Shell-Seg" "+p"
+ENDIF
+IF EXISTS "$systemdir:L/FastFileSystem"
+  protect >NIL: "$systemdir:L/FastFileSystem" "+p"
+ENDIF
+IF EXISTS "$systemdir:L/Ram-Handler"
+  protect >NIL: "$systemdir:L/Ram-Handler" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/audio.device"
+  protect >NIL: "$systemdir:DEVS/audio.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/console.device"
+  protect >NIL: "$systemdir:DEVS/console.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/input.device"
+  protect >NIL: "$systemdir:DEVS/input.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/gameport.device"
+  protect >NIL: "$systemdir:DEVS/gameport.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/keyboard.device"
+  protect >NIL: "$systemdir:DEVS/keyboard.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/ramdrive.device"
+  protect >NIL: "$systemdir:DEVS/ramdrive.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/trackdisk.device"
+  protect >NIL: "$systemdir:DEVS/trackdisk.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/timer.device"
+  protect >NIL: "$systemdir:DEVS/timer.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:DEVS/carddisk.device"
+  protect >NIL: "$systemdir:DEVS/carddisk.device" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/exec.library"
+  protect >NIL: "$systemdir:LIBS/exec.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/layers.library"
+  protect >NIL: "$systemdir:LIBS/layers.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/graphics.library"
+  protect >NIL: "$systemdir:LIBS/graphics.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/workbench.library"
+  protect >NIL: "$systemdir:LIBS/workbench.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/icon.library"
+  protect >NIL: "$systemdir:LIBS/icon.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/utility.library"
+  protect >NIL: "$systemdir:LIBS/utility.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/mathffp.library"
+  protect >NIL: "$systemdir:LIBS/mathffp.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/mathieeesingbas.library"
+  protect >NIL: "$systemdir:LIBS/mathieeesingbas.library" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/battclock.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/battclock.resource" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/card.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/card.resource" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/Resources/FileSystem.resource"
+  protect >NIL: "$systemdir:LIBS/Resources/FileSystem.resource" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/modules/syscheck"
+  protect >NIL: "$systemdir:LIBS/modules/syscheck" "+p"
+ENDIF
+IF EXISTS "$systemdir:LIBS/modules/bootmenu"
+  protect >NIL: "$systemdir:LIBS/modules/bootmenu" "+p"
+ENDIF
+
+; write prefs amiga os 3.1.4 is patched to kickstart 3.1
+echo "" NOLINE >"$systemdir:Prefs/AmigaOS-314-Kickstart-31"
+
+; end
+; ---
+LAB end
