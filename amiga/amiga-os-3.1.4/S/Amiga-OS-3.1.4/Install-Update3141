@@ -1,10 +1,11 @@
 ; Install Amiga OS 3.1.4.1 Update
 ; -------------------------------
 ;
-; Date: 2019-07-20
+; Date: 2019-07-22
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4.1 update floppy disk or adf file.
+; Warning: Use proper editor like NotePad++ when modifying this file as it has ISO 8859-1 characters
 
 
 ; make directories
@@ -164,80 +165,83 @@ gunzip -d "$amigaosdisk:Locale/Languages/svenska.language.Z" -c >"SYSTEMDIR:Loca
 ; If we run already under 3.1.4, ensure that we remove the P
 ; bit from some resources to avoid that LoadModule picks them
 ; up.
-IF EXISTS "SYSTEMDIR:L/Shell-Seg"
-  protect >NIL: "SYSTEMDIR:L/Shell-Seg" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:L/FastFileSystem"
-  protect >NIL: "SYSTEMDIR:L/FastFileSystem" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:L/Ram-Handler"
-  protect >NIL: "SYSTEMDIR:L/Ram-Handler" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/audio.device"
-  protect >NIL: "SYSTEMDIR:DEVS/audio.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/console.device"
-  protect >NIL: "SYSTEMDIR:DEVS/console.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/input.device"
-  protect >NIL: "SYSTEMDIR:DEVS/input.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/gameport.device"
-  protect >NIL: "SYSTEMDIR:DEVS/gameport.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/keyboard.device"
-  protect >NIL: "SYSTEMDIR:DEVS/keyboard.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/ramdrive.device"
-  protect >NIL: "SYSTEMDIR:DEVS/ramdrive.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/trackdisk.device"
-  protect >NIL: "SYSTEMDIR:DEVS/trackdisk.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/timer.device"
-  protect >NIL: "SYSTEMDIR:DEVS/timer.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:DEVS/carddisk.device"
-  protect >NIL: "SYSTEMDIR:DEVS/carddisk.device" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/exec.library"
-  protect >NIL: "SYSTEMDIR:LIBS/exec.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/layers.library"
-  protect >NIL: "SYSTEMDIR:LIBS/layers.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/graphics.library"
-  protect >NIL: "SYSTEMDIR:LIBS/graphics.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/workbench.library"
-  protect >NIL: "SYSTEMDIR:LIBS/workbench.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/icon.library"
-  protect >NIL: "SYSTEMDIR:LIBS/icon.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/utility.library"
-  protect >NIL: "SYSTEMDIR:LIBS/utility.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/mathffp.library"
-  protect >NIL: "SYSTEMDIR:LIBS/mathffp.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/mathieeesingbas.library"
-  protect >NIL: "SYSTEMDIR:LIBS/mathieeesingbas.library" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/Resources/battclock.resource"
-  protect >NIL: "SYSTEMDIR:LIBS/Resources/battclock.resource" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/Resources/card.resource"
-  protect >NIL: "SYSTEMDIR:LIBS/Resources/card.resource" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/Resources/FileSystem.resource"
-  protect >NIL: "SYSTEMDIR:LIBS/Resources/FileSystem.resource" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/modules/syscheck"
-  protect >NIL: "SYSTEMDIR:LIBS/modules/syscheck" "-p"
-ENDIF
-IF EXISTS "SYSTEMDIR:LIBS/modules/bootmenu"
-  protect >NIL: "SYSTEMDIR:LIBS/modules/bootmenu" "-p"
+Version >NIL: "expansion.library" 45
+IF $RC EQ 0 VAL
+  IF EXISTS "SYSTEMDIR:L/Shell-Seg"
+    protect >NIL: "SYSTEMDIR:L/Shell-Seg" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+    protect >NIL: "SYSTEMDIR:L/FastFileSystem" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:L/Ram-Handler"
+    protect >NIL: "SYSTEMDIR:L/Ram-Handler" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/audio.device"
+    protect >NIL: "SYSTEMDIR:DEVS/audio.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/console.device"
+    protect >NIL: "SYSTEMDIR:DEVS/console.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/input.device"
+    protect >NIL: "SYSTEMDIR:DEVS/input.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/gameport.device"
+    protect >NIL: "SYSTEMDIR:DEVS/gameport.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/keyboard.device"
+    protect >NIL: "SYSTEMDIR:DEVS/keyboard.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/ramdrive.device"
+    protect >NIL: "SYSTEMDIR:DEVS/ramdrive.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/trackdisk.device"
+    protect >NIL: "SYSTEMDIR:DEVS/trackdisk.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/timer.device"
+    protect >NIL: "SYSTEMDIR:DEVS/timer.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:DEVS/carddisk.device"
+    protect >NIL: "SYSTEMDIR:DEVS/carddisk.device" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/exec.library"
+    protect >NIL: "SYSTEMDIR:LIBS/exec.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/layers.library"
+    protect >NIL: "SYSTEMDIR:LIBS/layers.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/graphics.library"
+    protect >NIL: "SYSTEMDIR:LIBS/graphics.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/workbench.library"
+    protect >NIL: "SYSTEMDIR:LIBS/workbench.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/icon.library"
+    protect >NIL: "SYSTEMDIR:LIBS/icon.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/utility.library"
+    protect >NIL: "SYSTEMDIR:LIBS/utility.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/mathffp.library"
+    protect >NIL: "SYSTEMDIR:LIBS/mathffp.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/mathieeesingbas.library"
+    protect >NIL: "SYSTEMDIR:LIBS/mathieeesingbas.library" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/Resources/battclock.resource"
+    protect >NIL: "SYSTEMDIR:LIBS/Resources/battclock.resource" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/Resources/card.resource"
+    protect >NIL: "SYSTEMDIR:LIBS/Resources/card.resource" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/Resources/FileSystem.resource"
+    protect >NIL: "SYSTEMDIR:LIBS/Resources/FileSystem.resource" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/modules/syscheck"
+    protect >NIL: "SYSTEMDIR:LIBS/modules/syscheck" "-p"
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/modules/bootmenu"
+    protect >NIL: "SYSTEMDIR:LIBS/modules/bootmenu" "-p"
+  ENDIF
 ENDIF
 
 ; if intuition is already the V45 version, copy the new one over
@@ -248,3 +252,9 @@ IF EXISTS "SYSTEMDIR:LIBS/intuition.library"
     Copy >NIL: "SYSTEMDIR:LIBS/intuition-v45.library" "SYSTEMDIR:LIBS/intuition.library"
   ENDIF
 ENDIF
+
+; add patch amiga os 3.1.4.1 to startup sequence
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3141-Startup" "T:_Startup-Sequence"
+Type "SYSTEMDIR:S/Startup-Sequence" >>"T:_Startup-Sequence"
+Copy >NIL: "T:_Startup-Sequence" "SYSTEMDIR:S/Startup-Sequence"
+Delete >NIL: "T:_Startup-Sequence"

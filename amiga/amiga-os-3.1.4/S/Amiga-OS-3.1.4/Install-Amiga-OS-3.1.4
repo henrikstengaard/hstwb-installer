@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2019-03-13
+; Date: 2019-07-22
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -29,20 +29,17 @@ ELSE
   setenv screenmode `RequestChoice "Update Screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Yes|No"`
 ENDIF
 
+; copy patch amiga os 3.1.4.1
+Copy >NIL: "INSTALLDIR:Extras/Patch-Amiga-OS-3141" "SYSTEMDIR:S/"
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3141-Startup" "SYSTEMDIR:S/"
+
 ; run install amiga os 3.1.4 adf, if prefs exists. otherwise run install amiga os 3.1.4 disk
 fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314
 IF "`wc -l <T:_install_amiga-os-314`" GT 0 VAL
-  ; install amiga os 3.1.4 from adf files message
-  echo "*e[1mInstall Amiga OS 3.1.4 from adf files:*e[0m"
-
   ; run install amiga os 3.1.4 adf
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Adf"
-  echo "Done"
 ELSE
-  ; install amiga os 3.1.4 from adf files message
-  echo "*e[1mInstall Amiga OS 3.1.4 from floppy disks*e[0m"
-
-  ; run install amiga os 3.1.4 adf
+  ; run install amiga os 3.1.4 disk
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Disk"
 ENDIF 
 
