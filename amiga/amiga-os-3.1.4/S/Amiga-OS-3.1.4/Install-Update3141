@@ -253,8 +253,5 @@ IF EXISTS "SYSTEMDIR:LIBS/intuition.library"
   ENDIF
 ENDIF
 
-; add patch amiga os 3.1.4.1 to startup sequence
-Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3141-Startup" "T:_Startup-Sequence"
-Type "SYSTEMDIR:S/Startup-Sequence" >>"T:_Startup-Sequence"
-Copy >NIL: "T:_Startup-Sequence" "SYSTEMDIR:S/Startup-Sequence"
-Delete >NIL: "T:_Startup-Sequence"
+; install patch amiga os 3.1.4.1
+Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR
