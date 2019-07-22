@@ -30,8 +30,9 @@ ELSE
 ENDIF
 
 ; copy patch amiga os 3.1.4.1
-Copy >NIL: "INSTALLDIR:Extras/Patch-Amiga-OS-3141" "SYSTEMDIR:S/"
 Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3141-Startup" "SYSTEMDIR:S/"
+Copy >NIL: "INSTALLDIR:Extras/Install-Patch-Amiga-OS-3141" "SYSTEMDIR:S/"
+Copy >NIL: "INSTALLDIR:Extras/Patch-Amiga-OS-3141" "SYSTEMDIR:S/"
 
 ; run install amiga os 3.1.4 adf, if prefs exists. otherwise run install amiga os 3.1.4 disk
 fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314

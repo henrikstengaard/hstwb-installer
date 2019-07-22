@@ -1,0 +1,29 @@
+; Install Patch Amiga OS 3.1.4.1
+; ------------------------------
+;
+; Date: 2019-07-22
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install patch Amiga OS 3.1.4.1 to Startup-Sequence.
+
+; fail, if patch amiga os 3.1.4.1 doesn't exist
+IF NOT EXISTS "S:Patch-Amiga-OS-3141"
+  echo "*e[1mError: Patch Amiga OS 3.1.4.1 script doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; fail, if amiga os 3.1.4.1 startup doesn't exist
+IF NOT EXISTS "S:Amiga-OS-3141-Startup"
+  echo "*e[1mError: Amiga OS 3.1.4.1 startup script doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; add patch amiga os 3.1.4.1 to startup sequence
+Copy >NIL: "S:Amiga-OS-3141-Startup" "T:_Startup-Sequence"
+Type "S:Startup-Sequence" >>"T:_Startup-Sequence"
+Copy >NIL: "T:_Startup-Sequence" "S:Startup-Sequence"
+Delete >NIL: "T:_Startup-Sequence"
+
+; success
+echo "Successfully installed patch Amiga OS 3.1.4.1"
+echo "to Startup-Sequence!"
