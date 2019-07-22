@@ -1,3 +1,7 @@
+.KEY SYS/K
+.BRA {
+.KET }
+
 ; Install Patch Amiga OS 3.1.4.1
 ; ------------------------------
 ;
@@ -6,24 +10,51 @@
 ;
 ; AmigaDOS script to install patch Amiga OS 3.1.4.1 to Startup-Sequence.
 
+IF "{SYS}" EQ ""
+  set systemdir "SYS"
+ELSE
+  set systemdir "{SYS}"
+ENDIF
+
+; fail, if startup sequence doesn't exist
+IF NOT EXISTS "$systemdir:S/Startup-Sequence"
+  echo "*e[1mError: Startup sequence doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; end, if patch amiga os 3.1.4.1 is already installed
+search "$systemdir:S/Startup-Sequence" "Patch-Amiga-OS-3141" >NIL:
+IF $RC EQ 0 VAL
+  echo "Patch Amiga OS 3.1.4.1 is already installed!"
+  SKIP end
+ENDIF
+
 ; fail, if patch amiga os 3.1.4.1 doesn't exist
-IF NOT EXISTS "S:Patch-Amiga-OS-3141"
+IF NOT EXISTS "$systemdir:S/Patch-Amiga-OS-3141"
   echo "*e[1mError: Patch Amiga OS 3.1.4.1 script doesn't exist!*e[0m"
   quit 20
 ENDIF
 
 ; fail, if amiga os 3.1.4.1 startup doesn't exist
-IF NOT EXISTS "S:Amiga-OS-3141-Startup"
+IF NOT EXISTS "$systemdir:S/Amiga-OS-3141-Startup"
   echo "*e[1mError: Amiga OS 3.1.4.1 startup script doesn't exist!*e[0m"
   quit 20
 ENDIF
 
+; backup startup sequence
+IF NOT EXISTS "$systemdir:S/Startup-Sequence.3141"
+  Copy >NIL: "$systemdir:S/Startup-Sequence" "$systemdir:S/Startup-Sequence.3141"
+ENDIF
+
 ; add patch amiga os 3.1.4.1 to startup sequence
-Copy >NIL: "S:Amiga-OS-3141-Startup" "T:_Startup-Sequence"
-Type "S:Startup-Sequence" >>"T:_Startup-Sequence"
-Copy >NIL: "T:_Startup-Sequence" "S:Startup-Sequence"
+Copy >NIL: "$systemdir:S/Amiga-OS-3141-Startup" "T:_Startup-Sequence"
+Type "$systemdir:S/Startup-Sequence" >>"T:_Startup-Sequence"
+Copy >NIL: "T:_Startup-Sequence" "$systemdir:S/Startup-Sequence"
 Delete >NIL: "T:_Startup-Sequence"
 
-; success
-echo "Successfully installed patch Amiga OS 3.1.4.1"
-echo "to Startup-Sequence!"
+; done
+echo "Patch Amiga OS 3.1.4.1 installed!"
+
+
+; end
+LAB end
