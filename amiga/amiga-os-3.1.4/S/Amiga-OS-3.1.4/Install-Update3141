@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4.1 Update
 ; -------------------------------
 ;
-; Date: 2019-07-22
+; Date: 2019-07-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4.1 update floppy disk or adf file.
@@ -254,4 +254,4 @@ IF EXISTS "SYSTEMDIR:LIBS/intuition.library"
 ENDIF
 
 ; install patch amiga os 3.1.4.1
-Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR
+Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR >NIL:
