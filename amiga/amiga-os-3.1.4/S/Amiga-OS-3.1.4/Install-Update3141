@@ -254,4 +254,4 @@ IF EXISTS "SYSTEMDIR:LIBS/intuition.library"
 ENDIF
 
 ; install patch amiga os 3.1.4.1
-Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR >NIL:
+Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR QUIET
