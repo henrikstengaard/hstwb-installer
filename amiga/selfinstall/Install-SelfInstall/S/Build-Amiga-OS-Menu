@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-04-01
+; Date: 2019-07-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -34,6 +34,10 @@ IF EXISTS T:_amigaos314
   Delete >NIL: T:_amigaos314
 ENDIF
 
+IF EXISTS T:_amigaos314update
+  Delete >NIL: T:_amigaos314update
+ENDIF
+
 IF EXISTS T:_iconpackinstall
   Delete >NIL: T:_iconpackinstall
 ENDIF
@@ -47,13 +51,15 @@ IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 ENDIF
 
-echo "set amigaosname *"Amiga OS from floppy disks*"" >T:_amigaosfloppydisk
+echo "set amigaosname *"Amiga OS and updates from floppy disks*"" >T:_amigaosfloppydisk
 echo "set amigaosinstall *"Amiga-OS-Disk*"" >>T:_amigaosfloppydisk
 echo "set amigaos39 *"0*"" >>T:_amigaosfloppydisk
 echo "set amigaos314 *"0*"" >>T:_amigaosfloppydisk
+echo "set amigaos314update *"0*"" >>T:_amigaosfloppydisk
 echo "set boingbaginstall *"0*"" >>T:_amigaosfloppydisk
 echo "set iconpackinstall *"0*"" >>T:_amigaosfloppydisk
 
@@ -73,6 +79,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-390-CD
     echo "1" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "0" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -110,6 +117,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-390-ISO
     echo "1" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "0" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -216,6 +224,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A500-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -254,6 +263,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A600-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -292,6 +302,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A2000-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -330,6 +341,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A1200-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -368,6 +380,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A3000-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -406,6 +419,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A4000D-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -444,6 +458,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-A4000T-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "1" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -470,6 +485,38 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A4000T from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+ENDIF
+
+; amiga os 3.1.4.1 update
+set menuoption `eval $menuoption + 1`
+IF EXISTS INSTALLDIR:Prefs/Amiga-OS-3141-ADF
+  ; set default install amiga os 3.1.4.1 update, if not set
+  echo "1" >T:_amigaos314update
+
+  echo "" >>T:_amigaosmenu
+  echo "IF *"*$amigaos314update*" GT 0 VAL" >>T:_amigaosmenu
+  echo "  echo *"Install*" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
+  echo "ELSE" >>T:_amigaosmenu
+  echo "  echo *"Skip   *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
+  echo "ENDIF" >>T:_amigaosmenu
+  echo "  echo *" : Amiga OS 3.1.4.1 Update from adf file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  IF *"*$amigaos314*" EQ 1 VAL" >>T:_amigaosoption
+  echo "    IF *"*$amigaos314update*" GT 0 VAL" >>T:_amigaosoption
+  echo "      set amigaos314update *"0*"" >>T:_amigaosoption
+  echo "    ELSE" >>T:_amigaosoption
+  echo "      set amigaos314update *"1*"" >>T:_amigaosoption
+  echo "    ENDIF" >>T:_amigaosoption
+  echo "  ELSE" >>T:_amigaosoption
+  echo "    RequestChoice *"Amiga OS 3.1.4 required*" *"Select Amiga OS 3.1.4 to install first!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  ENDIF" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
+ELSE
+  echo "" >>T:_amigaosmenu
+  echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
+  echo "echo *" : Amiga OS 3.1.4.1 Update from adf file*" >>T:amigaosmenu" >>T:_amigaosmenu
 ENDIF
 
 ; amiga os 3.1.4 icon pack
@@ -524,6 +571,7 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-310-ADF
     echo "0" >T:_amigaos39
     echo "0" >T:_boingbaginstall
     echo "0" >T:_amigaos314
+    echo "0" >T:_amigaos314update
   ENDIF
 
   echo "" >>T:_amigaosmenu
@@ -629,6 +677,9 @@ echo "; amiga os install" >>T:_amigaosmenu
 echo "; ----------------" >>T:_amigaosmenu
 echo "LAB amigaosinstall" >>T:_amigaosmenu
 echo "echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-*$amigaosinstall*"" >>T:_amigaosmenu
+echo "IF *"*$amigaos314update*" GT 0 VAL" >>T:_amigaosmenu
+echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF*"" >>T:_amigaosmenu
+echo "ENDIF" >>T:_amigaosmenu
 echo "IF *"*$amigaos39*" EQ 1 VAL" >>T:_amigaosmenu
 echo "  echo *"*" NOLINE >*"INSTALLDIR:Prefs/Install-Amiga-OS-390*"" >>T:_amigaosmenu
 echo "ENDIF" >>T:_amigaosmenu
@@ -652,7 +703,7 @@ echo "" NOLINE >"{amigaosmenu}"
 IF EXISTS T:_amigaosname
   echo "set amigaosname *"`type T:_amigaosname`*"" >>"{amigaosmenu}"
 ELSE
-  echo "set amigaosname *"Amiga OS from floppy disks*"" >>"{amigaosmenu}"
+  echo "set amigaosname *"Amiga OS and updates from floppy disks*"" >>"{amigaosmenu}"
 ENDIF
 
 ; set default amigaosinstall
@@ -683,6 +734,12 @@ ELSE
   echo "set amigaos314 *"0*"" >>"{amigaosmenu}"
 ENDIF
 
+; set default amigaos314update
+IF EXISTS T:_amigaos314update
+  echo "set amigaos314update *"`type T:_amigaos314update`*"" >>"{amigaosmenu}"
+ELSE
+  echo "set amigaos314update *"0*"" >>"{amigaosmenu}"
+ENDIF
 
 ; set default iconpackinstall
 IF EXISTS T:_iconpackinstall
