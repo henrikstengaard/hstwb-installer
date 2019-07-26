@@ -17,17 +17,18 @@ echo "*e[0m" NOLINE
 echo ""
 
 ; glow icons
-setenv glowicons `RequestChoice "Install Glow Icons" "Do you want to install Amiga OS 3.1.4 GlowIcons?" "Yes|No"`
+setenv glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.1.4 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.1.4 Glow Icons?*N*NNote that Glow Icons might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
 IF "$glowicons" EQ 1 VAL
   echo "$glowicons" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+
+  ; screenmode
+  IF "$palmonitor" EQ 1 VAL
+    setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?*N*NNote that screenmode prefs might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
+  ELSE
+    setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?*N*NNote that screenmode prefs might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
+  ENDIF
 ENDIF
 
-; screenmode
-IF "$palmonitor" EQ 1 VAL
-  setenv screenmode `RequestChoice "Update Screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Yes|No"`
-ELSE
-  setenv screenmode `RequestChoice "Update Screenmode" "Do you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Yes|No"`
-ENDIF
 
 ; copy patch amiga os 3.1.4.1 files
 MakePath >NIL: "SYSTEMDIR:S"
