@@ -17,18 +17,55 @@ echo "*e[0m" NOLINE
 echo ""
 
 ; glow icons
-setenv glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.1.4 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.1.4 Glow Icons?*N*NNote that Glow Icons might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
-IF "$glowicons" EQ 1 VAL
-  echo "$glowicons" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+LAB glowicons
+setenv glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.1.4 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.1.4 Glow Icons?" "Help|Yes|No"`
 
-  ; screenmode
-  IF "$palmonitor" EQ 1 VAL
-    setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?*N*NNote that screenmode prefs might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
+; help option
+IF "$glowicons" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt" >NIL:
   ELSE
-    setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?*N*NNote that screenmode prefs might be overwritten, if*NClassicWB, BestWB, BetterWB or HstWB packages*Nare installed." "Yes|No"`
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt' doesn't exist!*e[0m"
+    quit 20
   ENDIF
+  SKIP BACK glowicons
 ENDIF
 
+; yes option
+IF "$glowicons" EQ 2 VAL
+  echo "$glowicons" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+  SKIP screenmode
+ENDIF
+
+SKIP install
+
+
+; screensmode
+; -----------
+LAB screenmode
+
+; screenmode
+IF "$palmonitor" EQ 1 VAL
+  setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Help|Yes|No"`
+ELSE
+  setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Help|Yes|No"`
+ENDIF
+
+; help option
+IF "$screenmode" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt" >NIL:
+  ELSE
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt' doesn't exist!*e[0m"
+    quit 20
+  ENDIF
+  SKIP BACK screenmode
+ENDIF
+
+
+; install
+; -------
+LAB install
 
 ; copy patch amiga os 3.1.4.1 files
 MakePath >NIL: "SYSTEMDIR:S"
