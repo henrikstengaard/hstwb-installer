@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2019-04-04
+; Date: 2019-07-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -62,6 +62,7 @@ Assign >NIL: HELP: LOCALE:Help DEFER
 
 ; add cls alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
+Alias Copy "Copy BUFFER=10 "
 
 ; set timezone for unzip
 SetEnv TZ MST7
