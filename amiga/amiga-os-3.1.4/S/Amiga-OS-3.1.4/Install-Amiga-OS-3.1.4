@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1.4
 ; ----------------------
 ;
-; Date: 2019-07-22
+; Date: 2019-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -18,7 +18,7 @@ echo ""
 
 ; glow icons
 LAB glowicons
-setenv glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.1.4 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.1.4 Glow Icons?" "Help|Yes|No"`
+set glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.1.4 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.1.4 Glow Icons?" "Help|Yes|No"`
 
 ; help option
 IF "$glowicons" EQ 1 VAL
@@ -33,7 +33,7 @@ ENDIF
 
 ; yes option
 IF "$glowicons" EQ 2 VAL
-  echo "$glowicons" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
   SKIP screenmode
 ENDIF
 
@@ -45,10 +45,10 @@ SKIP install
 LAB screenmode
 
 ; screenmode
-IF "$palmonitor" EQ 1 VAL
-  setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Help|Yes|No"`
+IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
+  set screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Help|Yes|No"`
 ELSE
-  setenv screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Help|Yes|No"`
+  set screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Help|Yes|No"`
 ENDIF
 
 ; help option
@@ -62,6 +62,11 @@ IF "$screenmode" EQ 1 VAL
   SKIP BACK screenmode
 ENDIF
 
+; yes option
+IF "$screenmode" EQ 2 VAL
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1.4-Screenmode
+ENDIF
+
 
 ; install
 ; -------
@@ -72,6 +77,15 @@ MakePath >NIL: "SYSTEMDIR:S"
 Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3141-Startup" "SYSTEMDIR:S"
 Copy >NIL: "INSTALLDIR:Extras/Install-Patch-Amiga-OS-3141" "SYSTEMDIR:S"
 Copy >NIL: "INSTALLDIR:Extras/Patch-Amiga-OS-3141" "SYSTEMDIR:S"
+
+; create sys, icons directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Icons/"
+  MakePath >NIL: "SYSTEMDIR:Icons"
+ENDIF
+
+; copy install glow icons and restore old icons
+Copy >NIL: "INSTALLDIR:Extras/Icons/#?" "SYSTEMDIR:Icons/"
+Copy >NIL: "INSTALLDIR:Extras/Icons.info" "SYSTEMDIR:"
 
 ; run install amiga os 3.1.4 adf, if prefs exists. otherwise run install amiga os 3.1.4 disk
 fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314
@@ -92,9 +106,6 @@ IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack"
   ; amiga os 3.1.4 icon pack message
   echo "Amiga OS 3.1.4 Icon Pack..."
 
-  IF NOT EXISTS "SYSTEMDIR:Icons/"
-    MakePath >NIL: SYSTEMDIR:Icons
-  ENDIF
   lha -q -m1 x "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-iconpack.lha" "SYSTEMDIR:Icons/"
 
   echo "Done"

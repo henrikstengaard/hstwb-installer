@@ -11,16 +11,19 @@ overwrite icons with their own icon set.
 
 Select "Yes" to install Glow Icons, if installing a
 plain Amiga OS 3.1.4 without any Workbench enhancement
-packages. Note Glow Icons might be overwritten, if
-installing any packages.
+packages. Before installing, a backup of old icons is
+first created. Note that Glow Icons might be overwritten,
+if installing any packages.
 
 Select "No" to install Glow Icons, if installing
 Workbench enhancement packages like ClassicWB, BestWB,
 BetterWB or HstWB.
 
-Regardless of choice, Glow Icons are copied to a
-"Icons" drawer and can always be manually installed
-later.
+Regardless of choice, Glow Icons can be installed
+later by opening Workbench, Icons drawer and 
+double-click "Install-GlowIcons". Before installing,
+a backup of old icons is first created, which can be
+restored by double-clicking "Restore-OldIcons".
 
 
 Screenmode

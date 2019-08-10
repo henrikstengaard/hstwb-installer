@@ -1,0 +1,32 @@
+; Restore Old Icons
+; -----------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2019-08-09
+;
+; This script restore old icons backup.
+
+
+; skip to end, if old icons backup doesn't exist
+IF NOT EXISTS "SYS:Icons/OldIcons/OldIcons-Backup.lha"
+  echo "*e[1mError: Old icons backup 'SYS:Icons/OldIcons/OldIcons-Backup.lha' doesn't exist!*e[0m"
+  Wait 1
+  SKIP end
+ENDIF
+
+; show requester to restore glowicons
+set restore `RequestChoice "Restore old icons" "Do you want to restore old icons?" "Yes|No"`
+If Not $restore Eq "1" VAL
+  SKIP end
+EndIf
+
+echo "Restoring old icons backup..."
+Lha -q -m1 x "SYS:Icons/OldIcons/OldIcons-Backup.lha" "SYS:"
+echo "Done"
+echo ""
+echo "Please reboot Amiga to get old icons shown."
+Wait 5
+
+
+; end
+; ---
+LAB end

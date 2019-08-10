@@ -1,7 +1,7 @@
 ; Install Install
 ; ---------------
 ;
-; Date: 2019-07-20
+; Date: 2019-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -107,9 +107,12 @@ IconPos >NIL: "SYSTEMDIR:Disk"      DXPOS 28 DYPOS 29 DWIDTH 462 DHEIGHT 93
 
 Protect >NIL: "SYSTEMDIR:C/Execute" ph add
 
-; copy glowicons to system directory, if glow icons have been selected
-IF "$glowicons" EQ 1 VAL
+; backup old icons and copy glowicons to system directory, if glow icons prefs exists
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons"
   IF EXISTS "SYSTEMDIR:Icons/GlowIcons"
+    echo "Creating old icons backup..."
+    Lha -q -e -r -x a "SYSTEMDIR:Icons/OldIcons/OldIcons-Backup.lha" "SYSTEMDIR:" #?.info
+
     echo "Installing glow icons..."
     Copy >NIL: "SYSTEMDIR:Icons/GlowIcons" "SYSTEMDIR:" ALL CLONE
   ENDIF
@@ -123,8 +126,8 @@ IF EXISTS "INSTALLDIR:Extras/Prefs/Workbench.prefs"
   Copy >NIL: "INSTALLDIR:Extras/Prefs/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
 ENDIF
 
-IF "$palmonitor" EQ 1 VAL
-  IF "$screenmode" EQ 1 VAL
+IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
+  IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.1.4-Screenmode"
     IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs"
       Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
@@ -134,7 +137,7 @@ IF "$palmonitor" EQ 1 VAL
     ENDIF
   ENDIF
 ELSE
-  IF "$screenmode" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.1.4-Screenmode"
     IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs"
       Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF

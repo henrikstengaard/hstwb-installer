@@ -1,7 +1,7 @@
 ; Install Storage
 ; ---------------
 ;
-; Date: 2019-01-11
+; Date: 2019-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 storage floppy disk or adf file.
@@ -14,7 +14,7 @@ Copy >NIL: "$amigaosdisk:Printers" SYSTEMDIR:Devs/Printers CLONE
 Copy >NIL: "$amigaosdisk:Keymaps" SYSTEMDIR:Devs/Keymaps CLONE
 
 ; copy pal or ntsc monitor
-IF "$palmonitor" EQ 1 VAL
+IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
 ELSE
@@ -22,10 +22,11 @@ ELSE
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/NTSC.info" "SYSTEMDIR:Devs/Monitors" CLONE  
 ENDIF
 
-; create glow icons directory, if it doesn't exist
-IF NOT EXISTS "SYSTEMDIR:Icons/GlowIcons"
-  MakePath >NIL: "SYSTEMDIR:Icons/GlowIcons"
-ENDIF
+; create glow icons and old icons directories
+MakePath >NIL: "SYSTEMDIR:Icons/GlowIcons"
+makeicon >NIL: "SYSTEMDIR:Icons/GlowIcons"
+MakePath >NIL: "SYSTEMDIR:Icons/OldIcons"
+makeicon >NIL: "SYSTEMDIR:Icons/OldIcons"
 
 ; copy glow icons to icons directory
 Copy >NIL: "$amigaosdisk:glowicons" "SYSTEMDIR:Icons/GlowIcons" ALL CLONE

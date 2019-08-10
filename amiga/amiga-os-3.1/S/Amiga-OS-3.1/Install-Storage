@@ -1,7 +1,7 @@
 ; Amiga OS 3.1 Storage
 ; ----------------------
 ;
-; Date: 2019-07-20
+; Date: 2019-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1 storage floppy disk or adf file.
@@ -15,7 +15,7 @@ ENDIF
 Copy >NIL: "$amigaosdisk:Printers.info" "SYSTEMDIR:Storage.info" CLONE 
 
 ; copy pal or ntsc monitor
-IF "$palmonitor" EQ 1 VAL
+IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
 ELSE

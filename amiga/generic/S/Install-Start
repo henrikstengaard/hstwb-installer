@@ -1,18 +1,17 @@
 ; Install Start
 ; -------------
 ;
-; Date: 2019-07-04
+; Date: 2019-08-09
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to start installation of Large Harddisk, Amiga OS 3.9, 3.1.4 or 3.1, Kickstarts and packages.
 
 
 ; detect pal or ntsc monitor
-setenv palmonitor "1"
 INSTALLDIR:C/paltest >T:_paltest
-search >NIL: T:_paltest "PAL  (256/512 lines)"
-IF NOT $RC EQ 0 VAL
-  setenv palmonitor "0"
+search >NIL: T:_paltest "PAL  "
+IF $RC EQ 0 VAL
+  echo "" NOLINE >"INSTALLDIR:Prefs/Pal-Monitor"
 ENDIF
 Delete >NIL: T:_paltest
 
