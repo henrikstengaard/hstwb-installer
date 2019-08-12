@@ -18,5 +18,5 @@ graphics_memory = 32768
 [$Harddrives]
 jit_compiler = 1
 kickstart_file = [$KickstartRomFile]
-logs_dir = [$ImageDir]
+logs_dir = [$LogsDir]
 theme = hstwb-installer

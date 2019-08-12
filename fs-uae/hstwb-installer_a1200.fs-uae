@@ -18,6 +18,6 @@ graphics_memory = 32768
 [$Harddrives]
 jit_compiler = 1
 kickstart_file = [$KickstartRomFile]
-logs_dir = [$ImageDir]
+logs_dir = [$LogsDir]
 zorro_iii_memory = 32768
 theme = hstwb-installer
