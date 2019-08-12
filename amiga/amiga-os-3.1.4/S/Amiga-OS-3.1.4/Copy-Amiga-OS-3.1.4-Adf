@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1.4 Adf
 ; -----------------------
 ;
-; Date: 2019-07-20
+; Date: 2019-08-12
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
@@ -120,6 +120,13 @@ IF "$md5" eq "4e095037af1da015c09ed26e3e107f50"
   SKIP copyadffile
 ENDIF
 
+; copy amiga os 3.1.4 modules a600 adf v3, if file md5 matches
+IF "$md5" eq "bc48d0bdafd123a6ed459c38c7a1c2e4"
+  echo "Amiga OS 3.1.4 Modules A600 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-modules-a600.adf"
+  SKIP copyadffile
+ENDIF
+
 ; copy amiga os 3.1.4 modules a2000 adf v1, if file md5 matches
 IF "$md5" eq "b201f0b45c5748be103792e03f938027"
   echo "Amiga OS 3.1.4 Modules A2000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
@@ -148,9 +155,15 @@ IF "$md5" eq "d170f8c11d1eb52f12643e0f13b44886"
   SKIP copyadffile
 ENDIF
 
-
 ; copy amiga os 3.1.4 modules a3000 adf v1, if file md5 matches
 IF "$md5" eq "60263124ea2c5f1831a3af639d085a28"
+  echo "Amiga OS 3.1.4 Modules A3000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-modules-a3000.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a3000 adf v2, if file md5 matches
+IF "$md5" eq "d068cbc850390c3e0028879cc1cae4c2"
   echo "Amiga OS 3.1.4 Modules A3000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
   set adffilename "amiga-os-314-modules-a3000.adf"
   SKIP copyadffile
@@ -165,6 +178,13 @@ ENDIF
 
 ; copy amiga os 3.1.4 modules a4000t adf v1, if file md5 matches
 IF "$md5" eq "68fb2ca4b81daeaf140d35dc7a63d143"
+  echo "Amiga OS 3.1.4 Modules A4000T adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  set adffilename "amiga-os-314-modules-a4000t.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.1.4 modules a4000t adf v2, if file md5 matches
+IF "$md5" eq "a0ed3065558bd43e80647c1c522322a0"
   echo "Amiga OS 3.1.4 Modules A4000T adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
   set adffilename "amiga-os-314-modules-a4000t.adf"
   SKIP copyadffile

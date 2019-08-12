@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-07
+# Date:   2019-08-12
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -461,17 +461,20 @@ $validAmigaOs314Md5Entries = @(
     @{ 'Md5' = '4007bfe06b5b51af981a3fa52c51f54a'; 'Filename' = 'amiga-os-314-locale.adf'; 'Name' = 'Amiga OS 3.1.4 Locale Disk, Hyperion Entertainment' },
     @{ 'Md5' = '372215cd27888d65a95db92b6513e702'; 'Filename' = 'amiga-os-314-storage.adf'; 'Name' = 'Amiga OS 3.1.4 Storage Disk, Hyperion Entertainment' },
     @{ 'Md5' = '05a7469fd903744aa5f53741765bf668'; 'Filename' = 'amiga-os-314-workbench.adf'; 'Name' = 'Amiga OS 3.1.4 Workbench Disk, Hyperion Entertainment' },
-    @{ 'Md5' = '8a3824e64dbe2c8327d5995188d5fdd3'; 'Filename' = 'amiga-os-314-modules-a500.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = '2065c8850b5ba97099c3ff2672221e3f'; 'Filename' = 'amiga-os-314-modules-a500.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment 2nd release' },
-    @{ 'Md5' = 'c5a96c56ee5a7e2ca639c755d89dda36'; 'Filename' = 'amiga-os-314-modules-a600.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = '4e095037af1da015c09ed26e3e107f50'; 'Filename' = 'amiga-os-314-modules-a600.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment 2nd release' },
-    @{ 'Md5' = 'b201f0b45c5748be103792e03f938027'; 'Filename' = 'amiga-os-314-modules-a2000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = 'b8d09ea3369ac538c3920c515ba76e86'; 'Filename' = 'amiga-os-314-modules-a2000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment 2nd release' },
-    @{ 'Md5' = '2797193dc7b7daa233abe1bcfee9d5a1'; 'Filename' = 'amiga-os-314-modules-a1200.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = 'd170f8c11d1eb52f12643e0f13b44886'; 'Filename' = 'amiga-os-314-modules-a1200.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment 2nd release' },
-    @{ 'Md5' = '60263124ea2c5f1831a3af639d085a28'; 'Filename' = 'amiga-os-314-modules-a3000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A3000 Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = '7d20dc438e802e41def3694d2be59f0f'; 'Filename' = 'amiga-os-314-modules-a4000d.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000D Disk, Hyperion Entertainment 1st release' },
-    @{ 'Md5' = '68fb2ca4b81daeaf140d35dc7a63d143'; 'Filename' = 'amiga-os-314-modules-a4000t.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment 1st release' }
+    @{ 'Md5' = '8a3824e64dbe2c8327d5995188d5fdd3'; 'Filename' = 'amiga-os-314-modules-a500.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2065c8850b5ba97099c3ff2672221e3f'; 'Filename' = 'amiga-os-314-modules-a500.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A500 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'c5a96c56ee5a7e2ca639c755d89dda36'; 'Filename' = 'amiga-os-314-modules-a600.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '4e095037af1da015c09ed26e3e107f50'; 'Filename' = 'amiga-os-314-modules-a600.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'bc48d0bdafd123a6ed459c38c7a1c2e4'; 'Filename' = 'amiga-os-314-modules-a600.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A600 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'b201f0b45c5748be103792e03f938027'; 'Filename' = 'amiga-os-314-modules-a2000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'b8d09ea3369ac538c3920c515ba76e86'; 'Filename' = 'amiga-os-314-modules-a2000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A2000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2797193dc7b7daa233abe1bcfee9d5a1'; 'Filename' = 'amiga-os-314-modules-a1200.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'd170f8c11d1eb52f12643e0f13b44886'; 'Filename' = 'amiga-os-314-modules-a1200.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A1200 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '60263124ea2c5f1831a3af639d085a28'; 'Filename' = 'amiga-os-314-modules-a3000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A3000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'd068cbc850390c3e0028879cc1cae4c2'; 'Filename' = 'amiga-os-314-modules-a3000.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A3000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '7d20dc438e802e41def3694d2be59f0f'; 'Filename' = 'amiga-os-314-modules-a4000d.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000D Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '68fb2ca4b81daeaf140d35dc7a63d143'; 'Filename' = 'amiga-os-314-modules-a4000t.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment' }
+    @{ 'Md5' = 'a0ed3065558bd43e80647c1c522322a0'; 'Filename' = 'amiga-os-314-modules-a4000t.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment' }
 )
 
 # valid kickstart rom md5 entries
@@ -494,11 +497,11 @@ $validKickstartMd5Entries = @(
     @{ 'Md5' = '82a21c1890cae844b3df741f2762d48d'; 'Filename' = 'kick34005.A500'; 'Encrypted' = $false; 'Name' = 'Kickstart 1.3 34.5 A500 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $false },
     @{ 'Md5' = '85ad74194e87c08904327de1a9443b7a'; 'Filename' = 'kick33180.A500'; 'Encrypted' = $false; 'Name' = 'Kickstart 1.2 33.180 A500 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $false },
 
-    @{ 'Md5' = '6de08cd5c5efd926d0a7643e8fb776fe'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment 1st release'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
-    @{ 'Md5' = '79bfe8876cd5abe397c50f60ea4306b9'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment 2nd release'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '6de08cd5c5efd926d0a7643e8fb776fe'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '79bfe8876cd5abe397c50f60ea4306b9'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     
-    @{ 'Md5' = '7fe1eb0ba2b767659bf547bfb40d67c4'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment 1st release'; 'Model' = 'A500'; 'ConfigSupported' = $true },
-    @{ 'Md5' = '61c5b9931555b8937803505db868d5a8'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment 2nd release'; 'Model' = 'A500'; 'ConfigSupported' = $true }
+    @{ 'Md5' = '7fe1eb0ba2b767659bf547bfb40d67c4'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '61c5b9931555b8937803505db868d5a8'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true }
 )
 
 # valid amiga os 39 md5 entries
@@ -560,7 +563,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-04-03"
+Write-Output "Date: 2019-08-12"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
