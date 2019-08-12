@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-07-12
+# Date:   2019-08-12
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -178,35 +178,38 @@ function FindEmulators()
     $winuaeX64File = "${Env:ProgramFiles}\WinUAE\winuae64.exe"
     if (test-path -path $winuaeX64File)
     {
-        $version = (get-item $winuaeX64File).VersionInfo.FileVersion
         $emulators += @{ 'Name' = (DetectEmulatorName $winuaeX64File); 'File' = $winuaeX64File }
     }
     
     $winuaeX86File = "${Env:ProgramFiles(x86)}\WinUAE\winuae.exe"
     if (test-path -path $winuaeX86File)
     {
-        $version = (get-item $winuaeX86File).VersionInfo.FileVersion
         $emulators += @{ 'Name' = (DetectEmulatorName $winuaeX86File); 'File' = $winuaeX86File }
     }
 
     $cloantoWinuaeX64File = "${Env:ProgramFiles}\Cloanto\Amiga Forever\WinUAE\winuae64.exe"
     if (test-path -path $cloantoWinuaeX64File)
     {
-        $version = (get-item $cloantoWinuaeX64File).VersionInfo.FileVersion
         $emulators += @{ 'Name' = (DetectEmulatorName $cloantoWinuaeX64File); 'File' = $cloantoWinuaeX64File }
     }
     
     $cloantoWinuaeX86File = "${Env:ProgramFiles(x86)}\Cloanto\Amiga Forever\WinUAE\winuae.exe"
     if (test-path -path $cloantoWinuaeX86File)
     {
-        $version = (get-item $cloantoWinuaeX86File).VersionInfo.FileVersion
         $emulators += @{ 'Name' = (DetectEmulatorName $cloantoWinuaeX86File); 'File' = $cloantoWinuaeX86File }
     }
     
+    # fs-uae 2.8.3
     $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\fs-uae.exe"
     if (test-path -path $fsuaeFile)
     {
-        $version = (get-item $fsuaeFile).VersionInfo.FileVersion
+        $emulators += @{ 'Name' = (DetectEmulatorName $fsuaeFile); 'File' = $fsuaeFile }
+    }
+
+    # fs-uae 3.0.0
+    $fsuaeFile = "${Env:LOCALAPPDATA}\fs-uae\FS-UAE\Windows\x86-64\fs-uae.exe"
+    if (test-path -path $fsuaeFile)
+    {
         $emulators += @{ 'Name' = (DetectEmulatorName $fsuaeFile); 'File' = $fsuaeFile }
     }
 

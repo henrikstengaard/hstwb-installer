@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-05
+# Date:   2019-08-12
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2221,7 +2221,10 @@ function RunInstall($hstwb)
                 continue
             }
 
-            Copy-Item $bestMatchingAmigaOsSetEntry.File -Destination (Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename) -Force
+            # copy amiga os adf file and remove isreadonly attribute
+            $tempAmigaOsFile = Join-Path $tempAmigaOsDir -ChildPath $bestMatchingAmigaOsSetEntry.Filename
+            Copy-Item $bestMatchingAmigaOsSetEntry.File -Destination $tempAmigaOsFile -Force
+            Set-ItemProperty $tempAmigaOsFile -name IsReadOnly -value $false
         }    
     }
 
@@ -2258,8 +2261,10 @@ function RunInstall($hstwb)
             $installKickstartEntryFile = Join-Path $prefsDir -ChildPath $bestMatchingKickstartSetEntry.PrefsFile
             Set-Content $installKickstartEntryFile -Value ""
 
-
-            Copy-Item $bestMatchingKickstartSetEntry.File -Destination (Join-Path $tempKickstartDir -ChildPath $bestMatchingKickstartSetEntry.Filename) -Force
+            # copy kickstart rom file and remove isreadonly attribute
+            $tempKickstartFile = Join-Path $tempKickstartDir -ChildPath $bestMatchingKickstartSetEntry.Filename
+            Copy-Item $bestMatchingKickstartSetEntry.File -Destination $tempKickstartFile -Force
+            Set-ItemProperty $tempKickstartFile -name IsReadOnly -value $false
         }    
 
         # create install kickstart rom prefs file
@@ -2516,19 +2521,24 @@ function RunInstall($hstwb)
         $isoFile = $hstwb.Paths.IsoEntry.File
     }
 
-    # set workbench adf file, if workbench adf entry entry exists
+    # copy and set workbench adf file, if workbench adf entry entry exists
     $workbenchAdfFile = ''
     if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
     {
-        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+        $workbenchAdfFile = Join-Path $hstwb.Paths.TempPath -ChildPath (Split-Path $hstwb.Paths.WorkbenchAdfEntry.File -Leaf)
+        Copy-Item $hstwb.Paths.WorkbenchAdfEntry.File -Destination $workbenchAdfFile -Force
+        Set-ItemProperty $workbenchAdfFile -name IsReadOnly -value $false
     }
 
-    # set install adf file, if install adf entry entry exists
+    # copy and set install adf file, if install adf entry entry exists
     $installAdfFile = ''
     if ($hstwb.Paths.InstallAdfEntry -and $hstwb.Paths.InstallAdfEntry.File)
     {
-        $installAdfFile = $hstwb.Paths.InstallAdfEntry.File
+        $installAdfFile = Join-Path $hstwb.Paths.TempPath -ChildPath (Split-Path $hstwb.Paths.InstallAdfEntry.File -Leaf)
+        Copy-Item $hstwb.Paths.InstallAdfEntry.File -Destination $installAdfFile -Force
+        Set-ItemProperty $installAdfFile -name IsReadOnly -value $false
     }
+
 
     #
     $emulatorArgs = ''
@@ -3155,12 +3165,24 @@ function RunBuildSelfInstall($hstwb)
         $isoFile = $hstwb.Paths.IsoEntry.File
     }
 
-    # set workbench adf file, if workbench adf entry entry exists
+    # copy and set workbench adf file, if workbench adf entry entry exists
     $workbenchAdfFile = ''
     if ($hstwb.Paths.WorkbenchAdfEntry -and $hstwb.Paths.WorkbenchAdfEntry.File)
     {
-        $workbenchAdfFile = $hstwb.Paths.WorkbenchAdfEntry.File
+        $workbenchAdfFile = Join-Path $hstwb.Paths.TempPath -ChildPath (Split-Path $hstwb.Paths.WorkbenchAdfEntry.File -Leaf)
+        Copy-Item $hstwb.Paths.WorkbenchAdfEntry.File -Destination $workbenchAdfFile -Force
+        Set-ItemProperty $workbenchAdfFile -name IsReadOnly -value $false
     }
+
+    # copy and set install adf file, if install adf entry entry exists
+    $installAdfFile = ''
+    if ($hstwb.Paths.InstallAdfEntry -and $hstwb.Paths.InstallAdfEntry.File)
+    {
+        $installAdfFile = Join-Path $hstwb.Paths.TempPath -ChildPath (Split-Path $hstwb.Paths.InstallAdfEntry.File -Leaf)
+        Copy-Item $hstwb.Paths.InstallAdfEntry.File -Destination $installAdfFile -Force
+        Set-ItemProperty $installAdfFile -name IsReadOnly -value $false
+    }
+
 
     #
     $emulatorArgs = ''
@@ -3179,7 +3201,7 @@ function RunBuildSelfInstall($hstwb)
         # replace hstwb installer fs-uae configuration placeholders
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile.Replace('\', '/'))
-        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
+        $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$Harddrives]', $fsUaeInstallHarddrivesConfigText)
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile.Replace('\', '/'))
         $fsUaeHstwbInstallerConfigText = $fsUaeHstwbInstallerConfigText.Replace('[$ImageDir]', $hstwb.Settings.Image.ImageDir.Replace('\', '/'))
@@ -3203,7 +3225,7 @@ function RunBuildSelfInstall($hstwb)
         # replace winuae hstwb installer config placeholders
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$KickstartRomFile]', $hstwb.Paths.KickstartEntry.File)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$WorkbenchAdfFile]', $workbenchAdfFile)
-        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', '')
+        $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$InstallAdfFile]', $installAdfFile)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$Harddrives]', $winuaeInstallHarddrivesConfigText)
         $winuaeHstwbInstallerConfigText = $winuaeHstwbInstallerConfigText.Replace('[$IsoFile]', $isoFile)
         
