@@ -306,19 +306,19 @@ def patch_uae_config_file( \
                 hardfile2_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(hardfile2_path_match.group(1))))
             if hardfile_path == None or not os.path.exists(hardfile_path):
-                print 'Error: Hardfile path \'{0}\' doesn\'t exist'.format(hardfile_path)
-                exit(1)
-            line = re.sub(r'^(hardfile2=[^,]*,[^,:]*:)[^,]+', 
-                '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile_path.replace('\\', '\\\\'))), line, 0, re.I)
+                print 'WARNING: Hardfile path \'{0}\' doesn\'t exist'.format(hardfile_path)
+            else:
+                line = re.sub(r'^(hardfile2=[^,]*,[^,:]*:)[^,]+', 
+                    '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile_path.replace('\\', '\\\\'))), line, 0, re.I)
 
             hardfile2_file_system_path_match = re.search(r',([^,]*),uae$', line, re.I)
             if hardfile2_file_system_path_match and hardfile2_file_system_path_match.group(1) != '':
                 hardfile2_file_system_path = os.path.join(uae_config_dir, os.path.basename(hardfile2_file_system_path_match.group(1)))
                 if hardfile2_file_system_path == None or not os.path.exists(hardfile2_file_system_path):
-                    print 'Error: Hardfile2 filesystem path \'{0}\' doesn\'t exist'.format(hardfile2_file_system_path)
-                    exit(1)
-                line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
-                    '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile2_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
+                    print 'WARNING: Hardfile2 filesystem path \'{0}\' doesn\'t exist'.format(hardfile2_file_system_path)
+                else:
+                    line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
+                        '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile2_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # patch uaehf path
         uaehf_device_match = re.search(r'^uaehf\d+=[^,]*,[^,]*,([^,:]*)', line, re.I)
@@ -335,23 +335,23 @@ def patch_uae_config_file( \
                 uaehf_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(uaehf_path_match.group(1))))
             if uaehf_path == None or not os.path.exists(uaehf_path):
-                print 'Error: Uaehf path \'{0}\' doesn\'t exist'.format(uaehf_path)
-                exit(1)
-            if uaehf_is_dir:
-                line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]+', 
-                    '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
+                print 'WARNING: Uaehf path \'{0}\' doesn\'t exist'.format(uaehf_path)
             else:
-                line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]+', 
-                    '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
+                if uaehf_is_dir:
+                    line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]+', 
+                        '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
+                else:
+                    line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]+', 
+                        '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_path.replace('\\', '\\\\'))), line, 0, re.I)
 
             uaehf_file_system_path_match = re.search(r',([^,]*),uae$', line, re.I)
             if uaehf_file_system_path_match and uaehf_file_system_path_match.group(1) != '':
                 uaehf_file_system_path = os.path.join(uae_config_dir, os.path.basename(uaehf_file_system_path_match.group(1)))
                 if uaehf_file_system_path == None or not os.path.exists(uaehf_file_system_path):
-                    print 'Error: Uaehf filesystem path \'{0}\' doesn\'t exist'.format(uaehf_file_system_path)
-                    exit(1)
-                line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
-                    '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
+                    print 'WARNING: Uaehf filesystem path \'{0}\' doesn\'t exist'.format(uaehf_file_system_path)
+                else:
+                    line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
+                        '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # patch filesystem2 path
         filesystem2_device_match = re.search(r'^filesystem2=[^,]*,[^,:]*:([^:]*)', line, re.I)
@@ -361,10 +361,10 @@ def patch_uae_config_file( \
                 filesystem2_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(filesystem2_path_match.group(1))))
             if filesystem2_path == None or not os.path.exists(filesystem2_path):
-                print 'Error: Filesystem path \'{0}\' doesn\'t exist'.format(filesystem2_path)
-                exit(1)
-            line = re.sub(r'^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]+', 
-                '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), filesystem2_path.replace('\\', '\\\\'))), line, 0, re.I)
+                print 'WARNING: Filesystem path \'{0}\' doesn\'t exist'.format(filesystem2_path)
+            else:
+                line = re.sub(r'^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]+', 
+                    '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), filesystem2_path.replace('\\', '\\\\'))), line, 0, re.I)
 
         # update line, if it's changed
         if line != uae_config_lines[i]:
@@ -446,11 +446,11 @@ def patch_fsuae_config_file( \
                     os.path.join(
                         fsuae_config_dir, os.path.basename(hard_drive_path))).replace('\\', '/')
                 if hard_drive_path == None or not os.path.exists(hard_drive_path):
-                    print 'Error: Harddrive path \'{0}\' doesn\'t exist'.format(hard_drive_path)
-                    exit(1)
-                line = re.sub(
-                    r'^(hard_drive_\d+\s*=\s*).*', \
-                    '\\1{0}'.format(hard_drive_path), line)
+                    print 'WARNING: Harddrive path \'{0}\' doesn\'t exist'.format(hard_drive_path)
+                else:
+                    line = re.sub(
+                        r'^(hard_drive_\d+\s*=\s*).*', \
+                        '\\1{0}'.format(hard_drive_path), line)
 
         # patch hard drive file system path
         hard_drive_file_system_match = re.match(
@@ -460,11 +460,11 @@ def patch_fsuae_config_file( \
                 fsuae_config_dir,
                 os.path.basename(hard_drive_file_system_match.group(1))).replace('\\', '/')
             if hard_drive_file_system_path == None or not os.path.exists(hard_drive_file_system_path):
-                print 'Error: Hard drive file system path \'{0}\' doesn\'t exist'.format(hard_drive_file_system_path)
-                exit(1)
-            line = re.sub(
-                r'^(^hard_drive_\d+_file_system\s*=\s*).*', \
-                '\\1{0}'.format(hard_drive_file_system_path), line)
+                print 'WARNING: Hard drive file system path \'{0}\' doesn\'t exist'.format(hard_drive_file_system_path)
+            else:
+                line = re.sub(
+                    r'^(^hard_drive_\d+_file_system\s*=\s*).*', \
+                    '\\1{0}'.format(hard_drive_file_system_path), line)
 
         # update line, if it's changed
         if line != fsuae_config_lines[i]:
@@ -669,24 +669,27 @@ for fsuae_config_file in fsuae_config_files:
 
 # set self install true, if patch only is not defined and config files has self install directories
 if not patch_only and config_files_has_self_install_dirs:
+    print 'One or more configuration files contain self install dirs'
     self_install = True
 
-# set default amiga os dir, if it's not defined
-if amiga_os_dir == None:
-    amiga_os_dir = os.path.join(install_dir, 'amigaos')
+# set install directories, if self install is true
+if self_install:
+    # set default amiga os dir, if it's not defined
+    if amiga_os_dir == None:
+        amiga_os_dir = os.path.join(install_dir, 'amigaos')
 
-# set default kickstart dir, if it's not defined
-if kickstart_dir == None:
-    kickstart_dir = os.path.join(install_dir, 'kickstart')
+    # set default kickstart dir, if it's not defined
+    if kickstart_dir == None:
+        kickstart_dir = os.path.join(install_dir, 'kickstart')
 
-# set default user packages dir, if it's not defined
-if user_packages_dir == None:
-    user_packages_dir = os.path.join(install_dir, 'userpackages')
+    # set default user packages dir, if it's not defined
+    if user_packages_dir == None:
+        user_packages_dir = os.path.join(install_dir, 'userpackages')
 
-# create install directories, if they don't exist
-for d in [amiga_os_dir, kickstart_dir, user_packages_dir]:
-    if not os.path.exists(d):
-        os.makedirs(d)
+    # create install directories, if they don't exist
+    for d in [amiga_os_dir, kickstart_dir, user_packages_dir]:
+        if not os.path.exists(d):
+            os.makedirs(d)
 
 # autodetect amiga forever data dir, if it's not defined
 if amiga_forever_data_dir == None:
@@ -714,71 +717,80 @@ if amiga_forever_data_dir != None:
     print 'Amiga Forever data dir \'{0}\''.format(amiga_forever_data_dir)
 
 # print amiga forever data dir, if it defined and exists
-if self_install and amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir):
+if amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir):
     # cloanto amiga forever
     print ''
     print 'Cloanto Amiga Forever'
     print '---------------------'
-    print 'Install Amiga OS 3.1 adf and Kickstart rom files from Amiga Forever data dir...'
 
     shared_dir = os.path.join(amiga_forever_data_dir, 'Shared')
     shared_adf_dir = os.path.join(shared_dir, 'adf')
     shared_rom_dir = os.path.join(shared_dir, 'rom')
 
-    # install amiga os 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
-    if os.path.isdir(shared_adf_dir):
-        # copy amiga os 3.1 adf files from shared adf dir that matches valid amiga os 3.1 md5
-        installed_amiga_os_31_adf_filenames = []
-        for md5_file in get_md5_files_from_dir(shared_adf_dir):
-            if not md5_file.md5_hash in valid_amiga_os_31_md5_index:
-                continue
-            amiga_os_31_adf_filename = os.path.basename(md5_file.full_filename)
-            installed_amiga_os_31_adf_filenames.append(amiga_os_31_adf_filename)
-            installed_amiga_os_31_adf_file = os.path.join(amiga_os_dir, amiga_os_31_adf_filename)
-            shutil.copyfile(
-                md5_file.full_filename,
-                installed_amiga_os_31_adf_file)
-            os.chmod(installed_amiga_os_31_adf_file, stat.S_IWRITE)
+    if self_install:
+        print 'Install Amiga OS 3.1 adf and Kickstart rom files from Amiga Forever data dir...'
 
-        # print installed amiga os 3.1 adf files
-        print '- {0} Amiga OS 3.1 adf files installed \'{1}\''.format(
-            len(installed_amiga_os_31_adf_filenames), 
-            ', '.join(installed_amiga_os_31_adf_filenames))
+        # install amiga os 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
+        if os.path.isdir(shared_adf_dir):
+            # copy amiga os 3.1 adf files from shared adf dir that matches valid amiga os 3.1 md5
+            installed_amiga_os_31_adf_filenames = []
+            for md5_file in get_md5_files_from_dir(shared_adf_dir):
+                if not md5_file.md5_hash in valid_amiga_os_31_md5_index:
+                    continue
+                amiga_os_31_adf_filename = os.path.basename(md5_file.full_filename)
+                installed_amiga_os_31_adf_filenames.append(amiga_os_31_adf_filename)
+                installed_amiga_os_31_adf_file = os.path.join(amiga_os_dir, amiga_os_31_adf_filename)
+                shutil.copyfile(
+                    md5_file.full_filename,
+                    installed_amiga_os_31_adf_file)
+                os.chmod(installed_amiga_os_31_adf_file, stat.S_IWRITE)
+
+            # print installed amiga os 3.1 adf files
+            print '- {0} Amiga OS 3.1 adf files installed \'{1}\''.format(
+                len(installed_amiga_os_31_adf_filenames), 
+                ', '.join(installed_amiga_os_31_adf_filenames))
+        else:
+            print '- No Amiga Forever data shared adf dir detected'
+
+        # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
+        if os.path.isdir(shared_rom_dir):
+            # copy kickstart rom files from shared rom dir that matches valid kickstart md5
+            installed_kickstart_rom_filenames = []
+            for md5_file in get_md5_files_from_dir(shared_rom_dir):
+                if not md5_file.md5_hash in valid_kickstart_md5_index:
+                    continue
+                kickstart_rom_filename = os.path.basename(md5_file.full_filename)
+                installed_kickstart_rom_filenames.append(kickstart_rom_filename)
+                installed_kickstart_rom_file = os.path.join(kickstart_dir, kickstart_rom_filename)
+                shutil.copyfile(
+                    md5_file.full_filename,
+                    installed_kickstart_rom_file)
+                os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
+
+            # copy amiga forever rom key file, if it exists
+            rom_key_filename = 'rom.key'
+            rom_key_file = os.path.join(shared_rom_dir, rom_key_filename)
+            if os.path.isfile(rom_key_file):
+                installed_kickstart_rom_filenames.append(rom_key_filename)
+                installed_kickstart_rom_file = os.path.join(kickstart_dir, rom_key_filename)
+                shutil.copyfile(
+                    rom_key_file,
+                    installed_kickstart_rom_file)
+                os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
+
+            # print installed kickstart rom files
+            print '- {0} Kickstart rom files installed \'{1}\''.format(
+                len(installed_kickstart_rom_filenames), 
+                ', '.join(installed_kickstart_rom_filenames))
+        else:
+            print '- No Amiga Forever data shared rom dir detected'
     else:
-        print '- No Amiga Forever data shared adf dir detected'
-
-    # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
-    if os.path.isdir(shared_rom_dir):
-        # copy kickstart rom files from shared rom dir that matches valid kickstart md5
-        installed_kickstart_rom_filenames = []
-        for md5_file in get_md5_files_from_dir(shared_rom_dir):
-            if not md5_file.md5_hash in valid_kickstart_md5_index:
-                continue
-            kickstart_rom_filename = os.path.basename(md5_file.full_filename)
-            installed_kickstart_rom_filenames.append(kickstart_rom_filename)
-            installed_kickstart_rom_file = os.path.join(kickstart_dir, kickstart_rom_filename)
-            shutil.copyfile(
-                md5_file.full_filename,
-                installed_kickstart_rom_file)
-            os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
-
-        # copy amiga forever rom key file, if it exists
-        rom_key_filename = 'rom.key'
-        rom_key_file = os.path.join(shared_rom_dir, rom_key_filename)
-        if os.path.isfile(rom_key_file):
-            installed_kickstart_rom_filenames.append(rom_key_filename)
-            installed_kickstart_rom_file = os.path.join(kickstart_dir, rom_key_filename)
-            shutil.copyfile(
-                rom_key_file,
-                installed_kickstart_rom_file)
-            os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
-
-        # print installed kickstart rom files
-        print '- {0} Kickstart rom files installed \'{1}\''.format(
-            len(installed_kickstart_rom_filenames), 
-            ', '.join(installed_kickstart_rom_filenames))
-    else:
-        print '- No Amiga Forever data shared rom dir detected'
+        print 'Using Kickstart rom files from Amiga Forever data dir...'
+        if kickstart_dir == None and os.path.isdir(shared_rom_dir):
+            kickstart_dir = shared_rom_dir
+            print '- Kickstart dir \'{0}\''.format(kickstart_dir)
+        else:
+            print '- No Amiga Forever data shared rom dir detected'
     print 'Done'
 
 

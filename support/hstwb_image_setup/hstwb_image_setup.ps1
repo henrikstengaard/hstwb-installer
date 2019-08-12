@@ -208,10 +208,12 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
 
                 if (!$hardfilePath -or !(Test-Path $hardfilePath))
                 {
-                    throw ("Hardfile2 path '{0}' doesn't exist" -f $hardfilePath)
+                    Write-Warning ("Hardfile2 path '{0}' doesn't exist" -f $hardfilePath)
                 }
-                
-                $line = $line -replace '^(hardfile2=[^,]*,[^,:]*:)[^,]*', "`$1$hardfilePath"
+                else
+                {
+                    $line = $line -replace '^(hardfile2=[^,]*,[^,:]*:)[^,]*', "`$1$hardfilePath"
+                }
             }
 
             $fileSystemPath = $line | Select-String -Pattern ',([^,]*),uae$' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Groups[1].Value.Trim() } | Select-Object -First 1
@@ -222,10 +224,12 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
 
                 if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
                 {
-                    throw ("Hardfile2 filesystem path '{0}' doesn't exist" -f $fileSystemPath)
+                    Write-Warning ("Hardfile2 filesystem path '{0}' doesn't exist" -f $fileSystemPath)
                 }
-
-                $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
+                else
+                {
+                    $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
+                }
             }
         }
 
@@ -258,16 +262,18 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
                 
                 if (!$uaehfPath -or !(Test-Path $uaehfPath))
                 {
-                    throw ("Uaehf path '{0}' doesn't exist" -f $uaehfPath)
-                }
-                
-                if ($uaehfIsDir)
-                {
-                    $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                    Write-Warning ("Uaehf path '{0}' doesn't exist" -f $uaehfPath)
                 }
                 else
                 {
-                    $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                    if ($uaehfIsDir)
+                    {
+                        $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                    }
+                    else
+                    {
+                        $line = $line -replace '^(uaehf\d+=[^,]*,[^,]*,[^,:]*:"?)[^,"]*', "`$1$uaehfPath"
+                    }
                 }
             }
 
@@ -279,10 +285,12 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
 
                 if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
                 {
-                    throw ("Uaehf filesystem path '{0}' doesn't exist" -f $fileSystemPath)
+                    Write-Warning ("Uaehf filesystem path '{0}' doesn't exist" -f $fileSystemPath)
                 }
-
-                $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
+                else
+                {
+                    $line = $line -replace '^(.+[^,]*,)[^,]*(,uae)$', "`$1$fileSystemPath`$2"
+                }
             }
         }
         
@@ -305,10 +313,12 @@ function PatchUaeConfigFile($uaeConfigFile, $kickstartFile, $amigaOs39IsoFile, $
 
                 if (!$filesystemPath -or !(Test-Path $filesystemPath))
                 {
-                    throw ("Filesystem2 path '{0}' doesn't exist" -f $filesystemPath)
+                    Write-Warning ("Filesystem2 path '{0}' doesn't exist" -f $filesystemPath)
                 }
-
-                $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$filesystemPath"
+                else
+                {
+                    $line = $line -replace '^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]*', "`$1$filesystemPath"
+                }
             }
         }
 
@@ -385,10 +395,12 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $kickstartFile, $amigaOs39IsoFil
 
                 if (!$harddrivePath -or !(Test-Path $harddrivePath))
                 {
-                    throw ("Hard drive path '{0}' doesn't exist" -f $harddrivePath)
+                    Write-Warning ("Hard drive path '{0}' doesn't exist" -f $harddrivePath)
                 }
-
-                $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
+                else
+                {
+                    $line = $line -replace '^(hard_drive_\d+\s*=\s*).*', ("`$1{0}" -f $harddrivePath.Replace('\', '/'))
+                }
             }
         }
 
@@ -405,10 +417,12 @@ function PatchFsuaeConfigFile($fsuaeConfigFile, $kickstartFile, $amigaOs39IsoFil
 
             if (!$fileSystemPath -or !(Test-Path $fileSystemPath))
             {
-                throw ("Hard drive file system path '{0}' doesn't exist" -f $fileSystemPath)
+                Write-Warning ("Hard drive file system path '{0}' doesn't exist" -f $fileSystemPath)
             }
-
-            $line = $line -replace '^(^hard_drive_\d+_file_system\s*=\s*).*', ("`$1{0}" -f $fileSystemPath.Replace('\', '/'))
+            else
+            {
+                $line = $line -replace '^(^hard_drive_\d+_file_system\s*=\s*).*', ("`$1{0}" -f $fileSystemPath.Replace('\', '/'))
+            }
         }
 
         # update line, if it's changed
@@ -610,33 +624,38 @@ if (!$configFilesHasSelfInstallDirs -and ($fsuaeConfigFiles | Where-Object { Con
 # set self install true, if patch only is not defined and config files has self install directories
 if (!$patchOnly -and $configFilesHasSelfInstallDirs)
 {
+    Write-Output 'One or more configuration files contain self install dirs'
     $selfInstall = $true
 }
 
-# set default amiga os dir, if it's not defined
-if (!$amigaOsDir)
+# set install directories, if self install is true
+if ($selfInstall)
 {
-    $amigaOsDir = Join-Path $installDir -ChildPath "amigaos"
-}
-
-# set default kickstart dir, if it's not defined
-if (!$kickstartDir)
-{
-    $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
-}
-
-# set default user packages dir, if it's not defined
-if (!$userPackagesDir)
-{
-    $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
-}
-
-# create self install directories, if they don't exist
-foreach ($dir in @($amigaOsDir, $kickstartDir, $userPackagesDir))
-{
-    if (!(Test-Path -Path $dir))
+    # set default amiga os dir, if it's not defined
+    if (!$amigaOsDir)
     {
-        mkdir $dir | Out-Null
+        $amigaOsDir = Join-Path $installDir -ChildPath "amigaos"
+    }
+
+    # set default kickstart dir, if it's not defined
+    if (!$kickstartDir)
+    {
+        $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
+    }
+
+    # set default user packages dir, if it's not defined
+    if (!$userPackagesDir)
+    {
+        $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
+    }
+
+    # create self install directories, if they don't exist
+    foreach ($dir in @($amigaOsDir, $kickstartDir, $userPackagesDir))
+    {
+        if (!(Test-Path -Path $dir))
+        {
+            mkdir $dir | Out-Null
+        }
     }
 }
 
@@ -672,79 +691,97 @@ if ($amigaForeverDataDir)
 }
 
 # install amiga os 3.1 adf and kickstart rom files from cloanto amiga forever data directory, if its defined
-if ($selfInstall -and $amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
+if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
 {
     # write cloanto amiga forever
     Write-Output ''
     Write-Output 'Cloanto Amiga Forever'
     Write-Output '---------------------'
-    Write-Output 'Install Amiga OS 3.1 adf and Kickstart rom files from Amiga Forever data dir...'
 
     $sharedDir = Join-Path $amigaForeverDataDir -ChildPath 'Shared'
     $sharedAdfDir = Join-Path $sharedDir -ChildPath "adf"
     $sharedRomDir = Join-Path $sharedDir -ChildPath "rom"
 
-    # install amiga os 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
-    if (Test-Path -path $sharedAdfDir)
+    if ($selfInstall)
     {
-        # copy amiga os 3.1 adf files from shared adf dir that matches valid amiga os 3.1 md5
-        $installedAmigaOs31AdfFilenames = New-Object System.Collections.Generic.List[System.Object]
-        foreach ($md5File in (GetMd5FilesFromDir $sharedAdfDir))
+        Write-Output 'Install Amiga OS adf and Kickstart rom files from Amiga Forever data dir...'
+
+        # install amiga os 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
+        if (Test-Path -path $sharedAdfDir)
         {
-            if (!$validAmigaOs31Md5Index.ContainsKey($md5File.Md5))
+            # copy amiga os 3.1 adf files from shared adf dir that matches valid amiga os 3.1 md5
+            $installedAmigaOs31AdfFilenames = New-Object System.Collections.Generic.List[System.Object]
+            foreach ($md5File in (GetMd5FilesFromDir $sharedAdfDir))
             {
-                continue
+                if (!$validAmigaOs31Md5Index.ContainsKey($md5File.Md5))
+                {
+                    continue
+                }
+                $amigaOs31AdfFilename = Split-Path $md5File.File -Leaf
+                $installedAmigaOs31AdfFilenames.Add($amigaOs31AdfFilename)
+                $installedAmigaOs31AdfFile = Join-Path $amigaOsDir -ChildPath $amigaOs31AdfFilename
+                Copy-Item $md5File.File -Destination $installedAmigaOs31AdfFile -Force
+                Set-ItemProperty $installedAmigaOs31AdfFile -name IsReadOnly -value $false
             }
-            $amigaOs31AdfFilename = Split-Path $md5File.File -Leaf
-            $installedAmigaOs31AdfFilenames.Add($amigaOs31AdfFilename)
-            $installedAmigaOs31AdfFile = Join-Path $amigaOsDir -ChildPath $amigaOs31AdfFilename
-            Copy-Item $md5File.File -Destination $installedAmigaOs31AdfFile -Force
-            Set-ItemProperty $installedAmigaOs31AdfFile -name IsReadOnly -value $false
+
+            # write installed workbench 3.1 adf files
+            Write-Output ('- {0} Workbench 3.1 adf files installed ''{1}''' -f $installedAmigaOs31AdfFilenames.Count, ($installedAmigaOs31AdfFilenames -join ', '))
+        }
+        else
+        {
+            Write-Output '- No Amiga Forever data shared adf dir detected'
         }
 
-        # write installed workbench 3.1 adf files
-        Write-Output ('- {0} Workbench 3.1 adf files installed ''{1}''' -f $installedAmigaOs31AdfFilenames.Count, ($installedAmigaOs31AdfFilenames -join ', '))
+        # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
+        if (Test-Path -Path $sharedRomDir)
+        {
+            # copy kickstart rom files from shared rom dir that matches valid kickstart md5
+            $installedKickstartRomFilenames = New-Object System.Collections.Generic.List[System.Object]
+            foreach ($md5File in (GetMd5FilesFromDir $sharedRomDir))
+            {
+                if (!$validKickstartMd5Index.ContainsKey($md5File.Md5))
+                {
+                    continue
+                }
+                $kickstartRomFilename = Split-Path $md5File.File -Leaf
+                $installedKickstartRomFilenames.Add($kickstartRomFilename)
+                $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $kickstartRomFilename
+                Copy-Item $md5File.File -Destination $installedKickstartRomFile -Force
+                Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
+            }
+
+            # copy amiga forever rom key file, if it exists
+            $romKeyFilename = 'rom.key'
+            $romKeyFile = Join-Path $sharedRomDir -ChildPath $romKeyFilename
+            if (Test-Path $romKeyFile)
+            {
+                $installedKickstartRomFilenames.Add($romKeyFilename)
+                $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $romKeyFilename
+                Copy-Item $romKeyFile -Destination $installedKickstartRomFile -Force
+                Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
+            }
+            
+            # write installed workbench 3.1 adf files
+            Write-Output ('- {0} Kickstart rom files installed ''{1}''' -f $installedKickstartRomFilenames.Count, ($installedKickstartRomFilenames -join ', '))
+        }
+        else
+        {
+            Write-Output '- No Amiga Forever data shared rom dir detected'
+        }
     }
     else
     {
-        Write-Output '- No Amiga Forever data shared adf dir detected'
-    }
+        Write-Output 'Using Kickstart rom files from Amiga Forever data dir...'
 
-    # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
-    if (Test-Path -Path $sharedRomDir)
-    {
-        # copy kickstart rom files from shared rom dir that matches valid kickstart md5
-        $installedKickstartRomFilenames = New-Object System.Collections.Generic.List[System.Object]
-        foreach ($md5File in (GetMd5FilesFromDir $sharedRomDir))
+        if (!$kickstartDir -and (Test-Path -path $sharedRomDir))
         {
-            if (!$validKickstartMd5Index.ContainsKey($md5File.Md5))
-            {
-                continue
-            }
-            $kickstartRomFilename = Split-Path $md5File.File -Leaf
-            $installedKickstartRomFilenames.Add($kickstartRomFilename)
-            $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $kickstartRomFilename
-            Copy-Item $md5File.File -Destination $installedKickstartRomFile -Force
-            Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
+            $kickstartDir = $sharedRomDir
+            Write-Output ('- Kickstart dir ''{0}''' -f $kickstartDir)
         }
-
-        # copy amiga forever rom key file, if it exists
-        $romKeyFilename = 'rom.key'
-        $romKeyFile = Join-Path $sharedRomDir -ChildPath $romKeyFilename
-        if (Test-Path $romKeyFile)
+        else
         {
-            $installedKickstartRomFilenames.Add($romKeyFilename)
-            $installedKickstartRomFile = Join-Path $kickstartDir -ChildPath $romKeyFilename
-            Copy-Item $romKeyFile -Destination $installedKickstartRomFile -Force
-            Set-ItemProperty $installedKickstartRomFile -name IsReadOnly -value $false
+            Write-Output '- No Amiga Forever data shared rom dir detected or Kickstart dir is already set'
         }
-        
-        # write installed workbench 3.1 adf files
-        Write-Output ('- {0} Kickstart rom files installed ''{1}''' -f $installedKickstartRomFilenames.Count, ($installedKickstartRomFilenames -join ', '))
-    }
-    else
-    {
-        Write-Output '- No Amiga Forever data shared rom dir detected'
     }
     Write-Output 'Done'
 }
