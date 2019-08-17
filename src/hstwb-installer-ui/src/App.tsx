@@ -11,8 +11,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   svg: {
-    width: '1.25em',
-    height: '1em',
+    width: '1.35em',
+    height: '1.1em',
+    marginLeft: '-2px',
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
