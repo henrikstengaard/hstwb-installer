@@ -1,11 +1,11 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
-class Project extends React.Component {
+class Configuration extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h2>Project</h2>
+        <h2>Configuration</h2>
         <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
           ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
@@ -23,4 +23,4 @@ class Project extends React.Component {
   }
 }
 
-export default Project;
+export default Configuration;

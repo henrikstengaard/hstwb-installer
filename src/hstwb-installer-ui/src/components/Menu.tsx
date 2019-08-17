@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, withRouter, RouteComponentProps } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faWrench } from '@fortawesome/free-solid-svg-icons'
 import { faHdd } from '@fortawesome/free-solid-svg-icons'
 import { faBox } from '@fortawesome/free-solid-svg-icons'
 import { faMicrochip } from '@fortawesome/free-solid-svg-icons'
@@ -19,9 +19,9 @@ class Menu extends React.Component<IProps> {
     render() {
         const menuItems = [
             {
-                label: 'Project',
-                link: '/project',
-                icon: <FontAwesomeIcon icon={faCoffee} />,
+                label: 'Configuration',
+                link: '/configuration',
+                icon: <FontAwesomeIcon icon={faWrench} />,
             },
             {
                 label: 'Image',

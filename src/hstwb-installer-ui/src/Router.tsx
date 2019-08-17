@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, BrowserRouter, Switch } from 'react-router-dom'
 import Start from './components/Start'
-import Project from './components/Configuration'
+import Configuration from './components/Configuration'
 import Image from './components/Image'
 import AmigaOs from './components/AmigaOs'
 import Kickstart from './components/Kickstart'
@@ -19,7 +19,7 @@ const router = ({classes}: IProps) => (
         <main className={classes.content}>
             <Switch>
                 <Route exact path="/" component={Start} />
-                <Route path="/project" component={Project} />
+                <Route path="/configuration" component={Configuration} />
                 <Route path="/image" component={Image} />
                 <Route path="/amiga-os" component={AmigaOs} />
                 <Route path="/kickstart" component={Kickstart} />
