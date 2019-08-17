@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, BrowserRouter, Switch } from 'react-router-dom'
 import Start from './components/Start'
-import Project from './components/Project'
+import Project from './components/Configuration'
 import Image from './components/Image'
 import AmigaOs from './components/AmigaOs'
 import Kickstart from './components/Kickstart'
