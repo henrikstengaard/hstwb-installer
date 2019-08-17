@@ -10,6 +10,10 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
   },
+  svg: {
+    width: '1.25em',
+    height: '1em',
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },

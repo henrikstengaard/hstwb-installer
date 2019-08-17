@@ -10,7 +10,7 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
-
+import { ReactComponent as AmigaOsIcon } from '../assets/icons/AmigaOsIcon.svg'
 
 interface IProps extends RouteComponentProps {
     classes: any
@@ -31,7 +31,7 @@ class Menu extends React.Component<IProps> {
             {
                 label: 'Amiga OS',
                 link: '/amiga-os',
-                icon: <FontAwesomeIcon icon={faCoffee} />,
+                icon: <AmigaOsIcon className={this.props.classes.svg} />,
             },
             {
                 label: 'Kickstart',
