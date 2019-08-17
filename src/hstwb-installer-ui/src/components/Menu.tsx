@@ -7,7 +7,7 @@ import { faBox } from '@fortawesome/free-solid-svg-icons'
 import { faMicrochip } from '@fortawesome/free-solid-svg-icons'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
+import MenuItem from '@material-ui/core/MenuItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import { ReactComponent as AmigaOsIcon } from '../assets/icons/AmigaOsIcon.svg'
@@ -16,7 +16,18 @@ interface IProps extends RouteComponentProps {
     classes: any
 }
 class Menu extends React.Component<IProps> {
+    state = {
+        selected: -1
+    }
+
+    updateSelected = (selected: number) => {
+        this.setState({
+            selected,
+        })
+    }
+
     render() {
+        const { selected } = this.state
         const menuItems = [
             {
                 label: 'Configuration',
@@ -59,12 +70,20 @@ class Menu extends React.Component<IProps> {
             anchor="left"
             >
             <List>
-                {menuItems.map((menuItem) => {
+                {menuItems.map((menuItem, index) => {
                     return (
-                        <ListItem button key={menuItem.label} component={Link} to={menuItem.link}>
+                        <MenuItem
+                            disableRipple={true}
+                            button 
+                            key={menuItem.label}
+                            component={Link} 
+                            to={menuItem.link}
+                            onClick={() => this.updateSelected(index)}
+                            selected={selected === index}
+                            >
                             <ListItemIcon>{menuItem.icon}</ListItemIcon>
                             <ListItemText primary={menuItem.label} />
-                        </ListItem>
+                        </MenuItem>
                 )})
                 }
             </List>
