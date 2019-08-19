@@ -1,12 +1,15 @@
 ; Start Self Install
 ; ------------------
 ;
-; Date: 2019-03-04
+; Date: 2019-08-19
 ; Author: Henrik Noerfjand Stengaard
 
 
 ; clear screen
 cls
+
+; set failat to 21
+failat 21
 
 ; fail, if HSTWBINSTALLERDIR: device doesn't exist
 Assign >NIL: EXISTS HSTWBINSTALLERDIR:

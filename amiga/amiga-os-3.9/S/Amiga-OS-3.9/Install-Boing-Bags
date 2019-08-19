@@ -1,11 +1,14 @@
 ; Install Boing Bags Script
 ; -------------------------
 ;
-; Date: 2019-03-14
+; Date: 2019-08-19
 ; Author: Henrik Noerfjand Stengaard 
 ;
 ; An AmigaDOS script to automate installation of Amiga OS 3.9 Boing Bags.
 
+
+; set failat to 21
+failat 21
 
 ; add amiga os 3.9 boing bags installation to log file
 echo "" >>SYS:hstwb-installer.log

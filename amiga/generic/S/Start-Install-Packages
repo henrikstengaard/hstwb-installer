@@ -1,9 +1,12 @@
 ; Start Install Packages
 ; ----------------------
 ;
-; Date: 2019-07-26
+; Date: 2019-08-19
 ; Author: Henrik Noerfjand Stengaard
 
+
+; set failat to 21
+failat 21
 
 ; replace startup-sequence with workbench startup-sequence, if it exists
 IF EXISTS SYSTEMDIR:S/Startup-Sequence.Workbench
