@@ -1,9 +1,6 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-// @ts-ignore
 const { dialog } = window.require('electron').remote;
-
-// const { dialog } = require('electron')
 
 class Image extends React.Component {
   openDialog = () => {
