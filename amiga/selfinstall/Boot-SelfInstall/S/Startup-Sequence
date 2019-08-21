@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2019-07-31
+; Date: 2019-08-21
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -123,6 +123,14 @@ IF NOT EXISTS "INSTALLDIR:Temp"
   MakePath >NIL: "INSTALLDIR:Temp"
 ENDIF
 
+; create sys and installdir libs directories, if they don't exist
+IF NOT EXISTS "SYS:Libs"
+  MakePath >NIL: "SYS:Libs"
+ENDIF
+IF NOT EXISTS "SYS:Libs"
+  MakePath >NIL: "INSTALLDIR:Libs"
+ENDIF
+
 
 ; load amiga os
 ; -------------
@@ -174,8 +182,22 @@ ENDIF
 ; set failat to 21
 failat 21
 
-; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT/C doesn't exist
 IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
+  ; log
+  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/C' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  SKIP amigaosiso
+ENDIF
+
+; copy workbench.library to sys and installdir libs, if amiga os 3.9 workbench.library exists
+IF EXISTS "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library"
+  Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library" "SYS:Libs"
+  Copy >NIL: "SYS:Libs/Workbench.Library" "INSTALLDIR:Libs"
+ELSE
+  ; log
+  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/Libs/Workbench.Library' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
   SKIP amigaosiso
 ENDIF
 
@@ -279,8 +301,22 @@ ENDIF
 ; set failat to 21
 failat 21
 
-; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT doesn't exist
+; goto find amiga os adf, if AmigaOS3.9:EMERGENCY-BOOT/C doesn't exist
 IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
+  ; log
+  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/C' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  SKIP amigaosadf
+ENDIF
+
+; copy workbench.library to sys and installdir libs, if amiga os 3.9 workbench.library exists
+IF EXISTS "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library"
+  Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library" "SYS:Libs"
+  Copy >NIL: "SYS:Libs/Workbench.Library" "INSTALLDIR:Libs"
+ELSE
+  ; log
+  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/Libs/Workbench.Library' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
   SKIP amigaosadf
 ENDIF
 
