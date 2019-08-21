@@ -150,6 +150,13 @@ echo "---------------------"
 echo "*e[0m" NOLINE
 echo ""
 echo "*e[1mLoading Amiga OS system files:*e[0m"
+
+; skip to amiga os adf, if expansion.library is v45 or higher (kickstart 3.1.4)
+Version >NIL: "expansion.library" 45
+IF $RC EQ 0 VAL
+  SKIP amigaosadf
+ENDIF
+
 echo "Amiga OS 3.9 cd-rom in CD0:..."
 
 ; set failat to 255 for diskindrive to fail silently
@@ -186,17 +193,6 @@ failat 21
 IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
   ; log
   echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/C' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
-
-  SKIP amigaosiso
-ENDIF
-
-; copy workbench.library to sys and installdir libs, if amiga os 3.9 workbench.library exists
-IF EXISTS "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library"
-  Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library" "SYS:Libs"
-  Copy >NIL: "SYS:Libs/Workbench.Library" "INSTALLDIR:Libs"
-ELSE
-  ; log
-  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/Libs/Workbench.Library' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
   SKIP amigaosiso
 ENDIF
@@ -305,17 +301,6 @@ failat 21
 IF NOT EXISTS "AmigaOS3.9:EMERGENCY-BOOT/C"
   ; log
   echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/C' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
-
-  SKIP amigaosadf
-ENDIF
-
-; copy workbench.library to sys and installdir libs, if amiga os 3.9 workbench.library exists
-IF EXISTS "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library"
-  Copy >NIL: "AmigaOS3.9:EMERGENCY-BOOT/Libs/Workbench.Library" "SYS:Libs"
-  Copy >NIL: "SYS:Libs/Workbench.Library" "INSTALLDIR:Libs"
-ELSE
-  ; log
-  echo "Amiga OS 3.9 cd-rom 'EMERGENCY-BOOT/Libs/Workbench.Library' doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
   SKIP amigaosadf
 ENDIF
