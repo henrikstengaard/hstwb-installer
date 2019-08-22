@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-12
+# Date:   2019-08-22
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -31,7 +31,7 @@ Param(
 	[Parameter(Mandatory=$false)]
     [string]$amigaForeverDataDir,
 	[Parameter(Mandatory=$false)]
-    [string]$uaeInstallDir,
+    [string]$uaeConfigDir,
 	[Parameter(Mandatory=$false)]
     [string]$fsuaeDir,
 	[Parameter(Mandatory=$false)]
@@ -62,7 +62,7 @@ function ConfigFileHasSelfInstallDirs($configFile)
 {
     return (Get-Content $configFile | `
         Where-Object { $_ -match '^hard_drive_\d+_label\s*=\s*(amigaosdir|kickstartdir|userpackagesdir)' -or `
-        $_ -match '^(hardfile2|uaehf\d+|filesystem2)=.+(amigaosdir|kickstartdir|userpackagesdir):' }).Count -gt 0
+        $_ -match '^(hardfile2|uaehf\d+|filesystem2)=.*[,:](amigaosdir|kickstartdir|userpackagesdir)[,:]' }).Count -gt 0
 }
 
 # find amiga forever data for from media windows
@@ -493,6 +493,12 @@ $validAmigaOs314Md5Entries = @(
 
 # valid kickstart rom md5 entries
 $validKickstartMd5Entries = @(
+    @{ 'Md5' = '6de08cd5c5efd926d0a7643e8fb776fe'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '79bfe8876cd5abe397c50f60ea4306b9'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    
+    @{ 'Md5' = '7fe1eb0ba2b767659bf547bfb40d67c4'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '61c5b9931555b8937803505db868d5a8'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+
     @{ 'Md5' = '151cce9d7aa9a36a835ec2f78853125b'; 'Filename' = 'kick40068.A4000'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.068 A4000 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A4000'; 'ConfigSupported' = $false },
     @{ 'Md5' = '43efffafb382528355bb4cdde9fa9ce7'; 'Filename' = 'kick40068.A1200'; 'Encrypted '= $true; 'Name' = 'Kickstart 3.1 40.068 A1200 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     @{ 'Md5' = '85a45066a0aebf9ec5870591b6ddcc52'; 'Filename' = 'kick40063.A600'; 'Encrypted' = $true; 'Name' = 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Cloanto Amiga Forever 8'; 'Model' = 'A500'; 'ConfigSupported' = $true },
@@ -509,13 +515,7 @@ $validKickstartMd5Entries = @(
     @{ 'Md5' = '646773759326fbac3b2311fd8c8793ee'; 'Filename' = 'kick40068.A1200'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1 40.068 A1200 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     @{ 'Md5' = 'e40a5dfb3d017ba8779faba30cbd1c8e'; 'Filename' = 'kick40063.A600'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1 40.063 A500-A600-A2000 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $true },
     @{ 'Md5' = '82a21c1890cae844b3df741f2762d48d'; 'Filename' = 'kick34005.A500'; 'Encrypted' = $false; 'Name' = 'Kickstart 1.3 34.5 A500 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $false },
-    @{ 'Md5' = '85ad74194e87c08904327de1a9443b7a'; 'Filename' = 'kick33180.A500'; 'Encrypted' = $false; 'Name' = 'Kickstart 1.2 33.180 A500 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $false },
-
-    @{ 'Md5' = '6de08cd5c5efd926d0a7643e8fb776fe'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
-    @{ 'Md5' = '79bfe8876cd5abe397c50f60ea4306b9'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
-    
-    @{ 'Md5' = '7fe1eb0ba2b767659bf547bfb40d67c4'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
-    @{ 'Md5' = '61c5b9931555b8937803505db868d5a8'; 'Filename' = 'kick.a500.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A500-A600-A2000 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true }
+    @{ 'Md5' = '85ad74194e87c08904327de1a9443b7a'; 'Filename' = 'kick33180.A500'; 'Encrypted' = $false; 'Name' = 'Kickstart 1.2 33.180 A500 Rom, Dump of original Amiga Kickstart'; 'Model' = 'A500'; 'ConfigSupported' = $false }
 )
 
 # valid amiga os 39 md5 entries
@@ -528,20 +528,20 @@ $validAmigaOs39Md5Entries = @(
 
 # index valid amiga os 3.1 md5 entries
 $validAmigaOs31Md5Index = @{}
-$validAmigaOs31Md5Entries | ForEach-Object { $validAmigaOs31Md5Index[$_['Md5'].ToLower()] = $_ }
+$validAmigaOs31Md5Entries | ForEach-Object { $_.Priority = $validAmigaOs31Md5Index.Count + 1; $validAmigaOs31Md5Index[$_['Md5'].ToLower()] = $_ }
 
 # index valid amiga os 3.1.4 md5 entries
 $validAmigaOs314Md5Index = @{}
-$validAmigaOs314Md5Entries | ForEach-Object { $validAmigaOs314Md5Index[$_['Md5'].ToLower()] = $_ }
+$validAmigaOs314Md5Entries | ForEach-Object { $_.Priority = $validAmigaOs314Md5Index.Count + 1; $validAmigaOs314Md5Index[$_['Md5'].ToLower()] = $_ }
 
 # index valid amiga os 3.9 md5 entries
 $validAmigaOs39Md5Index = @{}
 $validAmigaOs39FilenameIndex = @{}
-$validAmigaOs39Md5Entries | ForEach-Object { $validAmigaOs39Md5Index[$_['Md5'].ToLower()] = $_; $validAmigaOs39FilenameIndex[$_['Filename'].ToLower()] = $_; }
+$validAmigaOs39Md5Entries | ForEach-Object { $_.Priority = $validAmigaOs39Md5Index.Count + 1; $validAmigaOs39Md5Index[$_['Md5'].ToLower()] = $_; $validAmigaOs39FilenameIndex[$_['Filename'].ToLower()] = $_; }
 
 # index valid kickstart rom md5 entries
 $validKickstartMd5Index = @{}
-$validKickstartMd5Entries | ForEach-Object { $validKickstartMd5Index[$_['Md5'].ToLower()] = $_ }
+$validKickstartMd5Entries | ForEach-Object { $_.Priority = $validKickstartMd5Index.Count + 1; $validKickstartMd5Index[$_['Md5'].ToLower()] = $_ }
 
 # set install directory to current directory, if it's not defined
 if (!$installDir)
@@ -577,7 +577,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-08-12"
+Write-Output "Date: 2019-08-22"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
@@ -586,10 +586,10 @@ if (!(Test-Path $installDir))
     throw ("Error: Install dir '{0}' doesn't exist" -f $installDir)
 }
 
-# set uae install directory to detected winuae config directory, if uae install directory is not defined
-if (!$uaeInstallDir)
+# set uae config directory to detected winuae config directory, if uae config directory is not defined
+if (!$uaeConfigDir)
 {
-    $uaeInstallDir = GetWinuaeConfigDir
+    $uaeConfigDir = GetWinuaeConfigDir
 }
 
 # set fs-uae directory to detected fs-uae directory, if fs-uae directory is not defined
@@ -628,36 +628,43 @@ if (!$patchOnly -and $configFilesHasSelfInstallDirs)
     $selfInstall = $true
 }
 
-# set install directories, if self install is true
-if ($selfInstall)
+
+# set default amiga os dir, if it's not defined
+if (!$amigaOsDir)
 {
-    # set default amiga os dir, if it's not defined
-    if (!$amigaOsDir)
-    {
-        $amigaOsDir = Join-Path $installDir -ChildPath "amigaos"
-    }
+    $amigaOsDir = Join-Path $installDir -ChildPath "amigaos"
 
-    # set default kickstart dir, if it's not defined
-    if (!$kickstartDir)
+    # unset default amiga os dir, if it doesn't exist
+    if (!(Test-Path $amigaOsDir))
     {
-        $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
-    }
-
-    # set default user packages dir, if it's not defined
-    if (!$userPackagesDir)
-    {
-        $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
-    }
-
-    # create self install directories, if they don't exist
-    foreach ($dir in @($amigaOsDir, $kickstartDir, $userPackagesDir))
-    {
-        if (!(Test-Path -Path $dir))
-        {
-            mkdir $dir | Out-Null
-        }
+        $amigaOsDir = $null
     }
 }
+
+# set default kickstart dir, if it's not defined
+if (!$kickstartDir)
+{
+    $kickstartDir = Join-Path $installDir -ChildPath "kickstart"
+
+    # unset default kickstart dir, if it doesn't exist
+    if (!(Test-Path $kickstartDir))
+    {
+        $kickstartDir = $null
+    }
+}
+
+# set default user packages dir, if it's not defined
+if (!$userPackagesDir)
+{
+    $userPackagesDir = Join-Path $installDir -ChildPath "userpackages"
+
+    # unset default user packages dir, if it doesn't exist
+    if (!(Test-Path $userPackagesDir))
+    {
+        $userPackagesDir = $null
+    }
+}
+
 
 # autodetect amiga forever data dir, if it's not defined
 if (!$amigaForeverDataDir)
@@ -786,241 +793,192 @@ if ($amigaForeverDataDir -and (Test-Path -Path $amigaForeverDataDir))
     Write-Output 'Done'
 }
 
-# validate self install directories, if self install is defined
-if ($selfInstall)
+
+# write image directories
+Write-Output ''
+Write-Output 'Image directories'
+Write-Output '-----------------'
+
+# write detecting amiga os
+Write-Output 'Detecting Amiga OS...'
+Write-Output ("- Amiga OS dir '{0}'" -f $amigaOsDir)
+
+# get amiga os md5 files from amiga os directory
+$amigaOsMd5Files = GetMd5FilesFromDir $amigaOsDir
+
+# amiga os 3.9 filenames detected
+$detectedOs39FilenamesIndex = @{}
+foreach ($md5File in $amigaOsMd5Files)
 {
-    # write self install directories
-    Write-Output ''
-    Write-Output 'Self install'
-    Write-Output '------------'
-    Write-Output 'Validating Amiga OS...'
-    Write-Output ("- Amiga OS dir '{0}'" -f $amigaOsDir)
-
-    # get amiga os md5 files from amiga os directory
-    $amigaOsMd5Files = GetMd5FilesFromDir $amigaOsDir
-
-    # amiga os 3.9 filenames detected
-    $detectedOs39FilenamesIndex = @{}
-    foreach ($md5File in $amigaOsMd5Files)
+    $os39Filename = Split-Path $md5File.File -Leaf
+    if (!$validAmigaOs39FilenameIndex.ContainsKey($os39Filename.ToLower()))
     {
-        $os39Filename = Split-Path $md5File.File -Leaf
-        if (!$validAmigaOs39FilenameIndex.ContainsKey($os39Filename.ToLower()))
-        {
-            continue
-        }
-        $detectedOs39FilenamesIndex[$validAmigaOs39FilenameIndex[$os39Filename.ToLower()]['Filename'].ToLower()] = `
-            $md5File
+        continue
     }
-    foreach ($md5File in $amigaOsMd5Files)
+    $filename = $validAmigaOs39FilenameIndex[$os39Filename.ToLower()]['Filename'].ToLower()
+    $detectedOs39FilenamesIndex[$filename] = $md5File
+    $detectedOs39FilenamesIndex[$filename].Priority = $validAmigaOs39FilenameIndex[$os39Filename.ToLower()]['Priority']
+}
+foreach ($md5File in $amigaOsMd5Files)
+{
+    if (!$validAmigaOs39Md5Index.ContainsKey($md5File.Md5))
     {
-        if (!$validAmigaOs39Md5Index.ContainsKey($md5File.Md5))
-        {
-            continue
-        }
-        $detectedOs39FilenamesIndex[$validAmigaOs39Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
-            $md5File
+        continue
     }
-
-    # detected amiga os 3.9 filenames
-    $detectedOs39Filenames = $detectedOs39FilenamesIndex.Keys | `
-        Sort-Object | `
-        Get-Unique
-
-    # write detected amiga os 3.9 files
-    if ($detectedOs39Filenames.Count -gt 0)
-    {
-        Write-Output ('- {0} Amiga OS 3.9 files detected ''{1}''' -f $detectedOs39Filenames.Count, ($detectedOs39Filenames -join ', '))
-    }
-    else
-    {
-        Write-Output '- No Amiga OS 3.9 files detected'
-    }
-
-
-    # detected amiga os 3.1.4 md5 index and filenames from amiga os dir that matches valid amiga os 3.1.4 md5
-    $detectedAmigaOs314Md5Index = @{}
-    $detectedAmigaOs314Filenames = New-Object System.Collections.Generic.List[System.Object]
-    foreach ($md5File in $amigaOsMd5Files)
-    {
-        if (!$validAmigaOs314Md5Index.ContainsKey($md5File.Md5))
-        {
-            continue
-        }
-        $detectedAmigaOs314Md5Index[$validAmigaOs314Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
-            $validAmigaOs314Md5Index[$md5File.Md5]
-        $detectedAmigaOs314Filenames.Add((Split-Path $md5File.File -Leaf))
-    }
-    $detectedAmigaOs314Filenames = $detectedAmigaOs314Filenames | `
-        Sort-Object | `
-        Get-Unique
-
-    # detected amiga os 3.1.4 adfs
-    $detectedAmigaOs314Adfs = $detectedAmigaOs314Md5Index.Keys | `
-        Foreach-Object { $detectedAmigaOs314Md5Index[$_]['Name'] } | `
-        Sort-Object | `
-        Get-Unique
-
-    # print detected amiga os 3.1.4 adf files
-    if ($detectedAmigaOs314Filenames.Count -gt 0)
-    {
-        Write-Output ('- {0} Amiga OS 3.1.4 adf files detected ''{1}''' -f $detectedAmigaOs314Filenames.Count, ($detectedAmigaOs314Filenames -join ', '))
-        Write-Output ('- {0} Amiga OS 3.1.4 adfs detected ''{1}''' -f $detectedAmigaOs314Adfs.Count, ($detectedAmigaOs314Adfs -join ', '))
-    }
-    else
-    {
-        Write-Output '- No Amiga OS 3.1.4 adf files detected'
-    }
-
-
-    # detected amiga os 3.1 md5 index and filenames from amiga os dir that matches valid amiga os 3.1 md5
-    $detectedAmigaOs31Md5Index = @{}
-    $detectedAmigaOs31Filenames = New-Object System.Collections.Generic.List[System.Object]
-    foreach ($md5File in $amigaOsMd5Files)
-    {
-        if (!$validAmigaOs31Md5Index.ContainsKey($md5File.Md5))
-        {
-            continue
-        }
-        $detectedAmigaOs31Md5Index[$validAmigaOs31Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
-            $validAmigaOs31Md5Index[$md5File.Md5]
-        $detectedAmigaOs31Filenames.Add((Split-Path $md5File.File -Leaf))
-    }
-    $detectedAmigaOs31Filenames = $detectedAmigaOs31Filenames | `
-        Sort-Object | `
-        Get-Unique
-
-    # detected amiga os 3.1 adfs
-    $detectedAmigaOs31Adfs = $detectedAmigaOs31Md5Index.Keys | `
-        Foreach-Object { $detectedAmigaOs31Md5Index[$_]['Name'] } | `
-        Sort-Object | `
-        Get-Unique
-
-    # print detected amiga os 3.1 adf files
-    if ($detectedAmigaOs31Filenames.Count -gt 0)
-    {
-        Write-Output ('- {0} Amiga OS 3.1 adf files detected ''{1}''' -f $detectedAmigaOs31Filenames.Count, ($detectedAmigaOs31Filenames -join ', '))
-        Write-Output ('- {0} Amiga OS 3.1 adfs detected ''{1}''' -f $detectedAmigaOs31Adfs.Count, ($detectedAmigaOs31Adfs -join ', '))
-    }
-    else
-    {
-        Write-Output '- No Amiga OS 3.1 adf files detected'
-    }
-    Write-Output 'Done'
-
-
-    # write kickstart directory
-    Write-Output ''
-    Write-Output 'Validating Kickstart...'
-    Write-Output ('- Kickstart dir ''{0}''...' -f $kickstartDir)
-
-    # detected kickstart md5 index and filenames from kickstart dir that matches valid kickstart md5
-    $detectedKickstartMd5Index = @{}
-    $detectedKickstartFilenames = New-Object System.Collections.Generic.List[System.Object]
-    foreach ($md5File in (GetMd5FilesFromDir $kickstartDir))
-    {
-        $detectedKickstartFilename = Split-Path $md5File.File -Leaf
-        if ($detectedKickstartFilename -match 'rom\.key')
-        {
-            $detectedKickstartFilenames.Add($detectedKickstartFilename)
-            continue
-        }
-        if (!$validKickstartMd5Index.ContainsKey($md5File.Md5))
-        {
-            continue
-        }
-        $detectedKickstartMd5Index[$validKickstartMd5Index[$md5File.Md5]['Filename'].ToLower()] = `
-            $validKickstartMd5Index[$md5File.Md5]
-        $detectedKickstartFilenames.Add($detectedKickstartFilename)
-    }
-    $detectedKickstartFilenames = $detectedKickstartFilenames | `
-        Sort-Object | `
-        Get-Unique
-
-    # detected kickstart roms
-    $detectedKickstartRoms = $detectedKickstartMd5Index.Keys | `
-        Foreach-Object { $detectedKickstartMd5Index[$_]['Name'] } | `
-        Sort-Object | `
-        Get-Unique
-
-    # write detected kickstart rom files
-    if ($detectedKickstartFilenames.Count -gt 0)
-    {
-        Write-Output ('- {0} Kickstart rom files detected ''{1}''' -f $detectedKickstartFilenames.Count, ($detectedKickstartFilenames -join ', '))
-        Write-Output ('- {0} Kickstart roms detected ''{1}''' -f $detectedKickstartRoms.Count, ($detectedKickstartRoms -join ', '))
-    }
-    else
-    {
-        Write-Output '- No Kickstart rom files detected'
-    }
-    Write-Output 'Done'
-
-
-    # write user packages directory
-    Write-Output ''
-    Write-Output 'Validating User Packages'
-    Write-Output ('- User Packages dir ''{0}''...' -f $userPackagesDir)
-
-    # detected user package dirs
-    $detectedUserPackageDirs = @()
-    $detectedUserPackageDirs += Get-ChildItem $userPackagesDir | `
-        Where-Object { $_.PSIsContainer -and (Test-Path (Join-Path $_.FullName -ChildPath '_installdir')) }
-
-    # write detected user packages
-    if ($detectedUserPackageDirs.Count -gt 0)
-    {
-        Write-Output ('- {0} user packages detected ''{1}''' -f $detectedUserPackageDirs.Count, ($detectedUserPackageDirs -join ', '))
-    }
-    else
-    {
-        Write-Output '- No user packages detected'
-    }
-    Write-Output 'Done'
+    $filename = $validAmigaOs39Md5Index[$md5File.Md5]['Filename'].ToLower()
+    $detectedOs39FilenamesIndex[$filename] = $md5File
+    $detectedOs39FilenamesIndex[$filename].Priority = $validAmigaOs39Md5Index[$md5File.Md5]['Priority']
 }
 
-# find files for patching, if uae or fs-uae config files are present
+# detected amiga os 3.9 filenames
+$detectedOs39Filenames = $detectedOs39FilenamesIndex.Keys | `
+    Sort-Object | `
+    Get-Unique
+
+# write detected amiga os 3.9 files
+if ($detectedOs39Filenames.Count -gt 0)
+{
+    Write-Output ('- {0} Amiga OS 3.9 files detected ''{1}''' -f $detectedOs39Filenames.Count, ($detectedOs39Filenames -join ', '))
+}
+else
+{
+    Write-Output '- No Amiga OS 3.9 files detected'
+}
+
+
+# detected amiga os 3.1.4 md5 index and filenames from amiga os dir that matches valid amiga os 3.1.4 md5
+$detectedAmigaOs314Md5Index = @{}
+$detectedAmigaOs314Filenames = New-Object System.Collections.Generic.List[System.Object]
+foreach ($md5File in $amigaOsMd5Files)
+{
+    if (!$validAmigaOs314Md5Index.ContainsKey($md5File.Md5))
+    {
+        continue
+    }
+    $detectedAmigaOs314Md5Index[$validAmigaOs314Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
+        $validAmigaOs314Md5Index[$md5File.Md5]
+    $detectedAmigaOs314Filenames.Add((Split-Path $md5File.File -Leaf))
+}
+$detectedAmigaOs314Filenames = $detectedAmigaOs314Filenames | `
+    Sort-Object | `
+    Get-Unique
+
+# print detected amiga os 3.1.4 adf files
+if ($detectedAmigaOs314Filenames.Count -gt 0)
+{
+    Write-Output ('- {0} Amiga OS 3.1.4 adf files detected ''{1}''' -f $detectedAmigaOs314Filenames.Count, ($detectedAmigaOs314Filenames -join ', '))
+}
+else
+{
+    Write-Output '- No Amiga OS 3.1.4 adf files detected'
+}
+
+
+# detected amiga os 3.1 md5 index and filenames from amiga os dir that matches valid amiga os 3.1 md5
+$detectedAmigaOs31Md5Index = @{}
+$detectedAmigaOs31Filenames = New-Object System.Collections.Generic.List[System.Object]
+foreach ($md5File in $amigaOsMd5Files)
+{
+    if (!$validAmigaOs31Md5Index.ContainsKey($md5File.Md5))
+    {
+        continue
+    }
+    $detectedAmigaOs31Md5Index[$validAmigaOs31Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
+        $validAmigaOs31Md5Index[$md5File.Md5]
+    $detectedAmigaOs31Filenames.Add((Split-Path $md5File.File -Leaf))
+}
+$detectedAmigaOs31Filenames = $detectedAmigaOs31Filenames | `
+    Sort-Object | `
+    Get-Unique
+
+# print detected amiga os 3.1 adf files
+if ($detectedAmigaOs31Filenames.Count -gt 0)
+{
+    Write-Output ('- {0} Amiga OS 3.1 adf files detected ''{1}''' -f $detectedAmigaOs31Filenames.Count, ($detectedAmigaOs31Filenames -join ', '))
+}
+else
+{
+    Write-Output '- No Amiga OS 3.1 adf files detected'
+}
+
+
+# write detecting kickstart roms
+Write-Output 'Detecting Kickstart roms...'
+Write-Output ('- Kickstart dir ''{0}''' -f $kickstartDir)
+
+# detected kickstart md5 index and filenames from kickstart dir that matches valid kickstart md5
+$detectedKickstartMd5Index = @{}
+$detectedKickstartFilenames = New-Object System.Collections.Generic.List[System.Object]
+foreach ($md5File in (GetMd5FilesFromDir $kickstartDir))
+{
+    $detectedKickstartFilename = Split-Path $md5File.File -Leaf
+    if ($detectedKickstartFilename -match 'rom\.key')
+    {
+        $detectedKickstartFilenames.Add($detectedKickstartFilename)
+        continue
+    }
+    if (!$validKickstartMd5Index.ContainsKey($md5File.Md5))
+    {
+        continue
+    }
+    $filename = $validKickstartMd5Index[$md5File.Md5]['Filename'].ToLower()
+    $detectedKickstartMd5Index[$filename] = $validKickstartMd5Index[$md5File.Md5]
+    $detectedKickstartMd5Index[$filename].File = $md5File.File
+    $detectedKickstartFilenames.Add($detectedKickstartFilename)
+}
+$detectedKickstartFilenames = $detectedKickstartFilenames | `
+    Sort-Object | `
+    Get-Unique
+
+# write detected kickstart rom files
+if ($detectedKickstartFilenames.Count -gt 0)
+{
+    Write-Output ('- {0} Kickstart rom files detected ''{1}''' -f $detectedKickstartFilenames.Count, ($detectedKickstartFilenames -join ', '))
+}
+else
+{
+    Write-Output '- No Kickstart rom files detected'
+}
+
+
+# write detecting user packages
+Write-Output 'Detecting User Packages...'
+Write-Output ('- User Packages dir ''{0}''' -f $userPackagesDir)
+
+# detected user package dirs
+$detectedUserPackageDirs = @()
+$detectedUserPackageDirs += Get-ChildItem $userPackagesDir | `
+    Where-Object { $_.PSIsContainer -and (Test-Path (Join-Path $_.FullName -ChildPath '_installdir')) }
+
+# write detected user packages
+if ($detectedUserPackageDirs.Count -gt 0)
+{
+    Write-Output ('- {0} user packages detected ''{1}''' -f $detectedUserPackageDirs.Count, ($detectedUserPackageDirs -join ', '))
+}
+else
+{
+    Write-Output '- No user packages detected'
+}
+Write-Output 'Done'
+
+
+# set amiga os 3.9 iso file, if uae or fs-uae config files are present
 $amigaOs39IsoFile = $null
 if ($uaeConfigFiles.Count -gt 0 -or $fsuaeConfigFiles.Count -gt 0)
 {
-    # write files for patching
-    Write-Output ''
-    Write-Output 'Files for patching'
-    Write-Output '------------------'
-    Write-Output 'Finding A1200 Kickstart rom and Amiga OS 3.9 iso files...'
+    # find first amiga os 3.9 md5 files matching valid amiga os 3.9 md5 hash or has filename 'amigaos3.9.iso'
+    $amigaOs39IsoEntry = $detectedOs39FilenamesIndex.Values | `
+        Where-Object { ($validAmigaOs39Md5Index.ContainsKey($_.Md5.ToLower()) -and $validAmigaOs39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.?9\.iso') -or ($_.File -match '\\?amigaos3\.?9\.iso$') } | `
+        Sort-Object @{expression={$_.Priority}} | `
+        Select-Object -First 1
 
-    # add kickstart files to kickstart index
-    $kickstartFiles = GetMd5FilesFromDir $kickstartDir
-    $kickstartFiles | `
-        Where-Object { $validKickstartMd5Index.ContainsKey($_.Md5.ToLower()) } | `
-        ForEach-Object { $validKickstartMd5Index[$_.Md5.ToLower()].File = $_.File }
-
-    # find amiga os 3.9 iso file, if amiga os dir is defined and exists
-    if ($amigaOsDir -and (Test-Path $amigaOsDir))
+    # set amiga os 3.9 iso file, if amiga os39 iso md5 file is defined
+    if ($amigaOs39IsoEntry)
     {
-        # find first amiga os 3.9 md5 files matching valid amiga os 3.9 md5 hash or has name 'amigaos3.9.iso'
-        $amigaOs39IsoMd5File = GetMd5FilesFromDir $amigaOsDir | `
-            Where-Object { ($validAmigaOs39Md5Index.ContainsKey($_.Md5.ToLower()) -and $validAmigaOs39Md5Index[$_.Md5.ToLower()].Filename -match 'amigaos3\.?9\.iso') -or ($_.File -match '\\?amigaos3\.?9\.iso$') } | `
-            Sort-Object @{expression={!$validAmigaOs39Md5Index.ContainsKey($_.Md5.ToLower())}} | `
-            Select-Object -First 1
-
-        # set amiga os 3.9 iso file, if amiga os39 iso md5 file is defined
-        if ($amigaOs39IsoMd5File)
-        {
-            $amigaOs39IsoFile = $amigaOs39IsoMd5File.File
-        }
+        $amigaOs39IsoFile = $amigaOs39IsoEntry.File
     }
-
-    # write amiga os 3.9 iso file, if it's defined
-    if ($amigaOs39IsoMd5File)
-    {
-        Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
-    }
-    else
-    {
-        Write-Output '- No Amiga OS 3.9 iso file detected'
-    }
-
-    Write-Output 'Done'
 }
+
 
 # patch and install uae configuration files, if they are present
 if ($uaeConfigFiles.Count -gt 0)
@@ -1031,10 +989,19 @@ if ($uaeConfigFiles.Count -gt 0)
     Write-Output '-----------------'
     Write-Output 'Patching and installing UAE configuration files...'
 
-    # write uae install dir, if it exists
-    if ($uaeInstallDir)
+    # write uae config directory, if not patch only and uae config directory exists
+    if (!$patchOnly -and $uaeConfigDir)
     {
-        Write-Output ('- UAE install dir ''{0}''' -f $uaeInstallDir)
+        Write-Output ('- UAE config dir ''{0}''' -f $uaeConfigDir)
+    }
+
+    if ($amigaOs39IsoFile)
+    {
+        Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
+    }
+    else
+    {
+        Write-Output '- No Amiga OS 3.9 iso file detected'
     }
 
     Write-Output ('- {0} UAE configuration files' -f $uaeConfigFiles.Count)
@@ -1051,6 +1018,7 @@ if ($uaeConfigFiles.Count -gt 0)
             # get kickstart entry for model
             $kickstartEntry = $validKickstartMd5Index.Values | `
                 Where-Object { $_.Model -match $model -and $_.ConfigSupported -and $_.File } | `
+                Sort-Object @{expression={$_.Priority}} | `
                 Select-Object -First 1
 
             # set kickstart file
@@ -1073,10 +1041,10 @@ if ($uaeConfigFiles.Count -gt 0)
         # patch uae config file
         PatchUaeConfigFile $uaeConfigFile.FullName $kickstartFile $amigaOs39IsoFile $amigaOsDir $kickstartDir $userPackagesDir
 
-        # install uae config file in uae install directory, if uae install directory is defined
-        if ($uaeInstallDir)
+        # install uae config file in uae config directory, if not patch only and uae config directory is defined
+        if (!$patchOnly -and $uaeConfigDir)
         {
-            Copy-Item $uaeConfigFile.FullName -Destination $uaeInstallDir -Force
+            Copy-Item $uaeConfigFile.FullName -Destination $uaeConfigDir -Force
         }
     }    
     Write-Output 'Done'
@@ -1089,17 +1057,18 @@ if ($fsuaeConfigFiles.Count -gt 0)
     Write-Output ""
     Write-Output "FS-UAE configuration"
     Write-Output "--------------------"
+    Write-Output 'Patching and installing FS-UAE configuration files...'
 
     # fs-uae config dir
     $fsuaeConfigDir = $null
 
-    # write fs-uae directory, if it exists
-    if ($fsuaeDir)
+    # set and write fs-uae config directory, if not patch only and fs-uae dir exists
+    if (!$patchOnly -and $fsuaeDir)
     {
-        Write-Output ('- FS-UAE dir ''{0}''' -f $fsuaeDir)
-
         # fs-uae configuration directory
         $fsuaeConfigDir = Join-Path $fsuaeDir -ChildPath 'Configurations'
+
+        Write-Output ('- FS-UAE config dir ''{0}''' -f $fsuaeConfigDir)
 
         # create fs-uae configuration directory, if it doesn't exist
         if (!(Test-Path $fsuaeConfigDir))
@@ -1107,7 +1076,15 @@ if ($fsuaeConfigFiles.Count -gt 0)
             mkdir -Path $fsuaeConfigDir | Out-Null
         }
     }
-
+    
+    if ($amigaOs39IsoFile)
+    {
+        Write-Output ('- Using Amiga OS 3.9 iso file ''{0}''' -f $amigaOs39IsoFile)
+    }
+    else
+    {
+        Write-Output '- No Amiga OS 3.9 iso file detected'
+    }
 
     Write-Output ('- {0} FS-UAE configuration files' -f $fsuaeConfigFiles.Count)
     foreach($fsuaeConfigFile in $fsuaeConfigFiles)
@@ -1123,6 +1100,7 @@ if ($fsuaeConfigFiles.Count -gt 0)
             # get kickstart entry for model
             $kickstartEntry = $validKickstartMd5Index.Values | `
                 Where-Object { $_.Model -match $model -and $_.ConfigSupported -and $_.File } | `
+                Sort-Object @{expression={$_.Priority}} | `
                 Select-Object -First 1
 
             # set kickstart file
@@ -1145,8 +1123,8 @@ if ($fsuaeConfigFiles.Count -gt 0)
         # patch fs-uae config file
         PatchFsuaeConfigFile $fsuaeConfigFile.FullName $kickstartFile $amigaOs39IsoFile $amigaOsDir $kickstartDir $userPackagesDir
 
-        # install fs-uae config file in fs-uae install directory, if fs-uae install directory is defined
-        if ($fsuaeConfigDir)
+        # install fs-uae config file in fs-uae config directory, if not patch only and fs-uae config directory is defined
+        if (!$patchOnly -and $fsuaeConfigDir)
         {
             Copy-Item $fsuaeConfigFile.FullName -Destination $fsuaeConfigDir -Force
         }
@@ -1154,7 +1132,7 @@ if ($fsuaeConfigFiles.Count -gt 0)
 
     # install fs-uae hstwb installer theme
     $hstwbInstallerFsUaeThemeDir = Join-Path $installDir -ChildPath 'fs-uae\themes\hstwb-installer'
-    if ($fsuaeDir -and (Test-Path $hstwbInstallerFsUaeThemeDir))
+    if (!$patchOnly -and $fsuaeDir -and (Test-Path $hstwbInstallerFsUaeThemeDir))
     {
         $hstwbInstallerFsUaeThemeDirInstalled = Join-Path $fsuaeDir -ChildPath 'themes\hstwb-installer'
         Copy-Item $hstwbInstallerFsUaeThemeDir -Destination (Split-Path $hstwbInstallerFsUaeThemeDirInstalled -Parent) -Recurse -Force

@@ -19,6 +19,7 @@ Hyperion Entertainment Amiga OS 3.1.4 files:
 - ModulesA500_3.1.4.adf
 - ModulesA600_3.1.4.adf
 - Storage3_1_4.adf
+- Update3.1.4.1.adf
 - Workbench3_1_4.adf
 
 Cloanto Amiga Forever Amiga OS 3.1 files:
