@@ -1,5 +1,5 @@
 {
-    "Date":  "2019-03-27 13:19:00",
+    "Date":  "2019-08-23 13:40:00",
     "Description": "HstWB package repositories for building HstWB packages",
     "Url": "https://hstwb.firstrealize.com/data/hstwb-repositories.json",
     "Repositories": [
@@ -26,6 +26,10 @@
         {
             "Type": "github",
             "Url": "https://github.com/henrikstengaard/classicwb-full-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/classicwb-gaae-package"
         },
         {
             "Type": "github",
