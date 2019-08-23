@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2019-01-09
+; Date: 2019-08-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -236,6 +236,7 @@ IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
 ENDIF
 
 ; create amiga os 3.9 prefs
+echo "3.9" NOLINE >SYSTEMDIR:Prefs/AmigaOS
 echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.9
 
 ; done message

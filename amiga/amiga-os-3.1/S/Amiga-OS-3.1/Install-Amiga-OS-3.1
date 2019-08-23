@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.1
 ; --------------------
 ;
-; Date: 2019-01-09
+; Date: 2019-08-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1 from adf files or floppy disks.
@@ -33,6 +33,7 @@ ELSE
 ENDIF 
 
 ; create amiga os 3.1 prefs
+echo "3.1" NOLINE >SYSTEMDIR:Prefs/AmigaOS
 echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.1
 
 echo ""
