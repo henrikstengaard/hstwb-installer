@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-12
+# Date:   2019-08-23
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -409,16 +409,23 @@ function ReadPackages($packagesPath)
         # read package json text file from package file
         $packageJsonText = ReadZipEntryTextFile $packageFile.FullName 'hstwb-package\.json$'
 
-        # skip, if package ini text doesn't exist
+        # fail, if package ini text doesn't exist
         if (!$packageJsonText)
         {
-            #throw ("Package file '" + $packageFile.FullName + "' doesn't contain 'hstwb-package.json' file!")
-            continue
+            Write-Error ("Package file '" + $packageFile.FullName + "' doesn't contain 'hstwb-package.json' file! Please remove package and retry.")
+            throw 'Read packages failed'
         }
 
         # read package json text
         $package = $packageJsonText | ConvertFrom-Json
-        
+
+        # fail, if package has unsupported amiga os versions
+        if ($package.AmigaOsVersions -and $package.AmigaOsVersions.Count -gt 0 -and (Compare-Object -IncludeEqual -ExcludeDifferent (GetSupportedAmigaOsVersions) $package.AmigaOsVersions).Count -eq 0)
+        {
+            Write-Error ("Package file '" + $packageFile.FullName + "' has unsupported Amiga OS versions in 'hstwb-package.json' file! Please remove package and retry.")
+            throw 'Read packages failed'
+        }
+
         # TODO validate package, check structure is correct
 
         # add id, fullname and package file properties to package

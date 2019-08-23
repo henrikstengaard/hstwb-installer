@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-07-12
+# Date:   2019-08-23
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -188,6 +188,11 @@ function TopologicalSortV2 {
     return $topologicallySortedNodes
 }
 
+# get supported amiga os versions
+function GetSupportedAmigaOsVersions()
+{
+    return @('3.9', '3.1.4', '3.1')
+}
 
 # read zip entry text file
 function ReadZipEntryTextFile($zipFile, $entryName)
