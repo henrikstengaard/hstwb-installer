@@ -12,45 +12,82 @@ IF EXISTS "SYSTEMDIR:Prefs/AmigaOS"
 ENDIF
 
 IF EXISTS "SYSTEMDIR:Libs/workbench.library"
-  ; set amiga os version to 3.1.4, if workbench.library file is equal or greater than v45.194
+  ; amiga os version 3.1.4, if workbench.library file is equal or greater than v45.194
   Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 194 FILE
   IF $RC EQ 0 VAL
-    set amigaosversion "3.1.4"
+    ; set amiga os version to 3.1.4, if version.library file is equal or greater than v45.194
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 45 194 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.1.4"
+    ENDIF
+
+    ; set amiga os version to 3.1, if version.library file is equal or greater than v40.42
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 40 42 FILE
+    IF $RC EQ 0 VAL
+  	  ; this is only possible when using kickstart 3.1.4 to install amiga os 3.1
+      set amigaosversion "3.1"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 
-  ; set amiga os version to 3.9, if workbench.library file is equal or greater than v45.102
+  ; amiga os version 3.9, if workbench.library file is equal or greater than v45.102
   Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 102 FILE
   IF $RC EQ 0 VAL
-    set amigaosversion "3.9"
+    ; set amiga os version to 3.9, if version.library file is equal or greater than v45.1
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 45 1 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.9"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 
-  ; set amiga os version to 3.1, if workbench.library file is equal or greater than v40.5
+  ; amiga os version 3.1, if workbench.library file is equal or greater than v40.5
   Version >NIL: "SYSTEMDIR:Libs/workbench.library" 40 5 FILE
   IF $RC EQ 0 VAL
-    set amigaosversion "3.1"
+    ; set amiga os version to 3.1, if version.library file is equal or greater than v40.42
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 40 42 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.1"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 ELSE
-  ; set amiga os version to 3.1.4, if loaded workbench.library is equal or greater than v45.194
+  ; amiga os version 3.1.4, if loaded workbench.library is equal or greater than v45.194
   Version >NIL: "workbench.library" 45 194
   IF $RC EQ 0 VAL
-    set amigaosversion "3.1.4"
+    ; set amiga os version to 3.1.4, if version.library file is equal or greater than v45.194
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 45 194 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.1.4"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 
-  ; set amiga os version to 3.9, if loaded workbench.library is equal or greater than v45.102
+  ; amiga os version 3.9, if loaded workbench.library is equal or greater than v45.102
   Version >NIL: "workbench.library" 45 102
   IF $RC EQ 0 VAL
-    set amigaosversion "3.9"
+    ; set amiga os version to 3.9, if version.library file is equal or greater than v45.1
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 45 1 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.9"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 
-  ; set amiga os version to 3.1, if loaded workbench.library is equal or greater than v40.5
+  ; amiga os version 3.1, if loaded workbench.library is equal or greater than v40.5
   Version >NIL: "workbench.library" 40 5
   IF $RC EQ 0 VAL
-    set amigaosversion "3.1"
+    ; set amiga os version to 3.1, if version.library file is equal or greater than v40.42
+    Version >NIL: "SYSTEMDIR:Libs/version.library" 40 42 FILE
+    IF $RC EQ 0 VAL
+      set amigaosversion "3.1"
+    ENDIF
+
     SKIP verifyamigaos
   ENDIF
 ENDIF
