@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-12
+# Date:   2019-08-23
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -930,14 +930,9 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             }
         }
 
-        # build amiga os versions
-        $amigaOsVersionsIndex = @{}
-        foreach ($installPackageScript in ($installPackageScripts | Where-Object { $_.Package.AmigaOsVersions }))
-        {
-            $installPackageScript.Package.AmigaOsVersions | ForEach-Object { $amigaOsVersionsIndex[$_] = $true }
-        }
-        $amigaOsVersions = @("All") + ($amigaOsVersionsIndex.Keys | Sort-Object -Descending)
-
+        # amiga os versions
+        $amigaOsVersions = @('All')
+        $amigaOsVersions += GetSupportedAmigaOsVersions
 
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += ''
