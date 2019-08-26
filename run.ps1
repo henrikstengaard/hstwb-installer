@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-23
+# Date:   2019-08-26
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -3656,12 +3656,20 @@ try
     # find kickstart entry, is install mode is test, install or build self install
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
+        $amigaOsEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet } | Select-Object -First 1
+
+        # fail, if amiga os entry doesn't exist
+        if (!$amigaOsEntry)
+        {
+            Fail $hstwb ("Amiga os set '{0}' doesn't have any entries!" -f $hstwb.Settings.AmigaOs.AmigaOsSet)
+        }
+
         # get kickstart entry for running hstwb installer
         $kickstartEntry = $null
         foreach ($model in $hstwb.Models)
         {
             # get first run supported kickstart entry for model with detected file
-            $kickstartEntry = $hstwb.KickstartEntries | Where-Object { $_.RunSupported -match 'true' -and $_.Model -match $model -and $_.File } | Select-Object -First 1
+            $kickstartEntry = $hstwb.KickstartEntries | Where-Object { $_.RunSupported -match 'true' -and $_.Model -match $model -and $_.File -and ($_.AmigaOsVersionsSupported -split ',') -contains $amigaOsEntry.AmigaOsVersion } | Select-Object -First 1
 
             if ($kickstartEntry)
             {
@@ -3672,7 +3680,16 @@ try
         # fail, if kickstart entry doesn't exist
         if (!$kickstartEntry)
         {
-            Fail $hstwb ("Kickstart directory doesn't have {0} Kickstart rom file!" -f ($models -join '/'))
+            Fail $hstwb ("Kickstart directory doesn't have a Kickstart rom file for {0} that supports installing Amiga OS {1}!" -f ($hstwb.Models -join '/'), $amigaOsEntry.AmigaOsVersion)
+        }
+
+        # validate set
+        $amigaOsSetResult = ValidateSet $hstwb.AmigaOsEntries $hstwb.Settings.AmigaOs.AmigaOsSet
+
+        # fail, if required files count is less than entries count required
+        if ($amigaOsSetResult.FilesCountRequired -lt $amigaOsSetResult.EntriesCountRequired)
+        {
+            Fail $hstwb ('{0} required file(s) doesn''t exist in Amiga OS dir!' -f ($amigaOsSetResult.EntriesCountRequired - $amigaOsSetResult.FilesCountRequired))
         }
 
         # set kickstart entry

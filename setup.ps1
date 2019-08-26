@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-07-23
+# Date:   2019-08-26
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -544,7 +544,7 @@ function SelectAmigaOsSet($hstwb)
     {
         $amigaOsSetResult = ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
 
-        $amigaOsSetInfo = FormatSetInfo $amigaOsSetResult
+        $amigaOsSetInfo = FormatAmigaOsSetInfo $amigaOsSetResult
 
         $amigaOsSetOptions += @{
             'Text' = $amigaOsSetInfo.Text;
@@ -730,6 +730,9 @@ function ChangeKickstartDir($hstwb)
 
         # ui kickstart set info
         UiKickstartSetInfo $hstwb $hstwb.Settings.Kickstart.KickstartSet
+
+        # ui amiga os set info
+        UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet
 
         Save $hstwb
     }
@@ -1654,6 +1657,7 @@ try
             'RunFile' = $runFile;
             'SettingsDir' = $settingsDir
         };
+        'Models' = @('A1200', 'A500');
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
         'Packages' = (ReadPackages $packagesPath | Where-Object { $_ });
         'Settings' = $settings;

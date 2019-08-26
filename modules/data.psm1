@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-23
+# Date:   2019-08-26
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -527,7 +527,7 @@ function FindBestMatchingAmigaOsSet($hstwb)
     }
 
     # get best matching amiga os set, which has highest number of files that are required ordered by amiga os entries
-    $bestMatchingAmigaOsSetResult = $amigaOsSetResults | Where-Object { $_.FilesRequired -ge $_.EntriesRequired } | Select-Object -First 1
+    $bestMatchingAmigaOsSetResult = $amigaOsSetResults | Where-Object { $_.FilesCountRequired -ge $_.EntriesCountRequired } | Select-Object -First 1
 
     # return empty, if best matching amiga os set is not set
     if (!$bestMatchingAmigaOsSetResult)
@@ -583,37 +583,76 @@ function ValidateSet($entries, $setName)
 
     return @{
         'SetName' = $setName;
-        'Entries' = $entriesTotal;
-        'EntriesRequired' = $entriesRequired.Count;
-        'Files' = $filesTotal.Count;
-        'FilesRequired' = $filesRequired.Count
+        'Entries' = $entriesIndex.Values;
+        'EntriesCount' = $entriesTotal;
+        'EntriesCountRequired' = $entriesRequired.Count;
+        'FilesCount' = $filesTotal.Count;
+        'FilesCountRequired' = $filesRequired.Count
     }
 }
 
-function FormatSetInfo($result)
+function FormatAmigaOsSetInfo($result)
 {
     $color = $null
-    if ($result.Files -gt 0)
+    $errorMessage = ''
+    if ($result.FilesCount -gt 0)
     {
-        $color = if ($result.FilesRequired -ge $result.EntriesRequired) { 'Green' } else { 'Red' }
+        $color = if ($result.FilesCountRequired -ge $result.EntriesCountRequired) { 'Green' } else { 'Red' }
+        $errorMessage = if ($result.FilesCountRequired -lt $result.EntriesCountRequired) { ' {0} required file(s) doesn''t exist in Amiga OS dir!' -f ($result.EntriesCountRequired - $result.FilesCountRequired) } else { '' }
+    }
+
+    $amigaOsEntry = $result.Entries | Select-Object -First 1
+
+    if ($amigaOsEntry -and !(IsAmigaOsVersionSupported $hstwb $result.Entries))
+    {
+        $color = 'Red'
+        $errorMessage = ' Kickstart rom {0} in Kickstart is required to install!' -f $amigaOsEntry.KickstartVersionRequired
     }
 
     return @{
-        'Text' = ("'{0}' ({1}/{2})" -f $result.SetName, $result.Files, $result.Entries);
+        'Text' = ("'{0}' ({1}/{2}){3}" -f $result.SetName, $result.FilesCount, $result.EntriesCount, $errorMessage);
         'Color' = $color
     }
+}
+
+function IsAmigaOsVersionSupported($hstwb, $amigaOsEntries)
+{
+    if ($hstwb.Settings.Installer.Mode -notmatch "^(Install)$")
+    {
+        return $true
+    }
+
+    $amigaOsEntry = $amigaOsEntries | Select-Object -First 1
+
+    if (!$amigaOsEntry)
+    {
+        return $true
+    }
+
+
+    foreach ($model in $hstwb.Models)
+    {
+        $kickstartEntry = $hstwb.KickstartEntries | Where-Object { $_.RunSupported -match 'true' -and $_.Model -match $model -and $_.File -and ($_.AmigaOsVersionsSupported -split ',') -contains $amigaOsEntry.AmigaOsVersion } | Select-Object -First 1
+
+        if ($kickstartEntry)
+        {
+            return $true
+        }
+    }
+
+    return $false
 }
 
 function FormatKickstartSetInfo($result)
 {
     $color = 'Red'
-    if ($result.Files -gt 0)
+    if ($result.FilesCount -gt 0)
     {
-        $color = if ($result.FilesRequired -ge $result.EntriesRequired) { 'Green' } else { 'Yellow' }
+        $color = if ($result.FilesCountRequired -ge $result.EntriesCountRequired) { 'Green' } else { 'Yellow' }
     }
 
     return @{
-        'Text' = ("'{0}' ({1}/{2})" -f $result.SetName, $result.Files, $result.Entries);
+        'Text' = ("'{0}' ({1}/{2})" -f $result.SetName, $result.FilesCount, $result.EntriesCount);
         'Color' = $color
     }
 }
@@ -621,7 +660,7 @@ function FormatKickstartSetInfo($result)
 function UiAmigaOsSetInfo($hstwb, $amigaOsSetName)
 {
     $result = ValidateSet $hstwb.AmigaOsEntries $amigaOsSetName
-    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatSetInfo $result
+    $hstwb.UI.AmigaOs.AmigaOsSetInfo = FormatAmigaOsSetInfo $result
 }
 
 function UiKickstartSetInfo($hstwb, $kickstartSetName)
