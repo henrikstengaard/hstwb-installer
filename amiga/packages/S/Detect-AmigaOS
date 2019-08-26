@@ -21,13 +21,6 @@ IF EXISTS "SYSTEMDIR:Libs/workbench.library"
       set amigaosversion "3.1.4"
     ENDIF
 
-    ; set amiga os version to 3.1, if version.library file is equal or greater than v40.42
-    Version >NIL: "SYSTEMDIR:Libs/version.library" 40 42 FILE
-    IF $RC EQ 0 VAL
-  	  ; this is only possible when using kickstart 3.1.4 to install amiga os 3.1
-      set amigaosversion "3.1"
-    ENDIF
-
     SKIP verifyamigaos
   ENDIF
 
