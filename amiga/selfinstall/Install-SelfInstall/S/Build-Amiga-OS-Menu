@@ -5,7 +5,7 @@
 ; Build Amiga OS Menu
 ; -------------------
 ;
-; Date: 2019-08-23
+; Date: 2019-08-26
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS installation menu.
@@ -57,7 +57,7 @@ echo "" NOLINE >T:_amigaosoption
 echo "LAB amigaosmenu" >>T:_amigaosmenu
 echo "echo *"*" NOLINE >T:amigaosmenu" >>T:_amigaosmenu
 
-; set amiga os 3.9 not available, if expansion.library is v45 or higher (kickstart 3.1.4)
+; set amiga os 3.9 not available, if expansion.library is v45 or higher (kickstart rom 3.1.4)
 Version >NIL: "expansion.library" 45
 IF $RC EQ 0 VAL
   ; amiga os 3.9 cd
@@ -68,7 +68,7 @@ IF $RC EQ 0 VAL
 
   echo "" >>T:_amigaosoption
   echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom v3.1.4!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom 3.1.4!**N**NPlease restart with Kickstart rom 3.1**Nto install Amiga OS 3.9.*" *"OK*" >NIL:" >>T:_amigaosoption
   echo "ENDIF" >>T:_amigaosoption
 
   ; amiga os 3.9 iso
@@ -79,7 +79,7 @@ IF $RC EQ 0 VAL
 
   echo "" >>T:_amigaosoption
   echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom v3.1.4!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom 3.1.4!**N**NPlease restart with Kickstart rom 3.1**Nto install Amiga OS 3.9.*" *"OK*" >NIL:" >>T:_amigaosoption
   echo "ENDIF" >>T:_amigaosoption
 
   ; amiga os 3.9 boing bag 1
@@ -90,7 +90,7 @@ IF $RC EQ 0 VAL
 
   echo "" >>T:_amigaosoption
   echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom v3.1.4!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom 3.1.4!**N**NPlease restart with Kickstart rom 3.1**Nto install Amiga OS 3.9.*" *"OK*" >NIL:" >>T:_amigaosoption
   echo "ENDIF" >>T:_amigaosoption
 
   ; amiga os 3.9 boing bag 2
@@ -101,7 +101,7 @@ IF $RC EQ 0 VAL
 
   echo "" >>T:_amigaosoption
   echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom v3.1.4!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 can't be installed using**NKickstart rom 3.1.4!**N**NPlease restart with Kickstart rom 3.1**Nto install Amiga OS 3.9.*" *"OK*" >NIL:" >>T:_amigaosoption
   echo "ENDIF" >>T:_amigaosoption
 
   ; skip to amiga os 3.1.4 options
@@ -146,6 +146,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.9 from cd-rom*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 was not detected in**NCD0: device!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.9 iso
@@ -186,6 +191,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.9 from iso file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 not available*" *"Amiga OS 3.9 iso was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.9 boing bag 1
@@ -222,6 +232,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.9 Boing Bag 1 file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 Boing Bag 1 not available*" *"Amiga OS 3.9 Boing Bag 1 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.9 boing bag 2
@@ -258,6 +273,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.9 Boing Bag 2 file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.9 Boing Bag 2 not available*" *"Amiga OS 3.9 Boing Bag 2 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 
@@ -307,6 +327,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A500 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A500 not available*" *"Amiga OS 3.1.4 A500 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a600
@@ -346,6 +371,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A600 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A600 not available*" *"Amiga OS 3.1.4 A600 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a2000
@@ -385,6 +415,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A2000 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A2000 not available*" *"Amiga OS 3.1.4 A2000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a1200
@@ -424,6 +459,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A1200 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A1200 not available*" *"Amiga OS 3.1.4 A1200 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a3000
@@ -463,6 +503,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A3000 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A3000 not available*" *"Amiga OS 3.1.4 A3000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a4000d
@@ -502,6 +547,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A4000D from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A4000D not available*" *"Amiga OS 3.1.4 A4000D was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 a4000t
@@ -541,6 +591,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 A4000T from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 A4000T not available*" *"Amiga OS 3.1.4 A4000T was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4.1 update
@@ -577,6 +632,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4.1 Update from adf file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4.1 Update not available*" *"Amiga OS 3.1.4.1 Update was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 ; amiga os 3.1.4 icon pack
@@ -617,6 +677,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1.4 Icon Pack from lha file*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1.4 Icon Pack not available*" *"Amiga OS 3.1.4 Icon Pack was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 
@@ -636,7 +701,7 @@ IF $RC EQ 0 VAL
 
   echo "" >>T:_amigaosoption
   echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
-  echo "  RequestChoice *"Amiga OS 3.1 not available*" *"Amiga OS 3.1 can't be installed using**NKickstart rom v3.1.4!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1 not available*" *"Amiga OS 3.1 can't be installed using**NKickstart rom 3.1.4!**N**NPlease restart with Kickstart rom 3.1**Nto install Amiga OS 3.1.*" *"OK*" >NIL:" >>T:_amigaosoption
   echo "ENDIF" >>T:_amigaosoption
 
   ; skip to amiga os options
@@ -682,6 +747,11 @@ ELSE
   echo "" >>T:_amigaosmenu
   echo "echo *"N/A    *" NOLINE >>T:amigaosmenu" >>T:_amigaosmenu
   echo "echo *" : Amiga OS 3.1 from adf files*" >>T:amigaosmenu" >>T:_amigaosmenu
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosoption*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  RequestChoice *"Amiga OS 3.1 not available*" *"Amiga OS 3.1 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
 ENDIF
 
 
