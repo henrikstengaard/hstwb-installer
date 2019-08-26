@@ -1,11 +1,17 @@
 {
-    "Date":  "2019-08-12 08:40:06",
+    "Date":  "2019-08-26 14:17:05",
     "Description":  "HstWB packages",
     "Url":  "https://hstwb.firstrealize.com/data/hstwb-packages.json",
     "Packages":  [
                      {
                          "Name":  "bestwb-package",
                          "Releases":  [
+                                          {
+                                              "Prerelease":  "False",
+                                              "Version":  "1.2.1",
+                                              "Url":  "https://github.com/henrikstengaard/bestwb-package/releases/download/1.2.1/BestWB.1.2.1.zip",
+                                              "FileName":  "BestWB.1.2.1.zip"
+                                          },
                                           {
                                               "Prerelease":  "False",
                                               "Version":  "1.2.0",
@@ -184,6 +190,17 @@
                                       ]
                      },
                      {
+                         "Name":  "classicwb-gaae-package",
+                         "Releases":  [
+                                          {
+                                              "Prerelease":  "False",
+                                              "Version":  "28.1.0",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-gaae-package/releases/download/28.1.0/ClassicWB.GAAE.28.1.0.zip",
+                                              "FileName":  "ClassicWB.GAAE.28.1.0.zip"
+                                          }
+                                      ]
+                     },
+                     {
                          "Name":  "classicwb-lite-package",
                          "Releases":  [
                                           {
@@ -215,6 +232,12 @@
                      {
                          "Name":  "classicwb-os39-package",
                          "Releases":  [
+                                          {
+                                              "Prerelease":  "False",
+                                              "Version":  "28.1.1",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-os39-package/releases/download/28.1.1/ClassicWB.OS39.28.1.1.zip",
+                                              "FileName":  "ClassicWB.OS39.28.1.1.zip"
+                                          },
                                           {
                                               "Prerelease":  "False",
                                               "Version":  "28.1.0",
