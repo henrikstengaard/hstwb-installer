@@ -2,7 +2,7 @@
 # -----------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-23
+# Date:   2019-10-19
 #
 # A powershell module for HstWB Installer with config functions.
 
@@ -74,6 +74,7 @@ function DefaultSettings($settings)
     $settings.Emulator = @{}
     $settings.UserPackages = @{}
 
+    $settings.AmigaOs.InstallAmigaOs = 'Yes'
     $settings.Kickstart.InstallKickstart = 'Yes'
     $settings.Packages.InstallPackages = ''
     $settings.Installer.Mode = 'Install'
@@ -307,7 +308,6 @@ function UpgradeSettings($hstwb)
         # remove workbench settings
         $hstwb.Settings.Remove('Workbench')
     }
-
 
     # upgrade kickstart rom path to kickstart rom dir
     if ($hstwb.Settings.Kickstart.KickstartRomPath)
