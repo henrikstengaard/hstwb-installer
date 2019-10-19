@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-06-27
+# Date:   2019-10-19
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -643,7 +643,7 @@ function BuildUserPackageInstall()
         $userPackageInstallLines.Add("")
         $userPackageInstallLines.Add("; start entries installation option")
         $userPackageInstallLines.Add("IF ""`$entriesinstalloption"" EQ {0} VAL" -f $entriesInstallOption)
-        $userPackageInstallLines.Add("  set confirm ``RequestChoice ""Start entries installation"" ""Do you want to entries installation of `$totalcount entries?"" ""Yes|No""``")
+        $userPackageInstallLines.Add("  set confirm ``RequestChoice ""Start entries installation"" ""Do you want to start installation of `$totalcount entries?"" ""Yes|No""``")
         $userPackageInstallLines.Add("  IF ""`$confirm"" EQ ""1""")
         $userPackageInstallLines.Add("    execute ""USERPACKAGEDIR:Install/{0}/Install-Entries""" -f $entriesSet.Name)
         $userPackageInstallLines.Add("    SKIP end")
