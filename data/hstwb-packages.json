@@ -1,5 +1,5 @@
 {
-    "Date":  "2019-08-26 14:17:05",
+    "Date":  "2019-10-20 21:37:27",
     "Description":  "HstWB packages",
     "Url":  "https://hstwb.firstrealize.com/data/hstwb-packages.json",
     "Packages":  [
@@ -107,6 +107,12 @@
                          "Releases":  [
                                           {
                                               "Prerelease":  "False",
+                                              "Version":  "28.1.1",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-adv-package/releases/download/28.1.1/ClassicWB.ADV.28.1.1.zip",
+                                              "FileName":  "ClassicWB.ADV.28.1.1.zip"
+                                          },
+                                          {
+                                              "Prerelease":  "False",
                                               "Version":  "28.1.0",
                                               "Url":  "https://github.com/henrikstengaard/classicwb-adv-package/releases/download/28.1.0/ClassicWB.ADV.28.1.0.zip",
                                               "FileName":  "ClassicWB.ADV.28.1.0.zip"
@@ -136,6 +142,12 @@
                          "Releases":  [
                                           {
                                               "Prerelease":  "False",
+                                              "Version":  "28.1.1",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-advsp-package/releases/download/28.1.1/ClassicWB.ADVSP.28.1.1.zip",
+                                              "FileName":  "ClassicWB.ADVSP.28.1.1.zip"
+                                          },
+                                          {
+                                              "Prerelease":  "False",
                                               "Version":  "28.1.0",
                                               "Url":  "https://github.com/henrikstengaard/classicwb-advsp-package/releases/download/28.1.0/ClassicWB.ADVSP.28.1.0.zip",
                                               "FileName":  "ClassicWB.ADVSP.28.1.0.zip"
@@ -163,6 +175,12 @@
                      {
                          "Name":  "classicwb-full-package",
                          "Releases":  [
+                                          {
+                                              "Prerelease":  "False",
+                                              "Version":  "28.1.1",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-full-package/releases/download/28.1.1/ClassicWB.FULL.28.1.1.zip",
+                                              "FileName":  "ClassicWB.FULL.28.1.1.zip"
+                                          },
                                           {
                                               "Prerelease":  "False",
                                               "Version":  "28.1.0",
@@ -234,6 +252,12 @@
                          "Releases":  [
                                           {
                                               "Prerelease":  "False",
+                                              "Version":  "28.1.2",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-os39-package/releases/download/28.1.2/ClassicWB.OS39.28.1.2.zip",
+                                              "FileName":  "ClassicWB.OS39.28.1.2.zip"
+                                          },
+                                          {
+                                              "Prerelease":  "False",
                                               "Version":  "28.1.1",
                                               "Url":  "https://github.com/henrikstengaard/classicwb-os39-package/releases/download/28.1.1/ClassicWB.OS39.28.1.1.zip",
                                               "FileName":  "ClassicWB.OS39.28.1.1.zip"
@@ -261,6 +285,12 @@
                      {
                          "Name":  "classicwb-p96-package",
                          "Releases":  [
+                                          {
+                                              "Prerelease":  "False",
+                                              "Version":  "28.1.1",
+                                              "Url":  "https://github.com/henrikstengaard/classicwb-p96-package/releases/download/28.1.1/ClassicWB.P96.28.1.1.zip",
+                                              "FileName":  "ClassicWB.P96.28.1.1.zip"
+                                          },
                                           {
                                               "Prerelease":  "False",
                                               "Version":  "28.1.0",
