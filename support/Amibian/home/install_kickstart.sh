@@ -3,7 +3,7 @@
 # Install Kickstart
 # -----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2018-04-04
+# Date: 2019-10-23
 #
 # A bash script for Amibian to find and install A1200 Kickstart 3.1 (40.068) rom file in install directory and install it in kickstarts directory.
 
@@ -35,7 +35,31 @@ function install()
 		# get md5 from rom file
 		md5=$(md5sum "$romfile" | awk '{ print $1 }')
 
-		# copy rom file, if md5 matches cloanto amiga forever kickstart 3.1 (40.068) (a1200) rom
+		# copy rom file, if md5 matches kickstart 3.1 40.068 a1200 rom, cloanto amiga forever 8
+		if [ "$md5" == "43efffafb382528355bb4cdde9fa9ce7" ]; then
+			# get rom key file
+			romdir=$(dirname "$romfile")
+			romkeyfile="$romdir/rom.key"
+
+			# show error dialog, if cloanto amiga forever kickstart key file doesn't exist
+			if [ ! -f "$romkeyfile" ]; then
+				dialog --clear --title "ERROR" --msgbox "Cloanto Amiga Forever Kickstart key file 'rom.key' doesn't exist in install directory '$installdir'." 0 0
+				break
+			fi
+
+			# copy rom and key file to kickstarts directory
+			cp "$romfile" "$kickstartsdir/kick31.rom"
+			cp "$romkeyfile" "$kickstartsdir/rom.key"
+
+			# set installed true
+			installed=0
+
+			# show success dialog
+			dialog --clear --title "Success" --msgbox "Successfully installed Kickstart 3.1 40.068 A1200 rom, Cloanto Amiga Forever 8 in kickstarts directory '$kickstartsdir'" 0 0
+			break
+		fi
+
+		# copy rom file, if md5 matches kickstart 3.1 40.068 a1200 rom, cloanto amiga forever 7/2016
 		if [ "$md5" == "dc3f5e4698936da34186d596c53681ab" ]; then
 			# get rom key file
 			romdir=$(dirname "$romfile")
@@ -55,11 +79,11 @@ function install()
 			installed=0
 
 			# show success dialog
-			dialog --clear --title "Success" --msgbox "Successfully installed Cloanto Amiga Forever Kickstart 3.1 (40.068) rom in kickstarts directory '$kickstartsdir'" 0 0
+			dialog --clear --title "Success" --msgbox "Successfully installed Kickstart 3.1 40.068 A1200 rom, Cloanto Amiga Forever 7/2016 in kickstarts directory '$kickstartsdir'" 0 0
 			break
 		fi
 
-		# copy rom file, if md5 matches original kickstart 3.1 (40.068) (a1200) rom
+		# copy rom file, if md5 matches kickstart 3.1 40.068 a1200 rom, original
 		if [ "$md5" == "646773759326fbac3b2311fd8c8793ee" ]; then
 			# copy rom file to kickstarts directory
 			cp "$romfile" "$kickstartsdir/kick31.rom"
@@ -68,7 +92,7 @@ function install()
 			installed=0
 
 			# show success dialog
-			dialog --clear --title "Success" --msgbox "Successfully installed Original Kickstart 3.1 (40.068) rom in kickstarts directory '$kickstartsdir'" 0 0
+			dialog --clear --title "Success" --msgbox "Successfully installed Kickstart 3.1 40.068 A1200 rom, Original in kickstarts directory '$kickstartsdir'" 0 0
 			break
 		fi
 	done < <(find "$installdir" -type f)
