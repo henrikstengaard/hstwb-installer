@@ -5,7 +5,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-10-19
+# Date:   2019-10-30
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -210,13 +210,19 @@ def parse_entry(entry_name):
 # calculate best version rank
 def calculate_best_version_rank(entry):
     rank = 100
+
+    for version in entry.version:
+        formattedVersion = re.sub(r'^(\d+\.\d+).*', '\\1', 
+            re.sub(r'[^0-9\.]', '', version, re.I), re.I)
+        rank = rank + (float(formattedVersion) * 100)
+
+    lowmem_rank = rank
+
     rank = rank - len([x for x in entry.language if not re.search(r'en', x, re.I)]) * 10
     rank = rank - len(entry.release) * 10
     rank = rank - len(entry.publisher_developer) * 10
     rank = rank - len(entry.other) * 10
     rank = rank - len(entry.memory) * 10
-
-    lowmem_rank = rank
 
     lowest_memory_list = [x for x in entry.memory if re.search(r'^\d+(k|m)b?$', x, re.I)]
 
@@ -751,7 +757,7 @@ print("---------------------")
 print("Build Install Entries")
 print("---------------------")
 print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2019-06-27")
+print("Date: 2019-10-30")
 print("")
 
 # print usage and exit, if arguments are not defined

@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-10-19
+# Date:   2019-10-30
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
@@ -220,6 +220,19 @@ function CalculateBestVersionRank()
     )
 
     $rank = 100
+
+    foreach($version in $entry.Version)
+    {
+        $parsedVersion = 0.0d
+        if (![double]::TryParse($version, [ref]$parsedVersion))
+        {
+            continue
+        }
+        $rank += $parsedVersion * 100
+    }
+
+    $lowMemRank = $rank
+
 	$rank -= ($entry.Language | Where-Object { $_ -notmatch 'en' }).Count * 10
 	$rank -= $entry.Release.Count * 10
 	$rank -= $entry.PublisherDeveloper.Count * 10
@@ -856,7 +869,7 @@ Write-Output "---------------------"
 Write-Output "Build Install Entries"
 Write-Output "---------------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-06-27"
+Write-Output "Date: 2019-10-30"
 Write-Output ""
 
 # resolve paths
