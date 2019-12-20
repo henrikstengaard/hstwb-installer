@@ -1,21 +1,20 @@
 #!/bin/bash
 
-# Amibian Launcher
-# ----------------
+# Setup
+# -----
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-17
+# Date: 2019-12-20
 #
-# bash script to show amibian launcher.
+# bash script to show setup menu.
 
-# main menu
 while true; do
-	# show main menu
 	choices=$(dialog --clear --stdout \
-	--title "HstWB Installer for Amibian" \
+	--title "Setup" \
 	--menu "Select option:" 0 0 0 \
-	1 "Run emulator" \
-	2 "Setup" \
-	3 "Exit")
+	1 "Amibian" \
+	2 "Emulators" \
+	3 "HstWB Installer" \
+	4 "Exit")
 
 	clear
 
@@ -27,12 +26,21 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			3
+			pushd amibian
+			./amibian.sh
+			popd
 			;;
 		2)
-			./setup.sh
+			pushd emulators
+			./emulators.sh
+			popd
 			;;
 		3)
+			pushd hstwb-installer
+			./hstwb-installer.sh
+			popd
+			;;
+		4)
 			exit
 			;;
 		esac

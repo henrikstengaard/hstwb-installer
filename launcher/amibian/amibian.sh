@@ -3,7 +3,7 @@
 # Amibian Launcher
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-17
+# Date: 2019-12-20
 #
 # bash script to show amibian launcher.
 
@@ -11,9 +11,9 @@
 while true; do
 	# show main menu
 	choices=$(dialog --clear --stdout \
-	--title "Setup" \
+	--title "HstWB Installer for Amibian" \
 	--menu "Select option:" 0 0 0 \
-	1 "Select emulator" \
+	1 "Run emulator" \
 	2 "Setup" \
 	3 "Exit")
 
@@ -27,10 +27,12 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			./select-emulator.sh
+			3
 			;;
 		2)
-			./s.sh
+			pushd setup
+			./setup.sh
+			popd
 			;;
 		3)
 			exit
