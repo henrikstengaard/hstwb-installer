@@ -11,9 +11,11 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "Setup Amibian" \
 	--menu "Select option:" 0 0 0 \
-	1 "Configure WiFi" \
-	2 "Expand filesystem" \
-	3 "Exit")
+	1 "Raspberry Pi Software Configuration Tool (raspiconf)" \
+	2 "WiFi settings" \
+	3 "Network settings" \
+	4 "Expand filesystem" \
+	5 "Exit")
 
 	clear
 
@@ -25,12 +27,18 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			wifi
+			raspiconf
 			;;
 		2)
-			./expand.sh
+			wifi
 			;;
 		3)
+			network
+			;;
+		4)
+			./expand-filesystem.sh
+			;;
+		5)
 			exit
 			;;
 		esac
