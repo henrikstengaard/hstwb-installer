@@ -52,3 +52,4 @@ while true; do
         ;;
     esac
   done
+done

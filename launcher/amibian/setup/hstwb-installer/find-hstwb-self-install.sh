@@ -3,7 +3,7 @@
 # Find HstWB Self Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-15
+# Date: 2019-12-22
 #
 # A bash script for Amibian to find HstWB self install usb media.
 
@@ -36,7 +36,7 @@ function find_hstwb_self_install()
 
 # main loop
 while true; do
-	find_hstwb_self_install()
+	find_hstwb_self_install
 
 	# exit, if hstwb self install exists
 	if [ -f "/media/hstwb-self-install/hstwb-self-install.txt" ]; then

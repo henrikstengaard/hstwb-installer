@@ -5,16 +5,15 @@
 # Author: Henrik Noerfjand Stengaard
 # Date: 2019-12-22
 #
-# bash script to show setup menu.
+# bash script to show system menu.
 
 while true; do
 	choices=$(dialog --clear --stdout \
-	--title "Setup" \
+	--title "System" \
 	--menu "Select option:" 0 0 0 \
-	1 "Amibian" \
-	2 "Emulators" \
-	3 "HstWB Installer" \
-	4 "Exit")
+	1 "Reboot" \
+	2 "Shutdown" \
+	3 "Exit")
 
 	clear
 
@@ -26,21 +25,12 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			pushd amibian >/dev/null
-			./amibian.sh
-			popd >/dev/null
+			./reboot.sh
 			;;
 		2)
-			pushd emulators >/dev/null
-			./emulators.sh
-			popd >/dev/null
+			./shutdown.sh
 			;;
 		3)
-			pushd hstwb-installer >/dev/null
-			./hstwb-installer.sh
-			popd >/dev/null
-			;;
-		4)
 			exit
 			;;
 		esac

@@ -3,7 +3,7 @@
 # Amibian Launcher
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-20
+# Date: 2019-12-22
 #
 # bash script to show amibian launcher.
 
@@ -14,8 +14,10 @@ while true; do
 	--title "HstWB Installer for Amibian" \
 	--menu "Select option:" 0 0 0 \
 	1 "Run emulator" \
-	2 "Setup" \
-	3 "Exit")
+	2 "Midnight Commander" \
+	3 "Setup" \
+	4 "System" \
+	5 "Exit")
 
 	clear
 
@@ -30,11 +32,19 @@ while true; do
 			3
 			;;
 		2)
-			pushd setup
-			./setup.sh
-			popd
+			mc
 			;;
 		3)
+			pushd setup >/dev/null
+			./setup.sh
+			popd >/dev/null
+			;;
+		4)
+			pushd system >/dev/null
+			./system.sh
+			popd >/dev/null
+			;;
+		5)
 			exit
 			;;
 		esac

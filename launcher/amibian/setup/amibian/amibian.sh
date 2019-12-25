@@ -3,7 +3,7 @@
 # Setup Amibian
 # -------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-20
+# Date: 2019-12-25
 #
 # bash script to show setup amibian menu.
 
@@ -14,8 +14,9 @@ while true; do
 	1 "Raspberry Pi Software Configuration Tool (raspiconf)" \
 	2 "WiFi settings" \
 	3 "Network settings" \
-	4 "Expand filesystem" \
-	5 "Exit")
+	4 "Change boot" \
+	5 "Expand filesystem" \
+	6 "Exit")
 
 	clear
 
@@ -36,9 +37,12 @@ while true; do
 			network
 			;;
 		4)
-			./expand-filesystem.sh
+			./change-boot.sh
 			;;
 		5)
+			./expand-filesystem.sh
+			;;
+		6)
 			exit
 			;;
 		esac
