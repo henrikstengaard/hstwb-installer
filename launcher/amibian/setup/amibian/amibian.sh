@@ -14,9 +14,12 @@ while true; do
 	1 "Raspberry Pi Software Configuration Tool (raspiconf)" \
 	2 "WiFi settings" \
 	3 "Network settings" \
-	4 "Change boot" \
-	5 "Expand filesystem" \
-	6 "Exit")
+	4 "Change Volume" \
+	5 "Force audio To HDMI output" \
+	6 "Force audio to Jack output" \
+	7 "Change boot" \
+	8 "Expand filesystem" \
+	9 "Exit")
 
 	clear
 
@@ -37,12 +40,23 @@ while true; do
 			network
 			;;
 		4)
-			./change-boot.sh
+			volume
 			;;
 		5)
-			./expand-filesystem.sh
+			audiohdmi
+			read -n 1 -s -r -p "Press any key to continue"
 			;;
 		6)
+			audiojack
+			read -n 1 -s -r -p "Press any key to continue"
+			;;
+		7)
+			./change-boot.sh
+			;;
+		8)
+			./expand-filesystem.sh
+			;;
+		9)
 			exit
 			;;
 		esac
