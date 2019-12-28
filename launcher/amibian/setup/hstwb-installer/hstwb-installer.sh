@@ -13,7 +13,8 @@ while true; do
 	--menu "Select option:" 0 0 0 \
 	1 "Find HstWB Self Install" \
 	2 "Build Install Entries" \
-	3 "Exit")
+	3 "Install HstWB Installer image" \
+	4 "Exit")
 
 	clear
 
@@ -31,6 +32,9 @@ while true; do
 			./build-install-entries.sh
 			;;
 		3)
+			./install-hstwb-installer-image.sh
+			;;
+		4)
 			exit
 			;;
 		esac
