@@ -51,6 +51,9 @@ chmod +x "/usr/local/bin/hstwb"
 # copy hstwb installer profile
 cp "$INSTALLROOT/install/boot/.profile" ~/.profile
 
+# copy hstwb installer first boot
+cp "$INSTALLROOT/install/first-boot.sh" ~/.hstwb-installer
+
 # copy hstwb installer menu files
 cp -r "$INSTALLROOT/install/menu_files" ~/.hstwb-installer
 

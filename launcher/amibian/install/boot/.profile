@@ -9,6 +9,12 @@ if [ -f ~/.hstwb-installer/config.sh ]; then
 	. ~/.hstwb-installer/config.sh
 fi
 
+# run first boot, if it doesn't exist
+if [ ! -f ~/.hstwb-installer/.first-boot ]; then
+	~/.hstwb-installer/first-boot.sh
+	touch ~/.hstwb-installer/.first-boot
+fi
+
 # clear the screen
 clear
 
