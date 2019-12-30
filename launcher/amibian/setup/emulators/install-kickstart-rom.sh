@@ -3,7 +3,7 @@
 # Install Kickstart Rom
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-20
+# Date: 2019-12-29
 #
 # A bash script for Amibian to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
 
@@ -163,11 +163,6 @@ done
 
 # install, if install argument is present
 if [ $install == 0 ]; then
-	# exit, if kick31.rom already exists
-	if [ -f "$kickstartsdir/kick31.rom" ]; then
-		exit
-	fi
-
 	# exit, if install is successful
 	if install; then
 		exit

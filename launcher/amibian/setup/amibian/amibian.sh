@@ -3,7 +3,7 @@
 # Setup Amibian
 # -------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-25
+# Date: 2019-12-30
 #
 # bash script to show setup amibian menu.
 
@@ -12,14 +12,15 @@ while true; do
 	--title "Setup Amibian" \
 	--menu "Select option:" 0 0 0 \
 	1 "Raspberry Pi Software Configuration Tool (raspiconf)" \
-	2 "WiFi settings" \
-	3 "Network settings" \
-	4 "Change Volume" \
-	5 "Force audio To HDMI output" \
-	6 "Force audio to Jack output" \
-	7 "Change boot" \
-	8 "Expand filesystem" \
-	9 "Exit")
+	2 "Change WiFi configuration" \
+	3 "Edit WiFi settings file" \
+	4 "Edit network settings file" \
+	5 "Change Volume" \
+	6 "Force audio To HDMI output" \
+	7 "Force audio to Jack output" \
+	8 "Change boot" \
+	9 "Expand filesystem" \
+	10 "Exit")
 
 	clear
 
@@ -34,29 +35,32 @@ while true; do
 			raspiconf
 			;;
 		2)
-			wifi
+			./change-wifi-configuration.sh
 			;;
 		3)
-			network
+			wifi
 			;;
 		4)
-			volume
+			network
 			;;
 		5)
+			volume
+			;;
+		6)
 			audiohdmi
 			read -n 1 -s -r -p "Press any key to continue"
 			;;
-		6)
+		7)
 			audiojack
 			read -n 1 -s -r -p "Press any key to continue"
 			;;
-		7)
+		8)
 			./change-boot.sh
 			;;
-		8)
+		9)
 			./expand-filesystem.sh
 			;;
-		9)
+		10)
 			exit
 			;;
 		esac
