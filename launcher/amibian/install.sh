@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-# Amibian Launcher Install
-# ------------------------
+# HstWB Installer Install
+# -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-25
+# Date: 2019-12-29
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -44,6 +44,9 @@ else
 fi
 chmod +x ~/.hstwb-installer/config.sh
 
+# create first time use trigger
+touch ~/.hstwb-installer/.first-time-use
+
 # install hstwb bin
 cp -f "$INSTALLROOT/hstwb.sh" "/usr/local/bin/hstwb"
 chmod +x "/usr/local/bin/hstwb"
@@ -51,13 +54,20 @@ chmod +x "/usr/local/bin/hstwb"
 # copy hstwb installer profile
 cp "$INSTALLROOT/install/boot/.profile" ~/.profile
 
-# copy hstwb installer first boot
-cp "$INSTALLROOT/install/first-boot.sh" ~/.hstwb-installer
-
 # copy hstwb installer menu files
 cp -r "$INSTALLROOT/install/menu_files" ~/.hstwb-installer
 
 # add hstwb to amibian menu
 if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" /usr/local/bin/menu)" == "" ]; then
 	echo "cat ~/.hstwb-installer/menu_files/hstwb" >>/usr/local/bin/menu
+fi
+
+# show install dialog
+dialog --clear --stdout \
+--title "Success" \
+--yesno "Successfully installed HstWB Installer. For first time use Amibian should be rebooted. Do you want to reboot now?" 0 0
+
+# reboot, if yes is selected
+if [ $? -eq 0 ]; then
+ 	reboot
 fi
