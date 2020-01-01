@@ -11,9 +11,21 @@ if [ -f ~/expand_filesystem.sh -a -f ~/.expand_filesystem ]; then
   ~/expand_filesystem.sh
 fi
 
+# repair usb medias
+if [ -f ~/repair_usb_medias.sh -a -f ~/.repair_usb_medias ]; then
+  rm -f ~/.repair_usb_medias
+  ~/repair_usb_medias.sh
+fi
+
+# find hstwb self install
+if [ -f ~/find_hstwb_self_install.sh -a -f ~/.find_hstwb_self_install ]; then
+  rm -f ~/.find_hstwb_self_install
+	~/find_hstwb_self_install.sh
+fi
+
 # install kickstart
 if [ -f ~/install_kickstart.sh ]; then
-	~/install_kickstart.sh -i -id=/media/usb0/kickstart -kd=/root/amibian/amiga_files/kickstarts
+	~/install_kickstart.sh -i -id=/media/hstwb-self-install/kickstart -kd=/root/amibian/amiga_files/kickstarts
 fi
 
 # select emulator

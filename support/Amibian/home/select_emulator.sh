@@ -3,15 +3,15 @@
 # Select Emulator
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2018-04-04
+# Date: 2019-12-15
 #
-# A bash script for Amibian to select emulator for HstWB Installer.
+# A bash script for Amibian to select emulator to use.
 
 
 # show select emulator menu
 choices=$(dialog --clear --stdout \
 --title "Select Emulator" \
---menu "Select emulator to use for HstWB Installer:" 0 0 0 \
+--menu "Select emulator to use:" 0 0 0 \
 1 "Chips UAE4ARM for Raspberry Pi 1 and Zero" \
 2 "Chips UAE4ARM for Raspberry Pi 2" \
 3 "Chips UAE4ARM for Raspberry Pi 3" \

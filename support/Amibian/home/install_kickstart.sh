@@ -3,16 +3,16 @@
 # Install Kickstart
 # -----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-10-23
+# Date: 2019-12-15
 #
-# A bash script for Amibian to find and install A1200 Kickstart 3.1 (40.068) rom file in install directory and install it in kickstarts directory.
+# A bash script for Amibian to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
 
 
 # kickstarts directory
 kickstartsdir="/root/amibian/amiga_files/kickstarts"
 
 # install directory
-installdir="/media/usb0/kickstart"
+installdir="/media/hstwb-self-install/kickstart"
 
 # install
 install=1
@@ -34,6 +34,19 @@ function install()
 	while read romfile; do
 		# get md5 from rom file
 		md5=$(md5sum "$romfile" | awk '{ print $1 }')
+
+		# copy rom file, if md5 matches kickstart 3.1.4 46.143 a1200 rom, hyperion entertainment
+		if [ "$md5" == "79bfe8876cd5abe397c50f60ea4306b9" ]; then
+			# copy rom and key file to kickstarts directory
+			cp "$romfile" "$kickstartsdir/kick31.rom"
+
+			# set installed true
+			installed=0
+
+			# show success dialog
+			dialog --clear --title "Success" --msgbox "Successfully installed Kickstart 3.1.4 46.143 A1200 rom, Hyperion Entertainment in kickstarts directory '$kickstartsdir'" 0 0
+			break
+		fi
 
 		# copy rom file, if md5 matches kickstart 3.1 40.068 a1200 rom, cloanto amiga forever 8
 		if [ "$md5" == "43efffafb382528355bb4cdde9fa9ce7" ]; then
@@ -164,7 +177,7 @@ fi
 # install kickstart menu
 while true; do
 	# show install kickstart menu
-	choices=$(dialog --clear --stdout --title "Install Kickstart" --menu "Find and install A1200 Kickstart 3.1 (40.068) rom from install directory '$installdir':" 0 0 0 1 "Install Kickstart rom" 2 "Change Install Directory" 3 "Exit")
+	choices=$(dialog --clear --stdout --title "Install Kickstart" --menu "Find and install A1200 Kickstart 3.1.4 or 3.1 rom from install directory '$installdir':" 0 0 0 1 "Install Kickstart rom" 2 "Change Install Directory" 3 "Exit")
 
 	# exit, if cancelled
 	if [ $? -ne 0 ]; then

@@ -2,7 +2,7 @@ config_description=one of the configs you can select to autoboot
 config_hardware=true
 config_host=true
 config_version=3.6.0
-kickstart_rom_file_id=1483A091,KS ROM v3.1 (A1200)
+kickstart_rom_file_id=
 amiberry.rom_path=/root/amibian/amiberry/kickstarts/
 amiberry.floppy_path=/root/amibian/amiberry/disks/
 amiberry.hardfile_path=/root/amibian/amiberry/
@@ -49,7 +49,7 @@ amiberry.use_retroarch_reset=false
 ; 
 use_gui=no
 kickstart_rom_file=/root/amibian/amiga_files/kickstarts/kick31.rom
-kickstart_rom_file_id=1483A091,KS ROM v3.1 (A1200)
+kickstart_rom_file_id=
 kickstart_ext_rom_file=
 pcmcia_mb_rom_file=:ENABLED
 ide_mb_rom_file=:ENABLED
@@ -72,8 +72,8 @@ hardfile2=rw,DH0:/root/amibian/amiga_files/hdd/dh0.hdf,32,1,2,512,0,/root/amibia
 uaehf0=hdf,rw,DH0:/root/amibian/amiga_files/hdd/dh0.hdf,32,1,2,512,0,/root/amibian/amiga_files/hdd/pfs3aio,uae0
 filesystem2=rw,DH1:Data:/root/amibian/amiga_files/hdd/dh1/,-128
 uaehf1=dir,rw,DH1:Data:/root/amibian/amiga_files/hdd/dh1/,-128
-filesystem2=rw,DH2:USB:/media/usb0/,-128
-uaehf2=dir,rw,DH2:USB:/media/usb0/,-128
+filesystem2=rw,DH2:USB:/media/usb/,-128
+uaehf2=dir,rw,DH2:USB:/media/usb/,-128
 ; 
 ; *** CD / CD32
 ; 

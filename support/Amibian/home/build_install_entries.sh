@@ -3,13 +3,13 @@
 # Build Install Entries
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2018-05-21
+# Date: 2019-12-15
 #
 # A bash script for Amibian to run Build Install Entries for HstWB Installer user packages.
 
 
 # user packages directory
-userpackagesdir="/media/usb0/userpackages"
+userpackagesdir="/media/hstwb-self-install/userpackages"
 
 # show error dialog, if user packages directory doesn't exist
 if [ ! -d "$userpackagesdir" ]; then
