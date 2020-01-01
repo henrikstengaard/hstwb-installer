@@ -3,7 +3,7 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2019-12-31
+# Date: 2020-01-01
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
@@ -118,6 +118,32 @@ function unzip_image()
 	return 0
 }
 
+function update_configs()
+{
+	# show confirm dialog
+	dialog --clear --stdout \
+	--title "Install HstWB Installer image" \
+	--yesno "To use the HstWB Installer image, emulators needs to be configured with 'config9.uae' to start HstWB Installer image.\n\nIf emulators are not configured with 'config9.uae', the configs can started from emulators by loading the configs manually.\n\nDo you want to configure emulators with config9.uae to start HstWB Installer image?" 0 0
+
+	# return true, if no is selected
+	if [ $? -ne 0 ]; then
+		return 0
+	fi
+
+	# copy amiberry configs
+	cp -R "$HSTWBINSTALLERROOT/emulators/amiberry/configs/." ~/amibian/amiberry/conf/
+	cp ~/amibian/amiberry/conf/hstwb-installer.uae ~/amibian/amiberry/conf/config9.uae
+
+	# copy chips uae4arm configs
+	cp -R "$HSTWBINSTALLERROOT/emulators/chips_uae4arm/configs/." ~/amibian/chips_uae4arm/conf/
+	cp ~/amibian/chips_uae4arm/conf/hstwb-installer.uae ~/amibian/chips_uae4arm/conf/config9.uae
+
+	# update emulators to use config9.uae
+	uaeconf9
+
+	return 0
+}
+
 function retry_menu()
 {
 	while true; do
@@ -164,7 +190,7 @@ if [ $? -ne 0 ]; then
 fi
 
 while true;do
-	if is_online && latest_image && download_image && unzip_image; then
+	if is_online && latest_image && download_image && unzip_image && update_configs; then
 		# show success dialog
 		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGAHDDPATH\"." 0 0
 

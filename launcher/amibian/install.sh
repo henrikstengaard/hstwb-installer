@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-29
+# Date: 2020-01-01
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -61,6 +61,12 @@ cp -r "$INSTALLROOT/install/menu_files" ~/.hstwb-installer
 if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" /usr/local/bin/menu)" == "" ]; then
 	echo "cat ~/.hstwb-installer/menu_files/hstwb" >>/usr/local/bin/menu
 fi
+
+# copy amiberry configs
+cp -R "$HSTWBINSTALLERROOT/emulators/amiberry/configs/." ~/amibian/amiberry/conf/
+
+# copy chips uae4arm configs
+cp -R "$HSTWBINSTALLERROOT/emulators/chips_uae4arm/configs/." ~/amibian/chips_uae4arm/conf/
 
 # show install dialog
 dialog --clear --stdout \
