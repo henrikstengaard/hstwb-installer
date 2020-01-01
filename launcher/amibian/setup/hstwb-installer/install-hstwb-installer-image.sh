@@ -123,7 +123,7 @@ function update_configs()
 	# show confirm dialog
 	dialog --clear --stdout \
 	--title "Install HstWB Installer image" \
-	--yesno "To use the HstWB Installer image, emulators needs to be configured with 'config9.uae' to start HstWB Installer image.\n\nIf emulators are not configured with 'config9.uae', the configs can started from emulators by loading the configs manually.\n\nDo you want to configure emulators with config9.uae to start HstWB Installer image?" 0 0
+	--yesno "To use the HstWB Installer image, emulators needs to be configured with 'config9.uae' to start HstWB Installer image.\n\nIf emulators are not configured with 'config9.uae', the configs can be started from emulators by loading the configs manually.\n\nDo you want to configure emulators with config9.uae to start HstWB Installer image?" 0 0
 
 	# return true, if no is selected
 	if [ $? -ne 0 ]; then
