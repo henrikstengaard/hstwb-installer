@@ -11,7 +11,7 @@ fi
 
 # run first time use, if it exist
 if [ -f ~/.hstwb-installer/.first-time-use ]; then
-	$HSTWBINSTALLERROOT/launcher/amibian/setup/amibian/first-time-use.sh
+	$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/amibian/first-time-use.sh
 fi
 
 # clear the screen
@@ -32,8 +32,8 @@ if [ "$mytty" != "/dev/tty1" ]; then
   exit
 fi
 
-# hstwb installer boot 	
-case "$HSTWBINSTALLERBOOT" in
+# hstwb installer boot
+case "$HSTWB_INSTALLER_BOOT" in
 hstwb)
 	hstwb
 	;;

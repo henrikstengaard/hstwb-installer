@@ -3,15 +3,18 @@
 # Install Kickstart Rom
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-29
+# Date: 2020-02-23
 #
 # A bash script for Amibian to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
 
+# fail, if amiga kickstarts path doesn't exist
+if [ ! -d "$AMIGA_KICKSTARTS_PATH" ]; then
+        echo "ERROR: Amiga Kickstarts path \"$AMIGA_KICKSTARTS_PATH\" doesn't exist!"
+        exit 1
+fi
 
-# kickstarts directory
-kickstartsdir="/root/amibian/amiga_files/kickstarts"
-
-# install directory
+# paths
+kickstartsdir=$AMIGA_KICKSTARTS_PATH
 installdir="/media/hstwb-self-install/kickstart"
 
 # install

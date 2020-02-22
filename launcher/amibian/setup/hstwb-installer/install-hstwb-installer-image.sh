@@ -3,13 +3,19 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2020-01-01
+# Date: 2020-02-23
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
+# fail, if amiga hdd path doesn't exist
+if [ ! -d "$AMIGA_HDD_PATH" ]; then
+        echo "ERROR: Amiga HDD path \"$AMIGA_HDD_PATH\" doesn't exist!"
+        exit 1
+fi
+
 # paths
+AMIGAHDDPATH="$AMIGA_HDD_PATH/hstwb"
 UAE4ARMPATH=~/.hstwb-installer/uae4arm
-AMIGAHDDPATH="/root/amibian/amiga_files/hdd/hstwb"
 
 function is_online()
 {

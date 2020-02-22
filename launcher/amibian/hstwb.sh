@@ -3,7 +3,7 @@
 # Launcher
 # --------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-23
+# Date: 2020-02-23
 #
 # bash script to start HstWB Installer for Amibian launcher.
 
@@ -17,12 +17,12 @@ fi
 . ~/.hstwb-installer/config.sh
 
 # fail, if hstwb installer root doesn't exist
-if [ ! -d "$HSTWBINSTALLERROOT" ]; then
-	echo "ERROR: HstWB Installer root \"$HSTWBINSTALLERROOT\" doesn't exist!"
+if [ ! -d "$HSTWB_INSTALLER_ROOT" ]; then
+	echo "ERROR: HstWB Installer root \"$HSTWB_INSTALLER_ROOT\" doesn't exist!"
 	exit 1
 fi
 
 # start hstwb installer for amibian
-pushd "$HSTWBINSTALLERROOT/launcher/amibian" >/dev/null
+pushd "$HSTWB_INSTALLER_ROOT/launcher/amibian" >/dev/null
 ./amibian.sh
 popd >/dev/null
