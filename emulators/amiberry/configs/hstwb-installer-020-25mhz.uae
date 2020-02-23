@@ -1,8 +1,11 @@
 config_description=Config to start HstWB Installer for building a new image (020 CPU, 25MHz)
 config_hardware=true
 config_host=true
-config_version=3.6.0
-kickstart_rom_file_id=
+config_version=4.3.0
+config_hardware_path=
+config_host_path=
+config_all_path=
+amiberry.vertical_offset=0
 amiberry.rom_path=$[AMIGA_KICKSTARTS_PATH]/
 amiberry.floppy_path=/root/amibian/amiberry/disks/
 amiberry.hardfile_path=$[AMIGA_HDD_PATH]/
@@ -30,11 +33,11 @@ input.analog_joystick_multiplier=15
 input.analog_joystick_offset=-1
 input.mouse_speed=100
 input.autofire_speed=0
+input.autoswitch=1
 kbd_lang=us
 ; 
 ; *** Host-Specific
 ; 
-amiberry.vertical_offset=0
 amiberry.hide_idle_led=0
 amiberry.gfx_correct_aspect=1
 amiberry.kbd_led_num=-1
@@ -49,7 +52,6 @@ amiberry.use_retroarch_reset=false
 ; 
 use_gui=no
 kickstart_rom_file=$[AMIGA_KICKSTARTS_PATH]/kick31.rom
-kickstart_rom_file_id=
 kickstart_ext_rom_file=
 pcmcia_mb_rom_file=:ENABLED
 ide_mb_rom_file=:ENABLED
@@ -85,32 +87,31 @@ cd_speed=100
 ; 
 ; *** Display / Screen Setup
 ; 
-gfx_framerate=0
-gfx_top_windowed=0
-gfx_left_windowed=0
-gfx_lores_mode=normal
-gfx_center_horizontal=smart
-gfx_center_vertical=smart
+gfx_framerate=1
 gfx_width=640
 gfx_height=256
+gfx_top_windowed=0
+gfx_left_windowed=0
 gfx_refreshrate=50
 gfx_refreshrate_rtg=50
 gfx_lores=false
 gfx_resolution=hires
+gfx_lores_mode=normal
 gfx_linemode=none
 gfx_fullscreen_amiga=false
 gfx_fullscreen_picasso=false
+gfx_center_horizontal=smart
+gfx_center_vertical=smart
 ntsc=false
 ; 
 ; *** CPU options
 ; 
-cpu_speed=max
+cpu_speed=turbo
 cpu_type=68020/68881
 cpu_model=68020
 fpu_model=68882
 cpu_compatible=false
 cpu_24bit_addressing=false
-fpu_no_unimplemented=true
 fpu_strict=false
 compfpu=false
 cachesize=0
@@ -125,7 +126,10 @@ mbresmem_size=0
 z3mem_size=0
 z3mem_start=0x40000000
 bogomem_size=0
-rtg_modes=0x502
+gfxcard_hardware_vblank=false
+gfxcard_hardware_sprite=false
+gfxcard_multithread=false
+rtg_modes=0x112
 ; 
 ; *** Chipset
 ; 
