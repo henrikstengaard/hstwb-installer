@@ -11,7 +11,7 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "Setup Amibian" \
 	--menu "Select option:" 0 0 0 \
-	1 "Raspberry Pi Software Configuration Tool (raspiconf)" \
+	1 "Amibian/Raspberry Pi Software Configuration Tool (raspiconf)" \
 	2 "Change WiFi configuration" \
 	3 "Edit WiFi settings file" \
 	4 "Edit network settings file" \
@@ -48,13 +48,13 @@ while true; do
 			./change-wifi-configuration.sh
 			;;
 		3)
-			wifi
+			./edit-wifi-settings-file.sh
 			;;
 		4)
 			network
 			;;
 		5)
-			volume
+			sudo alsamixer
 			;;
 		6)
 			audiohdmi

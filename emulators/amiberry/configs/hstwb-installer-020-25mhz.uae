@@ -1,11 +1,11 @@
-config_description=one of the configs you can select to autoboot
+config_description=Config to start HstWB Installer for building a new image (020 CPU, 25MHz)
 config_hardware=true
 config_host=true
 config_version=3.6.0
 kickstart_rom_file_id=
-amiberry.rom_path=/root/amibian/amiberry/kickstarts/
+amiberry.rom_path=$[AMIGA_KICKSTARTS_PATH]/
 amiberry.floppy_path=/root/amibian/amiberry/disks/
-amiberry.hardfile_path=/root/amibian/amiberry/
+amiberry.hardfile_path=$[AMIGA_HDD_PATH]/
 amiberry.cd_path=/root/amibian/amiberry/cd32/
 ; 
 ; *** Controller/Input Configuration
@@ -48,7 +48,7 @@ amiberry.use_retroarch_reset=false
 ; *** Common / Paths
 ; 
 use_gui=no
-kickstart_rom_file=/root/amibian/amiga_files/kickstarts/kick31.rom
+kickstart_rom_file=$[AMIGA_KICKSTARTS_PATH]/kick31.rom
 kickstart_rom_file_id=
 kickstart_ext_rom_file=
 pcmcia_mb_rom_file=:ENABLED
@@ -68,12 +68,16 @@ floppy_speed=800
 ; 
 ; *** Hard Drives
 ; 
-hardfile2=rw,DH0:/root/amibian/amiga_files/hdd/hstwb/dh0.hdf,32,1,2,512,0,/root/amibian/amiga_files/hdd/hstwb/pfs3aio,uae0
-uaehf0=hdf,rw,DH0:/root/amibian/amiga_files/hdd/hstwb/dh0.hdf,32,1,2,512,0,/root/amibian/amiga_files/hdd/hstwb/pfs3aio,uae0
-filesystem2=rw,DH1:Data:/root/amibian/amiga_files/hdd/hstwb/dh1/,-128
-uaehf1=dir,rw,DH1:Data:/root/amibian/amiga_files/hdd/hstwb/dh1/,-128
-filesystem2=rw,DH2:USB:/media/usb/,-128
-uaehf2=dir,rw,DH2:USB:/media/usb/,-128
+hardfile2=rw,DH0:$[AMIGA_HDD_PATH]/hstwb/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/hstwb/pfs3aio,uae0
+uaehf0=hdf,rw,DH0:$[AMIGA_HDD_PATH]/hstwb/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/hstwb/pfs3aio,uae0
+filesystem2=rw,DH1:Data:$[AMIGA_HDD_PATH]/hstwb/dh1/,-128
+uaehf1=dir,rw,DH1:Data:$[AMIGA_HDD_PATH]/hstwb/dh1/,-128
+filesystem2=ro,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
+uaehf2=dir,ro,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
+filesystem2=ro,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
+uaehf3=dir,ro,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
+filesystem2=ro,DH4:UserPackagesDir:/media/hstwb-self-install/userpackages/,-128
+uaehf5=dir,ro,DH4:UserPackagesDir:/media/hstwb-self-install/userpackages/,-128
 ; 
 ; *** CD / CD32
 ; 
@@ -82,6 +86,11 @@ cd_speed=100
 ; *** Display / Screen Setup
 ; 
 gfx_framerate=0
+gfx_top_windowed=0
+gfx_left_windowed=0
+gfx_lores_mode=normal
+gfx_center_horizontal=smart
+gfx_center_vertical=smart
 gfx_width=640
 gfx_height=256
 gfx_refreshrate=50
@@ -95,7 +104,7 @@ ntsc=false
 ; 
 ; *** CPU options
 ; 
-finegrain_cpu_speed=128
+cpu_speed=max
 cpu_type=68020/68881
 cpu_model=68020
 fpu_model=68882

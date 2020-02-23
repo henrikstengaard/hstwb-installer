@@ -31,15 +31,19 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-# detect amibian version 
+# detect amibian version
 if [ -d ~/Amiga/conf/ ]; then
  	AMIBIAN_VERSION=1.5
 	AMIGA_HDD_PATH=/home/amibian/Amiga/Hard-drives_HDF
 	AMIGA_KICKSTARTS_PATH=/home/amibian/Amiga/kickstarts
+	AMIBERRY_CONF_PATH=~/Amiga/conf
+	UAE4ARM_CONF_PATH=
 elif [ -d ~/amibian/amiberry/conf/ -o -d ~/amibian/chips_uae4arm/conf/ ]; then
 	AMIBIAN_VERSION=1.4.1001
 	AMIGA_HDD_PATH=/root/amibian/amiga_files/hdd
 	AMIGA_KICKSTARTS_PATH=/root/amibian/amiga_files/kickstarts
+	AMIBERRY_CONF_PATH=~/Amiga/conf
+	UAE4ARM_CONF_PATH=~/amibian/chips_uae4arm/conf
 else
 	echo "ERROR: Unsupported Amibian version!"
 	exit 1
@@ -99,6 +103,8 @@ else
 	echo "export AMIGA_HDD_PATH=\"$AMIGA_HDD_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIBIAN_VERSION=\"$AMIBIAN_VERSION\"" >>~/.hstwb-installer/config.sh
+	echo "export AMIBERRY_CONF_PATH=\"$AMIBERRY_CONF_PATH\"" >>~/.hstwb-installer/config.sh
+	echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
 fi
 chmod +x ~/.hstwb-installer/config.sh
 
@@ -131,23 +137,34 @@ case $AMIBIAN_VERSION in
 		if [ "$(grep -i "hstwb" ~/.amibian_scripts/cli_menu/menu.txt)" == "" ]; then
 			cat ~/.hstwb-installer/menu_files/hstwb >>~/.amibian_scripts/cli_menu/menu.txt
 		fi
-
-		# copy amiberry configs
-		cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/configs/." ~/Amiga/conf/
 		;;
 	1.4.1001)
 		# add hstwb to amibian menu
 		if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" /usr/local/bin/menu)" == "" ]; then
 			echo "cat ~/.hstwb-installer/menu_files/hstwb" >>/usr/local/bin/menu
 		fi
-
-		# copy amiberry configs
-		cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/configs/." ~/amibian/amiberry/conf/
-
-		# copy chips uae4arm configs
-		cp -R "$HSTWB_INSTALLER_ROOT/emulators/chips_uae4arm/configs/." ~/amibian/chips_uae4arm/conf/
 		;;
 esac
+
+# amiberry conf
+if [ ! "$AMIBERRY_CONF_PATH" == "" -a -d "$AMIBERRY_CONF_PATH" ]; then
+	# copy amiberry configs
+	cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/configs/." "$AMIBERRY_CONF_PATH"
+
+	# replace amiga hdd path placeholders with path
+	find "$AMIBERRY_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_HDD_PATH\\]/$(echo "$AMIGA_HDD_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+	find "$AMIBERRY_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+fi
+
+# uae4arm conf
+if [ ! "$UAE4ARM_CONF_PATH" == "" -a -d "$UAE4ARM_CONF_PATH" ]; then
+	# copy chips uae4arm configs
+	cp -R "$HSTWB_INSTALLER_ROOT/emulators/chips_uae4arm/configs/." "$UAE4ARM_CONF_PATH"
+
+	# replace amiga hdd path placeholders with path
+	find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_HDD_PATH\\]/$(echo "$AMIGA_HDD_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+	find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+fi
 
 # disable exit on eror
 set +e
