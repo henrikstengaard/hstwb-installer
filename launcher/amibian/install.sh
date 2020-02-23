@@ -69,11 +69,15 @@ fi
 # enable exit on error
 set -e
 
+# create backup of rc.local, if it doesn't exist
+if [ -f /etc/rc.local -a ! -f /etc/rc.local_backup ]; then
+	sudo cp /etc/rc.local /etc/rc.local_backup
+fi
+
 # create backup of profile, if it doesn't exist
 if [ -f ~/.profile -a ! -f ~/.profile_backup ]; then
 	cp ~/.profile ~/.profile_backup
 fi
-
 
 # create hstwb installer profile, if it doesn't exist
 if [ ! -d ~/.hstwb-installer ]; then
@@ -98,6 +102,9 @@ else
 fi
 chmod +x ~/.hstwb-installer/config.sh
 
+# run hstwb installer config
+. ~/.hstwb-installer/config.sh
+
 # create first time use trigger
 touch ~/.hstwb-installer/.first-time-use
 
@@ -114,6 +121,12 @@ cp -r "$INSTALL_ROOT/install/menu_files" ~/.hstwb-installer
 # install for amibian version
 case $AMIBIAN_VERSION in
 	1.5)
+		# disable start on boot
+		if [ "$(grep -i "exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh" /etc/rc.local)" != "" ]; then
+			sudo sed -e "s/^\(exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh\).*/#\1/g" /etc/rc.local >/tmp/_rc.local
+			sudo mv -f /tmp/_rc.local /etc/rc.local
+		fi
+
 		# add hstwb to amibian menu
 		if [ "$(grep -i "hstwb" ~/.amibian_scripts/cli_menu/menu.txt)" == "" ]; then
 			cat ~/.hstwb-installer/menu_files/hstwb >>~/.amibian_scripts/cli_menu/menu.txt

@@ -3,7 +3,7 @@
 # Amibian Launcher
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-22
+# Date: 2020-02-23
 #
 # bash script to show amibian launcher.
 
@@ -13,7 +13,7 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "HstWB Installer for Amibian" \
 	--menu "Select option:" 0 0 0 \
-	1 "Run emulator" \
+	1 "Run Amiga emulator" \
 	2 "Midnight Commander" \
 	3 "Setup" \
 	4 "System" \
@@ -29,7 +29,14 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			3
+			case $AMIBIAN_VERSION in
+        			1.5)
+					1
+					;;
+				1.4.1001)
+					3
+					;;
+			esac
 			;;
 		2)
 			mc

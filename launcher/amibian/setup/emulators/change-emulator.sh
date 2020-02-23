@@ -3,9 +3,16 @@
 # Change Emulator
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-29
+# Date: 2020-02-23
 #
 # bash script to show change emulator menu.
+
+# fail, if amibian version is not 1.4.1001
+if [ "$AMIBIAN_VERSION" != "1.4.1001" ]; then
+	# show success dialog
+	dialog --clear --title "Change Emulator" --msgbox "Change emulator is not supported with Amibian v$AMIBIAN_VERSION!" 0 0
+	exit
+fi
 
 # get selected emulator
 SELECTEDEMULATOR="$(cat ~/amibian/help_texts/selected_emulator | awk '{$1=$1};1')"

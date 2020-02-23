@@ -3,14 +3,14 @@
 # Change Boot
 # -----------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-25
+# Date: 2020-02-23
 #
 # bash script to change boot menu.
 
 function change_boot()
 {
-	HSTWBINSTALLERBOOT="$1"
-	sed -e "s/^\(export HSTWBINSTALLERBOOT=\).*/\1\"$(echo "$HSTWBINSTALLERBOOT" | sed -e "s/\//\\\\\//g")\"/g" ~/.hstwb-installer/config.sh >~/.hstwb-installer/_config.sh
+	HSTWB_INSTALLER_BOOT="$1"
+	sed -e "s/^\(export HSTWB_INSTALLER_BOOT=\).*/\1\"$(echo "$HSTWB_INSTALLER_BOOT" | sed -e "s/\//\\\\\//g")\"/g" ~/.hstwb-installer/config.sh >~/.hstwb-installer/_config.sh
 	mv -f ~/.hstwb-installer/_config.sh ~/.hstwb-installer/config.sh
 	chmod +x ~/.hstwb-installer/config.sh
 }

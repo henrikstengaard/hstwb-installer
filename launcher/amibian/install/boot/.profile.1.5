@@ -44,11 +44,13 @@ hstwb)
         hstwb
         ;;
 emulator)
-        echo "Can this be done?"
+	/home/amibian/.amibian_scripts/run-amiga.sh
         ;;
 esac
 
+# amibian menu
 cd /home/amibian/.amibian_scripts
 ./show_menu.sh
 cd ~
 sudo service bluetooth start
+

@@ -3,7 +3,7 @@
 # Setup Amibian
 # -------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-30
+# Date: 2020-02-23
 #
 # bash script to show setup amibian menu.
 
@@ -32,7 +32,17 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			raspiconf
+			case $AMIBIAN_VERSION in
+				1.5)
+					pushd /home/amibian/.amibian_scripts >/dev/null
+					./run_system_settings.sh
+					popd >/dev/null
+					;;
+				1.4.1001)
+					raspiconf
+					;;
+			esac
+
 			;;
 		2)
 			./change-wifi-configuration.sh
