@@ -3,7 +3,7 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-02-26
 #
 # Bash script for first time use of Amibian.
 
@@ -25,7 +25,7 @@ if [ ! -f ~/.hstwb-installer/.first-time-use-dialog ]; then
 	# show first time use dialog
 	dialog --clear --stdout \
 	--title "First time use" \
-	--yesno "First time use will go through initial steps to get Amibian, emulators and HstWB Installer up and running. Do you want to go through first time use steps?" 0 0
+	--yesno "First time use will go through initial steps to get HstWB Installer up and running. Do you want to go through first time use steps?" 0 0
 
 	# exit, if no is selected
 	if [ $? -ne 0 ]; then
@@ -51,10 +51,12 @@ fi
 $HSTWB_INSTALLER_ROOT/launcher/amibian/setup/hstwb-installer/find-hstwb-self-install.sh
 
 # install kickstart rom
-$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/emulators/install-kickstart-rom.sh
+$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/emulators/install-kickstart-rom.sh -i
 
-# change emulator
-$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/emulators/change-emulator.sh
+# change emulator for amibian v1.4.1001
+if [ "$AMIBIAN_VERSION" = "1.4.1001" ]; then
+	$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/emulators/change-emulator.sh
+fi
 
 # change wifi configuration
 $HSTWB_INSTALLER_ROOT/launcher/amibian/setup/amibian/change-wifi-configuration.sh

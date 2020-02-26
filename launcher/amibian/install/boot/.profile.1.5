@@ -35,7 +35,7 @@ fi
 
 # run first time use, if it exist
 if [ -f ~/.hstwb-installer/.first-time-use ]; then
-        $HSTWB_INSTALLER_ROOT/launcher/amibian/setup/amibian/first-time-use.sh
+        $HSTWB_INSTALLER_ROOT/launcher/amibian/setup/hstwb-installer/first-time-use.sh
 fi
 
 # hstwb installer boot
@@ -44,13 +44,12 @@ hstwb)
         hstwb
         ;;
 emulator)
-	/home/amibian/.amibian_scripts/run-amiga.sh
+        $HSTWB_INSTALLER_ROOT/launcher/amibian/run-amiga-emulator.sh
         ;;
 esac
 
-# amibian menu
-cd /home/amibian/.amibian_scripts
-./show_menu.sh
-cd ~
 sudo service bluetooth start
+
+# amibian menu
+menu
 

@@ -14,7 +14,8 @@ while true; do
 	1 "Find HstWB Self Install" \
 	2 "Build Install Entries" \
 	3 "Install HstWB Installer image" \
-	4 "Exit")
+	4 "First Time Use" \
+	5 "Exit")
 
 	clear
 
@@ -35,6 +36,9 @@ while true; do
 			./install-hstwb-installer-image.sh
 			;;
 		4)
+			./first-time-use.sh
+			;;
+		5)
 			exit
 			;;
 		esac

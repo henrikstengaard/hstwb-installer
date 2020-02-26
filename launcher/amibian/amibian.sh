@@ -31,7 +31,7 @@ while true; do
 		1)
 			case $AMIBIAN_VERSION in
         			1.5)
-					1
+					./run-amiga-emulator.sh
 					;;
 				1.4.1001)
 					3

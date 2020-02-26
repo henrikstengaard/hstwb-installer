@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-02-26
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -63,25 +63,27 @@ fi
 # show install dialog
 dialog --clear --stdout \
 --title "Install HstWB Installer" \
---yesno "Do you want to install HstWB Installer launcher?" 0 0
+--yesno "Do you want to install HstWB Installer?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then
   exit
 fi
 
+CHANGE_AMIBIAN_BOOT=0
+
+# show change amibian boot
+dialog --clear --stdout \
+--title "Change Amibian boot" \
+--yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make backups of '/etc/rc.local' and '~/.profile' files and patch these to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
+
+# exit, if no is selected
+if [ $? -eq 0 ]; then
+	CHANGE_AMIBIAN_BOOT=1
+fi
+
 # enable exit on error
 set -e
-
-# create backup of rc.local, if it doesn't exist
-if [ -f /etc/rc.local -a ! -f /etc/rc.local_backup ]; then
-	sudo cp /etc/rc.local /etc/rc.local_backup
-fi
-
-# create backup of profile, if it doesn't exist
-if [ -f ~/.profile -a ! -f ~/.profile_backup ]; then
-	cp ~/.profile ~/.profile_backup
-fi
 
 # create hstwb installer profile, if it doesn't exist
 if [ ! -d ~/.hstwb-installer ]; then
@@ -111,15 +113,20 @@ chmod +x ~/.hstwb-installer/config.sh
 # run hstwb installer config
 . ~/.hstwb-installer/config.sh
 
-# create first time use trigger
-touch ~/.hstwb-installer/.first-time-use
-
 # install hstwb bin
 cp -f "$INSTALL_ROOT/hstwb.sh" "/usr/local/bin/hstwb"
 chmod +x "/usr/local/bin/hstwb"
 
-# copy hstwb installer profile
-cp "$INSTALL_ROOT/install/boot/.profile.$AMIBIAN_VERSION" ~/.profile
+# change .profile, if change amibian boot
+if [ $CHANGE_AMIBIAN_BOOT -eq 1 ]; then
+	# create backup of profile, if it doesn't exist
+	if [ -f ~/.profile -a ! -f ~/.profile_backup ]; then
+		cp ~/.profile ~/.profile_backup
+	fi
+
+	# copy hstwb installer profile
+	cp "$INSTALL_ROOT/install/boot/.profile.$AMIBIAN_VERSION" ~/.profile
+fi
 
 # copy hstwb installer menu files
 cp -r "$INSTALL_ROOT/install/menu_files" ~/.hstwb-installer
@@ -127,10 +134,18 @@ cp -r "$INSTALL_ROOT/install/menu_files" ~/.hstwb-installer
 # install for amibian version
 case $AMIBIAN_VERSION in
 	1.5)
-		# disable start on boot
-		if [ "$(grep -i "exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh" /etc/rc.local)" != "" ]; then
-			sudo sed -e "s/^\(exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh\).*/#\1/g" /etc/rc.local >/tmp/_rc.local
-			sudo mv -f /tmp/_rc.local /etc/rc.local
+		# change rc.local, if change amibian boot
+		if [ $CHANGE_AMIBIAN_BOOT -eq 1 ]; then
+			# create backup of rc.local, if it doesn't exist
+			if [ -f /etc/rc.local -a ! -f /etc/rc.local_backup ]; then
+				sudo cp /etc/rc.local /etc/rc.local_backup
+			fi
+
+			# disable start on boot
+			if [ "$(grep -i "exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh" /etc/rc.local)" != "" ]; then
+				sudo sed -e "s/^\(exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh\).*/#\1/g" /etc/rc.local >/tmp/_rc.local
+				sudo mv -f /tmp/_rc.local /etc/rc.local
+			fi
 		fi
 
 		# add hstwb to amibian menu
@@ -172,9 +187,12 @@ set +e
 # show install dialog
 dialog --clear --stdout \
 --title "Success" \
---yesno "Successfully installed HstWB Installer. For first time use Amibian, should be rebooted. Do you want to reboot now?" 0 0
+--yesno "Successfully installed HstWB Installer.\n\nType hstwb and press enter from shell at anytime to start HstWB Installer menu.\n\nDo you want to reboot and go through first time use steps now?" 0 0
 
-# reboot, if yes is selected
+# reboot to first time use, if yes is selected
 if [ $? -eq 0 ]; then
+	# create first time use trigger
+	touch ~/.hstwb-installer/.first-time-use
+
  	reboot
 fi

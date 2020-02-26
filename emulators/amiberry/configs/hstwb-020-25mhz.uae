@@ -70,10 +70,10 @@ floppy_speed=800
 ; 
 ; *** Hard Drives
 ; 
-hardfile2=rw,DH0:$[AMIGA_HDD_PATH]/hstwb/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/hstwb/pfs3aio,uae0
-uaehf0=hdf,rw,DH0:$[AMIGA_HDD_PATH]/hstwb/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/hstwb/pfs3aio,uae0
-filesystem2=rw,DH1:Data:$[AMIGA_HDD_PATH]/hstwb/dh1/,-128
-uaehf1=dir,rw,DH1:Data:$[AMIGA_HDD_PATH]/hstwb/dh1/,-128
+hardfile2=rw,DH0:$[AMIGA_HDD_PATH]/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/pfs3aio,uae0
+uaehf0=hdf,rw,DH0:$[AMIGA_HDD_PATH]/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/pfs3aio,uae0
+filesystem2=rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
+uaehf1=dir,rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
 filesystem2=rw,DH2:USB:/media/usb/,-128
 uaehf2=dir,rw,DH2:USB:/media/usb/,-128
 ; 

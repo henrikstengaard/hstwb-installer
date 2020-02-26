@@ -3,7 +3,7 @@
 # Launcher
 # --------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-02-26
 #
 # bash script to start HstWB Installer for Amibian launcher.
 

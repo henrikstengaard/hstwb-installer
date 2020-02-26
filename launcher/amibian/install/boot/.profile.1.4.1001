@@ -11,7 +11,7 @@ fi
 
 # run first time use, if it exist
 if [ -f ~/.hstwb-installer/.first-time-use ]; then
-	$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/amibian/first-time-use.sh
+	$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/hstwb-installer/first-time-use.sh
 fi
 
 # clear the screen
