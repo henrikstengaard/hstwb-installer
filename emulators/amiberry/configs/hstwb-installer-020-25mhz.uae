@@ -76,8 +76,8 @@ filesystem2=rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
 uaehf1=dir,rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
 filesystem2=ro,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
 uaehf2=dir,ro,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
-filesystem2=ro,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
-uaehf3=dir,ro,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
+filesystem2=rw,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
+uaehf3=dir,rw,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
 filesystem2=ro,DH4:UserPackagesDir:/media/hstwb-self-install/userpackages/,-128
 uaehf5=dir,ro,DH4:UserPackagesDir:/media/hstwb-self-install/userpackages/,-128
 ; 
