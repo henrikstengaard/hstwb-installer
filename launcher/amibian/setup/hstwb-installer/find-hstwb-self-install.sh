@@ -3,9 +3,9 @@
 # Find HstWB Self Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-22
+# Date: 2020-03-04
 #
-# A bash script for Amibian to find HstWB self install usb media.
+# A bash script to find HstWB self install in '/media' and update '/media/hstwb-self-install' synlink to directory containing 'hstwb-self-install.txt' file.
 
 
 function find_hstwb_self_install()
@@ -31,7 +31,7 @@ function find_hstwb_self_install()
 		dialog --clear --title "Success" --msgbox "Successfully found HstWB Self Install at USB media directory '$usbmediapath' and updated media symlink." 0 0
 
 		break
-	done < <(lsblk --list --paths --noheadings --output name,fstype,size,state,mountpoint | grep -e "vfat" -e "/media/usb" | awk '{print $4}')
+	done < <(lsblk --list --paths --noheadings --output name,fstype,size,state,mountpoint | grep -e "vfat" -e "/media/" | awk '{print $4}')
 }
 
 # main loop

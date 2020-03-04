@@ -3,7 +3,7 @@
 # Setup HstWB Installer
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-20
+# Date: 2020-03-04
 #
 # bash script to show setup hstwb installer menu.
 
