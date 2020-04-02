@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-26
+# Date: 2020-04-02
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -146,6 +146,23 @@ case $AMIBIAN_VERSION in
 				sudo sed -e "s/^\(exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh\).*/#\1/g" /etc/rc.local >/tmp/_rc.local
 				sudo mv -f /tmp/_rc.local /etc/rc.local
 			fi
+		fi
+
+		# create backup of usbmount.conf, if it doesn't exist
+		if [ -f /etc/usbmount/usbmount.conf -a ! -f /etc/usbmount/usbmount.conf_backup ]; then
+			sudo cp /etc/usbmount/usbmount.conf /etc/usbmount/usbmount.conf_backup
+		fi
+
+		# change usbmount.conf mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
+		if [ "$(grep -i "^MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"" ]; then
+			sudo sed -e "s/^MOUNTOPTIONS=.*/MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
+			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
+		fi
+
+		# change usbmount.conf fs_mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
+		if [ "$(grep -i "^FS_MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"" ]; then
+			sudo sed -e "s/^FS_MOUNTOPTIONS=.*/FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
+			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
 		fi
 
 		# add hstwb to amibian menu
