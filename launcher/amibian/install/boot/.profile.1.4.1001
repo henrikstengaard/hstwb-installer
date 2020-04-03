@@ -27,19 +27,16 @@ mesg n
 
 # start emulator, if not logged in via ssh
 mytty=`tty`
-if [ "$mytty" != "/dev/tty1" ]; then
-  menu
-  exit
+if [ "$mytty" == "/dev/tty1" ]; then
+	# hstwb installer boot
+	case "$HSTWB_INSTALLER_BOOT" in
+		hstwb)
+			hstwb
+			;;
+		emulator)
+			bootstartingemulator
+			;;
+	esac
 fi
-
-# hstwb installer boot
-case "$HSTWB_INSTALLER_BOOT" in
-hstwb)
-	hstwb
-	;;
-emulator)
-	bootstartingemulator
-	;;
-esac
 
 menu
