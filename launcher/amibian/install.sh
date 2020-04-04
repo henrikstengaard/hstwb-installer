@@ -72,15 +72,31 @@ fi
 
 CHANGE_AMIBIAN_BOOT=0
 
-# show change amibian boot
-dialog --clear --stdout \
---title "Change Amibian boot" \
---yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make backups of '/etc/rc.local' and '~/.profile' files and patch these to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
+# change amibian boot dialog
+case $AMIBIAN_VERSION in
+	1.5)
+		# show change amibian boot
+		dialog --clear --stdout \
+		--title "Change Amibian boot" \
+		--yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make backups of '/etc/rc.local' and '~/.profile' files and patch these to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
 
-# exit, if no is selected
-if [ $? -eq 0 ]; then
-	CHANGE_AMIBIAN_BOOT=1
-fi
+		# exit, if no is selected
+		if [ $? -eq 0 ]; then
+			CHANGE_AMIBIAN_BOOT=1
+		fi
+		;;
+	1.4.1001)
+		# show change amibian boot
+		dialog --clear --stdout \
+		--title "Change Amibian boot" \
+		--yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make a backup of '~/.profile' file and patch it to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
+
+		# exit, if no is selected
+		if [ $? -eq 0 ]; then
+			CHANGE_AMIBIAN_BOOT=1
+		fi
+		;;
+esac
 
 # enable exit on error
 set -e
