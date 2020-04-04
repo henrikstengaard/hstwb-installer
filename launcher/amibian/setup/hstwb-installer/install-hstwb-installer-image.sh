@@ -3,7 +3,7 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2020-02-26
+# Date: 2020-04-03
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
@@ -146,30 +146,54 @@ function update_configs()
 		find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
 	fi
 
-	# show confirm dialog
-	dialog --clear --stdout \
-	--title "Autostart HstWB Installer image" \
-	--yesno "Do you want to update Amiga emulator to autostart HstWB Installer image?" 0 0
+	# autostart hstwb installer
+	case $AMIBIAN_VERSION in
+        1.5)
+		# show confirm dialog
+		dialog --clear --stdout \
+		--title "Autostart HstWB Installer image" \
+		--yesno "HstWB Installer can be configured to autostart using Amiga emulator configuration file 'autostart.uae'. This will overwrite existing Amiga emulator configuration file 'autostart.uae'.\n\nDo you want to update Amiga emulator to autostart HstWB Installer image using configuration file 'autostart.uae'?" 0 0
 
-	# exit, if no is selected
-	if [ $? -ne 0 ]; then
-	  return 0
-	fi
+		# exit, if no is selected
+		if [ $? -ne 0 ]; then
+			return 0
+		fi
 
-	# amiberry autostart config
-	if [ -f "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
-		cp "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" "$AMIBERRY_CONF_PATH/autostart.uae"
-	fi
+		# amiberry autostart config
+		if [ -f "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
+			cp "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" "$AMIBERRY_CONF_PATH/autostart.uae"
+		fi
 
-	# uae4arm autostart config
-	if [ -f "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
-		cp "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" "$UAE4ARM_CONF_PATH/autostart.uae"
-	fi
+		# uae4arm autostart config
+		if [ -f "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
+			cp "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" "$UAE4ARM_CONF_PATH/autostart.uae"
+		fi
+		;;
+        1.4.1001)
+		# show confirm dialog
+		dialog --clear --stdout \
+		--title "Autostart HstWB Installer image" \
+		--yesno "HstWB Installer can be configured to autostart using Amiga emulator configuration file 'config9.uae'. This will overwrite existing Amiga emulator configuration file 'config9.uae'.\n\nDo you want to update Amiga emulator to autostart HstWB Installer image using configuration file 'config9.uae'?" 0 0
 
-	# autostart for amibian v1.4.1001
-	if [ "$AMIBIAN_VERSION" = "1.4.1001" ]; then
-		read -p "TODO: Make autostart for Amibian v1.4.1001"
-	fi
+		# exit, if no is selected
+		if [ $? -ne 0 ]; then
+			return 0
+		fi
+
+		# amiberry autostart config
+		if [ -f "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
+			cp "$AMIBERRY_CONF_PATH/hstwb-installer-020-jit.uae" "$AMIBERRY_CONF_PATH/config9.uae"
+		fi
+
+		# uae4arm autostart config
+		if [ -f "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" ]; then
+			cp "$UAE4ARM_CONF_PATH/hstwb-installer-020-jit.uae" "$UAE4ARM_CONF_PATH/config9.uae"
+		fi
+
+		# configure amiga emulators to autostart config9.uae
+		uaeconf9
+		;;
+	esac
 
 	return 0
 }
@@ -222,7 +246,7 @@ fi
 while true;do
 	if is_online && latest_image && download_image && unzip_image && update_configs; then
 		# show success dialog
-		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGA_HDD_PATH\".\n\nIf Amiga emulator is not configured to autostart HstWB Installer configuration, then manually run Amiga emulator, load and start \"hstwb-installer-020-jit.uae\" configuration and start HstWB Installer." 0 0
+		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGA_HDD_PATH\".\n\nIf Amiga emulator is not configured to autostart HstWB Installer, then manually run Amiga emulator, load and start \"hstwb-installer-020-jit.uae\" configuration file to start HstWB Installer." 0 0
 
 		exit
 	else
