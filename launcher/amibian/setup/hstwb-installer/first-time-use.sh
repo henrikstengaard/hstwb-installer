@@ -3,7 +3,7 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-26
+# Date: 2020-04-04
 #
 # Bash script for first time use of Amibian.
 
@@ -45,6 +45,11 @@ fi
 if [ ! -f ~/.hstwb-installer/.expand-filesystem ]; then
 	touch ~/.hstwb-installer/.expand-filesystem
 	$HSTWB_INSTALLER_ROOT/launcher/amibian/setup/amibian/expand-filesystem.sh
+fi
+
+# mount fat32 devices for amibian v1.5
+if [ "$AMIBIAN_VERSION" = "1.5" ]; then
+	$HSTWB_INSTALLER_ROOT/launcher/amibian/system/mount-fat32-devices.sh -q
 fi
 
 # find hstwb self install
