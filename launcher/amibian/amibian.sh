@@ -17,7 +17,8 @@ while true; do
 	2 "Midnight Commander" \
 	3 "Setup" \
 	4 "System" \
-	5 "Exit")
+	5 "Update" \
+	6 "Exit")
 
 	clear
 
@@ -52,6 +53,9 @@ while true; do
 			popd >/dev/null
 			;;
 		5)
+			./update.sh
+			;;
+		6)
 			exit
 			;;
 		esac
