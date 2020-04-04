@@ -181,12 +181,24 @@ case $AMIBIAN_VERSION in
 			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
 		fi
 
+                # create backup of show_menu.sh, if it doesn't exist
+                if [ -f ~/.amibian_scripts/show_menu.sh -a ! -f ~/.amibian_scripts/show_menu.sh_backup ]; then
+                        cp ~/.amibian_scripts/show_menu.sh ~/.amibian_scripts/show_menu.sh_backup
+                fi
+
 		# add hstwb to amibian menu
-		if [ "$(grep -i "hstwb" ~/.amibian_scripts/cli_menu/menu.txt)" == "" ]; then
-			cat ~/.hstwb-installer/menu_files/hstwb >>~/.amibian_scripts/cli_menu/menu.txt
+		if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" ~/.amibian_scripts/show_menu.sh)" == "" ]; then
+			sed '/cat \/home\/amibian\/.amibian_scripts\/cli_menu\/menu.txt/ a cat ~/.hstwb-installer/menu_files/hstwb' ~/.amibian_scripts/show_menu.sh >/tmp/_show_menu.sh
+			mv /tmp/_show_menu.sh ~/.amibian_scripts/show_menu.sh
+			chmod +x ~/.amibian_scripts/show_menu.sh
 		fi
 		;;
 	1.4.1001)
+                # create backup of menu, if it doesn't exist
+                if [ -f /usr/local/bin/menu -a ! -f /usr/local/bin/menu_backup ]; then
+                        cp /usr/local/bin/menu /usr/local/bin/menu_backup
+                fi
+
 		# add hstwb to amibian menu
 		if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" /usr/local/bin/menu)" == "" ]; then
 			echo "cat ~/.hstwb-installer/menu_files/hstwb" >>/usr/local/bin/menu

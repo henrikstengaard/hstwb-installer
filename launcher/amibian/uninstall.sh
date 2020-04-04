@@ -17,6 +17,16 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
+# restore backup of rc.local, if it exist
+if [ -f /etc/rc.local_backup -a -f /etc/rc.local ]; then
+	sudo cp /etc/rc.local_backup /etc/rc.local
+fi
+
+# restore backup of usbmount.conf, if it exist
+if [ -f /etc/usbmount/usbmount.conf_backup -a -f /etc/usbmount/usbmount.conf ]; then
+	sudo cp /etc/usbmount/usbmount.conf_backup /etc/usbmount/usbmount.conf
+fi
+
 # delete hstwb installer profile, if it exist
 if [ -d ~/.hstwb-installer ]; then
         rm -Rf ~/.hstwb-installer
@@ -30,6 +40,13 @@ fi
 # restore backup of profile, if it exist
 if [ -f ~/.profile_backup -a -f ~/.profile ]; then
 	cp ~/.profile_backup ~/.profile
+fi
+
+# remove hstwb from amibian 1.5 menu
+if [ -f ~/.amibian_scripts/show_menu.sh -a "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" ~/.amibian_scripts/show_menu.sh)" != "" ]; then
+	grep -iv "cat ~/.hstwb-installer/menu_files/hstwb" ~/.amibian_scripts/show_menu.sh >/tmp/_show_menu.sh
+	mv /tmp/_show_menu.sh ~/.amibian_scripts/show_menu.sh
+	chmod +x ~/.amibian_scripts/show_menu.sh
 fi
 
 # remove hstwb from amibian 1.4.1001 menu
