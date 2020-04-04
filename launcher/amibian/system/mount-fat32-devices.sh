@@ -7,6 +7,25 @@
 #
 # A bash script to mount FAT32 devices to '/media/' using pmount.
 
+# check if pmount is installed
+dpkg -s pmount >/dev/null 2>&1
+
+# show install pmount, if pmount is not installed
+if [ $? -ne 0 ]; then
+	# show install pmount dialog
+	dialog --clear --stdout \
+	--title "Install pmount" \
+	--yesno "Pmount is not installed and is required by mount FAT32 devices.\n\nDo you want to install pmount?" 0 0
+
+	# exit, if no is selected
+	if [ $? -ne 0 ]; then
+		exit
+	fi
+
+	# install pmount
+	sudo apt-get install pmount
+fi
+
 quiet=0
 
 # parse arguments
