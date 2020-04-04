@@ -16,8 +16,8 @@ while true; do
 	3 "Edit WiFi settings file" \
 	4 "Edit network settings file" \
 	5 "Change Volume" \
-	6 "Force audio To HDMI output" \
-	7 "Force audio to Jack output" \
+	6 "Set audio output to HDMI" \
+	7 "Set audio output to Jack" \
 	8 "Change boot" \
 	9 "Expand filesystem" \
 	10 "Exit")
@@ -51,18 +51,16 @@ while true; do
 			./edit-wifi-settings-file.sh
 			;;
 		4)
-			network
+			./edit-network-settings-file.sh
 			;;
 		5)
 			sudo alsamixer
 			;;
 		6)
-			audiohdmi
-			read -n 1 -s -r -p "Press any key to continue"
+			./audio-output-hdmi.sh
 			;;
 		7)
-			audiojack
-			read -n 1 -s -r -p "Press any key to continue"
+			./audio-output-jack.sh
 			;;
 		8)
 			./change-boot.sh
