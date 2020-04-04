@@ -3,7 +3,7 @@
 # Amibian Launcher
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-04-04
 #
 # bash script to show amibian launcher.
 
@@ -11,7 +11,7 @@
 while true; do
 	# show main menu
 	choices=$(dialog --clear --stdout \
-	--title "HstWB Installer for Amibian" \
+	--title "HstWB Installer for Amibian v$AMIBIAN_VERSION" \
 	--menu "Select option:" 0 0 0 \
 	1 "Run Amiga emulator" \
 	2 "Midnight Commander" \
