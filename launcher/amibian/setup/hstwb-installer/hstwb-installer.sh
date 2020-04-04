@@ -3,7 +3,7 @@
 # Setup HstWB Installer
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-03-04
+# Date: 2020-04-04
 #
 # bash script to show setup hstwb installer menu.
 
@@ -14,8 +14,9 @@ while true; do
 	1 "Find HstWB Self Install" \
 	2 "Build Install Entries" \
 	3 "Install HstWB Installer image" \
-	4 "First Time Use" \
-	5 "Exit")
+	4 "Delete HstWB Installer image cache" \
+	5 "First Time Use" \
+	6 "Exit")
 
 	clear
 
@@ -36,9 +37,12 @@ while true; do
 			./install-hstwb-installer-image.sh
 			;;
 		4)
-			./first-time-use.sh
+			./delete-hstwb-installer-image-cache.sh
 			;;
 		5)
+			./first-time-use.sh
+			;;
+		6)
 			exit
 			;;
 		esac
