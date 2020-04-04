@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-04-02
+# Date: 2020-04-04
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -42,7 +42,7 @@ elif [ -d ~/amibian/amiberry/conf/ -o -d ~/amibian/chips_uae4arm/conf/ ]; then
 	AMIBIAN_VERSION=1.4.1001
 	AMIGA_HDD_PATH=/root/amibian/amiga_files/hdd
 	AMIGA_KICKSTARTS_PATH=/root/amibian/amiga_files/kickstarts
-	AMIBERRY_CONF_PATH=~/Amiga/conf
+	AMIBERRY_CONF_PATH=~/amibian/amiberry/conf
 	UAE4ARM_CONF_PATH=~/amibian/chips_uae4arm/conf
 else
 	echo "ERROR: Unsupported Amibian version!"
