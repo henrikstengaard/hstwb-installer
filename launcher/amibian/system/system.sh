@@ -11,12 +11,13 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "System" \
 	--menu "Select option:" 0 0 0 \
-	1 "List FAT32 devices" \
-	2 "Mount FAT32 devices" \
-	3 "Repair FAT32 devices" \
-	4 "Reboot" \
-	5 "Shutdown" \
-	6 "Exit")
+	1 "System information" \
+	2 "List FAT32 devices" \
+	3 "Mount FAT32 devices" \
+	4 "Repair FAT32 devices" \
+	5 "Reboot" \
+	6 "Shutdown" \
+	7 "Exit")
 
 	clear
 
@@ -28,21 +29,24 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			./list-fat32-devices.sh
+			./system-information.sh
 			;;
 		2)
-			./mount-fat32-devices.sh
+			./list-fat32-devices.sh
 			;;
 		3)
-			./repair-fat32-devices.sh
+			./mount-fat32-devices.sh
 			;;
 		4)
-			./reboot.sh
+			./repair-fat32-devices.sh
 			;;
 		5)
-			./shutdown.sh
+			./reboot.sh
 			;;
 		6)
+			./shutdown.sh
+			;;
+		7)
 			exit
 			;;
 		esac
