@@ -3,7 +3,7 @@
 # Amibian Launcher
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-04-04
+# Date: 2020-04-05
 #
 # bash script to show amibian launcher.
 
@@ -18,7 +18,8 @@ while true; do
 	3 "Setup" \
 	4 "System" \
 	5 "Update" \
-	6 "Exit")
+	6 "About" \
+	7 "Exit")
 
 	clear
 
@@ -56,6 +57,9 @@ while true; do
 			./update.sh
 			;;
 		6)
+			./about.sh
+			;;
+		7)
 			exit
 			;;
 		esac
