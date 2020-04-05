@@ -55,6 +55,11 @@ while true; do
 			;;
 		5)
 			./update.sh
+
+			# restart script, if updated
+			if [ $? -eq 0 ]; then
+				exec "$0"
+			fi
 			;;
 		6)
 			./about.sh

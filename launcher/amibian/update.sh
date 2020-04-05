@@ -14,7 +14,7 @@ dialog --clear --stdout \
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then
-	exit
+	exit 1
 fi
 
 # git pull
@@ -34,7 +34,7 @@ if [ $? -ne 0 ]; then
 
 	# exit, if no is selected
 	if [ $? -ne 0 ]; then
-		exit
+		exit 1
 	fi
 
 	# git reset, clean and pull
