@@ -33,10 +33,18 @@ fi
 
 # detect amibian version
 if [ -d ~/Amiga/conf/ ]; then
+	# amibian 1.5 without updates
  	AMIBIAN_VERSION=1.5
-	AMIGA_HDD_PATH=/home/amibian/Amiga/Hard-drives_HDF
-	AMIGA_KICKSTARTS_PATH=/home/amibian/Amiga/kickstarts
+	AMIGA_HDD_PATH=~/Amiga/Hard-drives_HDF
+	AMIGA_KICKSTARTS_PATH=~/Amiga/kickstarts
 	AMIBERRY_CONF_PATH=~/Amiga/conf
+	UAE4ARM_CONF_PATH=
+elif [ -d ~/Amiga/Emulators/amiberry/conf/ ]; then
+	# amibian 1.5 with updates
+	AMIBIAN_VERSION=1.5
+	AMIGA_HDD_PATH=~/Amiga/Hard-drives_HDF
+	AMIGA_KICKSTARTS_PATH=~/Amiga/kickstarts
+	AMIBERRY_CONF_PATH=~/Amiga/Emulators/amiberry/conf/
 	UAE4ARM_CONF_PATH=
 elif [ -d ~/amibian/amiberry/conf/ -o -d ~/amibian/chips_uae4arm/conf/ ]; then
 	AMIBIAN_VERSION=1.4.1001
