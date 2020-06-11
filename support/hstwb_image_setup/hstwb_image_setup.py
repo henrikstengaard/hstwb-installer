@@ -68,7 +68,7 @@ def config_file_has_self_install_dirs(config_file):
     """Config file has self install dirs"""
 
     has_self_install_dirs = False
-    with open(config_file) as _f:
+    with open(config_file,'rU') as _f:
         for line in _f:
             if re.search(r'^hard_drive_\d+_label\s*=\s*(amigaosdir|kickstartdir|userpackagesdir)', line, re.I) or \
                 re.search(r'^(hardfile2|uaehf\d+|filesystem2)=.*[,:](amigaosdir|kickstartdir|userpackagesdir)[,:]', line, re.I):
@@ -239,7 +239,7 @@ def read_model_from_config_file( \
     model = None
 
     # read lines from config file
-    with open(config_file) as _f:
+    with open(config_file,'rU') as _f:
         for line in _f:
             # parse model, if line matches model
             model_match = re.search(r'^(;|#)\s+Model:\s+(A\d+)', line, re.I)
@@ -271,7 +271,7 @@ def patch_uae_config_file( \
 
     # read uae config file
     uae_config_lines = []
-    with open(uae_config_file) as _f:
+    with open(uae_config_file,'rU') as _f:
         for line in _f:
             # skip line, if it's empty
             if re.search(r'^\s*$', line):
@@ -398,7 +398,7 @@ def patch_fsuae_config_file( \
     # read fs-uae config file
     hard_drive_labels = {}
     fsuae_config_lines = []
-    with open(fsuae_config_file) as _f:
+    with open(fsuae_config_file,'rU') as _f:
         for line in _f:
             # skip line, if it's empty or contains floppy_image
             if re.search(r'^\s*$', line) or re.search(r'^floppy_image_\d+', line):
