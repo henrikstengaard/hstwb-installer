@@ -1,0 +1,55 @@
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package.
+
+# the default umask is set in /etc/profile; for setting the umask
+# for ssh logins, install and configure the libpam-umask package.
+#umask 022
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+	. "$HOME/.bashrc"
+    fi
+fi
+
+setterm -cursor on
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+# run hstwb installer config, if it exists
+if [ -f ~/.hstwb-installer/config.sh ]; then
+        . ~/.hstwb-installer/config.sh
+fi
+
+# run first time use, if it exist
+if [ -f ~/.hstwb-installer/.first-time-use ]; then
+        $HSTWB_INSTALLER_ROOT/launcher/amibian/setup/hstwb-installer/first-time-use.sh
+fi
+
+# hstwb installer boot
+case "$HSTWB_INSTALLER_BOOT" in
+hstwb)
+        hstwb
+        ;;
+emulator)
+        $HSTWB_INSTALLER_ROOT/launcher/amibian/run-amiga-emulator.sh
+        ;;
+esac
+
+sudo service bluetooth start
+
+# amibian menu
+menu
+
