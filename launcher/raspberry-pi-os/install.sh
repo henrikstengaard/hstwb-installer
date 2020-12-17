@@ -3,9 +3,9 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-04-04
+# Date: 2020-12-17
 #
-# A bash script to install HstWB Installer launcher for Amibian.
+# A bash script to install HstWB Installer launcher for Raspberry Pi OS.
 
 # disable exit on eror and check if dialog is installed
 #set +e
@@ -31,42 +31,11 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-# detect amibian version
-if [ -d ~/Amiga/Emulators/amiberry/conf/ ]; then
-	# amibian 1.5 with updates
-	AMIBIAN_VERSION=1.5
-	AMIGA_HDD_PATH=~/Amiga/Hard-drives_HDF
-	AMIGA_KICKSTARTS_PATH=~/Amiga/kickstarts
-	AMIBERRY_CONF_PATH=~/Amiga/Emulators/amiberry/conf/
-	UAE4ARM_CONF_PATH=
-elif [ -d ~/Amiga/conf/ ]; then
-	# amibian 1.5 without updates
-	AMIBIAN_VERSION=1.5
-	AMIGA_HDD_PATH=~/Amiga/Hard-drives_HDF
-	AMIGA_KICKSTARTS_PATH=~/Amiga/kickstarts
-	AMIBERRY_CONF_PATH=~/Amiga/conf
-	UAE4ARM_CONF_PATH=
-elif [ -d ~/amibian/amiberry/conf/ -o -d ~/amibian/chips_uae4arm/conf/ ]; then
-	AMIBIAN_VERSION=1.4.1001
-	AMIGA_HDD_PATH=/root/amibian/amiga_files/hdd
-	AMIGA_KICKSTARTS_PATH=/root/amibian/amiga_files/kickstarts
-	AMIBERRY_CONF_PATH=~/amibian/amiberry/conf
-	UAE4ARM_CONF_PATH=~/amibian/chips_uae4arm/conf
-else
-	echo "ERROR: Unsupported Amibian version!"
-	exit 1
-fi
-
-# show install dialog
-dialog --clear --stdout \
---title "Detected Amibian v$AMIBIAN_VERSION" \
---yesno "Is it correct you're using Amibian v$AMIBIAN_VERSION?" 0 0
-
-# exit, if detected amibian version is not correct
-if [ $? -ne 0 ]; then
-        echo "ERROR: Unsupported Amibian version!"
-	exit 1
-fi
+# raspberry pi os configuration
+AMIGA_HDD_PATH=~/amiga/hdfs
+AMIGA_KICKSTARTS_PATH=~/amiga/kickstarts
+AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
+AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf/
 
 # show install dialog
 dialog --clear --stdout \
@@ -78,38 +47,22 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-CHANGE_AMIBIAN_BOOT=0
+CHANGE_BOOT=0
 
-# change amibian boot dialog
-case $AMIBIAN_VERSION in
-	1.5)
-		# show change amibian boot
-		dialog --clear --stdout \
-		--title "Change Amibian boot" \
-		--yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make backups of '/etc/rc.local' and '~/.profile' files and patch these to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
+# show change raspberry pi os boot
+dialog --clear --stdout \
+--title "Change Raspberry Pi OS boot" \
+--yesno "HstWB Installer can change Raspberry Pi OS boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or console.\n\nThis will first make a backup of '~/.profile' and patch it to use HstWB Installer.\n\nIf Raspberry Pi OS boot is changed to use HstWB Installer, Raspberry Pi OS boot can be changed from HstWB Installer menu, Setup, Raspberry Pi OS and Change boot.\n\nDo you want to change Raspberry Pi OS boot to use HstWB Installer?" 0 0
 
-		# exit, if no is selected
-		if [ $? -eq 0 ]; then
-			CHANGE_AMIBIAN_BOOT=1
-		fi
-		;;
-	1.4.1001)
-		# show change amibian boot
-		dialog --clear --stdout \
-		--title "Change Amibian boot" \
-		--yesno "HstWB Installer can change Amibian boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or Amibian menu.\n\nThis will first make a backup of '~/.profile' file and patch it to use HstWB Installer.\n\nIf Amibian boot is changed to use HstWB Installer, Amibian boot can be changed from HstWB Installer menu, Setup, Amibian and Change boot.\n\nDo you want to change Amibian boot to use HstWB Installer?" 0 0
-
-		# exit, if no is selected
-		if [ $? -eq 0 ]; then
-			CHANGE_AMIBIAN_BOOT=1
-		fi
-		;;
-esac
+# exit, if no is selected
+if [ $? -eq 0 ]; then
+	CHANGE_BOOT=1
+fi
 
 # enable exit on error
 set -e
 
-# create hstwb installer profile, if it doesn't exist
+# create hstwb installer home directory, if it doesn't exist
 if [ ! -d ~/.hstwb-installer ]; then
 	mkdir ~/.hstwb-installer
 fi
@@ -128,9 +81,8 @@ else
 	echo "export HSTWB_INSTALLER_BOOT=\"emulator\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_HDD_PATH=\"$AMIGA_HDD_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
-	echo "export AMIBIAN_VERSION=\"$AMIBIAN_VERSION\"" >>~/.hstwb-installer/config.sh
+        echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIBERRY_CONF_PATH=\"$AMIBERRY_CONF_PATH\"" >>~/.hstwb-installer/config.sh
-	echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
 fi
 chmod +x ~/.hstwb-installer/config.sh
 
@@ -138,81 +90,28 @@ chmod +x ~/.hstwb-installer/config.sh
 . ~/.hstwb-installer/config.sh
 
 # install hstwb bin
-cp -f "$INSTALL_ROOT/hstwb.sh" "/usr/local/bin/hstwb"
-chmod +x "/usr/local/bin/hstwb"
+sudo cp -f "$INSTALL_ROOT/hstwb.sh" "/usr/local/bin/hstwb"
+sudo chmod +x "/usr/local/bin/hstwb"
 
-# change .profile, if change amibian boot
-if [ $CHANGE_AMIBIAN_BOOT -eq 1 ]; then
+# change .profile, if change boot
+if [ $CHANGE_BOOT -eq 1 ]; then
 	# create backup of profile, if it doesn't exist
 	if [ -f ~/.profile -a ! -f ~/.profile_backup ]; then
 		cp ~/.profile ~/.profile_backup
 	fi
 
+	# patch .profile to start ~/.hstwb-installer/profile.sh
+	if [ "$(grep -i "\$HOME/.hstwb-installer" ~/.profile)" == "" ]; then
+		echo "" >>~/.profile
+		echo "# run hstwb installer profile" >>~/.profile
+		echo "if [ -f \"\$HOME/.hstwb-installer\" ]; then" >>~/.profile
+		echo "  . \"\$HOME/.hstwb-installer/profile.sh\"" >>~/.profile
+		echo "fi" >>~/.profile
+	fi
+
 	# copy hstwb installer profile
-	cp "$INSTALL_ROOT/install/boot/.profile.$AMIBIAN_VERSION" ~/.profile
+	cp "$INSTALL_ROOT/install/profile.sh" ~/.hstwb-installer/profile.sh
 fi
-
-# copy hstwb installer menu files
-cp -r "$INSTALL_ROOT/install/menu_files" ~/.hstwb-installer
-
-# install for amibian version
-case $AMIBIAN_VERSION in
-	1.5)
-		# change rc.local, if change amibian boot
-		if [ $CHANGE_AMIBIAN_BOOT -eq 1 ]; then
-			# create backup of rc.local, if it doesn't exist
-			if [ -f /etc/rc.local -a ! -f /etc/rc.local_backup ]; then
-				sudo cp /etc/rc.local /etc/rc.local_backup
-			fi
-
-			# disable start on boot
-			if [ "$(grep -i "exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh" /etc/rc.local)" != "" ]; then
-				sudo sed -e "s/^\(exec \/home\/amibian\/.amibian_scripts\/start-on-boot.sh\).*/#\1/g" /etc/rc.local >/tmp/_rc.local
-				sudo mv -f /tmp/_rc.local /etc/rc.local
-			fi
-		fi
-
-		# create backup of usbmount.conf, if it doesn't exist
-		if [ -f /etc/usbmount/usbmount.conf -a ! -f /etc/usbmount/usbmount.conf_backup ]; then
-			sudo cp /etc/usbmount/usbmount.conf /etc/usbmount/usbmount.conf_backup
-		fi
-
-		# change usbmount.conf mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
-		if [ "$(grep -i "^MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"" ]; then
-			sudo sed -e "s/^MOUNTOPTIONS=.*/MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
-			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
-		fi
-
-		# change usbmount.conf fs_mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
-		if [ "$(grep -i "^FS_MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"" ]; then
-			sudo sed -e "s/^FS_MOUNTOPTIONS=.*/FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
-			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
-		fi
-
-                # create backup of show_menu.sh, if it doesn't exist
-                if [ -f ~/.amibian_scripts/show_menu.sh -a ! -f ~/.amibian_scripts/show_menu.sh_backup ]; then
-                        cp ~/.amibian_scripts/show_menu.sh ~/.amibian_scripts/show_menu.sh_backup
-                fi
-
-		# add hstwb to amibian menu
-		if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" ~/.amibian_scripts/show_menu.sh)" == "" ]; then
-			sed '/cat \/home\/amibian\/.amibian_scripts\/cli_menu\/menu.txt/ a cat ~/.hstwb-installer/menu_files/hstwb' ~/.amibian_scripts/show_menu.sh >/tmp/_show_menu.sh
-			mv /tmp/_show_menu.sh ~/.amibian_scripts/show_menu.sh
-			chmod +x ~/.amibian_scripts/show_menu.sh
-		fi
-		;;
-	1.4.1001)
-                # create backup of menu, if it doesn't exist
-                if [ -f /usr/local/bin/menu -a ! -f /usr/local/bin/menu_backup ]; then
-                        cp /usr/local/bin/menu /usr/local/bin/menu_backup
-                fi
-
-		# add hstwb to amibian menu
-		if [ "$(grep -i "cat ~/.hstwb-installer/menu_files/hstwb" /usr/local/bin/menu)" == "" ]; then
-			echo "cat ~/.hstwb-installer/menu_files/hstwb" >>/usr/local/bin/menu
-		fi
-		;;
-esac
 
 # amiberry conf
 if [ ! "$AMIBERRY_CONF_PATH" == "" -a -d "$AMIBERRY_CONF_PATH" ]; then
@@ -224,23 +123,13 @@ if [ ! "$AMIBERRY_CONF_PATH" == "" -a -d "$AMIBERRY_CONF_PATH" ]; then
 	find "$AMIBERRY_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
 fi
 
-# uae4arm conf
-if [ ! "$UAE4ARM_CONF_PATH" == "" -a -d "$UAE4ARM_CONF_PATH" ]; then
-	# copy chips uae4arm configs
-	cp -R "$HSTWB_INSTALLER_ROOT/emulators/chips_uae4arm/configs/." "$UAE4ARM_CONF_PATH"
-
-	# replace amiga hdd path placeholders with path
-	find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_HDD_PATH\\]/$(echo "$AMIGA_HDD_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
-	find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
-fi
-
 # disable exit on eror
 set +e
 
 # show install dialog
 dialog --clear --stdout \
 --title "Success" \
---yesno "Successfully installed HstWB Installer.\n\nType hstwb and press enter from shell at anytime to start HstWB Installer menu.\n\nDo you want to reboot and go through first time use steps now?" 0 0
+--yesno "Successfully installed HstWB Installer.\n\nType hstwb and press enter from console at anytime to start HstWB Installer menu.\n\nDo you want to reboot and go through first time use steps now?" 0 0
 
 # reboot to first time use, if yes is selected
 if [ $? -eq 0 ]; then
