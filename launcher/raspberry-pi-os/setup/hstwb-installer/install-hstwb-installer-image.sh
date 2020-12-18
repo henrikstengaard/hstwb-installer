@@ -3,14 +3,15 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2020-04-03
+# Date: 2020-12-18
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
 # fail, if amiga hdd path doesn't exist
 if [ ! -d "$AMIGA_HDD_PATH" ]; then
-        echo "ERROR: Amiga HDD path \"$AMIGA_HDD_PATH\" doesn't exist!"
-        exit 1
+	mkdir -p "$AMIGA_HDD_PATH"
+        #echo "ERROR: Amiga HDD path \"$AMIGA_HDD_PATH\" doesn't exist!"
+	#exit 1
 fi
 
 # paths
@@ -25,7 +26,7 @@ function is_online()
 	# return error, if internet is offline
 	if [ $? -ne 0 ]; then
 		# show offline dialog
-		dialog --clear --title "Install HstWB Installer image" --msgbox "The internet connection appears to be offline. A menu will now be shown with options to retry or change WiFi configuration." 0 0
+		dialog --clear --title "Install HstWB Installer image" --msgbox "The internet connection appears to be offline." 0 0
 
 		return 1
 	fi
