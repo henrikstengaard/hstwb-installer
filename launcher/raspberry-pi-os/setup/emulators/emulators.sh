@@ -3,7 +3,7 @@
 # Setup Emulators
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-18
 #
 # bash script to show setup emulators menu.
 
@@ -18,7 +18,7 @@ while true; do
 	clear
 
 	# exit, if cancelled
-	if [ $? -ne 0 ]; then
+	if [ -z $choices ]; then
 		exit
 	fi
 

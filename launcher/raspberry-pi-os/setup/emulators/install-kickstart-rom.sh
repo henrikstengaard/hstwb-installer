@@ -3,14 +3,19 @@
 # Install Kickstart Rom
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-12-18
 #
-# A bash script for Amibian to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
+# A bash script for HstWB Installer to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
 
-# fail, if amiga kickstarts path doesn't exist
+# fail, if amiga kickstarts path is not set
+if [ -z "$AMIGA_KICKSTARTS_PATH" ]; then
+	dialog --clear --title "ERROR" --msgbox "ERROR: Amiga Kickstarts path 'AMIGA_KICKSTARTS_PATH' is not set!" 0 0
+	exit 1
+fi
+
+# create amiga kickstarts path, if it doesn't exist
 if [ ! -d "$AMIGA_KICKSTARTS_PATH" ]; then
-        echo "ERROR: Amiga Kickstarts path \"$AMIGA_KICKSTARTS_PATH\" doesn't exist!"
-        exit 1
+	mkdir -p "$AMIGA_KICKSTARTS_PATH"
 fi
 
 # paths
@@ -20,6 +25,8 @@ installdir="/media/hstwb-self-install/kickstart"
 # install
 install=1
 
+# find hstwb self install
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/hstwb-installer/find-hstwb-self-install.sh
 
 # install a1200 kickstart 3.1 rom
 function install()

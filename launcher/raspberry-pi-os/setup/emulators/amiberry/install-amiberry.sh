@@ -3,28 +3,60 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-19
 #
 # bash script to install amiberry.
+
+# paths
+homedir=~
+eval homedir=$homedir
+amiberrydir="$AMIBERRY_EMULATOR_PATH/source"
+
+#pushd "$amiberrydir" >/dev/null
+
+#tags=()
+#while read line; do # process file by file
+#	tags+=($line)
+#done < <(git tag -l | cat -n)
+#FILE=$(dialog --title "List file of directory /home" --menu "Chose one" 0 0 0 "${tags[@]}" 3>&2 2>&1 1>&3) # show dialog and store output
+
+#popd >/dev/null
+
+#readarray -t tags < test.txt
+#dialog  --menu "Latest news " 0 0 0 "${tags[@]}"
+
+
+#exit
 
 # show confirm dialog
 dialog --clear --stdout \
 --title "Install Amiberry" \
---yesno "This will download and install latest Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIBERRY_EMULATOR_PATH\" will be overwritten!\n\nDo you want to install latest Amiberry?" 0 0
+--yesno "This will download and install latest Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIBERRY_EMULATOR_PATH\" will be overwritten!\n\nHard drives, floppies and configurations will stay untouched.\n\nDo you want to install latest Amiberry?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then
   exit
 fi
 
+# create amiberry directory, if it doesn't exist
+if [ ! -d "$amiberrydir" ]; then
+        mkdir -p "$amiberrydir"
+fi
+
+# clone amiberry source code
+if [ ! -d "$amiberrydir" ]; then
+	clear
+        git clone https://github.com/midwan/amiberry.git "$amiberrydir"
+	sleep 1
+fi
 
 # show amiberry branch dialog
 choices=$(dialog --clear --stdout \
 --title "Amiberry branch" \
 --menu "Select Amiberry branch:" 0 0 0 \
-1 "Latest stable (master)" \
-2 "Latest development (dev)" \
-3 "Exit")
+1 "Stable (master)" \
+2 "Development (dev)" \
+4 "Exit")
 
 clear
 
@@ -33,20 +65,77 @@ if [ -z "$choices" ]; then
   exit
 fi
 
+branch="master"
+
 # choices
 for choice in $choices; do
-  case $choice in
-    1)
-      branch="master"
-      ;;
-    2)
-      branch="dev"
-      ;;
-    3)
-      exit
-      ;;
-  esac
+	case $choice in
+		1)
+			branch="master"
+			;;
+		2)
+			branch="dev"
+			;;
+		3)
+			exit
+			;;
+	esac
+esac
+
+
+# clone amiberry source code
+if [ ! -d "$amiberrydir" ]; then
+        clear
+        git clone https://github.com/midwan/amiberry.git "$amiberrydir"
+        sleep 1
+fi
+
+# show amiberry version dialog
+choices=$(dialog --clear --stdout \
+--title "Amiberry version" \
+--menu "Select Amiberry version:" 0 0 0 \
+1 "Latest version" \
+2 "Specific version" \
+3 "Exit")
+
+version=""
+
+# choices
+for choice in $choices; do
+        case $choice in
+                1)
+                        version=""
+                        ;;
+ 		2)
+			# build tags list
+			pushd "$amiberrydir" >/dev/null
+			git reset --hard
+			git clean -xfd
+			git checkout $branch
+			git fetch --all --tags
+			tags=()
+			while read line; do
+				tags+=($line)
+			done < <(git tag -l | cat -n)
+			popd >/dev/null
+
+			# show select tag/version dialog
+			version=$(dialog --clear --stdout --title "Specific tag/version" --menu "Select Specific tag/version:" 0 0 0 "${tags[@]}" 3>&2 2>&1 1>&3)
+
+			clear
+
+			# exit, if cancelled
+			if [ -z "$version" ]; then
+				exit
+			fi
+			;;
+		4)
+			exit
+			;;
+	esac
 done
+
+exit
 
 
 # show select raspberry pi model dialog
@@ -114,11 +203,7 @@ for choice in $choices; do
   esac
 done
 
-# paths
-homedir=~
-eval homedir=$homedir
-
-# create amiberry directory, if it doesn't exist
+# create amiberry emulator directory, if it doesn't exist
 amiberrydir="$AMIBERRY_EMULATOR_PATH/source"
 if [ ! -d "$amiberrydir" ]; then
 	mkdir -p "$amiberrydir"
