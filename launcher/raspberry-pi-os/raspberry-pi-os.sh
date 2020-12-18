@@ -3,7 +3,7 @@
 # Raspberry Pi OS Launcher
 # ------------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-18
 #
 # bash script to show raspberry pi os launcher.
 
@@ -24,7 +24,7 @@ while true; do
 	clear
 
 	# exit, if cancelled
-	if [ $? -ne 0 ]; then
+	if [ -z $choices ]; then
 		exit
 	fi
 
@@ -34,7 +34,7 @@ while true; do
 			./run-amiga-emulator.sh
 			;;
 		2)
-			mc
+			./midnight-commander.sh
 			;;
 		3)
 			pushd setup >/dev/null

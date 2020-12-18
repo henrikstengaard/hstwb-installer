@@ -142,8 +142,8 @@ fi
 pushd "$amiberrydir" >/dev/null
 git reset --hard
 git clean -xfd
-git pull
 git checkout $branch
+git pull
 
 # compile amiberry
 echo ""

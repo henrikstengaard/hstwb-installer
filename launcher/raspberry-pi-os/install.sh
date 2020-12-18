@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-18
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi OS.
 
@@ -54,7 +54,7 @@ dialog --clear --stdout \
 --title "Change Raspberry Pi OS boot" \
 --yesno "HstWB Installer can change Raspberry Pi OS boot to a configurable startup of either HstWB Installer, Amiga emulator with autostart or console.\n\nThis will first make a backup of '~/.profile' and patch it to use HstWB Installer.\n\nIf Raspberry Pi OS boot is changed to use HstWB Installer, Raspberry Pi OS boot can be changed from HstWB Installer menu, Setup, Raspberry Pi OS and Change boot.\n\nDo you want to change Raspberry Pi OS boot to use HstWB Installer?" 0 0
 
-# exit, if no is selected
+# set change boot true, if yes is selected
 if [ $? -eq 0 ]; then
 	CHANGE_BOOT=1
 fi
@@ -101,16 +101,77 @@ if [ $CHANGE_BOOT -eq 1 ]; then
 	fi
 
 	# patch .profile to start ~/.hstwb-installer/profile.sh
-	if [ "$(grep -i "\$HOME/.hstwb-installer" ~/.profile)" == "" ]; then
+	if [ "$(grep -i "\$HOME/.hstwb-installer/profile.sh" ~/.profile)" == "" ]; then
 		echo "" >>~/.profile
 		echo "# run hstwb installer profile" >>~/.profile
-		echo "if [ -f \"\$HOME/.hstwb-installer\" ]; then" >>~/.profile
+		echo "if [ -f \"\$HOME/.hstwb-installer/profile.sh\" ]; then" >>~/.profile
 		echo "  . \"\$HOME/.hstwb-installer/profile.sh\"" >>~/.profile
 		echo "fi" >>~/.profile
 	fi
 
 	# copy hstwb installer profile
 	cp "$INSTALL_ROOT/install/profile.sh" ~/.hstwb-installer/profile.sh
+fi
+
+
+# show autologin dialog
+dialog --clear --stdout \
+--title "Enable autologin" \
+--yesno "This will automatically login as user '$USER' at boot and allow automatically start of Amiga emulator or HstWB Installer at boot.\n\nDo you want to enable autologin?" 0 0
+
+AUTOLOGIN=0
+
+# set autologin true, if yes is selected
+if [ $? -eq 0 ]; then
+        AUTOLOGIN=1
+fi
+
+# enable autologin
+if [ $AUTOLOGIN -eq 1 ]; then
+	sudo systemctl set-default multi-user.target
+	sudo ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
+        sudo cat > /tmp/_autologin.conf << EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin $USER --noclear %I \$TERM
+EOF
+	sudo mv -f /tmp/_autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf
+else
+	sudo systemctl set-default multi-user.target
+	sudo ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
+	sudo rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
+fi 
+
+
+# install usbmount
+dpkg -s usbmount >/dev/null 2>&1
+
+# install usbmount, if usbmount package is not installed
+if [ $? -ne 0 ]; then
+	sudo apt-get --assume-yes install usbmount
+fi
+
+# create backup of usbmount.conf, if it doesn't exist
+if [ -f /etc/usbmount/usbmount.conf -a ! -f /etc/usbmount/usbmount.conf_backup ]; then
+	sudo cp /etc/usbmount/usbmount.conf /etc/usbmount/usbmount.conf_backup
+fi
+
+# change usbmount.conf mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
+if [ -f /etc/usbmount/usbmount.conf -a "$(grep -i "^MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"" ]; then
+	sudo sed -e "s/^MOUNTOPTIONS=.*/MOUNTOPTIONS=\"sync,noexec,nodev,noatime,nodiratime,nosuid,users,rw\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
+	sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
+fi
+
+# change usbmount.conf fs_mountoptions, if not already changed. this is to ensure fat32 usb devices are automounted as r/w
+if [ -f /etc/usbmount/usbmount.conf -a "$(grep -i "^FS_MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"" ]; then
+	sudo sed -e "s/^FS_MOUNTOPTIONS=.*/FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
+	sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
+fi
+
+# patch device to mount as non private for automount usb devices
+if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "/lib/systemd/system/systemd-udevd.service" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
+	sudo sed -e "s/PrivateMounts=yes/PrivateMounts=no/gi" /lib/systemd/system/systemd-udevd.service >/tmp/_systemd-udevd.service
+	sudo mv -f /tmp/_systemd-udevd.service /lib/systemd/system/systemd-udevd.service
 fi
 
 # amiberry conf
