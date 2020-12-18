@@ -3,19 +3,51 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-18
 #
 # bash script to install amiberry.
 
 # show confirm dialog
 dialog --clear --stdout \
 --title "Install Amiberry" \
---yesno "This will download and install latest Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIGA_HDD_PATH\" will be overwritten!\n\nDo you want to install latest Amiberry?" 0 0
+--yesno "This will download and install latest Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIBERRY_EMULATOR_PATH\" will be overwritten!\n\nDo you want to install latest Amiberry?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then
   exit
 fi
+
+
+# show amiberry branch dialog
+choices=$(dialog --clear --stdout \
+--title "Amiberry branch" \
+--menu "Select Amiberry branch:" 0 0 0 \
+1 "Latest stable (master)" \
+2 "Latest development (dev)" \
+3 "Exit")
+
+clear
+
+# exit, if cancelled
+if [ -z "$choices" ]; then
+  exit
+fi
+
+# choices
+for choice in $choices; do
+  case $choice in
+    1)
+      branch="master"
+      ;;
+    2)
+      branch="dev"
+      ;;
+    3)
+      exit
+      ;;
+  esac
+done
+
 
 # show select raspberry pi model dialog
 choices=$(dialog --clear --stdout \
@@ -87,7 +119,7 @@ homedir=~
 eval homedir=$homedir
 
 # create amiberry directory, if it doesn't exist
-amiberrydir="$homedir/amiga/emulators/amiberry"
+amiberrydir="$AMIBERRY_EMULATOR_PATH/source"
 if [ ! -d "$amiberrydir" ]; then
 	mkdir -p "$amiberrydir"
 fi
@@ -101,36 +133,37 @@ sudo apt-get --assume-yes install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev 
 
 # clone or pull amiberry source code
 echo ""
-echo "Clone or pull latest Amiberry source code..."
+echo "Clone or pull latest Amiberry $branch source code..."
 sleep 1
-if [ ! -d "$amiberrydir/source" ]; then
-	git clone https://github.com/midwan/amiberry.git "$amiberrydir/source"
-else
-        git reset --hard
-        git clean -xfd
-        git pull
+if [ ! -d "$amiberrydir" ]; then
+	git clone https://github.com/midwan/amiberry.git "$amiberrydir"
 fi
+
+pushd "$amiberrydir" >/dev/null
+git reset --hard
+git clean -xfd
+git pull
+git checkout $branch
 
 # compile amiberry
 echo ""
-echo "Compile Amiberry..."
+echo "Compile Amiberry $branch..."
 sleep 1
-pushd "$amiberrydir/source" >/dev/null
 make clean
 make $makeargs
 popd >/dev/null
 
 # install amiberry
 echo ""
-echo "Install Amiberry..."
+echo "Install Amiberry $branch..."
 sleep 1
-cp "$amiberrydir/source/amiberry" "$amiberrydir"
-cp -R "$amiberrydir/source/conf" "$amiberrydir"
-cp -R "$amiberrydir/source/data" "$amiberrydir"
-cp -R "$amiberrydir/source/kickstarts" "$amiberrydir"
-cp -R "$amiberrydir/source/savestates" "$amiberrydir"
-cp -R "$amiberrydir/source/screenshots" "$amiberrydir"
-cp -R "$amiberrydir/source/whdboot" "$amiberrydir"
+cp "$amiberrydir/amiberry" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/conf" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/data" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/kickstarts" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/savestates" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/screenshots" "$AMIBERRY_EMULATOR_PATH"
+cp -R "$amiberrydir/whdboot" "$AMIBERRY_EMULATOR_PATH"
 
 # show success dialog
-dialog --title "Success" --msgbox "Successfully installed Amiberry in directory \"$AMIGA_HDD_PATH\"" 0 0
+dialog --title "Success" --msgbox "Successfully installed Amiberry in directory \"$AMIBERRY_EMULATOR_PATH\"" 0 0
