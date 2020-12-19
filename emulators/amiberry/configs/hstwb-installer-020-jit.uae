@@ -106,7 +106,7 @@ ntsc=false
 ; 
 ; *** CPU options
 ; 
-cpu_speed=turbo
+cpu_speed=max
 cpu_type=68020/68881
 cpu_model=68020
 fpu_model=68882
@@ -120,10 +120,10 @@ cachesize=16384
 ; 
 chipmem_size=4
 z3mapping=real
-fastmem_size=8
+fastmem_size=0
 a3000mem_size=0
 mbresmem_size=0
-z3mem_size=0
+z3mem_size=16
 z3mem_start=0x40000000
 bogomem_size=0
 gfxcard_hardware_vblank=false
