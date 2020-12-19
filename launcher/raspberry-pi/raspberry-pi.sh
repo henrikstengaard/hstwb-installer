@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# Raspberry Pi OS Launcher
+# Raspberry Pi Launcher
 # ------------------------
 # Author: Henrik Noerfjand Stengaard
 # Date: 2020-12-19
 #
-# bash script to show raspberry pi os launcher.
+# bash script to show raspberry pi launcher.
 
 # main menu
 while true; do
 	# show main menu
 	choices=$(dialog --clear --stdout \
-	--title "HstWB Installer for Raspbery Pi OS" \
+	--title "HstWB Installer for Raspbery Pi" \
 	--menu "Select option:" 0 0 0 \
 	1 "Run Amiga emulator" \
 	2 "Run Amiga emulator without autostart" \
