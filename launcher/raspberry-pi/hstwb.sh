@@ -3,9 +3,9 @@
 # Launcher
 # --------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-19
 #
-# bash script to start HstWB Installer for Raspberry Pi OS launcher.
+# bash script to start HstWB Installer for Raspberry Pi launcher.
 
 # fail, if hstwb installer config doesn't exist
 if [ ! -f ~/.hstwb-installer/config.sh ]; then
@@ -22,7 +22,7 @@ if [ ! -d "$HSTWB_INSTALLER_ROOT" ]; then
 	exit 1
 fi
 
-# start hstwb installer for raspberry pi os
-pushd "$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os" >/dev/null
-./raspberry-pi-os.sh
+# start hstwb installer for raspberry pi
+pushd "$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi" >/dev/null
+./raspberry-pi.sh
 popd >/dev/null

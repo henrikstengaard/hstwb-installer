@@ -3,7 +3,7 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-19
 #
 # Bash script for first time use of Amibian.
 
@@ -38,25 +38,17 @@ if [ ! -f ~/.hstwb-installer/.first-time-use-dialog ]; then
 
 fi
 
-# enable exit on error
-#set -e
-
 # expand filesystem, if its trigger exists
 if [ ! -f ~/.hstwb-installer/.expand-filesystem ]; then
 	touch ~/.hstwb-installer/.expand-filesystem
-	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/amibian/expand-filesystem.sh
-fi
-
-# mount fat32 devices for amibian v1.5
-if [ "$AMIBIAN_VERSION" = "1.5" ]; then
-	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/system/mount-fat32-devices.sh -q
+	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/expand-filesystem.sh
 fi
 
 # install kickstart rom
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/emulators/install-kickstart-rom.sh -i
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/install-kickstart-rom.sh -i
 
 # install hstwb installer image
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/hstwb-installer/install-hstwb-installer-image.sh
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/install-hstwb-installer-image.sh
 
 # delete triggers
 delete_triggers
