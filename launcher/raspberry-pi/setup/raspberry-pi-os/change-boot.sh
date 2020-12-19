@@ -3,7 +3,7 @@
 # Change Boot
 # -----------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-02-23
+# Date: 2020-12-19
 #
 # bash script to change boot menu.
 
@@ -32,7 +32,7 @@ choices=$(dialog --clear --stdout \
 clear
 
 # exit, if cancelled
-if [ $? -ne 0 ]; then
+if [ -z $choices ]; then
   exit
 fi
 

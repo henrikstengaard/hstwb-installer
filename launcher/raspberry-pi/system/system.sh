@@ -3,7 +3,7 @@
 # Setup
 # -----
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-03-04
+# Date: 2020-12-19
 #
 # bash script to show system menu.
 
@@ -22,7 +22,7 @@ while true; do
 	clear
 
 	# exit, if cancelled
-	if [ $? -ne 0 ]; then
+	if [ -z $choices ]; then
 		exit
 	fi
 

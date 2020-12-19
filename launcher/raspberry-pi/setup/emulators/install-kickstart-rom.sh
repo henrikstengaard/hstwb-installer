@@ -185,7 +185,7 @@ while true; do
 	choices=$(dialog --clear --stdout --title "Install Kickstart" --menu "Find and install A1200 Kickstart 3.1.4 or 3.1 rom from install directory '$installdir':" 0 0 0 1 "Install Kickstart rom" 2 "Change Install Directory" 3 "Exit")
 
 	# exit, if cancelled
-	if [ $? -ne 0 ]; then
+	if [ -z $choices ]; then
 		clear
 		exit
 	fi
