@@ -3,7 +3,7 @@
 # Setup Raspberry Pi OS
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2020-12-19
 #
 # bash script to show setup raspberry pi os menu.
 
@@ -12,20 +12,17 @@ while true; do
 	--title "Setup Raspberry Pi OS" \
 	--menu "Select option:" 0 0 0 \
 	1 "Raspberry Pi Software Configuration Tool (raspi-conf)" \
-	2 "Change WiFi configuration" \
-	3 "Edit WiFi settings file" \
-	4 "Edit network settings file" \
-	5 "Change Volume" \
-	6 "Set audio output to HDMI" \
-	7 "Set audio output to Jack" \
-	8 "Change boot" \
-	9 "Expand filesystem" \
-	10 "Exit")
+	2 "Change Volume" \
+	3 "Set audio output to HDMI" \
+	4 "Set audio output to Jack" \
+	5 "Change boot" \
+	6 "Expand filesystem" \
+	7 "Exit")
 
 	clear
 
 	# exit, if cancelled
-	if [ $? -ne 0 ]; then
+	if [ -z $choices ]; then
 		exit
 	fi
 
@@ -35,30 +32,21 @@ while true; do
 			sudo raspi-config
 			;;
 		2)
-			./change-wifi-configuration.sh
-			;;
-		3)
-			./edit-wifi-settings-file.sh
-			;;
-		4)
-			./edit-network-settings-file.sh
-			;;
-		5)
 			sudo alsamixer
 			;;
-		6)
+		3)
 			./audio-output-hdmi.sh
 			;;
-		7)
+		4)
 			./audio-output-jack.sh
 			;;
-		8)
+		5)
 			./change-boot.sh
 			;;
-		9)
+		6)
 			./expand-filesystem.sh
 			;;
-		10)
+		7)
 			exit
 			;;
 		esac
