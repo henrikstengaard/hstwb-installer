@@ -3,7 +3,7 @@
 # Run Amiga Emulator
 # ------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-19
 #
 # A bash script to run Amiga emulator.
 
@@ -19,9 +19,31 @@ if [ ! -f "$AMIBERRY_EMULATOR_PATH/amiberry" ]; then
         exit 1
 fi
 
-# run amiberry with autostart config
+
+# args
+noautostart=0
+
+# parse arguments
+for i in "$@"
+do
+case $i in
+    -n|--no-autostart)
+    noautostart=1
+    shift
+    ;;
+    *)
+        # unknown argument
+    ;;
+esac
+done
+
+# run amiberry
 pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
-./amiberry -f "$AMIBERRY_CONF_PATH/autostart.uae"
+if [ $noautostart -eq 1 ]; then
+	./amiberry
+else
+	./amiberry -f "$AMIBERRY_CONF_PATH/autostart.uae"
+fi
 popd >/dev/null
 
 

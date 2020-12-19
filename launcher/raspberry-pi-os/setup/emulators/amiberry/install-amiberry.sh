@@ -212,11 +212,11 @@ git reset --hard
 git clean -xfd
 
 if [ "$tag" != "" ]; then
-	git checkout tags/$tag $branch
+	git checkout tags/$tag
 else
 	git checkout $branch
+	git pull
 fi
-git pull
 
 # compile amiberry
 echo ""
