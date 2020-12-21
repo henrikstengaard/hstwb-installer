@@ -3,9 +3,9 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-21
 #
-# A bash script to install HstWB Installer launcher for Raspberry Pi OS.
+# A bash script to install HstWB Installer launcher for Raspberry Pi.
 
 # disable exit on eror and check if dialog is installed
 #set +e
@@ -141,6 +141,35 @@ else
 	sudo ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
 	sudo rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
 fi 
+
+
+
+# show network at boot dialog
+dialog --clear --stdout \
+--title "Delay network at boot" \
+--yesno "This will delay network at boot and make Amiga emulator, HstWB Installer or console boot faster.\n\nDo you want boot to wait until a network connection is established?" 0 0
+
+DELAYNETWORK=0
+
+# set delay network true, if yes is selected
+if [ $? -eq 0 ]; then
+	DELAYNETWORK=1
+fi
+
+# enable delay network
+if [ $DELAYNETWORK -eq 1 ]; then
+	if [ -f /etc/systemd/system/dhcpcd.service.d/wait.conf ]; then
+		sudo rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
+	fi
+else
+	sudo mkdir -p /etc/systemd/system/dhcpcd.service.d/
+	sudo cat > /tmp/_wait.conf << EOF
+[Service]
+ExecStart=
+ExecStart=/usr/lib/dhcpcd5/dhcpcd -q -w
+EOF
+	sudo mv -f /tmp/_wait.conf /etc/systemd/system/dhcpcd.service.d/wait.conf
+fi
 
 
 # install usbmount

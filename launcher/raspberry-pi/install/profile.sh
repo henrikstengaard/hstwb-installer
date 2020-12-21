@@ -11,7 +11,7 @@ mytty=`tty`
 if [ "$mytty" == "/dev/tty1" ]; then
 	# run first time use, if it exist
 	if [ -f ~/.hstwb-installer/.first-time-use ]; then
-        	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/hstwb-installer/first-time-use.sh
+        	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/first-time-use.sh
 	fi
 
 	# hstwb installer boot
@@ -20,7 +20,7 @@ if [ "$mytty" == "/dev/tty1" ]; then
         	hstwb
 	        ;;
 	emulator)
-        	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/run-amiga-emulator.sh
+        	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/run-amiga-emulator.sh
 	        ;;
 	esac
 fi
