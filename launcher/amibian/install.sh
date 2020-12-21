@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-04-04
+# Date: 2020-12-21
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -187,6 +187,12 @@ case $AMIBIAN_VERSION in
 		if [ "$(grep -i "^FS_MOUNTOPTIONS=" /etc/usbmount/usbmount.conf)" != "FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"" ]; then
 			sudo sed -e "s/^FS_MOUNTOPTIONS=.*/FS_MOUNTOPTIONS=\"-fstype=vfat,umask=000\"/g" /etc/usbmount/usbmount.conf >/tmp/_usbmount.conf
 			sudo mv -f /tmp/_usbmount.conf /etc/usbmount/usbmount.conf
+		fi
+
+		# patch device to mount as non private for automount usb devices
+		if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "/lib/systemd/system/systemd-udevd.service" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
+		        sudo sed -e "s/PrivateMounts=yes/PrivateMounts=no/gi" /lib/systemd/system/systemd-udevd.service >/tmp/_systemd-udevd.service
+		        sudo mv -f /tmp/_systemd-udevd.service /lib/systemd/system/systemd-udevd.service
 		fi
 
                 # create backup of show_menu.sh, if it doesn't exist

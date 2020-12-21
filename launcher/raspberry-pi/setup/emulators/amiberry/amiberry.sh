@@ -3,7 +3,7 @@
 # Setup Amiberry
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-19
+# Date: 2020-12-21
 #
 # bash script to show setup amiberry menu.
 
@@ -13,7 +13,8 @@ while true; do
 	--menu "Select option:" 0 0 0 \
 	1 "Install Amiberry" \
 	2 "Install SDL2 KMSDRM" \
-	3 "Exit")
+	3 "Disable Amiberry autostart" \
+	4 "Exit")
 
 	clear
 
@@ -31,6 +32,9 @@ while true; do
 			./install-sdl2-kmsdrm.sh
 			;;
 		3)
+			./disable-amiberry-autostart.sh
+			;;
+		4)
 			exit
 			;;
 		esac

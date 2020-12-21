@@ -3,7 +3,7 @@
 # Install Kickstart Rom
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-21
 #
 # A bash script for HstWB Installer to find and install A1200 Kickstart 3.1.4 or 3.1 rom file in install directory and install it in kickstarts directory.
 
@@ -26,7 +26,7 @@ installdir="/media/hstwb-self-install/kickstart"
 install=1
 
 # find hstwb self install
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi-os/setup/hstwb-installer/find-hstwb-self-install.sh
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/find-hstwb-self-install.sh --quiet
 
 # install a1200 kickstart 3.1 rom
 function install()

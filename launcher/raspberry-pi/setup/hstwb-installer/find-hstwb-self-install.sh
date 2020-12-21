@@ -3,7 +3,7 @@
 # Find HstWB Self Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2020-12-21
 #
 # A bash script to find HstWB self install in '/media' and update '/media/hstwb-self-install' symlink to directory containing 'hstwb-self-install.txt' file.
 
@@ -63,11 +63,6 @@ while true; do
 
 	# exit, if hstwb self install exists
 	if [ -f "/media/hstwb-self-install/hstwb-self-install.txt" ]; then
-		exit
-	fi
-
-	# exit, if quiet
-	if [ $quiet -eq 1 ]; then
 		exit
 	fi
 
