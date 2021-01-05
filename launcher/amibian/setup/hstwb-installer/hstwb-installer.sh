@@ -3,7 +3,7 @@
 # Setup HstWB Installer
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-04-04
+# Date: 2021-01-05
 #
 # bash script to show setup hstwb installer menu.
 
@@ -14,9 +14,10 @@ while true; do
 	1 "Find HstWB Self Install" \
 	2 "Build Install Entries" \
 	3 "Install HstWB Installer image" \
-	4 "Delete HstWB Installer image cache" \
-	5 "First Time Use" \
-	6 "Exit")
+	4 "Run Amiga emulator for HstWB Installer image" \
+	5 "Delete HstWB Installer image cache" \
+	6 "First Time Use" \
+	7 "Exit")
 
 	clear
 
@@ -36,13 +37,16 @@ while true; do
 		3)
 			./install-hstwb-installer-image.sh
 			;;
-		4)
+                4)
+                        ./run-amiga-emulator-hstwb-installer.sh
+                        ;;
+		5)
 			./delete-hstwb-installer-image-cache.sh
 			;;
-		5)
+		6)
 			./first-time-use.sh
 			;;
-		6)
+		7)
 			exit
 			;;
 		esac

@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-21
+# Date: 2021-01-05
 #
 # A bash script to install HstWB Installer launcher for Amibian.
 
@@ -193,6 +193,7 @@ case $AMIBIAN_VERSION in
 		if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "/lib/systemd/system/systemd-udevd.service" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
 		        sudo sed -e "s/PrivateMounts=yes/PrivateMounts=no/gi" /lib/systemd/system/systemd-udevd.service >/tmp/_systemd-udevd.service
 		        sudo mv -f /tmp/_systemd-udevd.service /lib/systemd/system/systemd-udevd.service
+			sudo systemctl restart systemd-udevd.service
 		fi
 
                 # create backup of show_menu.sh, if it doesn't exist
