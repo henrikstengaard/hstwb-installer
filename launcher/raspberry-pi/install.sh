@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-21
+# Date: 2020-12-25
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -140,8 +140,7 @@ else
 	sudo systemctl set-default multi-user.target
 	sudo ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
 	sudo rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
-fi 
-
+fi
 
 
 # show network at boot dialog
@@ -201,6 +200,7 @@ fi
 if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "/lib/systemd/system/systemd-udevd.service" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
 	sudo sed -e "s/PrivateMounts=yes/PrivateMounts=no/gi" /lib/systemd/system/systemd-udevd.service >/tmp/_systemd-udevd.service
 	sudo mv -f /tmp/_systemd-udevd.service /lib/systemd/system/systemd-udevd.service
+	sudo systemctl restart systemd-udevd.service
 fi
 
 # amiberry conf

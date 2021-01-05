@@ -3,7 +3,7 @@
 # Run Amiga Emulator
 # ------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-19
+# Date: 2021-01-05
 #
 # A bash script to run Amiga emulator.
 

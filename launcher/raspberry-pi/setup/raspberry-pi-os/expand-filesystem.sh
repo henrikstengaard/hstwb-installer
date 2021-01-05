@@ -3,9 +3,9 @@
 # Expand Filesystem
 # -----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-29
+# Date: 2021-01-05
 #
-# A bash script for Amibian to expand filesystem.
+# A bash script for raspberry pi to expand filesystem.
 
 # get root partition size
 SIZE="$(df -h --output=size ~ | tail -n 1 | awk '{$1=$1};1')"
@@ -23,7 +23,7 @@ fi
 # expand filesystem
 echo "Expanding filesystem..."
 echo ""
-raspi-config --expand-rootfs
+sudo raspi-config --expand-rootfs
 echo ""
 read -rp "Press enter to reboot..."
 reboot

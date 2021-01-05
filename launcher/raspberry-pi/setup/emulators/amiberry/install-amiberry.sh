@@ -3,7 +3,7 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-19
+# Date: 2020-12-25
 #
 # bash script to install amiberry.
 
@@ -11,7 +11,7 @@
 # show confirm dialog
 dialog --clear --stdout \
 --title "Install Amiberry" \
---yesno "This will download and install Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIBERRY_EMULATOR_PATH\" will be overwritten!\n\nHard drives, floppies and configurations will stay untouched.\n\nDo you want to install Amiberry from github source code?" 0 0
+--yesno "This will download, compile and install Amiberry from github source code.\n\nWARNING: Existing Amiberry emulator in Amiberry directory \"$AMIBERRY_EMULATOR_PATH\" will be overwritten!\n\nHard drives, floppies and configurations will stay untouched.\n\nDo you want to install Amiberry from github source code?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then

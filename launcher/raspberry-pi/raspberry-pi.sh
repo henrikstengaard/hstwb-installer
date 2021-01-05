@@ -3,7 +3,7 @@
 # Raspberry Pi Launcher
 # ------------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-21
+# Date: 2021-01-05
 #
 # bash script to show raspberry pi launcher.
 
@@ -14,13 +14,12 @@ while true; do
 	--title "HstWB Installer for Raspbery Pi" \
 	--menu "Select option:" 0 0 0 \
 	1 "Run Amiga emulator" \
-	2 "Run Amiga emulator for HstWB Installer image" \
-	3 "Midnight Commander" \
-	4 "Setup" \
-	5 "System" \
-	6 "Update" \
-	7 "About" \
-	8 "Exit")
+	2 "Midnight Commander" \
+	3 "Setup" \
+	4 "System" \
+	5 "Update" \
+	6 "About" \
+	7 "Exit")
 
 	clear
 
@@ -35,26 +34,19 @@ while true; do
 			./run-amiga-emulator.sh
 			;;
 		2)
-			# find hstwb self install
-			$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/find-hstwb-self-install.sh --quiet
-
-			# run amiga emulator
-			./run-amiga-emulator.sh
-			;;
-		3)
 			./midnight-commander.sh
 			;;
-		4)
+		3)
 			pushd setup >/dev/null
 			./setup.sh
 			popd >/dev/null
 			;;
-		5)
+		4)
 			pushd system >/dev/null
 			./system.sh
 			popd >/dev/null
 			;;
-		6)
+		5)
 			./update.sh
 
 			# restart script, if updated
@@ -62,10 +54,10 @@ while true; do
 				exec "$0"
 			fi
 			;;
-		7)
+		6)
 			./about.sh
 			;;
-		8)
+		7)
 			exit
 			;;
 		esac
