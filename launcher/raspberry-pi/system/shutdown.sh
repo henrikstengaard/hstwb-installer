@@ -3,9 +3,9 @@
 # Shutdown
 # --------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-28
+# Date: 2021-01-05
 #
-# A bash script for Amibian to shutdown system.
+# A bash script for raspberry pi os to shutdown system.
 
 
 # show shutdown dialog
@@ -19,4 +19,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Shutting down..."
-shutdown -h now
+sudo shutdown -h now

@@ -3,9 +3,9 @@
 # Reboot
 # ------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2019-12-28
+# Date: 2021-01-05
 #
-# A bash script for Amibian to reboot system.
+# A bash script for raspberry pi os to reboot system.
 
 
 # show reboot dialog
@@ -19,4 +19,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Rebooting..."
-reboot
+sudo reboot
