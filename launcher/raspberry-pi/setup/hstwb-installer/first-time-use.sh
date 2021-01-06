@@ -44,11 +44,11 @@ if [ ! -f ~/.hstwb-installer/.expand-filesystem ]; then
 	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/expand-filesystem.sh
 fi
 
-# install amiberry
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
-
 # install sdl2 kmsdrm
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2-kmsdrm.sh
+
+# install amiberry
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
 
 # install kickstart rom
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/install-kickstart-rom.sh -i
