@@ -197,7 +197,7 @@ if [ -f /etc/usbmount/usbmount.conf -a "$(grep -i "^FS_MOUNTOPTIONS=" /etc/usbmo
 fi
 
 # patch device to mount as non private for automount usb devices
-if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "/lib/systemd/system/systemd-udevd.service" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
+if [ -f /lib/systemd/system/systemd-udevd.service -a "$(grep -i "PrivateMounts=yes" /lib/systemd/system/systemd-udevd.service)" != "" ]; then
 	sudo sed -e "s/PrivateMounts=yes/PrivateMounts=no/gi" /lib/systemd/system/systemd-udevd.service >/tmp/_systemd-udevd.service
 	sudo mv -f /tmp/_systemd-udevd.service /lib/systemd/system/systemd-udevd.service
 	sudo systemctl restart systemd-udevd.service
