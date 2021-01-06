@@ -60,7 +60,7 @@ if [ $? -eq 0 ]; then
 fi
 
 # enable exit on error
-set -e
+#set -e
 
 # create hstwb installer home directory, if it doesn't exist
 if [ ! -d ~/.hstwb-installer ]; then
