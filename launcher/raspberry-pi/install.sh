@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-25
+# Date: 2021-01-12
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -38,6 +38,7 @@ AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
 AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
 UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
 UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
+AMIGA_EMULATOR=amiberry
 
 # show install dialog
 dialog --clear --stdout \
@@ -78,16 +79,6 @@ if [ -f ~/.hstwb-installer/config.sh ]; then
 	# update hstwb installer root
 	sed -e "s/^\(export HSTWB_INSTALLER_ROOT=\).*/\1\"$(echo "$HSTWB_INSTALLER_ROOT" | sed -e "s/\//\\\\\//g")\"/g" ~/.hstwb-installer/config.sh >~/.hstwb-installer/_config.sh
 	mv -f ~/.hstwb-installer/_config.sh ~/.hstwb-installer/config.sh
-
-	# add uae4arm emulator path, if it doesn't exist
-	if [ "$(grep -i "UAE4ARM_EMULATOR_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
-		echo "export UAE4ARM_EMULATOR_PATH=\"$UAE4ARM_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
-	fi
-
-	# add uae4arm conf path, if it doesn't exist
-	if [ "$(grep -i "UAE4ARM_CONF_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
-		echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
-	fi
 else
 	echo "#!/bin/bash -e" >~/.hstwb-installer/config.sh
 	echo "export HSTWB_INSTALLER_ROOT=\"$HSTWB_INSTALLER_ROOT\"" >>~/.hstwb-installer/config.sh
@@ -96,9 +87,25 @@ else
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
         echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIBERRY_CONF_PATH=\"$AMIBERRY_CONF_PATH\"" >>~/.hstwb-installer/config.sh
+
+fi
+
+# add uae4arm emulator path to config, if it doesn't exist
+if [ "$(grep -i "UAE4ARM_EMULATOR_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
 	echo "export UAE4ARM_EMULATOR_PATH=\"$UAE4ARM_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
+fi
+
+# add uae4arm conf path to config, if it doesn't exist
+if [ "$(grep -i "UAE4ARM_CONF_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
 	echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
 fi
+
+# add amiga emulator to config, if it doesn't exist
+if [ "$(grep -i "AMIGA_EMULATOR=" ~/.hstwb-installer/config.sh)" == "" ]; then
+	echo "export AMIGA_EMULATOR=\"$AMIGA_EMULATOR\"" >>~/.hstwb-installer/config.sh
+fi
+
+# add execute permission to config
 chmod +x ~/.hstwb-installer/config.sh
 
 # run hstwb installer config
@@ -161,7 +168,7 @@ fi
 # show network at boot dialog
 dialog --clear --stdout \
 --title "Delay network at boot" \
---yesno "This will delay network at boot and make Amiga emulator, HstWB Installer or console boot faster.\n\nDo you want boot to wait until a network connection is established?" 0 0
+--yesno "This will delay network at boot and make Amiga emulator, HstWB Installer or console boot faster.\n\nDo you want delay establishing network connection during boot?" 0 0
 
 DELAYNETWORK=0
 

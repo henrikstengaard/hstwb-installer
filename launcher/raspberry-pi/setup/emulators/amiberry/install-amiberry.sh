@@ -8,6 +8,12 @@
 # bash script to install amiberry.
 
 
+# fail, if amiberry emulator path is not set
+if [ -z "$AMIBERRY_EMULATOR_PATH" ]; then
+        dialog --clear --title "ERROR" --msgbox "ERROR: Amiberry emulator path 'AMIBERRY_EMULATOR_PATH' is not set!" 0 0
+        exit 1
+fi
+
 # show confirm dialog
 dialog --clear --stdout \
 --title "Install Amiberry" \
@@ -131,7 +137,7 @@ done
 choices=$(dialog --clear --stdout \
 --title "Raspberry Pi model" \
 --menu "Select Raspberry Pi model:" 0 0 0 \
-1 "Raspberry Pi 4" \
+1 "Raspberry Pi 4 / 400" \
 2 "Raspberry Pi 3 (B+)" \
 3 "Raspberry Pi 2" \
 4 "Raspberry Pi 1 / Zero" \

@@ -51,9 +51,13 @@ fi
 for choice in $choices; do
   case $choice in
     1)
+	makeargs=""
+	;;
     2)
+	makeargs=""
+	;;
     3)
-      makeargs="-j2"
+      makeargs=""
       ;;
     4)
       makeargs="PLATFORM=rpi1"
@@ -67,7 +71,7 @@ done
 
 # create uae4arm emulator path, if it doesn't exist
 if [ ! -d "$$UAE4ARM_EMULATOR_PATH" ]; then
-        mkdir -p "$$UAE4ARM_EMULATOR_PATH"
+        mkdir -p "$UAE4ARM_EMULATOR_PATH"
 fi
 
 # clone uae4arm source code, if it doesn't exist
@@ -100,7 +104,7 @@ git pull
 echo ""
 echo "Compile UAE4ARM..."
 sleep 1
-make clean
+make
 make $makeargs
 popd >/dev/null
 
