@@ -3,22 +3,19 @@
 # Run Amiga Emulator
 # ------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-05
+# Date: 2021-01-12
 #
 # A bash script to run Amiga emulator.
 
-# fail, if amiberry emulator path is not set
-if [ -z "$AMIBERRY_EMULATOR_PATH" ]; then
-        dialog --clear --title "ERROR" --msgbox "ERROR: Amiberry emulator path 'AMIBERRY_EMULATOR_PATH' is not set!" 0 0
+
+# run hstwb installer config in current shell
+. ~/.hstwb-installer/config.sh
+
+# fail, if amiga emulator is not set
+if [ -z "$AMIGA_EMULATOR" ]; then
+        dialog --clear --title "ERROR" --msgbox "ERROR: Amiga emulator 'AMIGA_EMULATOR' is not set!\n\nPlease verify HstWB Installer is installed correctly." 0 0
         exit 1
 fi
-
-# fail, if amiberry emulator is not installed
-if [ ! -f "$AMIBERRY_EMULATOR_PATH/amiberry" ]; then
-        dialog --clear --title "ERROR" --msgbox "ERROR: Amiberry emulator is not installed!" 0 0
-        exit 1
-fi
-
 
 # args
 noautostart=0
@@ -37,13 +34,55 @@ case $i in
 esac
 done
 
-# run amiberry
-pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
-if [ $noautostart -eq 1 ]; then
-	./amiberry
-else
-	./amiberry -f "$AMIBERRY_CONF_PATH/autostart.uae"
-fi
-popd >/dev/null
 
+case "$AMIGA_EMULATOR" in
+amiberry)
+	# fail, if amiberry emulator path is not set
+	if [ -z "$AMIBERRY_EMULATOR_PATH" ]; then
+       		dialog --clear --title "ERROR" --msgbox "ERROR: Amiberry emulator path 'AMIBERRY_EMULATOR_PATH' is not set!\n\nPlease verify HstWB Installer is installed correctly." 0 0
+	        exit 1
+	fi
+
+	# fail, if amiberry emulator is not installed
+	if [ ! -f "$AMIBERRY_EMULATOR_PATH/amiberry" ]; then
+		dialog --clear --title "ERROR" --msgbox "ERROR: Amiberry emulator is not installed!" 0 0
+		exit 1
+	fi
+
+	# run amiberry
+	pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
+	if [ $noautostart -eq 1 ]; then
+		amiberryargs="-f \"$AMIBERRY_CONF_PATH/autostart.uae\""
+	else
+		amiberryargs=""
+	fi
+
+	./amiberry $amiberryargs
+	popd >/dev/null
+	;;
+uae4arm)
+	# fail, if uae4arm emulator path is not set
+	if [ -z "$UAE4ARM_EMULATOR_PATH" ]; then
+        	dialog --clear --title "ERROR" --msgbox "ERROR: UAE4ARM emulator path 'UAE4ARM_EMULATOR_PATH' is not set!\n\nPlease verify HstWB Installer is installed correctly." 0 0
+	        exit 1
+	fi
+
+        # fail, if uae4arm emulator is not installed
+        if [ ! -f "$UAE4ARM_EMULATOR_PATH/uae4arm" ]; then
+                dialog --clear --title "ERROR" --msgbox "ERROR: UAE4ARM emulator is not installed!" 0 0
+                exit 1
+        fi
+
+	# run uae4arm
+        pushd "$UAE4ARM_EMULATOR_PATH" >/dev/null
+        if [ $noautostart -eq 1 ]; then
+                uae4armargs="-f \"$UAE4ARM_CONF_PATH/autostart.uae\""
+        else
+                uae4armargs=""
+        fi
+
+        ./uae4arm $uae4armargs
+	popd >/dev/null
+	;;
+esac
 
