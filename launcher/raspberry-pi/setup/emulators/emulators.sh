@@ -3,7 +3,7 @@
 # Setup Emulators
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-18
+# Date: 2021-01-12
 #
 # bash script to show setup emulators menu.
 
@@ -12,8 +12,9 @@ while true; do
 	--title "Setup Emulators" \
 	--menu "Select option:" 0 0 0 \
         1 "Amiberry" \
-	2 "Install Kickstart rom" \
-	3 "Exit")
+	2 "UAE4ARM" \
+	3 "Install Kickstart rom" \
+	4 "Exit")
 
 	clear
 
@@ -29,10 +30,15 @@ while true; do
                         ./amiberry.sh
                         popd >/dev/null
 			;;
-		2)
+                2)
+                        pushd uae4arm >/dev/null
+                        ./uae4arm.sh
+                        popd >/dev/null
+                        ;;
+		3)
 			./install-kickstart-rom.sh
 			;;
-		3)
+		4)
 			exit
 			;;
 		esac
