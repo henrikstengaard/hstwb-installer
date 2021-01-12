@@ -35,7 +35,9 @@ fi
 AMIGA_HDD_PATH=~/amiga/hdfs
 AMIGA_KICKSTARTS_PATH=~/amiga/kickstarts
 AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
-AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf/
+AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
+UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
+UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
 
 # show install dialog
 dialog --clear --stdout \
@@ -73,8 +75,19 @@ HSTWB_INSTALLER_ROOT="$(dirname "$(dirname "$INSTALL_ROOT")")"
 
 # update or create hstwb installer config.sh
 if [ -f ~/.hstwb-installer/config.sh ]; then
+	# update hstwb installer root
 	sed -e "s/^\(export HSTWB_INSTALLER_ROOT=\).*/\1\"$(echo "$HSTWB_INSTALLER_ROOT" | sed -e "s/\//\\\\\//g")\"/g" ~/.hstwb-installer/config.sh >~/.hstwb-installer/_config.sh
 	mv -f ~/.hstwb-installer/_config.sh ~/.hstwb-installer/config.sh
+
+	# add uae4arm emulator path, if it doesn't exist
+	if [ "$(grep -i "UAE4ARM_EMULATOR_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
+		echo "export UAE4ARM_EMULATOR_PATH=\"$UAE4ARM_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
+	fi
+
+	# add uae4arm conf path, if it doesn't exist
+	if [ "$(grep -i "UAE4ARM_CONF_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
+		echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
+	fi
 else
 	echo "#!/bin/bash -e" >~/.hstwb-installer/config.sh
 	echo "export HSTWB_INSTALLER_ROOT=\"$HSTWB_INSTALLER_ROOT\"" >>~/.hstwb-installer/config.sh
@@ -83,6 +96,8 @@ else
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
         echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIBERRY_CONF_PATH=\"$AMIBERRY_CONF_PATH\"" >>~/.hstwb-installer/config.sh
+	echo "export UAE4ARM_EMULATOR_PATH=\"$UAE4ARM_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
+	echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
 fi
 chmod +x ~/.hstwb-installer/config.sh
 
