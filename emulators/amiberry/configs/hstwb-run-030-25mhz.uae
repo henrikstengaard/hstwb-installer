@@ -1,4 +1,4 @@
-config_description=Config to run installed HstWB Installer image (020 CPU, 25MHz)
+config_description=Run HstWB Installer image (030, 25MHz, 16MB Z3)
 config_hardware=true
 config_host=true
 config_version=4.3.0
@@ -84,8 +84,8 @@ cd_speed=100
 ; *** Display / Screen Setup
 ; 
 gfx_framerate=1
-gfx_width=640
-gfx_height=256
+gfx_width=720
+gfx_height=284
 gfx_top_windowed=0
 gfx_left_windowed=0
 gfx_refreshrate=50
@@ -93,7 +93,7 @@ gfx_refreshrate_rtg=50
 gfx_lores=false
 gfx_resolution=hires
 gfx_lores_mode=normal
-gfx_linemode=none
+gfx_linemode=double
 gfx_fullscreen_amiga=false
 gfx_fullscreen_picasso=false
 gfx_center_horizontal=smart
@@ -104,10 +104,11 @@ ntsc=false
 ; 
 finegrain_cpu_speed=128
 cpu_type=68020/68881
-cpu_model=68020
+cpu_model=68030
 fpu_model=68882
 cpu_compatible=false
 cpu_24bit_addressing=false
+fpu_no_unimplemented=true
 fpu_strict=false
 compfpu=false
 cachesize=0
@@ -116,15 +117,17 @@ cachesize=0
 ; 
 chipmem_size=4
 z3mapping=real
-fastmem_size=8
+fastmem_size=0
 a3000mem_size=0
 mbresmem_size=0
-z3mem_size=0
+z3mem_size=16
 z3mem_start=0x40000000
 bogomem_size=0
 gfxcard_hardware_vblank=false
 gfxcard_hardware_sprite=false
 gfxcard_multithread=false
+gfxcard_size=4
+gfxcard_type=ZorroIII
 rtg_modes=0x112
 ; 
 ; *** Chipset

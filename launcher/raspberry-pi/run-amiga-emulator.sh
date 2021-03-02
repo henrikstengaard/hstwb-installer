@@ -52,9 +52,9 @@ amiberry)
 	# run amiberry
 	pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
 	if [ $noautostart -eq 1 ]; then
-		amiberryargs="-f \"$AMIBERRY_CONF_PATH/autostart.uae\""
-	else
 		amiberryargs=""
+	else
+		amiberryargs="-f \"$AMIBERRY_CONF_PATH/autostart.uae\""
 	fi
 
 	./amiberry $amiberryargs
@@ -76,9 +76,9 @@ uae4arm)
 	# run uae4arm
         pushd "$UAE4ARM_EMULATOR_PATH" >/dev/null
         if [ $noautostart -eq 1 ]; then
+		uae4armargs=""
+	else
                 uae4armargs="-f \"$UAE4ARM_CONF_PATH/autostart.uae\""
-        else
-                uae4armargs=""
         fi
 
         ./uae4arm $uae4armargs
