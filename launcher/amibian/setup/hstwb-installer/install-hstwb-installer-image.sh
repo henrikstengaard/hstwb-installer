@@ -3,7 +3,7 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2020-04-03
+# Date: 2021-03-02
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
@@ -246,7 +246,7 @@ fi
 while true;do
 	if is_online && latest_image && download_image && unzip_image && update_configs; then
 		# show success dialog
-		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGA_HDD_PATH\".\n\nIf Amiga emulator is not configured to autostart HstWB Installer, then manually run Amiga emulator, load and start \"hstwb-installer-020-jit.uae\" configuration file to start HstWB Installer." 0 0
+		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGA_HDD_PATH\".\n\nIf Amiga emulator is not configured to autostart HstWB Installer, then manually run Amiga emulator, load and start \"hstwb-build-030-jit.uae\" configuration file to start HstWB Installer." 0 0
 
 		exit
 	else
