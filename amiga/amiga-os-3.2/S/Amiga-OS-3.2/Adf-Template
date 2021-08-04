@@ -1,0 +1,42 @@
+.KEY disk/a,label/a,adffile/a
+.BRA {
+.KET }
+
+; Adf Template
+; -------------
+;
+; Date: 2021-07-25
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to template to install amiga os 3.2 from adf file
+; "disk" argument defines amiga os 3.2 adf to install.
+
+
+; quit, if detect disk doesn't exist
+IF NOT EXISTS "{adffile}"
+  echo "*e[1mError: Adf file '{adffile}' doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; quit, if detect disk doesn't exist
+IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.2/Detect-{disk}"
+  echo "*e[1mError: Detect {label} doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+; quit, if install disk doesn't exist
+IF NOT EXISTS "INSTALLDIR:S/Amiga-OS-3.2/Install-{disk}"
+  echo "*e[1mError: Install {label} doesn't exist!*e[0m"
+  quit 20
+ENDIF
+
+
+; mount disk
+; ----------
+
+; copy adf file to ff0:
+diskwiz >NIL: "{adffile}" ff0:
+
+; run install amiga os 3.2 disk
+echo "{label}..."
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Install-{disk}"

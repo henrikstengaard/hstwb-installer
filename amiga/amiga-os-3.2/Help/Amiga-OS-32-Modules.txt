@@ -1,0 +1,40 @@
+Amiga OS 3.2 Modules
+--------------------
+
+Amiga OS 3.2 comes with a colorful and professionally
+designed icon set called Glow Icons.
+
+Glow Icons works best with a plain Amiga OS 3.2
+installation without any Workbench enhancement packages
+like ClassicWB, BestWB, BetterWB or HstWB as they will
+overwrite icons with their own icon set.
+
+Select "Yes" to install Glow Icons, if installing a
+plain Amiga OS 3.2 without any Workbench enhancement
+packages. Before installing, a backup of old icons is
+first created. Note that Glow Icons might be overwritten,
+if installing any packages.
+
+Select "No" to install Glow Icons, if installing
+Workbench enhancement packages like ClassicWB, BestWB,
+BetterWB or HstWB.
+
+Regardless of choice, Glow Icons can be installed
+later by opening Workbench, Icons drawer and 
+double-click "Install-GlowIcons". Before installing,
+a backup of old icons is first created, which can be
+restored by double-clicking "Restore-OldIcons".
+
+
+Screenmode
+----------
+
+Glow Icons looks best with interlaced screenmode, so
+it's recommended to update screenmode to interlaced.
+
+Select "Yes" to update screenmode for optimal interlaced
+screenmode with Glow Icons. Note screenmode might be
+overwritten, if installing any packages.
+
+Select "No" to update screenmode for keeping non
+interlaced screenmode.

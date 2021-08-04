@@ -1,0 +1,256 @@
+; Install Amiga OS 3.2
+; --------------------
+;
+; Date: 2021-07-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of Amiga OS 3.2 from adf files or floppy disks.
+
+
+; amiga os 3.2 installation message
+cls
+echo "*e[32m" NOLINE
+echo "Amiga OS 3.2 Installation"
+echo "*e[0m*e[1m" NOLINE
+echo "---------------------------"
+echo "*e[0m" NOLINE 
+echo ""
+
+echo "A500" >"T:_modules-menu"
+echo "A600" >>"T:_modules-menu"
+echo "A1200" >>"T:_modules-menu"
+echo "A2000" >>"T:_modules-menu"
+echo "A3000" >>"T:_modules-menu"
+echo "A4000D" >>"T:_modules-menu"
+echo "A4000T" >>"T:_modules-menu"
+echo "CD32" >>"T:_modules-menu"
+echo "--------------------------------------------------" >>"T:_modules-menu"
+echo "Help" >>"T:_modules-menu"
+echo "Skip Modules" >>"T:_modules-menu"
+
+; show modules menu
+LAB modules
+
+set modules ""
+set modules "`RequestList TITLE="Select Amiga OS 3.2 Modules to install" LISTFILE="T:_modules-menu" WIDTH=640 LINES=24`"
+
+; a500 option
+IF "$modules" EQ 1 VAL
+  set confirm "`RequestChoice "A500 modules installation" "Do you want to install A500 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a500.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A500-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A500 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a600 option
+IF "$modules" EQ 2 VAL
+  set confirm "`RequestChoice "A600 modules installation" "Do you want to install A600 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a600.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A600-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A600 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a1200 option
+IF "$modules" EQ 3 VAL
+  set confirm "`RequestChoice "A1200 modules installation" "Do you want to install A1200 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a1200.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A1200-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A1200 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a2000 option
+IF "$modules" EQ 4 VAL
+  set confirm "`RequestChoice "A2000 modules installation" "Do you want to install A2000 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a2000.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A2000-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A2000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a3000 option
+IF "$modules" EQ 5 VAL
+  set confirm "`RequestChoice "A3000 modules installation" "Do you want to install A3000 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a3000.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A3000-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A3000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a4000d option
+IF "$modules" EQ 6 VAL
+  set confirm "`RequestChoice "A4000D modules installation" "Do you want to install A4000D modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000d.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000D-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A4000D was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; a4000t option
+IF "$modules" EQ 7 VAL
+  set confirm "`RequestChoice "A4000T modules installation" "Do you want to install A4000T modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000t.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000T-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A4000T was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; cd32 option
+IF "$modules" EQ 8 VAL
+  set confirm "`RequestChoice "CD32 modules installation" "Do you want to install CD32 modules for*NAmiga OS 3.2?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-cd32.adf"
+      echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-CD32-ADF
+      SKIP glowicons
+    ELSE
+      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules CD32 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+    ENDIF
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; help option
+IF "$modules" EQ 10 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Modules.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-32-Modules.txt" >NIL:
+  ELSE
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Modules.txt' doesn't exist!*e[0m"
+    quit 20
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; skip modules option
+IF "$modules" EQ 11 VAL
+  set confirm "`RequestChoice "Skip modules installation" "Amiga OS 3.2 Modules are optional and can*Nbe skipped. Doing so requires Kickstart 3.2 rom*Nis installed in the Amiga running this image!*N*NDo you want to skip modules installation?" "Yes|No"`"
+  IF "$confirm" EQ 1 VAL
+    SKIP glowicons
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+SKIP BACK modules
+
+
+; glow icons
+LAB glowicons
+Delete >NIL: "T:_modules-menu"
+
+set glowicons `RequestChoice "Install Glow Icons" "Amiga OS 3.2 comes with a colorful and*Nprofessionally designed icon set called Glow Icons.*N*NDo you want to install Amiga OS 3.2 Glow Icons?" "Help|Yes|No"`
+
+; help option
+IF "$glowicons" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt" >NIL:
+  ELSE
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt' doesn't exist!*e[0m"
+    quit 20
+  ENDIF
+  SKIP BACK glowicons
+ENDIF
+
+; yes option
+IF "$glowicons" EQ 2 VAL
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.2-GlowIcons
+  SKIP screenmode
+ENDIF
+
+SKIP install
+
+
+; screensmode
+; -----------
+LAB screenmode
+
+; screenmode
+IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
+  set screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"PAL 640 x 512, 256 colors*"?" "Help|Yes|No"`
+ELSE
+  set screenmode `RequestChoice "Update Screenmode" "Glow Icons looks best with interlaced screenmode.*N*NDo you want to update screenmode prefs with display mode*Nset to *"NTSC 640 x 400, 256 colors*"?" "Help|Yes|No"`
+ENDIF
+
+; help option
+IF "$screenmode" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt" >NIL:
+  ELSE
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Glow-Icons.txt' doesn't exist!*e[0m"
+    quit 20
+  ENDIF
+  SKIP BACK screenmode
+ENDIF
+
+; yes option
+IF "$screenmode" EQ 2 VAL
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.2-Screenmode
+ENDIF
+
+
+; install
+; -------
+LAB install
+
+; create sys, icons directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Icons/"
+  MakePath >NIL: "SYSTEMDIR:Icons"
+ENDIF
+
+; copy install glow icons and restore old icons
+Copy >NIL: "INSTALLDIR:Extras/Icons/#?" "SYSTEMDIR:Icons/"
+Copy >NIL: "INSTALLDIR:Extras/Icons.info" "SYSTEMDIR:"
+
+; run install amiga os 3.2 adf, if prefs exists. otherwise run install amiga os 3.2 disk
+fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-32-#?-ADF" >T:_install_amiga-os-32
+IF "`wc -l <T:_install_amiga-os-32`" GT 0 VAL
+  ; run install amiga os 3.2 adf
+  execute "INSTALLDIR:S/Amiga-OS-3.2/Install-Adf"
+ELSE
+  ; run install amiga os 3.2 disk
+  execute "INSTALLDIR:S/Amiga-OS-3.2/Install-Disk"
+ENDIF 
+
+; create amiga os 3.2 prefs
+echo "3.2" NOLINE >SYSTEMDIR:Prefs/AmigaOS
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.2
+
+echo ""
+echo "Amiga OS 3.2 installation is complete."
+echo ""
+ask "Press ENTER to continue"

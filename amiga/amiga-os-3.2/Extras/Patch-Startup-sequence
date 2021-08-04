@@ -1,0 +1,91 @@
+; Startup Sequence
+; ----------------------
+;
+; Date: 2021-08-03
+; Author: Henrik Noerfjand Stengaard
+;
+; Amiga OS 3.2 patched startup-Sequence to load modules if kickstart rom is lower than 3.2 and
+; enable or disable 680x0 libraries depending on cpu model
+
+; skip mmu libraries patch, if disable mmu libraries patch prefs exist
+IF EXISTS SYS:Prefs/Env-Archive/Disable-MMULibs-Patch
+  SKIP loadmodule
+ENDIF
+
+; set cpu to 68000 by default
+set cpumodel "68000"
+
+; set failat to 21
+failat 21
+
+; set cpu model to 68020, if test cpu returns 68020 is present
+TestCPU 68020
+IF $RC EQ 0 VAL
+  set cpumodel "68020"
+ENDIF
+
+; set cpu model to 68030, if test cpu returns 68030 is present
+TestCPU 68030
+IF $RC EQ 0 VAL
+  set cpumodel "68030"
+ENDIF
+
+; set cpu model to 68040, if test cpu returns 68040 is present
+TestCPU 68040
+IF $RC EQ 0 VAL
+  set cpumodel "68040"
+ENDIF
+
+; set cpu model to 68060, if test cpu returns 68060 is present
+TestCPU 68060
+IF $RC EQ 0 VAL
+  set cpumodel "68060"
+ENDIF
+
+; disable 68020 library, ifenabled
+IF EXISTS Libs:68020.library
+  Rename >NIL: Libs:68020.library Libs:68020.library_disabled
+ENDIF
+
+; disable 68030 library, if enabled
+IF EXISTS Libs:68030.library
+  Rename >NIL: Libs:68030.library Libs:68030.library_disabled
+ENDIF
+
+; disable 68040 library, if enabled
+IF EXISTS Libs:68040.library
+  Rename >NIL: Libs:68040.library Libs:68040.library_disabled
+ENDIF
+
+; disable 68060 library, if enabled
+IF EXISTS Libs:68060.library
+  Rename >NIL: Libs:68060.library Libs:68060.library_disabled
+ENDIF
+
+; enable detected cpu model, if disabled
+IF EXISTS Libs:$cpumodel.library_disabled
+  Rename >NIL: Libs:$cpumodel.library_disabled Libs:$cpumodel.library
+ENDIF
+
+; load module for kickstart rom 3.2
+LAB loadmodule
+
+; load new rom modules, if kickstart rom is lower than 3.2.
+; otherwise quit, if kickstart rom 3.2 is not present.
+Version exec.library version 47 >NIL:
+If Warn
+  If Exists L:System-Startup
+    Echo ""
+    Echo " Forcing new ROM modules. A reboot will happen next."
+    Echo " Please wait..."
+    LoadModule L:System-Startup ROMUPDATE DOWNGRADE
+  Else
+    Echo ""
+    Echo " The system must be booted from Kickstart ROM 3.2 (V47)"
+    Echo " or from the 'Modules' disk that matches your hardware."
+    Echo ""
+    Quit
+  EndIf
+EndIf
+
+

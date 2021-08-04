@@ -1,0 +1,62 @@
+; Detect Amiga OS 3.2 Install
+; ---------------------------
+;
+; Date: 2021-07-25
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2 install floppy disk or adf file.
+
+
+; end, if volume name is not "Install3.2:"
+IF NOT "`Which $amigaosdisk:`" EQ "Install3.2:"
+  SKIP notvalid
+ENDIF
+
+; end, if hdtoolbox doesn't exist
+IF NOT EXISTS "$amigaosdisk:HDTools/HDToolBox"
+  SKIP notvalid
+ENDIF
+
+; end, if hdtoolbox is greater than v47.10
+Version >NIL: "$amigaosdisk:HDTools/HDToolBox" 47 11 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if hdtoolbox is less than v47.10
+Version >NIL: "$amigaosdisk:HDTools/HDToolBox" 47 9 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if fastfilesystem doesn't exist
+IF NOT EXISTS "$amigaosdisk:L/FastFileSystem"
+  SKIP notvalid
+ENDIF
+
+; end, if fastfilesystem is greater than v47.4
+Version >NIL: "$amigaosdisk:L/FastFileSystem" 47 5 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if fastfilesystem is less than v47.4
+Version >NIL: "$amigaosdisk:L/FastFileSystem" 47 3 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2 Install is not valid"
+
+
+; end
+; ---
+
+LAB end

@@ -1,0 +1,23 @@
+.KEY path/a
+.BRA {
+.KET }
+
+; Uncompress
+; ----------
+;
+; Date: 2021-08-03
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to uncompress .z files.
+
+; uncompress .z files
+list "{path}" ALL FILES LFORMAT="gunzip -d *"%f%n*" -c >*"%f%m*"" >T:_uncompress1
+search T:_uncompress1 ".Z" NONUM >T:_uncompress2
+Execute T:_uncompress2
+Delete >NIL: T:_uncompress#?
+
+; delete .z files
+list "{path}" ALL FILES LFORMAT="Delete >NIL: *"%f%n*"" >T:_uncompress1
+search T:_uncompress1 ".Z" NONUM >T:_uncompress2
+Execute T:_uncompress2
+Delete >NIL: T:_uncompress#?

@@ -99,10 +99,17 @@ Resident >NIL: "INSTALLDIR:C/LhA" PURE
 Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
-; mount kingcon
-Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
-Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
+; con shell for amiga os 3.2 or kingcon shell for amiga os 3.9, 3.1.4 and 3.1
+IF EXISTS SYSTEMDIR:Prefs/Amiga-OS-32
+  ; run start install packages in new con shell
+  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+ELSE
+  ; mount kingcon
+  Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
+  Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
 
-; run start install packages in new kingcon shell
-NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+  ; run start install packages in new kingcon shell
+  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+ENDIF
+
 EndShell

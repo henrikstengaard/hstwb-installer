@@ -1,7 +1,7 @@
 ; Detect Amiga OS Disk
 ; --------------------
 ;
-; Date: 2018-12-12
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect amiga os 3.1.4 or 3.1 workbench disk.
@@ -16,11 +16,16 @@ echo "--------------------"
 echo "*e[0m" NOLINE 
 echo ""
 echo "To determine which Amiga OS to install, HstWB Installer"
-echo "will now detect Amiga OS 3.1.4 or 3.1 Workbench disk in"
-echo "any floppy device."
+echo "will now detect Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk"
+echo "in any floppy device."
 
 
 set detectworkbench "0"
+
+; set detect workbench to 1, if amiga os 3.2 detect workbench exists
+IF EXISTS "INSTALLDIR:S/Amiga-OS-3.2/Detect-Workbench"
+  set detectworkbench "1"
+ENDIF
 
 ; set detect workbench to 1, if amiga os 3.1.4 detect workbench exists
 IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Workbench"
@@ -34,7 +39,8 @@ ENDIF
 
 ; fail, if detect amiga os workbench doesn't exist 
 IF "$detectworkbench" EQ 0 VAL
-  echo "*e[1mError: Detect Amiga OS 3.1.4 or 3.1 Workbench doesn't exist!*e[0m"
+  echo "*e[1mError: Detect Amiga OS 3.2, 3.1.4 or 3.1 Workbench"
+  echo "doesn't exist!*e[0m"
   quit 20
 ENDIF
 
@@ -43,8 +49,8 @@ ENDIF
 ; -----------
 LAB insertdisk
 echo ""
-echo "Please insert Amiga OS 3.1.4 or 3.1 Workbench disk in any"
-echo "floppy device."
+echo "Please insert Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk"
+echo "in any floppy device."
 echo ""
 ask "Press ENTER to continue"
 
@@ -90,6 +96,26 @@ LAB detectdisk
 
 ; set failat to 21
 failat 21
+
+; run detect amiga os 3.2 disk
+IF EXISTS "INSTALLDIR:S/Amiga-OS-3.2/Detect-Workbench"
+  ; run install amiga os 3.2, if amiga os 3.2 workbench disk is detected
+  IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Workbench"`" EQ ""
+    echo ""
+    echo "Detected Amiga OS 3.2 Workbench disk in $amigaosdisk:"
+    echo "floppy device."
+    echo ""
+    echo "Continue will start installation of Amiga OS 3.2."
+    echo ""
+    ask "Press ENTER to continue"
+
+    ; run install amiga os 3.2 disk
+    Execute "INSTALLDIR:S/Amiga-OS-3.2/Install-Amiga-OS-3.2"
+
+    SKIP end
+  ENDIF
+ENDIF
+
 
 ; run detect amiga os 3.1.4 disk
 IF EXISTS "INSTALLDIR:S/Amiga-OS-3.1.4/Detect-Workbench"

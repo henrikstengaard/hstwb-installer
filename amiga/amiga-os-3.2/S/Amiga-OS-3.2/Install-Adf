@@ -1,0 +1,222 @@
+; Install Adf
+; -----------
+;
+; Date: 2021-08-03
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of Amiga OS 3.2 from adf files.
+
+
+; install amiga os 3.2 from adf files message
+echo "*e[1mInstall Amiga OS 3.2 from adf files:*e[0m"
+
+; set amigaosdisk to ff0: device
+setenv amigaosdisk "ff0"
+
+; set modules name to a500, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A500-ADF"
+  setenv modulesname "A500"
+ENDIF
+
+; set modules name to a600, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A600-ADF"
+  setenv modulesname "A600"
+ENDIF
+
+; set modules name to a2000, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A2000-ADF"
+  setenv modulesname "A2000"
+ENDIF
+
+; set modules name to a1200, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A1200-ADF"
+  setenv modulesname "A1200"
+ENDIF
+
+; set modules name to a3000, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A3000-ADF"
+  setenv modulesname "A3000"
+ENDIF
+
+; set modules name to a4000d, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000D-ADF"
+  setenv modulesname "A4000D"
+ENDIF
+
+; set modules name to a4000t, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000T-ADF"
+  setenv modulesname "A4000T"
+ENDIF
+
+; set modules name to cd32, if install prefs and adf file exists
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-CD32-ADF"
+  setenv modulesname "CD32"
+ENDIF
+
+
+; install adf
+; -----------
+
+; run adf template for amiga os 3.2 install adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Install" "Amiga OS 3.2 Install" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-install.adf"
+
+; run adf template for amiga os 3.2 workbench adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Workbench" "Amiga OS 3.2 Workbench" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-workbench.adf"
+
+; run adf template for amiga os 3.2 disk doctor adf file, if file is present
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-disk-doctor.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "DiskDoctor" "Amiga OS 3.2 Disk Doctor" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-disk-doctor.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale.adf"
+
+; run adf template for amiga os 3.2 locale de adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-de.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale DE" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-de.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale dk adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-dk.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale DK" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-dk.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale en adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-en.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale EN" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-en.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale es adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-es.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale ES" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-es.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale fr adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-fr.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale FR" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-fr.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale gr adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-gr.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale GR" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-gr.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale it adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-it.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale IT" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-it.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale nl adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-nl.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale NL" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-nl.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale no adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-no.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale NO" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-no.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale pl adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-pl.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale PL" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-pl.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale pt adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-pt.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale PT" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-pt.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale ru adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-ru.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale RU" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-ru.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale se adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-se.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale SE" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-se.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale tr adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-tr.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale TR" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-tr.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 locale uk adf file
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-uk.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Locale" "Amiga OS 3.2 Locale UK" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale-uk.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 extras adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Extras" "Amiga OS 3.2 Extras" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-extras.adf"
+
+; run adf template for amiga os 3.2 classes adf file, if file is present
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-classes.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Classes" "Amiga OS 3.2 Classes" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-classes.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 fonts adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Fonts" "Amiga OS 3.2 Fonts" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-fonts.adf"
+
+; run adf template for amiga os 3.2 storage adf file
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Storage" "Amiga OS 3.2 Storage" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-storage.adf"
+
+; run adf template for amiga os 3.2 backdrops adf file, if file is present
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-backdrops.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Backdrops" "Amiga OS 3.2 Backdrops" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-backdrops.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a500, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a500.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A500 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a500.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a600, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a600.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A600 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a600.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a1200, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a1200.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A1200 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a1200.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a2000, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a2000.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A2000 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a2000.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a3000, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a3000.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A3000 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a3000.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a4000d, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000d.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A4000D Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000d.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules a4000t, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000t.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 A4000T Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000t.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 modules cd32, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-cd32.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "Modules" "Amiga OS 3.2 CD32 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-cd32.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 glow icons adf file, if file is present
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-glow-icons.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "GlowIcons" "Amiga OS 3.2 Glow Icons" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-glow-icons.adf"
+ENDIF
+
+; run adf template for amiga os 3.2 mmulibs adf file, if file is present
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-mmulibs.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.2/Adf-Template" "MMULibs" "Amiga OS 3.2 MMULibs" "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-mmulibs.adf"
+ENDIF
+
+; run finalize
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Finalize"
+
+; install amiga os 3.2 done
+echo "Done"

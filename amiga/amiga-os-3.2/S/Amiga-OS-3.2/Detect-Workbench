@@ -1,0 +1,82 @@
+; Detect Amiga OS 3.2 Workbench
+; -----------------------------
+;
+; Date: 2021-07-18
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2 workbench floppy disk or adf file.
+
+
+; end, if which doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/Which"
+  SKIP notvalid
+ENDIF
+
+; end, if volume name is not "Workbench3.2:"
+IF NOT "`$amigaosdisk:c/which $amigaosdisk:`" EQ "Workbench3.2:"
+  SKIP notvalid
+ENDIF
+
+; end, if assign doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/Assign"
+  SKIP notvalid
+ENDIF
+
+; end, if datatypes.library doesn't exist
+IF NOT EXISTS "$amigaosdisk:Libs/datatypes.library"
+  SKIP notvalid
+ENDIF
+
+; end, if datatypes.library is higher than v47.3
+Version >NIL: "$amigaosdisk:Libs/datatypes.library" 47 4 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if datatypes.library is less than v47.3
+Version >NIL: "$amigaosdisk:Libs/datatypes.library" 47 2 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if cli doesn't exist
+IF NOT EXISTS "$amigaosdisk:System/CLI"
+  SKIP notvalid
+ENDIF
+
+; end, if shell.info doesn't exist
+IF NOT EXISTS "$amigaosdisk:System/Shell.info"
+  SKIP notvalid
+ENDIF
+
+; end, if version.library doesn't exist
+IF NOT EXISTS "$amigaosdisk:Libs/version.library"
+  SKIP notvalid
+ENDIF
+
+; end, if version.library is greater than v47.2
+Version >NIL: "$amigaosdisk:Libs/version.library" 47 3 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if version.library is less than v47.2
+Version >NIL: "$amigaosdisk:Libs/version.library" 47 1 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2 Workbench is not valid"
+
+
+; end
+; ---
+
+LAB end

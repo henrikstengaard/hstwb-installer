@@ -1,0 +1,44 @@
+; Install Disk
+; ------------
+;
+; Date: 2021-07-26
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of Amiga OS 3.2 from floppy disks.
+
+
+; install amiga os 3.2 from adf files message
+echo "*e[1mInstall Amiga OS 3.2 from floppy disks*e[0m"
+
+; run disk template for amiga os 3.2 install disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Install" "Amiga OS 3.2 Install" NOPROMPT
+
+; run disk template for amiga os 3.2 workbench disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Workbench" "Amiga OS 3.2 Workbench"
+
+; run disk template for amiga os 3.2 disk doctor disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "DiskDoctor" "Amiga OS 3.2 Disk Doctor"
+
+; run disk template for amiga os 3.2 locale disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Locale" "Amiga OS 3.2 Locale"
+
+; run disk template for amiga os 3.2 extras disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Extras" "Amiga OS 3.2 Extras"
+
+; run disk template for amiga os 3.2 classes disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Classes" "Amiga OS 3.2 Classes"
+
+; run disk template for amiga os 3.2 fonts disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Fonts" "Amiga OS 3.2 Fonts"
+
+; run disk template for amiga os 3.2 storage disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Storage" "Amiga OS 3.2 Storage"
+
+; run disk template for amiga os 3.2 backdrops disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Backdrops" "Amiga OS 3.2 Backdrops"
+
+; run disk template for amiga os 3.2 modules disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Modules" "Amiga OS 3.2 Modules"
+
+; run disk template for amiga os 3.2 glow icons disk
+Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "GlowIcons" "Amiga OS 3.2 Glow Icons"

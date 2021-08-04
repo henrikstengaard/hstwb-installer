@@ -62,9 +62,6 @@ echo ""
 echo "*e[1mLoading Amiga OS system files:*e[0m"
 echo "Amiga OS 3.9 cd-rom in CD0:..."
 
-; set amiga os 3.1.4 to 0
-set amigaos314 "0"
-
 ; set failat to 255 for diskindrive to fail silently
 failat 255
 
@@ -110,8 +107,8 @@ SKIP loadsystemfiles
 LAB amigaosdisk
 
 ; log
-echo "Amiga OS 3.1.4 or 3.1 Workbench disk in DF0:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
-echo "Amiga OS 3.1.4 or 3.1 Workbench disk in DF0:..."
+echo "Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk in DF0:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+echo "Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk in DF0:..."
 
 ; set failat to 255 for diskindrive to fail silently
 failat 255
@@ -136,21 +133,40 @@ failat 21
 ; fail, if which doesn't exist in device DF0:
 IF NOT EXISTS "DF0:C/Which"
   ; log
-  echo "Amiga OS 3.1.4 or 3.1 Workbench disk in floppy device DF0: is not valid" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+  echo "Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk in floppy device DF0: is not valid" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
-  echo "*e[1mERROR: Amiga OS 3.1.4 or 3.1 Workbench disk in floppy device"
+  echo "*e[1mERROR: Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk in floppy device"
   echo "DF0: is not valid!*e[0m"
 
   SKIP fail
 ENDIF
 
-; set amiga os 3.1.4 to 1, if DF0: volume name is 'Workbench3.1.4'
+
+; set amiga os 3.2 to 0
+set amigaos32 "0"
+
+; set amiga os 3.1 to 1
+set amigaos31 "1"
+
+; set amiga os 3.1 to 0, if DF0: volume name is 'Workbench3.2' or 'Workbench3.1.4'
 set volumename "`DF0:C/Which DF0:`"
-IF "$volumename" EQ "Workbench3.1.4:"
-  set amigaos314 "1"
+IF "$volumename" EQ "Workbench3.2:"
+  set amigaos32 "1"
+  set amigaos31 "0"
+
+  Echo NOLINE "" >INSTALLDIR:Prefs/Amiga-OS-32
+  IF NOT EXISTS "SYSTEMDIR:Prefs"
+    MakePath >NIL: "SYSTEMDIR:Prefs"
+    Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-32
+  ENDIF
 ENDIF
 
-; load system files from amiga os 3.1.4 or 3.1 workbench disk in DF0: device
+IF "$volumename" EQ "Workbench3.1.4:"
+  set amigaos31 "0"
+ENDIF
+
+
+; load system files from amiga os 3.2, 3.1.4 or 3.1 workbench disk in DF0: device
 set systemfilesdir "DF0:C"
 
 
@@ -167,24 +183,28 @@ resident "$systemfilesdir/Copy" PURE
 resident "$systemfilesdir/Delete" PURE
 resident "$systemfilesdir/DiskChange" PURE
 resident "$systemfilesdir/Eval" PURE
-resident "$systemfilesdir/Execute" PURE
+
+IF EXISTS "$systemfilesdir/Execute"
+  resident "$systemfilesdir/Execute" PURE
+ENDIF
+
 resident "$systemfilesdir/List" PURE
-resident "$systemfilesdir/Rename" PURE
 resident "$systemfilesdir/MakeDir" PURE
+resident "$systemfilesdir/Mount" PURE
 resident "$systemfilesdir/Protect" PURE
+resident "$systemfilesdir/Rename" PURE
+resident "$systemfilesdir/RequestChoice" PURE
 resident "$systemfilesdir/Search" PURE 
+resident "$systemfilesdir/Type" PURE
+resident "$systemfilesdir/Version" PURE
 resident "$systemfilesdir/Wait" PURE 
 resident "$systemfilesdir/Which" PURE 
-resident "$systemfilesdir/Mount" PURE
-resident "$systemfilesdir/Type" PURE
-resident "$systemfilesdir/RequestChoice" PURE
-resident "$systemfilesdir/Version" PURE
 
 MakeDir RAM:Clipboards RAM:ENV/Sys
 SetEnv TZ MST7
 
-; goto start install, if amiga os 3.1.4 is 0
-IF "$amigaos314" EQ "0" VAL
+; goto start install, if amiga os 3.1 is 1
+IF "$amigaos31" EQ "1" VAL
   SKIP startinstall
 ENDIF
 
@@ -205,21 +225,35 @@ IF NOT $RC EQ 0 VAL
   SKIP fail
 ENDIF
 
-; fail, if floppy disk in device DF1: doesn't have volume name 'Install3.1.4'
-IF NOT "`Which DF1:`" EQ "Install3.1.4:"
-  ; log
-  echo "Amiga OS 3.1.4 Install disk in floppy device DF1: is not valid" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
 
-  echo "*e[1mERROR: Amiga OS 3.1.4 Install disk in floppy device"
+set installdisk "0"
+IF "`Which DF1:`" EQ "Install3.2:"
+  set installdisk "1"
+  echo "Amiga OS 3.2 Install disk in DF1:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+  echo "Amiga OS 3.2 Install disk in DF1:..."
+
+  IF EXISTS "DF1:C/Execute"
+    resident "DF1:C/Execute" PURE
+  ENDIF
+ELSE
+  IF "`Which DF1:`" EQ "Install3.1.4:"
+    set installdisk "1"
+    echo "Amiga OS 3.1.4 Install disk in DF1:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+    echo "Amiga OS 3.1.4 Install disk in DF1:..."
+  ENDIF
+ENDIF
+
+; fail, if floppy disk in device DF1: doesn't have volume name 'Install3.2' or 'Install3.1.4'
+IF "$installdisk" EQ "0" VAL
+  ; log
+  echo "Amiga OS 3.2 or 3.1.4 Install disk in floppy device DF1: is not valid" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+
+  echo "*e[1mERROR: Amiga OS 3.2, 3.1.4 Install disk in floppy device"
   echo "DF1: is not valid!*e[0m"
 
   SKIP fail
 ENDIF
 
-; log
-echo "Amiga OS 3.1.4 Install disk in DF1:" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
-
-echo "Amiga OS 3.1.4 Install disk in DF1:..."
 
 ; create sys libs directory, if it doesn't exist
 IF NOT EXISTS "SYSTEMDIR:Libs"
@@ -247,12 +281,19 @@ ask "Press ENTER to continue"
 echo "" >>SYS:hstwb-installer.log
 type "INSTALLDIR:Temp/Amiga-OS-System-Files.log" >>SYS:hstwb-installer.log
 
-; mount kingcon
-Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
-Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON
+; con shell for amiga os 3.2 or kingcon shell for amiga os 3.9, 3.1.4 and 3.1
+IF "$amigaos32" EQ "1" VAL
+  ; run start-selfinstall in new con shell
+  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install"
+ELSE
+  ; mount kingcon
+  Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
+  Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON
 
-; run start-selfinstall in new kingcon shell
-NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install"
+  ; run start-selfinstall in new kingcon shell
+  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install"
+ENDIF
+
 EndShell
 
 SKIP end

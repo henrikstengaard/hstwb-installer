@@ -1,0 +1,148 @@
+; Detect Amiga OS 3.2 Locale
+; --------------------------
+;
+; Date: 2021-07-18
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2 locale floppy disk or adf file.
+
+setenv localename ""
+setenv localepath ""
+
+; goto check locale, if volume name is "Locale-DE:"
+IF "`Which $amigaosdisk:`" EQ "Locale-DE:"
+  setenv localename "DE"
+  setenv localepath "deutsch"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-DK:"
+IF "`Which $amigaosdisk:`" EQ "Locale-DK:"
+  setenv localename "DK"
+  setenv localepath "dansk"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-EN:"
+IF "`Which $amigaosdisk:`" EQ "Locale-EN:"
+  setenv localename "EN"
+  setenv localepath "english"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-ES:"
+IF "`Which $amigaosdisk:`" EQ "Locale-ES:"
+  setenv localename "ES"
+  setenv localepath "español"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-FR:"
+IF "`Which $amigaosdisk:`" EQ "Locale-FR:"
+  setenv localename "FR"
+  setenv localepath "français"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-GR:"
+IF "`Which $amigaosdisk:`" EQ "Locale-GR:"
+  setenv localename "GR"
+  setenv localepath "greek"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-IT:"
+IF "`Which $amigaosdisk:`" EQ "Locale-IT:"
+  setenv localename "IT"
+  setenv localepath "italiano"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-NL:"
+IF "`Which $amigaosdisk:`" EQ "Locale-NL:"
+  setenv localename "NL"
+  setenv localepath "nederlands"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-NO:"
+IF "`Which $amigaosdisk:`" EQ "Locale-NO:"
+  setenv localename "NO"
+  setenv localepath "norsk"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-PL:"
+IF "`Which $amigaosdisk:`" EQ "Locale-PL:"
+  setenv localename "PL"
+  setenv localepath "polski"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-PT:"
+IF "`Which $amigaosdisk:`" EQ "Locale-PT:"
+  setenv localename "PT"
+  setenv localepath "português"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-RU:"
+IF "`Which $amigaosdisk:`" EQ "Locale-RU:"
+  setenv localename "RU"
+  setenv localepath "russian"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-SE:"
+IF "`Which $amigaosdisk:`" EQ "Locale-SE:"
+  setenv localename "SE"
+  setenv localepath "svenska"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-TR:"
+IF "`Which $amigaosdisk:`" EQ "Locale-TR:"
+  setenv localename "TR"
+  setenv localepath "türkçe"
+  SKIP checklocale
+ENDIF
+
+; goto check locale, if volume name is "Locale-UK:"
+IF "`Which $amigaosdisk:`" EQ "Locale-UK:"
+  setenv localename "UK"
+  setenv localepath "english_british"
+  SKIP checklocale
+ENDIF
+
+SKIP notvalid
+
+
+; check locale
+; -------------
+
+LAB checklocale
+
+; end, if monitors catalog doesn't exist
+IF NOT EXISTS "$amigaosdisk:HELP/Catalogs/$localepath/Sys/monitors.catalog.Z"
+  SKIP notvalid
+ENDIF
+
+; end, if workbench guide doesn't exist
+IF NOT EXISTS "$amigaosdisk:HELP/$localepath/Sys/Workbench.guide.Z"
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2 Locale is not valid"
+
+
+; end
+; ---
+
+LAB end

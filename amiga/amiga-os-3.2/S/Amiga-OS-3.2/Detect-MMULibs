@@ -1,0 +1,53 @@
+; Detect Amiga OS 3.2 MMULibs
+; ---------------------------
+;
+; Date: 2021-07-30
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2 mmulibs floppy disk or adf file.
+
+
+; end, if volume name is not "MMULibs:"
+IF NOT "`Which $amigaosdisk:`" EQ "MMULibs:"
+  SKIP notvalid
+ENDIF
+
+; end, if FPU doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/FPU"
+  SKIP notvalid
+ENDIF 
+
+; end, if MuMapRom doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/MuMapRom"
+  SKIP notvalid
+ENDIF 
+
+; end, if 680x0.library doesn't exist
+IF NOT EXISTS "$amigaosdisk:Libs/680x0.library"
+  SKIP notvalid
+ENDIF
+
+; end, if 68060.library doesn't exist
+IF NOT EXISTS "$amigaosdisk:Libs/68060.library"
+  SKIP notvalid
+ENDIF
+
+; end, if MMU-Configuration doesn't exist
+IF NOT EXISTS "$amigaosdisk:Configs/MMU-Configuration"
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2 MMULibs is not valid"
+
+
+; end
+; ---
+
+LAB end

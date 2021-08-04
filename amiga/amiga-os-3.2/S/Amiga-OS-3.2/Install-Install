@@ -1,0 +1,88 @@
+; Install Install
+; ---------------
+;
+; Date: 2021-07-30
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2 install floppy disk or adf file.
+
+MakeDir >NIL: "SYSTEMDIR:Prefs"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive/Sys"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Env-Archive/Versions"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Presets"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Presets/Backdrops"
+MakeDir >NIL: "SYSTEMDIR:Prefs/Presets/Pointers"
+MakeDir >NIL: "SYSTEMDIR:Fonts"
+MakeDir >NIL: "SYSTEMDIR:Expansion"
+MakeDir >NIL: "SYSTEMDIR:WBStartup"
+MakeDir >NIL: "SYSTEMDIR:Locale"
+MakeDir >NIL: "SYSTEMDIR:Locale/Catalogs"
+MakeDir >NIL: "SYSTEMDIR:Locale/Languages"
+MakeDir >NIL: "SYSTEMDIR:Locale/Countries"
+MakeDir >NIL: "SYSTEMDIR:Locale/Help"
+MakeDir >NIL: "SYSTEMDIR:Classes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Gadgets"
+MakeDir >NIL: "SYSTEMDIR:Classes/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Classes/Images"
+MakeDir >NIL: "SYSTEMDIR:Devs"
+MakeDir >NIL: "SYSTEMDIR:Devs/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Devs/DataTypes"
+MakeDir >NIL: "SYSTEMDIR:Devs/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Printers"
+MakeDir >NIL: "SYSTEMDIR:Devs/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage"
+MakeDir >NIL: "SYSTEMDIR:Storage/DOSDrivers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Printers"
+MakeDir >NIL: "SYSTEMDIR:Storage/Monitors"
+MakeDir >NIL: "SYSTEMDIR:Storage/Keymaps"
+MakeDir >NIL: "SYSTEMDIR:Storage/DataTypes"
+
+MakeDir >NIL: "SYSTEMDIR:Libs"
+MakeDir >NIL: "SYSTEMDIR:Tools"
+MakeDir >NIL: "SYSTEMDIR:System"
+
+MakeDir >NIL: "SYSTEMDIR:L"
+MakeDir >NIL: "SYSTEMDIR:S"
+
+Resident >NIL: "$amigaosdisk:C/IconPos" PURE
+
+Copy >NIL: "$amigaosdisk:C/#?" "SYSTEMDIR:C" CLONE
+Copy >NIL: "$amigaosdisk:HDTools/(hd|bru)#?" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:Installer" "SYSTEMDIR:System" CLONE
+
+; copy workbench.library
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  Protect >NIL: "SYSTEMDIR:Libs/workbench.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
+
+; copy icon.library
+IF EXISTS "SYSTEMDIR:Libs/icon.library"
+  Protect >NIL: "SYSTEMDIR:Libs/icon.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/icon.library" "SYSTEMDIR:Libs" CLONE
+
+MakeDir >NIL: "SYSTEMDIR:Temp/Update"
+Copy >NIL: "$amigaosdisk:Update" "SYSTEMDIR:Temp/Update" ALL CLONE
+
+Copy >NIL: "$amigaosdisk:HDTools/(hd|bru)#?" "SYSTEMDIR:Tools" CLONE
+Copy >NIL: "$amigaosdisk:Installer" "SYSTEMDIR:System" CLONE
+
+; copy workbench.library
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  Protect >NIL: "SYSTEMDIR:Libs/workbench.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/workbench.library" "SYSTEMDIR:Libs" CLONE
+
+; copy icon.library
+IF EXISTS "SYSTEMDIR:Libs/icon.library"
+  Protect >NIL: "SYSTEMDIR:Libs/icon.library" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:Libs/icon.library" "SYSTEMDIR:Libs" CLONE
+
+; copy fastfilesystem
+IF EXISTS "SYSTEMDIR:L/FastFileSystem"
+  Protect >NIL: "SYSTEMDIR:L/FastFileSystem" +prwed
+ENDIF
+Copy >NIL: "$amigaosdisk:L/FastFileSystem" "SYSTEMDIR:L" CLONE

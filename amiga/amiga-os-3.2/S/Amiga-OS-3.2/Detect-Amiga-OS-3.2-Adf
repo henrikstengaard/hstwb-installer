@@ -1,0 +1,108 @@
+; Detect Amiga OS 3.2 Adf
+; -----------------------
+;
+; Date: 2021-07-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect if Amiga OS 3.2 adf files are present.
+
+
+; add detect amiga os 3.2 to log
+echo "Amiga OS 3.2 adf" >INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+echo "------------------" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+IF EXISTS "INSTALLDIR:Prefs/AmigaModel"
+  echo "Amiga Model Detected = " NOLINE >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  type "INSTALLDIR:Prefs/AmigaModel" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+ENDIF
+echo "Detecting Amiga OS 3.2 adf files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
+ENDIF
+
+; run detect amiga os 3.2 adf, if amigaosdir: exists and check if all amiga os 3.2 adf files are present
+Assign >NIL: EXISTS AMIGAOSDIR:
+IF NOT WARN
+  ; set amiga os disk to "FDF0"
+  setenv amigaosdisk "FDF0"
+
+  ; run unmount adf
+  execute "INSTALLDIR:S/Unmount-Adf"
+
+  ; create script to copy amiga os 3.2 adf files 
+  List AMIGAOSDIR: PAT=#?.adf ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-3.2/Copy-Amiga-OS-3.2-Adf *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS*"" >T:_copy_amiga-os-3.2_adfs
+
+  ; run copy amiga os 3.2 adfs
+  Execute T:_copy_amiga-os-3.2_adfs
+  Delete >NIL: T:_copy_amiga-os-3.2_adfs
+
+  ; set amigaos32adf to 0, if one or more Amiga OS 3.2 adf files doesn't exist
+  set amigaos32adf "1"
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-workbench.adf"
+    echo "Amiga OS 3.2 Workbench adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-locale.adf"
+    echo "Amiga OS 3.2 Locale adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-extras.adf"
+    echo "Amiga OS 3.2 Extras adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-fonts.adf"
+    echo "Amiga OS 3.2 Fonts adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-storage.adf"
+    echo "Amiga OS 3.2 Storage adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+
+  set amigaos32modules "0"
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a500.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a600.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a2000.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a1200.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a3000.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000d.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000t.adf"
+    set amigaos32modules "1"
+  ENDIF
+  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-cd32.adf"
+    set amigaos32modules "1"
+  ENDIF
+
+  IF "$amigaos32modules" EQ 0 VAL
+    echo "Amiga OS 3.2 Modules adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+
+  IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-install.adf"
+    echo "Amiga OS 3.2 Install adf doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+    set amigaos32adf "0"
+  ENDIF
+
+  ; create amiga os 3.2 adf prefs, if amigaos32adf is 1
+  IF "$amigaos32adf" EQ 1 VAL
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-ADF
+  ENDIF
+ENDIF
+
+
+; End
+; ---
+LAB end

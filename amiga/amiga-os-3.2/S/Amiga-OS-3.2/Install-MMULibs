@@ -1,0 +1,23 @@
+; Install MMULibs
+; ---------------
+;
+; Date: 2021-07-30
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2 mmulibs floppy disk or adf file.
+
+; install 680x0 libraries required for cpus and accelerator cards
+
+MakeDir >NIL: "SYSTEMDIR:MuTools"
+MakeDir >NIL: "SYSTEMDIR:Libs/MMU"
+
+Copy >NIL: "$amigaosdisk:~(Configs|Locale)" "SYSTEMDIR:Libs/MMU" ALL CLONE
+
+; uncompress mutools .z files
+list "$amigaosdisk:Locale/Help/MMUlib" FILES LFORMAT="gunzip -d *"%f%n*" -c >*"SYSTEMDIR:MuTools/%m*"" >T:_mutools1
+search T:_mutools1 ".Z" NONUM >T:_mutools2
+Execute T:_mutools2
+Delete >NIL: T:_mutools#?
+
+Copy >NIL: "$amigaosdisk:Libs/680#?.library" "SYSTEMDIR:Libs" CLONE
+Copy >NIL: "$amigaosdisk:Libs/mmu.library" "SYSTEMDIR:Libs" CLONE

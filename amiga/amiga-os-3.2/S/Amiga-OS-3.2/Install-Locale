@@ -1,0 +1,25 @@
+; Install Locale
+; --------------
+;
+; Date: 2021-07-28
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2 locale floppy disk or adf file.
+
+; copy countries
+Copy >NIL: "$amigaosdisk:Countries" "SYSTEMDIR:Locale/Countries" ALL CLONE
+
+; copy fonts, if exists
+IF EXISTS "$amigaosdisk:Support/Fonts"
+  ; copy fonts
+  Copy >NIL: "$amigaosdisk:Support/Fonts" "SYSTEMDIR:Fonts" ALL CLONE
+ENDIF
+
+; copy help
+Copy >NIL: "$amigaosdisk:Help/#?" "SYSTEMDIR:Locale/Help" ALL CLONE
+
+; copy catalogs
+Copy >NIL: "$amigaosdisk:Catalogs" "SYSTEMDIR:Locale/Catalogs" ALL CLONE
+
+; copy languages
+Copy >NIL: "$amigaosdisk:Languages/#?" "SYSTEMDIR:Locale/Languages" ALL CLONE

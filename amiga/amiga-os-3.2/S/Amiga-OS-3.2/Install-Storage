@@ -1,0 +1,36 @@
+; Install Storage
+; ---------------
+;
+; Date: 2021-07-25
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2 storage floppy disk or adf file.
+
+;(if (= askForStorage TRUE)
+;(
+
+Copy >NIL: "$amigaosdisk:(DataTypes|DOSDrivers|KeyMaps|Monitors|Printers).info" SYSTEMDIR:Storage CLONE
+
+Copy >NIL: "$amigaosdisk:Classes/DataTypes" SYSTEMDIR:Classes/DataTypes ALL CLONE
+
+Copy >NIL: "$amigaosdisk:C" SYSTEMDIR:C ALL CLONE
+
+Copy >NIL: "$amigaosdisk:DefIcons/#?.info" SYSTEMDIR:Prefs/Env-Archive/Sys CLONE
+
+Copy >NIL: "$amigaosdisk:Presets/Pointers" SYSTEMDIR:Prefs/Presets/Pointers ALL CLONE
+
+Copy >NIL: "$amigaosdisk:Monitors" SYSTEMDIR:Storage/Monitors ALL CLONE
+
+Copy >NIL: "$amigaosdisk:DOSDrivers" SYSTEMDIR:Storage/DOSDrivers ALL CLONE
+
+Copy >NIL: "$amigaosdisk:WBStartup" SYSTEMDIR:WBStartup ALL CLONE
+
+Copy >NIL: "$amigaosdisk:Env-Archive/deficons.prefs" SYSTEMDIR:Prefs/Env-Archive CLONE
+
+Copy >NIL: "$amigaosdisk:Env-Archive/Pointer.prefs" SYSTEMDIR:Prefs/Env-Archive/Sys CLONE
+
+Copy >NIL: "$amigaosdisk:Printers/#?" SYSTEMDIR:Devs/Printers CLONE
+
+Copy >NIL: "$amigaosdisk:Keymaps/#?" SYSTEMDIR:Devs/Keymaps CLONE
+
+Copy >NIL: "$amigaosdisk:LIBS" SYSTEMDIR:LIBS ALL CLONE

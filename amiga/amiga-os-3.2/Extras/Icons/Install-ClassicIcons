@@ -1,0 +1,33 @@
+; Install Classic Icons
+; ---------------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2021-07-27
+;
+; This script restore old icons backup.
+
+
+; skip to end, if classic icons doesn't exist
+IF NOT EXISTS "SYS:Icons/ClassicIcons/ClassicIcons.lha"
+  echo "*e[1mError: Classic icons 'SYS:Icons/ClassicIcons/ClassicIcons.lha' doesn't exist!*e[0m"
+  Wait 1
+  SKIP end
+ENDIF
+
+; show requester to install classic icons
+set restore `RequestChoice "Install classic icons" "Do you want to install classic icons?" "Yes|No"`
+If Not $restore Eq "1" VAL
+  SKIP end
+EndIf
+
+; install classic icons
+echo "Install classic icons..."
+Lha -q -m1 x "SYS:Icons/ClassicIcons/ClassicIcons.lha" "SYS:"
+echo "Done"
+echo ""
+echo "Please reboot Amiga to get classic icons shown."
+Wait 5
+
+
+; end
+; ---
+LAB end
