@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-07-29
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -738,8 +738,8 @@ echo "Amiga OS system files will now be loaded from floppy device."
 ; insert workbench disk
 LAB insertworkbenchdisk
 echo ""
-echo "Please insert Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk in any"
-echo "floppy device."
+echo "Please insert Amiga OS 3.2, 3.1.4 or 3.1 Workbench disk"
+echo "in any floppy device."
 echo ""
 ask "Press ENTER to continue"
 echo ""
@@ -791,7 +791,7 @@ set amigaos32 "0"
 set amigaos314 "0"
 set volumename "`$floppydevice:c/which $floppydevice:`"
 IF "$volumename" EQ "Workbench3.2:"
-  set amigaos314 "1"
+  set amigaos32 "1"
   SKIP verifyworkbenchfiles
 ENDIF
 IF "$volumename" EQ "Workbench3.1.4:"

@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.2 Classes
 ; ---------------------------
 ;
-; Date: 2021-07-28
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.2 classes floppy disk or adf file.
@@ -9,6 +9,16 @@
 
 ; end, if volume name is not "Classes3.2:"
 IF NOT "`Which $amigaosdisk:`" EQ "Classes3.2:"
+  SKIP notvalid
+ENDIF
+
+; end, if requester class doesn't exist
+IF NOT EXISTS "$amigaosdisk:Classes/DataTypes/png.datatype"
+  SKIP notvalid
+ENDIF
+
+; end, if requester class doesn't exist
+IF NOT EXISTS "$amigaosdisk:Classes/requester.class"
   SKIP notvalid
 ENDIF
 

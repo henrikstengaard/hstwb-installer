@@ -1,13 +1,18 @@
 ; Detect Amiga OS 3.2 Locale
 ; --------------------------
 ;
-; Date: 2021-07-18
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.2 locale floppy disk or adf file.
 
 setenv localename ""
 setenv localepath ""
+
+; goto check locale, if volume name is "Locale:"
+IF "`Which $amigaosdisk:`" EQ "Locale:"
+  SKIP checklocale
+ENDIF
 
 ; goto check locale, if volume name is "Locale-DE:"
 IF "`Which $amigaosdisk:`" EQ "Locale-DE:"
@@ -122,12 +127,20 @@ SKIP notvalid
 
 LAB checklocale
 
-; end, if monitors catalog doesn't exist
-IF NOT EXISTS "$amigaosdisk:HELP/Catalogs/$localepath/Sys/monitors.catalog.Z"
+; skip to end, if valid locale disk
+IF EXISTS "$amigaosdisk:Support/Fonts/courier_iso-8859-9.font.Z"
+  IF EXISTS "$amigaosdisk:Catalogs/english_british/Sys/installer.catalog"
+    SKIP end
+  ENDIF
   SKIP notvalid
 ENDIF
 
-; end, if workbench guide doesn't exist
+; end, if monitors catalog doesn't exist (locale language disk)
+IF NOT EXISTS "$amigaosdisk:Catalogs/$localepath/Sys/monitors.catalog.Z"
+  SKIP notvalid
+ENDIF
+
+; end, if workbench guide doesn't exist (locale language disk)
 IF NOT EXISTS "$amigaosdisk:HELP/$localepath/Sys/Workbench.guide.Z"
   SKIP notvalid
 ENDIF

@@ -7,6 +7,9 @@
 ; AmigaDOS script to detect amiga os 3.1.4 or 3.1 workbench disk.
 
 
+; create amiga os disk pref
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-Disk
+
 ; detect amiga os disk message
 cls
 echo "*e[32m" NOLINE

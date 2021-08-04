@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.2 Backdrops
 ; -----------------------------
 ;
-; Date: 2021-07-28
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.2 backdrops floppy disk or adf file.
@@ -9,6 +9,21 @@
 
 ; end, if volume name is not "Backdrops3.2:"
 IF NOT "`Which $amigaosdisk:`" EQ "Backdrops3.2:"
+  SKIP notvalid
+ENDIF
+
+; end, if background 1920 1080 doesn't exist
+IF NOT EXISTS "$amigaosdisk:background_1920_1080.png"
+  SKIP notvalid
+ENDIF
+
+; end, if default pal doesn't exist
+IF NOT EXISTS "$amigaosdisk:default_pal.iff"
+  SKIP notvalid
+ENDIF
+
+; end, if pattern doesn't exist
+IF NOT EXISTS "$amigaosdisk:pattern.iff"
   SKIP notvalid
 ENDIF
 

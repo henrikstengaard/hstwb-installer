@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.2 Glow Icons
 ; ------------------------------
 ;
-; Date: 2021-07-28
+; Date: 2021-08-04
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect valid amiga os 3.2 glow icons floppy disk or adf file.
@@ -9,6 +9,21 @@
 
 ; end, if volume name is not "GlowIcons3.2:"
 IF NOT "`Which $amigaosdisk:`" EQ "GlowIcons3.2:"
+  SKIP notvalid
+ENDIF
+
+; end, if font icon doesn't exist
+IF NOT EXISTS "$amigaosdisk:Prefs/Font.info"
+  SKIP notvalid
+ENDIF
+
+; end, if shell icon doesn't exist
+IF NOT EXISTS "$amigaosdisk:System/Shell.info"
+  SKIP notvalid
+ENDIF
+
+; end, if def icons icon doesn't exist
+IF NOT EXISTS "$amigaosdisk:WBStartup/DefIcons.info"
   SKIP notvalid
 ENDIF
 
