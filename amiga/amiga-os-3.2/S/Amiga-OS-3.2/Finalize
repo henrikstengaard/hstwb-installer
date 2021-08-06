@@ -1,7 +1,7 @@
 ; Finalize
 ; --------
 ;
-; Date: 2021-07-28
+; Date: 2021-08-05
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to finalize installation of amiga os 3.2.
@@ -16,9 +16,10 @@ Execute "INSTALLDIR:S/Amiga-OS-3.2/Uncompress" "SYSTEMDIR:Locale"
 IF EXISTS "SYSTEMDIR:Disk.info"
   Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
 ENDIF
-
 IF NOT EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.2-GlowIcons"
-  Copy >NIL: "SYSTEMDIR:Temp/Update/Disk.info" "SYSTEMDIR:" CLONE
+  IF EXISTS "SYSTEMDIR:Temp/Update/Disk.info"
+    Copy >NIL: "SYSTEMDIR:Temp/Update/Disk.info" "SYSTEMDIR:" CLONE
+  ENDIF
 ENDIF
 
 ; update dh1 disk icon, if dh1: device exists
@@ -36,11 +37,11 @@ IF EXISTS "SYSTEMDIR:S/Startup-Sequence"
   Protect >NIL: "SYSTEMDIR:S/Startup-Sequence" +prwed
   Delete >NIL: "SYSTEMDIR:S/Startup-Sequence"
 ENDIF
-Copy >NIL: "INSTALLDIR:Extras/Patch-Startup-sequence" "SYSTEMDIR:S/Startup-sequence" CLONE
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Patch-Startup-sequence" "SYSTEMDIR:S/Startup-sequence" CLONE
 Type "SYSTEMDIR:Temp/Update/Startup-HardDrive" >>"SYSTEMDIR:S/Startup-sequence"
 
 ; copy mmulib test cpu for patch startup sequence
-Copy >NIL: "INSTALLDIR:Extras/C/TestCPU" "SYSTEMDIR:C" CLONE
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/C/TestCPU" "SYSTEMDIR:C" CLONE
 
 ; copy release to versions
 Copy >NIL: "SYSTEMDIR:Temp/Update/Release" "SYSTEMDIR:Prefs/Env-Archive/Versions" CLONE
@@ -64,35 +65,39 @@ IF NOT EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.2-GlowIcons"
 ENDIF
 
 ; copy workbench prefs to use best icon quality and no icon border
-IF EXISTS "INSTALLDIR:Extras/Prefs/Workbench.prefs"
-  Copy >NIL: "INSTALLDIR:Extras/Prefs/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
+IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/Workbench.prefs"
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/Workbench.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Workbench.prefs" CLONE
 ENDIF
 
 ; copy font prefs to use text only for workbench font
-IF EXISTS "INSTALLDIR:Extras/Prefs/Font.prefs"
-  Copy >NIL: "INSTALLDIR:Extras/Prefs/Font.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Font.prefs" CLONE
+IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/Font.prefs"
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/Font.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/Font.prefs" CLONE
 ENDIF
 
 IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
   IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.2-Screenmode"
-    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs"
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/WBPattern_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/WBPattern.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_PAL_640x512.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+      IF EXISTS "SYSTEMDIR:Prefs/Presets/Backdrops/default_pal.iff"
+        Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/WBPattern_PAL_640x512.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/WBPattern.prefs" CLONE
+      ENDIF
     ENDIF
   ELSE
-    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x256.prefs"
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_PAL_640x256.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_PAL_640x256.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_PAL_640x256.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ENDIF
 ELSE
   IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.2-Screenmode"
-    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs"
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/WBPattern_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/WBPattern.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_NTSC_640x400.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+      IF EXISTS "SYSTEMDIR:Prefs/Presets/Backdrops/default_ntsc.iff"
+        Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/WBPattern_NTSC_640x400.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/WBPattern.prefs" CLONE
+      ENDIF
     ENDIF
   ELSE
-    IF EXISTS "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x200.prefs"
-      Copy >NIL: "INSTALLDIR:Extras/Prefs/ScreenMode_NTSC_640x200.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
+    IF EXISTS "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_NTSC_640x200.prefs"
+      Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Prefs/ScreenMode_NTSC_640x200.prefs" TO "SYSTEMDIR:Prefs/Env-Archive/Sys/ScreenMode.prefs" CLONE
     ENDIF
   ENDIF
 ENDIF

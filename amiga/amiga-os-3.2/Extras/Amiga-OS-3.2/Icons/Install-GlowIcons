@@ -1,0 +1,33 @@
+; Install GlowIcons
+; -----------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2021-08-05
+;
+; An AmigaDOS script install glow icons.
+
+
+; skip to end, if glow icons doesn't exist
+IF NOT EXISTS "SYS:Icons/GlowIcons/GlowIcons.lha"
+  echo "*e[1mError: Glow icons 'SYS:Icons/GlowIcons/GlowIcons.lha' doesn't exist!*e[0m"
+  Wait 1
+  SKIP end
+ENDIF
+
+; show requester to install glow icons
+set install `RequestChoice "Install glow icons" "Do you want to install glow icons?" "Yes|No"`
+If Not $install Eq "1" VAL
+  SKIP end
+EndIf
+
+; install glow icons
+echo "Install glow icons..."
+Lha -q -m1 x "SYS:Icons/GlowIcons/GlowIcons.lha" "SYS:"
+echo "Done"
+echo ""
+echo "Please reboot Amiga to get glow icons shown."
+Wait 5
+
+
+; end
+; ---
+LAB end

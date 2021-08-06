@@ -1,9 +1,9 @@
 ; Install Classic Icons
 ; ---------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2021-07-27
+; Date: 2021-08-05
 ;
-; This script restore old icons backup.
+; An AmigaDOS script install classic icons.
 
 
 ; skip to end, if classic icons doesn't exist
@@ -14,8 +14,8 @@ IF NOT EXISTS "SYS:Icons/ClassicIcons/ClassicIcons.lha"
 ENDIF
 
 ; show requester to install classic icons
-set restore `RequestChoice "Install classic icons" "Do you want to install classic icons?" "Yes|No"`
-If Not $restore Eq "1" VAL
+set install `RequestChoice "Install classic icons" "Do you want to install classic icons?" "Yes|No"`
+If Not $install Eq "1" VAL
   SKIP end
 EndIf
 

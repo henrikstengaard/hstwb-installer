@@ -19,6 +19,14 @@ makeicon >NIL: "SYSTEMDIR:Icons/ClassicIcons"
 MakePath >NIL: "SYSTEMDIR:Icons/GlowIcons"
 makeicon >NIL: "SYSTEMDIR:Icons/GlowIcons"
 
+; copy disk.info
+IF EXISTS "SYSTEMDIR:Disk.info"
+  Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
+ENDIF
+IF EXISTS "SYSTEMDIR:Temp/Update/Disk.info"
+  Copy >NIL: "SYSTEMDIR:Temp/Update/Disk.info" "SYSTEMDIR:" CLONE
+ENDIF
+
 ; archive classic icons
 Lha -q -e -r -x a "SYSTEMDIR:Icons/ClassicIcons/ClassicIcons.lha" "SYSTEMDIR:" #?.info
 

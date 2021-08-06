@@ -1,7 +1,7 @@
 ; Install Disk
 ; ------------
 ;
-; Date: 2021-08-04
+; Date: 2021-08-05
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.2 from floppy disks.
@@ -28,38 +28,56 @@ Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Fonts" "Amiga OS 3.2 Fonts"
 ; run disk template for amiga os 3.2 storage disk
 Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Storage" "Amiga OS 3.2 Storage"
 
-set confirm "`RequestChoice "Modules installation" "Do you want to install modules for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+
+; modules
+LAB modules
+
+set install "`RequestChoice "Modules installation" "Do you want to install modules for*NAmiga OS 3.2?" "Help|Yes|No"`"
+
+; help option
+IF "$install" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Modules.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-32-Modules.txt" >NIL:
+  ELSE
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Modules.txt' doesn't exist!*e[0m"
+    quit 20
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; yes option
+IF "$install" EQ 2 VAL
   ; run disk template for amiga os 3.2 modules disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Modules" "Amiga OS 3.2 Modules"
 ENDIF
 
-set confirm "`RequestChoice "Locale language installation" "Do you want to install locale language (DE, DK, ...) for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+
+set install "`RequestChoice "Locale language installation" "Do you want to install locale language (DE, DK, ...) for*NAmiga OS 3.2?" "Yes|No"`"
+IF "$install" EQ 1 VAL
   ; run disk template for amiga os 3.2 locale language disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Locale" "Amiga OS 3.2 Locale Language"
 ENDIF
 
-set confirm "`RequestChoice "MMULibs installation" "Do you want to install MMULibs for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+set install "`RequestChoice "MMULibs installation" "Do you want to install MMULibs for*NAmiga OS 3.2?" "Yes|No"`"
+IF "$install" EQ 1 VAL
   ; run disk template for amiga os 3.2 mmulibs disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "MMULibs" "Amiga OS 3.2 MMULibs"
 ENDIF
 
-set confirm "`RequestChoice "Disk doctor installation" "Do you want to install disk doctor for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+set install "`RequestChoice "Disk doctor installation" "Do you want to install disk doctor for*NAmiga OS 3.2?" "Yes|No"`"
+IF "$install" EQ 1 VAL
   ; run disk template for amiga os 3.2 disk doctor disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "DiskDoctor" "Amiga OS 3.2 Disk Doctor"
 ENDIF
 
-set confirm "`RequestChoice "Classes installation" "Do you want to install classes for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+set install "`RequestChoice "Classes installation" "Do you want to install classes for*NAmiga OS 3.2?" "Yes|No"`"
+IF "$install" EQ 1 VAL
   ; run disk template for amiga os 3.2 classes disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Classes" "Amiga OS 3.2 Classes"
 ENDIF
 
-set confirm "`RequestChoice "Backdrops installation" "Do you want to install backdrops for*NAmiga OS 3.2?" "Yes|No"`"
-IF "$confirm" EQ 1 VAL
+set install "`RequestChoice "Backdrops installation" "Do you want to install backdrops for*NAmiga OS 3.2?" "Yes|No"`"
+IF "$install" EQ 1 VAL
   ; run disk template for amiga os 3.2 backdrops disk
   Execute "INSTALLDIR:S/Amiga-OS-3.2/Disk-Template" "Backdrops" "Amiga OS 3.2 Backdrops"
 ENDIF
@@ -70,4 +88,5 @@ IF EXISTS INSTALLDIR:Prefs/Amiga-OS-3.2-GlowIcons
 ENDIF
 
 ; run finalize
+echo ""
 Execute "INSTALLDIR:S/Amiga-OS-3.2/Finalize"

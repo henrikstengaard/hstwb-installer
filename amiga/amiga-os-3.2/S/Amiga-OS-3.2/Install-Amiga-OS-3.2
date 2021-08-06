@@ -237,9 +237,9 @@ IF NOT EXISTS "SYSTEMDIR:Icons/"
   MakePath >NIL: "SYSTEMDIR:Icons"
 ENDIF
 
-; copy install glow icons and restore old icons
-Copy >NIL: "INSTALLDIR:Extras/Icons/#?" "SYSTEMDIR:Icons/"
-Copy >NIL: "INSTALLDIR:Extras/Icons.info" "SYSTEMDIR:"
+; copy install classic and glow icons scripts
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Icons/#?" "SYSTEMDIR:Icons/"
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Icons.info" "SYSTEMDIR:"
 
 ; run install amiga os 3.2 adf, if prefs exists. otherwise run install amiga os 3.2 disk
 fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-32-#?-ADF" >T:_install_amiga-os-32

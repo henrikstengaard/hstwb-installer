@@ -3,7 +3,7 @@ Amiga OS installation help
 
 Amiga OS installation shows valid Amiga OS installations
 detected in AMIGAOSDIR: device, which can be installed.
-HstWB Installer supports Amiga OS 3.9, 3.1.4 and 3.1.
+HstWB Installer supports Amiga OS 3.9, 3.2, 3.1.4 and 3.1.
 
 The detection process examines file names and md5
 checksums to identify valid Amiga OS installations.
