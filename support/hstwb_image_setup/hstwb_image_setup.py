@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-22
+# Date:   2021-08-06
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -82,7 +82,7 @@ def run_command(commands):
     """Run command"""
 
     # process to run commands
-    process = subprocess.Popen(commands, bufsize=-1,
+    process = subprocess.Popen(commands, bufsize=-1, text=True,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     
     # get stdout and stderr from process
@@ -114,7 +114,7 @@ def find_amiga_forever_data_dir_from_media_windows():
         drives = drives_match.group(1).strip().split(' ')
         for drive in drives:
             # find valid amiga files from drive
-            amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(drive, 'utf-8'))
+            amiga_forever_data_dir = find_valid_amiga_files_dir(drive)
 
             # return, if amiga forever data dir is valid
             if amiga_forever_data_dir != None:
@@ -145,7 +145,7 @@ def find_amiga_forever_data_dir_from_media_macos():
         volume_dir = volume_dir_match.group(1)
 
         # find valid amiga files from volume dir
-        amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(volume_dir, 'utf-8'))
+        amiga_forever_data_dir = find_valid_amiga_files_dir(volume_dir)
 
         if amiga_forever_data_dir != None:
             return amiga_forever_data_dir
@@ -172,7 +172,7 @@ def find_amiga_forever_data_dir_from_media_linux():
         target_dir = target_dir_match.group(1)
 
         # find valid amiga files from target dir
-        amiga_forever_data_dir = find_valid_amiga_files_dir(unicode(target_dir, 'utf-8'))
+        amiga_forever_data_dir = find_valid_amiga_files_dir(target_dir)
 
         if amiga_forever_data_dir != None:
             return amiga_forever_data_dir
@@ -307,7 +307,7 @@ def patch_uae_config_file( \
                 hardfile2_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(hardfile2_path_match.group(1))))
             if hardfile_path == None or not os.path.exists(hardfile_path):
-                print 'WARNING: Hardfile path \'{0}\' doesn\'t exist'.format(hardfile_path)
+                print('WARNING: Hardfile path \'{0}\' doesn\'t exist'.format(hardfile_path))
             else:
                 line = re.sub(r'^(hardfile2=[^,]*,[^,:]*:)[^,]+', 
                     '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile_path.replace('\\', '\\\\'))), line, 0, re.I)
@@ -316,7 +316,7 @@ def patch_uae_config_file( \
             if hardfile2_file_system_path_match and hardfile2_file_system_path_match.group(1) != '':
                 hardfile2_file_system_path = os.path.join(uae_config_dir, os.path.basename(hardfile2_file_system_path_match.group(1)))
                 if hardfile2_file_system_path == None or not os.path.exists(hardfile2_file_system_path):
-                    print 'WARNING: Hardfile2 filesystem path \'{0}\' doesn\'t exist'.format(hardfile2_file_system_path)
+                    print('WARNING: Hardfile2 filesystem path \'{0}\' doesn\'t exist'.format(hardfile2_file_system_path))
                 else:
                     line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
                         '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), hardfile2_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
@@ -336,7 +336,7 @@ def patch_uae_config_file( \
                 uaehf_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(uaehf_path_match.group(1))))
             if uaehf_path == None or not os.path.exists(uaehf_path):
-                print 'WARNING: Uaehf path \'{0}\' doesn\'t exist'.format(uaehf_path)
+                print('WARNING: Uaehf path \'{0}\' doesn\'t exist'.format(uaehf_path))
             else:
                 if uaehf_is_dir:
                     line = re.sub(r'^(uaehf\d+=[^,]*,[^,]*,[^,:]*:[^,:]*:"?)[^,"]+', 
@@ -349,7 +349,7 @@ def patch_uae_config_file( \
             if uaehf_file_system_path_match and uaehf_file_system_path_match.group(1) != '':
                 uaehf_file_system_path = os.path.join(uae_config_dir, os.path.basename(uaehf_file_system_path_match.group(1)))
                 if uaehf_file_system_path == None or not os.path.exists(uaehf_file_system_path):
-                    print 'WARNING: Uaehf filesystem path \'{0}\' doesn\'t exist'.format(uaehf_file_system_path)
+                    print('WARNING: Uaehf filesystem path \'{0}\' doesn\'t exist'.format(uaehf_file_system_path))
                 else:
                     line = re.sub(r'^(.+[^,]*,)[^,]*(,uae)$', 
                         '\\1{0}\\2'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), uaehf_file_system_path.replace('\\', '\\\\'))), line, 0, re.I)
@@ -362,7 +362,7 @@ def patch_uae_config_file( \
                 filesystem2_device_match.group(1).lower(),
                 os.path.join(uae_config_dir, os.path.basename(filesystem2_path_match.group(1))))
             if filesystem2_path == None or not os.path.exists(filesystem2_path):
-                print 'WARNING: Filesystem path \'{0}\' doesn\'t exist'.format(filesystem2_path)
+                print('WARNING: Filesystem path \'{0}\' doesn\'t exist'.format(filesystem2_path))
             else:
                 line = re.sub(r'^(filesystem2=[^,]*,[^,:]*:[^:]*:)[^,]+', 
                     '\\1{0}'.format(re.sub(r'(\\|/)', os.sep.replace('\\', '\\\\'), filesystem2_path.replace('\\', '\\\\'))), line, 0, re.I)
@@ -447,7 +447,7 @@ def patch_fsuae_config_file( \
                     os.path.join(
                         fsuae_config_dir, os.path.basename(hard_drive_path))).replace('\\', '/')
                 if hard_drive_path == None or not os.path.exists(hard_drive_path):
-                    print 'WARNING: Harddrive path \'{0}\' doesn\'t exist'.format(hard_drive_path)
+                    print('WARNING: Harddrive path \'{0}\' doesn\'t exist'.format(hard_drive_path))
                 else:
                     line = re.sub(
                         r'^(hard_drive_\d+\s*=\s*).*', \
@@ -461,7 +461,7 @@ def patch_fsuae_config_file( \
                 fsuae_config_dir,
                 os.path.basename(hard_drive_file_system_match.group(1))).replace('\\', '/')
             if hard_drive_file_system_path == None or not os.path.exists(hard_drive_file_system_path):
-                print 'WARNING: Hard drive file system path \'{0}\' doesn\'t exist'.format(hard_drive_file_system_path)
+                print('WARNING: Hard drive file system path \'{0}\' doesn\'t exist'.format(hard_drive_file_system_path))
             else:
                 line = re.sub(
                     r'^(^hard_drive_\d+_file_system\s*=\s*).*', \
@@ -474,7 +474,7 @@ def patch_fsuae_config_file( \
     # get adf files from amiga os dir
     adf_files = []
     if amiga_os_dir != None and os.path.isdir(amiga_os_dir):
-        adf_files.extend([os.path.join(amiga_os_dir, _f) for _f in os.listdir(unicode(amiga_os_dir, 'utf-8')) \
+        adf_files.extend([os.path.join(amiga_os_dir, _f) for _f in os.listdir(amiga_os_dir) \
             if os.path.isfile(os.path.join(amiga_os_dir, _f)) and _f.endswith(".adf")])
 
     # add adf files to fs-uae config lines as swappable floppies
@@ -525,8 +525,49 @@ valid_amiga_os_314_md5_entries = [
     { 'Md5': 'a0ed3065558bd43e80647c1c522322a0', 'Filename': 'amiga-os-314-modules-a4000t.adf', 'Name': 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment' }
 ]
 
+# valid amiga os 3.2 adf md5 entries
+valid_amiga_os_32_md5_entries = [
+    { 'Md5': '4f0c3383a10e62fdea5e5758a9238223', 'Filename': 'amiga-os-32-extras.adf', 'Name': 'Amiga OS 3.2 Extras Disk, Hyperion Entertainment' },
+    { 'Md5': 'e03eb0505fb244aaf1c7486f6fe61ede', 'Filename': 'amiga-os-32-fonts.adf', 'Name': 'Amiga OS 3.2 Fonts Disk, Hyperion Entertainment' },
+    { 'Md5': '71edc1249c013d60380d3db81fd87ae7', 'Filename': 'amiga-os-32-install.adf', 'Name': 'Amiga OS 3.2 Install Disk, Hyperion Entertainment' },
+    { 'Md5': 'b697a03f0620b5e06947b5e9d7b16142', 'Filename': 'amiga-os-32-locale.adf', 'Name': 'Amiga OS 3.2 Locale Disk, Hyperion Entertainment' },
+    { 'Md5': '3726fab6ec5cfc48f7c2368005964d90', 'Filename': 'amiga-os-32-storage.adf', 'Name': 'Amiga OS 3.2 Storage Disk, Hyperion Entertainment' },
+    { 'Md5': '5edf0b7a10409ef992ea351565ef8b6c', 'Filename': 'amiga-os-32-workbench.adf', 'Name': 'Amiga OS 3.2 Workbench Disk, Hyperion Entertainment' },
+    { 'Md5': '2236629e7c316ff907b7e0cb1ee0ad18', 'Filename': 'amiga-os-32-backdrops.adf', 'Name': 'Amiga OS 3.2 Backdrops Disk, Hyperion Entertainment' },
+    { 'Md5': 'fd11e54b038d5f236248a941125065db', 'Filename': 'amiga-os-32-classes.adf', 'Name': 'Amiga OS 3.2 Classes Disk, Hyperion Entertainment' },
+    { 'Md5': '497d0aa96229a0e7fd2c475163d7462a', 'Filename': 'amiga-os-32-disk-doctor.adf', 'Name': 'Amiga OS 3.2 Disk Doctor Disk, Hyperion Entertainment' },
+    { 'Md5': '26ef4d09cf71b7fdbd9cc68f333b7373', 'Filename': 'amiga-os-32-glow-icons.adf', 'Name': 'Amiga OS 3.2 Glow Icons Disk, Hyperion Entertainment' },
+    { 'Md5': '3d36568bce19234b84fe88aa9629f5bf', 'Filename': 'amiga-os-32-locale-de.adf', 'Name': 'Amiga OS 3.2 Locale DE Disk, Hyperion Entertainment' },
+    { 'Md5': '3a80e4f6b0d2d95f727dc45f99068ad8', 'Filename': 'amiga-os-32-locale-dk.adf', 'Name': 'Amiga OS 3.2 Locale DK Disk, Hyperion Entertainment' },
+    { 'Md5': '7170c0bc81b7daeee39552279dada58c', 'Filename': 'amiga-os-32-locale-en.adf', 'Name': 'Amiga OS 3.2 Locale EN Disk, Hyperion Entertainment' },
+    { 'Md5': '5e2eb9acef8e7b062d103db3fd270a27', 'Filename': 'amiga-os-32-locale-es.adf', 'Name': 'Amiga OS 3.2 Locale ES Disk, Hyperion Entertainment' },
+    { 'Md5': '9f65d321d92d72e17d1f744f47d16323', 'Filename': 'amiga-os-32-locale-fr.adf', 'Name': 'Amiga OS 3.2 Locale FR Disk, Hyperion Entertainment' },
+    { 'Md5': 'f93f2cd799ad1356adf4db01e20218f1', 'Filename': 'amiga-os-32-locale-gr.adf', 'Name': 'Amiga OS 3.2 Locale GR Disk, Hyperion Entertainment' },
+    { 'Md5': 'ad728c377ce3d7f4bd6adba8419a81ae', 'Filename': 'amiga-os-32-locale-it.adf', 'Name': 'Amiga OS 3.2 Locale IT Disk, Hyperion Entertainment' },
+    { 'Md5': 'e7b7b5a6583fca0d302201a1cb0b2829', 'Filename': 'amiga-os-32-locale-nl.adf', 'Name': 'Amiga OS 3.2 Locale NL Disk, Hyperion Entertainment' },
+    { 'Md5': '1a9b83a7385c1aab8094fc1d72123437', 'Filename': 'amiga-os-32-locale-no.adf', 'Name': 'Amiga OS 3.2 Locale NO Disk, Hyperion Entertainment' },
+    { 'Md5': '1aaa138753cec33a55f48d869780b7c8', 'Filename': 'amiga-os-32-locale-pl.adf', 'Name': 'Amiga OS 3.2 Locale PL Disk, Hyperion Entertainment' },
+    { 'Md5': '425bbeb03c74fb275d643644bdd1af9a', 'Filename': 'amiga-os-32-locale-pt.adf', 'Name': 'Amiga OS 3.2 Locale PT Disk, Hyperion Entertainment' },
+    { 'Md5': 'c45409fca931fc1ce76f6713f27ccd00', 'Filename': 'amiga-os-32-locale-ru.adf', 'Name': 'Amiga OS 3.2 Locale RU Disk, Hyperion Entertainment' },
+    { 'Md5': 'a588dbc1ee7bf43e0e79694e10e48669', 'Filename': 'amiga-os-32-locale-se.adf', 'Name': 'Amiga OS 3.2 Locale SE Disk, Hyperion Entertainment' },
+    { 'Md5': '6f9a623611fd19e084f7be2106ecfd99', 'Filename': 'amiga-os-32-locale-tr.adf', 'Name': 'Amiga OS 3.2 Locale TR Disk, Hyperion Entertainment' },
+    { 'Md5': '8d88812406cbf373cdb38148096972b9', 'Filename': 'amiga-os-32-locale-uk.adf', 'Name': 'Amiga OS 3.2 Locale UK Disk, Hyperion Entertainment' },
+    { 'Md5': '66c46918b7005167f1b65e444d0b95f7', 'Filename': 'amiga-os-32-mmulibs.adf', 'Name': 'Amiga OS 3.2 MMULibs Disk, Hyperion Entertainment' },
+    { 'Md5': '2d46a2856152256771883f212a4e462d', 'Filename': 'amiga-os-32-modules-a1200.adf', 'Name': 'Amiga OS 3.2 Modules A1200 Disk, Hyperion Entertainment' },
+    { 'Md5': '9b18dea310bf073ef9cae2a120254d92', 'Filename': 'amiga-os-32-modules-a2000.adf', 'Name': 'Amiga OS 3.2 Modules A2000 Disk, Hyperion Entertainment' },
+    { 'Md5': '99fdc21e434c2b2a988ba96b69d46389', 'Filename': 'amiga-os-32-modules-a3000.adf', 'Name': 'Amiga OS 3.2 Modules A3000 Disk, Hyperion Entertainment' },
+    { 'Md5': '729ddf87056936d77ee8287f9ad090a7', 'Filename': 'amiga-os-32-modules-a4000d.adf', 'Name': 'Amiga OS 3.2 Modules A4000D Disk, Hyperion Entertainment' },
+    { 'Md5': 'f8eddbca10560582b99a2f4555ad0620', 'Filename': 'amiga-os-32-modules-a4000t.adf', 'Name': 'Amiga OS 3.2 Modules A4000T Disk, Hyperion Entertainment' },
+    { 'Md5': '2af6b84449996440211e9547660b10b6', 'Filename': 'amiga-os-32-modules-a500.adf', 'Name': 'Amiga OS 3.2 Modules A500 Disk, Hyperion Entertainment' },
+    { 'Md5': 'c6474df1d52300a4993f13a394701697', 'Filename': 'amiga-os-32-modules-a600.adf', 'Name': 'Amiga OS 3.2 Modules A600 Disk, Hyperion Entertainment' },
+    { 'Md5': '00b2c4d420c933894151c43dc3a24155', 'Filename': 'amiga-os-32-modules-cd32.adf', 'Name': 'Amiga OS 3.2 Modules CD32 Disk, Hyperion Entertainment' }
+]
+
 # valid kickstart md5 entries
 valid_kickstart_md5_entries = [
+    { 'Md5': 'cad62a102848e13bf04d8a3b0f8be6ab', 'Filename': 'kick.a1200.47.96', 'Encrypted': False, 'Name': 'Kickstart 3.2 47.96 A1200 Rom, Hyperion Entertainment', 'Model': 'A1200', 'ConfigSupported': True },
+    { 'Md5': '1d9b6068abff5a44b4b2f1d5d3516dd9', 'Filename': 'kick.a500.47.96', 'Encrypted': False, 'Name': 'Kickstart 3.2 47.96 A500 Rom, Hyperion Entertainment', 'Model': 'A500', 'ConfigSupported': True },
+
     { 'Md5': '6de08cd5c5efd926d0a7643e8fb776fe', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment', 'Model': 'A1200', 'ConfigSupported': True },
     { 'Md5': '79bfe8876cd5abe397c50f60ea4306b9', 'Filename': 'kick.a1200.46.143', 'Encrypted': False, 'Name': 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment', 'Model': 'A1200', 'ConfigSupported': True },
 
@@ -559,6 +600,12 @@ valid_amiga_os_39_md5_entries = [
     { 'Md5': '71353d4aeb9af1f129545618d013a8c8', 'Filename': 'boingbag39-1.lha', 'Name': 'Boing Bag 1 for Amiga OS 3.9', 'Size': 5254174 },
     { 'Md5': 'fd45d24bb408203883a4c9a56e968e28', 'Filename': 'boingbag39-2.lha', 'Name': 'Boing Bag 2 for Amiga OS 3.9', 'Size': 2053444 }
 ]
+
+# index valid amiga 3.2 md5 entries
+valid_amiga_os_32_md5_index = {}
+for entry in valid_amiga_os_32_md5_entries:
+    entry['Priority'] = len(valid_amiga_os_32_md5_index) + 1
+    valid_amiga_os_32_md5_index[entry['Md5'].lower()] = entry
 
 # index valid amiga 3.1.4 md5 entries
 valid_amiga_os_314_md5_index = {}
@@ -628,17 +675,17 @@ for i in range(0, len(sys.argv)):
         self_install = True
 
 # print hstwb image setup title
-print '-----------------'
-print 'HstWB Image Setup'
-print '-----------------'
-print 'Author: Henrik Noerfjand Stengaard'
-print 'Date: 2019-08-22'
-print ''
-print 'Install dir \'{0}\''.format(install_dir)
+print('-----------------')
+print('HstWB Image Setup')
+print('-----------------')
+print('Author: Henrik Noerfjand Stengaard')
+print('Date: 2021-08-06')
+print('')
+print('Install dir \'{0}\''.format(install_dir))
 
 # fail, if install directory doesn't exist
 if (install_dir != None and not os.path.isdir(install_dir)):
-    print 'Error: Install dir \'{0}\' doesn\'t exist'.format(install_dir)
+    print('Error: Install dir \'{0}\' doesn\'t exist'.format(install_dir))
     exit(1)
 
 # set uae config directory to detected winuae config directory, if uae config directory is not defined and platform is win32
@@ -650,16 +697,16 @@ if fsuae_dir == None:
     fsuae_dir = get_fsuae_dir()
 
 # get uae config files from install directory
-uae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
+uae_config_files = [os.path.join(install_dir, n) for n in os.listdir(install_dir) \
     if os.path.isfile(os.path.join(install_dir, n)) and re.search(r'\.uae$', n, re.I)]
 
 # get fs-uae config files from install directory
-fsuae_config_files = [os.path.join(install_dir, n) for n in os.listdir(unicode(install_dir, 'utf-8')) \
+fsuae_config_files = [os.path.join(install_dir, n) for n in os.listdir(install_dir) \
     if os.path.isfile(os.path.join(install_dir, n)) and re.search(r'\.fs-uae$', n, re.I)]
 
 # print uae and fs-uae configuration files
-print '{0} UAE configuration file(s)'.format(len(uae_config_files))
-print '{0} FS-UAE configuration file(s)'.format(len(fsuae_config_files))
+print('{0} UAE configuration file(s)'.format(len(uae_config_files)))
+print('{0} FS-UAE configuration file(s)'.format(len(fsuae_config_files)))
 
 # detect, if uae or fs-uae config files has self install directories
 config_files_has_self_install_dirs = False
@@ -674,7 +721,7 @@ for fsuae_config_file in fsuae_config_files:
 
 # set self install true, if patch only is not defined and config files has self install directories
 if not patch_only and config_files_has_self_install_dirs:
-    print 'One or more configuration files contain self install dirs'
+    print('One or more configuration files contain self install dirs')
     self_install = True
 
 # set default amiga os dir, if it's not defined
@@ -719,27 +766,27 @@ if amiga_forever_data_dir == None:
 
 # print install directories
 if amiga_os_dir != None:
-    print 'Amiga OS dir \'{0}\''.format(amiga_os_dir)
+    print('Amiga OS dir \'{0}\''.format(amiga_os_dir))
 if kickstart_dir != None:
-    print 'Kickstart dir \'{0}\''.format(kickstart_dir)
+    print('Kickstart dir \'{0}\''.format(kickstart_dir))
 if user_packages_dir != None:
-    print 'User packages dir \'{0}\''.format(user_packages_dir)
+    print('User packages dir \'{0}\''.format(user_packages_dir))
 if amiga_forever_data_dir != None:
-    print 'Amiga Forever data dir \'{0}\''.format(amiga_forever_data_dir)
+    print('Amiga Forever data dir \'{0}\''.format(amiga_forever_data_dir))
 
 # print amiga forever data dir, if it defined and exists
 if amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir):
     # cloanto amiga forever
-    print ''
-    print 'Cloanto Amiga Forever'
-    print '---------------------'
+    print('')
+    print('Cloanto Amiga Forever')
+    print('---------------------')
 
     shared_dir = os.path.join(amiga_forever_data_dir, 'Shared')
     shared_adf_dir = os.path.join(shared_dir, 'adf')
     shared_rom_dir = os.path.join(shared_dir, 'rom')
 
     if self_install:
-        print 'Install Amiga OS 3.1 adf and Kickstart rom files from Amiga Forever data dir...'
+        print('Install Amiga OS 3.1 adf and Kickstart rom files from Amiga Forever data dir...')
 
         # install amiga os 3.1 adf rom files from cloanto amiga forever data directory, if shared adf directory exists
         if os.path.isdir(shared_adf_dir):
@@ -757,11 +804,11 @@ if amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir):
                 os.chmod(installed_amiga_os_31_adf_file, stat.S_IWRITE)
 
             # print installed amiga os 3.1 adf files
-            print '- {0} Amiga OS 3.1 adf files installed \'{1}\''.format(
+            print('- {0} Amiga OS 3.1 adf files installed \'{1}\''.format(
                 len(installed_amiga_os_31_adf_filenames), 
-                ', '.join(installed_amiga_os_31_adf_filenames))
+                ', '.join(installed_amiga_os_31_adf_filenames)))
         else:
-            print '- No Amiga Forever data shared adf dir detected'
+            print('- No Amiga Forever data shared adf dir detected')
 
         # install kickstart rom files from cloanto amiga forever data directory, if shared rom directory exists
         if os.path.isdir(shared_rom_dir):
@@ -790,29 +837,29 @@ if amiga_forever_data_dir != None and os.path.isdir(amiga_forever_data_dir):
                 os.chmod(installed_kickstart_rom_file, stat.S_IWRITE)
 
             # print installed kickstart rom files
-            print '- {0} Kickstart rom files installed \'{1}\''.format(
+            print('- {0} Kickstart rom files installed \'{1}\''.format(
                 len(installed_kickstart_rom_filenames), 
-                ', '.join(installed_kickstart_rom_filenames))
+                ', '.join(installed_kickstart_rom_filenames)))
         else:
-            print '- No Amiga Forever data shared rom dir detected'
+            print('- No Amiga Forever data shared rom dir detected')
     else:
-        print 'Using Kickstart rom files from Amiga Forever data dir...'
+        print('Using Kickstart rom files from Amiga Forever data dir...')
         if kickstart_dir == None and os.path.isdir(shared_rom_dir):
             kickstart_dir = shared_rom_dir
-            print '- Kickstart dir \'{0}\''.format(kickstart_dir)
+            print('- Kickstart dir \'{0}\''.format(kickstart_dir))
         else:
-            print '- No Amiga Forever data shared rom dir detected or Kickstart dir is already set'
-    print 'Done'
+            print('- No Amiga Forever data shared rom dir detected or Kickstart dir is already set')
+    print('Done')
 
 
 # print image directories
-print ''
-print 'Image directories'
-print '-----------------'
+print('')
+print('Image directories')
+print('-----------------')
 
 # print detecting amiga os
-print 'Detecting Amiga OS...'
-print '- Amiga OS dir \'{0}\''.format(amiga_os_dir)
+print('Detecting Amiga OS...')
+print('- Amiga OS dir \'{0}\''.format(amiga_os_dir))
 
 # get amiga os files from amiga os directory
 amiga_os_md5_files = get_md5_files_from_dir(amiga_os_dir)
@@ -834,17 +881,38 @@ for md5_file in amiga_os_md5_files:
     detected_amiga_os_39_filenames_index[index_filename].priority = valid_amiga_os_39_md5_index[md5_file.md5_hash]['Priority']
 
 # amiga os 3.9 filenames
-detected_amiga_os_39_filenames = detected_amiga_os_39_filenames_index.keys()
+detected_amiga_os_39_filenames = list(detected_amiga_os_39_filenames_index.keys())
 detected_amiga_os_39_filenames.sort()
 
 # print detected amiga os 3.9 files
 if len(detected_amiga_os_39_filenames) > 0:
-    print '- {0} Amiga OS 3.9 files detected \'{1}\''.format(len(detected_amiga_os_39_filenames_index), ', '.join(detected_amiga_os_39_filenames))
+    print('- {0} Amiga OS 3.9 files detected \'{1}\''.format(len(detected_amiga_os_39_filenames_index), ', '.join(detected_amiga_os_39_filenames)))
 else:
-    print '- No Amiga OS 3.9 files detected'
+    print('- No Amiga OS 3.9 files detected')
 
 
-# detected amiga os 3.1.4 md5 index and filenames from workbench dir that matches valid amiga os 3.1 md5
+# detected amiga os 3.2 md5 index and filenames from workbench dir that matches valid amiga os 3.2 md5
+detected_amiga_os_32_md5_index = {}
+detected_amiga_os_32_filenames = []
+for md5_file in amiga_os_md5_files:
+    if not md5_file.md5_hash in valid_amiga_os_32_md5_index:
+        continue
+    detected_amiga_os_32_md5_index[valid_amiga_os_32_md5_index[md5_file.md5_hash]['Filename'].lower()] = \
+        valid_amiga_os_32_md5_index[md5_file.md5_hash]
+    detected_amiga_os_32_filenames.append(os.path.basename(md5_file.full_filename))
+detected_amiga_os_32_filenames = list(set(detected_amiga_os_32_filenames))
+detected_amiga_os_32_filenames.sort()
+
+# print detected amiga os 3.2 adf files
+if len(detected_amiga_os_32_filenames) > 0:
+    print('- {0} Amiga OS 3.2 adf files detected \'{1}\''.format(
+        len(detected_amiga_os_32_filenames), 
+        ', '.join(detected_amiga_os_32_filenames)))
+else:
+    print('- No Amiga OS 3.2 adf files detected')
+
+
+# detected amiga os 3.1.4 md5 index and filenames from workbench dir that matches valid amiga os 3.1.4 md5
 detected_amiga_os_314_md5_index = {}
 detected_amiga_os_314_filenames = []
 for md5_file in amiga_os_md5_files:
@@ -858,11 +926,11 @@ detected_amiga_os_314_filenames.sort()
 
 # print detected amiga os 3.1.4 adf files
 if len(detected_amiga_os_314_filenames) > 0:
-    print '- {0} Amiga OS 3.1.4 adf files detected \'{1}\''.format(
+    print('- {0} Amiga OS 3.1.4 adf files detected \'{1}\''.format(
         len(detected_amiga_os_314_filenames), 
-        ', '.join(detected_amiga_os_314_filenames))
+        ', '.join(detected_amiga_os_314_filenames)))
 else:
-    print '- No Amiga OS 3.1.4 adf files detected'
+    print('- No Amiga OS 3.1.4 adf files detected')
 
 
 # detected amiga os 3.1 md5 index and filenames from workbench dir that matches valid amiga os 3.1 md5
@@ -879,16 +947,16 @@ detected_amiga_os_31_filenames.sort()
 
 # print detected amiga os 3.1 adf files
 if len(detected_amiga_os_31_filenames) > 0:
-    print '- {0} Amiga OS 3.1 adf files detected \'{1}\''.format(
+    print('- {0} Amiga OS 3.1 adf files detected \'{1}\''.format(
         len(detected_amiga_os_31_filenames), 
-        ', '.join(detected_amiga_os_31_filenames))
+        ', '.join(detected_amiga_os_31_filenames)))
 else:
-    print '- No Amiga OS 3.1 adf files detected'
+    print('- No Amiga OS 3.1 adf files detected')
 
 
 # print detecting kickstart roms
-print 'Detecting Kickstart roms...'
-print '- Kickstart dir \'{0}\''.format(kickstart_dir)
+print('Detecting Kickstart roms...')
+print('- Kickstart dir \'{0}\''.format(kickstart_dir))
 
 # detected kickstart md5 index and filenames from kickstart dir that matches valid kickstart md5
 detected_kickstart_md5_index = {}
@@ -910,27 +978,27 @@ detected_kickstart_filenames.sort()
 
 # print detected kickstart rom files
 if len(detected_kickstart_filenames) > 0:
-    print '- {0} Kickstart rom files detected \'{1}\''.format(
+    print('- {0} Kickstart rom files detected \'{1}\''.format(
         len(detected_kickstart_filenames), 
-        ', '.join(detected_kickstart_filenames))
+        ', '.join(detected_kickstart_filenames)))
 else:
-    print '- No Kickstart rom files detected'
+    print('- No Kickstart rom files detected')
 
 
 # print detecting user packages
-print 'Detecting User Packages...'
-print '- User Packages dir \'{0}\''.format(user_packages_dir)
+print('Detecting User Packages...')
+print('- User Packages dir \'{0}\''.format(user_packages_dir))
 
 # get user package dirs
-user_package_dirs = [n for n in os.listdir(unicode(user_packages_dir, 'utf-8')) \
+user_package_dirs = [n for n in os.listdir(user_packages_dir) \
     if os.path.isfile(os.path.join(os.path.join(user_packages_dir, n), '_installdir'))]
 
 # print detected user packages
 if len(user_package_dirs) > 0:
-    print '- {0} user packages detected \'{1}\''.format(len(user_package_dirs), ', '.join(user_package_dirs))
+    print('- {0} user packages detected \'{1}\''.format(len(user_package_dirs), ', '.join(user_package_dirs)))
 else:
-    print '- No user packages detected'
-print 'Done'
+    print('- No user packages detected')
+print('Done')
 
 
 # set amiga os 3.9 iso file, if uae or fs-uae config files are present
@@ -968,21 +1036,21 @@ if user_packages_dir != None:
 # patch and install uae configuration files, if they are present
 if len(uae_config_files) > 0:
     # print uae configuration
-    print ''
-    print 'UAE configuration'
-    print '-----------------'
-    print 'Patching and installing UAE configuration files...'
+    print('')
+    print('UAE configuration')
+    print('-----------------')
+    print('Patching and installing UAE configuration files...')
 
     # print uae config directory, if not patch only and uae config directory exists
     if not patch_only and uae_config_dir != None:
-        print '- UAE config dir \'{0}\''.format(uae_config_dir)
+        print('- UAE config dir \'{0}\''.format(uae_config_dir))
 
     if amiga_os_39_iso_file != None:
-        print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os_39_iso_file)
+        print('- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os_39_iso_file))
     else:
-        print '- No Amiga OS 3.9 iso file detected'
+        print('- No Amiga OS 3.9 iso file detected')
 
-    print '- {0} UAE configuration files \'{1}\''.format(len(uae_config_files), ', '.join(uae_config_files))    
+    print('- {0} UAE configuration files \'{1}\''.format(len(uae_config_files), ', '.join(uae_config_files)))
     for uae_config_file in uae_config_files:
         kickstart_file = None
 
@@ -1007,10 +1075,10 @@ if len(uae_config_files) > 0:
             model = 'unknown'
 
         if kickstart_file:
-            print '- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(uae_config_file, kickstart_file, model)
+            print('- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(uae_config_file, kickstart_file, model))
             kickstart_file = os.path.realpath(kickstart_file)
         else:
-            print '- \'{0}\'. No Kickstart file for {1} model in configuration file!'.format(uae_config_file, model)
+            print('- \'{0}\'. No Kickstart file for {1} model in configuration file!'.format(uae_config_file, model))
 
         # patch uae config file
         patch_uae_config_file(
@@ -1027,15 +1095,15 @@ if len(uae_config_files) > 0:
                 uae_config_file, 
                 os.path.join(uae_config_dir, os.path.basename(uae_config_file)))
 
-    print 'Done'
+    print('Done')
 
 # patch and install fs-uae configuration files, if they are present
 if len(fsuae_config_files) > 0:
     # print fs-uae configuration
-    print ''
-    print 'FS-UAE configuration'
-    print '--------------------'
-    print 'Patching and installing FS-UAE configuration files...'
+    print('')
+    print('FS-UAE configuration')
+    print('--------------------')
+    print('Patching and installing FS-UAE configuration files...')
 
     # fs-uae config dir
     fsuae_config_dir = None
@@ -1045,18 +1113,18 @@ if len(fsuae_config_files) > 0:
         # fs-uae configuration directory
         fsuae_config_dir = os.path.join(fsuae_dir, 'Configurations')
 
-        print '- FS-UAE config dir \'{0}\''.format(fsuae_dir)
+        print('- FS-UAE config dir \'{0}\''.format(fsuae_dir))
 
         # create fs-uae configuration directory, if it doesn't exist
         if not os.path.exists(fsuae_config_dir):
             os.makedirs(fsuae_config_dir)
 
     if amiga_os_39_iso_file != None:
-        print '- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os_39_iso_file)
+        print('- Using Amiga OS 3.9 iso file \'{0}\''.format(amiga_os_39_iso_file))
     else:
-        print '- No Amiga OS 3.9 iso file detected'
+        print('- No Amiga OS 3.9 iso file detected')
 
-    print '- {0} FS-UAE configuration files'.format(len(fsuae_config_files))
+    print('- {0} FS-UAE configuration files'.format(len(fsuae_config_files)))
     for fsuae_config_file in fsuae_config_files:
         kickstart_file = None
 
@@ -1081,10 +1149,10 @@ if len(fsuae_config_files) > 0:
             model = 'unknown'
 
         if kickstart_file:
-            print '- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(fsuae_config_file, kickstart_file, model)
+            print('- \'{0}\'. Using Kickstart file \'{1}\' for {2} model'.format(fsuae_config_file, kickstart_file, model))
             kickstart_file = os.path.realpath(kickstart_file)
         else:
-            print '- \'{0}\'. No Kickstart file for {1} model!'.format(fsuae_config_file, model)
+            print('- \'{0}\'. No Kickstart file for {1} model!'.format(fsuae_config_file, model))
 
         # patch fs-uae config file
         patch_fsuae_config_file(
@@ -1110,12 +1178,12 @@ if len(fsuae_config_files) > 0:
             os.makedirs(hstwb_installer_fsuae_theme_dir_installed)
 
         # copy hstwb installer fs-uae theme directory
-        for filename in os.listdir(unicode(hstwb_installer_fsuae_theme_dir, 'utf-8')):
+        for filename in os.listdir(hstwb_installer_fsuae_theme_dir):
             source_file = os.path.join(hstwb_installer_fsuae_theme_dir, filename) 
             shutil.copyfile(
                 source_file, 
                 os.path.join(hstwb_installer_fsuae_theme_dir_installed, filename))
 
-        print '- HstWB Installer FS-UAE theme installed'
+        print('- HstWB Installer FS-UAE theme installed')
 
-    print 'Done'
+    print('Done')

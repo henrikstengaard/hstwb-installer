@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-22
+# Date:   2021-08-06
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -491,8 +491,49 @@ $validAmigaOs314Md5Entries = @(
     @{ 'Md5' = 'a0ed3065558bd43e80647c1c522322a0'; 'Filename' = 'amiga-os-314-modules-a4000t.adf'; 'Name' = 'Amiga OS 3.1.4 Modules A4000T Disk, Hyperion Entertainment' }
 )
 
+# valid amiga os 3.2 adf md5 entries
+$validAmigaOs32Md5Entries = @(
+    @{ 'Md5' = '4f0c3383a10e62fdea5e5758a9238223'; 'Filename' = 'amiga-os-32-extras.adf'; 'Name' = 'Amiga OS 3.2 Extras Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'e03eb0505fb244aaf1c7486f6fe61ede'; 'Filename' = 'amiga-os-32-fonts.adf'; 'Name' = 'Amiga OS 3.2 Fonts Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '71edc1249c013d60380d3db81fd87ae7'; 'Filename' = 'amiga-os-32-install.adf'; 'Name' = 'Amiga OS 3.2 Install Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'b697a03f0620b5e06947b5e9d7b16142'; 'Filename' = 'amiga-os-32-locale.adf'; 'Name' = 'Amiga OS 3.2 Locale Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '3726fab6ec5cfc48f7c2368005964d90'; 'Filename' = 'amiga-os-32-storage.adf'; 'Name' = 'Amiga OS 3.2 Storage Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '5edf0b7a10409ef992ea351565ef8b6c'; 'Filename' = 'amiga-os-32-workbench.adf'; 'Name' = 'Amiga OS 3.2 Workbench Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2236629e7c316ff907b7e0cb1ee0ad18'; 'Filename' = 'amiga-os-32-backdrops.adf'; 'Name' = 'Amiga OS 3.2 Backdrops Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'fd11e54b038d5f236248a941125065db'; 'Filename' = 'amiga-os-32-classes.adf'; 'Name' = 'Amiga OS 3.2 Classes Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '497d0aa96229a0e7fd2c475163d7462a'; 'Filename' = 'amiga-os-32-disk-doctor.adf'; 'Name' = 'Amiga OS 3.2 Disk Doctor Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '26ef4d09cf71b7fdbd9cc68f333b7373'; 'Filename' = 'amiga-os-32-glow-icons.adf'; 'Name' = 'Amiga OS 3.2 Glow Icons Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '3d36568bce19234b84fe88aa9629f5bf'; 'Filename' = 'amiga-os-32-locale-de.adf'; 'Name' = 'Amiga OS 3.2 Locale DE Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '3a80e4f6b0d2d95f727dc45f99068ad8'; 'Filename' = 'amiga-os-32-locale-dk.adf'; 'Name' = 'Amiga OS 3.2 Locale DK Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '7170c0bc81b7daeee39552279dada58c'; 'Filename' = 'amiga-os-32-locale-en.adf'; 'Name' = 'Amiga OS 3.2 Locale EN Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '5e2eb9acef8e7b062d103db3fd270a27'; 'Filename' = 'amiga-os-32-locale-es.adf'; 'Name' = 'Amiga OS 3.2 Locale ES Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '9f65d321d92d72e17d1f744f47d16323'; 'Filename' = 'amiga-os-32-locale-fr.adf'; 'Name' = 'Amiga OS 3.2 Locale FR Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'f93f2cd799ad1356adf4db01e20218f1'; 'Filename' = 'amiga-os-32-locale-gr.adf'; 'Name' = 'Amiga OS 3.2 Locale GR Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'ad728c377ce3d7f4bd6adba8419a81ae'; 'Filename' = 'amiga-os-32-locale-it.adf'; 'Name' = 'Amiga OS 3.2 Locale IT Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'e7b7b5a6583fca0d302201a1cb0b2829'; 'Filename' = 'amiga-os-32-locale-nl.adf'; 'Name' = 'Amiga OS 3.2 Locale NL Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '1a9b83a7385c1aab8094fc1d72123437'; 'Filename' = 'amiga-os-32-locale-no.adf'; 'Name' = 'Amiga OS 3.2 Locale NO Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '1aaa138753cec33a55f48d869780b7c8'; 'Filename' = 'amiga-os-32-locale-pl.adf'; 'Name' = 'Amiga OS 3.2 Locale PL Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '425bbeb03c74fb275d643644bdd1af9a'; 'Filename' = 'amiga-os-32-locale-pt.adf'; 'Name' = 'Amiga OS 3.2 Locale PT Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'c45409fca931fc1ce76f6713f27ccd00'; 'Filename' = 'amiga-os-32-locale-ru.adf'; 'Name' = 'Amiga OS 3.2 Locale RU Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'a588dbc1ee7bf43e0e79694e10e48669'; 'Filename' = 'amiga-os-32-locale-se.adf'; 'Name' = 'Amiga OS 3.2 Locale SE Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '6f9a623611fd19e084f7be2106ecfd99'; 'Filename' = 'amiga-os-32-locale-tr.adf'; 'Name' = 'Amiga OS 3.2 Locale TR Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '8d88812406cbf373cdb38148096972b9'; 'Filename' = 'amiga-os-32-locale-uk.adf'; 'Name' = 'Amiga OS 3.2 Locale UK Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '66c46918b7005167f1b65e444d0b95f7'; 'Filename' = 'amiga-os-32-mmulibs.adf'; 'Name' = 'Amiga OS 3.2 MMULibs Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2d46a2856152256771883f212a4e462d'; 'Filename' = 'amiga-os-32-modules-a1200.adf'; 'Name' = 'Amiga OS 3.2 Modules A1200 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '9b18dea310bf073ef9cae2a120254d92'; 'Filename' = 'amiga-os-32-modules-a2000.adf'; 'Name' = 'Amiga OS 3.2 Modules A2000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '99fdc21e434c2b2a988ba96b69d46389'; 'Filename' = 'amiga-os-32-modules-a3000.adf'; 'Name' = 'Amiga OS 3.2 Modules A3000 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '729ddf87056936d77ee8287f9ad090a7'; 'Filename' = 'amiga-os-32-modules-a4000d.adf'; 'Name' = 'Amiga OS 3.2 Modules A4000D Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'f8eddbca10560582b99a2f4555ad0620'; 'Filename' = 'amiga-os-32-modules-a4000t.adf'; 'Name' = 'Amiga OS 3.2 Modules A4000T Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2af6b84449996440211e9547660b10b6'; 'Filename' = 'amiga-os-32-modules-a500.adf'; 'Name' = 'Amiga OS 3.2 Modules A500 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = 'c6474df1d52300a4993f13a394701697'; 'Filename' = 'amiga-os-32-modules-a600.adf'; 'Name' = 'Amiga OS 3.2 Modules A600 Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '00b2c4d420c933894151c43dc3a24155'; 'Filename' = 'amiga-os-32-modules-cd32.adf'; 'Name' = 'Amiga OS 3.2 Modules CD32 Disk, Hyperion Entertainment' }
+)
+
 # valid kickstart rom md5 entries
 $validKickstartMd5Entries = @(
+    @{ 'Md5' = 'cad62a102848e13bf04d8a3b0f8be6ab'; 'Filename' = 'kick.a1200.47.96'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2 47.96 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = '1d9b6068abff5a44b4b2f1d5d3516dd9'; 'Filename' = 'kick.a500.47.96'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2 47.96 A500 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+
     @{ 'Md5' = '6de08cd5c5efd926d0a7643e8fb776fe'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     @{ 'Md5' = '79bfe8876cd5abe397c50f60ea4306b9'; 'Filename' = 'kick.a1200.46.143'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.1.4 46.143 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     
@@ -529,6 +570,10 @@ $validAmigaOs39Md5Entries = @(
 # index valid amiga os 3.1 md5 entries
 $validAmigaOs31Md5Index = @{}
 $validAmigaOs31Md5Entries | ForEach-Object { $_.Priority = $validAmigaOs31Md5Index.Count + 1; $validAmigaOs31Md5Index[$_['Md5'].ToLower()] = $_ }
+
+# index valid amiga os 3.2 md5 entries
+$validAmigaOs32Md5Index = @{}
+$validAmigaOs32Md5Entries | ForEach-Object { $_.Priority = $validAmigaOs32Md5Index.Count + 1; $validAmigaOs32Md5Index[$_['Md5'].ToLower()] = $_ }
 
 # index valid amiga os 3.1.4 md5 entries
 $validAmigaOs314Md5Index = @{}
@@ -577,7 +622,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2019-08-22"
+Write-Output "Date: 2021-08-06"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
@@ -843,6 +888,33 @@ if ($detectedOs39Filenames.Count -gt 0)
 else
 {
     Write-Output '- No Amiga OS 3.9 files detected'
+}
+
+# detected amiga os 3.2 md5 index and filenames from amiga os dir that matches valid amiga os 3.2 md5
+$detectedAmigaOs32Md5Index = @{}
+$detectedAmigaOs32Filenames = New-Object System.Collections.Generic.List[System.Object]
+foreach ($md5File in $amigaOsMd5Files)
+{
+    if (!$validAmigaOs32Md5Index.ContainsKey($md5File.Md5))
+    {
+        continue
+    }
+    $detectedAmigaOs32Md5Index[$validAmigaOs32Md5Index[$md5File.Md5]['Filename'].ToLower()] = `
+        $validAmigaOs32Md5Index[$md5File.Md5]
+    $detectedAmigaOs32Filenames.Add((Split-Path $md5File.File -Leaf))
+}
+$detectedAmigaOs32Filenames = $detectedAmigaOs32Filenames | `
+    Sort-Object | `
+    Get-Unique
+
+# print detected amiga os 3.2 adf files
+if ($detectedAmigaOs32Filenames.Count -gt 0)
+{
+    Write-Output ('- {0} Amiga OS 3.2 adf files detected ''{1}''' -f $detectedAmigaOs32Filenames.Count, ($detectedAmigaOs32Filenames -join ', '))
+}
+else
+{
+    Write-Output '- No Amiga OS 3.2 adf files detected'
 }
 
 
