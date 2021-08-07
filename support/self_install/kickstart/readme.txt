@@ -1,5 +1,9 @@
 Copy Kickstart rom files here.
 
+Hyperion Entertainment Kickstart 3.2 rom files:
+- kicka1200.rom
+- kickCDTVa1000a500a2000a600.rom
+
 Hyperion Entertainment Kickstart 3.1.4 rom files (only emulation_or_maprom and unsplit_unswapped roms can be used):
 - kick.a1200.46.143
 - kick.a500.46.143
