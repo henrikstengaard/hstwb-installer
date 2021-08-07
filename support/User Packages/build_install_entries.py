@@ -4,16 +4,14 @@
 # Build Install Entries
 # ---------------------
 #
-# Author: Henrik Noerfjand Stengaard
-# Date:   2019-10-30
+# Author: Henrik Nørfjand Stengaard
+# Date:   2021-08-07
 #
 # A powershell script to build install entries script for HstWB Installer user packages.
 
 
 """Build Install Entries"""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import os
 import re
 import shutil
@@ -121,11 +119,11 @@ def parse_entry(entry_name):
             pattern_match = True
             language = language_match.group(1)
 
-            if language is not u'En':
+            if language != 'En':
                 if re.search(r'german', language, re.I):
-                    language = u'De'
+                    language = 'De'
                 if re.search(r'spanish', language, re.I):
-                    language = u'Es'
+                    language = 'Es'
                 language_list.append(language.lower())
 
             entry_name = re.sub(language_pattern, '', entry_name)
@@ -187,11 +185,11 @@ def parse_entry(entry_name):
 
     # add ocs hardware, if no hardware results exist
     if len(hardware_list) == 0:
-        hardware_list.append(u'ocs')
+        hardware_list.append('ocs')
 
     # add en language, if no language results exist
     if len(language_list) == 0:
-        language_list.append(u'en')
+        language_list.append('en')
 
     entry = Entry()
     entry.name = entry_name
@@ -254,7 +252,7 @@ def find_entries(user_package_dir):
     user_package_dir_index = len(user_package_dir) + 1
     entries = []
 
-    for root, directories, filenames in os.walk(unicode(user_package_dir, 'utf-8')):
+    for root, directories, filenames in os.walk(user_package_dir):
         for filename in filenames:
             # skip, if filename doesn't end with .lha, .lzx or .zip
             if not (filename.endswith(".lha") or filename.endswith(".lzx") or filename.endswith(".zip")):
@@ -351,7 +349,7 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
     user_package_install_lines = []
     user_package_install_lines.append("; {0}".format(user_package_name))
     user_package_install_lines.append(("; {0}".format("-" * len(user_package_name))))
-    user_package_install_lines.append("; Author: Henrik Noerfjand Stengaard")
+    user_package_install_lines.append("; Author: Henrik Nørfjand Stengaard")
     user_package_install_lines.append("; Date: {0}".format(datetime.date.today().strftime('%Y-%m-%d')))
     user_package_install_lines.append("")
     user_package_install_lines.append("; An AmigaDOS script for installing entries in user package '{0}' built by Build Install Entries script.".format(user_package_name))
@@ -414,9 +412,9 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
         entries_set_id += 1
 
         # get hardwares and languages sorted
-        hardwares = hardware_index[entries_set.name].keys()
+        hardwares = list(hardware_index[entries_set.name].keys())
         hardwares.sort()
-        languages = language_index[entries_set.name]["single"].keys()
+        languages = list(language_index[entries_set.name]["single"].keys())
         languages.sort()
 
         user_package_install_lines.append("")
@@ -448,7 +446,7 @@ def build_user_package_install(entries_sets, user_package_name, entries_dir):
             user_package_install_lines.append("set languagecount \"0\"")
             user_package_install_lines.append("set multicount \"0\"")
 
-            language_hardwares = language_index[entries_set.name]["single"][language].keys()
+            language_hardwares = list(language_index[entries_set.name]["single"][language].keys())
             language_hardwares.sort()
             for hardware in language_hardwares:
                 user_package_install_lines.append("IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
@@ -676,7 +674,7 @@ def build_install_entries(user_package_name, entries, user_package_path, install
 
     # write install entries file
     install_entries_lines = []
-    index_names = install_entry_filename_index.keys()
+    index_names = list(install_entry_filename_index.keys())
     index_names.sort()
     for index_name in index_names:
         install_entries_lines.append("set entrydir \"`execute INSTALLDIR:S/CombinePath \"$INSTALLDIR\" \"{0}\"`\"".format(index_name))
@@ -684,12 +682,12 @@ def build_install_entries(user_package_name, entries, user_package_path, install
         install_entries_lines.append("  MakePath \"$entrydir\" >NIL:")
         install_entries_lines.append("ENDIF")
 
-        hardwares = install_entry_filename_index[index_name].keys()
+        hardwares = list(install_entry_filename_index[index_name].keys())
         hardwares = sorted(hardwares, key=lambda hardware: hardware.lower())
         for hardware in hardwares:
             install_entries_lines.append("IF \"$entrieshardware{0}\" EQ 1 VAL".format(hardware))
 
-            languages = install_entry_filename_index[index_name][hardware].keys()
+            languages = list(install_entry_filename_index[index_name][hardware].keys())
             languages = sorted(languages, key=lambda language: language.lower())
             for language in languages:
                 if re.search(r'multi', language, re.I):
@@ -718,7 +716,9 @@ def write_entries_list(entries_file, entries):
     """Write entries list"""
     with open(entries_file, 'wb') as csvfile:
         csvfile.write(codecs.BOM_UTF8)
-        writer = csv.writer(csvfile, delimiter=str(u';'), quoting=csv.QUOTE_ALL)
+
+    with open(entries_file, 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile, delimiter=str(';'), quoting=csv.QUOTE_ALL)
         writer.writerow([
             "File",
             "UserPackageFile",
@@ -736,18 +736,18 @@ def write_entries_list(entries_file, entries):
             "BestVersionLowMemRank"])
         for entry in entries:
             writer.writerow([
-                entry.file_full_name.encode('utf-8'),
-                entry.user_package_file.encode('utf-8'),
-                entry.name.encode('utf-8'),
-                ','.join(entry.entry_id).encode('utf-8'),
-                ','.join(entry.hardware).encode('utf-8'),
-                ','.join(entry.language).encode('utf-8'),
-                ','.join(entry.memory).encode('utf-8'),
-                ','.join(entry.release).encode('utf-8'),
-                ','.join(entry.publisher_developer).encode('utf-8'),
-                ','.join(entry.other).encode('utf-8'),
-                ','.join(entry.version).encode('utf-8'),
-                ','.join(entry.unsupported).encode('utf-8'),
+                entry.file_full_name,
+                entry.user_package_file,
+                entry.name,
+                ','.join(entry.entry_id),
+                ','.join(entry.hardware),
+                ','.join(entry.language),
+                ','.join(entry.memory),
+                ','.join(entry.release),
+                ','.join(entry.publisher_developer),
+                ','.join(entry.other),
+                ','.join(entry.version),
+                ','.join(entry.unsupported),
                 entry.best_version_rank,
                 entry.best_version_lowmem_rank])
 
@@ -756,8 +756,8 @@ def write_entries_list(entries_file, entries):
 print("---------------------")
 print("Build Install Entries")
 print("---------------------")
-print("Author: Henrik Noerfjand Stengaard")
-print("Date: 2019-10-30")
+print("Author: Henrik Nørfjand Stengaard")
+print("Date: 2021-08-07")
 print("")
 
 # print usage and exit, if arguments are not defined
