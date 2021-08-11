@@ -1,0 +1,5 @@
+; Execute Amiga OS 3.2 startup, if it exists
+IF EXISTS "S:Amiga-OS-32-Startup"
+  Execute "S:Amiga-OS-32-Startup"
+ENDIF
+

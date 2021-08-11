@@ -1,10 +1,10 @@
-; Startup Sequence
-; ----------------------
+; Patch Amiga OS 3.2 Startup
+; --------------------------
 ;
-; Date: 2021-08-03
+; Date: 2021-08-11
 ; Author: Henrik Noerfjand Stengaard
 ;
-; Amiga OS 3.2 patched startup-Sequence to load modules if kickstart rom is lower than 3.2 and
+; AmigaDOS script to patch Amiga OS 3.2 startup to load modules if kickstart rom is lower than 3.2 and
 ; enable or disable 680x0 libraries depending on cpu model
 
 ; skip mmu libraries patch, if disable mmu libraries patch prefs exist

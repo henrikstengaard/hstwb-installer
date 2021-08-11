@@ -37,7 +37,8 @@ IF EXISTS "SYSTEMDIR:S/Startup-Sequence"
   Protect >NIL: "SYSTEMDIR:S/Startup-Sequence" +prwed
   Delete >NIL: "SYSTEMDIR:S/Startup-Sequence"
 ENDIF
-Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Patch-Startup-sequence" "SYSTEMDIR:S/Startup-sequence" CLONE
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Amiga-OS-32-Startup" "SYSTEMDIR:S/" CLONE
+Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.2/Startup-sequence" "SYSTEMDIR:S/" CLONE
 Type "SYSTEMDIR:Temp/Update/Startup-HardDrive" >>"SYSTEMDIR:S/Startup-sequence"
 
 ; copy mmulib test cpu for patch startup sequence

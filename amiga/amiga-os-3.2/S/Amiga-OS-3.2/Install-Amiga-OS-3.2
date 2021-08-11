@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.2
 ; --------------------
 ;
-; Date: 2021-08-04
+; Date: 2021-08-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.2 from adf files or floppy disks.
@@ -47,7 +47,7 @@ IF "$modules" EQ 1 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A500-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A500 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A500 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -61,7 +61,7 @@ IF "$modules" EQ 2 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A600-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A600 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A600 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -75,7 +75,7 @@ IF "$modules" EQ 3 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A1200-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A1200 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A1200 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -89,7 +89,7 @@ IF "$modules" EQ 4 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A2000-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A2000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A2000 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -103,7 +103,7 @@ IF "$modules" EQ 5 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A3000-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A3000 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A3000 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -117,7 +117,7 @@ IF "$modules" EQ 6 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000D-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A4000D was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A4000D was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -131,7 +131,7 @@ IF "$modules" EQ 7 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-A4000T-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules A4000T was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules A4000T was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules
@@ -145,7 +145,7 @@ IF "$modules" EQ 8 VAL
       echo "" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-CD32-ADF
       SKIP glowicons
     ELSE
-      echo "RequestChoice *"Modules not available*" *"Amiga OS 3.2 Modules CD32 was not detected in**N'amigaos'directory!*" *"OK*" >NIL:" >>T:_amigaosoption
+      RequestChoice "Modules not available" "Amiga OS 3.2 Modules CD32 was not detected in*N'amigaos' directory!" "OK" >NIL:
     ENDIF
   ENDIF
   SKIP BACK modules

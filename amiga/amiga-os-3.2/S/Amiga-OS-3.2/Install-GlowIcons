@@ -1,7 +1,7 @@
 ; Install Glow Icons
 ; ------------------
 ;
-; Date: 2021-07-28
+; Date: 2021-08-11
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.2 glow icons floppy disk or adf file.
@@ -15,17 +15,7 @@ Execute "INSTALLDIR:S/Amiga-OS-3.2/Clean-Up"
 
 ; create classic and glow icons directories
 MakePath >NIL: "SYSTEMDIR:Icons/ClassicIcons"
-makeicon >NIL: "SYSTEMDIR:Icons/ClassicIcons"
 MakePath >NIL: "SYSTEMDIR:Icons/GlowIcons"
-makeicon >NIL: "SYSTEMDIR:Icons/GlowIcons"
-
-; copy disk.info
-IF EXISTS "SYSTEMDIR:Disk.info"
-  Protect >NIL: "SYSTEMDIR:Disk.info" +prwed
-ENDIF
-IF EXISTS "SYSTEMDIR:Temp/Update/Disk.info"
-  Copy >NIL: "SYSTEMDIR:Temp/Update/Disk.info" "SYSTEMDIR:" CLONE
-ENDIF
 
 ; archive classic icons
 Lha -q -e -r -x a "SYSTEMDIR:Icons/ClassicIcons/ClassicIcons.lha" "SYSTEMDIR:" #?.info
@@ -36,4 +26,27 @@ Lha -q -e -r -x a "SYSTEMDIR:Icons/GlowIcons/GlowIcons.lha" "$amigaosdisk:" #?.i
 ; install glowicons to system directory, if glow icons prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-3.2-GlowIcons"
   Lha -q -m1 x "SYSTEMDIR:Icons/GlowIcons/GlowIcons.lha" "SYSTEMDIR:"
+ENDIF
+
+; create classic and glow icons
+IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info SYSTEMDIR:Icons.info 
+  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info SYSTEMDIR:Icons/ClassicIcons.info 
+  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info SYSTEMDIR:Icons/GlowIcons.info 
+  Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info SYSTEMDIR:Locale.info
+ELSE
+  makeicon >NIL: "SYSTEMDIR:Icons"
+  makeicon >NIL: "SYSTEMDIR:Icons/ClassicIcons"
+  makeicon >NIL: "SYSTEMDIR:Icons/GlowIcons"
+ENDIF
+
+; create install classic and glow icons
+IF EXISTS SYSTEMDIR:WBStartup/DefIcons.icon
+  Copy >NIL: SYSTEMDIR:WBStartup/DefIcons.icon SYSTEMDIR:Icons/Install-ClassicIcons.info 
+  Copy >NIL: SYSTEMDIR:WBStartup/DefIcons.icon SYSTEMDIR:Icons/Install-GlowIcons.info 
+ENDIF
+
+; create locale icon, if not exist
+IF NOT EXISTS "SYSTEMDIR:Locale.info"
+  makeicon >NIL: "SYSTEMDIR:Locale"
 ENDIF
