@@ -11,7 +11,7 @@ run directly from Windows Explorer, macOS Finder and Ubuntu Files.
 
 Self install images comes with following image directories for installation:
 - "amigaos": Directory with Amiga OS 3.9 iso, Boing Bag 1 & 2 lha,
-  Amiga OS 3.1.4 or 3.1 adf files.
+  Amiga OS 3.1.4, 3.2 or 3.1 adf files.
 - "kickstart": Directory with Kickstart rom files. These are used for running
   emulator and installed for WHDLoad.
 - "userpackages": Directory with user packages. Each directory represent a user
@@ -26,7 +26,7 @@ If Cloanto Amiga Forever is not used, then image directories "amigaos" and
 "kickstart" must also be prepared manually by copying files to these directories.
 See readme files in image directories for details about files to copy manually.
 
-Files for Amiga OS 3.9, 3.1.4 must be manually copied to image directories
+Files for Amiga OS 3.9, 3.2, 3.1.4 must be manually copied to image directories
 "amigaos". See readme files in image directories for details about files to copy
 manually.
 
@@ -35,7 +35,7 @@ path as config files and install UAE and FS-UAE config files in WinUAE and
 FS-UAE default configuration directories.
 
 Kickstart rom file in UAE and FS-UAE config files are patched to use Kickstart
-3.1.4 or 3.1 rom, if they exist in image directory "kickstart". If image
+3.1.4, 3.2 or 3.1 rom, if they exist in image directory "kickstart". If image
 directory "kickstart" doesn't exist, HstWB Image Setup will use installed
 Cloanto Amiga Forever or mounted Cloanto Amiga Forever cd/dvd-rom or iso.
 
