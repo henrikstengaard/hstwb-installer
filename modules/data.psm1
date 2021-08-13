@@ -191,7 +191,7 @@ function TopologicalSortV2 {
 # get supported amiga os versions
 function GetSupportedAmigaOsVersions()
 {
-    return @('3.9', '3.1.4', '3.1')
+    return @('3.9', '3.2', '3.1.4', '3.1')
 }
 
 # read zip entry text file

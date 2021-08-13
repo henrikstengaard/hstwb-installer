@@ -1,7 +1,7 @@
 ; Startup Sequence for Amiga OS 3.9 Installation
 ; ----------------------------------------------
 ;
-; Date: 2019-07-31
+; Date: 2019-08-13
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -95,10 +95,17 @@ Resident >NIL: "INSTALLDIR:C/LhA" PURE
 Resident >NIL: "INSTALLDIR:C/UNLZX" PURE
 Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 
-; mount kingcon
-Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
-Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
+; con shell for amiga os 3.2 and kingcon shell for amiga os 3.9, 3.1.4 and 3.1
+IF EXISTS INSTALLDIR:Prefs/Amiga-OS-32
+  ; run start install amiga os 3.9 in new con shell
+  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Amiga-OS-3.9/Start-Install-Amiga-OS-3.9"
+ELSE
+  ; mount kingcon
+  Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
+  Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
 
-; run start install amiga os 3.9 in new kingcon shell
-NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Amiga-OS-3.9/Start-Install-Amiga-OS-3.9"
+  ; run start install amiga os 3.9 in new kingcon shell
+  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Amiga-OS-3.9/Start-Install-Amiga-OS-3.9"
+ENDIF
+
 EndShell

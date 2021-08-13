@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-08-04
+; Date: 2021-08-13
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -828,6 +828,12 @@ IF $amigaos32 EQ 1 VAL
   ; log
   echo "Loading Amiga OS system files from Amiga OS 3.2" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
   echo "Loading Amiga OS system files from Amiga OS 3.2"
+
+  Echo NOLINE "" >INSTALLDIR:Prefs/Amiga-OS-32
+  IF NOT EXISTS "SYSTEMDIR:Prefs"
+    MakePath >NIL: "SYSTEMDIR:Prefs"
+  ENDIF
+  Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-32
 ELSE
   IF $amigaos314 EQ 1 VAL
     ; log
@@ -879,6 +885,57 @@ resident "$systemfilesdir/Which" PURE
 
 MakeDir RAM:Clipboards RAM:ENV/Sys
 SetEnv TZ MST7
+
+; detect amiga os version
+set amigaos "3.1"
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  ; set amiga os version to 3.1.4, if workbench.library file is equal or greater than v45.194
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 194 FILE
+  IF $RC EQ 0 VAL
+    set amigaos "3.1.4"
+  ENDIF
+
+  ; set amiga os version to 3.2, if workbench.library file is equal or greater than v47.33
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 47 33 FILE
+  IF $RC EQ 0 VAL
+    set amigaos "3.2"
+  ENDIF
+ELSE
+  ; set amiga os version to 3.1.4, if loaded workbench.library is equal or greater than v45.194
+  Version >NIL: "workbench.library" 45 194
+  IF $RC EQ 0 VAL
+    set amigaos "3.1.4"
+  ENDIF
+
+  ; set amiga os version to 3.2, if loaded workbench.library is equal or greater than v47.33
+  Version >NIL: "workbench.library" 47 33
+  IF $RC EQ 0 VAL
+    set amigaos "3.2"
+  ENDIF
+ENDIF
+
+; create systemdir prefs, if it doesnt exist
+IF NOT EXISTS "SYSTEMDIR:Prefs"
+  MakePath >NIL: "SYSTEMDIR:Prefs"
+ENDIF
+
+; create amiga os 3.2 prefs, if amiga os is 3.2
+IF "$amigaos" EQ "3.2"
+  Echo NOLINE "" >INSTALLDIR:Prefs/Amiga-OS-32
+  Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-32
+ENDIF
+
+; create amiga os 3.1.4 prefs, if amiga os is 3.1.4
+IF "$amigaos" EQ "3.1.4"
+  Echo NOLINE "" >INSTALLDIR:Prefs/Amiga-OS-314
+  Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-314
+ENDIF
+
+; create amiga os 3.1 prefs, if amiga os is 3.1
+IF "$amigaos" EQ "3.1"
+  Echo NOLINE "" >INSTALLDIR:Prefs/Amiga-OS-31
+  Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-31
+ENDIF
 
 echo "Done"
 
@@ -1009,8 +1066,8 @@ ask "Press ENTER to continue"
 echo "" >>SYS:hstwb-installer.log
 type "INSTALLDIR:Temp/Amiga-OS-System-Files.log" >>SYS:hstwb-installer.log
 
-; con shell for amiga os 3.2 or kingcon shell for amiga os 3.9, 3.1.4 and 3.1
-IF EXISTS SYSTEMDIR:Prefs/Amiga-OS-32
+; con shell for amiga os 3.2 and kingcon shell for amiga os 3.9, 3.1.4 and 3.1
+IF "$amigaos" EQ "3.2"
   ; run start-selfinstall in new con shell
   NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall"
 ELSE

@@ -12,6 +12,13 @@ IF EXISTS "SYSTEMDIR:Prefs/AmigaOS"
 ENDIF
 
 IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  ; amiga os version to 3.2, if workbench.library file is equal or greater than v47.33
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 47 33 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.2"
+    SKIP verifyamigaos
+  ENDIF
+
   ; amiga os version 3.1.4, if workbench.library file is equal or greater than v45.194
   Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 194 FILE
   IF $RC EQ 0 VAL
@@ -48,6 +55,13 @@ IF EXISTS "SYSTEMDIR:Libs/workbench.library"
     SKIP verifyamigaos
   ENDIF
 ELSE
+  ; amiga os version to 3.2, if loaded workbench.library is equal or greater than v47.33
+  Version >NIL: "workbench.library" 47 33
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.2"
+    SKIP verifyamigaos
+  ENDIF
+
   ; amiga os version 3.1.4, if loaded workbench.library is equal or greater than v45.194
   Version >NIL: "workbench.library" 45 194
   IF $RC EQ 0 VAL
