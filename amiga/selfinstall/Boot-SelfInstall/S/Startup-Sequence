@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-08-13
+; Date: 2021-08-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -91,8 +91,8 @@ echo "Cloanto Amiga Forever Plus Edition contains both"
 echo "Amiga OS 3.1 and Kickstart roms and can be bought from"
 echo "https://www.amigaforever.com."
 echo ""
-echo "Amiga OS 3.9 can be bought from either http://www.vesalia.de"
-echo "or http://www.amigakit.com/."
+echo "Amiga OS 3.2 and 3.1.4 can be bought from"
+echo "https://www.hyperion-entertainment.com."
 echo ""
 ask "Press ENTER to continue"
 
@@ -636,6 +636,11 @@ IF NOT $RC EQ 0
     echo "Error: Failed to extract Amiga OS 3.1.4 Install adf file" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
   ENDIF
   SKIP amigaosdisk
+ENDIF
+
+; load amiga os system file execute resident, if it exists
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/C/Execute"
+  resident "HSTWBINSTALLERDIR:Temp/Amiga-OS-Install/C/Execute" PURE
 ENDIF
 
 ; create sys libs directory, if it doesn't exist

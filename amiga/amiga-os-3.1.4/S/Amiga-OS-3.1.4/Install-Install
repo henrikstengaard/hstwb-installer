@@ -1,7 +1,7 @@
 ; Install Install
 ; ---------------
 ;
-; Date: 2019-08-09
+; Date: 2019-08-14
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 install floppy disk or adf file.
@@ -148,10 +148,29 @@ ELSE
   ENDIF
 ENDIF
 
-; update dh1 disk icon, if dh1: device exists
-Assign >NIL: EXISTS DH1:
-IF $RC EQ 0 VAL
-  Copy >NIL: "SYSTEMDIR:Disk.info" "DH1:Disk.info"
+; set harddisk icon
+set harddiskicon ""
+IF EXISTS "SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk.info"
+  set harddiskicon "SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk.info"
+ELSE
+  IF EXISTS "SYSTEMDIR:Disk.info"
+    set harddiskicon "SYSTEMDIR:Disk.info"
+  ENDIF
+ENDIF
+
+; update disk icon, if harddisk icon exists
+IF NOT "$harddiskicon" EQ ""
+  ; update dh1 disk icon, if dh1: device exists
+  Assign >NIL: EXISTS DH1:
+  IF $RC EQ 0 VAL
+    Copy >NIL: "$harddiskicon" "DH1:Disk.info"
+  ENDIF
+
+  ; update dh2 disk icon, if dh2: device exists
+  Assign >NIL: EXISTS DH2:
+  IF $RC EQ 0 VAL
+    Copy >NIL: "$harddiskicon" "DH2:Disk.info"
+  ENDIF
 ENDIF
 
 ; install 680x0 libraries required for cpus and accelerator cards
