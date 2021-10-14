@@ -9,11 +9,8 @@ Compile with SAS C v6.58:
 
 assign sc: sys:programs/sasc
 
-assign lib: sc:lib
- add
-assign include: sc:include
- add
-assign cxxinclude: sc:cxxinclude
- add
+assign lib: sc:lib add
+assign include: sc:include add
+assign cxxinclude: sc:cxxinclude add
 path sc:c add
 smake

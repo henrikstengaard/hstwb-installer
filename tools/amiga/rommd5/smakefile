@@ -1,0 +1,11 @@
+all: rommd5
+
+clean:
+	delete rommd5 *.lib *.o *.lnk
+	smake
+
+rommd5: md52.o rommd5.o
+   sc link md52.o rommd5.o to rommd5 CPU=68000 opt nostkchk MATH=standard LIB:scm.lib
+
+md52.o: md52.c md52.h
+rommd5.o: rommd5.c
