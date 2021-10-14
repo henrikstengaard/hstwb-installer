@@ -1,0 +1,124 @@
+; Install Amiga OS 4.1
+; --------------------
+;
+; Date: 2021-08-20
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigsDOS script to automate installation of Amiga OS 4.1.
+;
+; References:
+; https://thomas-rapp.homepage.t-online.de/os41uae/index.html
+
+
+; add amiga os 4.1 installation to log file
+echo "" >>SYS:hstwb-installer.log
+echo "Amiga OS 4.1 installation" >>SYS:hstwb-installer.log
+echo "-------------------------" >>SYS:hstwb-installer.log
+
+; Amiga OS 4.1 installation
+cls 
+echo "*e[32m" NOLINE
+echo "Amiga OS 4.1 installation"
+echo "*e[0m*e[1m" NOLINE
+echo "-------------------------"
+echo "*e[0m" NOLINE
+echo ""
+
+; goto fail, if device AmigaOS 4.1 Final Edition: doesn't exist
+Assign >>SYS:hstwb-installer.log EXISTS "AmigaOS 4.1 Final Edition:"
+IF WARN
+  echo "ERROR: Device AmigaOS 4.1 Final Edition: doesn't exist!" >>SYS:hstwb-installer.log
+
+  echo "*e[1mERROR: Device AmigaOS 4.1 Final Edition: doesn't exist!*e[22m"
+  SKIP fail
+ENDIF
+
+; install amiga os 4.1 message
+echo "Installing Amiga OS 4.1 Final Edition" >>SYS:hstwb-installer.log
+echo "*e[1mInstalling Amiga OS 4.1 Final Edition*e[0m"
+
+; copy system
+echo "Copying System..." >>SYS:hstwb-installer.log
+echo "Copying System..."
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System" SYSTEMDIR: ALL CLONE
+
+; copy disk icon
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:Installation-Files/Disk.info" SYSTEMDIR: CLONE
+
+; copy startup sequence
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:Installation-Files/Startup-Sequence" SYSTEMDIR:S CLONE
+
+; copy user startup
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:Installation-Files/User-Startup" SYSTEMDIR:S CLONE
+
+; copy app dir
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/ATA3.driver" SYSTEMDIR:Prefs/Env-Archive/AppDir/ATA3.driver CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/AddDataTypes" SYSTEMDIR:Prefs/Env-Archive/AppDir/AddDataTypes CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/AddNetInterface" SYSTEMDIR:Prefs/Env-Archive/AppDir/AddNetInterface CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/AmiDock" SYSTEMDIR:Prefs/Env-Archive/AppDir/AmiDock CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Assign" SYSTEMDIR:Prefs/Env-Archive/AppDir/Assign CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/AsyncWB" SYSTEMDIR:Prefs/Env-Archive/AppDir/AsyncWB CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/BindDrivers" SYSTEMDIR:Prefs/Env-Archive/AppDir/BindDrivers CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Bootloader" SYSTEMDIR:Prefs/Env-Archive/AppDir/Bootloader CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:Installation-Support/CDPostInstall/CDPostInstall" SYSTEMDIR:Prefs/Env-Archive/AppDir/CDPostInstall CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/System/CLI" SYSTEMDIR:Prefs/Env-Archive/AppDir/CLI CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/CharsetConvert" SYSTEMDIR:Prefs/Env-Archive/AppDir/CharsetConvert CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/ClickToFront" SYSTEMDIR:Prefs/Env-Archive/AppDir/ClickToFront CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/ConClip" SYSTEMDIR:Prefs/Env-Archive/AppDir/ConClip CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/ContextMenus" SYSTEMDIR:Prefs/Env-Archive/AppDir/ContextMenus CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/DefIcons" SYSTEMDIR:Prefs/Env-Archive/AppDir/DefIcons CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Delete" SYSTEMDIR:Prefs/Env-Archive/AppDir/Delete CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Dir" SYSTEMDIR:Prefs/Env-Archive/AppDir/Dir CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/IPrefs" SYSTEMDIR:Prefs/Env-Archive/AppDir/IPrefs CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/IconX" SYSTEMDIR:Prefs/Env-Archive/AppDir/IconX CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/List" SYSTEMDIR:Prefs/Env-Archive/AppDir/List CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/LoadMonDrvs" SYSTEMDIR:Prefs/Env-Archive/AppDir/LoadMonDrvs CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/LoadWB" SYSTEMDIR:Prefs/Env-Archive/AppDir/LoadWB CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/MakeDir" SYSTEMDIR:Prefs/Env-Archive/AppDir/MakeDir CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/MakeLink" SYSTEMDIR:Prefs/Env-Archive/AppDir/MakeLink CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Mount" SYSTEMDIR:Prefs/Env-Archive/AppDir/Mount CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Devs/Monitors/PicassoIV" SYSTEMDIR:Prefs/Env-Archive/AppDir/PicassoIV CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/RAWBInfo" SYSTEMDIR:Prefs/Env-Archive/AppDir/RAWBInfo CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/System/RexxMast" SYSTEMDIR:Prefs/Env-Archive/AppDir/RexxMast CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/System/RinghioServer" SYSTEMDIR:Prefs/Env-Archive/AppDir/RinghioServer CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/Utilities/Commodities/ScreenBlankerEngine" SYSTEMDIR:Prefs/Env-Archive/AppDir/ScreenBlankerEngine CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:Installation-Support/CDPostInstall/SetCDEnv" SYSTEMDIR:Prefs/Env-Archive/AppDir/SetCDEnv CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/SetPatch" SYSTEMDIR:Prefs/Env-Archive/AppDir/SetPatch CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/SoundPlayer" SYSTEMDIR:Prefs/Env-Archive/AppDir/SoundPlayer CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/USBCtrl" SYSTEMDIR:Prefs/Env-Archive/AppDir/USBCtrl CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/Version" SYSTEMDIR:Prefs/Env-Archive/AppDir/Version CLONE
+Copy >>SYS:hstwb-installer.log "AmigaOS 4.1 Final Edition:System/C/WBStartupCTRL" SYSTEMDIR:Prefs/Env-Archive/AppDir/WBStartupCTRL CLONE
+
+; copy console and screenmode
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-4.1/console.prefs" "SYSTEMDIR:Prefs/Env-Archive/Sys/console.prefs" CLONE
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-4.1/screenmode.prefs" "SYSTEMDIR:Prefs/Env-Archive/Sys/screenmode.prefs" CLONE
+
+; create amiga os 4.1 prefs
+echo "3.9" NOLINE >SYSTEMDIR:Prefs/AmigaOS
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-4.1
+
+; done message
+echo "Done" >>SYS:hstwb-installer.log
+echo "Done"
+echo ""
+echo "Amiga OS 4.1 installation is complete."
+
+SKIP end
+
+
+; fail
+; ----
+LAB fail
+
+echo ""
+echo "Amiga OS 4.1 installation failed and has stopped"
+echo "installation process."
+quit
+
+
+; end
+; ---
+LAB end
+
+echo ""
+ask "Press ENTER to continue"

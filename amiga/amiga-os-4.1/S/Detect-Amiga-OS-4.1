@@ -1,0 +1,200 @@
+; Detect Amiga OS 4.1
+; -------------------
+;
+; Date: 2021-08-20
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect if Amiga OS 4.1 cd-rom and iso files are present.
+
+
+; add detect amiga os 4.1 to log
+echo "Amiga OS 4.1" >INSTALLDIR:Temp/Amiga-OS-410.log
+echo "------------" >>INSTALLDIR:Temp/Amiga-OS-410.log
+echo "Detecting Amiga OS 4.1 cd-rom in CD0: and iso file in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-410.log
+
+; create amiga os installdir temp directory, if it doesn't exist
+IF NOT EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
+ENDIF
+
+; set failat to 255 for DiskInDrive to fail silently
+failat 255
+
+; set amigaos41cd to 1 and run disk change, if "CD0:" device exists
+set amigaos41cd "0"
+DiskInDrive >NIL: CD0:
+IF $RC EQ 0 VAL
+  set amigaos41cd "1"
+
+  ; disk change CD0: device to detect changed directories and files
+  DiskChange CD0:
+ELSE
+  echo "CD0: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+ENDIF
+
+; set amigaosdir to 1, if "AMIGAOSDIR:" device exists
+set amigaosdir "0"
+DiskInDrive >NIL: AMIGAOSDIR:
+IF $RC EQ 0 VAL
+  set amigaosdir "1"
+ELSE
+  echo "AMIGAOSDIR: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+ENDIF
+
+; set failat to 21
+failat 21
+
+
+; detect amiga os 4.1 iso file in amigaosdir: device
+set amigaos41iso "0"
+set checkamigaos41iso "0"
+IF "$amigaosdir" EQ 1 VAL
+  ; find and sort amiga os 4.1 iso files in amigaosdir:
+  echo "" NOLINE >T:_amigaos41isofiles
+  fsearch "AMIGAOSDIR:" PAT amigaos41.iso >>T:_amigaos41isofiles1
+  fsearch "AMIGAOSDIR:" PAT amigaos4.1.iso >>T:_amigaos41isofiles1
+  frsort <T:_amigaos41isofiles1 >T:_amigaos41isofiles
+
+  ; get first amiga os 4.1 iso file
+  sed "1q;d" T:_amigaos41isofiles >T:_amigaos41isofile
+  set amigaos41isofile "`type T:_amigaos41isofile`"
+
+  ; create amiga os 4.1 iso prefs, if amiga os 4.1 iso file exists
+  IF NOT "$amigaos41isofile" EQ ""
+    echo "Amiga OS 4.1 iso file" >>INSTALLDIR:Temp/Amiga-OS-410.log
+    echo "'$amigaos41isofile'" >>INSTALLDIR:Temp/Amiga-OS-410.log
+
+    Copy "INSTALLDIR:Devs/Mountlist-Iso-Template" "INSTALLDIR:Devs/Mountlist-AmigaOS41-Iso" >NIL:
+    rep "INSTALLDIR:Devs/Mountlist-AmigaOS41-Iso" "[*$IsoFile]" "$amigaos41isofile"
+    set amigaos41iso "1"
+    set checkamigaos41iso "1"
+  ELSE
+    echo "Amiga OS 4.1 iso file doesn't exist in AMIGAOSDIR: device!" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  ENDIF
+ENDIF
+
+; goto amiga os 4.1 valid, if amiga 4.1 cd is present
+IF "$amigaos41cd" EQ 1 VAL
+  SKIP amigaos41valid
+ENDIF
+
+; goto end, if amiga os 4.1 iso is not present
+IF "$amigaos41iso" EQ 0 VAL
+  SKIP end
+ENDIF
+
+
+; amiga os 4.1 iso
+; ----------------
+LAB amigaos41iso
+
+; mount amiga os 4.1 iso file
+echo "Mounting Amiga OS 4.1 iso file" >>INSTALLDIR:Temp/Amiga-OS-410.log
+Mount FCD0: FROM "INSTALLDIR:Devs/Mountlist-AmigaOS41-Iso"
+wait 5
+
+set checkamigaos41iso "0"
+
+
+; amiga os 4.1 valid
+; ------------------
+LAB amigaos41valid
+
+; goto end, if "AmigaOS 4.1 Final Edition:" device doesn't exist
+Assign >NIL: EXISTS "AmigaOS 4.1 Final Edition:"
+IF NOT $RC EQ 0 VAL
+  echo "AmigaOS 4.1 Final Edition: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS 4.1 Final Edition:v:Installation-Support/Install-AmigaOS4.1" directory doesn't exist
+IF NOT EXISTS "AmigaOS 4.1 Final Edition:Installation-Support/Install-AmigaOS4.1"
+  echo "AmigaOS 4.1 Final Edition:Installation-Support/Install-AmigaOS4.1 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS 4.1 Final Edition:AmigaOS4.1-Installation-800" directory doesn't exist
+IF NOT EXISTS "AmigaOS 4.1 Final Edition:AmigaOS4.1-Installation-800"
+  echo "AmigaOS 4.1 Final Edition:AmigaOS4.1-Installation-800 directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS 4.1 Final Edition:Start_From_OS3.x" directory doesn't exist
+IF NOT EXISTS "AmigaOS 4.1 Final Edition:Start_From_OS3.x"
+  echo "AmigaOS 4.1 Final Edition:Start_From_OS3.x directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS 4.1 Final Edition:BootFloppy/L/BootCDFileSystem" directory doesn't exist
+IF NOT EXISTS "AmigaOS 4.1 Final Edition:BootFloppy/L/BootCDFileSystem"
+  echo "AmigaOS 4.1 Final Edition:BootFloppy/L/BootCDFileSystem directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; goto end, if "AmigaOS 4.1 Final Edition:Installation-Support/CDWelcome/CDWelcome" directory doesn't exist
+IF NOT EXISTS "AmigaOS 4.1 Final Edition:Installation-Support/CDWelcome/CDWelcome"
+  echo "AmigaOS 4.1 Final Edition:Installation-Support/CDWelcome/CDWelcome directory doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-410.log
+  IF "$amigaos41iso" EQ 1 VAL
+    IF "$checkamigaos41iso" EQ 1 VAL
+      SKIP BACK amigaos41iso
+    ELSE
+      SKIP end
+    ENDIF
+  ELSE
+    SKIP end
+  ENDIF
+ENDIF
+
+; create amiga os 4.1 cd prefs, if amiga os 4.1 cd is present
+IF "$amigaos41cd" EQ 1 VAL
+  echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-410-CD
+ELSE
+  ; create amiga os 4.1 iso prefs, if amiga os 4.1 iso is present
+  IF "$amigaos41iso" EQ 1 VAL
+    echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-410-ISO
+  ENDIF
+ENDIF
+
+; end
+; ---
+LAB end
