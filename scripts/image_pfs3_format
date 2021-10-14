@@ -1,10 +1,30 @@
 ; Image PFS3 format
 ; -----------------
 ;
-; Date: 2018-11-03
+; Date: 2021-08-23
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to format PFS3 images for HstWB Installer
+; PDS3: 0x50445303
+
+ask "Is only harddrive to format connected? (Default=NO)"
+if not warn
+  skip end
+endif 
 
 pfsformat drive dh0: name "Workbench" quick noicons fnsize=107
-pfsformat drive dh1: name "Data" quick noicons fnsize=107
+
+; pfs3 format dh1:, if it exists
+Assign >NIL: EXISTS dh1:
+IF $RC EQ 0 VAL
+  pfsformat drive dh1: name "Work" quick noicons fnsize=107
+ENDIF
+
+; pfs3 format dh2:, if it exists
+Assign >NIL: EXISTS dh2:
+IF $RC EQ 0 VAL
+  pfsformat drive dh2: name "Work2" quick noicons fnsize=107
+ENDIF
+
+; end
+LAB end
