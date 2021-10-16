@@ -8,7 +8,7 @@
  * used to decrypt Kickstart rom before calculating MD5 checksum.
  * 
  * Returns error codes:
- * 0: OK, Kickstart rom is encrypted and rom.key was erad and used to decrypt .
+ * 0: OK, Kickstart rom is encrypted and rom.key was read and used to decrypt Kickstart rom.
  * 5: WARN, Kickstart rom is not encrypted.
  * 10: ERROR, Kickstart rom is encrypted, but rom.key file was not found.
  */
@@ -29,7 +29,9 @@ void printhash (unsigned char buf[16])
 	int i;
 	printf("%02x", *buf++);
 	for (i = 0; i < 15; i++)
+    {
 		printf("%02x", *buf++);
+    }
 	putchar('\n');
 }
 
@@ -52,8 +54,8 @@ void dirname(char *path, char* dirname)
     base = strrchr(path, ':');
     if (base)
     {
-        strncpy(dirname, path, base-path);
-        dirname[base-path+1] = '\0';
+        strncpy(dirname, path, base-path+1);
+        dirname[base-path+2] = '\0';
         return;
     }
 
