@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.2 Adf
 ; -----------------------
 ;
-; Date: 2021-07-29
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.2 adf files are present.
@@ -62,27 +62,35 @@ IF NOT WARN
 
   set amigaos32modules "0"
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a500.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A500-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a600.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A600-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a2000.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A2000-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a1200.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A1200-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a3000.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A3000-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000d.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A4000D-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-a4000t.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-A4000T-ADF
     set amigaos32modules "1"
   ENDIF
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-32-modules-cd32.adf"
+    echo "" >INSTALLDIR:Prefs/Amiga-OS-32-CD32-ADF
     set amigaos32modules "1"
   ENDIF
 
@@ -99,6 +107,7 @@ IF NOT WARN
   ; create amiga os 3.2 adf prefs, if amigaos32adf is 1
   IF "$amigaos32adf" EQ 1 VAL
     echo "" >INSTALLDIR:Prefs/Amiga-OS-32-ADF
+    echo "Amiga OS 3.2 adf files detected" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
   ENDIF
 ENDIF
 

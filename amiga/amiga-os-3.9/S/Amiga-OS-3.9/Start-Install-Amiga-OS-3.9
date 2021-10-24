@@ -1,7 +1,7 @@
 ; Start Install Amiga OS 3.9
 ; --------------------------
 ;
-; Date: 2019-08-19
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -47,13 +47,30 @@ echo "----------------------------------"
 echo "*e[0m" NOLINE
 echo ""
 
+; get boing bag install
+set boingbaginstall "0"
+IF EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-390-BB
+  set boingbaginstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-390-BB`"
+ENDIF
+
 ; amiga os 3.9 boing bags or packages message
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390-BB1"
+IF "$boingbaginstall" GT 0 VAL
   echo "HstWB Installer has completed Amiga OS 3.9 installation and"
   echo "will reboot system to start installation of Boing Bags in"
   echo "Amiga OS 3.9."
 ELSE
+  ; set installpackages to 1, if install packages prefs exists
+  set installpackages "0"
   IF EXISTS INSTALLDIR:Prefs/Install-Packages
+    set installpackages "1"
+  ENDIF
+
+  ; set installpackages to 1, if install user packages prefs exists
+  IF EXISTS INSTALLDIR:Prefs/Install-User-Packages
+    set installpackages "1"
+  ENDIF
+
+  IF "$installpackages" EQ 1 VAL
     ; Copy assign hstwb installer for installing boing bags
     Copy >NIL: INSTALLDIR:S/Assign-HstWB-Installer SYSTEMDIR:S
 

@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.1.4 Files
 ; ---------------------------
 ;
-; Date: 2019-03-13
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.1.4 support files are present.
@@ -34,6 +34,7 @@ IF NOT WARN
   ; create amiga os 3.1.4 icon pack prefs, if amiga os 3.1.4 icon pack lha exist
   IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-iconpack.lha"
     echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-314-IconPack
+    echo "Amiga OS 3.1.4 Icon Pack lha detected" >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
   ELSE
     echo "Amiga OS 3.1.4 Icon Pack lha doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-314-Files.log
   ENDIF
@@ -43,3 +44,12 @@ ENDIF
 ; End
 ; ---
 LAB end
+
+; create default install amiga os 3.1.4 icon pack prefs, if doesn't exist
+IF NOT EXISTS INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack
+  IF EXISTS INSTALLDIR:Prefs/Amiga-OS-314-IconPack
+    echo "1" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack
+  ELSE
+    echo "0" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack
+  ENDIF
+ENDIF

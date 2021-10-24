@@ -1,7 +1,7 @@
 ; Install Adf
 ; -----------
 ;
-; Date: 2019-07-22
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files.
@@ -13,85 +13,45 @@ echo "*e[1mInstall Amiga OS 3.1.4 from adf files:*e[0m"
 ; set amigaosdisk to ff0: device
 setenv amigaosdisk "ff0"
 
-; copy amiga os 3.1.4 modules a500, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A500-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a500.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a500.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A500 adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+
+; get amiga os install
+set amigaosinstall ""
+set amigaosinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-314-ADF`"
+
+; set modules name to a500, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A500-ADF"
+  setenv modulesname "A500"
 ENDIF
 
-; copy amiga os 3.1.4 modules a600, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A600-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a600.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a600.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A600 adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a600, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A600-ADF"
+  setenv modulesname "A600"
 ENDIF
 
-; copy amiga os 3.1.4 modules a2000, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A2000-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a2000.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a2000.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A2000 adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a1200, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A1200-ADF"
+  setenv modulesname "A1200"
 ENDIF
 
-; copy amiga os 3.1.4 modules a1200, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A1200-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a1200.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a1200.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A1200 adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a2000, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A2000-ADF"
+  setenv modulesname "A2000"
 ENDIF
 
-; copy amiga os 3.1.4 modules a3000, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A3000-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a3000.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a3000.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A3000 adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a3000, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A3000-ADF"
+  setenv modulesname "A3000"
 ENDIF
 
-; copy amiga os 3.1.4 modules a4000d, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A4000D-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000d.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000d.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A4000D adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a4000d, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A4000D-ADF"
+  setenv modulesname "A4000D"
 ENDIF
 
-; copy amiga os 3.1.4 modules a4000t, if install prefs and adf file exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-A4000T-ADF"
-  IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000t.adf"
-    Copy "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000t.adf" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
-    SKIP installadf
-  ELSE
-    echo "*e[1mError: Amiga OS 3.1.4 Modules A4000T adf file doesn't exist!*e[0m"
-    quit 20
-  ENDIF
+; set modules name to a4000t, if install prefs and adf file exists
+IF "$amigaosinstall" EQ "Amiga-OS-314-A4000T-ADF"
+  setenv modulesname "A4000T"
 ENDIF
-
-echo "*e[1mError: Amiga OS 3.1.4 Modules adf file doesn't exist!*e[0m"
-quit 20
 
 
 ; install adf
@@ -113,8 +73,40 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Fonts" "Amiga OS 3.1.4 Fonts
 ; run adf template for amiga os 3.1.4 storage adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Storage" "Amiga OS 3.1.4 Storage" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-storage.adf"
 
-; run adf template for amiga os 3.1.4 modules adf file
-Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules.adf"
+; run adf template for amiga os 3.1.4 modules a500, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a500.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A500 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a500.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a600, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a600.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A600 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a600.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a1200, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a1200.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A1200 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a1200.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a2000, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a2000.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A2000 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a2000.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a3000, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a3000.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A3000 Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a3000.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a4000d, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000d.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A4000D Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000d.adf"
+ENDIF
+
+; run adf template for amiga os 3.1.4 modules a4000t, if adf file exists
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000t.adf"
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Modules" "Amiga OS 3.1.4 A4000T Modules" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-modules-a4000t.adf"
+ENDIF
 
 ; run adf template for amiga os 3.1.4 install adf file
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Install" "Amiga OS 3.1.4 Install" "INSTALLDIR:Temp/Amiga-OS/amiga-os-314-install.adf"
@@ -122,8 +114,12 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Install" "Amiga OS 3.1.4 Ins
 ; install amiga os 3.1.4 done
 echo "Done"
 
-; install amiga os 3.1.4 updates, if install amiga os 3.1.4.1 adf prefs exist
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF"
+; get icon pack install
+set updateinstall ""
+set updateinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF`"
+
+; install amiga os 3.1.4.1 update, if install update
+IF "$updateinstall" EQ 1 VAL
   ; install amiga os 3.1.4 updates from adf files message
   echo ""
   echo "*e[1mInstall Amiga OS 3.1.4 updates from adf files:*e[0m"

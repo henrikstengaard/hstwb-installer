@@ -1,0 +1,14 @@
+Amiga OS 3.1.4 Installation
+---------------------------
+
+Amiga OS 3.1.4 comes with modules disk for all Amiga
+models and these contain devices and libraries specific
+different Amiga models.
+
+Installing modules disks is optional and can be skipped.
+Skipping modules disks requires Kickstart 3.1.4 rom is
+installed in the Amiga running this image. If module
+disks are installed then this image will support both
+Kickstart 3.1.4 and 3.1 rom, but will require additional
+chip or fast ram to softkick/load Kickstart 3.1.4 rom
+into memory.

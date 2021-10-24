@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.9
 ; -------------------
 ;
-; Date: 2019-03-14
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
@@ -51,8 +51,7 @@ set checkamigaos39iso "0"
 IF "$amigaosdir" EQ 1 VAL
   ; find and sort amiga os 3.9 iso files in amigaosdir:
   echo "" NOLINE >T:_amigaos39isofiles
-  fsearch "AMIGAOSDIR:" PAT amigaos39.iso >>T:_amigaos39isofiles1
-  fsearch "AMIGAOSDIR:" PAT amigaos3.9.iso >>T:_amigaos39isofiles1
+  fsearch "AMIGAOSDIR:" ALL PAT amiga#?os#?3#?9.iso >>T:_amigaos39isofiles1
   frsort <T:_amigaos39isofiles1 >T:_amigaos39isofiles
 
   ; get first amiga os 3.9 iso file
@@ -188,12 +187,15 @@ ENDIF
 ; create amiga os 3.9 cd prefs, if amiga os 3.9 cd is present
 IF "$amigaos39cd" EQ 1 VAL
   echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-CD
+  echo "Amiga OS 3.9 cd-rom in CD0: detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
 ELSE
   ; create amiga os 3.9 iso prefs, if amiga os 3.9 iso is present
   IF "$amigaos39iso" EQ 1 VAL
     echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390-ISO
+    echo "Amiga OS 3.9 iso file detected" >>INSTALLDIR:Temp/Amiga-OS-390.log
   ENDIF
 ENDIF
+echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-390
 
 
 ; boing bags
@@ -208,7 +210,7 @@ echo "" >>INSTALLDIR:Temp/Amiga-OS-390.log
 echo "Detecting Amiga OS 3.9 Boing Bag files in AMIGAOSDIR:..." >>INSTALLDIR:Temp/Amiga-OS-390.log
 
 ; find and sort amiga os 3.9 boing bag files
-fsearch "AMIGAOSDIR:" PAT BoingBag39#?.lha >T:_boingbagfiles1
+fsearch "AMIGAOSDIR:" ALL PAT BoingBag39#?.lha >T:_boingbagfiles1
 frsort <T:_boingbagfiles1 >T:_boingbagfiles
 
 ; set boing bags

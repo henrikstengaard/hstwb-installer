@@ -1,0 +1,139 @@
+; Install Amiga OS 3.9
+; --------------------
+;
+; Date: 2021-10-24
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to build Amiga OS 3.9 installation menu.
+
+
+; amiga os menu
+set menuoption "0"
+set boingbaginstall "0"
+
+; amiga os menu
+echo "" NOLINE >T:_amigaosmenu
+echo "" NOLINE >T:_amigaosoption
+
+; cd option
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-CD"
+  set menuoption `eval $menuoption + 1`
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to continue with installation of**NAmiga OS 3.9 from cd-rom device CD0:?*" *"Yes|No*"*`" >>T:_amigaosoption
+  echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
+  echo "    set amigaosinstall *"Amiga-OS-390-CD*"" >>T:_amigaosoption
+  echo "    SKIP amigaosinstall" >>T:_amigaosoption
+  echo "  ENDIF" >>T:_amigaosoption
+  echo "  SKIP BACK amigaosmenu" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
+
+  echo "Install Amiga OS 3.9 from cd-rom device CD0:" >>"T:_amigaosmenu"
+ENDIF
+
+; iso option
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-ISO"
+  set menuoption `eval $menuoption + 1`
+
+  echo "" >>T:_amigaosoption
+  echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+  echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to continue with installation of**NAmiga OS 3.9 from iso file?*" *"Yes|No*"*`" >>T:_amigaosoption
+  echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
+  echo "    set amigaosinstall *"Amiga-OS-390-ISO*"" >>T:_amigaosoption
+  echo "    SKIP amigaosinstall" >>T:_amigaosoption
+  echo "  ENDIF" >>T:_amigaosoption
+  echo "  SKIP BACK amigaosmenu" >>T:_amigaosoption
+  echo "ENDIF" >>T:_amigaosoption
+
+  echo "Install Amiga OS 3.9 from iso file" >>"T:_amigaosmenu"
+ENDIF
+
+; boing bag options
+IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-BB1"
+  echo "--------------------------------------------------" >>T:_amigaosmenu
+  
+  set boingbaginstall "1"
+  set menuoption `eval $menuoption + 2`
+  echo "Amiga OS 3.9 Boing Bag 1 detected" >>"T:_amigaosmenu"
+
+  IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-390-BB2"
+    set boingbaginstall "2"
+    set menuoption `eval $menuoption + 1`
+    echo "Amiga OS 3.9 Boing Bag 2 detected" >>"T:_amigaosmenu"
+  ENDIF
+ENDIF
+
+; back option
+set menuoption `eval $menuoption + 2`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  SKIP end" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+
+; help option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  IF EXISTS *"INSTALLDIR:Help/Amiga-OS-390-Install.txt*"" >>T:_amigaosoption
+echo "    Lister *"INSTALLDIR:Help/Amiga-OS-390-Install.txt*" >NIL:" >>T:_amigaosoption
+echo "  ELSE" >>T:_amigaosoption
+echo "    RequestChoice *"Error*" *"Help file 'INSTALLDIR:Help/Amiga-OS-390-Install.txt' doesn't exist!*" *"OK*" >NIL:" >>T:_amigaosoption
+echo "  ENDIF" >>T:_amigaosoption
+echo "  SKIP BACK amigaosmenu" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+
+; log option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  IF EXISTS *"INSTALLDIR:Temp/Detect-Amiga-OS.log*"" >>T:_amigaosoption
+echo "    Lister *"INSTALLDIR:Temp/Detect-Amiga-OS.log*" >NIL:" >>T:_amigaosoption
+echo "  ELSE" >>T:_amigaosoption
+echo "    RequestChoice *"Error*" *"Detect Amiga OS log file**N'INSTALLDIR:Temp/Detect-Amiga-OS.log'**Ndoesn't exist!*" *"OK*" >NIL:" >>T:_amigaosoption
+echo "  ENDIF" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+
+; reset option
+set menuoption `eval $menuoption + 1`
+echo "" >>T:_amigaosoption
+echo "IF *"*$amigaosmenu*" EQ $menuoption VAL" >>T:_amigaosoption
+echo "  set confirm *`RequestChoice *"Amiga OS installation*" *"Do you want to restart detect Amiga OS?*" *"Yes|No*"*`" >>T:_amigaosoption
+echo "  IF *"*$confirm*" EQ 1 VAL" >>T:_amigaosoption
+echo "    echo *"*" NOLINE >INSTALLDIR:Prefs/Restart-Detect-Amiga-OS" >>T:_amigaosoption
+echo "    SKIP end" >>T:_amigaosoption
+echo "  ENDIF" >>T:_amigaosoption
+echo "  SKIP BACK amigaosmenu" >>T:_amigaosoption
+echo "ENDIF" >>T:_amigaosoption
+
+; menu
+echo "--------------------------------------------------" >>T:_amigaosmenu
+echo "Back" >>T:_amigaosmenu
+echo "Help" >>T:_amigaosmenu
+echo "View detect Amiga OS log" >>T:_amigaosmenu
+echo "Restart Detect Amiga OS" >>T:_amigaosmenu
+
+; build amiga os 3.9 menu
+echo "LAB amigaosmenu" >T:_amigaos390menu
+
+; show amiga os menu
+echo "set amigaosmenu *"*"" >>T:_amigaos390menu
+echo "set amigaosmenu *"*`RequestList TITLE=*"Amiga OS 3.9 installation*" LISTFILE=*"T:_amigaosmenu*" WIDTH=640 LINES=24*`*"" >>T:_amigaos390menu
+
+type T:_amigaosoption >>T:_amigaos390menu
+
+echo "" >>T:_amigaos390menu
+echo "SKIP BACK amigaosmenu" >>T:_amigaos390menu
+echo "" >>T:_amigaos390menu
+echo "LAB amigaosinstall" >>T:_amigaos390menu
+echo "echo *"Amiga-OS-390*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS" >>T:_amigaos390menu
+echo "echo *"*$amigaosinstall*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-390" >>T:_amigaos390menu
+echo "echo *"$boingbaginstall*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-390-BB" >>T:_amigaos390menu
+echo "echo *"*" NOLINE >INSTALLDIR:Prefs/Continue-Amiga-OS-Install" >>T:_amigaos390menu
+echo "" >>T:_amigaos390menu
+echo "LAB end" >>T:_amigaos390menu
+echo "" >>T:_amigaos390menu
+
+; show amiga os 3.9 menu
+copy T:_amigaos390menu amigaosdir:
+Execute T:_amigaos390menu

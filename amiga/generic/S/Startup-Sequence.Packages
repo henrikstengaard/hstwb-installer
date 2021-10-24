@@ -1,7 +1,7 @@
 ; Startup Sequence for Packages Installation
 ; ------------------------------------------
 ;
-; Date: 2019-08-13
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -102,14 +102,14 @@ Resident >NIL: "INSTALLDIR:C/UnZip" PURE
 ; con shell for amiga os 3.2 and kingcon shell for amiga os 3.9, 3.1.4 and 3.1
 IF EXISTS INSTALLDIR:Prefs/Amiga-OS-32
   ; run start install packages in new con shell
-  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages" >NIL:
 ELSE
   ; mount kingcon
   Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
   Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON 
 
   ; run start install packages in new kingcon shell
-  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages"
+  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-Install-Packages" >NIL:
 ENDIF
 
 EndShell

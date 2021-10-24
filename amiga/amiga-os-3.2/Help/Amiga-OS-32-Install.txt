@@ -1,0 +1,15 @@
+Amiga OS 3.2 Install
+--------------------
+
+Amiga OS 3.2 comes with modules disk for all Amiga
+models and these contain devices and libraries specific
+different Amiga models.
+
+Installing modules disks is optional as long as
+Kickstart rom 3.2 is installed in the Amiga using
+this image.
+
+HstWB Installer will copy all modules disks from .adf
+files present in AMIGAOSDIR: to Modules directory and
+install selected modules disk. This makes it easier to
+switch the image between different Amiga models.

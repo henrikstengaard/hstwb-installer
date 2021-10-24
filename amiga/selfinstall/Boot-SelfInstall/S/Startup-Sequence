@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-08-14
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -1074,14 +1074,14 @@ type "INSTALLDIR:Temp/Amiga-OS-System-Files.log" >>SYS:hstwb-installer.log
 ; con shell for amiga os 3.2 and kingcon shell for amiga os 3.9, 3.1.4 and 3.1
 IF "$amigaos" EQ "3.2"
   ; run start-selfinstall in new con shell
-  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall"
+  NewShell WINDOW "CON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall" >NIL:
 ELSE
   ; mount kingcon
   Mount KCON: from INSTALLDIR:Devs/Mountlist-KingCON
   Mount KRAW: from INSTALLDIR:Devs/Mountlist-KingCON
 
   ; run start-selfinstall in new kingcon shell
-  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall"
+  NewShell WINDOW "KCON:0/0/640/300/HstWB Installer v[$VersionText]/AUTO" FROM "INSTALLDIR:S/Start-SelfInstall" >NIL:
 ENDIF
 
 EndShell

@@ -1,0 +1,16 @@
+; Restart Detect Amiga OS
+; -----------------------
+;
+; Date: 2021-10-24
+; Author: Henrik Noerfjand Stengaard
+
+; delete amiga os temp files, if temp amiga os exist
+IF EXISTS "HSTWBINSTALLERDIR:Temp/Amiga-OS"
+  Erase >NIL: "HSTWBINSTALLERDIR:Temp/Amiga-OS/#?" ALL TIMES=0
+ENDIF
+
+; delete amiga os prefs directory, if install prefs directory exist
+IF EXISTS "INSTALLDIR:Prefs/"
+  Erase >NIL: "INSTALLDIR:Prefs/Install-Amiga-OS#?" ALL TIMES=0
+  Erase >NIL: "INSTALLDIR:Prefs/Amiga-OS#?" ALL TIMES=0
+ENDIF

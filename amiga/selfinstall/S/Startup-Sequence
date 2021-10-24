@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2021-08-03
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -13,6 +13,9 @@ Alias Copy "Copy BUFFER=10 "
 
 ; set failat to 21
 FailAt 21
+
+; set amiga os to 3.1
+set amigaos "3.1"
 
 ; fail, if exec.library is less than v40
 Version >NIL: exec.library 40
@@ -99,6 +102,7 @@ ENDIF
 
 ; load system files from amiga os 3.9 emergency boot cd-rom
 set systemfilesdir "AmigaOS3.9:EMERGENCY-BOOT/C"
+set amigaos "3.9"
 SKIP loadsystemfiles
 
 
@@ -142,17 +146,10 @@ IF NOT EXISTS "DF0:C/Which"
 ENDIF
 
 
-; set amiga os 3.2 to 0
-set amigaos32 "0"
-
-; set amiga os 3.1 to 1
-set amigaos31 "1"
-
 ; set amiga os 3.1 to 0, if DF0: volume name is 'Workbench3.2' or 'Workbench3.1.4'
 set volumename "`DF0:C/Which DF0:`"
 IF "$volumename" EQ "Workbench3.2:"
-  set amigaos32 "1"
-  set amigaos31 "0"
+  set amigaos "3.2"
 
   IF NOT EXISTS "SYSTEMDIR:Prefs"
     MakePath >NIL: "SYSTEMDIR:Prefs"
@@ -160,8 +157,9 @@ IF "$volumename" EQ "Workbench3.2:"
   Echo NOLINE "" >SYSTEMDIR:Prefs/Amiga-OS-32
 ENDIF
 
+; set amiga os to 3.1.4, if DF0: volume name is 'Workbench3.1.4'
 IF "$volumename" EQ "Workbench3.1.4:"
-  set amigaos31 "0"
+  set amigaos "3.1.4"
 ENDIF
 
 
@@ -203,8 +201,13 @@ resident "$systemfilesdir/Which" PURE
 MakeDir RAM:Clipboards RAM:ENV/Sys
 SetEnv TZ MST7
 
+; goto start install, if amiga os 3.9 is 1
+IF "$amigaos" EQ "3.9"
+  SKIP startinstall
+ENDIF
+
 ; goto start install, if amiga os 3.1 is 1
-IF "$amigaos31" EQ "1" VAL
+IF "$amigaos" EQ "3.1"
   SKIP startinstall
 ENDIF
 

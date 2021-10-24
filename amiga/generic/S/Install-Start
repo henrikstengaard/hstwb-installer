@@ -1,7 +1,7 @@
 ; Install Start
 ; -------------
 ;
-; Date: 2021-08-04
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; An AmigaDOS script to start installation of Large Harddisk, Amiga OS 3.9, 3.2, 3.1.4 or 3.1, Kickstarts and packages.
@@ -24,25 +24,28 @@ ENDIF
 assign FMS: SYSTEMDIR:Temp
 Mount FF0: FROM "INSTALLDIR:Devs/Mountlist"
 
-; Wait
+; wait for mount
 Wait 2
 
+
+; get amiga os install
+set amigaosinstall ""
+set amigaosinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS`"
+
 ; run install amiga os 3.9 emergency boot, if prefs exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-390"
+IF "$amigaosinstall" EQ "Amiga-OS-390"
   execute "INSTALLDIR:S/Amiga-OS-3.9/Install-Emergency-Boot"
 ELSE
   ; run install amiga os 3.2, if prefs exists
-  IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-32-ADF"
+  IF "$amigaosinstall" EQ "Amiga-OS-32-ADF"
     execute "INSTALLDIR:S/Amiga-OS-3.2/Install-Amiga-OS-3.2"
   ELSE
     ; run install amiga os 3.1.4, if prefs exists
-    fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314
-    IF "`wc -l <T:_install_amiga-os-314`" GT 0 VAL
+    IF "$amigaosinstall" EQ "Amiga-OS-314-ADF"
         execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Amiga-OS-3.1.4"
     ELSE
         ; run install amiga os 3.1, if prefs exists
-        fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-310#?" >T:_install_amiga-os-310
-        IF "`wc -l <T:_install_amiga-os-310`" GT 0 VAL
+        IF "$amigaosinstall" EQ "Amiga-OS-310-ADF"
           execute "INSTALLDIR:S/Amiga-OS-3.1/Install-Amiga-OS-3.1"
         ELSE
         ; run detect amiga os disk
@@ -51,10 +54,6 @@ ELSE
     ENDIF
   ENDIF
 ENDIF
-Delete >NIL: T:_install_amiga-os-390
-Delete >NIL: T:_install_amiga-os-32
-Delete >NIL: T:_install_amiga-os-314
-Delete >NIL: T:_install_amiga-os-310
 
 ; install kickstart, if prefs exists
 IF EXISTS "INSTALLDIR:Prefs/Install-Kickstart-Rom"

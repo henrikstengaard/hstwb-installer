@@ -1,7 +1,7 @@
 ; Install Disk
 ; ------------
 ;
-; Date: 2019-07-22
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from floppy disks.
@@ -25,11 +25,29 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Disk-Template" "Fonts" "Amiga OS 3.1.4 Font
 ; run disk template for amiga os 3.1.4 storage disk
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Disk-Template" "Storage" "Amiga OS 3.1.4 Storage"
 
-; run disk template for amiga os 3.1.4 modules disk
-Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Disk-Template" "Modules" "Amiga OS 3.1.4 Modules"
-
 ; run disk template for amiga os 3.1.4 install disk
 Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Disk-Template" "Install" "Amiga OS 3.1.4 Install"
+
+; modules
+LAB modules
+
+set install "`RequestChoice "Modules installation" "Do you want to install modules for*NAmiga OS 3.1.4?" "Help|Yes|No"`"
+
+; help option
+IF "$install" EQ 1 VAL
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Modules.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-314-Modules.txt" >NIL:
+  ELSE
+    RequestChoice "Error" "Help file*N'INSTALLDIR:Help/Amiga-OS-314-Modules.txt'*Ndoesn't exist!" "OK" >NIL:
+  ENDIF
+  SKIP BACK modules
+ENDIF
+
+; yes option
+IF "$install" EQ 2 VAL
+  ; run disk template for amiga os 3.1.4 modules disk
+  Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Disk-Template" "Modules" "Amiga OS 3.1.4 Modules"
+ENDIF
 
 ; amiga os 3.1.4.1 update
 setenv update `RequestChoice "Amiga OS 3.1.4.1 Update" "Do you want to install Amiga OS 3.1.4.1 Update?" "Yes|No"`

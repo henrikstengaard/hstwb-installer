@@ -1,10 +1,46 @@
 ; Install Modules
 ; ---------------
 ;
-; Date: 2018-12-11
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4 modules floppy disk or adf file.
 
+; get modules disk
+Which $amigaosdisk: >T:_modulesdisk1
+sed "s/Modules//" T:_modulesdisk1 >T:_modulesdisk2
+sed "s/_3.1.4://" T:_modulesdisk2 >T:_modulesdisk3
+set modulesdisk `Type T:_modulesdisk3`
 
-Copy >NIL: "$amigaosdisk:#?" SYSTEMDIR: ALL CLONE
+; create modules disk directories
+MakePath >NIL: "SYSTEMDIR:Modules/$modulesdisk"
+
+; copy modules disk
+Copy >NIL: "$amigaosdisk:#?" "SYSTEMDIR:Modules/$modulesdisk" ALL CLONE
+
+; set install modules 0
+set installmodules "0"
+
+; set install modules 1, if modules disk is equal to modules name (selected in amiga os installation menu)
+IF "$modulesdisk" EQ "$modulesname"
+  set installmodules "1"
+ELSE
+  ; set install modules 1, if modules name is not defined (install from floppy disk)
+  IF "$modulesname" EQ ""
+    set installmodules "1"
+  ENDIF
+ENDIF
+
+; install modules, if set to 1
+IF "$installmodules" EQ 1 VAL
+  Copy >NIL: "SYSTEMDIR:Modules/$modulesdisk/#?" SYSTEMDIR: ALL CLONE
+  IF EXISTS "SYSTEMDIR:DEVS/$modulesdisk"
+    Copy >NIL: "SYSTEMDIR:DEVS/$modulesdisk/#?" SYSTEMDIR:DEVS ALL CLONE
+  ENDIF
+  IF EXISTS "SYSTEMDIR:LIBS/$modulesdisk"
+    Copy >NIL: "SYSTEMDIR:LIBS/$modulesdisk/#?" SYSTEMDIR:LIBS ALL CLONE
+  ENDIF
+ENDIF
+
+; end
+LAB end

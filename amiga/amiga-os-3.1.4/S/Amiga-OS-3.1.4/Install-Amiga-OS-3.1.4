@@ -1,7 +1,7 @@
-; Install Amiga OS 3.1.4
-; ----------------------
+; Amiga OS 3.1.4 Menu
+; -------------------
 ;
-; Date: 2019-08-23
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -25,8 +25,7 @@ IF "$glowicons" EQ 1 VAL
   IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt"
     Lister "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt" >NIL:
   ELSE
-    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt' doesn't exist!*e[0m"
-    quit 20
+    RequestChoice "Error" "Help file*N'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt'*Ndoesn't exist!" "OK" >NIL:
   ENDIF
   SKIP BACK glowicons
 ENDIF
@@ -56,8 +55,7 @@ IF "$screenmode" EQ 1 VAL
   IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt"
     Lister "INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt" >NIL:
   ELSE
-    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt' doesn't exist!*e[0m"
-    quit 20
+    RequestChoice "Error" "Help file*N'INSTALLDIR:Help/Amiga-OS-314-Glow-Icons.txt'*Ndoesn't exist!" "OK" >NIL:
   ENDIF
   SKIP BACK screenmode
 ENDIF
@@ -88,17 +86,29 @@ Copy >NIL: "INSTALLDIR:Extras/Icons/#?" "SYSTEMDIR:Icons/"
 Copy >NIL: "INSTALLDIR:Extras/Icons.info" "SYSTEMDIR:"
 
 ; run install amiga os 3.1.4 adf, if prefs exists. otherwise run install amiga os 3.1.4 disk
-fsearch INSTALLDIR:Prefs PAT "Install-Amiga-OS-314-#?-ADF" >T:_install_amiga-os-314
-IF "`wc -l <T:_install_amiga-os-314`" GT 0 VAL
+IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-ADF"
   ; run install amiga os 3.1.4 adf
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Adf"
 ELSE
   ; run install amiga os 3.1.4 disk
   execute "INSTALLDIR:S/Amiga-OS-3.1.4/Install-Disk"
-ENDIF 
+ENDIF
+
+; fix glow icons def harddisk icon as disk icon, if glow icons are installed and def harddisk icon exists
+IF EXISTS INSTALLDIR:Prefs/Amiga-OS-3.1.4-GlowIcons
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk.info
+    Copy >NIL: SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk.info SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk_org.info
+    seticontype 1 SYSTEMDIR:Prefs/Env-Archive/Sys/def_harddisk.info
+  ENDIF
+ENDIF
+
+
+; get icon pack install
+set iconpackinstall ""
+set iconpackinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack`"
 
 ; install amiga os 3.1.4 icon pack, if prefs exists
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-314-IconPack"
+IF "$iconpackinstall" EQ 1 VAL
   ; install amiga os 3.1.4 from adf files message
   echo ""
   echo "*e[1mInstall Amiga OS 3.1.4 support files:*e[0m"

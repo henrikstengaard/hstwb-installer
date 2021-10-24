@@ -1,7 +1,7 @@
 ; Detect Amiga OS
 ; ---------------
 ;
-; Date: 2019-01-11
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -10,8 +10,10 @@
 LAB detectamigaos
 
 ; delete restart detect amiga os prefs, if it exists
-IF EXISTS "INSTALLDIR:Prefs/Restart-Detect-Amiga-OS"
-  Delete >NIL: "INSTALLDIR:Prefs/Restart-Detect-Amiga-OS"
+IF EXISTS INSTALLDIR:Prefs/Restart-Detect-Amiga-OS
+  Delete >NIL: INSTALLDIR:Prefs/Restart-Detect-Amiga-OS
+
+  set dummy "`Execute INSTALLDIR:S/Restart-Detect-Amiga-OS`"
 ENDIF
 
 ; detect amiga os message
@@ -29,6 +31,12 @@ set md5only `RequestChoice "Amiga OS adf detection" "Do you want use MD5 only or
 IF "$md5only" EQ 1 VAL
   echo "" NOLINE >INSTALLDIR:Prefs/MD5-Only
 ENDIF
+
+; delete temp amiga os files, if directory exist
+IF EXISTS "INSTALLDIR:Temp/Amiga-OS/"
+  Delete >NIL: "INSTALLDIR:Temp/Amiga-OS/" ALL
+ENDIF
+MakePath >NIL: "INSTALLDIR:Temp/Amiga-OS"
 
 ; set failat to 255 for DiskInDrive to fail silently
 failat 255

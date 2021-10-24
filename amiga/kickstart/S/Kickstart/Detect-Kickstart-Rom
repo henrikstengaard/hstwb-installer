@@ -1,7 +1,7 @@
 ; Detect Kickstart Rom
 ; --------------------
 ;
-; Date: 2019-01-06
+; Date: 2021-10-24
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Cloanto Amiga Forever and original Kickstart rom files are present.
@@ -17,85 +17,61 @@ IF NOT EXISTS "INSTALLDIR:Temp/Kickstart/"
   MakePath >NIL: "INSTALLDIR:Temp/Kickstart"
 ENDIF
 
-; create script to copy kickstart rom files 
+; create script to copy kickstart rom files
 List KICKSTARTDIR: PAT=#? ALL FILES LFORMAT "Execute INSTALLDIR:S/Kickstart/Copy-Kickstart-Rom *"%p%n*" *"INSTALLDIR:Temp/Kickstart*"" >T:_copy_kickstart_roms
 
 ; run copy kickstart roms
+FailAt 21
 Execute T:_copy_kickstart_roms
 Delete >NIL: T:_copy_kickstart_roms
 
 ; create prefs, if kickstart 1.2 (33.180) a500 rom is present
 set kick33180a500 "0"
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick33180.A500"
-  set kick33180a500 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick33180-A500-Rom
-ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick33180.A500"
   set kick33180a500 "1"
   echo "" NOLINE >INSTALLDIR:Prefs/Kick33180-A500-Rom
-ENDIF
-IF NOT "$kick33180a500" EQ 1 VAL
+ELSE
   echo "Kickstart 1.2 (33.180) A500 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
 ENDIF
 
 ; create prefs, if kickstart 1.3 (34.5) a500 rom is present
 set kick34005a500 "0"
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick34005.A500"
-  set kick34005a500 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick34005-A500-Rom
-ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick34005.A500"
   set kick34005a500 "1"
   echo "" NOLINE >INSTALLDIR:Prefs/Kick34005-A500-Rom
-ENDIF
-IF NOT "$kick34005a500" EQ 1 VAL
+ELSE
   echo "Kickstart 1.3 (34.5) A500 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
 ENDIF
 
 ; create prefs, if kickstart 3.1 (40.063) a600 rom is present
 set kick40063a600 "0"
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick40063.A600"
-  set kick40063a600 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick40063-A600-Rom
-ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick40063.A600"
   set kick40063a600 "1"
   echo "" NOLINE >INSTALLDIR:Prefs/Kick40063-A600-Rom
-ENDIF
-IF NOT "$kick40063a600" EQ 1 VAL
+ELSE
   echo "Kickstart 3.1 (40.063) A600 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
 ENDIF
 
 ; create prefs, if kickstart 3.1 (40.068) a1200 rom is present
 set kick40068a1200 "0"
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick40068.A1200"
-  set kick40068a1200 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick40068-A1200-Rom
-ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick40068.A1200"
   set kick40068a1200 "1"
   echo "" NOLINE >INSTALLDIR:Prefs/Kick40068-A1200-Rom
-ENDIF
-IF NOT "$kick40068a1200" EQ 1 VAL
+ELSE
   echo "Kickstart 3.1 (40.068) A1200 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
 ENDIF
 
 ; create prefs, if kickstart 3.1 (40.068) a4000 rom is present
 set kick40068a4000 "0"
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-kick40068.A4000"
-  set kick40068a4000 "1"
-  echo "" NOLINE >INSTALLDIR:Prefs/AF-Kick40068-A4000-Rom
-ENDIF
 IF EXISTS "INSTALLDIR:Temp/Kickstart/kick40068.A4000"
   set kick40068a4000 "1"
   echo "" NOLINE >INSTALLDIR:Prefs/Kick40068-A4000-Rom
-ENDIF
-IF NOT "$kick40068a4000" EQ 1 VAL
+ELSE
   echo "kickstart 3.1 (40.068) A4000 rom doesn't exist!" >>INSTALLDIR:Temp/Kickstart-Rom.log
 ENDIF
 
 ; create prefs, if cloanto amiga forever kickstart rom key
-IF EXISTS "INSTALLDIR:Temp/Kickstart/af-rom.key"
+IF EXISTS "INSTALLDIR:Temp/Kickstart/rom.key"
   echo "" NOLINE >INSTALLDIR:Prefs/AF-Rom-Key
 ENDIF
 
