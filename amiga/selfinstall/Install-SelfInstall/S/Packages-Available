@@ -1,7 +1,7 @@
 ; Packages available
 ; ------------------
 ;
-; Date: 2019-01-09
+; Date: 2021-10-27
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -26,30 +26,27 @@ LAB packagesmenu
 set packagescount `wc -l <INSTALLDIR:Prefs/Packages`
 
 ; packages menu
-Copy >NIL: "INSTALLDIR:Prefs/Packages" "T:_packages-menu"
-echo "--------------------------------------------------" >>"T:_packages-menu"
+echo "Continue with $packagescount package(s) available" >"T:_packages-menu"
 echo "Help" >>"T:_packages-menu"
-echo "Continue with $packagescount package(s) available" >>"T:_packages-menu"
+echo "--------------------------------------------------" >>"T:_packages-menu"
+Type "INSTALLDIR:Prefs/Packages" >>"T:_packages-menu"
 
 ; show packages available menu
 set packagesoption ""
 set packagesoption "`RequestList TITLE="Packages available" LISTFILE="T:_packages-menu" WIDTH=640 LINES=24`"
 Delete >NIL: "T:_packages-menu"
 
-; set initial menu option
-set menuoption "$packagescount"
+; continue option
+set menuoption "1"
+IF "$packagesoption" EQ $menuoption VAL
+  SKIP end
+ENDIF
 
 ; help option
 set menuoption `eval $menuoption + 2`
 IF "$packagesoption" EQ $menuoption VAL
   Lister "INSTALLDIR:Help/Packages-Available.txt" >NIL:
   SKIP BACK packagesmenu
-ENDIF
-
-; continue option
-set menuoption `eval $menuoption + 1`
-IF "$packagesoption" EQ $menuoption VAL
-  SKIP end
 ENDIF
 
 SKIP BACK packagesmenu
