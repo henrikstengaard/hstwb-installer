@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2021-10-24
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS 3.9 installation menu.
@@ -127,7 +127,6 @@ echo "SKIP BACK amigaosmenu" >>T:_amigaos390menu
 echo "" >>T:_amigaos390menu
 echo "LAB amigaosinstall" >>T:_amigaos390menu
 echo "echo *"Amiga-OS-390*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS" >>T:_amigaos390menu
-echo "echo *"*$amigaosinstall*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-390" >>T:_amigaos390menu
 echo "echo *"$boingbaginstall*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-390-BB" >>T:_amigaos390menu
 echo "echo *"*" NOLINE >INSTALLDIR:Prefs/Continue-Amiga-OS-Install" >>T:_amigaos390menu
 echo "" >>T:_amigaos390menu
@@ -135,5 +134,4 @@ echo "LAB end" >>T:_amigaos390menu
 echo "" >>T:_amigaos390menu
 
 ; show amiga os 3.9 menu
-copy T:_amigaos390menu amigaosdir:
 Execute T:_amigaos390menu

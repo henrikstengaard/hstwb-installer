@@ -1,15 +1,14 @@
-; Patch Amiga OS 3.2 Startup
-; --------------------------
+; Boot Startup
+; ------------
 ;
-; Date: 2021-08-11
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 ;
-; AmigaDOS script to patch Amiga OS 3.2 startup to load modules if kickstart rom is lower than 3.2 and
-; enable or disable 680x0 libraries depending on cpu model
+; AmigaDOS script to boot Amiga OS 3.1 startup which enable or disable 680x0 libraries depending on cpu model
 
 ; skip mmu libraries patch, if disable mmu libraries patch prefs exist
 IF EXISTS SYS:Prefs/Env-Archive/Disable-MMULibs-Patch
-  SKIP loadmodule
+  SKIP end
 ENDIF
 
 ; set cpu to 68000 by default
@@ -67,25 +66,6 @@ IF EXISTS Libs:$cpumodel.library_disabled
   Rename >NIL: Libs:$cpumodel.library_disabled Libs:$cpumodel.library
 ENDIF
 
-; load module for kickstart rom 3.2
-LAB loadmodule
 
-; load new rom modules, if kickstart rom is lower than 3.2.
-; otherwise quit, if kickstart rom 3.2 is not present.
-Version exec.library version 47 >NIL:
-If Warn
-  If Exists L:System-Startup
-    Echo ""
-    Echo " Forcing new ROM modules. A reboot will happen next."
-    Echo " Please wait..."
-    LoadModule L:System-Startup ROMUPDATE DOWNGRADE
-  Else
-    Echo ""
-    Echo " The system must be booted from Kickstart ROM 3.2 (V47)"
-    Echo " or from the 'Modules' disk that matches your hardware."
-    Echo ""
-    Quit
-  EndIf
-EndIf
-
-
+; end
+LAB end

@@ -1,7 +1,7 @@
 ; Install Disk
 ; ------------
 ;
-; Date: 2021-10-24
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from floppy disks.
@@ -35,10 +35,10 @@ set install "`RequestChoice "Modules installation" "Do you want to install modul
 
 ; help option
 IF "$install" EQ 1 VAL
-  IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Modules.txt"
-    Lister "INSTALLDIR:Help/Amiga-OS-314-Modules.txt" >NIL:
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-314-Install.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-314-Install.txt" >NIL:
   ELSE
-    RequestChoice "Error" "Help file*N'INSTALLDIR:Help/Amiga-OS-314-Modules.txt'*Ndoesn't exist!" "OK" >NIL:
+    RequestChoice "Error" "Help file*N'INSTALLDIR:Help/Amiga-OS-314-Install.txt'*Ndoesn't exist!" "OK" >NIL:
   ENDIF
   SKIP BACK modules
 ENDIF

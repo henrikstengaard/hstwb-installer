@@ -1,2 +1,9 @@
-Amiga OS 3.9 Installation
--------------------------
+Amiga OS 3.9 Installation help
+------------------------------
+
+HstWB Installer supports installation of Amiga OS 3.9
+from both cd-rom and iso file.
+
+If boing bag update 1 and/or 2 is present in AMIGAOSDIR:
+device, then these will be installed during Amiga OS
+installation.

@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-26
+# Date:   2021-11-02
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -301,6 +301,66 @@ function CalculateMd5FromFile($file)
     }
 }
 
+function IsEncryptedKickstartRom($romBytes)
+{
+    # header for encrypted roms
+    $header = "AMIROMTYPE1"
+
+    if ($romBytes.Count -lt $header.Length)
+    {
+        return $false
+    }
+
+    # return if header from rom bytes match
+    return $header -eq [System.Text.Encoding]::ASCII.GetString($romBytes[0..($header.Length - 1)])
+}
+
+function CalculateMd5FromBytes($bytes)
+{
+    try
+    {
+        $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+        return [System.BitConverter]::ToString($md5.ComputeHash($bytes)).ToLower().Replace('-', '')
+    }
+    catch
+    {
+        throw ('Failed to calculate MD5: {1}' -f $_.ErrorDetails.Message)
+    }
+}
+
+# calculate md5 hash from file
+function CalculateDecryptedKickstartMd5FromBytes($romBytes, $keyBytes)
+{
+    try
+    {
+        # fail, if header from rom bytes doesn't match 
+        if (!(IsEncryptedKickstartRom $romBytes))
+        {
+            Write-Error "Rom file not encrypted"
+            exit 1
+        }
+
+        # header for encrypted roms
+        $header = "AMIROMTYPE1"
+
+        # strip header from rom bytes
+        $romBytes = $romBytes[$header.Length..$romBytes.Count]
+
+        # decrypt rom bytes using bitwise xor of key bytes
+        for ($i = $j = 0; $i -lt $romBytes.Count; $i++)
+        {
+            $romBytes[$i] = $romBytes[$i] -bxor $keyBytes[$j]
+            $j = ($j + 1) % $keyBytes.Count
+        }
+
+        return CalculateMd5FromBytes $romBytes
+    }
+    catch
+    {
+        throw ('Failed to calculate decrypted kickstart MD5: {1}' -f $_.ErrorDetails.Message)
+    }
+}
+
 # calculate md5 hash from text
 function CalculateMd5FromText($text)
 {
@@ -452,6 +512,101 @@ function FindMatchingAmigaOsEntriesByFileName($amigaOsEntries, $dir)
     }
 }
 
+function FindMatchingKickstartFileHashes($kickstartEntries, $dir)
+{
+    $romKeyPath = Join-Path $dir -ChildPath 'rom.key'
+    $romKeyPresent = Test-Path $romKeyPath
+
+    # read key bytes
+    $keyBytes = @()
+    if ($romKeyPresent)
+    {
+        $keyBytes += [System.IO.File]::ReadAllBytes($romKeyPath)
+    }
+
+    # get entries
+    $files = Get-ChildItem -Path $dir
+
+    # index file hashes
+    $kickstartFileHashesIndex = @{}
+
+    foreach($file in $files)
+    {
+        # read rom bytes
+        $romBytes = @()
+        $romBytes += [System.IO.File]::ReadAllBytes($file.FullName)
+
+        $encrypted = 'No'
+
+        # calculate decrypted kickstart md5, if file is not encrypted kickstart rom file
+        if (IsEncryptedKickstartRom $romBytes)
+        {
+            if (!$romKeyPresent)
+            {
+                continue
+            }
+
+            $encrypted = 'Yes'
+            $md5Hash = CalculateDecryptedKickstartMd5FromBytes $romBytes $keyBytes
+        }
+        else
+        {
+            $md5Hash = CalculateMd5FromBytes $romBytes            
+        }
+
+        $kickstartFile = @{
+            'File' = $file.FullName;
+            'Md5Hash' = $md5Hash;
+            'Encrypted' = $encrypted
+        }
+
+        # add kickstart file
+        $kickstartFileHashesIndex.Set_Item($md5Hash, $kickstartFile)
+    }
+
+    # return, if kickstart file hashes index is empty
+    if ($kickstartFileHashesIndex.Count -eq 0)
+    {
+        return
+    }
+
+    # find matching kickstart os entries by md5 hash
+    foreach($kickstartEntry in $kickstartEntries)
+    {
+        if (!$kickstartFileHashesIndex.ContainsKey($kickstartEntry.Md5Hash))
+        {
+            continue
+        }
+
+        $kickstartFile = $kickstartFileHashesIndex[$kickstartEntry.Md5Hash]
+
+        $kickstartEntry | Add-Member -MemberType NoteProperty -Name 'File' -Value $kickstartFile.File -Force
+        $kickstartEntry | Add-Member -MemberType NoteProperty -Name 'MatchType' -Value 'MD5' -Force
+        $kickstartEntry | Add-Member -MemberType NoteProperty -Name 'MatchRank' -Value '1' -Force
+        $kickstartEntry | Add-Member -MemberType NoteProperty -Name 'Encrypted' -Value $kickstartFile.Encrypted -Force
+    }
+}
+
+function FindMatchingFileNames($kickstartEntries, $dir)
+{
+    # get entries
+    $files = Get-ChildItem -Path $dir
+
+    # find matching kickstart entries by filename, which doesn't already have a file defined
+    foreach($kickstartEntry in ($kickstartEntries | Where-Object { $_.Filename -ne '' -and !$_.File }))
+    {
+        $matchingFile = $files | Where-Object { $_.Name -eq $amigaOsEntry.Filename } | Select-Object -First 1
+
+        if (!$matchingFile)
+        {
+            continue
+        }
+
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'File' -Value $matchingFile.FullName -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchType' -Value 'FileName' -Force
+        $amigaOsEntry | Add-Member -MemberType NoteProperty -Name 'MatchRank' -Value '2' -Force
+    }
+}
 
 # find amiga os files
 function FindAmigaOsFiles($hstwb)
@@ -480,10 +635,9 @@ function FindKickstartFiles($hstwb)
         $hstwb.Settings.Kickstart.KickstartDir = ''
     }
 
-    # find files with hashes matching kickstart rom hashes
-    FindMatchingFileHashes $hstwb.KickstartEntries $hstwb.Settings.Kickstart.KickstartDir
+    # find matching kickstart files by md5 hash of encrypted and unencrypted kickstart roms
+    FindMatchingKickstartFileHashes $hstwb.KickstartEntries $hstwb.Settings.Kickstart.KickstartDir
 }
-
 
 # find best matching kickstart set
 function FindBestMatchingKickstartSet($hstwb)

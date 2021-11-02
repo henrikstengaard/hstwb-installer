@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2021-10-27
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -250,21 +250,26 @@ IF "$boingbaginstall" GT 0 VAL
   Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/S" "SYSTEMDIR:S" ALL
   Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Boing-Bags/WBStartup" "SYSTEMDIR:WBStartup" ALL
 
-  ; update startup sequence with loadmodule patched scsi.device
-  echo "FailAt 21" >>T:Startup-Sequence
-  echo "" >>T:Startup-Sequence
-  echo "; Load patched scsi.device v43.45, if it exists" >T:Startup-Sequence
-  echo "IF EXISTS DEVS:scsi.device" >>T:Startup-Sequence
-  echo "  ; Load scsi.device, if current loaded scsi.device is less than v43.45" >>T:Startup-Sequence
-  echo "  Version >>SYS:hstwb-installer.log *"scsi.device*" 43 45" >>T:Startup-Sequence
-  echo "  IF WARN" >>T:Startup-Sequence
-  echo "    LoadModule DEVS:scsi.device" >>T:Startup-Sequence
-  echo "  ENDIF" >>T:Startup-Sequence
-  echo "ENDIF" >>T:Startup-Sequence
-  echo "" >>T:Startup-Sequence
-  Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
-  Copy >>SYS:hstwb-installer.log T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
 ENDIF
+
+; update startup sequence
+Copy INSTALLDIR:Extras/Amiga-OS-3.9/Startup-Sequence T:Startup-Sequence
+Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
+Copy >>SYS:hstwb-installer.log T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
+
+; install boot startup
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Amiga-OS-3.9-Startup" "SYSTEMDIR:S" ALL
+
+; copy mmulib test cpu for patch startup sequence
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/C/TestCPU" "SYSTEMDIR:C" CLONE
+
+; install 680x0 libraries required for cpus and accelerator cards
+MakePath >NIL: "SYSTEMDIR:Temp"
+lha -m1 x "INSTALLDIR:Extras/Amiga-OS-3.9/MMULib.lha" "SYSTEMDIR:Temp/" >>SYS:hstwb-installer.log
+Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Temp/MMULib/Libs/680?0.library" "SYSTEMDIR:Libs" CLONE
+Copy >>SYS:hstwb-installer.log "SYSTEMDIR:Temp/MMULib/Libs/mmu.library" "SYSTEMDIR:Libs" CLONE
+Delete >>SYS:hstwb-installer.log "SYSTEMDIR:Temp/MMULib" ALL
+
 
 ; create amiga os 3.9 prefs
 echo "3.9" NOLINE >SYSTEMDIR:Prefs/AmigaOS

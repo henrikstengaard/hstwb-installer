@@ -2,4 +2,3 @@
 IF EXISTS "S:Amiga-OS-32-Startup"
   Execute "S:Amiga-OS-32-Startup"
 ENDIF
-

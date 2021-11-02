@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-07-27
+# Date:   2021-11-02
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -35,7 +35,7 @@ function FolderBrowserDialog($title, $directory, $showNewFolderButton)
     if($result -ne "OK")
     {
         return $null
-    }    
+    }
 
     return $folderBrowserDialog.SelectedPath    
 }
@@ -498,16 +498,6 @@ function BuildDefaultAssignsScriptLines($hstwb)
 function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $installPackageScripts)
 {
     $packagesMenuScriptLines = @()
-
-    $packagesMenuScriptLines += "echo """" NOLINE >T:packagesmenu"
-    $packagesMenuScriptLines += 'IF "$amigaosversion" EQ "All"'
-    $packagesMenuScriptLines += '  set amigaostext "All Amiga OS versions"'
-    $packagesMenuScriptLines += 'ELSE'
-    $packagesMenuScriptLines += '  set amigaostext "Amiga OS $amigaosversion"'
-    $packagesMenuScriptLines += 'ENDIF'
-    $packagesMenuScriptLines += "echo ""Select package filtering: `$amigaostext"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
-
     $contentIdPackages = @{}
     
     foreach ($installPackageScript in $installPackageScripts)
@@ -567,13 +557,19 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
     $packageDependenciesLegends = @{}
     $packageDependenciesIndex = @{}
 
+    $packageMenuOption = 0
+    $packagesMenuOptionLines = @()
+
+    $installPackagesMenuOptionLines = @()
+
+    # build package dependencies
     foreach ($installPackageScript in $installPackageScripts)
     {
-        $packagesMenuScriptLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-        $packagesMenuScriptLines += "  echo ""Install"" NOLINE >>T:packagesmenu"
-        $packagesMenuScriptLines += "ELSE"
-        $packagesMenuScriptLines += "  echo ""Skip   "" NOLINE >>T:packagesmenu"
-        $packagesMenuScriptLines += "ENDIF"
+        $installPackagesMenuOptionLines += ("IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+        $installPackagesMenuOptionLines += "  echo ""Install"" NOLINE >>T:packagesmenu"
+        $installPackagesMenuOptionLines += "ELSE"
+        $installPackagesMenuOptionLines += "  echo ""Skip   "" NOLINE >>T:packagesmenu"
+        $installPackagesMenuOptionLines += "ENDIF"
 
         $legends = @()
         if ($installPackageScript.Package.Dependencies.Count -gt 0)
@@ -594,17 +590,161 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
         }
 
         $legendsFormatted = if ($legends.Count -gt 0) { (' ({0})' -f ($legends -join ', ')) } else { '' }
-        $packagesMenuScriptLines += ("echo "" : {0}{1}"" >>T:packagesmenu" -f $installPackageScript.Package.FullName, $legendsFormatted)
+        $installPackagesMenuOptionLines += ("echo "" : {0}{1}"" >>T:packagesmenu" -f $installPackageScript.Package.FullName, $legendsFormatted)
     }
 
-    $packagesMenuScriptLines += "echo ""============================================================"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""Help"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""Legends (!), (=)"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""Install all packages"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""Skip all packages"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""View readme"" >>T:packagesmenu"
-    $packagesMenuScriptLines += "echo ""Edit assigns"" >>T:packagesmenu"
+
+    # select package filtering option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; select package filtering option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  SKIP packagefilteringmenu"
+    $packagesMenuOptionLines += "ENDIF"
+
+    $packagesMenuScriptLines += "echo """" NOLINE >T:packagesmenu"
+    $packagesMenuScriptLines += 'IF "$amigaosversion" EQ "All"'
+    $packagesMenuScriptLines += '  set amigaostext "All Amiga OS versions"'
+    $packagesMenuScriptLines += 'ELSE'
+    $packagesMenuScriptLines += '  set amigaostext "Amiga OS $amigaosversion"'
+    $packagesMenuScriptLines += 'ENDIF'
+    $packagesMenuScriptLines += "echo ""Select package filtering: `$amigaostext"" >>T:packagesmenu"
+
+    # splitter
+    $packageMenuOption++
+    $packagesMenuScriptLines += "echo ""--------------------------------------------------"" >>T:packagesmenu"
+
+    # install packages option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; install packages option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  set selectedpackagescount 0"
+    foreach ($installPackageScript in $installPackageScripts)
+    {
+        $packagesMenuOptionLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+        $packagesMenuOptionLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
+        $packagesMenuOptionLines += "  ENDIF"
+    }
+    $packagesMenuOptionLines += "  set confirm ``RequestChoice ""Start package installation"" ""Do you want to install `$selectedpackagescount package(s)?"" ""Yes|No""``"
+    $packagesMenuOptionLines += "  IF ""`$confirm"" EQ ""1"""
+    $packagesMenuOptionLines += "    SKIP installpackages"
+    $packagesMenuOptionLines += "  ENDIF"
+    $packagesMenuOptionLines += "ENDIF"
     $packagesMenuScriptLines += "echo ""Start package installation"" >>T:packagesmenu"
+
+
+    # install all option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; install all packages option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  SKIP installallpackages"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""Install all packages"" >>T:packagesmenu"
+
+    # skip all option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; skip all packages option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  SKIP skipallpackages"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""Skip all packages"" >>T:packagesmenu"
+
+    # edit assigns option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; edit assigns option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  SKIP editassignsmenu"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""Edit assigns"" >>T:packagesmenu"
+
+    # view readme option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; view readme option'
+    $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+    $packagesMenuOptionLines += "  SKIP viewreadmemenu"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""View readme"" >>T:packagesmenu"
+
+    # legends option
+    $packageMenuOption++
+    $packagesMenuOptionLines += '; legends option'
+    $packagesMenuOptionLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
+    $packagesMenuOptionLines += '  echo "Legends" >T:packageinstallationlegends.txt'
+    $packagesMenuOptionLines += '  echo "-------" >>T:packageinstallationlegends.txt'
+    $packagesMenuOptionLines += '  echo "Description for legends this package installation." >>T:packageinstallationlegends.txt'
+    $packagesMenuOptionLines += '  echo "" >>T:packageinstallationlegends.txt'
+
+    if ($packageDependenciesLegends.Count -gt 0)
+    {
+        $packagesMenuOptionLines += ('echo "{0} package dependencies legends:" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegends.Count)
+
+        foreach($packageDependenciesLegend in ($packageDependenciesLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuOptionLines += ('echo "!{0}: Package has package dependencies ''{1}''" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegend.Value, ($packageDependenciesIndex[$packageDependenciesLegend.Name] -join ', '))
+        }
+    }
+    else
+    {
+        $packagesMenuOptionLines += 'echo "No package dependencies legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuOptionLines += '  echo "" >>T:packageinstallationlegends.txt'
+    if ($identicalContentIdLegends.Count -gt 0)
+    {
+        $packagesMenuOptionLines += ('echo "{0} identical content legends:" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegends.Count)
+
+        foreach($identicalContentIdLegend in ($identicalContentIdLegends.GetEnumerator() | Sort-Object Value))
+        {
+            $packagesMenuOptionLines += ('echo "={0}: Packages has identical content id ''{1}''" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegend.Value, $identicalContentIdLegend.Name)
+        }
+    }
+    else
+    {
+        $packagesMenuOptionLines += 'echo "No identical content legends" >>T:packageinstallationlegends.txt'
+    }
+
+    $packagesMenuOptionLines += '  Lister "T:packageinstallationlegends.txt" >NIL:'
+    $packagesMenuOptionLines += '  delete >NIL: "T:packageinstallationlegends.txt"'
+    $packagesMenuOptionLines += "  SKIP BACK installpackagesmenu"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""Legends (!), (=)"" >>T:packagesmenu"
+
+    # help option
+    $packageMenuOption++
+    $packagesMenuOptionLines += ''
+    $packagesMenuOptionLines += '; help option'
+    $packagesMenuOptionLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
+    $packagesMenuOptionLines += '  IF EXISTS "PACKAGESDIR:Help/Package-Installation.txt"'
+    $packagesMenuOptionLines += '    Lister "PACKAGESDIR:Help/Package-Installation.txt" >NIL:'
+    $packagesMenuOptionLines += '  ELSE'
+    $packagesMenuOptionLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Package-Installation.txt'' doesn''t exist!"'
+    $packagesMenuOptionLines += '  ENDIF'
+    $packagesMenuOptionLines += "  SKIP BACK installpackagesmenu"
+    $packagesMenuOptionLines += "ENDIF"
+    $packagesMenuScriptLines += "echo ""Help"" >>T:packagesmenu"
+
+    # quit/skip option
+    $packageMenuOption++
+    if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
+    {
+        $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuOptionLines += "  SKIP end"
+        $packagesMenuOptionLines += "ENDIF"
+    }
+    else
+    {
+        $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuOptionLines += "  set confirm ``RequestChoice ""Skip package installation"" ""Do you want to skip package installation?"" ""Yes|No""``"
+        $packagesMenuOptionLines += "  IF ""`$confirm"" EQ ""1"""
+        $packagesMenuOptionLines += "    SKIP end"
+        $packagesMenuOptionLines += "  ENDIF"
+        $packagesMenuOptionLines += "ENDIF"
+    }
 
     if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
     {
@@ -615,38 +755,33 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
         $packagesMenuScriptLines += "echo ""Skip package installation"" >>T:packagesmenu"
     }
 
-    $packagesMenuScriptLines += ""
-    $packagesMenuScriptLines += "set packagesmenu """""
-    $packagesMenuScriptLines += "set packagesmenu ""``RequestList TITLE=""Package installation"" LISTFILE=""T:packagesmenu"" WIDTH=640 LINES=24``"""
-    $packagesMenuScriptLines += "delete >NIL: T:packagesmenu"
-
-    $packageMenuOption = 1
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; select package filtering option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  SKIP packagefilteringmenu"
-    $packagesMenuScriptLines += "ENDIF"
-
-
+    # splitter 
     $packageMenuOption++
+    $packagesMenuScriptLines += "echo ""--------------------------------------------------"" >>T:packagesmenu"
+    $packagesMenuScriptLines += ""
+
+    # install packages menu options
+    $packagesMenuScriptLines += $installPackagesMenuOptionLines
+
+    # install / skip package options
     foreach($installPackageScript in $installPackageScripts)
     {
         $package = $installPackageScript.Package
 
         $packageMenuOption++
-        $packagesMenuScriptLines += ""
-        $packagesMenuScriptLines += ("; install package menu '{0}' option" -f $package.FullName)
-        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-        $packagesMenuScriptLines += "  ; skip package, if set to install. otherwise set package to install"
-        $packagesMenuScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
+        $packagesMenuOptionLines += ""
+        $packagesMenuOptionLines += ("; install package menu '{0}' option" -f $package.FullName)
+        $packagesMenuOptionLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
+        $packagesMenuOptionLines += "  ; skip package, if set to install. otherwise set package to install"
+        $packagesMenuOptionLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
 
         $packageName = $installPackageScript.Package.Name.ToLower()
 
         # show package dependency warning, if package has dependencies
         if ($dependencyPackageNamesIndex.ContainsKey($packageName))
         {
-            $packagesMenuScriptLines += "    set showdependencywarning ""0"""
-            $packagesMenuScriptLines += "    set dependencypackagenames """""
+            $packagesMenuOptionLines += "    set showdependencywarning ""0"""
+            $packagesMenuOptionLines += "    set dependencypackagenames """""
             
             # list selected package names that has dependencies to package
             $dependencyPackageNames = @()
@@ -657,33 +792,33 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
                 $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
 
                 # add script lines to set show dependency warning, if dependency package is selected
-                $packagesMenuScriptLines += ("    ; set show dependency warning, if package '{0}' is set to install" -f $dependencyPackage.FullName)
-                $packagesMenuScriptLines += ("    IF EXISTS ""T:{0}""" -f $dependencyPackage.Id)
-                $packagesMenuScriptLines += "      set showdependencywarning ""1"""
-                $packagesMenuScriptLines += "      IF ""`$dependencypackagenames"" EQ """""
-                $packagesMenuScriptLines += ("        set dependencypackagenames ""{0}""" -f $dependencyPackage.Name)
-                $packagesMenuScriptLines += "      ELSE"
-                $packagesMenuScriptLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $dependencyPackage.Name)
-                $packagesMenuScriptLines += "      ENDIF"
-                $packagesMenuScriptLines += "    ENDIF"
+                $packagesMenuOptionLines += ("    ; set show dependency warning, if package '{0}' is set to install" -f $dependencyPackage.FullName)
+                $packagesMenuOptionLines += ("    IF EXISTS ""T:{0}""" -f $dependencyPackage.Id)
+                $packagesMenuOptionLines += "      set showdependencywarning ""1"""
+                $packagesMenuOptionLines += "      IF ""`$dependencypackagenames"" EQ """""
+                $packagesMenuOptionLines += ("        set dependencypackagenames ""{0}""" -f $dependencyPackage.Name)
+                $packagesMenuOptionLines += "      ELSE"
+                $packagesMenuOptionLines += ("        set dependencypackagenames ""`$dependencypackagenames, {0}""" -f $dependencyPackage.Name)
+                $packagesMenuOptionLines += "      ENDIF"
+                $packagesMenuOptionLines += "    ENDIF"
             }
 
             # add script lines to show package dependency warning, if selected packages has dependencies to it
-            $packagesMenuScriptLines += "    set skippackage ""1"""
-            $packagesMenuScriptLines += "    IF `$showdependencywarning EQ 1 VAL"
-            $packagesMenuScriptLines += ("      set skippackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Name)
-            $packagesMenuScriptLines += "    ENDIF"
-            $packagesMenuScriptLines += "    IF `$skippackage EQ 1 VAL"
-            $packagesMenuScriptLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
-            $packagesMenuScriptLines += "    ENDIF"
+            $packagesMenuOptionLines += "    set skippackage ""1"""
+            $packagesMenuOptionLines += "    IF `$showdependencywarning EQ 1 VAL"
+            $packagesMenuOptionLines += ("      set skippackage ``RequestChoice ""Package dependency warning"" ""Warning! Package(s) '`$dependencypackagenames' has a*Ndependency to '{0}' and skipping it*Nmay cause issues when installing packages.*N*NAre you sure you want to skip*Npackage '{0}'?"" ""Yes|No""``" -f $installPackageScript.Package.Name)
+            $packagesMenuOptionLines += "    ENDIF"
+            $packagesMenuOptionLines += "    IF `$skippackage EQ 1 VAL"
+            $packagesMenuOptionLines += ("      delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
+            $packagesMenuOptionLines += "    ENDIF"
         }
         else
         {
             # deselect package, if no other packages has dependencies to it
-            $packagesMenuScriptLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
+            $packagesMenuOptionLines += ("    delete >NIL: ""T:{0}""" -f $installPackageScript.Package.Id)
         }
 
-        $packagesMenuScriptLines += "  ELSE"
+        $packagesMenuOptionLines += "  ELSE"
 
         $dependencyPackageNames = GetDependencyPackageNames $hstwb $installPackageScript.Package | ForEach-Object { $_.ToLower() }
 
@@ -691,12 +826,12 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
         {
             $dependencyPackage = $hstwb.Packages[$dependencyPackageName]
 
-            $packagesMenuScriptLines += ("    ; Install dependency package '{0}'" -f $dependencyPackage.FullName)
-            $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
+            $packagesMenuOptionLines += ("    ; Install dependency package '{0}'" -f $dependencyPackage.FullName)
+            $packagesMenuOptionLines += ("    echo """" NOLINE >""T:{0}""" -f $dependencyPackage.Id)
         }
         
-        $packagesMenuScriptLines += ("    ; Install package '{0}'" -f $installPackageScript.Package.FullName)
-        $packagesMenuScriptLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
+        $packagesMenuOptionLines += ("    ; Install package '{0}'" -f $installPackageScript.Package.FullName)
+        $packagesMenuOptionLines += ("    echo """" NOLINE >""T:{0}""" -f $installPackageScript.Package.Id)
 
         $identicalContentIds = @()
         if ($installPackageScript.Package.ContentIds)
@@ -714,138 +849,26 @@ function BuildPackagesMenuScriptLines($hstwb, $dependencyPackageNamesIndex, $ins
                 $packageIdenticalContentIds = @()
                 $packageIdenticalContentIds += (Compare-Object -ReferenceObject $installPackageScript.Package.ContentIds -DifferenceObject $package.ContentIds -includeEqual -ExcludeDifferent).InputObject | Sort-Object
 
-                $packagesMenuScriptLines += ("    ; Skip package '{0}' with identical content id '{1}'" -f $package.FullName, ($packageIdenticalContentIds -join ', '))
-                $packagesMenuScriptLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
-                $packagesMenuScriptLines += ("      delete >NIL: ""T:{0}""" -f $package.Id)
-                $packagesMenuScriptLines += "    ENDIF"
+                $packagesMenuOptionLines += ("    ; Skip package '{0}' with identical content id '{1}'" -f $package.FullName, ($packageIdenticalContentIds -join ', '))
+                $packagesMenuOptionLines += ("    IF EXISTS ""T:{0}""" -f $package.Id)
+                $packagesMenuOptionLines += ("      delete >NIL: ""T:{0}""" -f $package.Id)
+                $packagesMenuOptionLines += "    ENDIF"
             }
         }
 
-        $packagesMenuScriptLines += "  ENDIF"
-        $packagesMenuScriptLines += "ENDIF"
+        $packagesMenuOptionLines += "  ENDIF"
+        $packagesMenuOptionLines += "ENDIF"
     }
 
-    # install packages option and skip back to install packages menu 
-    $packageMenuOption += 2
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; help option'
-    $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
-    $packagesMenuScriptLines += '  IF EXISTS "PACKAGESDIR:Help/Package-Installation.txt"'
-    $packagesMenuScriptLines += '    Lister "PACKAGESDIR:Help/Package-Installation.txt" >NIL:'
-    $packagesMenuScriptLines += '  ELSE'
-    $packagesMenuScriptLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Package-Installation.txt'' doesn''t exist!"'
-    $packagesMenuScriptLines += '  ENDIF'
-    $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += '; legends option'
-    $packagesMenuScriptLines += ('IF "$packagesmenu" eq "{0}"' -f $packageMenuOption)
-    $packagesMenuScriptLines += '  echo "Legends" >T:packageinstallationlegends.txt'
-    $packagesMenuScriptLines += '  echo "-------" >>T:packageinstallationlegends.txt'
-    $packagesMenuScriptLines += '  echo "Description for legends this package installation." >>T:packageinstallationlegends.txt'
-
-    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
-    if ($packageDependenciesLegends.Count -gt 0)
-    {
-        $packagesMenuScriptLines += ('echo "{0} package dependencies legends:" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegends.Count)
-
-        foreach($packageDependenciesLegend in ($packageDependenciesLegends.GetEnumerator() | Sort-Object Value))
-        {
-            $packagesMenuScriptLines += ('echo "!{0}: Package has package dependencies ''{1}''" >>T:packageinstallationlegends.txt' -f $packageDependenciesLegend.Value, ($packageDependenciesIndex[$packageDependenciesLegend.Name] -join ', '))
-        }
-    }
-    else
-    {
-        $packagesMenuScriptLines += 'echo "No package dependencies legends" >>T:packageinstallationlegends.txt'
-    }
-
-    $packagesMenuScriptLines += '  echo "" >>T:packageinstallationlegends.txt'
-    if ($identicalContentIdLegends.Count -gt 0)
-    {
-        $packagesMenuScriptLines += ('echo "{0} identical content legends:" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegends.Count)
-
-        foreach($identicalContentIdLegend in ($identicalContentIdLegends.GetEnumerator() | Sort-Object Value))
-        {
-            $packagesMenuScriptLines += ('echo "={0}: Packages has identical content id ''{1}''" >>T:packageinstallationlegends.txt' -f $identicalContentIdLegend.Value, $identicalContentIdLegend.Name)
-        }
-    }
-    else
-    {
-        $packagesMenuScriptLines += 'echo "No identical content legends" >>T:packageinstallationlegends.txt'
-    }
-
-    $packagesMenuScriptLines += '  Lister "T:packageinstallationlegends.txt" >NIL:'
-    $packagesMenuScriptLines += '  delete >NIL: "T:packageinstallationlegends.txt"'
-    $packagesMenuScriptLines += "  SKIP BACK installpackagesmenu"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; install all packages option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  SKIP installallpackages"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; skip all packages option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  SKIP skipallpackages"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; view readme option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  SKIP viewreadmemenu"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; edit assigns option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  SKIP editassignsmenu"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
-    $packagesMenuScriptLines += ''
-    $packagesMenuScriptLines += '; install packages option'
-    $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-    $packagesMenuScriptLines += "  set selectedpackagescount 0"
-    foreach ($installPackageScript in $installPackageScripts)
-    {
-        $packagesMenuScriptLines += ("  IF EXISTS ""T:{0}""" -f $installPackageScript.Package.Id)
-        $packagesMenuScriptLines += "    set selectedpackagescount ``eval `$selectedpackagescount + 1``"
-        $packagesMenuScriptLines += "  ENDIF"
-    }
-    $packagesMenuScriptLines += "  set confirm ``RequestChoice ""Start package installation"" ""Do you want to install `$selectedpackagescount package(s)?"" ""Yes|No""``"
-    $packagesMenuScriptLines += "  IF ""`$confirm"" EQ ""1"""
-    $packagesMenuScriptLines += "    SKIP installpackages"
-    $packagesMenuScriptLines += "  ENDIF"
-    $packagesMenuScriptLines += "ENDIF"
-
-    $packageMenuOption++
+    # show packages menu
     $packagesMenuScriptLines += ""
-    if ($hstwb.Settings.Installer.Mode -eq "BuildPackageInstallation")
-    {
-        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-        $packagesMenuScriptLines += "  SKIP end"
-        $packagesMenuScriptLines += "ENDIF"
-    }
-    else
-    {
-        $packagesMenuScriptLines += ("IF ""`$packagesmenu"" eq ""{0}""" -f $packageMenuOption)
-        $packagesMenuScriptLines += "  set confirm ``RequestChoice ""Skip package installation"" ""Do you want to skip package installation?"" ""Yes|No""``"
-        $packagesMenuScriptLines += "  IF ""`$confirm"" EQ ""1"""
-        $packagesMenuScriptLines += "    SKIP end"
-        $packagesMenuScriptLines += "  ENDIF"
-        $packagesMenuScriptLines += "ENDIF"
-    }
-
+    $packagesMenuScriptLines += "set packagesmenu """""
+    $packagesMenuScriptLines += "set packagesmenu ""``RequestList TITLE=""Package installation"" LISTFILE=""T:packagesmenu"" WIDTH=640 LINES=24``"""
+    $packagesMenuScriptLines += "delete >NIL: T:packagesmenu"
+    $packagesMenuScriptLines += $packagesMenuOptionLines
     $packagesMenuScriptLines += ""
     $packagesMenuScriptLines += "SKIP BACK installpackagesmenu"
-    
+
     return $packagesMenuScriptLines
 }
 
@@ -1032,8 +1055,46 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'echo "" NOLINE >T:packagefilteringmenu'
 
-        $selectPackageFilteringLines = @()
         $selectPackageFilteringOption = 0
+        $selectPackageFilteringLines = @()
+
+        $selectPackageFilteringOption++
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; detect amiga os version option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  set confirm `RequestChoice "Auto-detect Amiga OS version" "Do you want to auto-detect Amiga OS version?*N*NThis will reset selected packages and changed assigns." "Yes|No"`'
+        $selectPackageFilteringLines += '  IF "$confirm" EQ "1"'
+        $selectPackageFilteringLines += '    SKIP BACK detectamigaos'
+        $selectPackageFilteringLines += '  ENDIF'
+        $selectPackageFilteringLines += '  SKIP BACK packagefilteringmenu'
+        $selectPackageFilteringLines += 'ENDIF'
+        $installPackagesScriptLines += 'echo "Auto-detect Amiga OS version" >>T:packagefilteringmenu'
+
+        $selectPackageFilteringOption++
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; help option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  IF EXISTS "PACKAGESDIR:Help/Select-Package-Filtering.txt"'
+        $selectPackageFilteringLines += '    Lister "PACKAGESDIR:Help/Select-Package-Filtering.txt" >NIL:'
+        $selectPackageFilteringLines += '  ELSE'
+        $selectPackageFilteringLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Select-Package-Filtering.txt'' doesn''t exist!"'
+        $selectPackageFilteringLines += '  ENDIF'
+        $selectPackageFilteringLines += "  SKIP BACK packagefilteringmenu"
+        $selectPackageFilteringLines += "ENDIF"
+        $installPackagesScriptLines += 'echo "Help" >>T:packagefilteringmenu'
+
+        $selectPackageFilteringOption++
+        $selectPackageFilteringLines += ''
+        $selectPackageFilteringLines += '; back option'
+        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
+        $selectPackageFilteringLines += '  SKIP BACK installpackagesmenu'
+        $selectPackageFilteringLines += 'ENDIF'
+        $installPackagesScriptLines += 'echo "Back" >>T:packagefilteringmenu'
+
+        # splitter
+        $selectPackageFilteringOption++
+        $installPackagesScriptLines += 'echo "--------------------------------------------------" >>T:packagefilteringmenu'
+
         foreach ($amigaOsVersion in $amigaOsVersions)
         {
             $amigaOsVersionText = if ($amigaOsVersion -eq "All") { "All Amiga OS versions" } else { ("Amiga OS {0}" -f $amigaOsVersion) }
@@ -1052,40 +1113,6 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $selectPackageFilteringLines += 'ENDIF'
         }
 
-        $selectPackageFilteringOption += 2
-        $selectPackageFilteringLines += ''
-        $selectPackageFilteringLines += '; help option'
-        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
-        $selectPackageFilteringLines += '  IF EXISTS "PACKAGESDIR:Help/Select-Package-Filtering.txt"'
-        $selectPackageFilteringLines += '    Lister "PACKAGESDIR:Help/Select-Package-Filtering.txt" >NIL:'
-        $selectPackageFilteringLines += '  ELSE'
-        $selectPackageFilteringLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Select-Package-Filtering.txt'' doesn''t exist!"'
-        $selectPackageFilteringLines += '  ENDIF'
-        $selectPackageFilteringLines += "  SKIP BACK packagefilteringmenu"
-        $selectPackageFilteringLines += "ENDIF"
-
-        $selectPackageFilteringOption++
-        $selectPackageFilteringLines += ''
-        $selectPackageFilteringLines += '; detect amiga os version option'
-        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
-        $selectPackageFilteringLines += '  set confirm `RequestChoice "Auto-detect Amiga OS version" "Do you want to auto-detect Amiga OS version?*N*NThis will reset selected packages and changed assigns." "Yes|No"`'
-        $selectPackageFilteringLines += '  IF "$confirm" EQ "1"'
-        $selectPackageFilteringLines += '    SKIP BACK detectamigaos'
-        $selectPackageFilteringLines += '  ENDIF'
-        $selectPackageFilteringLines += '  SKIP BACK packagefilteringmenu'
-        $selectPackageFilteringLines += 'ENDIF'
-
-        $selectPackageFilteringOption++
-        $selectPackageFilteringLines += ''
-        $selectPackageFilteringLines += '; back option'
-        $selectPackageFilteringLines += ('IF "$packagefilteringmenu" eq "{0}"' -f $selectPackageFilteringOption)
-        $selectPackageFilteringLines += '  SKIP BACK installpackagesmenu'
-        $selectPackageFilteringLines += 'ENDIF'
-
-        $installPackagesScriptLines += 'echo "============================================================" >>T:packagefilteringmenu'
-        $installPackagesScriptLines += 'echo "Help" >>T:packagefilteringmenu'
-        $installPackagesScriptLines += 'echo "Auto-detect Amiga OS version" >>T:packagefilteringmenu'
-        $installPackagesScriptLines += 'echo "Back" >>T:packagefilteringmenu'
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += 'set packagefilteringmenu ""'
         $installPackagesScriptLines += 'set packagefilteringmenu "`RequestList TITLE="Select package filtering" LISTFILE="T:packagefilteringmenu" WIDTH=640 LINES=24`"'
@@ -1174,6 +1201,34 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             
             $viewReadmeOptionIndex = 0
             $viewReadmeOptionLines = @()
+
+            # add help option to view readme menu
+            $viewReadmeOptionIndex++
+            $viewReadmeOptionLines += ''
+            $viewReadmeOptionLines += '; help option'
+            $viewReadmeOptionLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
+            $viewReadmeOptionLines += '  IF EXISTS "PACKAGESDIR:Help/View-Readme.txt"'
+            $viewReadmeOptionLines += '    Lister "PACKAGESDIR:Help/View-Readme.txt" >NIL:'
+            $viewReadmeOptionLines += '  ELSE'
+            $viewReadmeOptionLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/View-Readme.txt'' doesn''t exist!"'
+            $viewReadmeOptionLines += '  ENDIF'
+            $viewReadmeOptionLines += "  SKIP BACK viewreadmemenu"
+            $viewReadmeOptionLines += "ENDIF"
+            $viewReadmeMenuLines += 'echo "Help" >>T:viewreadmemenu'
+
+            # add back option to view readme menu
+            $viewReadmeOptionIndex++
+            $viewReadmeOptionLines += ''
+            $viewReadmeOptionLines += '; back option'
+            $viewReadmeOptionLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
+            $viewReadmeOptionLines += '  SKIP BACK installpackagesmenu'
+            $viewReadmeOptionLines += 'ENDIF'
+            $viewReadmeMenuLines += 'echo "Back" >>T:viewreadmemenu'
+
+            # splitter
+            $viewReadmeOptionIndex++
+            $viewReadmeMenuLines += 'echo "--------------------------------------------------" >>T:viewreadmemenu'
+
             foreach ($amigaOsVersionPackageScript in $amigaOsVersionPackageScripts)
             {
                 $viewReadmeMenuLines += ("echo ""{0}"" >>T:viewreadmemenu" -f $amigaOsVersionPackageScript.Package.FullName)
@@ -1191,33 +1246,11 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
                 $viewReadmeOptionLines += 'ENDIF'
             }
 
-            $viewReadmeMenuLines += 'echo "============================================================" >>T:viewreadmemenu'
-            $viewReadmeMenuLines += 'echo "Help" >>T:viewreadmemenu'
-            $viewReadmeMenuLines += 'echo "Back" >>T:viewreadmemenu'
             $viewReadmeMenuLines += ''
             $viewReadmeMenuLines += 'set viewreadmemenu ""'
             $viewReadmeMenuLines += 'set viewreadmemenu "`RequestList TITLE="View readme" LISTFILE="T:viewreadmemenu" WIDTH=640 LINES=24`"'
             $viewReadmeMenuLines += 'delete >NIL: T:viewreadmemenu'
             $viewReadmeMenuLines += $viewReadmeOptionLines
-
-            $viewReadmeOptionIndex += 2
-            $viewReadmeMenuLines += ''
-            $viewReadmeMenuLines += '; help option'
-            $viewReadmeMenuLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
-            $viewReadmeMenuLines += '  IF EXISTS "PACKAGESDIR:Help/View-Readme.txt"'
-            $viewReadmeMenuLines += '    Lister "PACKAGESDIR:Help/View-Readme.txt" >NIL:'
-            $viewReadmeMenuLines += '  ELSE'
-            $viewReadmeMenuLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/View-Readme.txt'' doesn''t exist!"'
-            $viewReadmeMenuLines += '  ENDIF'
-            $viewReadmeMenuLines += "  SKIP BACK viewreadmemenu"
-            $viewReadmeMenuLines += "ENDIF"
-
-            $viewReadmeOptionIndex++
-            $viewReadmeMenuLines += ''
-            $viewReadmeMenuLines += '; back option'
-            $viewReadmeMenuLines += ('IF "$viewreadmemenu" eq "{0}"' -f $viewReadmeOptionIndex)
-            $viewReadmeMenuLines += '  SKIP BACK installpackagesmenu'
-            $viewReadmeMenuLines += 'ENDIF'
             $viewReadmeMenuLines += ''
             $viewReadmeMenuLines += 'SKIP BACK viewreadmemenu'
         }
@@ -1249,13 +1282,66 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             $editAssignsMenuOption = 0
             $editAssignsMenuOptionLines = @()
     
+            # add reset option to edit assigns menu
+            $editAssignsMenuOption++
+            $editAssignsMenuOptionLines += ''
+            $editAssignsMenuOptionLines += '; reset assigns option'
+            $editAssignsMenuOptionLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuOptionLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to reset assigns?"" ""Yes|No""``"
+            $editAssignsMenuOptionLines += "  IF ""`$confirm"" EQ ""1"""
+            $editAssignsMenuOptionLines += "    SKIP BACK resetassigns"
+            $editAssignsMenuOptionLines += "  ENDIF"
+            $editAssignsMenuOptionLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuOptionLines += "ENDIF"
+            $editAssignsMenuLines += "echo ""Reset assigns"" >>T:editassignsmenu"
+
+            # add default assigns option to edit assigns menu
+            $editAssignsMenuOption++
+            $editAssignsMenuOptionLines += ''
+            $editAssignsMenuOptionLines += '; default assigns option'
+            $editAssignsMenuOptionLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuOptionLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to use default assigns?"" ""Yes|No""``"
+            $editAssignsMenuOptionLines += "  IF ""`$confirm"" EQ ""1"""
+            $editAssignsMenuOptionLines += "    SKIP BACK defaultassigns"
+            $editAssignsMenuOptionLines += "  ENDIF"
+            $editAssignsMenuOptionLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuOptionLines += "ENDIF"
+            $editAssignsMenuLines += "echo ""Default assigns"" >>T:editassignsmenu"
+
+            # add help option to edit assigns menu
+            $editAssignsMenuOption++
+            $editAssignsMenuOptionLines += ''
+            $editAssignsMenuOptionLines += '; help option'
+            $editAssignsMenuOptionLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuOptionLines += '  IF EXISTS "PACKAGESDIR:Help/Edit-Assigns.txt"'
+            $editAssignsMenuOptionLines += '    Lister "PACKAGESDIR:Help/Edit-Assigns.txt" >NIL:'
+            $editAssignsMenuOptionLines += '  ELSE'
+            $editAssignsMenuOptionLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Edit-Assigns.txt'' doesn''t exist!"'
+            $editAssignsMenuOptionLines += '  ENDIF'
+            $editAssignsMenuOptionLines += "  SKIP BACK editassignsmenu"
+            $editAssignsMenuOptionLines += "ENDIF"
+            $editAssignsMenuLines += "echo ""Help"" >>T:editassignsmenu"
+
+            # add back option to edit assigns menu
+            $editAssignsMenuOption++
+            $editAssignsMenuOptionLines += ''
+            $editAssignsMenuOptionLines += '; back option'
+            $editAssignsMenuOptionLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
+            $editAssignsMenuOptionLines += "  SKIP BACK installpackagesmenu"
+            $editAssignsMenuOptionLines += "ENDIF"
+            $editAssignsMenuLines += "echo ""Back"" >>T:editassignsmenu"
+
+            # splitter
+            $editAssignsMenuOption++
+            $editAssignsMenuLines += "echo ""--------------------------------------------------"" >>T:editassignsmenu"
+
             $assignSectionNames = @('Global')
             $assignSectionNames += $hstwb.Assigns.keys | Where-Object { $_ -notlike 'Global' -and $hstwb.Assigns[$_].Count -gt 0 -and ($amigaOsVersion -eq 'All' -or !$hstwb.Packages[$_.ToLower()].AmigaOsVersions -or ($hstwb.Packages[$_.ToLower()].AmigaOsVersions -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions.Count -gt 0 -and $hstwb.Packages[$_.ToLower()].AmigaOsVersions -contains $amigaOsVersion)) } | Sort-Object
 
             foreach($assignSectionName in $assignSectionNames)
             {
                 # add menu option to show assign section name
-                $editAssignsMenuLines += ("echo ""| {0} |"" >>T:editassignsmenu" -f $assignSectionName)
+                $editAssignsMenuLines += ("echo ""{0}"" >>T:editassignsmenu" -f $assignSectionName)
     
                 # increase menu option
                 $editAssignsMenuOption += 1
@@ -1306,58 +1392,10 @@ function BuildInstallPackagesScriptLines($hstwb, $installPackages)
             }
 
             # add back option to view readme menu
-            $editAssignsMenuLines += "echo ""============================================================"" >>T:editassignsmenu"
-            $editAssignsMenuLines += "echo ""Help"" >>T:editassignsmenu"
-            $editAssignsMenuLines += "echo ""Reset assigns"" >>T:editassignsmenu"
-            $editAssignsMenuLines += "echo ""Default assigns"" >>T:editassignsmenu"
-            $editAssignsMenuLines += "echo ""Back"" >>T:editassignsmenu"
-            $editAssignsMenuLines += ""
             $editAssignsMenuLines += "set editassignsmenu """""
             $editAssignsMenuLines += "set editassignsmenu ""``RequestList TITLE=""Edit assigns"" LISTFILE=""T:editassignsmenu"" WIDTH=640 LINES=24``"""
             $editAssignsMenuLines += "delete >NIL: T:editassignsmenu"
             $editAssignsMenuLines += $editAssignsMenuOptionLines
-
-            # add back option to edit assigns menu
-            $editAssignsMenuOption += 2
-            $editAssignsMenuLines += ''
-            $editAssignsMenuLines += '; help option'
-            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
-            $editAssignsMenuLines += '  IF EXISTS "PACKAGESDIR:Help/Edit-Assigns.txt"'
-            $editAssignsMenuLines += '    Lister "PACKAGESDIR:Help/Edit-Assigns.txt" >NIL:'
-            $editAssignsMenuLines += '  ELSE'
-            $editAssignsMenuLines += '    RequestChoice "Error" "ERROR: Help file ''PACKAGESDIR:Help/Edit-Assigns.txt'' doesn''t exist!"'
-            $editAssignsMenuLines += '  ENDIF'
-            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
-            $editAssignsMenuLines += "ENDIF"
-
-            $editAssignsMenuOption++
-            $editAssignsMenuLines += ''
-            $editAssignsMenuLines += '; reset assigns option'
-            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
-            $editAssignsMenuLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to reset assigns?"" ""Yes|No""``"
-            $editAssignsMenuLines += "  IF ""`$confirm"" EQ ""1"""
-            $editAssignsMenuLines += "    SKIP BACK resetassigns"
-            $editAssignsMenuLines += "  ENDIF"
-            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
-            $editAssignsMenuLines += "ENDIF"
-
-            $editAssignsMenuOption++
-            $editAssignsMenuLines += ''
-            $editAssignsMenuLines += '; default assigns option'
-            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
-            $editAssignsMenuLines += "  set confirm ``RequestChoice ""Confirm"" ""Are you sure you want to use default assigns?"" ""Yes|No""``"
-            $editAssignsMenuLines += "  IF ""`$confirm"" EQ ""1"""
-            $editAssignsMenuLines += "    SKIP BACK defaultassigns"
-            $editAssignsMenuLines += "  ENDIF"
-            $editAssignsMenuLines += "  SKIP BACK editassignsmenu"
-            $editAssignsMenuLines += "ENDIF"
-
-            $editAssignsMenuOption++
-            $editAssignsMenuLines += ''
-            $editAssignsMenuLines += '; back option'
-            $editAssignsMenuLines += ('IF "$editassignsmenu" eq "{0}"' -f $editAssignsMenuOption)
-            $editAssignsMenuLines += "  SKIP BACK installpackagesmenu"
-            $editAssignsMenuLines += "ENDIF"
             $editAssignsMenuLines += ""
             $editAssignsMenuLines += "SKIP BACK editassignsmenu"
         }
@@ -2142,10 +2180,11 @@ function RunInstall($hstwb)
             # set install to reboot for amiga os 3.9 installation
             $installAmigaOs39Reboot = $true
 
-            # create install amiga os 3.9 prefs file
-            $installAmigaOs390PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-390'
-            Set-Content $installAmigaOs390PrefsFile -Value ""
+            # create install amiga os prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-390'
 
+            $installBoingBags = 0;
             for ($i = 1; $i -le 2; $i++)
             {
                 # find boing bag 3.9 update lha in amiga os set
@@ -2157,29 +2196,42 @@ function RunInstall($hstwb)
 
                 # set install to reboot for boing bag installation
                 $installBoingBagsReboot = $true
-                
-                # create install boing bag prefs file
-                $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB{0}' -f $i)
-                Set-Content $installBoingBagPrefsFile -Value ""
+                $installBoingBags++
             }
+
+            # create install boing bag prefs file
+            $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB' -f $i)
+            Set-Content $installBoingBagPrefsFile -Value $installBoingBags
         }
 
         # find amiga os 3.2 modules adf in amiga os set
-        $amigaOs32ModulesAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-32-[^\.]+\.adf$' } | Select-Object -First 1
-        if ($amigaOs32ModulesAdf)
+        $amigaOs32ModulesAdfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-32-[^\.]+\.adf$' }
+        if ($amigaOs32ModulesAdfs)
         {
-            # create install amiga os 3.2 adf prefs file
-            $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-32-ADF'
-            Set-Content $installAmigaOs32PrefsFile -Value ""
+            # create install amiga os prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-32-ADF'
+            
+            # create install amiga os 3.2 modules adf prefs files
+            foreach ($amigaOs32ModulesAdf in $amigaOs32ModulesAdfs) {
+                $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-32-{0}-ADF' -f $amigaOs32ModulesAdf.Model)
+                Set-Content $installAmigaOs32PrefsFile -Value ""                    
+            }            
         }
 
         # find amiga os 3.1.4 modules adf in amiga os set
-        $amigaOs314ModulesAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-modules-[^\-\.]+\.adf$' } | Select-Object -First 1
-        if ($amigaOs314ModulesAdf)
+        $amigaOs314ModulesAdfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-314-modules-[^\-\.]+\.adf$' }
+        if ($amigaOs314ModulesAdfs)
         {
-            # create install amiga os 3.1.4 adf prefs file
-            $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
-            Set-Content $installAmigaOs314PrefsFile -Value ""
+            # create install amiga os prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-314-ADF'            
+
+            # create install amiga os 3.1.4 modules adf prefs files
+            foreach ($amigaOs314ModulesAdf in $amigaOs314ModulesAdfs) {
+                $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
+                Set-Content $installAmigaOs314PrefsFile -Value ""                    
+            }
 
             # find amiga os 3.1.4.1 update adf in amiga os set
             $amigaOs3141UpdateAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-3141-update\.adf$' } | Select-Object -First 1
@@ -2204,9 +2256,13 @@ function RunInstall($hstwb)
         $amigaOs31Adf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-310-[^\-\.]+\.adf$' } | Select-Object -First 1
         if ($amigaOs31Adf)
         {
-            # create install amiga os 3.1 prefs file
-            $installAmigaOs310PrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
-            Set-Content $installAmigaOs310PrefsFile -Value ""
+            # create install amiga os prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-310-ADF'
+            
+            # create install amiga os 3.1 adf prefs file
+            $installAmigaOs31AdfPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-310-ADF'
+            Set-Content $installAmigaOs31AdfPrefsFile -Value ""
         }
 
         # write copying amiga os files to temp install dir
@@ -2248,6 +2304,9 @@ function RunInstall($hstwb)
         # copy kickstart files to temp install dir
         Write-Host "Copying Kickstart files to temp install dir"
 
+        $encrypted = $false
+        $romKeyPath = $null
+
         # copy amiga os set entries to temp install dir
         $kickstartSetEntriesFirstIndex = @{}
         foreach($kickstartSetEntry in $kickstartSetEntries)
@@ -2268,6 +2327,13 @@ function RunInstall($hstwb)
                 continue
             }
 
+            # set rom key path, if rom key path is not set and kickstart entry is encrypted
+            if (!$romKeyPath -and $bestMatchingKickstartSetEntry.Encrypted -eq 'Yes')
+            {
+                $encrypted = $true
+                $romKeyPath = Join-Path (Split-Path $bestMatchingKickstartSetEntry.File -Parent) -ChildPath 'rom.key'
+            }
+
             # create install kickstart prefs file
             $installKickstartEntryFile = Join-Path $prefsDir -ChildPath $bestMatchingKickstartSetEntry.PrefsFile
             Set-Content $installKickstartEntryFile -Value ""
@@ -2281,6 +2347,25 @@ function RunInstall($hstwb)
         # create install kickstart rom prefs file
         $installKickstartRomFile = Join-Path $prefsDir -ChildPath 'Install-Kickstart-Rom'
         Set-Content $installKickstartRomFile -Value ""
+
+        # encrypted kickstart entry
+        if ($encrypted)
+        {
+            # create install kickstart rom prefs and copy kickstart rom exists. otherwise throw error
+            if ($romKeyPath)
+            {
+                # create install amiga forever rom key prefs file
+                $installAmigaForeverRomKeyFile = Join-Path $prefsDir -ChildPath 'Install-AF-Rom-Key'
+                Set-Content $installAmigaForeverRomKeyFile -Value ""
+    
+                # copy amiga forever rom key file
+                Copy-Item $romKeyPath -Destination $tempKickstartDir -Force
+            }
+            else
+            {
+                throw "Encrypted Cloanto Amiga Forever present, Kickstart rom key file doesn't exist"
+            }
+        }
     }
 
     # find packages to install
@@ -2335,7 +2420,7 @@ function RunInstall($hstwb)
         $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
         $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy-MM-dd"))
         $installPackagesScriptLines += ";"
-        $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
+        $installPackagesScriptLines += "; AmigaDOS script generated by HstWB Installer to install configured packages."
         $installPackagesScriptLines += ''
         $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
         $installPackagesScriptLines += ''
@@ -2968,7 +3053,7 @@ function RunBuildSelfInstall($hstwb)
         $installPackagesScriptLines += "; Author: Henrik Noerfjand Stengaard"
         $installPackagesScriptLines += ("; Date: {0}" -f (Get-Date -format "yyyy-MM-dd"))
         $installPackagesScriptLines += ";"
-        $installPackagesScriptLines += "; An install packages script generated by HstWB Installer to install configured packages."
+        $installPackagesScriptLines += "; AmigaDOS script generated by HstWB Installer to install configured packages."
         $installPackagesScriptLines += ""
         $installPackagesScriptLines += BuildInstallPackagesScriptLines $hstwb $installPackages
         $installPackagesScriptLines += "echo """""
@@ -3570,38 +3655,25 @@ try
 
     # detect user packages
     $hstwb.UserPackages = DetectUserPackages $hstwb
-    
-    # find amiga os files
-    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
-    FindAmigaOsFiles $hstwb
-
-    # find kickstart files
-    Write-Host "Finding Kickstart sets in Kickstart dir..."
-    FindKickstartFiles $hstwb
 
     # update packages and assigns
     UpdateInstallPackages $hstwb
     UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
-        
-    # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartEntries | Where-Object { $_.Set -eq $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
-    {
-        # set new kickstart rom set
-        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
-    }
 
-    # find best matching amiga os set, if amiga os set doesn't exist
-    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
-        # set new amiga os set
+        # find amiga os files
+        Write-Host "Finding Amiga OS sets in Amiga OS dir..."
         $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+
+        # find kickstart files
+        Write-Host "Finding Kickstart sets in Kickstart dir..."
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
     }
     
     # save settings and assigns
     Save $hstwb
-
-    Write-Host "Done"
 
     # ui amiga os set info
     UiAmigaOsSetInfo $hstwb $hstwb.Settings.AmigaOs.AmigaOsSet

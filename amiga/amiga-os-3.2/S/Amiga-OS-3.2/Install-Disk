@@ -1,7 +1,7 @@
 ; Install Disk
 ; ------------
 ;
-; Date: 2021-08-05
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.2 from floppy disks.
@@ -36,10 +36,10 @@ set install "`RequestChoice "Modules installation" "Do you want to install modul
 
 ; help option
 IF "$install" EQ 1 VAL
-  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Modules.txt"
-    Lister "INSTALLDIR:Help/Amiga-OS-32-Modules.txt" >NIL:
+  IF EXISTS "INSTALLDIR:Help/Amiga-OS-32-Install.txt"
+    Lister "INSTALLDIR:Help/Amiga-OS-32-Install.txt" >NIL:
   ELSE
-    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Modules.txt' doesn't exist!*e[0m"
+    echo "*e[1mError: Help file 'INSTALLDIR:Help/Amiga-OS-32-Install.txt' doesn't exist!*e[0m"
     quit 20
   ENDIF
   SKIP BACK modules

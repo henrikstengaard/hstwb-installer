@@ -1,14 +1,21 @@
-Amiga OS 3.1.4 Installation
----------------------------
+Amiga OS 3.1.4 Installation help
+--------------------------------
 
 Amiga OS 3.1.4 comes with modules disk for all Amiga
 models and these contain devices and libraries specific
-different Amiga models.
+for each different Amiga models.
 
-Installing modules disks is optional and can be skipped.
-Skipping modules disks requires Kickstart 3.1.4 rom is
-installed in the Amiga running this image. If module
-disks are installed then this image will support both
-Kickstart 3.1.4 and 3.1 rom, but will require additional
-chip or fast ram to softkick/load Kickstart 3.1.4 rom
+Installing modules disks is optional as long as
+Kickstart rom 3.1.4 is installed in the Amiga using
+this image.
+
+If module disks are installed then this image will
+support both Kickstart rom 3.1.4 and 3.1, but will use
+chip or fast ram to softkick/load Kickstart rom 3.1.4
 into memory.
+
+During Amiga OS installation HstWB Installer will copy
+all modules disks from .adf files in AMIGAOSDIR: to
+SYS:Modules directory and install modules disk for
+selected amiga. This makes it easier to switch the image
+between different Amiga models.

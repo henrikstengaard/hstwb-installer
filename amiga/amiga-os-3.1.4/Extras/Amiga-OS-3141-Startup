@@ -1,5 +1,0 @@
-; Patch Amiga OS 3.1.4.1 files for Kickstart 3.1.4 or Kickstart 3.1.
-IF EXISTS "S:Patch-Amiga-OS-3141"
-  Execute "S:Patch-Amiga-OS-3141"
-ENDIF
-

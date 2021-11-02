@@ -1,7 +1,7 @@
 ; Detect Amiga OS
 ; ---------------
 ;
-; Date: 2021-10-24
+; Date: 2021-11-02
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -27,7 +27,7 @@ echo ""
 echo "*e[1mDetecting Amiga OS:*e[0m"
 
 ; ask for md5 only or md5 and mount adf 
-set md5only `RequestChoice "Amiga OS adf detection" "Do you want use MD5 only or MD5 and mount adf*Nto detect Amiga OS adf files?*N*N'MD5 only' makes detection faster, but will only*Ndetect valid Amiga OS adf files using MD5 checksum.*N*N'MD5 and mount adf' makes detection slower, but will*Nuse both MD5 checksum and mount adf for a more broad*Ndetection of valid Amiga OS adf files.*N*NIf you're not sure what to choose, *Nselect 'MD5 and mount adf' for best detection." "MD5 only|MD5 and mount adf"`
+set md5only `RequestChoice "Amiga OS adf detection" "Do you want use MD5 only or MD5 and mount adf*Nto detect Amiga OS files?*N*N'MD5 only' makes detection faster, but will only*Ndetect valid Amiga OS files using MD5 checksum.*N*N'MD5 + mount' makes detection slower, but will*Nuse both MD5 checksum and mount for a more broad*Ndetection of valid Amiga OS files.*N*NIf you're not sure what to choose, *Nselect 'MD5 + mount' for best detection." "MD5 only|MD5 + mount"`
 IF "$md5only" EQ 1 VAL
   echo "" NOLINE >INSTALLDIR:Prefs/MD5-Only
 ENDIF

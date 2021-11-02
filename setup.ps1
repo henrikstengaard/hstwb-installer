@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-08-26
+# Date:   2021-11-02
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -509,7 +509,6 @@ function ChangeAmigaOsDir($hstwb)
 
         # find amiga os files
         Write-Host "Finding Amiga OS sets in Amiga OS dir..."
-        FindAmigaOsFiles $hstwb
 
         # find best matching amiga os set
         $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
@@ -649,7 +648,14 @@ function ViewAmigaOsSetFiles($hstwb)
         }
         else
         {
-            Write-Host "Not found!" -Foregroundcolor "Red"
+            if ($bestMatchingAmigaOsSetEntry.Required -eq 'True')
+            {
+                Write-Host "Not found!" -Foregroundcolor "Red"
+            }
+            else
+            {
+                Write-Host "Not found!" -Foregroundcolor "Yellow"                
+            }
         }
     }
 
@@ -723,7 +729,6 @@ function ChangeKickstartDir($hstwb)
 
         # find kickstart files
         Write-Host "Finding Kickstart sets in Kickstart dir..."
-        FindKickstartFiles $hstwb
 
         # set new kickstart rom set and save
         $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
@@ -828,7 +833,16 @@ function ViewKickstartSetFiles($hstwb)
         if ($bestMatchingKickstartSetEntry.File)
         {
             Write-Host ("'" + $bestMatchingKickstartSetEntry.File + "'") -NoNewline -Foregroundcolor "Green"
-            Write-Host (' (Match {0}' -f $bestMatchingKickstartSetEntry.MatchType) -NoNewline
+            Write-Host (' (Match ') -NoNewline
+            if ($bestMatchingKickstartSetEntry.Encrypted)
+            {
+                Write-Host ('Decrypted ') -NoNewline
+            }
+            Write-Host $bestMatchingKickstartSetEntry.MatchType -NoNewline
+            if ($bestMatchingKickstartSetEntry.Encrypted)
+            {
+                Write-Host (', requires rom key') -NoNewline
+            }
             if ($bestMatchingKickstartSetEntry.Comment -and $bestMatchingKickstartSetEntry.Comment -ne '')
             {
                 Write-Host ('. {0}' -f $bestMatchingKickstartSetEntry.Comment) -NoNewline
@@ -837,7 +851,14 @@ function ViewKickstartSetFiles($hstwb)
         }
         else
         {
-            Write-Host "Not found!" -Foregroundcolor "Red"
+            if ($bestMatchingKickstartSetEntry.Required -eq 'True')
+            {
+                Write-Host "Not found!" -Foregroundcolor "Red"
+            }
+            else
+            {
+                Write-Host "Not found!" -Foregroundcolor "Yellow"                
+            }
         }
     }
 
@@ -1690,32 +1711,18 @@ try
     $hstwb.UserPackages = DetectUserPackages $hstwb
     $hstwb.Emulators = FindEmulators
     
-    # find amiga os files
-    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
-    FindAmigaOsFiles $hstwb
-
-    # find kickstart files
-    Write-Host "Finding Kickstart sets in Kickstart dir..."
-    FindKickstartFiles $hstwb
-        
     # update packages, user packages and assigns
     UpdateInstallPackages $hstwb
     UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
 
-    # find best matching kickstart rom set, if kickstart rom set doesn't exist
-    if (($hstwb.KickstartEntries | Where-Object { $_.Set -like $hstwb.Settings.Kickstart.KickstartSet }).Count -eq 0)
-    {
-        # set new kickstart rom set
-        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
-    }
+    # find amiga os files
+    Write-Host "Finding Amiga OS sets in Amiga OS dir..."
+    $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
 
-    # find best matching amiga os set, if amiga os set doesn't exist
-    if (($hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }).Count -eq 0)
-    {
-        # set new amiga os set
-        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
-    }
+    # find kickstart files
+    Write-Host "Finding Kickstart sets in Kickstart dir..."
+    $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
 
     # save settings and assigns
     Save $hstwb
