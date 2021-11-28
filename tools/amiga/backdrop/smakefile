@@ -1,0 +1,10 @@
+all: backdrop
+
+clean:
+	delete backdrop *.lib *.o *.lnk
+	smake
+
+backdrop: backdrop.o
+   sc link backdrop.o to backdrop CPU=68000 opt nostkchk MATH=standard LIB:scm.lib
+
+backdrop.o: backdrop.c

@@ -1,0 +1,5 @@
+FROM LIB:c.o "backdrop.o"
+TO "backdrop"
+LIB LIB:scm.lib LIB:scm.lib
+    LIB:sc.lib LIB:amiga.lib
+
