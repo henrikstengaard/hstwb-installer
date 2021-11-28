@@ -1,0 +1,695 @@
+Short:        Library to ctrl the MC68K MMUs
+Author:       thomas.richter@alumni.tu-berlin.de (Thomas Richter)
+Uploader:     thomas richter alumni tu-berlin de (Thomas Richter)
+Type:         util/libs
+Version:      47.1
+Requires:     68020/68851, 68030, 68040 or 68060 with a working MMU
+Architecture: m68k-amigaos >= 2.0.4
+
+-----------------------------------------------------------------------------
+
+NOTE:	The developer information went now into the "MuManual" archive, this
+	is the "user only" distribution.
+
+-----------------------------------------------------------------------------
+
+Purpose and goal of this library:
+
+The mmu.library is a basis for MMU (memory management) related functions the 
+MC68K family can perform. Up to now certain hacks are available that program 
+the MMU themselves (Enforcer,CyberGuard,GuardianAngle,SetCPU,Shapeshifter,
+VMM,GigaMem...). 
+It's therefore not unexpected that these tools conflict with each other.
+There's up to now no Os support for the MMU at all - the gap this mmu.library
+fills.
+
+The goal is to provide a basis of functions to address and program the MMU in
+a hardware independent, Os friendly fashion. Hence, the new version of the
+Enforcer, called MuForce, will work together with virtual memory, and others.
+
+The mmu.library is also the basis for the virtual memory project, the 
+memory.library. Even though the mmu.library does not provide virtual memory
+itself, it builds the basics to allow an easy implementation and to avoid the
+hacks required by other implementations so far.
+
+The memory.library is now complete and can be found in this archive.
+
+------------------------------------------------------------------------------
+
+Release 47.1
+--------------
+	- Added an API to translate a physical address to a logical address
+	  under which it can be accessed.
+	- Added the MuMapRanger tool to the distribution (also available
+	  separately).
+
+Release 46.22
+--------------
+	- In case the mmu.library was run on top of an EC processor, the
+	  IOMMU functions CachePreDMA() and CachePostDMA() run into an alert
+	  as the DMA translation tables are not prepared. They now implement
+	  a 1:1 logical to physical mapping in the absence of a MMU.
+	- The 68040 and 68060 no longer generate a visible warning in case
+	  they are run on the wrong CPU (i.e. the 68060.library on a 68040
+	  or the 68040.library on a 68060) provided a recent exec.library is
+	  detected. It is assumed that on such newer systems, a sane version
+	  of SetPatch is present that no longer attempts to load the wrong
+	  library. This avoids problems with programs that attempt to open
+	  the CPU library manually, though from the wrong processor.
+	  Note that there is absolutely no reason why an application should
+	  attempt to open them - the public interface towards the CPU libraries
+	  is in the 680x0.library.
+
+Release 46.21
+--------------
+	- Z2Burst is a new command for the MMU-Configuration which disables
+	  caching and by that also bursting in the Z2 area. This is useful
+	  for some (or many?) 68040 and 68060 based CPU boards that cannot
+	  abort burst transfers to the Z-II area properly and may slow down
+	  or hang if attempts are made to initiate a burst transfer over the
+	  Zorro bus.
+	- A new vendor specific init-tool, GVPInit, was added to disable
+	  bursting to the Zorro area for affected GVP boards. Thanks to 
+	  Ralph Babel for sharing the information how to detect them and
+	  to Robert Miranda for testing them.
+	- The P5Init tool now also detects the B2060 card and disables caching
+	  and bursting in the Z-II area for it.
+	- Init scripts have been augmented to support GVPInit, and a new tool
+	  GVPIdentify which detects affected GVP boards.
+
+Release 46.20
+--------------
+	- The mmu.library and the 68030.library are now aware of the A3000
+	  SuperKickstart, and protect it and the corresponding MMU tables
+	  such that the system can reboot cleanly with the SuperKickstart
+	  installed.
+	- New versions of ACAInit and ACAIdentify are included that hopefully
+	  have somewhat more robust support for the ACA cards. In particular,
+	  the ACA630 support should have been improved.
+
+Release 46.19.2
+---------------
+	- No new release of the mmu.library, but a new version of 
+	  MuForce, which now also prints the PC at which an Alert()
+	  or a software failure was detected.
+	- Also included a new version of the disassembler.library which
+	  fixes the disassembly of fmovem with multiple immediate sources.
+	- Also includes a new release of MuRedox which now also patches
+	  the fmovem.l #immed,<multiple ctrl regs> instruction.
+
+Release 46.19.1
+---------------
+	- No new release of the mmu.library, but a new version of 
+	  MuForce, which now also tests word-aligned data on the stack
+	  through SegTracker. Former releases expected data on the
+	  stack to be longword aligned.
+
+Release 46.19
+-------------
+	- The MMU-Configuration file allows now one additional command,
+	  namely "MMU off". This turns off usage of the MMU. The
+	  purpose of this command is to allow safe usage of the MMULib
+	  based processor libraries (68040.library and 68060.library)
+	  on EC processors where the mmulib internal MMU detection logic
+	  reports incorrectly the presence of a MMU. Unfortunately, the
+	  MMU test cannot be made 100% reliably as Motorola labeled
+	  processors with defective MMU as "EC" models, though they were
+	  produced from the same mask set.
+	- P5Init was updated to also configure the MMU for the Permedia2
+	  and Voodoo3 chips which were present on some P5 based graphics
+	  cards with proprietary PCI bridge. This may help to operate
+	  these cards on MMULib based installations.
+
+Release 46.18.1
+---------------
+	- The EnvArc/MMU-Configuration.ACA file was missing from the
+	  distribution. Outch! Thanks to Jan-Erik for reporting this
+	  problem.
+	- Added new releases of ACAInit and ACAIdentify that also cover
+	  the ACA1233n. This is experimental.
+	- Added a new version of MuFastZero that also attempts to copy 
+	  the KickMem and KickTag Ptrs to the non-mirrored version of
+	  ExecBase over, hopefully allow programs to install resident
+	  modules even if SysBase is remapped.
+
+Release 46.18
+-------------
+	- Unlike documented, the dos.library FGets() function does
+	  not always zero-terminate its result, potentially causing
+	  an infinite loop when reading the preferences. This version
+	  includes a workaround.
+	- The data caches are no longer disabled during context building
+	  if a context does not yet have a root pointer. This may speed
+	  up initial MMU table creation somewhat.
+
+Release 46.17
+-------------
+	- The ColdReboot() patch of the mmu.library triggered a
+	  full coldstart on A3000 boards, erasing all resident
+	  modules, including LoadModule. This has been fixed.
+	  Note, however, that the A3000 SuperKickstart support
+	  has one bug that erraneously reserves 512K of RAM
+	  space with the mmu.library loaded. If you use LoadModule,
+	  add the option "HeaderForwards" to make it working.
+	- MuForce was bumped to 46.2 and fixes one access error
+	  in its Alert() patch.
+
+Release 46.16.1
+---------------
+	- No functional changes, but the installer script was
+	  updated to recognize the 3.1.4 version of SetPatch, and
+	  some minor tweaks have been made for the update process
+	  of the mfm.device and IPrefs. Furthermore, the processor
+	  libraries are now installed by default.
+
+Release 46.16
+-------------
+	- In case the mmu.library was run on top of a soft-loaded
+	  exec.library, the startup-code did not generate the
+	  implicit "ClearTTx" and hence could have left some IO
+	  boards configured as WriteThrough instead of CacheInhibit.
+	  This release now also recognizes versions of exec that
+	  have been injected via LoadModule and other related tools.
+
+Release 46.15
+-------------
+	- This release includes an updated mmu.library which fixes
+	  the handling of expansion boards that have been "shut up"
+	  because the system run out of expansion space. All
+	  previous releases would have flagged erraneously the 
+	  entire system memory as "I/O space" if that happened.
+	  This version ignores such (absend, and de-configured)
+	  boards correctly.
+
+Release 46.14.3
+---------------
+	- This relase provides a new version of the 68030.library
+	  which includes now better support for the 68EC030
+	  processors, especially on GVP boards. For these boards,
+	  caching needs to be disabled for the entire lower 16MB.
+	  Typically, the MMU and the mmu.library do that, but not
+	  if an EC processor lacking a MMU is in the system.
+	- Updated scripts (installer scripts and rexx scripts) to
+	  support older ACA boards and install ACAInit if such a
+	  board is identified or requested by the user.
+	- Updated MuGuardianAngel which failed to test whether it
+	  AllocAbs() had been patched over after MuGA was run.
+
+Release 46.14.2
+---------------
+	- This release provides a new version of the 68060.library
+	  which includes now a more careful test for the I4 bug
+	  of the 68060. Apparently, the test used before could fail
+	  to detect the erratum on revision 5 68060 processors.
+	- This distribution also includes a new (still experimental)
+	  MMU setup helper "ACAInit" that opens the MMU pages for
+	  some older ACA (icomp) cards such that ACATune will
+	  hopefully continue to operate on them. To use ACAInit,
+	  copy it to LIBS:mmu, and add this command at the end of
+	  ENVARC:MMU-Configuration. Feedback welcome.
+
+Release 46.14.1
+---------------
+	- The configuration for the Merlin graphics card was not
+	  right as it uses 4MB in the Z3 area, but only 2MB in the
+	  Z2 area. An appropriate switch was added to the default
+	  config files and the configuration builder file.
+
+Release 46.14
+---------------
+	- A arithmetic overflow in a {base+delta} or {size+delta}
+	  expression in ENVARC:mmu-configuration triggered a yellow 
+	  alert, even if the result is never used because the
+	  corresponding board is not installed. This has been fixed.
+	- This release ships with a new disassembler.library which
+	  no longer classifies btst with a PC-relative target as
+	  invalid.
+
+Release 46.13.1
+---------------
+	- The configuration for the VA2000 was apparently not yet
+	  ideal as the first 64K are IO and not grahics memory,
+	  hence fixed the MMU-Configuration for the board.
+
+Release 46.13
+---------------
+	- Added MMU information about the VA2000 graphics card.
+	- Fixed a bug in PhysicalLocation() that crashed on
+	  mmu-less systems.
+
+Release 46.12.1
+---------------
+	- The core library and most tools remain identical.
+	- The processor libs were updated to release 46.3.
+	  ColdReboot() was potentially broken in case the code
+	  was run from MEMF_CHIP (rather unusual, but possible)
+	  and hence the CPU could not prefetch the jump to ROM.
+	- MuProtectModules was updated to 45.5 and fixes a bug
+	  in not carrying over the cache inhibit settings correctly
+	  when enabling remapping.
+	- LoadModule was updated to 45.9 and fixes a bug for not
+	  clearing module remapping addresses on a reset correctly.
+	- The installer script did not create path names of the
+	  MuTools correctly and hence might have created an incorrect
+	  startup sequence.
+	- Thanks to Hyperion, Installer 43.8 could be provided along
+	  with the distribution making the installation stand-alone.
+
+Release 46.12
+---------------
+	- MMUInit is now also called during early setup of the library,
+	  that is in particular when the library is resident in memory.
+
+Release 46.11
+---------------
+	- The setup and detection of CD32 ROMs was partially broken
+	  and several iterations were required to fix this.
+	- Added another LVO to ease the layout of ContextWindows()
+	  upon creation. There is no longer a need to setup the
+	  target context correctly manually. In the autodocs, see
+	  LayoutContextWindow() for details.
+
+Release 46.7
+---------------
+	- The interface of P5Init/p5emu.library to the CPU libraries
+	  changed again to make it a bit more future proof. The new
+	  interface allows P5Init to replace multiple CPU library
+	  call-ins to optimize compatibility.
+	- Merging entries in the high-level MMU table description as
+	  used by SetPropertiesA() could have resulted in erasing
+	  side information required by MAPP_BUNDLED/MAPP_REMAPPED/
+	  MAPP_INVALID/MAPP_SWAPPED/MAPP_WINDOW. Fixed.
+	- MuMapRom was reworked again to improve compatibility with
+	  motherboard RAM on the A600 and A1200.
+	- A debug version MuMapRom.debug is now included.
+	- MuMapRom always mapped the A4000 and A3000 motherboard RAM,
+	  even on systems where this RAM is not present.
+	- Erasing one of the MMU properties that require side information
+	  no longer erases the side information of other properties
+	  that remain set. 
+
+Release 46.5
+---------------
+	- This is beta release with a couple of bug fixes of the
+	  mmu.library and new functions of the tools.
+	- Building a MMU context that was completely blank caused
+	  an infinite loop in the table builder process, fixed.
+	- Removed duplications in the MMU default context creation.
+	- Added support to tell the CD32 and CDTV apart, as the
+	  former has ROM in the 0x00e0-space, whereas the latter
+	  has motherboard resources there.
+	- Added new mmu.library functions to create windows in mmu
+	  contexts and to enable fast window switching.
+	- Updated MuScan to report on context windows.
+	- Updated MuForce to report context windows.
+	- Updated MuFastRom to be aware of the CD32 lower ROM area.
+	- Updated MuMapRom to be aware of the CD32 lower ROM area,
+	  and to setup the MMU context for the reset-resident ROM
+	  mirror more carefully.
+	- Bumped CPU libraries to V46.
+
+Release 43.14.2
+---------------
+	- Not a new release. Apparently, the database command
+	  of the installer only consults ExecBase to detect a
+	  68060, which may not always be correct. Added a work-
+	  around.
+
+Release 43.14.1
+---------------
+	- Not a new release. The only difference is that we are
+	  now including also a patch for SetPatch 40.16, the
+	  version that came with Os 3.1.
+
+Release 43.14
+---------------
+	- This version of the mmu.library introduces a new
+	  source of the MMU configuration, namely a resident
+	  module named "MMUInit". This module, if found on
+	  the exec resident list, is used to setup the MMU
+	  context during initialization before the user based
+	  configuration is called.
+	- The 68060.library now uses an explicit test to disable
+	  the load/store bypass of the 68060 in case the CPU
+	  is faulty. Previous versions parsed the CPU revision,
+	  though created false negatives by a test that is too
+	  conservative when disabling the load/store buffer
+	  bypass.
+	- MuMove4K includes now an explicit check whether it is
+	  run in front of SetPatch.
+
+
+Release 43.13.2
+---------------
+	- One minor bug-fix in P5Init, namely handling of out
+	  of memory in the creation of the p5emu.library was
+	  not handled gracefully.
+	- All CPU libraries check now for the presence of the
+	  p5emu.library and install "trampoline functions" to
+	  the emulation in case it is detected. This may help to
+	  avoid compatibility problems to P5 programs that jump
+	  into undocumented LVOs of the CPU libraries.
+
+Release 43.13.1
+---------------
+	- Minor tweak in the CPU libraries to ensure that the
+	  visible "old" MMU configuration is also set to the
+	  configuration initialized by the CPU libraries.
+	- The 68030.library now initializes the TTx registers
+	  on EC-based models explicitly such that the Z-II
+	  are is not-cacheable for write-accesses, working around
+	  a bug in the on-chip caching logic. Read accesses
+	  may be cached and are in control of the external board
+	  logic.
+
+Release 43.13
+--------------
+	- Some utilities unfortunately release the previous MMU
+	  tables after initializing the mmu.library, then causing
+	  a hang whenever the library restores them for a reset.
+	  This release no longer attempts to do that if it finds
+	  that it has been loaded by an mmu-aware CPU library.
+	- ENVARC:mmu-configuration is no longer strictly necessary
+	  if the library is initialized from a CPU library.
+
+Release 43.12
+--------------
+	- This release fixes one (or possibly even two) serious but
+	  unfortunate bugs in the 68060.library: Loading single
+	  precision numbers as sources from unimplemented opcodes
+	  was unfortunately broken and caused wrong data to be loaded,
+	  and generated bogus bus errors at times.
+
+Release 43.11
+--------------
+	- This release merges the changes made by Etienne back in the main
+	  development branch.
+	- The MMU detection code is now also able to identify 68060's during
+	  the system bootstrap where some P5 boards only identify them as
+	  68010's for compatibility reasons.
+	- Fixed a harmless bug in the 68030/68581 MMU table reader.
+	- CPU libraries: This release patches the private exec function
+	  ExitIntr() to address spurious interrupts happening on fast
+	  accelerator boards. On such boards Paula did not yet clear the
+	  interrupt bits when the CPU leaves the interrupt processing,
+	  causing a second spurious interrupt as soon as the processor
+	  leaves the exec interrupt handler.
+	- LoadModule: Merged changes by Etienne back into the main branch.
+	- MuGuardianAngel: Merged fixes by Christian Sauer back into the
+	  main development branch.
+
+Release 43.10
+--------------
+	- Fixed nasty 43.9 exception crashes on 030 systems (and probably
+	  020/881 as well). These crashes were caused by PhxAss default
+	  optimizations which converted explicit BRA.W to BRA.S in the
+	  exception handler and messed up calculated jumps. The MuLib is now
+	  assembled with branch optimization explicitely turned OFF *grunt*
+
+Release 43.9
+--------------
+	- Made the mmu.library assemble with PhxAss by decoding DevPac only
+	  macros.
+	- Added safeguard to the mmu.library AddMem command for switchable
+	  accelerator boards: memory in the 32bit address space (above the
+	  first 16Mb) will only be added if the CPU is at least a 68020.
+	- Made the mmu.library ClearMMU command more effective: it will now
+	  reset areas incorrectly marked valid in the boot configuration
+	  to blank space.
+	- THOR: Added workaround for some Appolo 060 boards that apparently
+	  misuse some undocumented 060 MMU table bits.
+
+Release 43.8
+--------------
+	- mmu.library: I seem to have updated something here in 2002, but
+	  I really forgot. Anyhow, this is the latest release I have.
+	- 68060.library: Added patches for the utility.library division
+	  support since some kickstart versions apparently do not patch
+	  in the optimized versions.
+	- 68040.library: Added patches for the utility.library division
+	  and multiplication routines because some kickstart routines
+	  do not seem to patch the optimized versions in.
+	- disassembler.library: Fixed all issues Christian Sauer fixed
+	  in 40.5, and also fixed garbled output on disassembly of
+	  floating point constants.
+
+Release 43.7
+--------------
+	- mmu.library: Added a workaround against invalid MMU tables
+	  setup by utilities that do not satisfy the stronger alignment
+	  restrictions of the 68060 compared to the 68040. The MMU table
+	  scanner is now a bit more relaxed for these tables.
+	- 68060.library: Improved the divu.l 64:32 division emulation
+	  somewhat. Motorola used Knuth's "Algorithm D" out of the book,
+	  which is, however, a bit overweighted for the purpose of the
+	  library. I replaced it by a somewhat simpler and faster algo-
+	  rithm. Won't make a difference unless the program to be emulated
+	  uses way too many divu.l computations.
+	- Applied the same changes to MuRedox and its divu emulation.
+
+Release 43.6
+--------------
+	- mmu.library: Added another safety check for the DMA property
+	  list.
+	- MuMapRom: The reset-and-stay resident mechanism of MuMapRom
+	  makes now use of the ColdCapture exec vector and a nice little
+	  extra hack.
+	- MuMapRom: Adds now a 16MB "safety zone" around memory areas to
+	  keep some wierd memory tests working.
+	- memory.library: Changed the memory administration functions a
+	  bit by adding a "ranger pointer". 
+
+Release 43.5.1
+--------------
+	- 680x0.library: Handled the low-memory area of MuMove4K unproperly
+	  and therefore broke MuFastZero. Fixed.
+	- MuMapRom: Did not work at all if the "ROMINFAST" option was not
+	  present at the command line. Should be much better now.
+	- memory.library: The library does no longer allow the attachment of
+	  an address space to the global MMU context.
+	- memory.library: The library does no longer support attachments of
+	  address spaces to supervisor contexts. This wouldn't have worked
+	  anyhow.
+	- MuGuardianAngel: AllocAbs() was still broken and returned the wrong
+	  register.
+
+Release 43.5
+--------------
+	- CPU libraries: All CPU libraries reset the VBR now before restarting
+	  the ROM.
+	- mmu.library: Fixed a possible race condition of the 68060 exception
+	  handler. The 68060 can report a misaligned access even though the
+	  fault address and the access fault size do not indicate that a page
+	  boundary is crossed.
+	- Included a new test tool: "SwapTest" will check whether the 68060 or
+	  68040 library support some race conditions on swapping correctly.
+	  Note that this test will fail for most third-party libraries.
+	- Included MuForce 40.30 (Aminet release) that is required for the
+	  latest MuGA. It won't work with former releases.
+
+Release 43.4.2	(Internal release only)
+--------------
+	- memory.library:
+		- fixed possible memory leak of the swap hooks. They should
+		  have closed files/devices on VMPACK_EXIT, not VMPACK_CLOSE.
+	- Updated the documentation of the mmu.library for the new functions.
+	- Included a first version for the memory.library documentation.
+
+
+Release 43.4.1	(Internal release only)
+--------------
+	- mmu.library:	Forgot to include the 43.4 of the mmu.library in the
+	  last distribution.
+	- memory.library:
+		- fixed broken handling of private swap hooks for 
+		  virtual memory pools.
+		- fixed broken handling of "Retry" of error requesters.
+		- added more sophisticated error handling for out of memory
+		  and swap alerts. The code will no longer try to repeat for
+		  obvious errors.
+	- mmap.c:
+		- fixed missing result code on error.
+
+
+Release 43.4	(Internal release only)
+--------------
+	- mmu.library: The 68040 race condition fix of the 43.3 wasn't as
+	  good as I though. Reworked this mess again. It will now be able
+	  to handle the wierd condition where a write-back is busy and
+	  detected from a word-sized movem, even though it comes from a
+	  different instruction. Yuck!
+	- mmu.library: Added workarounds for the V37 ObtainSemaphoreShared()
+	  bug.
+	- mmu.library: Made all context locks shared as far as possible.
+	- mmu.library: Fixed a possible register trash for the shared context
+	  locks.
+	- memory.library: Worked again a bit on the memory allocation routines
+	- Examples: vmem.c and mmap.c are now ready for release. The examples
+	  look now like they are supposed to.
+	- Updated the mmu.library autodocs a bit.
+	- memory.library:
+		- added another cache at the swap hook side of the library.
+		  This should hopefully help to improve the performance a
+		  bit as it tries to bundle I/O accesses.
+		- the library limits now the virtual memory range of the
+		  address space to the user defined limit before asking the
+		  hook for the maximal size. This avoids unnecessary disk-
+		  trashing for the file hook.
+		- the library should behaive much better now for low memory
+		  situations and errors on the swap hook. The hook remains
+		  responsive in these situations. 
+		- added a (localizable) error requester for failures of the
+		  three built-in swap hooks.
+		- All file I/O goes now over packets rather the dos.library.
+		  This would avoid trouble in case the dos.library gets
+		  patched over.
+
+
+Release 43.3	(Internal release only)
+--------------
+	
+	- mmu.library: Fixed a possible race condition of the Motorola
+	  "Diva", the 68040. Unlike what the documentation suggests, the
+	  CM bit is not directly related to access errors of movem's. )-:
+	- memory.library:
+		- Fixed a bug in the final page disposal routine that
+		  could have caused MuGA hits. Fixed.
+		- Fixed a bug in the swap daemon that could have tried
+		  to deliver a motor tick to the swap hook even though
+		  the hook has been released already.
+		- Reworked the internal memory handling. The memory
+		  pools come now with scratch lists to speed up the
+		  allocation of tiny chunks, and to avoid unnecessary
+		  virtual memory accesses. Further, the library uses
+		  now its own set of pooled allocation/deallocation
+		  routines. First of all, this avoids clashes with
+		  whatever patch might sit there and doesn't know
+		  how to handle virtual memory correctly, especially
+		  the rather harsh Forbid()/Disable() rules. Second,
+		  the new pooled allocation tries a combination of
+		  a "best fit" plus "buddy chunk" allocation that is
+		  less naive than the native exec allocation. 
+		  (but still naive enough to allow improvements...)
+		- Fixed bugs in the computation of the swap pool size
+		  that happened mainly on machines with Z2 memory
+		  only.
+		- Added documentation for the PoolVSize() function
+		  that was forgotten for the 0.0 release last time.
+		- Added a tag to restrict the size of the virtual
+		  memory pool created.
+	- MuGA: Fixed Deallocate()/Allocate() patches that forgot to
+	  align memory correctly.
+	- MuRedox: Aparently, the new version never made it to Aminet,
+	  even though it was uploaded. It provides one new option,
+	  SHOWPATCHEDINSTRS, which shows the list of instructions it
+	  was able to replace by its own set of stub-routines.
+
+If the vmem example program shows an "Allocation Failed" report, do not worry.
+This is just because the memory pool run out of data. This is likely to happen
+due to the way how this stress-test works.
+
+The memory.library got tested now on the 030,040 and 060.
+
+
+Release 43.2	(Internal release only)
+--------------
+	- mmu.library: Added support for the mmu.resource. This is a
+	  system resource that defines the interface to the true hard-
+	  ware MMU. The library will make use of this resource whenever
+	  it is present, and will fall back to its build-in routines
+	  otherwise. The purpose of the resource is to allow emulation
+	  of the MC68K MMU on non-native CPUs (i.e. x86) without the
+	  need to re-write the entire library from scratch.
+	- mmu.library: "shared" pages are finally officially supported.
+	  Note that most of this stuff worked already in V42.
+	- mmu.library: Fixed a bug in PhysicalLocation() that did not
+	  return the true physical location in case the memory was
+	  marked as MAPP_SHARED.
+	- mmu.library: Added GetPageUsedModified() to parse the
+	  Used/Modified flags more easely than with Get/SetPage-
+	  Properties(). This is still to be documented and mainly for
+	  the purpose of the memory.library.
+	- MuGA: Fixed a register trash that broke AllocAbs() and related
+	  calls.
+	- NEWS FLASH! Finally, the first release of the memory.library
+	  is available. The purpose of this release is to supply
+	  virtual memory to the AmigaOs in a flexible and compatible
+	  way. There is not yet much documentation, but there are
+	  includes and autodocs.
+
+------------------------------------------------------------------------------
+
+                      The THOR-Software Licence (v3, January 2nd 2021)
+
+This License applies to the computer programs known as "mmu.library", the
+"disassembler.library", the version 40 releases of the "68040.library", the
+"MuTools", including "MuForce", "MuGuardianAngel", "MuSetCacheMode",
+"MuScan", "MuLink", "MuMove4K", "FixCybAccess", "CheckFPU", "MuOVLYMGR",
+"MuLockLib", "MuOmniSCSIPatch" and the corresponding documentation, known as
+".guide" files. The "Program", below, refers to such program. The "Archive"
+refers to the package of distribution, as prepared by the author of the
+Program, Thomas Richter. Each licensee is addressed as "you".
+
+The Program and the data in the archive are freely distributable
+under the restrictions stated below, but are also Copyright (c)
+Thomas Richter.
+
+Distribution of the Program, the Archive and the data in the Archive by a
+commercial organization without written permission from the author to any
+third party is prohibited if any payment is made in connection with such
+distribution, whether directly (as in payment for a copy of the Program) or
+indirectly (as in payment for some service related to the Program, or
+payment for some product or service that includes a copy of the Program
+"without charge"; these are only examples, and not an exhaustive
+enumeration of prohibited activities).
+
+
+However, the following methods of distribution involving payment shall not
+in and of themselves be a violation of this restriction:
+
+(i) Distributing the Program on a physical data carrier (e.g. CD-ROM,
+    DVD, USB-Stick, Disk...) provided that:
+
+a) the Archive is reproduced entirely and verbatim on such data carrier,
+   including especially this licence agreement;
+
+b) the data carrier is made available to the public for a nominal
+   fee only, i.e. for a fee that covers the costs of the data carrier,
+   and shipment of the data carrier;
+
+c) a data carrier with the Program installed is made available to the
+   author for free except for shipment costs, and
+
+d) provided further that all information on said data carrier is
+   redistributable for non-commercial purposes without charge.
+
+
+Redistribution of a modified version of the Archive, the Program or the
+contents of the Archive is prohibited in any way, by any organization,
+regardless whether commercial or non-commercial. Everything must be kept
+together, in original and unmodified form.
+
+
+
+Limitations.
+
+
+THE PROGRAM IS PROVIDED TO YOU "AS IS", WITHOUT WARRANTY. THERE IS NO
+WARRANTY FOR THE PROGRAM, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. THE ENTIRE
+RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD
+THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY
+SERVICING, REPAIR OR CORRECTION.
+
+
+IF YOU DO NOT ACCEPT THIS LICENCE, YOU MUST DELETE THE PROGRAM, THE ARCHIVE
+AND ALL DATA OF THIS ARCHIVE FROM YOUR STORAGE SYSTEM. YOU ACCEPT THIS
+LICENCE BY USING OR REDISTRIBUTING THE PROGRAM.
+
+
+                                                        Thomas Richter
+-----------------------------------------------------------------------------
+
+So long,
+	Thomas			(August 2021)

@@ -1,0 +1,152 @@
+Short:        Win95/98 compatible file system
+Author:       t.jager@gmx.de (Torsten Jager)
+Uploader:     t jager gmx de (Torsten Jager)
+Type:         disk/misc
+Version:      3.18
+Architecture: m68k-amigaos
+Kurz:         Win95/98-kompatibles Dateisystem
+
+SEE THE "COPYING" FILE FOR LICENSING DETAILS.
+
+(deutsche Beschreibung siehe unten - german description see below)
+
+Much thanks to Hervé Dupont for the french version!
+
+$VER: fat95 3.18 (01.03.2013)
+
+--- english section ----------------------------------------
+
+PLEASE READ english/readme.too REALLY !!!
+Amithlon users should also look at english/amithlon
+(courtesy of Chris Handley).
+
+News
+====
+
+Finally I put this under LGPL :-))
+Not plain GPL because an Amiga filesytem handler is primarily used
+by the non-free OS to extend its functionality. Thus bundling the 2
+should be possible.
+The code itself is almost identical to 3.17. The preassembled
+binaries serve to make plain users life easier but you may rebuild
+them yourself now with AsmOne or something like that.
+
+Purpose
+=======
+
+"fat95" is a DOS handler to mount and use Win95/98 volumes just as if they were
+AMIGA volumes.
+
+System requirements
+===================
+
+* every AMIGA, OS 1.3+ (OS 2.0+ for full functionality)
+* a suitable device file for low level disk access, like the
+  mfm.device for floppies.
+
+Features
+========
+
+* workbench and applications support
+* diskchange autosense
+* format type autosense: FAT12, FAT16 and FAT32
+* simple LINUX style partition selection or manual definition
+* up to 4 GBytes of partition size for FAT16
+* large harddisk support via TD64 or direct SCSI
+* long filenames (up to 104 chars for now)
+* inquiry, read, write, and maintenance access
+* built-in error check utility
+* disk formatting using the OS 2.0+ format command
+* MS-DOS 8.3 downward compatibility
+* user definable language and code page
+* date range Jan 1st, 1980 through Dec 31st, 2107
+* extended datestamp support: creation date and time, last accessed date
+  (written automatically, readable as file comment text)
+* volume serial number as name for unnamed volumes
+* automatic directory optimization
+* written entirely in assembly language
+
+And finally...
+==============
+
+By kind request of its author, I hereby link to his MUI tool for generating
+fat95 mountlists (although I could not test it since I have no MUI...):
+
+aminet/disk/misc/fatmounter.lha
+
+Best regards to everybody who mailed me, especially H.J. "Buccaneer" Pinkert
+for spending hours on testing and bug reporting!!!
+
+I have been enjoying "fat95" for some time already as part of my private
+"sneaker net" towards several PCs via CF memory cards.
+On massive public demand, fat95 is now trying to support FAT32, too ;-)
+Feel free to send me an email on your experiences with "fat95"!
+
+Have Fun!
+
+
+--- und noch einmal auf deutsch ----------------------------
+
+BITTE WIRKLICH deutsch/liesmich.auch LESEN !!!
+
+Neues
+=====
+
+Endlich: FAT95 unter LGPL :-))
+Keine einfache GPL weil ein Dateisystemhandler hauptsächlich vom unfreien
+Betriebssystem benutzt wird um dessen Funktionalität zu erweitern. Es
+sollte also möglich sein beides gemeinsam zu vertreiben.
+Die vorassemblierten Binärdateien sollen normalen Anwendern das Leben
+erleichtern, aber jetzt kann sie ja jeder auch selbst neu bauen mit
+AsmOne oder etwas Ähnlichen.
+
+Verwendungszweck
+================
+
+"fat95" ist ein DOS-Handler der Win95/98-Datenträger wie normale AMIGA-Disks
+zugänglich macht.
+
+Systemvoraussetzungen
+=====================
+
+* jeder AMIGA ab OS 1.3 (volle Funktionalität ab OS 2.0)
+* ein geeignetes "device" für den low level-Diskzugriff
+  (z.B. "mfm.device" für Disketten)
+
+Eigenschaften
+=============
+
+* Zugriff von jeder Anwendung und der Workbench aus
+* Diskwechsel-Automatik
+* automatische Formaterkennung: FAT12, FAT16 and FAT32
+* einfache LINUX-ähnliche Partitionsauswahl oder manuelle Festlegung
+* bis 4 GByte Partitionsgröße bei FAT16
+* große Festplatten über TD64 oder SCSI direkt
+* lange Dateinamen (bis zu 104 Zeichen)
+* Abfrage-, Lese-, Schreib- und Wartungsfunktionen
+* eingebaute Prüffunktion
+* Formatieren möglich mit dem normalen Format-Befehl (ab OS 2.0)
+* abwärtskompatibel zu MS-DOS (8.3 Dateinamen inklusive Umlauten und "ß")
+* benutzerdefinierbare Sprache und Zeichentabelle
+* Datumsbereich 1. Jan 1980 bis 31. Dez 2107
+* erweiterte Datumsstempel: Datum und Zeit der Erstellung und Datum des letzten
+  Zugriffs werden automatisch gesetzt und können als Dateikommentar im
+  Klartext gelesen werden
+* Datenträger-Seriennummer als Name für unbenannte Disks
+* automatische Verzeichnisoptimierung
+* vollständig in Assembler geschrieben
+
+Zum Schluß...
+=============
+
+Besten Dank an alle wo mir per email halfen, ganz besonders
+H.J. "Buccaneer" Pinkert für stundenlanges geduldiges Testen
+und Wanzen aufspüren!!!
+
+Ich verwende "fat95" schon einige Zeit für mein privates "Turnschuh-Netzwerk"
+zu diversen PCs per CF-Speicherkarten.
+Auf vielfachen Wunsch versucht sich fat95 nun auch an FAT32 ;-)
+Schreiben Sie mir doch eine E-Mail über Ihre Erfahrungen mit "fat95"!
+
+Viel Spaß!
+

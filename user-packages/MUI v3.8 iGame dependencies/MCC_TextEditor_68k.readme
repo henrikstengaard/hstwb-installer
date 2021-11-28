@@ -1,0 +1,54 @@
+Short:        TextEditor MCC for MUI, 68000 build
+Author:       TextEditor.mcc Open Source Team
+Uploader:     jcagigal gmail com
+Type:         dev/mui
+Version:      15.28
+Requires:     AmigaOS 3.0+ or MorphOS, MUI 3.8+, 68000
+Architecture: m68k-amigaos >= 3.0
+
+ABOUT TextEditor.mcc
+********************
+
+This build is compiled and optimized for m68000 because standard version
+requires at least a 68020 and this left out some users. For documentation
+and catalogs check out main archive.
+
+Sources and changelog are available at sourceforge.
+
+TextEditor.mcc is a multiline string gadget which offers most of the common
+features you can find in a typical text editor, but embedded in a MUI custom
+class. It is used by a wide range of well-known MUI based applications like
+YAM or SimpleMail as the main text editing gadget. Its main features are:
+
+- Text can be colored (limited syntax highlighting)
+- WYSIWYG for bold, italic and underline soft styles
+- Multi-level undo & redo
+- Lines with different alignments (left, right, centered)
+- Ability to insert thick or thin separators with an optional title
+- Easy marking either using the mouse or keyboard
+- Full clipboard support, offering very fast cut & paste routines
+- Light text highlighting for e-mail based on an opening ">" character
+- Support for external spellcheckers, including type'n'spell and word
+  guessing
+- Configurable keys, colors, cursor types, blink speed, and much more
+- Ability to have a bitmap as a background
+- Support for proportional fonts with floating word wrap, as well as
+  antialiased fonts
+- Pixel smooth scrolling
+- AREXX interface for scripted programming
+
+
+LEGALESE
+********
+
+TextEditor.mcc was originally written in 1997 and is Copyright (C) 1997-2000
+by Allan Odgaard. As of version 15.10, released in April 2005, the gadget is
+maintained and Copyright (C) 2005-2007 by the TextEditor.mcc Open Source Team.
+
+TextEditor.mcc is distributed under the GNU Lesser General Public License
+(LGPL) and the development is hosted at SourceForge.net:
+
+            http://www.sourceforge.net/projects/texteditor-mcc/
+
+Please consult the included "COPYING" file for more detailed information
+about the licensing of the gadget and its source code.

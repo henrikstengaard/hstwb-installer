@@ -1,0 +1,48 @@
+; Modules Startup
+; ---------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-28
+
+; assign t, if it doesn't exist
+set removeassign "0"
+Assign >NIL: EXISTS T:
+IF NOT $RC EQ 0 VAL
+  set removeassign "1"
+
+  ; create ram t directory, if it exists
+  If Not Exists RAM:T
+    MakeDir >NIL: RAM:T
+  EndIf
+
+  Assign T: RAM:T
+EndIf
+
+; create empty modules
+echo NOLINE "" >T:_Modules
+
+; add icon.library to modules, if icon.library exists and version is less than v46
+If Exists LIBS:icon.library
+  Version >NIL: icon.library 46
+  If WARN
+    If EXISTS LIBS:workbench.library
+      LoadResident >NIL: LIBS:workbench.library
+    EndIf
+    echo "LIBS:icon.library" >>T:_Modules
+  EndIf
+EndIf
+
+; get modules to load resident
+set modules ""
+set modules "`Type T:_Modules`"
+
+; load modules, if modules is not empty
+If Not "$modules" EQ ""
+  Echo "LoadResident >NIL: $modules REBOOT" >T:_LoadModules
+  Execute T:_LoadModules
+EndIf
+
+; remove assign
+If "$removeassign" EQ "1"
+  Assign T: REMOVE
+  Delete >NIL: RAM:T
+EndIf

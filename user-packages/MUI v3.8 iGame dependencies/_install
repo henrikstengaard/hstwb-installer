@@ -1,0 +1,64 @@
+; MUI v3.8 iGame dependencies
+; ---------------------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of iGame dependencies
+; MUI TextEditor MCC and guigfx and render libraries.
+
+
+; skip to end, if "MUI:" device doesn't exist 
+Assign >NIL: EXISTS MUI:
+IF NOT $RC EQ 0 VAL
+  echo "*e[1mError: Unable to install MUI iGame dependencies,*NMUI: device not found.*NMUI iGame dependencies can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+  SKIP end
+ENDIF
+
+; create mui libs directory, if it doesn't exist
+set muilibsdir "MUI:Libs/mui"
+IF NOT EXISTS "$muilibsdir"
+  MakePath >NIL: "$muilibsdir"
+ENDIF
+
+
+; write install status
+Echo "MUI TextEditor MCC..."
+
+; extract texteditor to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:MCC_TextEditor_68k.lha" "SYSTEMDIR:Temp/_TextEditor/"
+
+; install texteditor files
+Copy >NIL: "SYSTEMDIR:Temp/_TextEditor/TextEditor.#?" "$muilibsdir" CLONE ALL
+
+; delete mui from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_TextEditor" ALL
+
+
+; write install status
+Echo "MUI Guigfx MCC..."
+
+; extract guigfx to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:MCC_Guigfx.lha" "SYSTEMDIR:Temp/_guigfx/"
+
+; install guigfx files
+Copy >NIL: "SYSTEMDIR:Temp/_guigfx/MCC_Guigfx/Libs/MUI/Guigfx.#?" "$muilibsdir" CLONE ALL
+
+; delete guigfx from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_guigfx" ALL
+
+
+; write install status
+Echo "Guigfx and render libraries..."
+
+; libs dir
+set libsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Libs"`"
+
+; extract guigfx and render libraries to libs
+lha -m1 -q x "USERPACKAGEDIR:guigfx_render_nofpu.lha" "$libsdir/"
+
+
+; end
+; ---
+LAB end

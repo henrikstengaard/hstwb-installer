@@ -1,0 +1,19 @@
+Short:        Replaces CON: (Review, menus, TAB-exp...)
+Author:       f92dala@dd.chalmers.se
+Uploader:     f92dala dd chalmers se (David Larsson)
+Type:         util/shell
+Architecture: m68k-amigaos
+
+KingCON is a console-handler that optionally replaces the standard
+'CON:' and 'RAW:' devices. It is 100% compatible, but adds some VERY
+useful features, such as..
+   * Filename-completion (TAB-expansion)
+   * A review-buffer
+   * Intuition menus
+   * Global preferences
+   * Jump-scroll. (FAAST output!)
+   * Asynchronous typeahead. (Optional)
+   * Cursor-positioning using the mouse
+   * MC68020-optimized version
+   * And more...
+			 

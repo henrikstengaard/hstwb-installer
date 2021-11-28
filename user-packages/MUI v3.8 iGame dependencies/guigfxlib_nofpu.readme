@@ -1,0 +1,8 @@
+Short:        application layer for pixel gfx (NoFPU)
+Author:       Timm S. Müller <tmueller@neoscientists.org>
+Uploader:     Renaud Schweingruber <renaud schweingruber gmail com>
+Type:         dev/misc
+Version:      20.0
+Architecture: m68k-amigaos >= 3.0
+
+guigfx.library 20.0 compiled for targets without FPU (68EC040, 68EC060, 68LC060, etc.)

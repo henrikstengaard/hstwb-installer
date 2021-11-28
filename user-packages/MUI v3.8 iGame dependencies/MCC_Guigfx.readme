@@ -1,0 +1,23 @@
+Short:        Guigfx MUI custom class V19.2
+Author:       Matthias Bethke <Matthias.Bethke@gmx.net>
+Uploader:     Matthias Bethke <Matthias Bethke gmx net>
+Type:         dev/mui
+Version:      19.2
+Requires:     MUI 3.8, guigfx.library, render.library
+Architecture: m68k-amigaos
+
+Guigfx is a Custom Class for Magic User Interface © by Stefan Stuntz.
+It is a subclass of areaclass.
+Guigfx.mcc can display image files in any format datatypes.library
+understands, guigfx.library image objects, bitmaps and Intuition images.
+It supports color depths up to 24bit, transparency channels/masks and
+various scaling modes including aspect correction.
+
+This class uses image processing libraries © 1997/98 TEK neoscientists (not included!)
+This class uses MCCLib.c by Kai Hofmann
+This distribution installs through MCCInstall by Kai Hofmann
+This distribution uses icons shamelessly ripped from AESIcons
+
+Many thanks to all of you!
+
+This readme ends here. :)

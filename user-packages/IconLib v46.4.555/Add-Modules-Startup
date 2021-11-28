@@ -1,0 +1,5 @@
+; execute modules startup, if it exists
+IF EXISTS S:Modules-Startup
+  Execute S:Modules-Startup
+ENDIF
+

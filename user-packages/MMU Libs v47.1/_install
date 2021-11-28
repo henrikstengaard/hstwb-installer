@@ -1,0 +1,71 @@
+; MMU Libs v47.1
+; --------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of MMU Libs v47.1.
+
+
+; paths
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+set bootstartup "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Boot-Startup"`"
+
+; add boot startup to startup sequence, if not present
+If Exists "$startupsequence"
+  If Not Exists "$startupsequence.MMU"
+    Copy >NIL: "$startupsequence" "$startupsequence.MMU"
+  EndIf
+
+  Search >NIL: "$startupsequence" "Execute S:Boot-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    Copy >NIL: USERPACKAGEDIR:Add-Boot-Startup T:_Startup-Sequence
+    Type "$startupsequence" >>T:_Startup-Sequence
+    Copy >NIL: T:_Startup-Sequence "$startupsequence"
+    Delete >NIL: T:_Startup-Sequence
+  ENDIF
+Else
+  Copy >NIL: USERPACKAGEDIR:Add-Boot-Startup "$startupsequence"
+EndIf
+
+; add mmulib startup to boot startup, if not present
+If Exists "$bootstartup"
+  Search >NIL: "$bootstartup" "Execute S:MMULib-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    Type USERPACKAGEDIR:Add-MMULib-Startup >>"$bootstartup"
+  ENDIF
+Else
+  Copy USERPACKAGEDIR:Add-MMULib-Startup "$bootstartup"
+EndIf
+
+; skip to end, if system libs dir doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Libs"
+  Echo "System Libs directory '$cdir' doesn't exist"
+  SKIP end
+ENDIF
+
+; write install status
+Echo "MMU Libs..."
+
+; copy sys files to install dir
+Copy >NIL: "USERPACKAGEDIR:Sys/#?" "$INSTALLDIR" ALL CLONE
+
+; create temp directory, if it doesn't exist
+IF NOT EXISTS "SYSTEMDIR:Temp"
+  MakePath >NIL: "SYSTEMDIR:Temp"
+ENDIF
+
+; extract mmulib to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:MMULib.lha" "SYSTEMDIR:Temp/_MMULib/"
+
+; install mmulib files
+Copy >NIL: "SYSTEMDIR:Temp/_MMULib/MMULib/Libs/680?0.library" "SYSTEMDIR:Libs" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_MMULib/MMULib/Libs/mmu.library" "SYSTEMDIR:Libs" CLONE
+
+; delete mmulib from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_MMULib" ALL 
+
+
+; end
+; ---
+LAB end

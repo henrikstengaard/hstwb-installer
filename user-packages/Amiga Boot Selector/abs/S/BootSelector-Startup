@@ -1,0 +1,15 @@
+; Boot Selector Startup
+; ---------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-28
+
+; run assign startup, if it exists
+IF EXISTS S:Assign-Startup
+  execute S:Assign-Startup
+ENDIF
+
+; run amiga boot selector and selected boot, if boot.abs exists
+C:abs
+IF EXISTS S:Boot.abs
+  execute S:Boot.abs
+ENDIF

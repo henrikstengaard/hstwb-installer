@@ -1,0 +1,6 @@
+; Amiga Boot Selector - Workbench
+; -------------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-25
+
+; empty to continue boot of startup sequence for workbench

@@ -1,0 +1,30 @@
+Short:        Notify on screen close/private/public (V1.0)
+Author:       stefanb@yello.ping.de (Stefan Becker)
+Uploader:     stefanb yello ping de (Stefan Becker)
+Type:         util/libs
+Architecture: m68k-amigaos
+
+Starting with AmigaOS V37 the Workbench offers a library with some useful
+functions for applications. Although this is a _BIG_ improvement over the
+old Workbench there are still some important features missing.  The  most
+annoying one is that an application with an open window on the  Workbench
+screen prevents the closing of the screen, e.g. after pressing  "Use"  in
+the ScreenMode preferences editor.
+
+To circumvent these programs have either to  patch  the  CloseWorkBench()
+and OpenWorkBench() functions  in  the  intuition.library  or  to  add  a
+notification for the screenmode.prefs file. The ideal solution would be a
+new App* message from the Workbench, but  as  we  all  know  a  Workbench
+update/rewrite is not very likely in the near future :-(
+
+ScreenNotify offers  an  intermediate  solution.  It  patches  the  above
+mentioned functions and offers a notification service for  clients.  This
+hides the "dirty" things in one location and offers a clean interface  to
+the outside world. Clients only  have  to  close  their  windows  on  the
+Workbench screen after receiving a CLOSE notification. They may open them
+again after receiving an OPEN notification.
+
+Additionally ScreenNotify patches CloseScreen() and PubScreenStatus(). It
+can therefore offer a notification when a  public  screen  is  closed  or
+opened. This may be useful for utilities  which  open  their  windows  on
+public screens.

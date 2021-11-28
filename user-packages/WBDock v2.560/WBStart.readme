@@ -1,0 +1,35 @@
+Short:        Emulate program starting from WB (V2.2)
+Author:       stefanb@yello.ping.de (Stefan Becker)
+Uploader:     stefanb yello ping de (Stefan Becker)
+Type:         util/libs
+Version:      2.2
+Replaces:     util/libs/WBStart*.lha
+Requires:     OS 3.0 (V39) or better
+Architecture: m68k-amigaos
+Kurz:         Emuliere Programmstart von der WB (V2.2)
+
+WBStart is a package  to  emulate  the  Workbenchs'  method  of  starting
+programs. Emulating this method seems to  be  easy  on  the  first  look,
+because you only have to load a program, create a process and then send a
+Workbench startup message to it.
+
+But complications arise from this startup message. It  contains  pointers
+to memory and directory locks owned by your process and it  will  not  be
+returned until the newly created Workbench process exits. So your process
+can't quit until ALL Workbench processes which have been started by  your
+process are finished. If you don't wait the replied messages will go into
+nowhere land and the man from India will visit you.
+
+WBStart solves this problem by using a handler process, which  loads  the
+program, creates the process, sends the message and then  waits  for  the
+reply. You just supply all  needed  information  like  program  name  and
+arguments in a library call. The handler copies this information so  your
+program can free its resources and exit.
+
+Changes since WBStart 2.1:
+
+   - Added "Caveats" and "Credits" section.
+   - Added Assembler and Oberon support files.
+   - Clarified directory lock usage in AutoDoc entry for WBStartTagList().
+   - Fixed problems with softlinks and project icons introduced in 2.1.
+   - Now uses dospath.library for AmigaDOS path list handling.

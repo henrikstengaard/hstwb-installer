@@ -1,0 +1,5 @@
+; execute kingcon startup, if it exists
+IF EXISTS S:KingCON-Startup
+  Execute S:KingCON-Startup
+ENDIF
+

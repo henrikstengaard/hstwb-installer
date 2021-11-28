@@ -1,0 +1,185 @@
+Short:        free icon.library in optimized ASM code
+Author:       Peter Keunecke
+Uploader:     pkeunecke alice-dsl net
+Type:         util/libs
+Version:      46.4.555
+Requires:     68000 CPU or 68020+
+Architecture: m68k-amigaos >= 3.0.0
+
+ Description:
+ ~~~~~~~~~~~
+
+ This is an optimized replacement for the icon.library
+ of AmigaOS 3.0-3.9 or Aros 68k which can exist in the
+ Kickstart ROM or is loaded from the LIBS: directory.
+
+ This shared library offers several functions to load,
+ decode, display and save icon images and to configure
+ settings for the execution of the associated programs
+ by storing tooltypes, a default tool, stacksize, icon
+ position and drawer window data in the ".info" files. 
+
+ Supported icon types are all old and MWB planar icons
+ as well as color-mapped NewIcons or OS 3.5 ColorIcons
+ and also OS4 and PNG TrueColor and merged Aros icons.
+
+ All icons can be displayed either with the blitter or
+ FBlit and the Amiga chipset or on a graphics card by
+ P96 or CGX in their best quality as fast as possible.
+
+
+ Beschreibung:
+ ~~~~~~~~~~~~
+
+ Dies ist ein optimierter Ersatz für die icon.library
+ von AmigaOS 3.0-3.9 oder Aros 68k, die im Kickstart ROM
+ existiert oder aus dem LIBS: Verzeichnis geladen wird.
+
+ Diese Shared Library enthält die Funktionen zum Laden,
+ Dekodieren, Anzeigen und Speichern von Piktogrammen und
+ zum Verwalten von Einstellungen für die Ausführung der
+ zugehörigen Programme durch Erfassen von Tooltypes, dem
+ DefaultTool, der Stackgrösse, der Icon-Position und bei
+ Verzeichnissen von Fensterdaten in den ".info"-Dateien. 
+
+ Unterstützt werden alle alten planaren und MWB-Icons,
+ sowie palettenbasierte NewIcons oder OS 3.5 ColorIcons,
+ als auch OS4 oder PNG TrueColor-Icons und Aros Icons. 
+
+ Alle Icons werden entweder per Blitter oder FBlit vom
+ Amiga-Chipsatz oder mit P96 bzw CGX auf Grafikkarten in
+ ihrer besten Qualität so schnell wie möglich angezeigt.
+
+
+ Latest changes:
+ ~~~~~~~~~~~~~~
+
+ On OS 3.2 the writing of deficons won't call UpdateWB.
+ This is already done by workbench.library v47 now. It
+ also avoids system crashes when you snapshot deficons.
+ "Notify Workbench" is still used on older OS versions,
+ because creating new WB drawers needs an icon update.
+
+ A fix for an issue with the WB option "no ColorIcons"
+ in TrueColor mode, where deficons didn't appear at all.
+ There was also a problem with the cache of DefIcons.
+
+ The RLEjit decoding was started accidentally for a few
+ TrueColor icons with one image, showing just a damaged 
+ 4-color icon, because RLE is used in ColorIcons only.
+
+ The RLE compression ratio has been improved a little.
+ The minimum repeat count depends on the bit depth now.
+
+ Added potential fixes for writing icons successfully,
+ but without setting the io-error code RC2 to zero. It
+ was mentioned in the release-notes for icon.library.
+ For the functions PutIconTagList(), LayoutIconA() and
+ DupDiskObject() the RC2 code is cleared in this case.
+
+ Allowed Workbench to call ReleasePens() again for the
+ case that this doesn't happen on the active screen. It
+ was a bug-fix to avoid crashes caused by DOpus5 only.
+
+ Some functions are now checking icons for "DiskMagic"
+ to avoid reading random data and FreeDiskObject() also
+ clears it before the DiskObject memory gets released,
+ which should make a second FreeMem() call impossible.
+
+ Fixes in the file type identification for executables
+ by the datatype system. Some appeared as a "project".
+
+
+ Letzte Änderungen:
+ ~~~~~~~~~~~~~~~~~
+
+ Auf OS 3.2 wird beim Speichern von Ersatz-Icons nicht
+ mehr UpdateWB aufgerufen, was die workbench.library 47
+ jetzt bereits macht. Es vermeidet Crashes bei Snapshot.
+ "Notify Workbench" wird bei älteren OS Versionen noch
+ benutzt, weil das Erstellen von WB Ordnern es benötigt.
+
+ Ein Problem mit der WB Option "No ColorIcons" wurde im
+ TrueColor-Mode behoben, wo DefIcons nicht erschienen.
+ Es gab auch Schwierigkeiten mit dem Cache von DefIcons.
+
+ Der RLEjit Dekoder wurde versehentlich auch für einige
+ TrueColor Icons mit nur einem Bild ausgeführt, wodurch
+ dann defekte 4-farbige Icons erschienen, weil RLE Code
+ nur in ColorIcons mit Farbpalette existiert.
+
+ Die RLE Komprimierung wurde geringfügig verbessert, da
+ die minimale Anzahl bei Wiederholungen nun von der Bit-
+ tiefe abhängt, die für die Icon-Palette benötigt wird. 
+
+ Beim erfolgreichen Erstellen/Ändern von Icons wird nun
+ der IO-Error Code RC2 gelöscht, worauf in den IconLib-
+ ReleaseNotes hingewiesen wurde. Dies passiert jetzt in
+ den Funktionen PutIconTagList(), DupDiskObject() und
+ LayoutIconA().
+
+ Die Workbench darf nun wieder ReleasePens() aufrufen,
+ auch wenn der Bildschirm gerade nicht aktiv ist, denn
+ dies war eigentlich nur ein Bugfix für DOpus5 Crashes.
+
+ Einige Funktionen prüfen jetzt Icons auf "DiskMagic",
+ um das Lesen von falschen Daten zu vermeiden. Bei der
+ Funktion FreeDiskObject() wird dies vor der Freigabe
+ des Speichers auch gelöscht, damit erneute Freigaben
+ später somit unmöglich gemacht werden.
+
+ Einige kleine Korrekturen in der Dateityperkennung für
+ "Executables" durch das Datatype-System, weil manchmal
+ der Icon-Typ "Project" statt "Tool" zugewiesen wurde. 
+
+
+ Distribution:
+ ~~~~~~~~~~~~
+
+ This program is freeware. I don't give any warranties.
+ You are using this program on your own risk and you
+ are responsible for any damage it could cause to your
+ system. This icon.library is completely independent
+ and free of the AmigaOS copyright. :)
+
+ It's not allowed to distribute or install the TrueColor
+ versions of this icon.library with or on AmiKit X or XE
+ or any other freeware distro or software package for
+ more than 10 Euro. Any other bundling with commercial
+ products is prohibited, too. This applies to the Aros-,
+ LD020 and all v51 versions. They may switch into a low
+ quality mode after a while and it's not recommended to
+ use them on AmiKit X or XE, which are not supported
+ anymore! But you can still use the new 68000 or 68020
+ versions, or any other versions of older releases up to
+ Build #538 without restrictions.
+
+
+ Verteilung:
+ ~~~~~~~~~~
+
+ Dieses Programm ist Freeware. Ich gebe keine Garantien.
+ Die Benutzung erfolgt auf eigenes Risiko und der Nutzer
+ trägt für jegliche Schäden an seinem System selbst die
+ Verantwortung. Diese icon.library ist vollständig frei
+ und unabhängig vom AmigaOS Copyright. :)
+
+ Die Verteilung oder die Installation der TrueColor
+ Versionen dieser icon.library mit oder auf AmiKit X,
+ AmiKit XE oder einer anderen Freeware Distribution
+ für mehr als 10 Euro sind nicht erlaubt. Jede Art der
+ Bündelung mit kommerziellen Produkten ist verboten.
+ Dies gilt für die Aros-, LD020 und alle v51 Versionen.
+ Sie schalten sich möglicherweise nach einiger Zeit
+ in einen Modus mit geringerer Qualität und es wird
+ nicht empfohlen, sie mit AmiKit X, XE zu verwenden,
+ die inzwischen nicht mehr unterstützt werden !
+ Sie können aber weiterhin die neuen 68000 oder 68020
+ Versionen oder andere Versionen von älteren Ausgaben
+ bis hin zu Build #538 ohne Einschränkungen verwenden.
+
+
+ Copyright 2007-2021:
+ ~~~~~~~~~~~~~~~~~~~
+   Peter Keunecke
+

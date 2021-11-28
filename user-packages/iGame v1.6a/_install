@@ -1,0 +1,76 @@
+; iGame v1.6a
+; -----------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of iGame v1.6a.
+; iGame v1.6a is patch to not save gamelist each time a whdload is launched,
+; which can take 30-60 seconds for a game list with 2000-3000 entries.
+
+
+; dirs
+set igamedir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "iGame"`"
+set igameicon "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "iGame.info"`"
+set muiprefsdir "SYSTEMDIR:Prefs/Env-Archive/mui"
+
+; set igame installed to 1, if igame is installed
+set igameinstalled "0"
+IF EXISTS "$igamedir"
+  set igameinstalled "1"
+EndIf
+
+; create igame directory and icons
+MakePath >NIL: "$igamedir"
+MakeIcon >NIL: "$INSTALLDIR"
+
+; create mui prefs dir, if it doesn't exist
+IF NOT EXISTS "$muiprefsdir"
+  MakePath >NIL: "$muiprefsdir"
+ENDIF
+
+; write install status
+echo "iGame..."
+
+; extract igame to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:iGame-1.5.lha" "SYSTEMDIR:Temp/_iGame/"
+
+; install igame files
+Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame.info" "$igameicon" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame/#?" "$igamedir" CLONE ALL
+Copy >NIL: "USERPACKAGEDIR:iGame v1.6a" "$igamedir/iGame" CLONE ALL
+
+; install igame mui prefs, if it doesn't exist
+IF "$igameinstalled" EQ 0 VAL
+  Copy >NIL: "USERPACKAGEDIR:IGAM.1.prefs" "$muiprefsdir" ALL CLONE
+ENDIF
+
+; delete igame from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_iGame" ALL
+
+; get device and path from igamedir
+echo "$igamedir/iGame" >T:_igamedir1
+
+cut -d ":" -f 1 T:_igamedir1 >T:_igamedir2
+sed "1d" T:_igamedir2 >T:_igamedir3
+rep T:_igamedir3 " " ""
+set device "`type T:_igamedir3`"
+
+cut -d ":" -f 2 T:_igamedir1 >T:_igamedir2
+sed "1d" T:_igamedir2 >T:_igamedir3
+rep T:_igamedir3 " " ""
+set path "`type T:_igamedir3`"
+
+; add igame to backdrop
+IF EXISTS "$device:.backdrop"
+  search "$device:.backdrop" "$path" >NIL:
+  IF NOT $RC EQ 0 VAL
+    echo ":$path" >>"$device:.backdrop"
+  ENDIF
+ELSE
+  echo ":$path" >>"$device:.backdrop"
+ENDIF
+
+; end
+; ---
+LAB end

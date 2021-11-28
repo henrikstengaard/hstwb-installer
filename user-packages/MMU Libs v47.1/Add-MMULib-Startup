@@ -1,0 +1,5 @@
+; execute mmulib startup, if it exists
+IF EXISTS S:MMULib-Startup
+  Execute S:MMULib-Startup
+ENDIF
+

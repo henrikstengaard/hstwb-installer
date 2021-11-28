@@ -1,0 +1,76 @@
+; CompactFlash and FAT95
+; ----------------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of PCMCIA CompactFlash device and (FAT12/FAT16/FAT32) filesystem.
+; This enables hot plug use of PCMCIA CompactFlash cards with Amiga 1200 and 600 and automatically mounts CompactFlash card as CF0: device.
+
+
+; dirs
+set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set devsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
+set dosdriversdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Storage/DOSDrivers"`"
+set ldir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L"`"
+
+; skip to end, if system c dir doesn't exist
+IF NOT EXISTS "$cdir"
+  Echo "System C directory '$cdir' doesn't exist"
+  SKIP end
+ENDIF
+
+; skip to end, if system devs dir doesn't exist
+IF NOT EXISTS "$devsdir"
+  Echo "System Devs directory '$devsdir' doesn't exist"
+  SKIP end
+ENDIF
+
+; skip to end, if system storage dosdrivers dir doesn't exist
+IF NOT EXISTS "$dosdriversdir"
+  Echo "System Storage DOSDrivers directory '$dosdriversdir' doesn't exist"
+  SKIP end
+ENDIF
+
+; skip to end, if system l dir doesn't exist
+IF NOT EXISTS "$ldir"
+  Echo "System C directory '$ldir' doesn't exist"
+  SKIP end
+ENDIF
+
+
+; write install status
+Echo "PCMCIA CompactFlash device..."
+
+; extract cfd to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:CFD133.lha" "SYSTEMDIR:Temp/_CFD/"
+
+; install cfd files
+Copy >NIL: "SYSTEMDIR:Temp/_CFD/CFD133/C/#?" "$cdir" CLONE ALL
+Copy >NIL: "SYSTEMDIR:Temp/_CFD/CFD133/DEVS/compactflash.device" "$devsdir" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_CFD/CFD133/DEVS/CF0#?" "$dosdriversdir" CLONE ALL
+
+
+; write install status
+Echo "FAT95 (FAT12/FAT16/FAT32) filesystem..."
+
+; extract cfd to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:fat95.lha" "SYSTEMDIR:Temp/_FAT95/"
+
+; install fat95 files
+Copy >NIL: "SYSTEMDIR:Temp/_FAT95/fat95/l/fat95" "$ldir" CLONE ALL
+
+
+; delete cfd from temp systemdir
+IF EXISTS "SYSTEMDIR:Temp/_CFD"
+  Delete >NIL: "SYSTEMDIR:Temp/_CFD" ALL
+ENDIF
+
+; delete fat95 from temp systemdir
+IF EXISTS "SYSTEMDIR:Temp/_FAT95"
+  Delete >NIL: "SYSTEMDIR:Temp/_FAT95" ALL
+ENDIF
+
+; end
+; ---
+LAB end

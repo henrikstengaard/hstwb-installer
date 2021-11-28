@@ -1,0 +1,175 @@
+; Kickstart roms
+; --------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2021-11-04
+;
+; User package for HstWB Installer to detect and install valid Kickstart rom files to Devs:Kickstarts.
+; Detection supports both original Kickstart dumps and encrypted Kickstart rom files from Cloanto Amiga Forever.
+
+; dirs
+set devsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
+set kickstartsdir "`execute INSTALLDIR:S/CombinePath "$devsdir" "Kickstarts"`"
+
+; skip to end, if system devs dir doesn't exist
+IF NOT EXISTS "$devsdir"
+  Echo "System Devs directory '$devsdir' doesn't exist"
+  SKIP end
+ENDIF
+
+
+; detect kickstart rom files
+; --------------------------
+LAB detectkickstarts
+
+; delete temp kickstart directory, if it exists
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/"
+  Delete >NIL: "INSTALLDIR:Temp/_Kickstart/" ALL FORCE
+ENDIF
+
+; create kickstart temp directory
+MakePath >NIL: "INSTALLDIR:Temp/_Kickstart"
+
+; run copy kickstart rom for files in kickstarts directory, if it exists
+IF EXISTS "USERPACKAGEDIR:Kickstarts"
+  ; create script to copy kickstart rom files
+  List USERPACKAGEDIR:Kickstarts PAT=#? ALL FILES LFORMAT "Execute USERPACKAGEDIR:Copy-Kickstart-Rom *"%p%n*" *"INSTALLDIR:Temp/_Kickstart*"" >T:_copy_kickstart_roms
+
+  ; run copy kickstart roms
+  FailAt 21
+  Execute T:_copy_kickstart_roms
+  Delete >NIL: T:_copy_kickstart_roms
+ENDIF
+
+; kickstart menu
+; --------------
+LAB kickstartmenu
+
+set kickstartroms "0"
+echo "" NOLINE >T:_kickstartsdetected
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick33180.A500"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart 1.2 33.180 A500 rom file detected" >>T:_kickstartsdetected
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick34005.A500"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart 1.3 34.5 A500 rom file detected" >>T:_kickstartsdetected
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40063.A600"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart 3.1 40.063 A600 rom file detected" >>T:_kickstartsdetected
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40068.A1200"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart 3.1 40.068 A1200 rom file detected" >>T:_kickstartsdetected
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40068.A4000"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart 3.1 40.068 A4000 rom file detected" >>T:_kickstartsdetected
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/rom.key"
+  set kickstartroms `eval $kickstartroms + 1`
+  echo "Kickstart rom key file, Cloanto Amiga Forever detected" NOLINE >>T:_kickstartsdetected
+ENDIF
+
+echo "" NOLINE >T:_kickstartmenu
+echo "Install $kickstartroms Kickstart rom file(s)" >>T:_kickstartmenu
+echo "Skip Kickstart rom files installation" >>T:_kickstartmenu
+echo "Restart Detect Kickstart rom files" >>T:_kickstartmenu
+echo "--------------------------------------------------" >>T:_kickstartmenu
+
+IF "$kickstartroms" GT 0 VAL
+  Type T:_kickstartsdetected >>T:_kickstartmenu
+ELSE
+  echo "No valid Kickstart rom files detected!" >>T:_kickstartmenu
+ENDIF
+delete >NIL: T:_kickstartsdetected
+
+; show kickstart roms menu
+set kickstartoption ""
+set kickstartoption `RequestList TITLE="Kickstart roms" LISTFILE="T:_kickstartmenu" WIDTH=640 LINES=24`
+delete >NIL: T:_kickstartmenu
+
+; install option
+IF "$kickstartoption" EQ 1 VAL
+  set confirm `RequestChoice "Kickstart roms" "Do you want to install $kickstartroms*NKickstart rom file(s)?" "Yes|No"`
+  IF "$confirm" EQ 1 VAL
+    SKIP installkickstart
+  ENDIF
+  SKIP BACK kickstartmenu
+ENDIF
+
+; skip option
+IF "$kickstartoption" EQ 2 VAL
+  set confirm `RequestChoice "Kickstart roms" "Do you want to skip install*NKickstart rom files?" "Yes|No"`
+  IF "$confirm" EQ 1 VAL
+    SKIP end
+  ENDIF
+  SKIP BACK kickstartmenu
+ENDIF
+
+; restart option
+IF "$kickstartoption" EQ 3 VAL
+  set confirm `RequestChoice "Kickstart roms" "Do you want to restart detect*NKickstart rom files?" "Yes|No"`
+  IF "$confirm" EQ 1 VAL
+    SKIP BACK detectkickstarts
+  ENDIF
+  SKIP BACK kickstartmenu
+ENDIF
+
+SKIP BACK kickstartmenu
+
+
+; install kickstart rom files
+; ---------------------------
+LAB installkickstart
+
+; create dev kickstarts directory, if it doesn't exist
+IF NOT EXISTS "$kickstartsdir"
+  MakePath >NIL: "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick33180.A500"
+  echo "Kickstart 1.2 33.180 A500 rom file..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/kick33180.A500" "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick34005.A500"
+  echo "Kickstart 1.3 34.5 A500 rom file..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/kick34005.A500" "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40063.A600"
+  echo "Kickstart 3.1 40.063 A600 rom file..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/kick40063.A600" "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40068.A1200"
+  echo "Kickstart 3.1 40.068 A1200 rom file..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/kick40068.A1200" "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/kick40068.A4000"
+  echo "Kickstart 3.1 40.068 A4000 rom file..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/kick40068.A4000" "$kickstartsdir"
+ENDIF
+
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/rom.key"
+  echo "Kickstart rom key file, Cloanto Amiga Forever..."
+  Copy >NIL: "INSTALLDIR:Temp/_Kickstart/rom.key" "$kickstartsdir"
+ENDIF
+
+
+; end
+; ---
+LAB end
+
+; delete temp kickstart directory, if it exists
+IF EXISTS "INSTALLDIR:Temp/_Kickstart/"
+  Delete >NIL: "INSTALLDIR:Temp/_Kickstart/" ALL FORCE
+ENDIF

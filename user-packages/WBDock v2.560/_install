@@ -1,0 +1,98 @@
+; WBDock v2.560
+; -------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of WBDock v2.560.
+
+
+; paths
+set libsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Libs"`"
+set wbstartupdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "WBStartup"`"
+set wbdockconfig "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Env-Archive/wbdock.config"`"
+set igamefile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Applications/iGame/iGame"`"
+set clifile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/CLI"`"
+set shellfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/Shell"`"
+set dopusfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Tools/DOpus"`"
+
+
+; write install status
+echo "ScreenNotify..."
+
+; extract screen notify to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:ScreenNotify10.lha" "SYSTEMDIR:Temp/_ScreenNotify/"
+
+; install screen notify files
+Copy >NIL: "SYSTEMDIR:Temp/_ScreenNotify/ScreenNotify/libs/screennotify.library" "$libsdir" CLONE
+
+; delete screen notify from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_ScreenNotify" ALL
+
+
+; write install status
+echo "WBStart..."
+
+; extract wbstart to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:WBStart.lha" "SYSTEMDIR:Temp/_WBStart/"
+
+; install wbstart files
+Copy >NIL: "SYSTEMDIR:Temp/_WBStart/WBStart/libs/wbstart.library" "$libsdir" CLONE
+
+; delete wbstart from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_WBStart" ALL
+
+
+; write install status
+echo "WBDock..."
+
+; extract wbdock to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:wbdock2.lha" "SYSTEMDIR:Temp/_WBDock/"
+
+; install wbdock files
+Copy >NIL: "SYSTEMDIR:Temp/_WBDock/WBDock2/WBDock" "$wbstartupdir" CLONE
+Copy >NIL: "USERPACKAGEDIR:WBDock.info" "$wbstartupdir" CLONE
+
+; delete igame from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_WBDock" ALL
+
+; create wbdock.config, if it doesn't exist
+If Not Exists "$wbdockconfig"
+  Echo "" NOLINE >"$wbdockconfig"
+EndIf
+
+; add igame to wbdock, if igame exist and is not present in wbdock config
+If Exists "$igamefile"
+  Search >NIL: "$wbdockconfig" "$igamefile" quiet
+  IF NOT $RC EQ 0 VAL
+    echo "$igamefile" >>"$wbdockconfig"
+  EndIf
+EndIf
+
+; copy system cli to shell for adding shell to wbdock
+If Exists "$clifile"
+  If Not Exists "$shellfile"
+    Copy >NIL: "$clifile" "$shellfile" CLONE
+  EndIf
+EndIf
+
+; add shell to wbdock, if shell exist and is not present in wbdock config
+If Exists "$shellfile"
+  Search >NIL: "$wbdockconfig" "$shellfile" quiet
+  IF NOT $RC EQ 0 VAL
+    echo "$shellfile" >>"$wbdockconfig"
+  EndIf
+EndIf
+
+; add directory opus to wbdock, if directory opus exist and is not present in wbdock config
+If Exists "$dopusfile"
+  Search >NIL: "$wbdockconfig" "$dopusfile" quiet
+  IF NOT $RC EQ 0 VAL
+    echo "$dopusfile" >>"$wbdockconfig"
+  EndIf
+EndIf
+
+
+; end
+; ---
+LAB end

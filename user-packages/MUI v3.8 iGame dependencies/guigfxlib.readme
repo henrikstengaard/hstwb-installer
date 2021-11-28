@@ -1,0 +1,137 @@
+Short:        Application layer for pixel graphics
+Author:       Timm S. Müller <tmueller@neoscientists.org>
+Uploader:     Andreas Falkenhahn <andreas airsoftsoftwair de>
+Type:         dev/misc
+Version:      20.1
+Architecture: m68k-amigaos >= 3.0; ppc-amigaos >= 4.0
+
+
+overview
+-----------------------------
+
+  - guigfx.library is an application layer for pixel graphics.
+
+  - guigfx.library breaks the chains of all those nasty
+    planar, chunky, 8/16/24bit, OS3.0, OS3.1, OCS, ECS, AGA,
+    CybergraphX and Picasso96 considerations.
+
+  - with guigfx.library you no longer have to take care about your
+    application running on a OCS machine or on a high-end
+    graphics-card system.
+
+  - guigfx.library lets you freely choose truecolor graphics for
+    your applications.
+
+  - with guigfx.library your graphics will always look as fine as
+    possible, on any screen, no matter if driven on 24 bit
+    1024x768 CybergraphX/Picasso96, on HAM8, or 1 bit productivity
+    interlaced.
+
+  - guigfx.library does quick color-reduction, rendering,
+    remapping and dithering for you. only you don't know when,
+    on which machine, under what circumstances.
+
+  - guigfx.library treats scaling as a standard operation.
+    it is available at any time, without extra consideration,
+    without extra memory consumption, even without a true loss
+    of performance.
+    
+  - guigfx.library handles screen pen allocation in an extremely
+    effective way.
+
+  - guigfx.library hides bugs, incompatibilities and insufficiencies
+    of graphics.library, cybergraphics.library and Picasso96 from
+    you. it is an attempt to render incompatibilities between
+    different versions of CybergraphX and Picasso96 obsolete.
+    
+  - guigfx.library features picture.datatype import. standard and
+    v43 (including Picasso96) picture datatypes are automatically
+    recognized and used as available.
+
+  - guigfx.library does not call SetFunction() and is hereby
+    guaranteed to never do so in future versions.
+
+  - guigfx.library puts all that stuff into a black-box,
+    freeing your mind for the creative part.
+
+
+
+features
+-----------------------------
+
+  - full truecolor, OCS, ECS, AGA, HAM support
+  - screen-pen management
+  - color-reduction
+  - dithering
+  - picture.class datatype import
+  - scaling
+  - image processing methods 
+    (crop, scale, render, tint, 
+    alpha-channel, texture-mapping, ...)
+  - fully documented
+  - supplied with C includes for SAS/C, StormC and MaxonC
+  - freeware
+
+
+
+requirements
+-----------------------------
+
+  - render.library v30
+  - os3.x (v39)
+  
+  optional:
+  - higher OS, higher CPU, FPU
+  - CyberGraphX or Picasso 96
+  - MorphOS
+  - AmigaOS4
+
+
+recent changes
+-----------------------------
+
+v20.1   [05-Nov-11]
+        - for some reason the only build for 68k I included in the release on
+          16-Mar-05 was a build for systems with an FPU. Even worse, I didn't
+          mark it as such which caused lots of confusion with people trying to
+          use it on non-FPU systems. I have now added 68k builds for all 
+          architectures that were originally part of the guigfx distribution
+          (020, 040, 060, FPU). Thanks to Niels Schapke for reporting this problem.
+        - bumped the version because the 68k builds now also contain the
+          WritePixelArray() fix from v20.0.2 (which should have been v20.1
+          back then already instead of that awkward non-standard versioning,
+          sorry!)
+        - removed the MorphOS build because guigfx.library is part of MorphOS    
+        
+v20.0.2 [16-Mar-05]
+	- fixed wrong modulo value in two WritePixelArray() calls; fixed
+	  only in the OS4 version as the wrong value is harmless under
+	  MorphOS and OS3.x. Reported by Stephan Rupprecht.
+	    	   
+v20.0   [03-Mar-05]
+        - added AmigaOS 4 binary and includes
+
+------ all releases after v20.0 made by Andreas Falkenhahn <andreas@airsoftsoftwair.de> ------
+      
+v20.0
+	- added picture attributes PICATTR_NumPaletteEntries and
+	  PICATTR_Palette to GetPictureAttrs(). This way you can
+	  query a picture's palette. PICATTR_NumPaletteEntries will
+	  currently always return 256 if a picture is palette-based,
+	  and zero otherwise. PICATTR_Palette expects a buffer of
+	  256 ULONG entries in (by default) the format PALFMT_RGB8.
+	  Requested by Andreas Falkenhahn.
+	  
+v19.2
+        - when a picture was read from a hicolor/truecolor rastport
+          using ReadPicture(), a palette was incorporated to the picture.
+          ClonePicture() created a copy of that palette but did not
+          actually place it in the resulting picture. when the library
+          was closed, the leak was indicated with a ILLEGAL exception.
+          fixed.
+
+v19.1
+	- fixed a LOOONG standing bug when adding pictures to
+	  a pensharemap, when the picture was less than 7 lines
+	  high. ouch!
+

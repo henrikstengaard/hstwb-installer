@@ -1,0 +1,79 @@
+Short:        Define, save & lock ALL Workbench colors!
+Author:       tanti@intercom.it (Massimo Tantignone)
+Uploader:     tanti intercom it (Massimo Tantignone)
+Type:         util/wb
+Version:      40.22
+Requires:     AmigaOS 3.0+
+Architecture: m68k-amigaos
+
+FullPalette 40.22 (9.5.99) by Massimo Tantignone
+
+   The FullPalette system allows you to edit and save ALL the 256 Workbench
+colors rather than just eight of them as the standard Palette editor does.
+
+   It features a preferences editor ("FullPalette") enabling to define the
+colors, and a patch running in the background ("FPPrefs") which takes care
+of applying the palette settings every time the Workbench screen is opened.
+
+   You can decide exactly which colors are to be "locked", and thus never
+modified by programs running on the Workbench screen, and which colors
+instead are to be left "free" for IPrefs and other applications.
+
+   This (among other advantages) makes the managing of icons much easier;
+using FullPalette you can, for example, have icons with any number of
+colors without risking to see some of them change just because you view
+a picture with MultiView on the Workbench screen.
+   You could also set colors 4-7 to always be the same as colors 252-255.
+
+   FullPalette also has a button strip to easily perform editing actions
+such as "Copy", "Swap" or "Spread".
+
+   For the purpose of editing the Workbench palette, FullPalette can
+completely replace the standard "Palette" preferences editor, whose settings
+file (palette.prefs) it continues to maintain for compatibility, although
+FullPalette also uses a custom file.
+
+   The patch runs alongside IPrefs without any conflicts.
+
+   **************************************************************
+   Note: This patch is even more useful when used in conjunction
+         with the "VisualPrefs" patch for the Amiga GUI, which is
+         also available on Aminet as util/wb/VisualPrefs.lha.
+   **************************************************************
+
+   Changes:
+
+   · Finally, the color of the editor's palette indicator changes
+     in real-time also on hicolor and truecolor screenmodes.
+     However, in order to avoid excessive flashing, the smaller
+     color box in the palette gadget itself is only updated when
+     the slider is released.
+
+   · Added a workaround for a bug in WordPerfect which caused the
+     program's requesters not to be displayed with FPPrefs running.
+
+   · The installation procedure is a bit smarter about where to
+     place the "FPPrefs" command in the Startup-sequence. Also, it
+     now works even if it finds "FastIPrefs" rather than "IPrefs".
+
+   · The FPPrefs program is now self-detaching. This means that you
+     don't need to put "Run > NIL:" before it anymore.
+
+   · By pressing the spacebar, is now possible to lock or free all
+     colors at once in the FullPalette editor.
+
+   · FullPalette and FPPrefs don't have any dependence on the
+     "palette.prefs" file anymore, so if you haven't any other use
+     for it (like non-default GUI pens settings), you can delete it.
+     However, FullPalette still updates the file if it's present.
+
+   **************************************************************
+
+   Author:
+
+   Massimo Tantignone
+   Via Campagnoli, 4
+   28100 Novara (NO)
+   ITALY
+
+   E-mail: tanti@intercom.it

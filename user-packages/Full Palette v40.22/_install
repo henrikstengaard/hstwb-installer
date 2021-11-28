@@ -1,0 +1,41 @@
+; Full Palette v40.22
+; -------------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of Full Palette v40.22.
+
+
+; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set prefsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs"`"
+set sysprefsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Env-Archive/sys"`"
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+
+; write install status
+echo "Full Palette..."
+
+; extract full palette to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:FullPalette22.lha" "SYSTEMDIR:Temp/_FullPalette/"
+
+; install full palette files
+Copy >NIL: "SYSTEMDIR:Temp/_FullPalette/FullPalette/FullPalette#?" "$prefsdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_FullPalette/FullPalette/FPPrefs" "$cdir" CLONE
+Copy >NIL: "USERPACKAGEDIR:fullpalette.prefs" "$sysprefsdir" CLONE
+
+; add fpprefs line to startup sequence, if it's not present
+If Exists "$startupsequence"
+  Search >NIL: "$startupsequence" "FPPrefs" quiet
+  IF NOT $RC EQ 0 VAL
+    rep SYSTEMDIR:S/Startup-Sequence "IPrefs" "IPrefs*NFPPrefs"  
+  EndIf
+EndIf
+
+; delete full palette from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_FullPalette" ALL
+
+
+; end
+; ---
+LAB end

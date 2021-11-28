@@ -1,0 +1,148 @@
+; WHDLoad v18.6
+; -------------
+;
+; Date: 2021-11-28
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of WHDLoad v18.6.
+; If WHDLoad v18.5 or newer version is already installed, installation of WHDLoad ends.
+; Files in S: "WHDLoad.prefs", "WHDLoad-Cleanup" and "WHDLoad-Startup" are only installed, if they don't exist.
+
+
+; paths
+set whdloadcdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set whdloadsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+set whdloadhelpdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Locale/Help"`"
+set whdloaddevsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
+set whdloadprefs "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/WHDLoad.prefs"`"
+
+
+; skip to end, if whdload c directory doesn't exist
+IF NOT EXISTS "$whdloadcdir"
+  echo "*e[1mError: System C directory doesn't exist!*e[0m"
+  SKIP end
+ENDIF
+
+; skip to end, if whdload s directory doesn't exist
+IF NOT EXISTS "$whdloadsdir"
+  echo "*e[1mError: System S directory doesn't exist!*e[0m"
+  SKIP end
+ENDIF
+
+; skip to end, if whdload devs directory doesn't exist
+IF NOT EXISTS "$whdloaddevsdir"
+  echo "*e[1mError: System Devs directory doesn't exist!*e[0m"
+  SKIP end
+ENDIF
+
+; skip to install whdload, if whdload doesn't exist
+IF NOT EXISTS "$whdloadcdir/WHDLoad"
+  SKIP installwhdload
+ENDIF
+
+
+; install whdload
+; ---------------
+LAB installwhdload
+
+echo "WHDLoad..."
+
+; extract whdload to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:WHDLoad_usr.lha" "SYSTEMDIR:Temp/"
+
+; install whdload c files
+Copy >NIL: "SYSTEMDIR:Temp/WHDLoad/C/#?" "$whdloadcdir" ALL
+
+; install whdload prefs, if it doesn't exist
+IF NOT EXISTS "$whdloadsdir/WHDLoad.prefs"
+  Copy >NIL: "SYSTEMDIR:Temp/WHDLoad/S/WHDLoad.prefs" "$whdloadsdir"  
+ENDIF
+
+; install whdload cleanup, if it doesn't exist
+IF NOT EXISTS "$whdloadsdir/WHDLoad-Cleanup"
+  Copy >NIL: "SYSTEMDIR:Temp/WHDLoad/S/WHDLoad-Cleanup" "$whdloadsdir"  
+ENDIF
+
+; install whdload startup, if it doesn't exist
+IF NOT EXISTS "$whdloadsdir/WHDLoad-Startup"
+  Copy >NIL: "SYSTEMDIR:Temp/WHDLoad/S/WHDLoad-Startup" "$whdloadsdir"  
+ENDIF
+
+; install docs, if help dir exists
+IF EXISTS "$whdloadhelpdir"
+  MakeDir >NIL: "$whdloadhelpdir/WHDLoad"
+  Copy >NIL: "SYSTEMDIR:Temp/WHDLoad/Docs/#?" "$whdloadhelpdir/WHDLoad" ALL
+ENDIF
+
+; delete whdload from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/WHDLoad.info"
+Delete >NIL: "SYSTEMDIR:Temp/WHDLoad/" ALL
+
+
+; install skick
+; -------------
+LAB installskick
+
+echo "SKick..."
+
+; extract whdload to temp systemdir
+MakeDir >NIL: "SYSTEMDIR:Temp/SKick"
+lha -m1 -q x "USERPACKAGEDIR:skick346.lha" "SYSTEMDIR:Temp/SKick/"
+
+; create devs kickstarts directory, if it doesn't exist
+IF NOT EXISTS "$whdloaddevsdir/Kickstarts"
+  MakeDir >NIL: "$whdloaddevsdir/Kickstarts"
+ENDIF
+
+; install skick kickstarts files for whdload
+Copy >NIL: "SYSTEMDIR:Temp/SKick/Kickstarts/#?" "$whdloaddevsdir/Kickstarts/"
+
+; delete skick from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/SKick/" ALL
+
+
+; disable existing quit key
+rep "$whdloadprefs" "QuitKey" ";QuitKey"
+
+; show select whdload quit key request choice
+set quitkey `RequestChoice "WHDLoad Quit Key" "Select global quit key for WHDLoad" "F10|Help|Del|NumL|ScrL|SysRq|PrtSc|Default"`
+
+; F10
+If "$quitkey" eq 1 VAL
+	echo "QuitKey=$59" >>"$whdloadprefs"
+EndIf
+
+; Help
+If "$quitkey" eq 2 VAL 
+	echo "QuitKey=$5f" >>"$whdloadprefs"
+EndIf
+
+; Del
+If "$quitkey" eq 3 VAL
+	echo "QuitKey=$46" >>"$whdloadprefs"
+EndIf
+
+; NumL
+If "$quitkey" eq 4 VAL 
+	echo "QuitKey=$5a" >>"$whdloadprefs"
+EndIf
+
+; ScrL
+If "$quitkey" eq 5 VAL
+	echo "QuitKey=$5b" >>"$whdloadprefs"
+EndIf
+
+; SysRq
+If "$quitkey" eq 6 VAL
+	echo "QuitKey=$5c" >>"$whdloadprefs"
+EndIf
+
+; PrtSc
+If "$quitkey" eq 7 VAL
+	echo "QuitKey=$5d" >>"$whdloadprefs"
+EndIf
+
+
+; end
+; ---
+LAB end

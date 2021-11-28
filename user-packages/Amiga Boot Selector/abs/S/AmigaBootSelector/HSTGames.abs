@@ -1,0 +1,12 @@
+; Amiga Boot Selector - HSTGames
+; ------------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-25
+
+IF EXISTS S:HSTLauncherMenu
+  execute S:HSTLauncherMenu "HSTGames"
+ELSE
+  REQUESTCHOICE "Error" "HST Launcher Menu is not installed!" "OK" >NIL:
+ENDIF
+wait 1
+totalreset

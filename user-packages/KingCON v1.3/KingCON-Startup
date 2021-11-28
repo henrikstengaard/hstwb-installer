@@ -1,0 +1,12 @@
+; KingCON Startup
+; ---------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-28
+
+; Replace CON with KingCON, if present
+IF EXISTS DEVS:KingCON-mountlist
+  Assign CON: DISMOUNT
+  Assign RAW: DISMOUNT 
+  Mount CON: from DEVS:KingCON-mountlist
+  Mount RAW: from DEVS:KingCON-mountlist 
+ENDIF
