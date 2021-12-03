@@ -1,7 +1,7 @@
 ; iGame v1.6a
 ; -----------
 ;
-; Date: 2021-11-28
+; Date: 2021-11-30
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of iGame v1.6a.
@@ -29,6 +29,9 @@ IF NOT EXISTS "$muiprefsdir"
   MakePath >NIL: "$muiprefsdir"
 ENDIF
 
+; show igame cpu version request choice
+set cpu `RequestChoice "iGame CPU version" "Select iGame CPU version to install*N*NDefault is 68020." "68020|68000|Default"` 
+
 ; write install status
 echo "iGame..."
 
@@ -40,36 +43,28 @@ Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame.info" "$igameicon" CLONE
 Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame/#?" "$igamedir" CLONE ALL
 Copy >NIL: "USERPACKAGEDIR:iGame v1.6a" "$igamedir/iGame" CLONE ALL
 
+; 68020 cpu, default
+If Not "$cpu" EQ 2 VAL
+  Skip muiprefs
+EndIf
+
+; 68000 cpu
+Copy >NIL: "USERPACKAGEDIR:iGame.info.000" "$igamedir/iGame.info" CLONE
+
+; mui prefs
+LAB muiprefs
+
 ; install igame mui prefs, if it doesn't exist
-IF "$igameinstalled" EQ 0 VAL
-  Copy >NIL: "USERPACKAGEDIR:IGAM.1.prefs" "$muiprefsdir" ALL CLONE
+If Not Exists "$muiprefsdir/IGAM.1.prefs"
+  Copy >NIL: "USERPACKAGEDIR:IGAM.1.prefs" "$muiprefsdir" CLONE
 ENDIF
 
 ; delete igame from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_iGame" ALL
 
-; get device and path from igamedir
-echo "$igamedir/iGame" >T:_igamedir1
+; backdrop leave out igame
+Execute INSTALLDIR:S/Backdrop-LeaveOut "$igamedir/iGame"
 
-cut -d ":" -f 1 T:_igamedir1 >T:_igamedir2
-sed "1d" T:_igamedir2 >T:_igamedir3
-rep T:_igamedir3 " " ""
-set device "`type T:_igamedir3`"
-
-cut -d ":" -f 2 T:_igamedir1 >T:_igamedir2
-sed "1d" T:_igamedir2 >T:_igamedir3
-rep T:_igamedir3 " " ""
-set path "`type T:_igamedir3`"
-
-; add igame to backdrop
-IF EXISTS "$device:.backdrop"
-  search "$device:.backdrop" "$path" >NIL:
-  IF NOT $RC EQ 0 VAL
-    echo ":$path" >>"$device:.backdrop"
-  ENDIF
-ELSE
-  echo ":$path" >>"$device:.backdrop"
-ENDIF
 
 ; end
 ; ---

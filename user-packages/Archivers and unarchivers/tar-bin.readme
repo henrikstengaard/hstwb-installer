@@ -1,0 +1,11 @@
+Short:        GNU Tape Archiver. V1.12
+Author:       John Gilmore
+Type:         dev/ade
+Version:      1.12
+Requires:     Amiga binary requires ixemul.library.
+Architecture: m68k-amigaos
+Origin:       Amiga Development Environment, ftp.ninemoons.com:pub/ade
+
+Tar collects files into an archive which is normally written to tape or
+other backup media.  It can also be written to a normal file, and such
+files have become a common intersystem exchange mechanism.

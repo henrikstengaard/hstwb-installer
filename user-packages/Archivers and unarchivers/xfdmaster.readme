@@ -1,0 +1,53 @@
+Short:        Rel1.38 Decrunch packed files (exe/data)
+Author:       Georg Hoermann, Dirk Stoecker
+Uploader:     stoecker epost de (Dirk Stoecker)
+Type:         util/pack
+Version:      1.38 / 39.15
+Architecture: m68k-amigaos
+
+The XFD system  is for single  file decrunching.  It can be compared to
+XAD system,  which  is  for  file extraction  from  archives!  They  do
+different work, but are used together often.
+
+This  software  package allows you to decrunch almost every packed file
+known  on the Amiga.  It consists of the xfdmaster.library as the brain
+and a couple of programs that offer certain functions to the user.
+
+The  xfdmaster.library is a standard Amiga shared, runtime library.  It
+works  with  Kickstart  V33+ and offers applications the possibility to
+directly support any crunched files.
+
+Other  than the predecessor decrunch.library, the xfdmaster.library has
+a  more  flexible interface, offers the possibility to decrunch already
+loaded  program  segments,  supports  external  decrunchers, is able to
+unlink 4EB9/4EF9- and text-linked files  and can scan for crunched data
+in any memory area.
+
+Contact the author at:
+
+*********************************************************************
+* snail-mail:                  * e-mail:                            *
+*   Dirk Stoecker              *   stoecker@epost.de                *
+*   Geschwister-Scholl-Str. 10 *   dirk@dstoecker.de                *
+*   01877 Bischofswerda        * world wide web:                    *
+*   GERMANY                    *   http://www.dstoecker.de/         *
+* phone:                       * pgp key:                           *
+*   GERMANY +49 (0)3594/706666 *   get from WWW pages or keyservers *
+*********************************************************************
+
+Following is my PGP signature for the corresponding LhA-File.
+Use ' pgpv xfdmaster.readme -o xfdmaster.lha ' to check it.
+Key fingerprint: B9 F2 3A 1A 29 02 75 16  6A C6 5B 7D 5E F6 16 CF.
+All my releases after April 2001 have a PGP signature with this key.
+Be alarmed if signature is missing or wrong.
+
+-----BEGIN PGP SIGNATURE-----
+Version: PGPfreeware 5.0i for non-commercial use
+MessageID: mUFCGjrFcHjhi/HMnWWdJEc6Tw8lrRwY
+
+iQCVAwUAP4rZg7OTsAT/iOY9AQHVfAP9HTjUYn8raBUegDmfrJaoq+Kx/svbukpm
+e2Tp/CH9VImZWpScSkLrxIjCJ6ZUXayEaBRTptb+bqzCaLV3yytYR+c5Sh6JFiUP
+MUk68u4s4CR57sMjP4gUsFcpggxbcz5/67LXe4rPyQJsDHC1WstqscaLIS1QCuJv
+tgIKGImQYHw=
+=nsBQ
+-----END PGP SIGNATURE-----

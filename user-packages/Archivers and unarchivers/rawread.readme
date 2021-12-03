@@ -1,0 +1,39 @@
+Short:        New transdisk by Toni Wilen
+Author:       twilen@arabuusimiehet.com (Toni Wilen)
+Type:         disk/bakup
+Architecture: m68k-amigaos
+
+New features compared to old transdisk:
+- raw mode (UAE 0.8.13 or later required, preferably 0.8.18 or later)
+
+RAW mode disables interrupts and uses direct hardware access. Unfortunately
+there isn't system routine for reading multiple disk revolutions with accurate
+index syncs. (No, TD_RAWREAD isn't enough)
+Tested with Kickstart 1.3 (Basic A500) and 3.0 (A1200+50MHz 68030)
+
+NOTE: THIS PROGRAM CAN'T BE USED COPYING PROTECTED DISKS!
+
+This program can create images of copy protected Amiga disks, but it is impossible
+to write them back to disk with standard Amiga hardware. Even with special hardware it
+requires careful analyzation of track data and knowledge of specific protection
+scheme. Emulating image file as floppy is very different to writing to real floppy!
+DO NOT ASK THE AUTHOR ABOUT COPY PROTECTIONS. This program "just" creates
+identical image of MFM data from floppy, nothing more, nothing less..
+
+In theory this program can create images from all MFM (2us bit rate) formatted
+floppies except floppies with bit cell timing tricks.
+
+Tested with following original games:
+- Federation of Free Traders
+- MidWinter
+- Time Machine
+Also works with MS-DOS and diskspare formatted floppies
+
+Changelog:
+
+05.12.2000
+- first version
+03.04.2001
+- rewritten analyzer, works now with MS-DOS formatted floppies
+02.12.2001
+- fixed "empty track"-bug

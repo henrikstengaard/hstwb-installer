@@ -1,0 +1,80 @@
+Short:        Final MagicMenu release (Beta, 03/2002)
+Author:       Martin Korndörfer, Olaf `Olsen' Barthel, Jens 'Damato' Langner and Stephan Rupprecht
+Uploader:     aminet aminet net
+Type:         util/wb
+Version:      2.35
+Requires:     util/wb/MagicMenu_II.lha; dev/gui/gtlayout.lha; util/libs/pmuser.lha; 68020 CPU
+Architecture: m68k-amigaos
+
+This is the final release of MagicMenu, a beta version originally released in
+March 2002 on the now defunct magicmenu.de.
+
+This archive is an update for MagiMenu 2.30 - install that one first then
+use the files from this archive to update your installation.
+
+This software is released under GNU General Public License, Version 2.
+The sourcecode can be found in util/wb/MagicMenu_2.35_src.zip
+
+History
+=======
+
+MagicMenu 2.31 (2.3.2001)
+
+- Made the 'SetFunction()' patch safer, following much good advice
+  from Harry Sintonen.
+
+
+MagicMenu 2.32 (17.10.2001)
+
+- Pulldown menus are transparent, again <Mario Cattaneo>. The menustrip
+  isn't transparent in this mode to make the menutexts easier to read.
+  
+- This release of MagicMenu is a FAT binary containing code for the 68k
+  *and* PPC processor running WarpUP v4.  The PPC is used to speedup rendering
+  when the transparent mode is enabled. If you feel like the PPC support makes
+  menu rendering even slower, then you can disable the PPC support by setting 
+  the "ENABLEPPC=NO" tooltype. Of course, this version also works without a
+  PPC. Responsible for PPC support is Stephan, so please send bugreports
+  to <stephan@magicmenu.de> if you experience any problems with it.
+
+
+MagicMenu 2.33 (16.11.2001)
+
+- fixed PPC support (didn't work well on some systems).
+- fixed the "Checkmark leaves garbage" bug reported by Andreas
+  Kürzinger. At least I hope so (no answer yet).
+- MagicMenuPrefs: fixed compiler specific problem with the
+  displayhook of the slidergadget (color precision).
+
+
+MagicMenu 2.34 (12.02.2002)
+- added PPCDIRECT tooltype. When set to YES, the PPC will
+  read from and write to the bitmaps.
+- implemented Amithlon support (just for fun:).
+- instead of having the background transparent, you can now
+  have a backdrop image.
+- transparency didn't work when blocking mode was enabled and
+  cast shadows off (two uninitialized variables) <Sensei>.
+
+
+MagicMenu 2.35 (20.03.2002)  
+- for standard menus dri_CheckMark was used instead of
+  Win->CheckMark (unless dri_CheckMark was NULL).
+- fixed a problem with CGFX and the SAVEMEM option of it.
+  MagicMenu was using GetCyberMapAttr() on non cgx
+  bitmaps causing some garbage because the transparency
+  feature got activated on <= 4bit screens.
+- the highlighting color is used to highlight the 
+  currently active item when transparency is used. Before
+  the item was brighten by 25%. You can switch between
+  both possibilities.
+- due to heavy demand the background image can be 
+  made transparent, too.
+- transparency can be disabled for pull-down menus, now.
+- MagicMenuPrefs: fixed the color precision slider
+  once again (this time the compiler grabbed the
+  parameter with the right order from the stack;).
+- MagicMenuPrefs: the stackswapping code was missing
+  in 2.34.
+- MagicMenuPrefs: the path of the background image
+  will be turned into an absolute one, now.

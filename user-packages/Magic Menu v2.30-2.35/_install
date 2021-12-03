@@ -1,0 +1,60 @@
+; Magic Menu v2.30-2.35
+; ---------------------
+;
+; Date: 2021-12-01
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of Magic Menu v2.30 or v2.35.
+; 68000 installs is v2.30.
+; 68020 installs is v2.35.
+
+
+; paths
+set libsdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Libs"`"
+set prefsdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Prefs"`"
+set envarcdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Prefs/Env-Archive"`"
+set wbstartupdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "WBStartup"`"
+
+; show magic menu cpu version request choice
+set cpu `RequestChoice "Magic Menu CPU version" "Select Magic Menu CPU version to install*N*NDefault is 68000." "68020|68000|Default"` 
+
+; write install status
+If "$cpu" EQ 1 VAL
+  echo "Magic Menu v2.35..."
+Else
+  echo "Magic Menu v2.30..."
+EndIf
+
+; extract magic menu to installdir
+lha -m1 -q x "USERPACKAGEDIR:MagicMenu_II.lha" "SYSTEMDIR:Temp/_MagicMenu/"
+lha -m1 -q x "USERPACKAGEDIR:MagicMenu_2.35.lha" "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/020/"
+
+If "$cpu" EQ 1 VAL
+  ; install magic menu files for 68020
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/020/MagicMenu" "$wbstartupdir" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/020/MagicMenu.info" "$wbstartupdir" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/020/MagicMenuPrefs#?" "$prefsdir" CLONE
+Else
+  ; install magic menu files for 68000, default
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/68k/MagicMenu" "$wbstartupdir" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/68k/MagicMenu.info" "$wbstartupdir" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/68k/MagicMenuPrefs#?" "$prefsdir" CLONE
+EndIf
+
+; install gtlayout library, if it doesn't exist
+If Not Exists "$libsdir/gtlayout.library"
+  Copy >NIL: "SYSTEMDIR:Temp/_MagicMenu/MagicMenu/libs/gtlayout.library" "$libsdir" CLONE
+EndIf
+
+; install magic menu prefs, if it doesn't exist
+If Not Exists "$envarcdir/MagicMenu.prefs"
+  Copy >NIL: "USERPACKAGEDIR:MagicMenu.prefs" "$envarcdir" CLONE
+EndIf
+
+; delete magic menu from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_MagicMenu" ALL
+
+
+; end
+; ---
+LAB end

@@ -1,0 +1,21 @@
+; WHDLoad Packs
+; -------------
+;
+; Date: 2021-12-03
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of WHDLoad Packs.
+
+
+; create script to run whdload packs
+List USERPACKAGEDIR: DIRS LFORMAT "Echo *"WHDLoad Pack '%n'...*"*NIf Exists *"%p%n/_install*"*N  Execute *"%p%n/_install*"*NElse*N  Echo *"_[1]_*"*NEndIf" >T:_whdloadpacks
+rep T:_whdloadpacks "_[1]_" "Warning: No entries or install entries not build!**N*"_[2]_"
+rep T:_whdloadpacks "_[2]_" "*N  Ask *"Press ENTER to continue"
+
+; run whdload packs
+Execute T:_whdloadpacks
+Delete >NIL: T:_whdloadpacks 
+
+; end
+; ---
+LAB end

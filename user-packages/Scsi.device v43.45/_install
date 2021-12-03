@@ -1,0 +1,272 @@
+; Scsi.device v43.45
+; ------------------
+;
+; Date: 2021-12-02
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to automate installation of scsi.device v43.45
+; for Kickstart 3.1 rom.
+; Scsi.device is extracted from Kickstart 3.1 rom and patched to v43.45.
+; Patched scsi.devices are installed in DEVS:.
+
+
+; show confirm install request choice
+set confirm "`RequestChoice "Scsi.device v43.45" "Patching scsi.device to v43.45 will enable*NKickstart 3.1 rom to use large harddisks*Nand partitions. Boot partition must still*Nbe within the first 4GB of your harddisk*Nloading patched scsi.device v43.45.*N*NBooting from a floppy disk will install this*Non the booted floppy and not on your harddisk.*N*NDo you want to install scsi.device v43.45?" "Yes|No"`"
+IF NOT "$confirm" EQ 1 VAL
+  SKIP end
+ENDIF
+
+; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set devsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+
+
+; fail, if devs directory doesn't exist
+If Not Exists "$devsdir"
+  echo "Error: Devs directory '$devsdir' not found!"
+  echo ""
+  ask "Press ENTER to continue"
+  Skip end
+EndIf
+
+; fail, if startup sequence doesn't exist
+If Not Exists "$startupsequence"
+  echo "Error: Startup sequence '$startupsequence' not found!"
+  echo ""
+  ask "Press ENTER to continue"
+  Skip end
+EndIf
+
+; stack for running md5
+Stack 8192
+
+; delete scsi.device, if it exists
+If Exists scsi.device
+  Delete >NIL: scsi.device
+EndIf
+
+; extract scsi device from kickstart rom
+USERPACKAGEDIR:GetSCSI
+
+; fail, failed to extract scsi.device
+If Not Exists scsi.device
+  echo "Error: Failed to extract scsi.device!"
+  echo ""
+  ask "Press ENTER to continue"
+  Skip end
+EndIf
+
+; get scsi device md5
+set md5 "`USERPACKAGEDIR:md5 scsi.device`"
+
+; a500 kickstart 3.1 40.63 scsi device
+If "$md5" EQ "5d77c814bbb57422bc33ab24aed95d96"
+  SKIP kickstart500
+EndIf
+
+; a1200 kickstart 3.1 40.68 scsi device
+If "$md5" EQ "cd815a9ccc40fb368dcf18a97d7e3880"
+  SKIP kickstart1200
+EndIf
+
+; a3000 kickstart 3.1 40.68 scsi device
+If "$md5" EQ "34d7ed747cbd260c0f0bb7100e4ed616"
+  SKIP kickstart3000
+EndIf
+
+; a4000 kickstart 3.1 40.68 scsi device
+If "$md5" EQ "116d6aeb5a78fe08d17707ab586d9647"
+  SKIP kickstart4000
+EndIf
+
+; a4000t kickstart 3.1 40.70 scsi device
+If "$md5" EQ "55c08c28e2f739caea02f99775073895"
+  SKIP kickstart4000t
+EndIf
+
+; unsupported scsi.device
+echo "Error: Unsupport scsi.device md5 '$md5', only original"
+echo "Kickstart 3.1 roms with scsi.device v40.x are supported!"
+echo ""
+ask "Press ENTER to continue"
+Skip end
+
+; kickstart a500 scsi.device
+LAB kickstart500
+echo "Creating scsi devices from A500 Kickstart 3.1 40.63..."
+Copy >NIL: scsi.device "$devsdir/scsi.device.40.63.a500"
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:KS31-Patches/scsi.40.63.a500-a1200.gpch" "$devsdir/scsi.device.40.68.a1200" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:KS31-Patches/scsi.40.63.a500-a3000.gpch" "$devsdir/scsi.device.40.68.a3000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:KS31-Patches/scsi.40.63.a500-a4000.gpch" "$devsdir/scsi.device.40.68.a4000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:KS31-Patches/scsi.40.63.a500-a4000t.gpch" "$devsdir/scsi.device.40.70.a4000t" QUIET
+Delete >NIL: scsi.device
+Skip validate
+
+; kickstart a500 scsi.device
+LAB kickstart1200
+echo "Creating scsi devices from A1200 Kickstart 3.1 40.68..."
+Copy >NIL: scsi.device "$devsdir/scsi.device.40.68.a1200"
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a1200-a500.gpch" "$devsdir/scsi.device.40.63.a500" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a1200-a3000.gpch" "$devsdir/scsi.device.40.68.a3000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a1200-a4000.gpch" "$devsdir/scsi.device.40.68.a4000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a1200-a4000t.gpch" "$devsdir/scsi.device.40.70.a4000t" QUIET
+Delete >NIL: scsi.device
+Skip validate
+
+LAB kickstart3000
+echo "Creating scsi devices from A3000 Kickstart 3.1 40.68..."
+Copy >NIL: scsi.device "$devsdir/scsi.device.40.68.a3000"
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a3000-a500.gpch" "$devsdir/scsi.device.40.63.a500" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a3000-a1200.gpch" "$devsdir/scsi.device.40.68.a1200" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a3000-a4000.gpch" "$devsdir/scsi.device.40.68.a4000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a3000-a4000t.gpch" "$devsdir/scsi.device.40.70.a4000t" QUIET
+Delete >NIL: scsi.device
+Skip validate
+
+LAB kickstart4000
+echo "Creating scsi devices from A4000 Kickstart 3.1 40.68..."
+Copy >NIL: scsi.device "$devsdir/scsi.device.40.68.a4000"
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a4000-a500.gpch" "$devsdir/scsi.device.40.63.a500" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a4000-a1200.gpch" "$devsdir/scsi.device.40.68.a1200" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a4000-a3000.gpch" "$devsdir/scsi.device.40.68.a3000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:KS31-Patches/scsi.40.68.a4000-a4000t.gpch" "$devsdir/scsi.device.40.70.a4000t" QUIET
+Delete >NIL: scsi.device
+Skip validate
+
+LAB kickstart4000t
+echo "Creating scsi devices from A4000T Kickstart 3.1 40.70..."
+Copy >NIL: scsi.device "$devsdir/scsi.device.40.70.a4000t"
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:KS31-Patches/scsi.40.70.a4000t-a500.gpch" "$devsdir/scsi.device.40.63.a500" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:KS31-Patches/scsi.40.70.a4000t-a1200.gpch" "$devsdir/scsi.device.40.68.a1200" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:KS31-Patches/scsi.40.70.a4000t-a3000.gpch" "$devsdir/scsi.device.40.68.a3000" QUIET
+USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:KS31-Patches/scsi.40.70.a4000t-a4000.gpch" "$devsdir/scsi.device.40.68.a4000" QUIET
+Delete >NIL: scsi.device
+
+; validate scsi devices
+LAB validate
+
+If Not "`USERPACKAGEDIR:md5 "$devsdir/scsi.device.40.63.a500"`" EQ "5d77c814bbb57422bc33ab24aed95d96"
+  echo "Error: Scsi.device.40.63.a500 has invalid md5 checksum!"
+EndIf
+
+If Not "`USERPACKAGEDIR:md5 "$devsdir/scsi.device.40.68.a1200"`" EQ "cd815a9ccc40fb368dcf18a97d7e3880"
+  echo "Error: Scsi.device.40.68.a1200 has invalid md5 checksum!"
+EndIf
+
+If Not "`USERPACKAGEDIR:md5 "$devsdir/scsi.device.40.68.a3000"`" EQ "34d7ed747cbd260c0f0bb7100e4ed616"
+  echo "Error: Scsi.device.40.68.a3000 has invalid md5 checksum!"
+EndIf
+
+If Not "`USERPACKAGEDIR:md5 "$devsdir/scsi.device.40.68.a4000"`" EQ "116d6aeb5a78fe08d17707ab586d9647"
+  echo "Error: Scsi.device.40.68.a4000 has invalid md5 checksum!"
+EndIf
+
+If Not "`USERPACKAGEDIR:md5 "$devsdir/scsi.device.40.70.a4000t"`" EQ "55c08c28e2f739caea02f99775073895"
+  echo "Error: Scsi.device.40.70.a4000t has invalid md5 checksum!"
+EndIf
+
+
+; patch scsi.device to v43.45
+; ---------------------------
+
+; patch a500 scsi.device to v43.45, if it exists
+If Exists "$devsdir/scsi.device.40.63.a500"
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:v43.45-Patches/scsi.40.63.a500-43.45.gpch" "$devsdir/scsi.device.43.45.a600" QUIET
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.63.a500" "USERPACKAGEDIR:v43.45-Patches/scsi.40.63.a500-43.45.n.gpch" "$devsdir/scsi.device.43.45.n.a600" QUIET
+Else
+  echo "ERROR: scsi.device.40.63.a500 not found!"
+EndIf
+
+; patch a1200 scsi.device to v43.45, if it exists
+If Exists "$devsdir/scsi.device.40.68.a1200"
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a1200-43.45.gpch" "$devsdir/scsi.device.43.45.a1200" QUIET
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a1200" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a1200-43.45.n.gpch" "$devsdir/scsi.device.43.45.n.a1200" QUIET
+Else
+  echo "ERROR: scsi.device.40.68.a1200 not found!"
+EndIf
+
+; patch a3000 scsi.device to v43.45, if it exists
+If Exists "$devsdir/scsi.device.40.68.a3000"
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a3000-43.45.gpch" "$devsdir/scsi.device.43.45.a3000" QUIET
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a3000" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a3000-43.45.n.gpch" "$devsdir/scsi.device.43.45.n.a3000" QUIET
+Else
+  echo "ERROR: scsi.device.40.68.a3000 not found!"
+EndIf
+
+; patch a4000 scsi.device to v43.45, if it exists
+If Exists "$devsdir/scsi.device.40.68.a4000"
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a4000-43.45.gpch" "$devsdir/scsi.device.43.45.a4000" QUIET
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.68.a4000" "USERPACKAGEDIR:v43.45-Patches/scsi.40.68.a4000-43.45.n.gpch" "$devsdir/scsi.device.43.45.n.a4000" QUIET
+Else
+  echo "ERROR: scsi.device.40.68.a4000 not found!"
+EndIf
+
+; patch a4000t scsi.device to v43.45, if it exists
+If Exists "$devsdir/scsi.device.40.70.a4000t"
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:v43.45-Patches/scsi.40.70.a4000t-43.45.gpch" "$devsdir/scsi.device.43.45.a4000t" QUIET
+  USERPACKAGEDIR:gpatch "$devsdir/scsi.device.40.70.a4000t" "USERPACKAGEDIR:v43.45-Patches/scsi.40.70.a4000t-43.45.n.gpch" "$devsdir/scsi.device.43.45.n.a4000t" QUIET
+Else
+  echo "ERROR: scsi.device.40.70.a4000t not found!"
+EndIf
+
+; show modify startup sequence request choice
+set amigamodel "`RequestChoice "Scsi.device v43.45 startup sequence" "Modifying startup sequence to load*Npatched scsi.device is required for Amiga OS 3.1*Nto use updated scsi.device and is*Nnot needed for Amiga OS 3.2 and 3.1.4!*N*NSelect Amiga model scsi.device v43.45*Nto install in startup sequence." "A500|A1200|A3000|A4000|A4000T|Skip"`"
+
+; a500
+IF "$amigamodel" EQ 1 VAL
+  Copy >NIL: "$devsdir/scsi.device.43.45.a600" "$devsdir/scsi.device"
+  Skip modifystartup
+ENDIF
+
+; a1200
+IF "$amigamodel" EQ 2 VAL
+  Copy >NIL: "$devsdir/scsi.device.43.45.a1200" "$devsdir/scsi.device"
+  Skip modifystartup
+ENDIF
+
+; a3000
+IF "$amigamodel" EQ 3 VAL
+  Copy >NIL: "$devsdir/scsi.device.43.45.a3000" "$devsdir/scsi.device"
+  Skip modifystartup
+ENDIF
+
+; a4000
+IF "$amigamodel" EQ 4 VAL
+  Copy >NIL: "$devsdir/scsi.device.43.45.a4000" "$devsdir/scsi.device"
+  Skip modifystartup
+ENDIF
+
+; a4000t
+IF "$amigamodel" EQ 5 VAL
+  Copy >NIL: "$devsdir/scsi.device.43.45.a4000t" "$devsdir/scsi.device"
+  Skip modifystartup
+ENDIF
+
+; skip
+Skip end
+
+
+; modify startup sequence
+; -----------------------
+LAB modifystartup
+
+echo "Updating startup sequence '$startupsequence'..."
+Search >NIL: "$startupsequence" "LoadModule DEVS:scsi.device" quiet
+IF NOT $RC EQ 0 VAL
+  If Not Exists "$startupsequence.BAK"
+    Copy >NIL: "$startupsequence" "$startupsequence.BAK"
+  EndIf
+  Echo "If Exists DEVS:scsi.device*N  LoadModule DEVS:scsi.device*NEndIf*N" >T:_Startup-Sequence
+  Type "$startupsequence" >>T:_Startup-Sequence
+  Copy >NIL: T:_Startup-Sequence "$startupsequence"
+  Delete >NIL: T:_Startup-Sequence
+ENDIF
+
+; install load module
+Copy >NIL: USERPACKAGEDIR:LoadModule "$cdir"
+
+
+; end
+; ---
+LAB end

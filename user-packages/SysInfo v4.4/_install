@@ -1,0 +1,31 @@
+; SysInfo v4.4
+; ------------
+;
+; Date: 2021-11-29
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of SysInfo v4.4.
+
+
+; write install status
+echo "SysInfo..."
+
+; extract sysinfo to installdir
+lha -m1 -q x "USERPACKAGEDIR:SysInfo.lha" "$INSTALLDIR/"
+
+; extract sysinfo boards to installdir
+lha -m1 -q x "USERPACKAGEDIR:SysInfo.lha" "SYSTEMDIR:Temp/_SysInfo/"
+
+; install sysinfo boards files
+Copy >NIL: "SYSTEMDIR:Temp/_SysInfo/Sysinfo.boards" "$INSTALLDIR/SysInfo" CLONE
+
+; delete sysinfo boards from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_SysInfo" ALL
+
+; backdrop leave out sysinfo
+Execute INSTALLDIR:S/Backdrop-LeaveOut "$INSTALLDIR/SysInfo/SysInfo"
+
+
+; end
+; ---
+LAB end

@@ -1,0 +1,96 @@
+; Directory Opus v4.12-4.17pre21
+; ------------------------------
+;
+; Date: 2021-12-01
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of Directory Opus v4.12 or v4.17pre21.
+; Directory Opus configuration from ClassicWB is installed, which comes with a lot good options
+; configured to eg. compress and uncompress archives.
+; 68000 installs is Directory Opus v4.12.
+; 68020 installs is Directory Opus v4.17pre21.
+
+; paths
+set sdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "S"`"
+set libsdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Libs"`"
+set dopusdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "DirectoryOpus"`"
+
+; create directory opus directory and icons
+MakePath >NIL: "$dopusdir"
+MakeIcon >NIL: "$INSTALLDIR"
+MakeIcon >NIL: "$dopusdir"
+
+; show directory opus cpu version request choice
+set cpu `RequestChoice "Directory Opus CPU version" "Select Directory Opus CPU version to install*N*NDefault is 68000." "68020|68000|Default"` 
+
+; skip to 68000, if cpu is not 68020
+If Not "$cpu" EQ 1 VAL
+  Skip cpu68000
+Else
+
+
+; write install status
+echo "Directory Opus v4.17pre21..."
+
+; extract directory opus v4.16 to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:DOpus416JRbin.lha" "SYSTEMDIR:Temp/_dopus/"
+
+; install directory opus v4.16 files
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/c/dopusrt" "$cdir"
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/libs/dopus.library" "$libsdir"
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/modules/#?" "$dopusdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/s/ConfigOpus.#?" "$sdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/s/DirectoryOpus.#?" "$sdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus/DirectoryOpus#?" "$dopusdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus.info" "$dopusdir.info" ALL CLONE
+
+; extract directory opus v4.17 to temp systemdir
+unlzx >NIL: -m x "USERPACKAGEDIR:DOpus417pre21.lzx" "SYSTEMDIR:Temp/_dopus/"
+
+; install directory opus v4.17 files
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpusRT" "$cdir"
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/dopus.library" "$libsdir"
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DOpus_#?" "$dopusdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/ConfigOpus" "$dopusdir"
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DirectoryOpus" "$dopusdir"
+
+Skip cleanup
+
+
+; 68000
+; -----
+LAB cpu68000
+
+; write install status
+echo "Directory Opus v4.12..."
+
+; extract directory opus to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:dopus_412_cu.lha" "SYSTEMDIR:Temp/_dopus/"
+
+; install directory opus files
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/c/dopusrt" "$cdir" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/libs/dopus.library" "$libsdir" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/Modules/#?" "$dopusdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/s/ConfigOpus.#?" "$sdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/s/DirectoryOpus.#?" "$sdir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_dopus/DirectoryOpus#?" "$dopusdir" ALL CLONE
+
+
+; cleanup
+; -------
+LAB cleanup
+
+; delete directory opus from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_dopus" ALL
+
+; install directory opus icon and configuration
+Copy >NIL: "USERPACKAGEDIR:DirectoryOpus.CFG" "$sdir" CLONE
+Copy >NIL: "USERPACKAGEDIR:DirectoryOpus.info" "$dopusdir" CLONE
+
+; backdrop leave out directory opus
+Execute INSTALLDIR:S/Backdrop-LeaveOut "$dopusdir/DirectoryOpus"
+
+
+; end
+; ---
+LAB end

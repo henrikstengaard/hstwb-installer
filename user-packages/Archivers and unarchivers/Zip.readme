@@ -1,0 +1,42 @@
+Short:        Zip v2.2 .ZIP archive creator
+Author:       Bunch of people (see documentation)
+Uploader:     rraWedor metrodowntown com
+Type:         util/arc
+Version:      v5.31, fUnZip v3.92
+Replaces:     util/arc/Zip.lha
+Architecture: m68k-amigaos
+
+Zip v2.2 .ZIP archive creator.  Creates .ZIP archives compatible with PKZip
+v2.04g.
+
+Note that if you use Zip with QWK or other offline mail readers, you probably
+want to use Zip v1.0 or lower, since most BBSs seem to only use PKZip v1.10 or
+lower to extract reply packets uploaded, and v1.10 can't unarchive files
+archived by Zip v2.1 unless you use the zero compression option.
+
+If anyone requires an earlier version of Zip (the latest one I could still find
+is version 0.93), I can upload it.  Just write me and ask.  If anyone has a
+version closer or equal to 1.0, please let *me* know!  :)
+
+In addition to the following from the WHATSNEWS text file included in the
+archive, it appears that there is no longer a seperate encrypting and
+non-encrypting version, and there is no ZipCloak command in the case of the
+encrypting version.
+
+New things in zip 2.2
+
+- BEOS port by Chris Herborth
+- QDOS port by Jonathan Hudson
+- TANDEM port by Dave Smith
+- WINDLL port (16-bit Win 3.x and 32-bit WinNT/Win95) by Mike White
+- SYSV packages support by John Bush
+- zip -P SeCrEt encrypts entries in the zip file with password SeCrEt
+  (WARNING: THIS IS INSECURE, use at your own risk)
+- zip -R recurses into subdirectories of current dir like "PKZIP -rP"
+- zip -x@exclude.lst excludes files specified in the file exclude.lst
+- zip -i@include.lst includes files specified in the file include.lst
+- zip -@ only handles one filename per line, but supports whitespace in names
+- zip -t ddmmyyyy, 4 digit year number for uniqueness of years beyond 2000
+- zip -tt ddmmyyyy only includes files before a specified date
+
+Readme created with ARC 2.0 - Copyright (c)1996-97 by Jens Weyer.

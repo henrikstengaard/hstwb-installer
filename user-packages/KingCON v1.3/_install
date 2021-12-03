@@ -1,7 +1,7 @@
 ; KingCON v1.3
 ; ------------
 ;
-; Date: 2021-11-28
+; Date: 2021-12-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of KingCON.
@@ -12,6 +12,9 @@ set sdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 set usfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/User-Startup"`"
 set ldir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L"`"
 set devsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
+
+; show kingcon cpu version request choice
+set cpu `RequestChoice "KingCON CPU version" "Select KingCON CPU version to install*N*NDefault is 68000." "68020|68000|Default"` 
 
 ; create user startup file, if it doesn't exist 
 IF NOT EXISTS "$usfile"
@@ -24,11 +27,16 @@ echo "KingCON..."
 ; extract kingcon to temp systemdir
 lha -m1 -q x "USERPACKAGEDIR:KingCON_1.3.lha" "SYSTEMDIR:Temp/_KingCON/"
 
-; install kingcon files
-Copy >NIL: "SYSTEMDIR:Temp/_KingCON/KingCON1.3/Handler/KingCON-handler#?" "$ldir" CLONE
+If "$cpu" EQ 1 VAL
+  ; install kingcon files for 68020
+  Copy >NIL: "SYSTEMDIR:Temp/_KingCON/KingCON1.3/Handler/KingCON-handler.020" "$ldir" CLONE
+Else
+  ; install kingcon files for 68000, default
+  Copy >NIL: "SYSTEMDIR:Temp/_KingCON/KingCON1.3/Handler/KingCON-handler" "$ldir" CLONE
+EndIf
 Copy >NIL: "SYSTEMDIR:Temp/_KingCON/KingCON1.3/Handler/KingCON-mountlist" "$devsdir" CLONE
 
-; delete igame from temp systemdir
+; delete kingcon from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_KingCON" ALL
 
 ; install kingcon startup

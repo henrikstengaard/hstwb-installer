@@ -1,0 +1,30 @@
+Short:        Y2K patches for LZX 1.21r
+Author:       Mikolaj Calusinski <bloelle@priv.gold.pl>
+Uploader:     Mikolaj Calusinski <bloelle priv gold pl>
+Type:         util/arc
+Version:      2.0 ;)
+Architecture: m68k-amigaos
+
+Bugfix release: Y2K dates were set wrong on systems without locale.library.
+Thanks for the reports to Bablos and Stefano Fenili.
+
+Here you can find my quick patches for all versions of LZX 1.21 registered
+dealing with Year 2000 problems. I made these fixes to be as transparent as
+possible with special care not to cause any damage to (de)compressing
+routines. Tests show that everything runs fine, however I take no
+responsibility for any possible damage these patches may cause, etc. Use at
+your own risk. Hopefully Jonathan Forbes will be so kind (again) to release an
+official update soon.
+
+Patched versions of LZX should store/restore/list correct dates upto 2033. In
+2034 the new revision of data header will be needed as currently the program
+stores year using 6 bits only; 2034-1970=64 and 64 requires 7 bits.
+
+Installation: use freely distributable GPatch program (included) on exe files
+from original LZX 1.21r distribution (it can be found on Aminet as
+'lzx121r1.lha' in 'util/arc' directory). Now choose the executable which is
+suitable for your CPU and enter f.ex.:
+'GPatch LZX_68040r LZX121r.gpch ram:lzx'
+
+LZX is Copyright © 1995 Data Compression Technologies
+GPatch is Copyright © 1997, 1998 Ralf Gruner

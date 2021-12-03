@@ -1,0 +1,133 @@
+Short:        More Boardinfos for Sysinfo
+Author:       Holger.Hippenstiel AT gmx.de
+Uploader:     Holger Hippenstiel nc-online de
+Type:         util/moni
+Version:      3.7
+Replaces:     util/moni/SysinfoBoards.lha
+Requires:     util/moni/SysInfo.lha
+Architecture: m68k-amigaos; generic
+Distribution: Aminet
+Kurz:         Mehr Boardinfos fuer Sysinfo
+
+SysinfoBoards V3.7
+==================
+
+TL;DR
+Copy Sysinfo.boards to S:
+Sysinfo will recognize more expansion boards.
+
+*****************************************************************************
+                              *** Important ***
+You must increase the Stacksize of SysInfo, or else it will crash with these
+extended Boardinfos !I didn't notice because i got StackAttack running ->
+http://aminet.net/package/util/boot/StackAttack2
+I've included an new Icon with 16384 Bytes Stack which seems enough even
+without StackAttack.
+Or increase the StackSize yourself.
+Or install StackAttack on your System - it's a good tool. :) 
+*****************************************************************************
+
+This is a list of all known expansion boards for the amiga, i've added a
+lot over the time and thought it maybe useful for others, if you know some
+which arent in the list, write me a mail and i will add them.
+
+Update 3.5:
+Added 50 new ID's with thanks to infos from http://amiga.resource.cx
+Reworked a lot of the descriptions.
+
+Please understand that many times the companies reused ID's, for example
+Manufacturer 2017 / ID 11 =
+http://amiga.resource.cx/search.pl?mid=2017&base=dec&pid=11
+Lists 11 expansions with this ID.
+Ok, if they got the same functionality like SCSI port on all of them it
+would make sense, but manufacturers used the same ID for totally
+different hardware, so the description will be sum of them - in this case
+SeriesII/SCSI - but they also did an IOExtender and PhonePak (an Fax-Card)
+with the same Autoconfig-IDs .. :-/
+I'm not really sure why this reusing happend so often, but there is nothing
+i can do about it. Multiple entries with same ID wont work, Sysinfo will
+just pick the first one.
+
+*****************************************************************************
+Many thanks to Robert Miranda fmr. GVP Tech Support for some interessing
+Knowledge about multiple ID's regarding the Manufacturer 2017 & ID 11:
+
+"The values you see in the board ID field is all the GVP DPRC chip.
+It's the same on any board with that IC. That's why a Series II HC, a
+HD8/HC8, the TBC+, all Combo030 and G-Force 030/040 accelerators,
+I/O Extender, and more report this. A new chip production run would have
+been needed to change the board ID for each change. The chip was actually
+designed with only the HC8/HD8 in mind, but a common Amiga to PC glue chip
+(vs many PAL/GAL, 74-series gates, and bus buffer chips) was an incredible
+cost saver back then, and ideas flowed into new products.."
+
+I guess the same thing happend at Phase5 and others with multiple products
+for the same ID.
+
+He also proposed i dig into the GVPInfo tool, disassemble it and have a look
+how the tool reads some extended information in the board config area ..
+I did, but thats not useful, because it basicly contains an own version
+of http://aminet.net/package/util/libs/BoardsLib - which will maybe used by
+Sysinfo in the future.
+
+It's no problem if an Manufacturer/ProductID occurs multiple times, in case
+of 2017/11 you get gvpscsi.device and gvpscsi2.device and so on ..
+*****************************************************************************
+
+If an Manfacturer+ID is already in the list, there is no need to write
+me alternativ descriptions for it, thanks for trying. :)
+
+Update 3.6:
+It needs atleast Sysinfo V3.22, V3.24 (I know the readme says 3.23 ..) from
+http://aminet.net/package/misc/fish/fish-0969 would work.
+Added & corrected some entries, the next SysInfo will include this list,
+so there will probably no further updates to this list.
+Get the newest SysInfo here -> http://aminet.net/package/util/moni/SysInfo
+
+BTW: Check out the ZZ9000 which was also added in this release,
+what a incredible new Amiga expansion - Wow !
+Based on a powerful Xilinx 7-series FPGA and 2 ARM Cortex-A9 cores:
+RTG (P96 compatible) up to 1920x1080 at 8bit/16bit/32bit. (1920x1080@16 Bit)
+Scandoubler with interlace flicker-fixer with AGA support
+Dual 666MHz ARM Cortex A9 coprocessors to offload JPEG, MP3, GPU-acceleration
+1GB DDR3 RAM
+Gigabit Ethernet interface with SANA-II support, get your Amiga online
+USB port supports USB mass storage devices. Access USB sticks from workbench.
+SD Card interface (for firmware updates, not usable from AmigaOS)
+For Amiga 500, 2000, 3000 and 4000 (Zorro 2 and 3 compatible)
+Drivers, firmware & schematics are open sourced: https://source.mntmn.com/MNT
+Includes ZZ9000CX video slot capture card with cable.
+SDK with C examples for running ARM code from AmigaOS.
+
+https://shop.mntmn.com/products/zz9000-for-amiga-preorder
+
+Update 3.7:
+Seems the new Sysinfo is a bit delayed, so here is an update with some more
+boards added.
+
+Check out my other tools:
+http://aminet.net/search?readme=%22Holger+Hippenstiel%22&sort=date&ord=DESC
+
+    DISCLAIMER
+
+        This software is subject to the "Standard Amiga FD-Software Copyright
+        Note". It is Giftware as defined in paragraph 4g. If you like it and
+		use it regulary, please send me a small gift.
+		For more information please read "AFD-COPYRIGHT".
+
+        Diese Software unterliegt der "Standard Amiga FD-Software Copyright
+        Note". Sie ist Giftware wie definiert in Absatz 4g. Falls du sie magst
+		und regelmaessig benutzt, sende bitte ein kleines Geschenk.
+		Fuer mehr Informationen lies bitte "AFD-COPYRIGHT".
+
+        (/pub/aminet/docs/misc/AFD-FilesV-XX.lha V=Version,XX=Languages)
+
+    AUTHOR
+
+        Please send comments, bug-reports or small gifts like a Vampire V4
+        or a now "worthless :P" NVidia RTX 2080 Ti, or Paypal me to:
+
+        Holger.Hippenstiel AT gmx.de
+        Hauptstr. 38
+        71229 Leonberg
+        Germany

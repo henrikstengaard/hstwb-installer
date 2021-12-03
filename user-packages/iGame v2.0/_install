@@ -1,7 +1,7 @@
 ; iGame v2.0
 ; ----------
 ;
-; Date: 2021-11-26
+; Date: 2021-11-30
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of iGame v2.0.
@@ -30,6 +30,9 @@ EndIf
 ; write install status
 echo "iGame..."
 
+; show igame cpu version request choice
+set cpu `RequestChoice "iGame CPU version" "Select iGame CPU version to install*N*NDefault is 68000." "68060|68040|68030|68020|68000|Default"` 
+
 ; extract igame to temp systemdir
 lha -m1 -q x "USERPACKAGEDIR:iGame-v2.0-20201016.lha" "SYSTEMDIR:Temp/_iGame/"
 
@@ -38,36 +41,49 @@ Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame-v2.0.info" "$igameicon" CLONE
 Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame-v2.0/#?" "$igamedir" CLONE ALL
 Delete >NIL: "$igamedir/Install-iGame#?"
 
+; 68060 cpu
+If "$cpu" EQ 1 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame-v2.0/iGame.060" "$igamedir/iGame" CLONE
+  Skip muiprefs
+EndIf
+
+; 68040 cpu
+If "$cpu" EQ 2 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame-v2.0/iGame.040" "$igamedir/iGame" CLONE
+  Skip muiprefs
+EndIf
+
+; 68030 cpu
+If "$cpu" EQ 3 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_iGame/iGame-v2.0/iGame.030" "$igamedir/iGame" CLONE
+  Skip muiprefs
+EndIf
+
+; 68020 cpu
+If "$cpu" EQ 4 VAL
+  Skip muiprefs
+EndIf
+
+; 68000 cpu, default
+Copy >NIL: "USERPACKAGEDIR:iGame.info.000" "$igamedir/iGame.info" CLONE
+
+; mui prefs
+LAB muiprefs
+
 ; install igame mui prefs, if it doesn't exist
-IF "$igameinstalled" EQ 0 VAL
-  Copy >NIL: "USERPACKAGEDIR:IGAME.1#?" "$muiprefsdir" ALL CLONE
+If Not Exists "$muiprefsdir/IGAME.1.cfg"
+  Copy >NIL: "USERPACKAGEDIR:IGAME.1.cfg" "$muiprefsdir" ALL CLONE
+ENDIF
+If Not Exists "$muiprefsdir/IGAME.1.prefs"
+  Copy >NIL: "USERPACKAGEDIR:IGAME.1.prefs" "$muiprefsdir" ALL CLONE
 ENDIF
 
 ; delete igame from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_iGame" ALL
 
-; get device and path from igamedir
-echo "$igamedir/iGame" >T:_igamedir1
+; backdrop leave out igame
+Execute INSTALLDIR:S/Backdrop-LeaveOut "$igamedir/iGame"
 
-cut -d ":" -f 1 T:_igamedir1 >T:_igamedir2
-sed "1d" T:_igamedir2 >T:_igamedir3
-rep T:_igamedir3 " " ""
-set device "`type T:_igamedir3`"
-
-cut -d ":" -f 2 T:_igamedir1 >T:_igamedir2
-sed "1d" T:_igamedir2 >T:_igamedir3
-rep T:_igamedir3 " " ""
-set path "`type T:_igamedir3`"
-
-; add igame to backdrop
-IF EXISTS "$device:.backdrop"
-  search "$device:.backdrop" "$path" >NIL:
-  IF NOT $RC EQ 0 VAL
-    echo ":$path" >>"$device:.backdrop"
-  ENDIF
-ELSE
-  echo ":$path" >>"$device:.backdrop"
-ENDIF
 
 ; end
 ; ---

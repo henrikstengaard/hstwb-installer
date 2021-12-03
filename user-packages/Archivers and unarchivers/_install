@@ -1,0 +1,173 @@
+; Archivers and Unarchivers
+; -------------------------
+;
+; Date: 2021-11-29
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of archivers and unarchivers:
+; - Lha v2.15: Create and extract lha files.
+; - LZX v1.21r: Create and extract lzx files.
+; - rawread: Create adf from floppy disks.
+; - UnZIP v5.5: Extract zip files.
+; - ZIP v2.2: Create zip files.
+; - xadmaster v12.1: Unarchive lots of different archiver formats with just one archiver tool.
+; - xfdmaster v1.38: Single file decrunching almost every packed file known on the Amiga.
+
+; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "C"`"
+set ldir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "L"`"
+set libsdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Libs"`"
+set libsxaddir "`execute INSTALLDIR:S/CombinePath "$libsdir" "xad"`"
+set libsxfddir "`execute INSTALLDIR:S/CombinePath "$libsdir" "xfd"`"
+
+
+; lha
+; ---
+
+; write install status
+echo "Lha v2.15..."
+
+; extract lha to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:lha.run" "SYSTEMDIR:Temp/_Lha/"
+
+; install lha
+Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_68k" "$cdir/lha"
+Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_680#?" "$cdir" ALL CLONE
+
+; delete lha from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_Lha" ALL
+
+; lzx
+; ---
+
+; write install status
+echo "LZX v1.21r..."
+
+; extract lha to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:lzx121r1.lha" "SYSTEMDIR:Temp/_LZX/"
+
+; extract lha patch to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:LZX121r_pch.lha" "SYSTEMDIR:Temp/_LZX/"
+
+; apply lzx y2k patch
+SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68040r SYSTEMDIR:Temp/_LZX/LZX121r.gpch SYSTEMDIR:Temp/_LZX/LZX_68040r_Y2K QUIET
+SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68020r SYSTEMDIR:Temp/_LZX/LZX121r.gpch SYSTEMDIR:Temp/_LZX/LZX_68020r_Y2K QUIET
+SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68000EC-r SYSTEMDIR:Temp/_LZX/LZX121r.gpch SYSTEMDIR:Temp/_LZX/LZX_68000EC-r_Y2K QUIET
+
+; install lzx
+Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68040r_Y2K" "$cdir/LZX_68040"
+Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68020r_Y2K" "$cdir/LZX_68020"
+Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68000EC-r_Y2K" "$cdir/LZX"
+Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX.Keyfile" "$ldir" ALL CLONE
+
+; delete lzx from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_LZX" ALL
+
+
+; rawread
+; -------
+
+; write install status
+echo "rawread..."
+
+; extract rawread to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:rawread.lha" "SYSTEMDIR:Temp/_rawread/"
+
+; install rawread
+Copy >NIL: "SYSTEMDIR:Temp/_rawread/rawread" "$cdir"
+
+; delete rawread from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_rawread" ALL
+
+
+; unzip
+; -----
+
+; write install status
+echo "UnZIP v5.5..."
+
+; extract unzip to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:unz550xA.lha" "SYSTEMDIR:Temp/_UnZip/"
+
+; install unzip
+Copy >NIL: "SYSTEMDIR:Temp/_UnZip/fUnZip" "$cdir"
+Copy >NIL: "SYSTEMDIR:Temp/_UnZip/MakeSFX" "$cdir"
+Copy >NIL: "SYSTEMDIR:Temp/_UnZip/UnZip" "$cdir"
+Copy >NIL: "SYSTEMDIR:Temp/_UnZip/UnZipSFX" "$cdir"
+
+; delete unzip from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_UnZip" ALL
+
+
+; zip
+; ---
+
+; write install status
+echo "ZIP v2.2..."
+
+; extract zip to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:Zip.lha" "SYSTEMDIR:Temp/_Zip/"
+
+; install zip
+Copy >NIL: "SYSTEMDIR:Temp/_Zip/Zip_v2.2/Zip#?" "$cdir"
+
+; delete zip from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_Zip" ALL
+
+
+; xadmaster
+; ---------
+
+; write install status
+echo "xadmaster v12.1..."
+
+; create libs xad directory
+If Not Exists "$libsxaddir"
+  MakePath >NIL: "$libsxaddir"
+EndIf
+
+; show select xadmaster cpu version request choice
+set cpu `RequestChoice "xadmaster CPU version" "Select xadmaster CPU version to install*N*NDefault is 68000." "68060|68020|68000|Default"` 
+
+; set xadmaster archive to extract
+set xadmaster "xadmaster000.lha"
+If "$cpu" EQ 1 VAL
+  set xadmaster "xadmaster060.lha"
+EndIf
+If "$cpu" EQ 2 VAL
+  set xadmaster "xadmaster020.lha"
+EndIf
+
+; extract xadmaster to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:$xadmaster" "SYSTEMDIR:Temp/_xadmaster/"
+
+; install xadmaster
+Copy >NIL: "SYSTEMDIR:Temp/_xadmaster/xad/Libs/xadmaster.library" "$libsdir"
+Copy >NIL: "SYSTEMDIR:Temp/_xadmaster/xad/Libs/xad/#?" "$libsxaddir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_xadmaster/xad/C/#?" "$cdir" ALL CLONE
+
+; delete xadmaster from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_xadmaster" ALL
+
+
+; xfdmaster
+; ---------
+
+; write install status
+echo "xfdmaster v1.38..."
+
+; create libs xad directory
+If Not Exists "$libsxaddir"
+  MakePath >NIL: "$libsxaddir"
+EndIf
+
+; extract xfdmaster to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:xfdmaster.lha" "SYSTEMDIR:Temp/_xfdmaster/"
+
+; install xfdmaster
+Copy >NIL: "SYSTEMDIR:Temp/_xfdmaster/xfd_User/Libs/xfdmaster.library" "$libsdir"
+Copy >NIL: "SYSTEMDIR:Temp/_xfdmaster/xfd_User/Libs/xfd/#?" "$libsxfddir" ALL CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_xfdmaster/xfd_User/C/#?" "$cdir" ALL CLONE
+
+; delete xfdmaster from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_xfdmaster" ALL

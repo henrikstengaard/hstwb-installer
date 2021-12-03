@@ -1,0 +1,144 @@
+Short:        Image processing kernel
+Author:       Timm S. Müller <tmueller@neoscientists.org>
+Uploader:     Andreas Falkenhahn <andreas airsoftsoftwair de>
+Type:         dev/misc
+Version:      40.8
+Architecture: m68k-amigaos >= 3.0; ppc-morphos >= 1.3; ppc-amigaos >= 4.0
+
+API-conformant re-implementation of render.library in ANSI C.
+this version is a drop-in replacement for render.library,
+which was written in 68k assembler (versions prior to v40).
+
+if your software doesn't work with this release, submit problem
+reports to tmueller@neoscientists.org
+
+
+implementation notes
+-----------------------------
+
+- RenderA() and ConvertChunky() now have additional return codes,
+REND_NO_DATA and CONV_NO_DATA respectively, if required
+arguments are missing. some other functions may check for
+illegal parameters as well, but don't rely on this.
+
+- render.library objects (palettes, histograms, scaling-engines and
+mapping-engines) are inherently thread-safe. you do not need to
+explicitely protect them in multitasked use. (this may be a
+questionable choice, but that's the way render.library was designed
+originally.)
+
+- many parametric 'issues' improved. scaling-engines, for example,
+seem to handle larger numbers correctly. histograms, however, still
+use 32bit integers and can overflow quite early.
+
+- some calculations now use floating point arithmetics and better
+algorithms. brightness, for instance, is now calculated correctly
+(i.e. in the sense of 'lumincance' like in YUV) in SortPalette() and
+CreateAlphaArray().
+
+- dithering to HAM is no longer supported. yuck.
+
+- the bresenham-like integer scaling algorithm was better in the
+previous version. (float sucks if you can't handle it. should be fixed
+some day. :)
+
+- mapping-engines are currently fake entities and do not actually lead
+to improved performance. they don't harm either. but you don't know
+this, simply stick to the autodocs. maybe they'll be put back into
+action later.
+
+- all histograms are now digital trees, using a much more
+sophisticated algorithm than before. albeit much more elegant and
+memory-saving, this is probably slower than before.
+
+
+performance issues
+-----------------------------
+
+- the 68k build is actually optimized for 68060 processors.
+
+- on 68060 processors, most functions in this implementation are not
+significantly slower than before.
+
+- expect a massive speed loss on <68040.
+
+- chunky to bitmap conversion (and vice versa) is implemented in an
+extremely lazy way. these functions do crawl.
+
+- quantization is faster and more accurate than before.
+
+- general memory consumption is lower than before.
+
+
+
+recent changes
+-----------------------------
+
+  40.8  [03-Mar-05]
+    - added AmigaOS4 binary and includes; compiled by Andreas Falkenhahn
+      <andreas@airsoftsoftwair.de>
+
+  40.8
+    - fixed libinit check: AFF_68881 now queried
+    - When a histogram contained less colors than specified
+      with ExtractPalette(), no colors were copied at all, which
+      resulted in an entirely black palette. Fixed.
+
+  40.7
+    - MixAlphaChannelA() now produces the intended behavior of
+      versions prior to v40. The old library was buggy too, and did
+      not handle a single second alpha channel correctly, as it
+      seems. Reported by Matthias Böcker.
+    - added GCC inline (fdpragma special 40). the proto file was
+      created using fdpragma special 35, and modified to include
+      the original SAS/C-style pragmas as well
+    - Morphos version 40.6 included
+    - turned around ratio argument interpretation in MixRGBArrayA().
+      it is now in compliance with the old version again. Reported
+      by Andreas Falkenhahn. note: some other functions with ratio
+      arguments are untested yet
+    - library base was NOT freed correctly in case of LibInit()
+      failure, now fixed
+
+  40.6
+    - more changes from Gunther Nikl applied: debug macro, register
+      argument macro, padding of libbase fields, compiler warnings.
+    - reduced the excessive amount of automatic inlinings in the
+      gcc release build, which leads to a much smaller binary. this
+      also fixes the misplaced LibNull() entry, and the result is
+      still much faster than sas/c. okay, agreed, gcc is it.
+    - more source and build cleanups
+
+  40.5
+    - CreateAlphaArrayA() has been fixed. a broken macro was used.
+      reported by Bernd Roesch.
+    - fixed a freemem(null) condition that showed up in MuForce.
+      reported by hexaae.
+    - improvements to the build procedure added by Gunther Nikl
+    - morphos version updated to 40.4
+
+  40.4
+    - dithered rendering with neither RND_PenTable nor
+      RND_OffsetColorZero rendered to a table of black pens. fixed.
+
+  40.3
+    - morphos version compiled by Sigbjørn Skjæret. added.
+    - HAM8 rendering was not 100% accurate. should be correct now.
+    - added missing semaphore locks
+    - minor cleanup
+
+  40.2
+    - the remaining alpha-channel functions have been implemented.
+    
+  40.1
+    - source added to the package.
+    - major overall performance improvements
+    - SortPalette() completed
+    - rendering to HAM6 and HAM8 has been completed. dithering to HAM
+      modes is no longer supported, sorry.
+    - tags to RGBArrayDiversity() and ChunkyArrayDiversity() did not
+      correctly handle palette/mapengine arguments. fixed.
+    - definitions added in render/render.h: CONV_NO_DATA, REND_NO_DATA
+
+  40.0
+    - rewritten in C

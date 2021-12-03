@@ -1,0 +1,82 @@
+Short:        Classic Amiga System Information Program
+Author:       Tobias 'Geijer' Geijersson, Nic Wilson
+Uploader:     geijer d0 se
+Type:         util/moni
+Version:      4.4
+Replaces:     util/moni/SysInfo.lha
+Architecture: m68k-amigaos
+
+SysInfo is  an application for Motorola  680x0 based Classic Amiga  and is
+used  for  getting  information  about  the system  like  OS  and  library
+versions, hardware revisions and stuff.
+
+                ___         ___       __        
+               / __|_  _ __|_ _|_ _  / _|___    
+               __  || (_-<| || ' |  _/ _    
+               |___/_, /__/___|_||_|_| ___/   
+                    |__/                 v4.4   
+              comprehensive system information  
+            http://sysinfo.d0.se   sysinfo@d0.se
+
+Supplied documentation is  in AmigaGuide® format, if you  are using older
+versions of AmigaOS, use aguide32.lha from aminet to be able to read it:
+http://aminet.net/package/text/hyper/aguide34.lha
+
+
+Web page:
+        http://sysinfo.d0.se
+Online version of SysInfo.guide help pages:
+        http://sysinfo.d0.se/guide/main
+Latest archive distribution (lha):
+        http://download.d0.se/pub/SysInfo.lha
+Latest disk image distribution (adf):
+        http://download.d0.se/pub/SysInfo.adf
+Aminet:
+        http://aminet.net/package/util/moni/SysInfo
+
+
+New/fixed in this version
+---------------
+4.4
+* Changed handling of speed numbers, if big, don't print decimals
+* Replaced "Chip Speed vs A600" algoritm to use a lot less instructions
+  and a lot more CHIP mem accesses resulting in a more relevant value.
+  This results in significantly lower value for machines with instruction
+  cache (68020+), which is more accurate because instruction cache should
+  not affect CHIPMEM access speed.
+* Added AC68080 frequency.
+* Update will no longer try to open 68040/68060.library when there is no such CPU
+* Bugfix: 68040/68060 non FPU guru fixed, again!
+* Lots of updates/corrections in the SysInfo.guide documentation.
+* Lots of code cleanup
+
+
+4.3
+* Identifies APOLLO-Core 68080 CPU/FPU
+* Better hanfling of 68060 CPU/FPU identification
+* Bugfix: 68040 non FPU guru fixed
+* Experimental adf release http://sysinfo.d0.se
+* Documentation in AmigaGuide® format and experimental html
+
+
+4.2
+* Intermediate release with better utilization of pipelining in 68040
+and newer CPUs in "Dhrystone" calculation implementation.
+
+
+4.1
+* Experimental internal release.
+
+
+4.0  19 years later, a new release. (tnx Nic Wilson)
+* Crasch due to assumed accessable memory at $2000 changed to $4000.
+* Updated memory size calculation in Memory Info to handle 64MB+ sizes
+correctly.
+* Updated board size calculation to handle 64MB+ correctly, added MB suffix
+for sizes greater than 2MB.
+* Several small corrections in the code.
+* Added some support for 68060, more to do.
+* Added identification of UAE Autoconfig® boards.
+* Added identification of Individual Computers GmbH Germany (www.icomp.de)
+Autoconfig® boards. (tnx Jens Schönfeld)
+* New contact information: http://sysinfo.d0.se SysInfo@d0.se.

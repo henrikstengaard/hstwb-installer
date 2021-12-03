@@ -1,0 +1,37 @@
+Short:        UnZip v5.32 .ZIP archive extracter
+Author:       kie@pacbell.net, John.Bush@East.Sun.COM, and e9225662@student.tuwien.ac.at
+Uploader:     kbze hrtlnd net (Kevin Boyd Zagonyi Eckenrode)
+Type:         util/arc
+Version:      v5.40, fUnZip v3.93
+Replaces:     util/arc/UnZip.lha
+Architecture: m68k-amigaos
+
+UnZip v5.40, fUnZip (filter UnZip) v3.93, and MakeSfx (no version number).
+Extracts .ZIP archives, compatible with .ZIPs created with and up to version 2.04g
+of PKZip, possibly PKZip for Windows/WinZip, also?
+
+
+Readme created with ARC 3.2 - Copyright (c)1996-99 by Jens Weyer.
+
+============================= Archive contents =============================
+Original  Packed Ratio    Date     Time    Name
+-------- ------- ----- --------- --------  -------------
+    4824    1761 63.4% 17-Nov-98 16:58:00 +CONTENTS
+   11259    4311 61.7% 26-Nov-98 14:44:40 +COPYING
+    3914    1629 58.3% 24-Nov-98 15:06:20 +funzip.doc
+   10875    5023 53.8% 23-Nov-98 12:46:46 +README
+    9416    3844 59.1% 02-Dec-98 22:57:46 +README.AMI
+    4385    1817 58.5% 21-Jan-98 13:30:58 +timezone.doc
+   45899   16060 65.0% 24-Nov-98 15:06:20 +unzip.doc
+   13657    5056 62.9% 24-Nov-98 15:06:20 +unzipsfx.doc
+   18280    5777 68.3% 17-Nov-98 19:15:22 +Where
+    3550    1367 61.4% 24-Nov-98 15:06:20 +zipgrep.doc
+   23897    8633 63.8% 24-Nov-98 15:06:22 +zipinfo.doc
+   19656   10571 46.2% 02-Dec-98 21:30:10 +fUnZip
+    8632    4936 42.8% 02-Dec-98 22:57:12 +MakeSFX
+   95140   40948 56.9% 02-Dec-98 22:25:18 +UnZip
+   26408   25940  1.7% 02-Dec-98 22:28:58 +UnZipSFX
+-------- ------- ----- --------- --------
+  299792  137673 54.0% 02-Dec-98 22:57:46   15 files
+
+Operation successful.

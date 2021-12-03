@@ -14,7 +14,9 @@ set wbdockconfig "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Env-Arc
 set igamefile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Applications/iGame/iGame"`"
 set clifile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/CLI"`"
 set shellfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/Shell"`"
-set dopusfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Tools/DOpus"`"
+set dopusfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Applications/DirectoryOpus/DirectoryOpus"`"
+set sysinfofile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Applications/SysInfo/SysInfo"`"
+set atkfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Applications/AmigaTestKit/AmigaTestKit"`"
 
 
 ; write install status
@@ -89,6 +91,22 @@ If Exists "$dopusfile"
   Search >NIL: "$wbdockconfig" "$dopusfile" quiet
   IF NOT $RC EQ 0 VAL
     echo "$dopusfile" >>"$wbdockconfig"
+  EndIf
+EndIf
+
+; add sysinfo to wbdock, if sysinfo exist and is not present in wbdock config
+If Exists "$sysinfofile"
+  Search >NIL: "$wbdockconfig" "$sysinfofile" quiet
+  IF NOT $RC EQ 0 VAL
+    echo "$sysinfofile" >>"$wbdockconfig"
+  EndIf
+EndIf
+
+; add amiga test kit to wbdock, if amiga test kit exist and is not present in wbdock config
+If Exists "$atkfile"
+  Search >NIL: "$wbdockconfig" "$atkfile" quiet
+  IF NOT $RC EQ 0 VAL
+    echo "$sysinfofile" >>"$wbdockconfig"
   EndIf
 EndIf
 

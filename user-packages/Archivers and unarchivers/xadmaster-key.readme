@@ -1,0 +1,11 @@
+Short:        Free XAD system keyfile
+Author:       Dirk Stoecker
+Uploader:     aminet aminet net
+Type:         util/arc
+Architecture: generic
+
+XAD has been released under the GPL years ago, but AFAICT nobody bothered
+to compile a new version for m68k-amigaos yet. This keyfile has been
+available from VHT Denmark (http://www.vht-dk.dk/) for a while and has
+now been transfered to Aminet (with Dirk Stoecker's permission) to reach
+a broader audience.

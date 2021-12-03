@@ -1,9 +1,15 @@
 ; Amiga Boot Selector - DirOpus4
 ; -------------------------------
 ; Author: Henrik Noerfjand Stengaard
-; Date:   2021-11-25
+; Date:   2021-12-01
 
-IF EXISTS SYS:Programs/DirOpus4
+IF EXISTS SYS:Applications/DirectoryOpus/DirectoryOpus
+  CD SYS:Applications/DirectoryOpus
+  DirectoryOpus
+  Quit
+ENDIF
+
+IF EXISTS SYS:Programs/DirOpus4/DirectoryOpus
   Assign >NIL: EXISTS "DOPUS:"
   IF WARN
     Assign >NIL: DOPUS: SYS:Programs/DirOpus4
@@ -13,8 +19,8 @@ IF EXISTS SYS:Programs/DirOpus4
   InitLib >NIL:
   DOPUS:DirectoryOpus
   Quit
-ELSE
-  REQUESTCHOICE "Error" "DirOpus4 is not installed in*N'SYS:Programs/DirOpus4'!" "OK" >NIL:
-  wait 1
-  totalreset
 ENDIF
+
+REQUESTCHOICE "Error" "Directory Opus is not installed in!" "OK" >NIL:
+wait 1
+totalreset

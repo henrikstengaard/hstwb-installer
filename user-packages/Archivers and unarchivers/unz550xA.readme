@@ -1,0 +1,213 @@
+Short:        portable UnZip, source included
+Author:       paul@paulkienitz.net (Paul Kienitz)
+Uploader:     aminet aminet net
+Type:         util/arc
+Version:      5.50
+Architecture: m68k-amigaos
+
+
+Amiga specific notes for UnZip 5.50 release of February 22, 2002
+
+------------------------------------------------------------------------
+
+The Info-Zip UnZip 5.50 package consists of C source code that compiles
+on many platforms.  Some systems, such as Amiga, lack a bundled C
+language compiler, so we package and distribute supported executables
+for those.  This enables users who don't own compilers to have a
+reliable source for obtaining executables directly from the developers.
+This cuts down on the occurence of partial or haphazardly built
+distributions.
+
+For more information about Info-Zip, and the enclosed utilities, please
+consult the README and doc files included in this archive.
+
+To install the programs, copy the files UnZip, FUnZip, UnZipSFX, and
+MakeSFX to a utility command directory where you normally place add-on
+system commands.  This would be a directory normally found in your
+command path.  Type "path" in a CLI window for a display of which
+directories are in your path.  The simplest choice is to place them all
+in "C:", which is always in the path.
+
+The official compiler for Info-Zip Amiga source used to be SAS/C version
+6.51.  Any compiler revision from 6.2 and above is supported in theory.
+We do not support SAS/C 5.10b (too old) nor DICE (the programmer
+dissapeared).  But changes for the 5.2 and newer releases of UnZip are
+largely untested with SAS/C, and so the current release has been compiled
+with Manx Aztec C 5.2b.  This compiler produces poorer code than SAS/C,
+but the use of assembly language "hot spots" in the source minimizes the
+difference in performance, and Aztec C is better than SAS/C at using 16
+bit integers, which are faster.
+
+Consult the file, WHERE, for information on where to obtain source code
+if you would like a copy.  It's free!  If you have no access to any of
+the sources listed therein, send electronic mail to the address listed
+below, and be sure to state that you are working with the Amiga version
+(we support at least a dozen platforms).
+
+These programs run only as CLI commands, but are compatible with
+Directory OPUS, SID, and IconX methods of execution.
+
+UnZip 5.30 and newer have 8 bit character set support.  When a file comes
+from an MS-DOS-like system, upper-ascii characters in filenames are
+converted, as nearly as possible, to the equivalent characters in the ISO
+character set that the Amiga uses.  For files originating on other
+systems, such as Unixes or the Windows 95/NT version of Zip, no conversion
+is needed.
+
+-------------------------------------------------------------------------
+
+SELF-EXTRACTING ARCHIVES:
+
+Version 5.2 or higher of UnZip for Amiga has the ability to create self-
+extracting Zip archives, which will recreate the archived files when the
+archive is executed as a program.  This UnZip package is delivered as such
+an archive in most cases.  These are created using the UnZipSFX program.
+On most platforms, all that is needed is to simply append the zip archive
+onto the UnZipSFX program, but on the Amiga this does not work.  Instead, a
+program called MakeSFX is used to combine the two.  The steps are to first
+create an archive using Info-ZIP's Zip, and then combine it with UnZipSFX
+using a MakeSFX command in this form:
+
+    MakeSFX <program_name_to_create> <archive_to_convert> [UnZipSFX_name]
+
+For example, if you want to convert an archive named Foo.zip into a self-
+extracting program named Foo.RunMe, you would use a command like this:
+
+    MakeSFX Foo.RunMe Foo.zip sys:tools/UnZipSFX
+
+If the program UnZipSFX is in your current directory or in C:, the last
+argument to MakeSFX can be ommitted (it defaults to "UnZipSFX" with no
+path).
+
+Note: using the command "Zip -A" with an Amiga self-extracting archive may
+make the self-extracting program unrunnable with some versions of Zip.
+Official releases of Amiga Zip 2.1 and higher ought to work okay, but Zip
+2.0 and some betas of 2.2 fail to handle Amiga self-extractors correctly,
+as do most versions of Zip for systems other than the Amiga.
+
+The UnZipSFX program is itself compressed with PowerPacker 4.3 by Nico
+Francois, to minimize the extra size added to the archive.
+
+-------------------------------------------------------------------------
+
+AMIGA FILENOTES:
+
+Normally, the comments that can be associated with Amiga files via the
+FileNote command are not stored in zip archives.  But the zip format
+allows a freeform comment to be associated with each file, and/or the
+archive as a whole.  The Amiga ports of Zip and UnZip have an option -N
+which allows filenotes to be stored as zipfile comments, and zipfile
+comments to be restored as filenotes.  If a Zip archive was created on
+an Amiga using the -N option, then using -N with UnZip will restore
+them.  Using it at other times may create filenotes that are somewhat
+meaningless, and possibly truncated if the original comment was longer
+than 79 characters, but this should have no negative consequences in
+most cases.
+
+The -N option can be turned on permanently by setting the environment
+variable UNZIP with the following commands:
+
+    SetEnv UNZIP -N
+    Copy ENV:UNZIP ENVARC:
+
+Another option you will probably want to put into the UNZIP environment
+variable is -C, which makes it look up filenames in zip archives case
+insensitively.  Because zip archives can be created on Unix systems,
+there are cases where two files in an archive can have the same name
+except for letter case.  Because of this, the default behavior is that
+if you want to extract a particular file from a zip archive, with a
+command like this:
+
+    UnZip foo.zip SomeFile
+
+You have to type the name "SomeFile" in the correct letter case or
+nothing will be extracted.  The -C option allows you to type the name in
+any letter case, as you would with other Amiga commands.  So I would
+recommend this environment setting:
+
+    SetEnv UNZIP -C -N
+
+If you need to issue a particular UnZip command with the -C option
+turned off to match a file exactly, use --C in the command line.
+Similarly, --N can suppress the creation of filenotes if -N is present
+in the UNZIP environment variable.
+
+-------------------------------------------------------------------------
+
+TIMEZONES:
+
+When extracting files that have been archived with a GMT timestamp, UnZip
+5.32 and up support a full implementation of reading timezone information
+from the TZ environment variable, instead of the limited TZ support that
+was previously included.  If the variable TZ is not set, UnZip will use
+the timezone set in your locale preferences.  If you don't use a TZ
+variable and just rely on the preference settings, then whenever daylight
+savings starts, you should set the preferences timezone one hour east of
+your actual timezone for accurate results.
+
+If you do use a TZ setting, the way to set it up is to include a line in
+your startup-sequence file looking something like this:
+
+    setenv TZ PST8PDT
+
+That example is for the pacific timezone.  If you live on the east coast:
+
+    setenv TZ EST5EDT
+
+If you leave your system clock set to standard time year round, then you
+should use a TZ variable that does not include DST information.  For
+example, such a timezone setting for Arizona could be given as:
+
+    setenv TZ MST7
+
+(Note: if you are becoming confused, it may be because the instructions in
+this section were incorrect in at least one previous UnZip release.  But
+then, so was the timezone support for a long time, so maybe it balanced.
+Release 5.42 now features new improved timezone code which is copyright-
+free and should eliminate some lingering bugs.)
+
+In Europe, where the starting and ending dates for daylight savings time
+are different, a string such as this one (for Germany) is needed:
+
+    setenv TZ MET-1MEST,M3.5.0,M10.5.0/03
+
+The full syntax of TZ specifications is given in the file timezone.doc,
+included in this archive.
+
+-------------------------------------------------------------------------
+
+REPORT ALL BUGS AND COMMENTS TO INFO-ZIP:   <Zip-Bugs@lists.wku.edu>
+
+-------------------------------------------------------------------------
+
+If you want to redistribute this archive, make sure that all the following
+files are included, as packaged in the original archive:
+
+  README.AMI                  9574 ---arwed 22-Feb-02 22:36:16
+  README                     12487 ----rwed 17-Feb-02 13:37:20
+  CONTENTS                    5244 ---arwed 30-Sep-01 15:39:34
+  LICENSE                     3020 ----rwed 16-Feb-02 10:30:00
+  WHERE                      19126 ---arwed 26-Nov-01 22:28:00
+  UnZip                      97844 ----rwed 22-Feb-02 22:13:00
+  fUnZip                     20068 ----rwed 22-Feb-02 22:27:56
+  UnZipSFX                   27020 ----rwed 22-Feb-02 22:33:18
+  MakeSFX                     8632 ----rwed 22-Feb-02 22:23:18
+  unzip.doc                  46671 ---arwed 14-Apr-00 18:56:14
+  zipinfo.doc                23884 ---arwed 14-Apr-00 18:33:50
+  zipgrep.doc                 3537 ---arwed 14-Apr-00 18:33:50
+  timezone.doc                4385 ---arwed 21-Jan-98 05:30:58
+  funzip.doc                  3901 ---arwed 14-Apr-00 18:33:46
+  unzipsfx.doc               13644 ---arwed 14-Apr-00 18:33:50
+
+-------------------------------------------------------------------------
+
+This Amiga port is brought to you by:
+
+ Paul Kienitz     <paul@gning.net>                  (new address)
+
+ John Bush        <John.Bush@East.Sun.COM>          (Amiga porter emeritus)
+                  <JBush@BIX.COM>
+
+ Walter Haidinger <walthaid@unix.ict.tuwien.ac.at>  (occasionally active)
+
+_________________________________________

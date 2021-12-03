@@ -1,7 +1,7 @@
-; iGame v2.0
-; ----------
+; IconLib v46.4.555
+; -----------------
 ;
-; Date: 2021-11-28
+; Date: 2021-12-02
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of icon library v46.4.555.
@@ -12,9 +12,11 @@ set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
 set libsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Libs"`"
 set sdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
 set bootstartup "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Boot-Startup"`"
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
 
-; select icon library cpu version
-set cpu `RequestChoice "IconLib version" "Select icon.library CPU version to install" "68020|68000|Default"` 
+
+; show select icon library cpu version request choice
+set cpu `RequestChoice "IconLib CPU version" "Select icon.library CPU version to install*N*NDefault is 68000." "68020|68000|Default"` 
 
 ; write install status
 echo "IconLib..."
@@ -33,6 +35,13 @@ Copy >NIL: "SYSTEMDIR:Temp/_IconLib/IconLib_46.4/ThirdParty/RemLib/RemLib" "$cdi
 
 ; delete IconLib from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_IconLib" ALL
+
+
+; show modify startup sequence request choice
+set confirm "`RequestChoice "IconLib startup sequence" "Modifying startup sequence to load*Nicon.library resident is required for Amiga OS 3.1*Nto use updated icon.library and is*Nnot needed for Amiga OS 3.2 and 3.1.4!*N*NDo you want to modify startup sequence*Nto load icon.library resident?" "Yes|No"`"
+IF NOT "$confirm" EQ 1 VAL
+  SKIP end
+ENDIF
 
 ; install modules startup
 Copy >NIL: USERPACKAGEDIR:Modules-Startup "$sdir"

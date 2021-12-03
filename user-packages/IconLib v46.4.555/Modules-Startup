@@ -1,7 +1,13 @@
 ; Modules Startup
 ; ---------------
 ; Author: Henrik Noerfjand Stengaard
-; Date:   2021-11-28
+; Date:   2021-11-29
+
+; skip to end, if icon library is version 46 or greater
+Version >NIL: icon.library 46
+If $RC EQ 0 VAL
+  SKIP end
+EndIf
 
 ; assign t, if it doesn't exist
 set removeassign "0"
@@ -46,3 +52,8 @@ If "$removeassign" EQ "1"
   Assign T: REMOVE
   Delete >NIL: RAM:T
 EndIf
+
+
+; end
+; ---
+LAB end
