@@ -106,7 +106,7 @@ EndIf
 If Exists "$atkfile"
   Search >NIL: "$wbdockconfig" "$atkfile" quiet
   IF NOT $RC EQ 0 VAL
-    echo "$sysinfofile" >>"$wbdockconfig"
+    echo "$atkfile" >>"$wbdockconfig"
   EndIf
 EndIf
 

@@ -19,8 +19,8 @@ MakeIcon >NIL: "$INSTALLDIR"
 MakeIcon >NIL: "$atkdir"
 
 ; install amiga test kit files
-Copy >NIL: "USERPACKAGEDIR:AmigaTestKit" "atkdir" CLONE
-Copy >NIL: "USERPACKAGEDIR:AmigaTestKit.info" "atkdir" CLONE
+Copy >NIL: "USERPACKAGEDIR:AmigaTestKit" "$atkdir" CLONE
+Copy >NIL: "USERPACKAGEDIR:AmigaTestKit.info" "$atkdir" CLONE
 
 ; backdrop leave out amiga test kit
 Execute INSTALLDIR:S/Backdrop-LeaveOut "$INSTALLDIR/AmigaTestKit/AmigaTestKit"
