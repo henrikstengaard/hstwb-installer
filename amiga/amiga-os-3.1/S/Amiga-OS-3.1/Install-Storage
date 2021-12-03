@@ -17,10 +17,12 @@ Copy >NIL: "$amigaosdisk:Printers.info" "SYSTEMDIR:Storage.info" CLONE
 ; copy pal or ntsc monitor
 IF EXISTS "INSTALLDIR:Prefs/Pal-Monitor"
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL" "SYSTEMDIR:Devs/Monitors" CLONE 
-  Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+  Copy >NIL: "SYSTEMDIR:Storage/Monitors/PAL.info" "SYSTEMDIR:Devs/Monitors" CLONE
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.1/ScreenMode_PAL_640x256.prefs" "SYSTEMDIR:Prefs/Env-Archive/sys/screenmode.prefs" CLONE
 ELSE
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/NTSC" "SYSTEMDIR:Devs/Monitors" CLONE 
   Copy >NIL: "SYSTEMDIR:Storage/Monitors/NTSC.info" "SYSTEMDIR:Devs/Monitors" CLONE  
+  Copy >NIL: "INSTALLDIR:Extras/Amiga-OS-3.1/ScreenMode_NTSC_640x200.prefs" "SYSTEMDIR:Prefs/Env-Archive/sys/screenmode.prefs" CLONE
 ENDIF
 
 

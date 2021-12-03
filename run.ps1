@@ -2237,9 +2237,13 @@ function RunInstall($hstwb)
             $amigaOs3141UpdateAdf = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-3141-update\.adf$' } | Select-Object -First 1
             if ($amigaOs3141UpdateAdf)
             {
+                # create amiga os 3.1.4.1 adf prefs file
+                $amigaOs3141AdfPrefsFile = Join-Path $prefsDir -ChildPath 'Amiga-OS-3141-ADF'
+                Set-Content $amigaOs3141AdfPrefsFile -Value ""
+
                 # create install amiga os 3.1.4.1 update adf prefs file
                 $installAmigaOs3141UpdateAdfPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-3141-ADF'
-                Set-Content $installAmigaOs3141UpdateAdfPrefsFile -Value ""
+                Set-Content $installAmigaOs3141UpdateAdfPrefsFile -Value "1"
             }
 
             # find amiga os 3.1.4 icon pack lha in amiga os set
@@ -2248,7 +2252,7 @@ function RunInstall($hstwb)
             {
                 # create install amiga os 3.1.4 icon pack prefs file
                 $installAmigaOs314IconPackLhaPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-314-IconPack'
-                Set-Content $installAmigaOs314IconPackLhaPrefsFile -Value ""
+                Set-Content $installAmigaOs314IconPackLhaPrefsFile -Value "1"
             }
         }
 
@@ -2462,6 +2466,8 @@ function RunInstall($hstwb)
     # create instal user packages prefs file and user packages, if user packages are selected
     if ($installUserPackageNames.Count -gt 0)
     {
+        $installPackagesReboot = $true
+
         # add empty line
         $installUserPackageNames += ''
 
@@ -2471,7 +2477,7 @@ function RunInstall($hstwb)
 
         # write user packages prefs file
         $userPackagesFile = Join-Path $prefsDir -ChildPath 'User-Packages'
-        WriteAmigaTextLines $userPackagesFile $installUserPackageNames 
+        WriteAmigaTextLines $userPackagesFile ($installUserPackageNames | Sort-Object | Where-Object { $_ -ne '' })
     }
 
 
@@ -3174,9 +3180,9 @@ function RunBuildSelfInstall($hstwb)
     $selfInstallDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "self_install")
     Copy-Item -Path "$selfInstallDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
 
-    # copy support user packages to image dir
-    $supportUserPackagesDir = Join-Path $hstwb.Paths.SupportPath -ChildPath "User Packages"
-    Copy-Item -Path "$supportUserPackagesDir\*" $imageUserPackagesDir -recurse -force
+    # copy user packages to image dir
+    $userPackagesDir = $hstwb.Paths.UserPackagesPath
+    Copy-Item -Path "$userPackagesDir\*" $imageUserPackagesDir -recurse -force
 
     # copy hstwb installer theme for fs-uae
     $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'
@@ -3586,6 +3592,7 @@ $licensesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFro
 $scriptsPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("scripts")
 $tempPath = [System.IO.Path]::Combine($env:TEMP, "HstWB-Installer_" + [System.IO.Path]::GetRandomFileName())
 $supportPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("support")
+$userPackagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("user-packages")
 
 if (!$settingsDir)
 {
@@ -3631,7 +3638,8 @@ try
             'TempPath' = $tempPath;
             'AssignsFile' = $assignsFile;
             'SettingsDir' = $settingsDir;
-            'SupportPath' = $supportPath
+            'SupportPath' = $supportPath;
+            'UserPackagesPath' = $userPackagesPath
         };
         'Models' = @('A1200', 'A500');
         'Packages' = ReadPackages $packagesPath;

@@ -525,7 +525,7 @@ function FindMatchingKickstartFileHashes($kickstartEntries, $dir)
     }
 
     # get entries
-    $files = Get-ChildItem -Path $dir
+    $files = Get-ChildItem -Path $dir | Where-Object { !$_.PSIsContainer }
 
     # index file hashes
     $kickstartFileHashesIndex = @{}

@@ -1,0 +1,123 @@
+Short:        V1.19 MBR/RDB ->  MountList and DosDrivers
+Author:       geit@gmx.de (Guido Mersmann)
+Type:         disk/misc
+Version:      1.19
+Replaces:     dev/c/giggledisk.lha
+Architecture: ppc-morphos >= 1.4.2; m68k-amigaos >= 2.1.0
+Kurz:         V1.19 MBR/RDB -> MountList und DosDrivers
+
+--- Die deutsche Version ist weiter unten ---
+
+
+--- English version ---
+
+GiggleDisk is a tool that creates dos driver and mountlist files by reading
+the hard disk MBR. This is useful to backup the partition positions and sizes.
+If the MBR get corrupted you can simply mount the partitions and backup the
+data.
+
+Another feature is that it's auto creating mountfiles for NTFS, EXT file
+systems, so you can create a proper working mount file by using this tool.
+
+
+ Usage:
+ ------
+
+DEVICE/A,UNIT/N,TO/K,LIST/S,LOWERCYL/S,PREFIX=PRE/K,MAXTRANSFER=MT/K,MOUNTDOS/S,
+MOUNTNTFS/S,MOUNTEXT/S,MOUNTSGIX/S
+
+DEVICE:     Standard Amiga device. e.g. scsi.device
+UNIT:       Standard Amiga device unit e.g. 4
+TO:         Mount file target. If target is a drawer, then DOSDrivers for direct
+            usage in devs:DosDrivers/ will be created. If TO is pointing on a
+            filename or non existing file a mount list will be created by using
+            this name.
+LIST        This switch force partition listing.
+LOWERCYL    Some devices may have problems with high cylinder values. By using this
+            option the values will be reduced to a minimum.
+PREFIX      By default any non RDB hard disk gets "GGD" as dos name. By using this
+            argument you can create a personal id.
+MAXTRANSFER By default 0xFFFE00 is used as default. Specify in decimal, (e.g. 1024),
+            or hexadecimal ( 0xf00000 or $f00000)
+MOUNTDOS    Auto mount MS-DOS partitions
+MOUNTNTFS   Auto mount NTFS partitions
+MOUNTEXT    Auto mount EXT partitions
+MOUNTSGIX   Auto mount SGIX partitions
+
+Some options are also available as tooltype.
+
+ Features:
+ ---------
+
+ ° Support for MBR ( PC / Linux / Pegasos )
+
+ ° Support for RDB ( Amiga RigidDiskBlock )
+
+ ° Support for VHD ( 0x76, Virtual Amiga HardDisks / Amithlon, UAE)
+
+ ° Support unpartitioned media.
+
+ ° Auto create mount files for any MBR and RDB partition.
+
+ ° Auto mount partition if requested
+
+ ° Direct support for FAT95, CrossDos, EXT2Filesystem, NTFileSystem, SGIXFileSystem and
+   Standard Amiga filesystems.
+
+
+--- Deutsche Version ---
+
+GiggleDisk ist ein Program, mit dem sich sehr einfach DosDriver und
+MountList Dateien erstellen lassen, die ein direktes mounten der jeweiligen
+Partition erlauben. Das ist z.B. sehr praktisch, wenn der MBR beschädigt wird,
+weil man dann immer noch auf die Daten zugreifen und die Daten retten kann.
+
+Die wohl wichtigste Funktion ist, das komplett funktionstüchtige DosDriver
+Dateien erstellt werden, die man sofort und ohne Änderung nutzen kann.
+
+
+ Benutzung:
+ ----------
+
+DEVICE/A,UNIT/N,TO/K,LIST/S,LOWERCYL/S,PREFIX=PRE/K,MAXTRANSFER=MT/K,MOUNTDOS/S,
+MOUNTNTFS/S,MOUNTEXT/S,MOUNTSGIX/S
+
+DEVICE:     Standard Amiga Device. z.B. scsi.device
+UNIT:       Standard Amiga Device Unit z.B. 4
+TO:         Ziel für Mount-Dateien. Ist das Ziel ein Verzeichnis, dann werden
+            DosDriver Dateien für den Devs:DosDrivers Ordner erzeugt. Ist das Ziel
+            eine Datei oder nicht existent, dann wird eine MountList erstellt.
+LIST        Erzwingt das Listen von Partitionen.
+LOWERCYL    Einige Devices haben Probleme mit großen Zylinderangaben. Mit diesem
+            werden die Werte auf ein Minimum reduziert.
+PREFIX      Normalerweise bekommt jede nicht RDB Partition den Laufwerksnamen "GGD".
+            Mit dieser Option können sie das ändern.
+MAXTRANSFER Normalerweie wird 0xFFFE00 vorgegeben. Sie konnen einen anderen Wert
+            angeben. Dabei steht ihnen dezimal (z.B. 1024) und hexadezimal
+            ( z.B. 0xf00000 or $f00000) zur verfügung.
+MOUNTDOS    MS-DOS Partitionen werden gemountet.
+MOUNTNTFS   NTFS Partitionen werden gemountet.
+MOUNTEXT    EXT Partitionen werden gemountet.
+MOUNTSGIX   SGIX Partitionen werden gemountet.
+
+Einige dieser Optionen stehen auch als ToolType zur Verfügung.
+
+ Features:
+ ---------
+
+ ° Unterstützt MBR ( PC / Linux / Pegasos )
+
+ ° Unterstützt RDB ( Amiga - RigidDiskBlock)
+
+ ° Unterstützt VHD ( Typ 0x76,  Virtual Amiga HardDisks / Amithlon, UAE)
+
+ ° Unterstützt unpartitionierte Medien
+
+ ° Erzeugt automatisch Mountdateien für alle Partitionen von MBR und RDB.
+
+ ° Automatisches Mounten von Partitionen, wenn gewünscht.
+
+ ° Direkte Unterstützung von FAT95, CrossDos, EXT2Filesystem, NTFileSystem,
+   SGIXFileSystem und Standard Amiga Dateisystemen.
+
+

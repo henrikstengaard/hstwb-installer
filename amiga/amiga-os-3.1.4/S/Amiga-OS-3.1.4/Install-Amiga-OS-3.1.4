@@ -1,7 +1,7 @@
 ; Amiga OS 3.1.4 Menu
 ; -------------------
 ;
-; Date: 2021-11-02
+; Date: 2021-11-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files or floppy disks.
@@ -78,7 +78,6 @@ LAB install
 
 ; copy patch amiga os 3.1.4.1 files
 MakePath >NIL: "SYSTEMDIR:S"
-Copy >NIL: "INSTALLDIR:Extras/Install-Patch-Amiga-OS-3141" "SYSTEMDIR:S"
 Copy >NIL: "INSTALLDIR:Extras/Patch-Amiga-OS-3141" "SYSTEMDIR:S"
 
 ; create sys, icons directory, if it doesn't exist
@@ -177,15 +176,18 @@ IF NOT "$harddiskicon" EQ ""
 ENDIF
 
 
-; update startup sequence
-Copy INSTALLDIR:Extras/Amiga-OS-3.1.4/Startup-Sequence T:Startup-Sequence
+; update startup sequence with boot startup
+Copy INSTALLDIR:Extras/Amiga-OS-3.1.4/Add-Boot-Startup T:Startup-Sequence
 Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
 Copy >>SYS:hstwb-installer.log T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
 
-; install boot startup
-Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.1.4/Boot-Startup" "SYSTEMDIR:S" ALL
+; add mmulib startup to boot startup
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.1.4/Add-MMULib-Startup" "SYSTEMDIR:S/Boot-Startup"
 
-; copy mmulib test cpu for patch startup sequence
+; install mmulib startup
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.1.4/MMULib-Startup" "SYSTEMDIR:S"
+
+; copy mmulib test cpu for mmulib startup
 Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.1.4/C/TestCPU" "SYSTEMDIR:C" CLONE
 
 ; install 680x0 libraries required for cpus and accelerator cards

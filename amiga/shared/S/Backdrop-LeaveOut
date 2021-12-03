@@ -1,0 +1,38 @@
+.KEY file/a
+.BRA {
+.KET }
+
+; Backdrop
+; --------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2021-11-29
+;
+; AmigaDOS script to leave out file in backdrop
+
+; write file to baget device and path from file
+echo "{file}" >T:_backdrop1
+
+; get device from file
+cut -d ":" -f 1 T:_backdrop1 >T:_backdrop2
+sed "1d" T:_backdrop2 >T:_backdrop3
+rep T:_backdrop3 " " ""
+set device "`type T:_backdrop3`"
+
+; get path from file
+cut -d ":" -f 2 T:_backdrop1 >T:_backdrop2
+sed "1d" T:_backdrop2 >T:_backdrop3
+rep T:_backdrop3 " " ""
+set path "`type T:_backdrop3`"
+
+; add file to backdrop
+IF EXISTS "$device:.backdrop"
+  search "$device:.backdrop" "$path" >NIL:
+  IF NOT $RC EQ 0 VAL
+    echo ":$path" >>"$device:.backdrop"
+  ENDIF
+ELSE
+  echo ":$path" >>"$device:.backdrop"
+ENDIF
+
+; delete temp files
+Delete >NIL: T:_backdrop#?

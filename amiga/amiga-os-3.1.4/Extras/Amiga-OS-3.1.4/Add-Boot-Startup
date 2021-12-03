@@ -1,4 +1,4 @@
-; Execute boot startup, if it exists
+; execute boot startup, if it exists
 IF EXISTS S:Boot-Startup
   Execute S:Boot-Startup
 ENDIF

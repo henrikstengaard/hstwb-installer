@@ -1,34 +1,12 @@
 ; Install Amiga OS 3.1.4.1 Update
 ; -------------------------------
 ;
-; Date: 2019-07-23
+; Date: 2021-11-21
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to install from amiga os 3.1.4.1 update floppy disk or adf file.
 ; Warning: Use proper editor like NotePad++ when modifying this file as it has ISO 8859-1 characters
 
-
-; make directories
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/nederlands/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/português/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/italiano/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/français/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/deutsch/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/español/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/Svenska/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/Dansk/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Catalogs/norsk/sys"
-MakePath >NIL: "SYSTEMDIR:Locale/Languages"
-MakePath >NIL: "SYSTEMDIR:Locale/Countries"
-MakePath >NIL: "SYSTEMDIR:Locale/Help"
-MakePath >NIL: "SYSTEMDIR:C"
-MakePath >NIL: "SYSTEMDIR:Devs"
-MakePath >NIL: "SYSTEMDIR:L"
-MakePath >NIL: "SYSTEMDIR:Libs"
-MakePath >NIL: "SYSTEMDIR:Tools"
-MakePath >NIL: "SYSTEMDIR:Utilities"
-MakePath >NIL: "SYSTEMDIR:Prefs"
-MakePath >NIL: "SYSTEMDIR:System"
 
 ; unprotect some files we are going to replace
 IF EXISTS "SYSTEMDIR:L/Shell-Seg"
@@ -94,73 +72,13 @@ ENDIF
 
 ; install files
 Copy >NIL: "$amigaosdisk:Installer" "SYSTEMDIR:System"
-gunzip -d "$amigaosdisk:Utilities/More.Z" -c >"SYSTEMDIR:Utilities/More"
-gunzip -d "$amigaosdisk:Prefs/Input.Z" -c >"SYSTEMDIR:Prefs/Input"
-gunzip -d "$amigaosdisk:HDTools/HDToolBox.Z" -c >"SYSTEMDIR:Tools/HDToolBox"
-gunzip -d "$amigaosdisk:DEVS/audio.device.Z" -c >"SYSTEMDIR:DEVS/audio.device"
-gunzip -d "$amigaosdisk:System/DiskCopy.Z" -c >"SYSTEMDIR:System/DiskCopy"
-gunzip -d "$amigaosdisk:System/Format.Z" -c >"SYSTEMDIR:System/Format"
-gunzip -d "$amigaosdisk:C/Execute.Z" -c >"SYSTEMDIR:C/Execute"
-gunzip -d "$amigaosdisk:C/Assign.Z" -c >"SYSTEMDIR:C/Assign"
-gunzip -d "$amigaosdisk:C/CPU.Z" -c >"SYSTEMDIR:C/CPU"
-gunzip -d "$amigaosdisk:C/Prod_Prep.Z" -c >"SYSTEMDIR:C/Prod_Prep"
-gunzip -d "$amigaosdisk:C/RequestChoice.Z" -c >"SYSTEMDIR:C/RequestChoice"
-gunzip -d "$amigaosdisk:C/SetPatch.Z" -c >"SYSTEMDIR:C/SetPatch"
-gunzip -d "$amigaosdisk:C/Type.Z" -c >"SYSTEMDIR:C/Type"
-gunzip -d "$amigaosdisk:C/DiskDoctor.Z" -c >"SYSTEMDIR:C/DiskDoctor"
-gunzip -d "$amigaosdisk:C/Copy.Z" -c >"SYSTEMDIR:C/Copy"
-gunzip -d "$amigaosdisk:LIBS/intuition-v45.library.Z" -c >"SYSTEMDIR:LIBS/intuition-v45.library"
-gunzip -d "$amigaosdisk:L/CrossDOSFileSystem.Z" -c >"SYSTEMDIR:L/CrossDOSFileSystem"
-gunzip -d "$amigaosdisk:L/CDFileSystem.Z" -c >"SYSTEMDIR:L/CDFileSystem"
-gunzip -d "$amigaosdisk:L/Shell-Seg.Z" -c >"SYSTEMDIR:L/Shell-Seg"
-gunzip -d "$amigaosdisk:L/FastFileSystem.Z" -c >"SYSTEMDIR:L/FastFileSystem"
-gunzip -d "$amigaosdisk:Locale/Catalogs/nederlands/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/nederlands/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/nederlands/sys/prepcard.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/nederlands/sys/prepcard.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/nederlands/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/nederlands/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/português/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/português/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/português/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/português/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/italiano/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/italiano/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/italiano/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/italiano/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/français/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/français/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/français/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/français/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/français/sys/prefs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/français/sys/prefs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/deutsch/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/deutsch/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/deutsch/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/deutsch/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/deutsch/sys/prefs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/deutsch/sys/prefs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/español/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/español/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/español/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/español/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/libs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/libs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/system.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/system.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/c.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/c.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/dos.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/dos.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/workbench.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/workbench.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/amigaguide.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/amigaguide.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/prepcard.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/prepcard.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/devs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/devs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/commodities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/commodities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/hp_printer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/hp_printer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/prefs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/prefs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Svenska/sys/monitors.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Svenska/sys/monitors.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/libs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/libs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/system.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/system.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/c.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/c.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/dos.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/dos.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/workbench.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/workbench.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/amigaguide.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/amigaguide.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/prepcard.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/prepcard.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/devs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/devs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/commodities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/commodities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/hp_printer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/hp_printer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/prefs.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/prefs.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/Dansk/sys/monitors.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/Dansk/sys/monitors.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/norsk/sys/installer.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/norsk/sys/installer.catalog"
-gunzip -d "$amigaosdisk:Locale/Catalogs/norsk/sys/utilities.catalog.Z" -c >"SYSTEMDIR:Locale/Catalogs/norsk/sys/utilities.catalog"
-gunzip -d "$amigaosdisk:Locale/Languages/dansk.language.Z" -c >"SYSTEMDIR:Locale/Languages/dansk.language"
-gunzip -d "$amigaosdisk:Locale/Languages/svenska.language.Z" -c >"SYSTEMDIR:Locale/Languages/svenska.language"
+
+; uncompress .z files
+list "$amigaosdisk:" ALL FILES PAT=#?.Z LFORMAT="IF NOT EXISTS *"X_%f*"*NMakePath >NIL: *"X_%f*"*NENDIF*Ngunzip -d *"%f%n*" -c >*"X_%f%m*"" >T:_uncompress
+rep T:_uncompress "X_$amigaosdisk:" "SYSTEMDIR:"
+rep T:_uncompress "X_`Which $amigaosdisk:`" "SYSTEMDIR:"
+Execute T:_uncompress
+Delete >NIL: T:_uncompress
 
 ; If we run already under 3.1.4, ensure that we remove the P
 ; bit from some resources to avoid that LoadModule picks them
@@ -252,6 +170,3 @@ IF EXISTS "SYSTEMDIR:LIBS/intuition.library"
     Copy >NIL: "SYSTEMDIR:LIBS/intuition-v45.library" "SYSTEMDIR:LIBS/intuition.library"
   ENDIF
 ENDIF
-
-; install patch amiga os 3.1.4.1
-Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR QUIET

@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-11-02
+; Date: 2021-12-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -9,7 +9,6 @@
 
 ; add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" " 
-Alias Copy "Copy BUFFER=10 "
 
 ; set failat to 21
 FailAt 21

@@ -1,6 +1,12 @@
 /* CD into program's own directory on Kickstart 1.3.
    Link with minimal C-startup. */
 // http://eab.abime.net/showthread.php?t=72464&page=2
+// https://eab.abime.net/showthread.php?t=86895
+// https://retrocomputing.stackexchange.com/questions/18133/how-do-i-detect-if-amigados-dos-library-currentdir-fails
+// http://www.pjhutchison.org/tutorial/file_io.html
+// https://eab.abime.net/showthread.php?t=106472
+// https://forum.amiga.org/index.php?topic=73225.0
+
 #include <string.h>
 #include <dos/dosextens.h> // openlibrary
 #include <workbench/startup.h>

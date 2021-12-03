@@ -9,7 +9,6 @@
 
 ; add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "
-Alias Copy "Copy BUFFER=10 "
 
 ; set failat to 21
 FailAt 21
@@ -24,13 +23,20 @@ IF WARN
   SKIP fail
 ENDIF
 
-; load patched scsi.device v43.45, if it exists
-IF EXISTS DEVS:scsi.device
-  ; Load scsi.device, if current loaded scsi.device is less than v43.45
-  Version >NIL: "scsi.device" 43 45
-  IF WARN
-    LoadModule DEVS:scsi.device
-  ENDIF
+; fail, if install mode is not running in an emulator
+Version >NIL: uaehf.device
+IF NOT $RC EQ 0
+  echo "*e[1mError: HstWB Installer requires install mode is running*N"
+  echo "in an emulator!*e[0m"
+  SKIP fail
+ENDIF
+
+; fail, if install mode is using scsi.device (scsi.device is not compatible with large harddisks)
+GiggleDisk >NIL: device=scsi.device
+IF $RC EQ 0
+  echo "*e[1mError: HstWB Installer requires install mode is using*N"
+  echo "scsi.device and not UAE HD controller (uaehf.device)!*e[0m"
+  SKIP fail
 ENDIF
 
 ; set stack

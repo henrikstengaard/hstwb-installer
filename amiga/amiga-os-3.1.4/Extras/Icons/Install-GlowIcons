@@ -1,7 +1,7 @@
 ; Install GlowIcons
 ; -----------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2019-08-09
+; Date: 2021-12-03
 ;
 ; This script creates a backup of old icons and installs GlowIcons.
 
@@ -50,7 +50,7 @@ echo "Done"
 ; -----------------
 LAB install
 echo "Installing GlowIcons..."
-Copy BUFFER=10 "SYS:Icons/GlowIcons" "SYS:" ALL CLONE >NIL:
+Copy "SYS:Icons/GlowIcons" "SYS:" ALL CLONE >NIL:
 echo "Done"
 echo ""
 echo "Please reboot Amiga to get GlowIcons shown."
