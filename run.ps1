@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-11-02
+# Date:   2021-11-06
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -3554,6 +3554,28 @@ function RunBuildUserPackageInstallation($hstwb)
     # copy amiga user package installation
     $amigaUserPackageInstallationDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "userpackageinstallation")
     Copy-Item -Path "$amigaUserPackageInstallationDir\*" $outputUserPackageInstallationPath -recurse -force
+
+
+    # get user packages
+    $installUserPackageNames = @()
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Sort-Object | Where-Object { $_ -match 'InstallUserPackage\d+' }))
+    {
+        $userPackageName = $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
+        $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+        $installUserPackageNames += $userPackage.Name
+    }
+
+    # set user packages dir
+    $userPackagesDir = $hstwb.Settings.UserPackages.UserPackagesDir
+
+    # copy selected user packages to user package installation
+    if ($installUserPackageNames.Count -gt 0)
+    {
+        foreach($installUserPackageName in $installUserPackageNames)
+        {
+            Copy-Item -Path (Join-Path $userPackagesDir -ChildPath $installUserPackageName) $outputUserPackageInstallationPath -recurse -force
+        }
+    }
 }
 
 

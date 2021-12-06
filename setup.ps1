@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-11-02
+# Date:   2021-11-06
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1552,12 +1552,6 @@ function ChangeInstallerMode($hstwb)
 
         # set installer mode
         $hstwb.Settings.Installer.Mode = $choice.Value
-
-        # update amiga os entries
-        UpdateAmigaOsEntries $hstwb
-
-        # find best matching amiga os set
-        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
 
         # update package filtering and install packages, if install mode is used
         if ($hstwb.Settings.Installer.Mode -eq "Install")
