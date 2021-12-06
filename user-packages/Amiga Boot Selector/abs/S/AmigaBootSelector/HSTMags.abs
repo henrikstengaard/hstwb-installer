@@ -1,0 +1,12 @@
+; Amiga Boot Selector - HSTMags
+; -----------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-12-05
+
+IF EXISTS S:HSTLauncherMenu
+  execute S:HSTLauncherMenu "HSTMagazines"
+ELSE
+  REQUESTCHOICE "Error" "HST Launcher Menu is not installed!" "OK" >NIL:
+ENDIF
+wait 1
+totalreset
