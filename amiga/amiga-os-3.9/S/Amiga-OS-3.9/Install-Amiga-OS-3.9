@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.9
 ; --------------------
 ;
-; Date: 2021-11-02
+; Date: 2021-12-17
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigsDOS script to automate installation of Amiga OS 3.9.
@@ -252,13 +252,29 @@ IF "$boingbaginstall" GT 0 VAL
 
 ENDIF
 
-; update startup sequence
-Copy INSTALLDIR:Extras/Amiga-OS-3.9/Startup-Sequence T:Startup-Sequence
-Type SYSTEMDIR:S/Startup-Sequence >>T:Startup-Sequence
-Copy >>SYS:hstwb-installer.log T:Startup-Sequence SYSTEMDIR:S/Startup-Sequence
+; find set patch in startup sequence
+Search SYSTEMDIR:S/Startup-Sequence "SetPatch" NONUM >T:_setpatch1
+IF $RC EQ 0 VAL
+  ; add boot startup to startup sequence after "SetPatch", if not present 
+  Search >NIL: SYSTEMDIR:S/Startup-Sequence "Execute S:Boot-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    ; get found set patch text
+    sed "1q;d" T:_setpatch1 >T:_setpatch2
+    set setpatch `type T:_setpatch2`
 
-; install boot startup
-Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Amiga-OS-3.9-Startup" "SYSTEMDIR:S" ALL
+    rep SYSTEMDIR:S/Startup-Sequence "$setpatch" "If Exists S:Boot-Startup*N  Execute S:Boot-Startup*NEndIf*N$setpatch"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add boot startup,*N'SetPatch'*Nnot found in startup sequence.*NBoot startup can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+Delete >NIL: T:_setpatch#?
+
+; add mmulib startup to boot startup
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/Add-MMULib-Startup" "SYSTEMDIR:S/Boot-Startup"
+
+; install mmulib startup
+Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/MMULib-Startup" "SYSTEMDIR:S"
 
 ; copy mmulib test cpu for patch startup sequence
 Copy >>SYS:hstwb-installer.log "INSTALLDIR:Extras/Amiga-OS-3.9/C/TestCPU" "SYSTEMDIR:C" CLONE
