@@ -1,0 +1,247 @@
+; HstWB Mini Package Install Script
+; ---------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2020-06-15
+;
+; This script extracts and installs zip archives for HstWB Mini Package. 
+
+
+; copy readme and screenshots to locale help for HstWB Mini
+IF NOT EXISTS SYSTEMDIR:Locale/Help/HstWB-Mini
+  makepath >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini
+  ENDIF
+ENDIF
+IF NOT EXISTS SYSTEMDIR:Locale/Help.info
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale/Help FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale/Help
+  ENDIF
+ENDIF
+IF NOT EXISTS SYSTEMDIR:Locale.info
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale
+  ENDIF
+ENDIF
+copy >NIL: PACKAGEDIR:README SYSTEMDIR:Locale/Help/HstWB-Mini
+copy >NIL: PACKAGEDIR:README.guide SYSTEMDIR:Locale/Help/HstWB-Mini
+copy >NIL: PACKAGEDIR:README.info SYSTEMDIR:Locale/Help/HstWB-Mini
+IF NOT EXISTS SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
+  makepath >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
+ENDIF
+copy >NIL: PACKAGEDIR:screenshots/#?.iff SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
+
+
+; detect amiga os version
+set amigaosversion "3.1"
+IF EXISTS "SYSTEMDIR:Libs/workbench.library"
+  ; set amiga os version to 3.1.4, if workbench.library file is equal or greater than v45.194
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 45 194 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1.4"
+  ENDIF
+
+  ; set amiga os version to 3.2, if workbench.library file is equal or greater than v47.33
+  Version >NIL: "SYSTEMDIR:Libs/workbench.library" 47 33 FILE
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.2"
+  ENDIF
+ELSE
+  ; set amiga os version to 3.1.4, if loaded workbench.library is equal or greater than v45.194
+  Version >NIL: "workbench.library" 45 194
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.1.4"
+  ENDIF
+
+  ; set amiga os version to 3.2, if loaded workbench.library is equal or greater than v47.33
+  Version >NIL: "workbench.library" 47 33
+  IF $RC EQ 0 VAL
+    set amigaosversion "3.2"
+  ENDIF
+ENDIF
+ 
+
+; copying amiga os files
+echo "Copying Amiga OS files..."
+
+echo "Installing HstWB Mini..."
+
+; create backup of wb startup sequence
+IF EXISTS SYSTEMDIR:S/Startup-Sequence
+  Copy >NIL: SYSTEMDIR:S/Startup-Sequence SYSTEMDIR:S/Startup-Sequence.WB
+ENDIF
+
+; create backup of wb user startup
+IF EXISTS SYSTEMDIR:S/User-Startup
+  Copy >NIL: SYSTEMDIR:S/User-Startup SYSTEMDIR:S/User-Startup.WB
+ENDIF
+
+; extract hstwb mini
+unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d SYSTEMDIR:
+
+; add boot patches startup to startup sequence, if not present
+Search >NIL: SYSTEMDIR:S/Startup-Sequence "BindDrivers" quiet
+IF $RC EQ 0 VAL
+  ; add boot patches startup to startup sequence after "BindDrivers", if not present
+  Search >NIL: SYSTEMDIR:S/Startup-Sequence "S:BootPatches-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    rep SYSTEMDIR:S/Startup-Sequence "BindDrivers" "IF EXISTS S:BootPatches-Startup*N  Execute S:BootPatches-Startup*NEndIf*NBindDrivers"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add boot patches startup,*N'BindDrivers'*Nnot found in startup sequence.*NBoot patches startup can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+
+; add boot selector startup to startup sequence, if not present
+Search >NIL: SYSTEMDIR:S/Startup-Sequence "Execute S:BootPatches-Startup" quiet
+IF $RC EQ 0 VAL
+  ; add boot selector startup to startup sequence after "S:BootPatches-Startup", if not present
+  Search >NIL: SYSTEMDIR:S/Startup-Sequence "S:BootSelector-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    rep SYSTEMDIR:S/Startup-Sequence "Execute S:BootPatches-Startup" "Execute S:BootPatches-Startup*NEndIf*NIF EXISTS S:BootSelector-Startup*N  Execute S:BootSelector-Startup"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add boot selector startup,*N'Execute S:BootPatches-Startup'*Nnot found in startup sequence.*NBoot selector can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+ 
+
+; patch fastfilesystem
+; --------------------
+
+; warning, if fastfilesystem doesn't exist
+IF NOT EXISTS SYSTEMDIR:L/FastFileSystem
+  echo "Warning: FastFileSystem file 'SYSTEMDIR:L/FastFileSystem'"
+  echo "doesn't exist. Skip patching!"
+  SKIP end
+ENDIF
+
+; skip, if fastfilesystem is already patched to v45.16
+Version "MINIDIR:L/FastFileSystem" 45 16 FILE >NIL:
+IF $RC EQ 0 VAL
+  echo "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' is already"
+  echo "patched to v45.16. Skip patching!"
+  SKIP end
+ENDIF
+
+; patch fastfilesystem v44.5 to v45.16, if fastfilesystem is v44.5
+; (v44.5 present on BetterWB v4.0)
+Version "MINIDIR:L/FastFileSystem" 44 5 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 44 6 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v44.5 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_44.05_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_44.05 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v44.5 to v45.16!"
+    ENDIF
+    SKIP end
+  ENDIF
+ENDIF
+
+; patch fastfilesystem v40.1 to v45.16, if fastfilesystem is v40.1
+; (v40.1 present on original Workbench 3.1 disks)
+Version "MINIDIR:L/FastFileSystem" 40 1 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 40 2 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v40.1 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_40.01_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_40.01 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v40.1 to v45.16!"
+    ENDIF
+    SKIP end
+  ENDIF
+ENDIF
+
+; patch fastfilesystem v39.27 to v45.16, if fastfilesystem is v39.27
+; (v39.27 present on ClassicWB)
+Version "MINIDIR:L/FastFileSystem" 39 27 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 39 28 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v39.27 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_39.27_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_39.27 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v39.27 to v45.16!"
+    ENDIF
+    SKIP end
+  ENDIF
+ENDIF
+
+
+; set harddisk icon
+set harddiskicon "SYSTEMDIR:Disk.info"
+
+; update disk icon, if harddisk icon exists
+IF NOT "$harddiskicon" EQ ""
+  ; update dh1 disk icon, if dh1: device exists
+  Assign >NIL: EXISTS DH1:
+  IF $RC EQ 0 VAL
+    Copy >NIL: "$harddiskicon" "DH1:Disk.info"
+  ENDIF
+
+  ; update dh2 disk icon, if dh2: device exists
+  Assign >NIL: EXISTS DH2:
+  IF $RC EQ 0 VAL
+    Copy >NIL: "$harddiskicon" "DH2:Disk.info"
+  ENDIF
+ENDIF
+
+; Change boot priority
+; --------------------
+;LAB changeboot
+
+; set systemdir device boot priority to 0 and disable automount
+;set systemdirdevice "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
+;Assign >NIL: EXISTS $systemdirdevice
+;IF $RC EQ 0 VAL
+;  MINIDIR:C/changebootpri >NIL: $systemdirdevice 0 nomount boot
+;ENDIF
+
+; set minidir device boot priority to 1 and automount
+;set minidirdevice "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
+;Assign >NIL: EXISTS $minidirdevice
+;IF $RC EQ 0 VAL
+;  MINIDIR:C/changebootpri >NIL: $minidirdevice 1 mount boot
+;ENDIF
+
+; replace systemdir device placeholder
+;rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
+;rep MINIDIR:S/AmigaBootSelector/DirOpus4.abs "[*$SystemDirDevice]" "$systemdirdevice"
+
+; delete systemdir load icon.library prefs, if it exists
+;IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-IconLibrary
+;  Delete SYSTEMDIR:Prefs/HstWB/Load-IconLibrary >NIL:
+;ENDIF
+
+; delete systemdir start abs prefs, if it exists
+;IF EXISTS SYSTEMDIR:Prefs/HstWB/Start-ABS
+;  Delete SYSTEMDIR:Prefs/HstWB/Start-ABS >NIL:
+;ENDIF
+
+; replace systemdir assign with minidir
+;Assign SYSTEMDIR: "$SYSTEMDIR" REMOVE
+;Assign SYSTEMDIR: "$MINIDIR"
+;setenv SYSTEMDIR "$MINIDIR"
+
+
+; End
+; ---
+LAB end

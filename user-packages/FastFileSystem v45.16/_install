@@ -1,0 +1,100 @@
+; FastFileSystem v45.16
+; ---------------------
+;
+; Date: 2021-12-20
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of FastFileSystem v45.16.
+; FastFileSystem v45.16 is installed in L:.
+
+
+; show confirm install request choice
+set confirm "`RequestChoice "FastFileSystem v45.16" "Patching FastFileSystem to v45.16 will enable*NKickstart 3.1 rom to use large*NFastFileSystem partitions.*NWithout patching, FastFileSystem partitions*Nare limited to 2GB.*N*NBooting from a floppy disk will install this*Non the booted floppy and not on your harddisk.*N*NDo you want to install FastFileSystem v45.16?" "Yes|No"`"
+IF NOT "$confirm" EQ 1 VAL
+  SKIP end
+ENDIF
+
+; paths
+set ffspath "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "L/FastFileSystem"`"
+
+; fail, if fastfilesystem doesn't exist
+If Not Exists "$ffspath"
+  echo "Error: FastFileSystem file '$ffspath'"
+  echo "doesn't exist."
+  echo ""
+  ask "Press ENTER to continue"
+  Skip end
+ENDIF
+
+; stack for running md5
+Stack 8192
+
+; get fastfilesystem md5
+set md5 "`USERPACKAGEDIR:md5 "$ffspath"`"
+
+; fastfilesystem is v39.27 (classicwb)
+If "$md5" EQ "12f80c69d91b30b76df2d8cf8eced2ea"
+  SKIP ffs3927
+EndIf
+
+; fastfilesystem is v40.1 (amiga os 3.1)
+If "$md5" EQ "e141c00c467afc62d6bca8957b27e83d"
+  SKIP ffs401
+EndIf
+
+; fastfilesystem is v44.5 (betterwb)
+If "$md5" EQ "bfa4736c6e932c229582196bfb2fe7d4"
+  SKIP ffs445
+EndIf
+
+; fastfilesystem is v45.1 (amiga os 3.9)
+If "$md5" EQ "6b13ccea5cd8f18005439ee151d26af2"
+  SKIP ffs451
+EndIf
+
+; fastfilesystem is v45.13 (amiga os 3.9 bb2)
+If "$md5" EQ "d0cf0a311231e04563a238bcc667c18c"
+  SKIP ffs4513
+EndIf
+
+; unsupported fastfilesystem
+echo "Error: Unsupport FastFileSystem md5 '$md5'!"
+echo ""
+ask "Press ENTER to continue"
+Skip end
+
+
+LAB ffs3927
+; write install status
+echo "Creating FastFileSystem v45.16 from v39.27..."
+USERPACKAGEDIR:gpatch "$ffspath" "USERPACKAGEDIR:Patches/FFS_39.27_45.16.gpch" "$ffspath.45.16" QUIET
+
+LAB ffs401
+; write install status
+echo "Creating FastFileSystem v45.16 from v40.1..."
+USERPACKAGEDIR:gpatch "$ffspath" "USERPACKAGEDIR:Patches/FFS_40.1_45.16.gpch" "$ffspath.45.16" QUIET
+
+LAB ffs445
+; write install status
+echo "Creating FastFileSystem v45.16 from v44.5..."
+USERPACKAGEDIR:gpatch "$ffspath" "USERPACKAGEDIR:Patches/FFS_44.5_45.16.gpch" "$ffspath.45.16" QUIET
+
+LAB ffs451
+; write install status
+echo "Creating FastFileSystem v45.16 from v45.1..."
+USERPACKAGEDIR:gpatch "$ffspath" "USERPACKAGEDIR:Patches/FFS_45.1_45.16.gpch" "$ffspath.45.16" QUIET
+
+LAB ffs4513
+; write install status
+echo "Creating FastFileSystem v45.16 from v45.13..."
+USERPACKAGEDIR:gpatch "$ffspath" "USERPACKAGEDIR:Patches/FFS_45.13_45.16.gpch" "$ffspath.45.16" QUIET
+
+; validate fastfilesystem v45.16
+If Not "`USERPACKAGEDIR:md5 "$ffspath.45.16"`" EQ "adb56dd05e6e42bfb8b1dea034127c7f"
+  echo "Error: FastFileSystem v45.16 has invalid md5 checksum!"
+EndIf
+
+
+; end
+; ---
+LAB end
