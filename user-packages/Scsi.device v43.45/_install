@@ -20,6 +20,7 @@ ENDIF
 set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
 set devsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Devs"`"
 set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+set bootstartup "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Boot-Startup"`"
 
 
 ; fail, if devs directory doesn't exist
@@ -252,16 +253,40 @@ Skip end
 LAB modifystartup
 
 echo "Updating startup sequence '$startupsequence'..."
-Search >NIL: "$startupsequence" "LoadModule DEVS:scsi.device" quiet
-IF NOT $RC EQ 0 VAL
-  If Not Exists "$startupsequence.BAK"
-    Copy >NIL: "$startupsequence" "$startupsequence.BAK"
-  EndIf
-  Echo "If Exists DEVS:scsi.device*N  LoadModule DEVS:scsi.device*NEndIf*N" >T:_Startup-Sequence
-  Type "$startupsequence" >>T:_Startup-Sequence
-  Copy >NIL: T:_Startup-Sequence "$startupsequence"
-  Delete >NIL: T:_Startup-Sequence
+
+; create backup of startup sequence, if it doesn't exist
+If Not Exists "$startupsequence.SCSI"
+  Copy >NIL: "$startupsequence" "$startupsequence.SCSI"
+EndIf
+
+; find set patch in startup sequence
+Search "$startupsequence" "SetPatch" NONUM >T:_setpatch1
+IF $RC EQ 0 VAL
+  ; add boot startup to startup sequence after "SetPatch", if not present 
+  Search >NIL: "$startupsequence" "Execute S:Boot-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    ; get found set patch text
+    sed "1q;d" T:_setpatch1 >T:_setpatch2
+    set setpatch `type T:_setpatch2`
+
+    rep "$startupsequence" "$setpatch" "If Exists S:Boot-Startup*N  Execute S:Boot-Startup*NEndIf*N$setpatch"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add boot startup,*N'SetPatch'*Nnot found in startup sequence.*NBoot startup can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
 ENDIF
+Delete >NIL: T:_setpatch#?
+
+; create boot startup, if it doesn't exist
+If Not Exists "$bootstartup"
+  Echo "" NOLINE >"$bootstartup"
+EndIf
+
+; add load module scsi.device to boot startup, if it doesn't exist
+Search "$bootstartup" "LoadModule DEVS:scsi.device" QUIET
+If Not $RC EQ 0 VAL
+  Echo "If Exists DEVS:scsi.device*N  LoadModule DEVS:scsi.device*NEndIf*N" >>"$bootstartup"
+EndIf
 
 ; install load module
 Copy >NIL: USERPACKAGEDIR:LoadModule "$cdir"

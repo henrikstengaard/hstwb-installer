@@ -1,39 +1,25 @@
 ; MUI v3.8
 ; --------
 ;
-; Date: 2021-11-28
+; Date: 2021-12-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of MUI v3.8.
 ; If MUI v3.8 or newer version is already installed, installation of MUI ends.
 
 
-; defaults
+; paths
 set sysdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System"`"
-set muidir ""
-set muiinstalled "0"
+set muidir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/MUI"`"
+set usfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/User-Startup"`"
 
 ; set muidir, if exists, otherwise use default
+set muiinstalled "0"
 Assign >NIL: EXISTS MUI:
 IF $RC EQ 0 VAL
   set muidir "MUI:"
   set muiinstalled "1"
-ELSE
-  set muidir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/MUI"`"
 ENDIF
-
-; set muifile
-;set muifile "`execute INSTALLDIR:S/CombinePath "$muidir" "MUI"`"
-
-; skip to installmui, if mui is not installed in "$muidir/MUI"
-;IF EXISTS "$muifile"
-;  ; skip to end, if muifile v3.8 or newer version is already installed
-;  Version "$muifile" 19 14 >NIL:
-;  IF $RC EQ 0 VAL
-;    Echo "MUI v3.8 or newer version is already installed"
-;    SKIP end
-;  ENDIF
-;ENDIF
 
 ; create mui directory, if it doesn't exist
 IF NOT EXISTS "$muidir"
@@ -52,9 +38,6 @@ IF "$muiinstalled" EQ 1 VAL
 Else
   Copy >NIL: "SYSTEMDIR:Temp/_MUI/MUI#?" "$sysdir" CLONE ALL
 EndIf
-
-; set user startup file
-set usfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/User-Startup"`"
 
 ; create user startup, if it doesn't exist
 IF NOT EXISTS "$usfile"
@@ -108,12 +91,6 @@ IF "$muiinstalled" EQ 0 VAL
     endif
   endif
 ENDIF
-
-; show reboot requester, if mui assign doesn't exist
-;Assign >NIL: EXISTS MUI:
-;IF NOT $RC EQ 0 VAL
-;  RequestChoice "Reboot" "MUI needs Amiga OS to be rebooted.*NPlease reboot after installing user packages." "OK"
-;ENDIF
 
 ; delete mui from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_MUI" ALL

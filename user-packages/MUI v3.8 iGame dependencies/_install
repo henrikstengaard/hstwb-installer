@@ -1,23 +1,34 @@
 ; MUI v3.8 iGame dependencies
 ; ---------------------------
 ;
-; Date: 2021-11-28
+; Date: 2021-12-06
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of iGame dependencies
 ; MUI TextEditor MCC and guigfx and render libraries.
 
 
-; skip to end, if "MUI:" device doesn't exist 
+; paths
+set muidir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/MUI"`"
+set libsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Libs"`"
+
+; Set mui dir to "MUI:", if  device exist
 Assign >NIL: EXISTS MUI:
-IF NOT $RC EQ 0 VAL
-  echo "*e[1mError: Unable to install MUI iGame dependencies,*NMUI: device not found.*NMUI iGame dependencies can't be installed without this!*e[0m"
-  ask "Press ENTER to continue"
-  SKIP end
+IF $RC EQ 0 VAL
+  set muidir "MUI:"
+ELSE
+  ; skip to end, if default mui directory doesn't exist 
+  IF NOT EXISTS "$muidir/mui"
+    echo "*e[1mError: Unable to install MUI iGame dependencies,*NMUI: device not found or*NMUI not installed in '$muidir'.*NMUI iGame dependencies can't be installed without this!*e[0m"
+    ask "Press ENTER to continue"
+    SKIP end
+  ENDIF
 ENDIF
 
+; set mui libs directory
+set muilibsdir "`execute INSTALLDIR:S/CombinePath "$muidir" "Libs/mui"`"
+
 ; create mui libs directory, if it doesn't exist
-set muilibsdir "MUI:Libs/mui"
 IF NOT EXISTS "$muilibsdir"
   MakePath >NIL: "$muilibsdir"
 ENDIF
@@ -51,9 +62,6 @@ Delete >NIL: "SYSTEMDIR:Temp/_guigfx" ALL
 
 ; write install status
 Echo "Guigfx and render libraries..."
-
-; libs dir
-set libsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Libs"`"
 
 ; extract guigfx and render libraries to libs
 lha -m1 -q x "USERPACKAGEDIR:guigfx_render_nofpu.lha" "$libsdir/"
