@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-11-06
+# Date:   2021-12-20
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2993,6 +2993,34 @@ function RunBuildSelfInstall($hstwb)
     $amigaUserPackagesDir = Join-Path $hstwb.Paths.AmigaPath -ChildPath 'userpackages'
     Copy-Item -Path "$amigaUserPackagesDir\*" $selfInstallUserPackagesDir -recurse -force
 
+    # create userpackages directory in image directory, if it doesn't exist
+    $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "userpackages"
+    if (!(Test-Path -Path $imageUserPackagesDir))
+    {
+       mkdir $imageUserPackagesDir | Out-Null
+    }
+
+    # get user packages
+    $installUserPackageNames = @()
+    foreach($installUserPackageKey in ($hstwb.Settings.UserPackages.Keys | Sort-Object | Where-Object { $_ -match 'InstallUserPackage\d+' }))
+    {
+        $userPackageName = $hstwb.Settings.UserPackages.Get_Item($installUserPackageKey.ToLower())
+        $userPackage = $hstwb.UserPackages.Get_Item($userPackageName)
+        $installUserPackageNames += $userPackage.Name
+    }
+
+    # set user packages dir
+    $userPackagesDir = $hstwb.Settings.UserPackages.UserPackagesDir
+
+    # copy selected user packages to self install user packages dir
+    if ($installUserPackageNames.Count -gt 0)
+    {
+        foreach($installUserPackageName in $installUserPackageNames)
+        {
+            Copy-Item -Path (Join-Path $userPackagesDir -ChildPath $installUserPackageName) $imageUserPackagesDir -recurse -force
+        }
+    }
+
     # create self install prefs file
     $selfInstallPrefsFile = Join-Path $prefsDir -ChildPath 'Self-Install'
     Set-Content $selfInstallPrefsFile -Value ""
@@ -3165,13 +3193,6 @@ function RunBuildSelfInstall($hstwb)
         mkdir $imageKickstartDir | Out-Null
     }
 
-    # create userpackages directory in image directory, if it doesn't exist
-    $imageUserPackagesDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath "userpackages"
-    if (!(Test-Path -Path $imageUserPackagesDir))
-    {
-        mkdir $imageUserPackagesDir | Out-Null
-    }
-
     # copy hstwb image setup to image dir
     $hstwbImageSetupDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "hstwb_image_setup")
     Copy-Item -Path "$hstwbImageSetupDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
@@ -3179,10 +3200,6 @@ function RunBuildSelfInstall($hstwb)
     # copy self install to image dir
     $selfInstallDir = [System.IO.Path]::Combine($hstwb.Paths.SupportPath, "self_install")
     Copy-Item -Path "$selfInstallDir\*" $hstwb.Settings.Image.ImageDir -recurse -force
-
-    # copy user packages to image dir
-    $userPackagesDir = $hstwb.Paths.UserPackagesPath
-    Copy-Item -Path "$userPackagesDir\*" $imageUserPackagesDir -recurse -force
 
     # copy hstwb installer theme for fs-uae
     $imageFsuaeThemeDir = Join-Path $hstwb.Settings.Image.ImageDir -ChildPath 'fs-uae\themes\hstwb-installer'

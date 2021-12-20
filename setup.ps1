@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-11-06
+# Date:   2021-12-20
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1600,7 +1600,7 @@ function ResetSettings($hstwb)
         return
     }
 
-    DefaultSettings $hstwb.Settings
+    DefaultSettings $hstwb
     DefaultAssigns $hstwb.Assigns
     Save $hstwb
 }
@@ -1613,6 +1613,7 @@ $hstwbPackagesListFile = $ExecutionContext.SessionState.Path.GetUnresolvedProvid
 $imagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("images")
 $packagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("packages")
 $runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("run.ps1")
+$userPackagesPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath("user-packages")
 
 if (!$settingsDir)
 {
@@ -1670,7 +1671,8 @@ try
             'SettingsFile' = $settingsFile;
             'AssignsFile' = $assignsFile;
             'RunFile' = $runFile;
-            'SettingsDir' = $settingsDir
+            'SettingsDir' = $settingsDir;
+            'UserPackagesPath' = $userPackagesPath
         };
         'Models' = @('A1200', 'A500');
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
@@ -1687,13 +1689,6 @@ try
     # upgrade settings and assigns
     UpgradeSettings $hstwb
     UpgradeAssigns $hstwb
-
-    # download packages, if download packages doesn't exist or is set to false
-    if (!$hstwb.Settings.Packages.DownloadPackages -or $hstwb.Settings.Packages.DownloadPackages -match 'true')
-    {
-        $hstwb.Settings.Packages.DownloadPackages = 'false'
-        DownloadLatestPackages $hstwb $false
-    }
 
     # update amiga os entries
     UpdateAmigaOsEntries $hstwb

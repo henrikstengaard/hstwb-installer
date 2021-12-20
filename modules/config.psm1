@@ -63,8 +63,9 @@ function WriteIniFile($iniFile, $ini)
 
 
 # default settings
-function DefaultSettings($settings)
+function DefaultSettings($hstwb)
 {
+    $settings = $hstwb.Settings
     $settings.Image = @{}
     $settings.AmigaOs = @{}
     $settings.Kickstart = @{}
@@ -98,7 +99,7 @@ function DefaultSettings($settings)
 
     $settings.Emulator.EmulatorFile = DefaultEmulatorFile
 
-    $settings.UserPackages.UserPackagesDir = ''
+    $settings.UserPackages.UserPackagesDir = $hstwb.Paths.UserPackagesPath
     $settings.UserPackages.InstallUserPackages = ''
 }
 

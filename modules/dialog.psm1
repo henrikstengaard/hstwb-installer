@@ -129,7 +129,7 @@ function PrintSettings($hstwb)
     }
 
     # show user packages packages for installer modes: install, build self install and build package installation
-    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildUserPackageInstallation)$")
+    if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|BuildUserPackageInstallation)$")
     {
         Write-Host "User Packages"
         Write-Host "  User Packages Dir     : " -NoNewline -foregroundcolor "Gray"
