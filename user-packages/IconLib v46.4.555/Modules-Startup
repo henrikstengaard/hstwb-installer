@@ -1,10 +1,10 @@
 ; Modules Startup
 ; ---------------
 ; Author: Henrik Noerfjand Stengaard
-; Date:   2021-11-29
+; Date:   2021-12-15
 
-; skip to end, if icon library is version 46 or greater
-Version >NIL: icon.library 46
+; skip to end, if icon library is version 47 or greater
+Version >NIL: icon.library 47
 If $RC EQ 0 VAL
   SKIP end
 EndIf
@@ -26,9 +26,9 @@ EndIf
 ; create empty modules
 echo NOLINE "" >T:_Modules
 
-; add icon.library to modules, if icon.library exists and version is less than v46
+; add icon.library to modules, if icon.library exists and version is less than v47
 If Exists LIBS:icon.library
-  Version >NIL: icon.library 46
+  Version >NIL: icon.library 47
   If WARN
     If EXISTS LIBS:workbench.library
       LoadResident >NIL: LIBS:workbench.library
