@@ -5,7 +5,7 @@
 ; Copy Kickstart Rom
 ; ------------------
 ;
-; Date: 2021-11-04
+; Date: 2021-12-20
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Kickstart rom files.
@@ -43,11 +43,12 @@ set validkickstartrom "0"
 
 ; get md5 from file
 USERPACKAGEDIR:rommd5 "$escapedfile" >T:_md5
-IF $RC EQ 0 VAL
+set romrc "$RC"
+IF $romrc EQ 0 VAL
   ; kickstart rom is encrypted and decrypted using rom.key
   set validkickstartrom "1"
 ENDIF
-IF $RC EQ 5 VAL
+IF $romrc EQ 5 VAL
   ; kickstart rom is not encrypted
   set validkickstartrom "1"
 ENDIF
