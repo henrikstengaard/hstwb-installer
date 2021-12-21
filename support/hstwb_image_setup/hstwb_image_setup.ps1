@@ -472,6 +472,7 @@ $validAmigaOs314Md5Entries = @(
     @{ 'Md5' = '988ddad5106d5b846be57b711d878b4c'; 'Filename' = 'amiga-os-314-extras.adf'; 'Name' = 'Amiga OS 3.1.4 Extras Disk, Hyperion Entertainment' },
     @{ 'Md5' = '27a7af42777a43a06f8d9d8e74226e56'; 'Filename' = 'amiga-os-314-fonts.adf'; 'Name' = 'Amiga OS 3.1.4 Fonts Disk, Hyperion Entertainment' },
     @{ 'Md5' = '7e9b5ec9cf89d9aae771cd1b708792d9'; 'Filename' = 'amiga-os-314-install.adf'; 'Name' = 'Amiga OS 3.1.4 Install Disk, Hyperion Entertainment' },
+    @{ 'Md5' = '2fac2ab6bdd36bd28c04297253238655'; 'Filename' = 'amiga-os-314-install.adf'; 'Name' = 'Amiga OS 3.1.4 Install Disk, Hyperion Entertainment' },
     @{ 'Md5' = '4007bfe06b5b51af981a3fa52c51f54a'; 'Filename' = 'amiga-os-314-locale.adf'; 'Name' = 'Amiga OS 3.1.4 Locale Disk, Hyperion Entertainment' },
     @{ 'Md5' = '372215cd27888d65a95db92b6513e702'; 'Filename' = 'amiga-os-314-storage.adf'; 'Name' = 'Amiga OS 3.1.4 Storage Disk, Hyperion Entertainment' },
     @{ 'Md5' = '05a7469fd903744aa5f53741765bf668'; 'Filename' = 'amiga-os-314-workbench.adf'; 'Name' = 'Amiga OS 3.1.4 Workbench Disk, Hyperion Entertainment' },

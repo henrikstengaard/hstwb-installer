@@ -411,6 +411,10 @@ def patch_fsuae_config_file( \
                 hard_drive_labels[hard_drive_match.group(1)] = hard_drive_match.group(2)
             fsuae_config_lines.append(line)
 
+    # add empty last line, if it doesn't exist
+    if not re.search(r'^\s*$', fsuae_config_lines[len(fsuae_config_lines) - 1]):
+        fsuae_config_lines.append('\n')
+
     # patch fs-uae config lines
     for i in range(0, len(fsuae_config_lines)):
         line = fsuae_config_lines[i]
@@ -506,6 +510,7 @@ valid_amiga_os_314_md5_entries = [
     { 'Md5': '988ddad5106d5b846be57b711d878b4c', 'Filename': 'amiga-os-314-extras.adf', 'Name': 'Amiga OS 3.1.4 Extras Disk, Hyperion Entertainment' },
     { 'Md5': '27a7af42777a43a06f8d9d8e74226e56', 'Filename': 'amiga-os-314-fonts.adf', 'Name': 'Amiga OS 3.1.4 Fonts Disk, Hyperion Entertainment' },
     { 'Md5': '7e9b5ec9cf89d9aae771cd1b708792d9', 'Filename': 'amiga-os-314-install.adf', 'Name': 'Amiga OS 3.1.4 Install Disk, Hyperion Entertainment' },
+    { 'Md5': '2fac2ab6bdd36bd28c04297253238655', 'Filename': 'amiga-os-314-install.adf', 'Name': 'Amiga OS 3.1.4 Install Disk, Hyperion Entertainment' },
     { 'Md5': '4007bfe06b5b51af981a3fa52c51f54a', 'Filename': 'amiga-os-314-locale.adf', 'Name': 'Amiga OS 3.1.4 Locale Disk, Hyperion Entertainment' },
     { 'Md5': '372215cd27888d65a95db92b6513e702', 'Filename': 'amiga-os-314-storage.adf', 'Name': 'Amiga OS 3.1.4 Storage Disk, Hyperion Entertainment' },
     { 'Md5': '05a7469fd903744aa5f53741765bf668', 'Filename': 'amiga-os-314-workbench.adf', 'Name': 'Amiga OS 3.1.4 Workbench Disk, Hyperion Entertainment' },
