@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-08-06
+# Date:   2021-12-21
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -684,7 +684,7 @@ print('-----------------')
 print('HstWB Image Setup')
 print('-----------------')
 print('Author: Henrik Noerfjand Stengaard')
-print('Date: 2021-08-06')
+print('Date: 2021-12-21')
 print('')
 print('Install dir \'{0}\''.format(install_dir))
 

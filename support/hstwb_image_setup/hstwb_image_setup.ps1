@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-08-06
+# Date:   2021-12-21
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -623,7 +623,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2021-08-06"
+Write-Output "Date: 2021-12-21"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 
