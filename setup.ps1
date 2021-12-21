@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-20
+# Date:   2021-12-21
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1603,6 +1603,8 @@ function ResetSettings($hstwb)
     DefaultSettings $hstwb
     DefaultAssigns $hstwb.Assigns
     Save $hstwb
+
+    $hstwb.UserPackages = DetectUserPackages $hstwb
 }
 
 

@@ -1,5 +1,5 @@
 {
-    "Date":  "2019-08-23 13:40:00",
+    "Date":  "2021-12-21 16:30:00",
     "Description": "HstWB package repositories for building HstWB packages",
     "Url": "https://hstwb.firstrealize.com/data/hstwb-repositories.json",
     "Repositories": [
@@ -58,6 +58,14 @@
         {
             "Type": "github",
             "Url": "https://github.com/henrikstengaard/eab-whdload-games-ocs-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-magazines-aga-menu-package"
+        },
+        {
+            "Type": "github",
+            "Url": "https://github.com/henrikstengaard/eab-whdload-magazines-ocs-menu-package"
         },
         {
             "Type": "github",
