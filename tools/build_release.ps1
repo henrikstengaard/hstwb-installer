@@ -4,7 +4,7 @@
 # A powershell script to build HstWB Installer portable zip and msi installer releases.
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-29
+# Date:   2021-12-22
 
 # Requirements:
 # - Pandoc
@@ -65,7 +65,7 @@ $wixToolsetLightFile = Join-Path $wixToolsetDir -ChildPath 'light.exe'
 $rootDir = Resolve-Path '..'
 $releaseDir = Join-Path $rootDir -ChildPath '.release'
 $buildDir = Join-Path $releaseDir -ChildPath '.build'
-$components = @("Amiga", "Data", "Fonts", "Fs-Uae", "Images", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae")
+$components = @("Amiga", "Data", "Fonts", "Fs-Uae", "Images", "Licenses", "Modules", "Readme", "Scripts", "Support", "Winuae", "User-Packages")
 $packagesText = if ($packages) { ' with packages' } else { '' }
 $packagesFileName = if ($packages) { '_packages' } else { '' }
 
