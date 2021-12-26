@@ -1,11 +1,11 @@
-; WHDLoad v18.6
+; WHDLoad v18.7
 ; -------------
 ;
-; Date: 2021-11-28
+; Date: 2021-12-25
 ; Author: Henrik Noerfjand Stengaard
 ;
-; User package for HstWB Installer to automate installation of WHDLoad v18.6.
-; If WHDLoad v18.6 or newer version is already installed, installation of WHDLoad ends.
+; User package for HstWB Installer to automate installation of WHDLoad v18.7.
+; If WHDLoad v18.7 or newer version is already installed, installation of WHDLoad ends.
 ; Files in S: "WHDLoad.prefs", "WHDLoad-Cleanup" and "WHDLoad-Startup" are only installed, if they don't exist.
 
 

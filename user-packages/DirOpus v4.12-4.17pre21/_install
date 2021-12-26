@@ -1,7 +1,7 @@
 ; Directory Opus v4.12-4.17pre21
 ; ------------------------------
 ;
-; Date: 2021-12-01
+; Date: 2021-12-26
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; User package for HstWB Installer to automate installation of Directory Opus v4.12 or v4.17pre21.
@@ -11,6 +11,7 @@
 ; 68020 installs is Directory Opus v4.17pre21.
 
 ; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "C"`"
 set sdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "S"`"
 set libsdir "`execute INSTALLDIR:S/CombinePath "SYSTEMDIR:" "Libs"`"
 set dopusdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "DirectoryOpus"`"
