@@ -1,0 +1,42 @@
+; Install Locale 3.2.1
+; --------------------
+;
+; Date: 2021-12-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2.1 locale floppy disk or adf file.
+
+; copy Languages
+If Exists "$amigaosdisk:Languages"
+  If Not Exists "SYSTEMDIR:Locale/Languages"
+    MakePath >NIL: "SYSTEMDIR:Locale/Languages"
+  EndIf
+  Copy >NIL: "$amigaosdisk:Languages" "SYSTEMDIR:Locale/Languages" ALL CLONE
+EndIf
+
+; uncompress catalogs .z files
+If Exists "$amigaosdisk:Catalogs"
+  list "$amigaosdisk:Catalogs" ALL FILES PAT=#?.Z LFORMAT="IF NOT EXISTS *"X_%f*"*NMakePath >NIL: *"X_%f*"*NENDIF*Ngunzip -d *"%f%n*" -c >*"X_%f%m*"" >T:_uncompress
+  rep T:_uncompress "X_$amigaosdisk:Catalogs/" "SYSTEMDIR:Locale/Catalogs"
+  rep T:_uncompress "X_`Which $amigaosdisk:`Catalogs/" "SYSTEMDIR:Locale/Catalogs"
+  Execute T:_uncompress
+  Delete >NIL: T:_uncompress
+EndIf
+
+; uncompress help .z files
+If Exists "$amigaosdisk:Help"
+  list "$amigaosdisk:Help" ALL FILES PAT=#?.Z LFORMAT="IF NOT EXISTS *"X_%f*"*NMakePath >NIL: *"X_%f*"*NENDIF*Ngunzip -d *"%f%n*" -c >*"X_%f%m*"" >T:_uncompress
+  rep T:_uncompress "X_$amigaosdisk:Help/" "SYSTEMDIR:Locale/Help"
+  rep T:_uncompress "X_`Which $amigaosdisk:`Help/" "SYSTEMDIR:Locale/Help"
+  Execute T:_uncompress
+  Delete >NIL: T:_uncompress
+EndIf
+
+; uncompress support fonts .z files
+If Exists "$amigaosdisk:Support/Fonts"
+  list "$amigaosdisk:Support/Fonts" ALL FILES PAT=#?.Z LFORMAT="IF NOT EXISTS *"X_%f*"*NMakePath >NIL: *"X_%f*"*NENDIF*Ngunzip -d *"%f%n*" -c >*"X_%f%m*"" >T:_uncompress
+  rep T:_uncompress "X_$amigaosdisk:Support/" "SYSTEMDIR:"
+  rep T:_uncompress "X_`Which $amigaosdisk:`Support/" "SYSTEMDIR:"
+  Execute T:_uncompress
+  Delete >NIL: T:_uncompress
+EndIf

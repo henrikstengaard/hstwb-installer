@@ -30,88 +30,45 @@ Execute INSTALLDIR:S/Escape-Filename T:_escapedfile
 set escapedfile "`type T:_escapedfile`"
 Delete >NIL: T:_escapedfile
 
-; get md5 from file
-; uses tempadffile set to unescaped or escaped file depending on md5 error codes
-md5 "{file}" >T:_md5
-IF $RC EQ 0 VAL
-  set tempadffile "{file}"
-ELSE
-  Copy >NIL: "$escapedfile" TO "INSTALLDIR:Temp/Amiga-OS-310.adf"
-  set tempadffile "INSTALLDIR:Temp/Amiga-OS-310.adf"
-
-  md5 "$tempadffile" >T:_md5
-  IF NOT $RC EQ 0 VAL
-    SKIP end
+; skip to end, if amiga os md5 doesn't exists
+If Not Exists "INSTALLDIR:Temp/Amiga-OS-MD5"
+  echo "Error: Amiga OS MD5 doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+  
+  ; goto mount, if md5 only prefs doesn't exists
+  If Not Exists INSTALLDIR:Prefs/MD5-Only
+    SKIP mount
   ENDIF
-ENDIF
 
-; get md5 for file
-set md5 ""
-set md5 "`type T:_md5`"
-Delete >NIL: T:_md5
+  Skip end
+EndIf
 
-; add md5 to log
-echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+; find md5 for amiga os file
+Search "INSTALLDIR:Temp/Amiga-OS-MD5" "{file}" NONUM >T:_amiga-os-md51
+If Not $RC EQ 0 VAL
+  Skip end
+EndIf
+
+; get found amiga os md5 text
+sed "1q;d" T:_amiga-os-md51 >T:_amiga-os-md52
+set md5 `Execute T:_amiga-os-md52`
+Delete >NIL: T:_amiga-os-md5#?
 
 
 ; md5
 ; ---
+LAB md5
 
-; copy cloanto amiga forever 2016 amiga os 3.1 workbench adf, if file md5 matches
-IF "$md5" eq "590c42a69675d6970df350e200fe25dc"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-workbench.adf"
-  SKIP copyadffile
-ENDIF
+; add md5 to log
+echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
 
-; copy cloanto amiga forever 7 amiga os 3.1 workbench adf, if file md5 matches
-IF "$md5" eq "e7b3a83df665a85e7ec27306a152b171"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-workbench.adf"
-  SKIP copyadffile
-ENDIF
+; skip to end, if amiga os 3.1 md5 doesn't exist
+If Not Exists "INSTALLDIR:MD5/Amiga-OS-3.1/$md5"
+  SKIP end
+EndIf
 
-; copy cloanto amiga forever 7/2016 amiga os 3.1 storage adf, if file md5 matches
-IF "$md5" eq "4fa1401aeb814d3ed138f93c54a5caef"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Storage adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-storage.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy cloanto amiga forever 7/2016 amiga os 3.1 Locale adf, if file md5 matches
-IF "$md5" eq "b53c9ff336e168643b10c4a9cfff4276"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Locale adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-locale.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy cloanto amiga forever 2016 amiga os 3.1 install adf, if file md5 matches
-IF "$md5" eq "d6aa4537586bf3f2687f30f8d3099c99"
-  echo "Cloanto Amiga Forever 2016 Amiga OS 3.1 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-install.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy cloanto amiga forever 7 amiga os 3.1 install adf, if file md5 matches
-IF "$md5" eq "c5be06daf40d4c3ace4eac874d9b48b1"
-  echo "Cloanto Amiga Forever 7 Amiga OS 3.1 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-install.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy cloanto amiga forever 7/2016 amiga os 3.1 fonts adf, if file md5 matches
-IF "$md5" eq "6fae8b94bde75497021a044bdbf51abc"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Fonts adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-fonts.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy cloanto amiga forever 7/2016 amiga os 3.1 extras adf, if file md5 matches
-IF "$md5" eq "c1c673eba985e9ab0888c5762cfa3d8f"
-  echo "Cloanto Amiga Forever 7/2016 Amiga OS 3.1 Extras adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
-  set adffilename "amiga-os-310-extras.adf"
-  SKIP copyadffile
-ENDIF
+set adffilename `Type "INSTALLDIR:MD5/Amiga-OS-3.2/$md5"`
+echo "'$adffilename' detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-310-Adf.log
+SKIP copyadffile
 
 ; goto end, if md5 only prefs exists
 IF EXISTS INSTALLDIR:Prefs/MD5-Only
@@ -121,6 +78,7 @@ ENDIF
 
 ; mount file
 ; ----------
+LAB mount
 
 ; goto end, if file size is not 901120 bytes
 IF NOT "`wc -c <"$tempadffile"`" EQ 901120 VAL

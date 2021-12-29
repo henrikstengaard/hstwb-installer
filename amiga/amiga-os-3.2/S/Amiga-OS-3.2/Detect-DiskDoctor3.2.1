@@ -1,0 +1,67 @@
+; Detect Amiga OS 3.2.1 Disk Doctor
+; -------------------------------
+;
+; Date: 2021-12-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2.1 disk doctor floppy disk or adf file.
+
+
+; end, if volume name is not "DiskDoctor:"
+IF NOT "`Which $amigaosdisk:`" EQ "DiskDoctor:"
+  SKIP notvalid
+ENDIF
+
+; end, if da control doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/DAControl"
+  SKIP notvalid
+ENDIF
+
+; end, if disk doctor doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/DiskDoctor"
+  SKIP notvalid
+ENDIF
+
+; end, if disk doctor is greater than v2.186
+Version >NIL: "$amigaosdisk:C/DiskDoctor" 2 187 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if disk doctor is less than v2.186
+Version >NIL: "$amigaosdisk:C/DiskDoctor" 2 185 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if trackfile device doesn't exist
+IF NOT EXISTS "$amigaosdisk:Devs/trackfile.device"
+  SKIP notvalid
+ENDIF
+
+; end, if trackfile device is greater than v2.46
+Version >NIL: "$amigaosdisk:Devs/trackfile.device" 2 47 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if trackfile device is less than v2.46
+Version >NIL: "$amigaosdisk:Devs/trackfile.device" 2 45 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2.1 Disk Doctor is not valid"
+
+
+; end
+; ---
+
+LAB end

@@ -1,0 +1,67 @@
+; Detect Amiga OS 3.2.1 Update
+; ----------------------------
+;
+; Date: 2021-12-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to detect valid amiga os 3.2.1 storage floppy disk or adf file.
+
+
+; end, if volume name is not "Update3.2.1:"
+IF NOT "`Which $amigaosdisk:`" EQ "Update3.2.1:"
+  SKIP notvalid
+ENDIF
+
+; end, if startup hard drive doesn't exist
+IF NOT EXISTS "$amigaosdisk:Update/Startup-HardDrive"
+  SKIP notvalid
+ENDIF
+
+; end, if startup hard drive is greater than v47.16
+Version >NIL: "$amigaosdisk:Update/Startup-HardDrive" 47 17 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if startup hard drive is less than v47.16
+Version >NIL: "$amigaosdisk:Update/Startup-HardDrive" 47 15 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if amiga model doesn't exist
+IF NOT EXISTS "$amigaosdisk:C/AmigaModel"
+  SKIP notvalid
+ENDIF
+
+; end, if amiga model is greater than v47.1
+Version >NIL: "$amigaosdisk:C/AmigaModel" 47 2 FILE
+IF $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if amiga model is less than v47.1
+Version >NIL: "$amigaosdisk:C/AmigaModel" 47 0 FILE
+IF NOT $RC EQ 0 VAL
+  SKIP notvalid
+ENDIF
+
+; end, if clipboard device doesn't exist
+IF NOT EXISTS "$amigaosdisk:DEVS/clipboard.device.Z"
+  SKIP notvalid
+ENDIF
+
+SKIP end
+
+
+; not valid
+; ---------
+LAB notvalid
+
+echo "Amiga OS 3.2.1 Update is not valid"
+
+
+; end
+; ---
+
+LAB end

@@ -1,0 +1,54 @@
+; Install Update 3.2.1
+; --------------------
+;
+; Date: 2021-12-29
+; Author: Henrik Noerfjand Stengaard
+;
+; AmigaDOS script to install from amiga os 3.2.1 update floppy disk or adf file.
+
+
+MakePath >NIL: SYSTEMDIR:C
+MakePath >NIL: SYSTEMDIR:Classes
+MakePath >NIL: SYSTEMDIR:Classes/DataTypes
+MakePath >NIL: SYSTEMDIR:Classes/Gadgets
+MakePath >NIL: SYSTEMDIR:Classes/Images
+MakePath >NIL: SYSTEMDIR:Devs
+MakePath >NIL: SYSTEMDIR:L
+MakePath >NIL: SYSTEMDIR:Libs
+MakePath >NIL: SYSTEMDIR:Locale
+MakePath >NIL: SYSTEMDIR:Locale/Catalogs
+MakePath >NIL: SYSTEMDIR:Locale/Help
+MakePath >NIL: SYSTEMDIR:Locale/Languages
+MakePath >NIL: SYSTEMDIR:Prefs
+MakePath >NIL: SYSTEMDIR:Prefs/Env-Archive
+MakePath >NIL: SYSTEMDIR:S
+MakePath >NIL: SYSTEMDIR:System
+MakePath >NIL: SYSTEMDIR:Tools
+MakePath >NIL: SYSTEMDIR:Tools/Commodities
+
+If Exists SYSTEMDIR:Libs/icon.library
+  protect SYSTEMDIR:Libs/icon.library +wd
+EndIf
+
+If Exists SYSTEMDIR:Libs/locale.library
+  protect SYSTEMDIR:Libs/locale.library +wd
+EndIf
+
+If Exists SYSTEMDIR:Libs/version.library
+  protect SYSTEMDIR:Libs/version.library +wd
+EndIf
+
+If Exists SYSTEMDIR:Libs/workbench.library
+  protect SYSTEMDIR:Libs/workbench.library +wd
+EndIf
+
+; uncompress .z files
+list "$amigaosdisk:" ALL FILES PAT=#?.Z LFORMAT="IF NOT EXISTS *"X_%f*"*NMakePath >NIL: *"X_%f*"*NENDIF*Ngunzip -d *"%f%n*" -c >*"X_%f%m*"" >T:_uncompress
+rep T:_uncompress "X_$amigaosdisk:" "SYSTEMDIR:"
+rep T:_uncompress "X_`Which $amigaosdisk:`" "SYSTEMDIR:"
+Execute T:_uncompress
+Delete >NIL: T:_uncompress
+
+Copy >NIL: "$amigaosdisk:Update/Release" "SYSTEMDIR:Prefs/Env-Archive/Versions"
+
+Copy >NIL: "$amigaosdisk:Update/Startup-HardDrive" "SYSTEMDIR:S/Startup-Sequence"

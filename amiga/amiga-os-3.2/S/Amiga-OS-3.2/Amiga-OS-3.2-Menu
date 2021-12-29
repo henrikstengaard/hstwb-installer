@@ -5,7 +5,7 @@
 ; Install Amiga OS 3.2
 ; --------------------
 ;
-; Date: 2021-12-20
+; Date: 2021-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to build Amiga OS 3.2 installation menu.
@@ -177,6 +177,21 @@ set menuoption `eval $menuoption + 1`
 echo "--------------------------------------------------" >>T:_amigaosmenu
 
 IF "$selfinstall" EQ 1 VAL
+  set splitter "0"
+  
+  ; 3.2.1 update option
+  IF EXISTS "INSTALLDIR:Prefs/Amiga-OS-321-ADF"
+    set splitter "1"
+    set menuoption `eval $menuoption + 1`
+    echo "Amiga OS 3.2.1 Update detected" >>"T:_amigaosmenu"
+  ENDIF
+
+  ; add splitter if support files are present
+  IF "$splitter" EQ 1 VAL
+    set menuoption `eval $menuoption + 1`
+    echo "--------------------------------------------------" >>T:_amigaosmenu
+  ENDIF
+
   ; back option
   set menuoption `eval $menuoption + 1`
   echo "" >>T:_amigaosoption
@@ -247,6 +262,13 @@ echo "LAB amigaosinstall" >>T:_amigaos32menu
 echo "echo *"Amiga-OS-32-ADF*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS" >>T:_amigaos32menu
 echo "echo *"*$amigaosinstall*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-32-ADF" >>T:_amigaos32menu
 echo "echo *"*" NOLINE >INSTALLDIR:Prefs/Continue-Amiga-OS-Install" >>T:_amigaos32menu
+
+echo "IF EXISTS INSTALLDIR:Prefs/Amiga-OS-321-ADF" >>T:_amigaos32menu
+echo "  echo *"1*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-321-ADF" >>T:_amigaos32menu
+echo "ELSE" >>T:_amigaos32menu
+echo "  echo *"0*" NOLINE >INSTALLDIR:Prefs/Install-Amiga-OS-321-ADF" >>T:_amigaos32menu
+echo "ENDIF" >>T:_amigaos32menu
+
 echo "" >>T:_amigaos32menu
 echo "LAB end" >>T:_amigaos32menu
 echo "" >>T:_amigaos32menu

@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.1.4 Adf
 ; -----------------------
 ;
-; Date: 2021-12-21
+; Date: 2021-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.1.4 adf files.
@@ -30,186 +30,45 @@ Execute INSTALLDIR:S/Escape-Filename T:_escapedfile
 set escapedfile "`type T:_escapedfile`"
 Delete >NIL: T:_escapedfile
 
-; get md5 from file
-; uses tempadffile set to unescaped or escaped file depending on md5 error codes
-md5 "{file}" >T:_md5
-IF $RC EQ 0 VAL
-  set tempadffile "{file}"
-ELSE
-  Copy >NIL: "$escapedfile" TO "INSTALLDIR:Temp/Amiga-OS-314.adf"
-  set tempadffile "INSTALLDIR:Temp/Amiga-OS-314.adf"
-
-  md5 "$tempadffile" >T:_md5
-  IF NOT $RC EQ 0 VAL
-    SKIP end
+; skip to end, if amiga os md5 doesn't exists
+If Not Exists "INSTALLDIR:Temp/Amiga-OS-MD5"
+  echo "Error: Amiga OS MD5 doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+  
+  ; goto mount, if md5 only prefs doesn't exists
+  If Not Exists INSTALLDIR:Prefs/MD5-Only
+    SKIP mount
   ENDIF
-ENDIF
 
-; get md5 for file
-set md5 ""
-set md5 "`type T:_md5`"
-Delete >NIL: T:_md5
+  Skip end
+EndIf
 
-; add md5 to log
-echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+; find md5 for amiga os file
+Search "INSTALLDIR:Temp/Amiga-OS-MD5" "{file}" NONUM >T:_amiga-os-md51
+If Not $RC EQ 0 VAL
+  Skip end
+EndIf
+
+; get found amiga os md5 text
+sed "1q;d" T:_amiga-os-md51 >T:_amiga-os-md52
+set md5 `Execute T:_amiga-os-md52`
+Delete >NIL: T:_amiga-os-md5#?
 
 
 ; md5
 ; ---
+LAB md5
 
-; copy amiga os 3.1.4 workbench adf, if file md5 matches
-IF "$md5" eq "05a7469fd903744aa5f53741765bf668"
-  echo "Amiga OS 3.1.4 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-workbench.adf"
-  SKIP copyadffile
-ENDIF
+; add md5 to log
+echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
 
-; copy amiga os 3.1.4 locale adf, if file md5 matches
-IF "$md5" eq "4007bfe06b5b51af981a3fa52c51f54a"
-  echo "Amiga OS 3.1.4 Locale adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-locale.adf"
-  SKIP copyadffile
-ENDIF
+; skip to end, if amiga os 3.1.4 md5 doesn't exist
+If Not Exists "INSTALLDIR:MD5/Amiga-OS-3.1.4/$md5"
+  SKIP end
+EndIf
 
-; copy amiga os 3.1.4 extras adf, if file md5 matches
-IF "$md5" eq "988ddad5106d5b846be57b711d878b4c"
-  echo "Amiga OS 3.1.4 Extras adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-extras.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 fonts adf, if file md5 matches
-IF "$md5" eq "27a7af42777a43a06f8d9d8e74226e56"
-  echo "Amiga OS 3.1.4 Fonts adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-fonts.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 storage adf, if file md5 matches
-IF "$md5" eq "372215cd27888d65a95db92b6513e702"
-  echo "Amiga OS 3.1.4 Storage adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-storage.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a500 adf v1, if file md5 matches
-IF "$md5" eq "8a3824e64dbe2c8327d5995188d5fdd3"
-  echo "Amiga OS 3.1.4 Modules A500 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a500.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a500 adf v2, if file md5 matches
-IF "$md5" eq "2065c8850b5ba97099c3ff2672221e3f"
-  echo "Amiga OS 3.1.4 Modules A500 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a500.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a600 adf v1, if file md5 matches
-IF "$md5" eq "c5a96c56ee5a7e2ca639c755d89dda36"
-  echo "Amiga OS 3.1.4 Modules A600 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a600.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a600 adf v2, if file md5 matches
-IF "$md5" eq "4e095037af1da015c09ed26e3e107f50"
-  echo "Amiga OS 3.1.4 Modules A600 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a600.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a600 adf v3, if file md5 matches
-IF "$md5" eq "bc48d0bdafd123a6ed459c38c7a1c2e4"
-  echo "Amiga OS 3.1.4 Modules A600 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a600.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a2000 adf v1, if file md5 matches
-IF "$md5" eq "b201f0b45c5748be103792e03f938027"
-  echo "Amiga OS 3.1.4 Modules A2000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a2000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a2000 adf v2, if file md5 matches
-IF "$md5" eq "b8d09ea3369ac538c3920c515ba76e86"
-  echo "Amiga OS 3.1.4 Modules A2000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a2000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a1200 adf v1, if file md5 matches
-IF "$md5" eq "2797193dc7b7daa233abe1bcfee9d5a1"
-  echo "Amiga OS 3.1.4 Modules A1200 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a1200.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a1200 adf v2, if file md5 matches
-IF "$md5" eq "d170f8c11d1eb52f12643e0f13b44886"
-  echo "Amiga OS 3.1.4 Modules A1200 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a1200.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a3000 adf v1, if file md5 matches
-IF "$md5" eq "60263124ea2c5f1831a3af639d085a28"
-  echo "Amiga OS 3.1.4 Modules A3000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a3000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a3000 adf v2, if file md5 matches
-IF "$md5" eq "d068cbc850390c3e0028879cc1cae4c2"
-  echo "Amiga OS 3.1.4 Modules A3000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a3000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a4000d adf v1, if file md5 matches
-IF "$md5" eq "7d20dc438e802e41def3694d2be59f0f"
-  echo "Amiga OS 3.1.4 Modules A4000D adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a4000d.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a4000t adf v1, if file md5 matches
-IF "$md5" eq "68fb2ca4b81daeaf140d35dc7a63d143"
-  echo "Amiga OS 3.1.4 Modules A4000T adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a4000t.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 modules a4000t adf v2, if file md5 matches
-IF "$md5" eq "a0ed3065558bd43e80647c1c522322a0"
-  echo "Amiga OS 3.1.4 Modules A4000T adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-modules-a4000t.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 install adf, if file md5 matches
-IF "$md5" eq "7e9b5ec9cf89d9aae771cd1b708792d9"
-  echo "Amiga OS 3.1.4 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-install.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4 install adf, if file md5 matches
-IF "$md5" eq "2fac2ab6bdd36bd28c04297253238655"
-  echo "Amiga OS 3.1.4 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-314-install.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.1.4.1 update adf, if file md5 matches
-IF "$md5" eq "62e7580b5f0c20e2162029fcd4783aaa"
-  echo "Amiga OS 3.1.4.1 Update adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
-  set adffilename "amiga-os-3141-update.adf"
-  SKIP copyadffile
-ENDIF
+set adffilename `Type "INSTALLDIR:MD5/Amiga-OS-3.2/$md5"`
+echo "'$adffilename' detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-314-Adf.log
+SKIP copyadffile
 
 ; goto end, if md5 only prefs exists
 IF EXISTS INSTALLDIR:Prefs/MD5-Only
@@ -219,6 +78,7 @@ ENDIF
 
 ; mount file
 ; ----------
+LAB mount
 
 ; goto end, if file size is not 901120 bytes
 IF NOT "`wc -c <"$tempadffile"`" EQ 901120 VAL

@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-12-03
+; Date: 2021-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -228,9 +228,9 @@ ENDIF
 failat 21
 
 ; find amiga os 3.9 iso files in AMIGAOSDIR: device
-FSearch >RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos39.iso"
-FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amigaos3.9.iso"
-FSearch >>RAM:_isofiles "AMIGAOSDIR:" PAT="amiga-os-390.iso"
+FSearch >RAM:_isofiles "AMIGAOSDIR:" ALL PAT="amigaos39.iso"
+FSearch >>RAM:_isofiles "AMIGAOSDIR:" ALL PAT="amigaos3.9.iso"
+FSearch >>RAM:_isofiles "AMIGAOSDIR:" ALL PAT="amiga-os-390.iso"
 
 ; goto amiga os adf, if no iso files are present
 IF "`wc -l <RAM:_isofiles`" EQ 0 VAL
@@ -349,7 +349,7 @@ set workbenchadffile ""
 set installadffile ""
 
 ; find adf files in AMIGAOSDIR:
-FSearch >RAM:_adffiles "AMIGAOSDIR:" PAT="#?.adf"
+FSearch >RAM:_adffiles "AMIGAOSDIR:" ALL PAT="#?.adf"
 
 ; next adf file
 LAB nextadffile

@@ -5,7 +5,7 @@
 ; Copy Amiga OS 3.2 Adf
 ; ---------------------
 ;
-; Date: 2021-07-25
+; Date: 2021-12-29
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to identify and copy valid Amiga OS 3.2 adf files.
@@ -30,270 +30,45 @@ Execute INSTALLDIR:S/Escape-Filename T:_escapedfile
 set escapedfile "`type T:_escapedfile`"
 Delete >NIL: T:_escapedfile
 
-; get md5 from file
-; uses tempadffile set to unescaped or escaped file depending on md5 error codes
-md5 "{file}" >T:_md5
-IF $RC EQ 0 VAL
-  set tempadffile "{file}"
-ELSE
-  Copy >NIL: "$escapedfile" TO "INSTALLDIR:Temp/Amiga-OS-32.adf"
-  set tempadffile "INSTALLDIR:Temp/Amiga-OS-32.adf"
-
-  md5 "$tempadffile" >T:_md5
-  IF NOT $RC EQ 0 VAL
-    SKIP end
+; skip to end, if amiga os md5 doesn't exists
+If Not Exists "INSTALLDIR:Temp/Amiga-OS-MD5"
+  echo "Error: Amiga OS MD5 doesn't exist!" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  
+  ; goto mount, if md5 only prefs doesn't exists
+  If Not Exists INSTALLDIR:Prefs/MD5-Only
+    SKIP mount
   ENDIF
-ENDIF
 
-; get md5 for file
-set md5 ""
-set md5 "`type T:_md5`"
-Delete >NIL: T:_md5
+  Skip end
+EndIf
 
-; add md5 to log
-echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+; find md5 for amiga os file
+Search "INSTALLDIR:Temp/Amiga-OS-MD5" "{file}" NONUM >T:_amiga-os-md51
+If Not $RC EQ 0 VAL
+  Skip end
+EndIf
+
+; get found amiga os md5 text
+sed "1q;d" T:_amiga-os-md51 >T:_amiga-os-md52
+set md5 `Execute T:_amiga-os-md52`
+Delete >NIL: T:_amiga-os-md5#?
 
 
 ; md5
 ; ---
+LAB md5
 
-; copy amiga os 3.2 backdrops adf, if file md5 matches
-IF "$md5" eq "2236629e7c316ff907b7e0cb1ee0ad18"
-  echo "Amiga OS 3.2 Backdrops adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-backdrops.adf"
-  SKIP copyadffile
-ENDIF
+; add md5 to log
+echo "MD5 = '$md5'" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
 
-; copy amiga os 3.2 classes adf, if file md5 matches
-IF "$md5" eq "fd11e54b038d5f236248a941125065db"
-  echo "Amiga OS 3.2 Classes adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-classes.adf"
-  SKIP copyadffile
-ENDIF
+; skip to end, if amiga os 3.2 md5 doesn't exist
+If Not Exists "INSTALLDIR:MD5/Amiga-OS-3.2/$md5"
+  SKIP end
+EndIf
 
-; copy amiga os 3.2 disk doctor adf, if file md5 matches
-IF "$md5" eq "497d0aa96229a0e7fd2c475163d7462a"
-  echo "Amiga OS 3.2 Disk Doctor adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-disk-doctor.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 extras adf, if file md5 matches
-IF "$md5" eq "4f0c3383a10e62fdea5e5758a9238223"
-  echo "Amiga OS 3.2 Extras adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-extras.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 fonts adf, if file md5 matches
-IF "$md5" eq "e03eb0505fb244aaf1c7486f6fe61ede"
-  echo "Amiga OS 3.2 Fonts adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-fonts.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 glow icons adf, if file md5 matches
-IF "$md5" eq "26ef4d09cf71b7fdbd9cc68f333b7373"
-  echo "Amiga OS 3.2 Glow Icons adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-glow-icons.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 install adf, if file md5 matches
-IF "$md5" eq "71edc1249c013d60380d3db81fd87ae7"
-  echo "Amiga OS 3.2 Install adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-install.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale de adf, if file md5 matches
-IF "$md5" eq "3d36568bce19234b84fe88aa9629f5bf"
-  echo "Amiga OS 3.2 Locale DE adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-de.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale dk adf, if file md5 matches
-IF "$md5" eq "3a80e4f6b0d2d95f727dc45f99068ad8"
-  echo "Amiga OS 3.2 Locale DK adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-dk.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale en adf, if file md5 matches
-IF "$md5" eq "7170c0bc81b7daeee39552279dada58c"
-  echo "Amiga OS 3.2 Locale EN adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-en.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale es adf, if file md5 matches
-IF "$md5" eq "5e2eb9acef8e7b062d103db3fd270a27"
-  echo "Amiga OS 3.2 Locale ES adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-es.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale fr adf, if file md5 matches
-IF "$md5" eq "9f65d321d92d72e17d1f744f47d16323"
-  echo "Amiga OS 3.2 Locale FR adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-fr.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale gr adf, if file md5 matches
-IF "$md5" eq "f93f2cd799ad1356adf4db01e20218f1"
-  echo "Amiga OS 3.2 Locale GR adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-gr.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale it adf, if file md5 matches
-IF "$md5" eq "ad728c377ce3d7f4bd6adba8419a81ae"
-  echo "Amiga OS 3.2 Locale IT adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-it.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale nl adf, if file md5 matches
-IF "$md5" eq "e7b7b5a6583fca0d302201a1cb0b2829"
-  echo "Amiga OS 3.2 Locale NL adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-nl.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale no adf, if file md5 matches
-IF "$md5" eq "1a9b83a7385c1aab8094fc1d72123437"
-  echo "Amiga OS 3.2 Locale NO adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-no.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale pl adf, if file md5 matches
-IF "$md5" eq "1aaa138753cec33a55f48d869780b7c8"
-  echo "Amiga OS 3.2 Locale PL adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-pl.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale pt adf, if file md5 matches
-IF "$md5" eq "425bbeb03c74fb275d643644bdd1af9a"
-  echo "Amiga OS 3.2 Locale PT adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-pt.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale ru adf, if file md5 matches
-IF "$md5" eq "c45409fca931fc1ce76f6713f27ccd00"
-  echo "Amiga OS 3.2 Locale RU adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-ru.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale se adf, if file md5 matches
-IF "$md5" eq "a588dbc1ee7bf43e0e79694e10e48669"
-  echo "Amiga OS 3.2 Locale SE adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-se.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale tr adf, if file md5 matches
-IF "$md5" eq "6f9a623611fd19e084f7be2106ecfd99"
-  echo "Amiga OS 3.2 Locale TR adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-tr.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale uk adf, if file md5 matches
-IF "$md5" eq "8d88812406cbf373cdb38148096972b9"
-  echo "Amiga OS 3.2 Locale UK adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale-uk.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 locale adf, if file md5 matches
-IF "$md5" eq "b697a03f0620b5e06947b5e9d7b16142"
-  echo "Amiga OS 3.2 Locale adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-locale.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 mmulibs adf, if file md5 matches
-IF "$md5" eq "66c46918b7005167f1b65e444d0b95f7"
-  echo "Amiga OS 3.2 MMULibs adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-mmulibs.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a500 adf, if file md5 matches
-IF "$md5" eq "2af6b84449996440211e9547660b10b6"
-  echo "Amiga OS 3.2 Modules A500 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a500.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a600 adf, if file md5 matches
-IF "$md5" eq "c6474df1d52300a4993f13a394701697"
-  echo "Amiga OS 3.2 Modules A600 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a600.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a2000 adf, if file md5 matches
-IF "$md5" eq "9b18dea310bf073ef9cae2a120254d92"
-  echo "Amiga OS 3.2 Modules A2000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a2000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a1200 adf, if file md5 matches
-IF "$md5" eq "2d46a2856152256771883f212a4e462d"
-  echo "Amiga OS 3.2 Modules A1200 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a1200.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a3000 adf, if file md5 matches
-IF "$md5" eq "99fdc21e434c2b2a988ba96b69d46389"
-  echo "Amiga OS 3.2 Modules A3000 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a3000.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a4000d adf, if file md5 matches
-IF "$md5" eq "729ddf87056936d77ee8287f9ad090a7"
-  echo "Amiga OS 3.2 Modules A4000D adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a4000d.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules a4000t adf, if file md5 matches
-IF "$md5" eq "f8eddbca10560582b99a2f4555ad0620"
-  echo "Amiga OS 3.2 Modules A4000T adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-a4000t.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 modules cd32 adf, if file md5 matches
-IF "$md5" eq "00b2c4d420c933894151c43dc3a24155"
-  echo "Amiga OS 3.2 Modules CD32 adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-modules-cd32.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 storage adf, if file md5 matches
-IF "$md5" eq "3726fab6ec5cfc48f7c2368005964d90"
-  echo "Amiga OS 3.2 Storage adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-storage.adf"
-  SKIP copyadffile
-ENDIF
-
-; copy amiga os 3.2 workbench adf, if file md5 matches
-IF "$md5" eq "5edf0b7a10409ef992ea351565ef8b6c"
-  echo "Amiga OS 3.2 Workbench adf detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
-  set adffilename "amiga-os-32-workbench.adf"
-  SKIP copyadffile
-ENDIF
+set adffilename `Type "INSTALLDIR:MD5/Amiga-OS-3.2/$md5"`
+echo "'$adffilename' detected using MD5" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+SKIP copyadffile
 
 ; goto end, if md5 only prefs exists
 IF EXISTS INSTALLDIR:Prefs/MD5-Only
@@ -303,6 +78,7 @@ ENDIF
 
 ; mount file
 ; ----------
+LAB mount
 
 ; goto end, if file size is not 901120 bytes
 IF NOT "`wc -c <"$tempadffile"`" EQ 901120 VAL
@@ -369,6 +145,79 @@ ENDIF
 IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Modules"`" EQ ""
   echo "Amiga OS 3.2 Modules $modulesname adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
   set adffilename "amiga-os-32-modules-$modulesfile.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2 classes file, if classes adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Classes"`" EQ ""
+  echo "Amiga OS 3.2 Classes adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-32-classes.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2 disk doctor file, if disk doctor adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-DiskDoctor"`" EQ ""
+  echo "Amiga OS 3.2 Disk Doctor adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-32-disk-doctor.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2 glow icons file, if glow icons adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-GlowIcons"`" EQ ""
+  echo "Amiga OS 3.2 Glow Icons adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-32-glow-icons.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2 mmulibs file, if glow icons adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-MMULibs"`" EQ ""
+  echo "Amiga OS 3.2 MMULibs adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-32-mmulibs.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2 backdrops file, if glow icons adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Backdrops"`" EQ ""
+  echo "Amiga OS 3.2 Backdrops adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-32-backdrops.adf"
+  SKIP copyadffile
+ENDIF
+
+; amiga os 3.2.1
+; --------------
+
+; copy amiga os 3.2.1 classes file, if classes adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Classes3.2.1"`" EQ ""
+  echo "Amiga OS 3.2.1 Classes adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-321-classes.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2.1 disk doctor file, if disk doctor adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-DiskDoctor3.2.1"`" EQ ""
+  echo "Amiga OS 3.2.1 Disk Doctor adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-321-disk-doctor.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2.1 locale file, if locale adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Locale3.2.1"`" EQ ""
+  echo "Amiga OS 3.2.1 Locale adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-321-locale.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2.1 modules file, if modules adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Modules3.2.1"`" EQ ""
+  echo "Amiga OS 3.2.1 Modules $modulesname adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-321-modules-$modulesfile.adf"
+  SKIP copyadffile
+ENDIF
+
+; copy amiga os 3.2.1 update file, if update adf is valid
+IF "`Execute "INSTALLDIR:S/Amiga-OS-3.2/Detect-Update3.2.1"`" EQ ""
+  echo "Amiga OS 3.2.1 Update adf detected using mount file" >>INSTALLDIR:Temp/Amiga-OS-32-Adf.log
+  set adffilename "amiga-os-321-update.adf"
   SKIP copyadffile
 ENDIF
 

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-20
+# Date:   2021-12-29
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2213,10 +2213,25 @@ function RunInstall($hstwb)
             Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-32-ADF'
             
             # create install amiga os 3.2 modules adf prefs files
-            foreach ($amigaOs32ModulesAdf in $amigaOs32ModulesAdfs) {
+            foreach ($amigaOs32ModulesAdf in ($amigaOs32ModulesAdfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
                 $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-32-{0}-ADF' -f $amigaOs32ModulesAdf.Model)
                 Set-Content $installAmigaOs32PrefsFile -Value ""                    
-            }            
+            }       
+
+            # find amiga os 3.2.1 modules adf in amiga os set
+            $amigaOs321ModulesAdfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-321-[^\.]+\.adf$'}
+            if ($amigaOs321ModulesAdfs)
+            {
+                # create install amiga os prefs file
+                $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-321-ADF'
+                Set-Content $installAmigaOsPrefsFile -NoNewline -Value ''
+
+                # create install amiga os 3.2.1 modules adf prefs files
+                foreach ($amigaOs321ModulesAdf in ($amigaOs321ModulesAdfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
+                    $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-321-{0}-ADF' -f $amigaOs321ModulesAdf.Model)
+                    Set-Content $installAmigaOs32PrefsFile -Value ""                    
+                }            
+            }
         }
 
         # find amiga os 3.1.4 modules adf in amiga os set
@@ -2228,7 +2243,7 @@ function RunInstall($hstwb)
             Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-314-ADF'            
 
             # create install amiga os 3.1.4 modules adf prefs files
-            foreach ($amigaOs314ModulesAdf in $amigaOs314ModulesAdfs) {
+            foreach ($amigaOs314ModulesAdf in ($amigaOs314ModulesAdfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
                 $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
                 Set-Content $installAmigaOs314PrefsFile -Value ""                    
             }
@@ -2924,6 +2939,32 @@ function RunBuildSelfInstall($hstwb)
     {
         mkdir $installSelfInstallDir | Out-Null
     }
+
+
+    # create install md5 dir
+    $md5Dir = Join-Path $installSelfInstallDir -ChildPath "MD5"
+    if(!(test-path -path $md5Dir))
+    {
+        mkdir $md5Dir | Out-Null
+    }
+
+    # read amiga os entries
+    $amigaOsEntries = @()
+    $amigaOsEntries += Import-Csv -Delimiter ';' $hstwb.Paths.AmigaOsEntriesFile | Where-Object { $_.Name -and $_.Name -ne '' }
+
+    # write amiga os entries md5
+    foreach ($amigaOsEntry in $amigaOsEntries)
+    {
+        $setMd5Dir = Join-Path $md5Dir -ChildPath ($amigaOsEntry.Set -replace ' ', '-')
+        if(!(test-path -path $setMd5Dir))
+        {
+            mkdir $setMd5Dir | Out-Null
+        }
+
+        $amigaOsEntryMd5File = Join-Path $setMd5Dir -ChildPath $amigaOsEntry.Md5Hash
+        Set-Content $amigaOsEntryMd5File -NoNewline -Value $amigaOsEntry.Filename
+    }
+
 
     # copy generic to install directory
     $amigaGenericDir = [System.IO.Path]::Combine($hstwb.Paths.AmigaPath, "generic")
