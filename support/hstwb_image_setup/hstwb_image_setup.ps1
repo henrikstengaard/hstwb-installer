@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-21
+# Date:   2021-12-31
 #
 # A powershell script to setup HstWB images with following installation steps:
 #
@@ -46,7 +46,7 @@ function GetMd5FilesFromDir($dir)
 {
     $md5Files = New-Object System.Collections.Generic.List[System.Object]
 
-    foreach($file in (Get-ChildItem $dir | Where-Object { ! $_.PSIsContainer }))
+    foreach($file in (Get-ChildItem $dir -Recurse | Where-Object { ! $_.PSIsContainer }))
     {
         $md5Files.Add(@{
             'Md5' = (Get-FileHash $file.FullName -Algorithm MD5).Hash.ToLower();
@@ -532,6 +532,9 @@ $validAmigaOs32Md5Entries = @(
 
 # valid kickstart rom md5 entries
 $validKickstartMd5Entries = @(
+    @{ 'Md5' = '1c76a282cfca1565ad0d46089742ef20'; 'Filename' = 'kick.a1200.47.102'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2.1 47.102 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
+    @{ 'Md5' = 'c6b6010db581ad9f77a89622d6d9cd29'; 'Filename' = 'kick.a500.47.102'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2.1 47.102 A500 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
+
     @{ 'Md5' = 'cad62a102848e13bf04d8a3b0f8be6ab'; 'Filename' = 'kick.a1200.47.96'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2 47.96 A1200 Rom, Hyperion Entertainment'; 'Model' = 'A1200'; 'ConfigSupported' = $true },
     @{ 'Md5' = '1d9b6068abff5a44b4b2f1d5d3516dd9'; 'Filename' = 'kick.a500.47.96'; 'Encrypted' = $false; 'Name' = 'Kickstart 3.2 47.96 A500 Rom, Hyperion Entertainment'; 'Model' = 'A500'; 'ConfigSupported' = $true },
 
@@ -623,7 +626,7 @@ Write-Output "-----------------"
 Write-Output "HstWB Image Setup"
 Write-Output "-----------------"
 Write-Output "Author: Henrik Noerfjand Stengaard"
-Write-Output "Date: 2021-12-21"
+Write-Output "Date: 2021-12-30"
 Write-Output ""
 Write-Output ("Install dir '{0}'" -f $installDir)
 

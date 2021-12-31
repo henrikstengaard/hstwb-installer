@@ -1,7 +1,7 @@
 ; Detect Amiga OS
 ; ---------------
 ;
-; Date: 2021-12-29
+; Date: 2021-12-31
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -69,7 +69,7 @@ If $amigaosdir EQ 1 VAL
   List AMIGAOSDIR: PAT=#?.zip ALL FILES LFORMAT "Execute INSTALLDIR:S/Amiga-OS-MD5 *"%p%n*" *"INSTALLDIR:Temp/Amiga-OS-MD5*"" >>T:_build-amiga-os-md5
 
   ; run build amiga os md5
-  Execute T:_build-amiga-os-md5
+  set dummy "`Execute T:_build-amiga-os-md5`"
   Delete >NIL: T:_build-amiga-os-md5
 EndIf
 

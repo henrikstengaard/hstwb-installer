@@ -2,7 +2,7 @@
 # -----------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-21
+# Date:   2021-12-31
 #
 # A python script to setup HstWB images with following installation steps:
 #
@@ -52,8 +52,7 @@ def get_md5_files_from_dir(_dir):
 
     md5_files = []    
 
-    files = [os.path.join(_dir, _f) for _f in os.listdir(_dir) \
-        if os.path.isfile(os.path.join(_dir, _f))]
+    files = [os.path.join(dp, f) for dp, dn, fn in os.walk(_dir) for f in fn]
 
     for f in files:
         md5_file = Md5File()
@@ -570,6 +569,9 @@ valid_amiga_os_32_md5_entries = [
 
 # valid kickstart md5 entries
 valid_kickstart_md5_entries = [
+    { 'Md5': '1c76a282cfca1565ad0d46089742ef20', 'Filename': 'kick.a1200.47.102', 'Encrypted': False, 'Name': 'Kickstart 3.2.1 47.102 A1200 Rom, Hyperion Entertainment', 'Model': 'A1200', 'ConfigSupported': True },
+    { 'Md5': 'c6b6010db581ad9f77a89622d6d9cd29', 'Filename': 'kick.a500.47.102', 'Encrypted': False, 'Name': 'Kickstart 3.2.1 47.102 A500 Rom, Hyperion Entertainment', 'Model': 'A500', 'ConfigSupported': True },
+
     { 'Md5': 'cad62a102848e13bf04d8a3b0f8be6ab', 'Filename': 'kick.a1200.47.96', 'Encrypted': False, 'Name': 'Kickstart 3.2 47.96 A1200 Rom, Hyperion Entertainment', 'Model': 'A1200', 'ConfigSupported': True },
     { 'Md5': '1d9b6068abff5a44b4b2f1d5d3516dd9', 'Filename': 'kick.a500.47.96', 'Encrypted': False, 'Name': 'Kickstart 3.2 47.96 A500 Rom, Hyperion Entertainment', 'Model': 'A500', 'ConfigSupported': True },
 
@@ -684,7 +686,7 @@ print('-----------------')
 print('HstWB Image Setup')
 print('-----------------')
 print('Author: Henrik Noerfjand Stengaard')
-print('Date: 2021-12-21')
+print('Date: 2021-12-30')
 print('')
 print('Install dir \'{0}\''.format(install_dir))
 

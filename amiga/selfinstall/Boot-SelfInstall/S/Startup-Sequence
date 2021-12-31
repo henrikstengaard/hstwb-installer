@@ -1,7 +1,7 @@
 ; Startup Sequence
 ; ----------------
 ;
-; Date: 2021-12-29
+; Date: 2021-12-31
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer self install
@@ -153,6 +153,11 @@ echo "*e[1mLoading Amiga OS system files:*e[0m"
 ; skip to amiga os adf, if expansion.library is v45 or higher (kickstart 3.1.4)
 Version >NIL: "expansion.library" 45
 IF $RC EQ 0 VAL
+  ; log
+  echo "Kickstart 3.1.4 or newer rom detected, skip Amiga OS 3.9!" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
+  
+  echo "Kickstart 3.1.4 or newer rom detected, skip Amiga OS 3.9!"
+  echo ""
   SKIP amigaosadf
 ENDIF
 
@@ -434,6 +439,25 @@ IF $detectworkbench EQ 1 VAL
   IF $amigaos32 EQ 1 VAL
     echo "Amiga OS 3.2 Workbench adf detected" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
   ELSE
+    ; kickstart 40.68 (3.1) exec.library = v40.10
+    ; kickstart 46.143 (3.1.4) exec.library = v46.45
+    ; kickstart 47.96 (3.2) exec.library = v47.7
+    ; kickstart 47.102 (3.2.1) exec.library = v47.8
+
+    ; fail, if exec.library is v47.7 (kickstart 3.2) or newer
+    Version >NIL: exec.library 47 7
+    IF $RC EQ 0 VAL
+      echo "*e[1mError: Amiga OS 3.1 can't be installed with Kickstart"
+      echo "3.2 or newer rom!*e[0m"
+      echo ""
+      echo "Remove Kickstart 3.2 or newer rom from Amiga OS directory,"
+      echo "run hstwb_image_setup script, restart HstWB Installer image."
+      echo ""
+      echo "Alternatively fix by manually changing to Kickstart 3.1 rom"
+      echo "in emulator and restart."
+      SKIP fail
+    ENDIF
+
     IF $amigaos314 EQ 1 VAL
       echo "Amiga OS 3.1.4 Workbench adf detected" >>INSTALLDIR:Temp/Amiga-OS-System-Files.log
     ELSE

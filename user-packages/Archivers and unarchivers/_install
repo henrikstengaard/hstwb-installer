@@ -28,12 +28,29 @@ set libsxfddir "`execute INSTALLDIR:S/CombinePath "$libsdir" "xfd"`"
 ; write install status
 echo "Lha v2.15..."
 
+; show select lha cpu version request choice
+set cpu `RequestChoice "Lha CPU version" "Select Lha CPU version to install*N*NDefault is 68000." "68040|68020|68000|Default"` 
+
 ; extract lha to temp systemdir
 lha -m1 -q x "USERPACKAGEDIR:lha.run" "SYSTEMDIR:Temp/_Lha/"
 
-; install lha
-Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_68k" "$cdir/lha"
-Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_680#?" "$cdir" ALL CLONE
+; 68040 cpu
+If "$cpu" EQ 1 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_68040" "$cdir/lha" CLONE
+  Skip lhatemp
+EndIf
+
+; 68020 cpu
+If "$cpu" EQ 2 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_68020" "$cdir/lha" CLONE
+  Skip lhatemp
+EndIf
+
+; 68000 cpu, default
+Copy >NIL: "SYSTEMDIR:Temp/_Lha/lha_68k" "$cdir/lha" CLONE
+
+; remove lha temp
+LAB lhatemp
 
 ; delete lha from temp systemdir
 Delete >NIL: "SYSTEMDIR:Temp/_Lha" ALL
@@ -43,6 +60,9 @@ Delete >NIL: "SYSTEMDIR:Temp/_Lha" ALL
 
 ; write install status
 echo "LZX v1.21r..."
+
+; show select lzx cpu version request choice
+set cpu `RequestChoice "LZX CPU version" "Select LZX CPU version to install*N*NDefault is 68000." "68040|68020|68000|Default"` 
 
 ; extract lha to temp systemdir
 lha -m1 -q x "USERPACKAGEDIR:lzx121r1.lha" "SYSTEMDIR:Temp/_LZX/"
@@ -55,10 +75,25 @@ SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68040r SYSTEMDIR:Temp/_LZX/LZ
 SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68020r SYSTEMDIR:Temp/_LZX/LZX121r.gpch SYSTEMDIR:Temp/_LZX/LZX_68020r_Y2K QUIET
 SYSTEMDIR:Temp/_LZX/GPatch SYSTEMDIR:Temp/_LZX/LZX_68000EC-r SYSTEMDIR:Temp/_LZX/LZX121r.gpch SYSTEMDIR:Temp/_LZX/LZX_68000EC-r_Y2K QUIET
 
-; install lzx
-Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68040r_Y2K" "$cdir/LZX_68040"
-Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68020r_Y2K" "$cdir/LZX_68020"
-Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68000EC-r_Y2K" "$cdir/LZX"
+; 68040 cpu
+If "$cpu" EQ 1 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68040r_Y2K" "$cdir/LZX" CLONE
+  Skip lzxtemp
+EndIf
+
+; 68020 cpu
+If "$cpu" EQ 2 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68020r_Y2K" "$cdir/LZX" CLONE
+  Skip lzxtemp
+EndIf
+
+; 68000 cpu, default
+Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX_68000EC-r_Y2K" "$cdir/LZX" CLONE
+
+; remove lzx temp
+LAB lzxtemp
+
+; install lzx key file
 Copy >NIL: "SYSTEMDIR:Temp/_LZX/LZX.Keyfile" "$ldir" ALL CLONE
 
 ; delete lzx from temp systemdir
