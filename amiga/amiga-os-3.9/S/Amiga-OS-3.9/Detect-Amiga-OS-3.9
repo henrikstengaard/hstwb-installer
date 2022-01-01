@@ -1,7 +1,7 @@
 ; Detect Amiga OS 3.9
 ; -------------------
 ;
-; Date: 2021-10-24
+; Date: 2022-01-01
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to detect if Amiga OS 3.9 cd-rom, iso and Boing Bag lha files are present.
@@ -24,10 +24,12 @@ failat 255
 set amigaos39cd "0"
 DiskInDrive >NIL: CD0:
 IF $RC EQ 0 VAL
-  set amigaos39cd "1"
-
   ; disk change CD0: device to detect changed directories and files
   DiskChange CD0:
+
+  IF "`Which CD0:`" EQ "AmigaOS3.9:"
+    set amigaos39cd "1"
+  ENDIF
 ELSE
   echo "CD0: device doesn't exist" >>INSTALLDIR:Temp/Amiga-OS-390.log
 ENDIF

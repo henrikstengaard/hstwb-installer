@@ -8,7 +8,7 @@ This is where HstWB Installer come to aid and can help simplifying installations
 
 ## Basics
 
-HstWB Installer comes with prepared image templates partitioned, formatted and ready to use for creating a new installation of Amiga OS. It supports automated installation of Amiga OS 3.1 from floppy disks or adf files and Amiga OS 3.9 from cd-rom or iso file. 
+HstWB Installer comes with prepared image templates partitioned, formatted and ready to use for creating a new installation of Amiga OS. It supports automated installation of Amiga OS 3.2, 3.1.4 and 3.1 from floppy disks or adf files and Amiga OS 3.9 from cd-rom or iso file. 
 
 Kickstart roms for WHDLoad are detected by checking rom file MD5 checksums and installed on Amiga system device along with Cloanto Amiga Forever rom key depending on rom files are encrypted or not. Afterwards additional content can be installed with packages and user packages. 
 
