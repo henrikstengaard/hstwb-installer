@@ -3,7 +3,7 @@
 # Setup Raspberry Pi OS
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-19
+# Date: 2022-01-02
 #
 # bash script to show setup raspberry pi os menu.
 
@@ -16,8 +16,9 @@ while true; do
 	3 "Set audio output to HDMI" \
 	4 "Set audio output to Jack" \
 	5 "Change boot" \
-	6 "Expand filesystem" \
-	7 "Exit")
+        6 "Force 1080p HDMI resolution" \
+	7 "Expand filesystem" \
+	8 "Exit")
 
 	clear
 
@@ -44,9 +45,12 @@ while true; do
 			./change-boot.sh
 			;;
 		6)
-			./expand-filesystem.sh
+			./force-1080p-hdmi.sh
 			;;
 		7)
+			./expand-filesystem.sh
+			;;
+		8)
 			exit
 			;;
 		esac

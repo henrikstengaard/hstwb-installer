@@ -3,7 +3,7 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-25
+# Date: 2022-01-02
 #
 # bash script to install amiberry.
 
@@ -132,7 +132,6 @@ for choice in $choices; do
 	esac
 done
 
-
 # show select raspberry pi model dialog
 choices=$(dialog --clear --stdout \
 --title "Raspberry Pi model" \
@@ -176,8 +175,8 @@ done
 choices=$(dialog --clear --stdout \
 --title "SDL2 target" \
 --menu "Select SDL2 target:" 0 0 0 \
-1 "SDL2 + DispmanX (Best performance, Raspberry Pi platforms only)" \
-2 "SDL2 (KMS, OpenGL, X11, etc.)" \
+1 "SDL2" \
+2 "SDL2 + DispmanX" \
 3 "Exit")
 
 clear
@@ -190,7 +189,7 @@ fi
 # choices
 for choice in $choices; do
   case $choice in
-    2)
+    1)
       makeargs="$makeargs-sdl2"
       ;;
     3)
@@ -210,8 +209,7 @@ fi
 echo ""
 echo "Install required packages to compile Amiberry..."
 sleep 1
-#sudo apt-get install libsdl2-2.0-0 libsdl2-ttf-2.0-0 libsdl2-image-2.0-0 libxml2 flac mpg123 libmpeg2-4
-sudo apt-get --assume-yes install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libxml2-dev libflac-dev libmpg123-dev libpng-dev libmpeg2-4-dev
+sudo apt-get --assume-yes install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libflac-dev libmpg123-dev libpng-dev libmpeg2-4-dev
 
 pushd "$amiberrydir" >/dev/null
 git reset --hard

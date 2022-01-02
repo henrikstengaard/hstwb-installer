@@ -1,4 +1,4 @@
-config_description=Run HstWB Installer image (030, JIT, 16MB Z3)
+config_description=Run HstWB Installer image (030, JIT, 32MB Z3)
 config_hardware=true
 config_host=true
 config_version=4.3.0
@@ -85,7 +85,11 @@ cd_speed=100
 ; 
 gfx_framerate=1
 gfx_width=720
-gfx_height=284
+gfx_width_fullscreen=800
+gfx_width_windowed=720
+gfx_height=568
+gfx_height_fullscreen=600
+gfx_height_windowed=568
 gfx_top_windowed=0
 gfx_left_windowed=0
 gfx_refreshrate=50
@@ -98,11 +102,12 @@ gfx_fullscreen_amiga=false
 gfx_fullscreen_picasso=false
 gfx_center_horizontal=smart
 gfx_center_vertical=smart
+gfx_flickerfixer=true
 ntsc=false
 ; 
 ; *** CPU options
 ; 
-cpu_speed=turbo
+cpu_speed=max
 cpu_type=68020/68881
 cpu_model=68030
 fpu_model=68882
@@ -120,7 +125,7 @@ z3mapping=real
 fastmem_size=0
 a3000mem_size=0
 mbresmem_size=0
-z3mem_size=16
+z3mem_size=32
 z3mem_start=0x40000000
 bogomem_size=0
 gfxcard_hardware_vblank=false

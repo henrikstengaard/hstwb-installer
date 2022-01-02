@@ -3,7 +3,7 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2021-03-02
+# Date: 2022-01-02
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
@@ -110,6 +110,14 @@ function unzip_image()
 		mkdir -p "$HSTWB_HDD_PATH" >/dev/null
 	fi
 
+	# create start first path, if it doesn't exist
+        if [ ! -d "$HSTWB_HDD_PATH/start-first" ]; then
+                mkdir -p "$HSTWB_HDD_PATH/start-first" >/dev/null
+        fi
+
+	# copy start first to hstwb hdd path#
+	cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/start-first/." "$HSTWB_HDD_PATH/start-first"
+
 	# unzip latest hstwb installer uae4arm image to hstwb hdd path
 	echo "Unzipping '$UAE4ARM_LATEST_FILENAME' to '$HSTWB_HDD_PATH'..."
 	sleep 1
@@ -128,7 +136,12 @@ function unzip_image()
 function update_configs()
 {
 	# amiberry config
-	if [ ! "$AMIBERRY_CONF_PATH" == "" -a -d "$AMIBERRY_CONF_PATH" ]; then
+	if [ ! "$AMIBERRY_CONF_PATH" == "" ]; then
+		# create amiberry config directory, if it doesn't exist
+		if [ ! -d "$AMIBERRY_CONF_PATH" ]; then
+			mkdir -p "$AMIBERRY_CONF_PATH" >/dev/null
+		fi
+
 		# copy amiberry configs
 		cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/configs/." "$AMIBERRY_CONF_PATH"
 
@@ -138,7 +151,12 @@ function update_configs()
 	fi
 
 	# uae4arm config
-	if [ ! "$UAE4ARM_CONF_PATH" == "" -a -d "$UAE4ARM_CONF_PATH" ]; then
+	if [ ! "$UAE4ARM_CONF_PATH" == "" ]; then
+		# create uae4arm config directory, if it doesn't exist
+		if [ ! -d "$UAE4ARM_CONF_PATH" ]; then
+			mkdir -p "$UAE4ARM_CONF_PATH" >/dev/null
+		fi
+
 		# copy chips uae4arm configs
 		cp -R "$HSTWB_INSTALLER_ROOT/emulators/chips_uae4arm/configs/." "$UAE4ARM_CONF_PATH"
 
