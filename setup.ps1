@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-21
+# Date:   2022-01-02
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1639,16 +1639,6 @@ try
     }
     
     
-    # create default settings, if settings file doesn't exist
-    if (test-path -path $settingsFile)
-    {
-        $settings = ReadIniFile $settingsFile
-    }
-    else
-    {
-        $settings = @{}
-        DefaultSettings $settings
-    }
     
     
     # read assigns, if assigns file exist
@@ -1679,13 +1669,23 @@ try
         'Models' = @('A1200', 'A500');
         'Images' = (ReadImages $imagesPath | Where-Object { $_ });
         'Packages' = (ReadPackages $packagesPath | Where-Object { $_ });
-        'Settings' = $settings;
+        'Settings' = @{};
         'Assigns' = $assigns;
         'UI' = @{
             'AmigaOs' = @{};
             'Kickstart' = @{}
         };
         'AmigaOsSets' = @()
+    }
+
+    # create default settings, if settings file doesn't exist
+    if (test-path -path $settingsFile)
+    {
+        $hstwb.Settings = ReadIniFile $settingsFile
+    }
+    else
+    {
+        DefaultSettings $hstwb
     }
 
     # upgrade settings and assigns
