@@ -3,7 +3,7 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-02
+# Date: 2022-01-04
 #
 # Bash script for first time use of Amibian.
 
@@ -43,6 +43,12 @@ if [ ! -f ~/.hstwb-installer/.expand-filesystem ]; then
 	touch ~/.hstwb-installer/.expand-filesystem
 	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/expand-filesystem.sh
 fi
+
+# force 1080p hdmi
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh
+
+# install sdl2 kmsdrm
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2-kmsdrm.sh
 
 # install amiberry
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh

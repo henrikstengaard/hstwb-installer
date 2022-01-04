@@ -3,7 +3,7 @@
 # Install HstWB Installer Image
 # -----------------------------
 # Author: Henrik Noefjand Stengaard
-# Date: 2022-01-02
+# Date: 2022-01-04
 #
 # Bash script to download and install latest HstWB Installer UAE4ARM image.
 
@@ -111,12 +111,12 @@ function unzip_image()
 	fi
 
 	# create start first path, if it doesn't exist
-        if [ ! -d "$HSTWB_HDD_PATH/start-first" ]; then
-                mkdir -p "$HSTWB_HDD_PATH/start-first" >/dev/null
-        fi
+        #if [ ! -d "$HSTWB_HDD_PATH/start-first" ]; then
+        #        mkdir -p "$HSTWB_HDD_PATH/start-first" >/dev/null
+        #fi
 
 	# copy start first to hstwb hdd path#
-	cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/start-first/." "$HSTWB_HDD_PATH/start-first"
+	#cp -R "$HSTWB_INSTALLER_ROOT/emulators/amiberry/start-first/." "$HSTWB_HDD_PATH/start-first"
 
 	# unzip latest hstwb installer uae4arm image to hstwb hdd path
 	echo "Unzipping '$UAE4ARM_LATEST_FILENAME' to '$HSTWB_HDD_PATH'..."
@@ -216,6 +216,7 @@ fi
 while true;do
 	if is_online && latest_image && download_image && unzip_image && update_configs; then
 		# show success dialog
+		# Amiberry requires first start of \"hstwb-build-must-start-first-jit.uae\" configuration file before starting to build the HstWB Installer image (not required for UAE4ARM).\n\n
 		dialog --clear --title "Success" --msgbox "Successfully installed latest HstWB Installer UAE4ARM image in Amiga hdd directory \"$AMIGA_HDD_PATH\".\n\nTo start building HstWB Installer image, run Amiga emulator then load and start \"hstwb-build-030-jit.uae\" configuration file.\n\nWhen HstWB Installer image is built, run Amiga emulator then load and start \"hstwb-run-030-jit.uae\" configuration file.\n\nTo enable autostart for \"hstwb-run-030-jit.uae\" configuration file, load it and save it as \"autostart.uae\" configuration file. Note that autostart only works, if Raspberry Pi OS is changed to start Amiga emulator or Amiga emulator is run from \"hstwb\" menu.\n\n" 0 0
 
 		exit

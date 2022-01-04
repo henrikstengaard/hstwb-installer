@@ -3,14 +3,14 @@
 # Force 1080p HDMI
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-01
+# Date: 2022-01-04
 #
 # Bash script to force set 1080p hdmi (CEA Mode 16 1920x1080 60Hz 16:9) resolution.
 
 # show dialog
 dialog --clear --stdout \
 --title "Force 1080p HDMI resolution" \
---yesno "Do you want to force set 1080p HDMI (CEA Mode 16 1920x1080 60Hz 16:9) resolution?" 0 0
+--yesno "Raspberry Pi 4 / 400 uses 4K HDMI resolutions when available and this causes slow downs in Amiga emulators. Forcing HDMI resolution to 1080p will improve performance with 4K displays.\n\nDo you want to force set 1080p HDMI (CEA Mode 16 1920x1080 60Hz 16:9) resolution?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then

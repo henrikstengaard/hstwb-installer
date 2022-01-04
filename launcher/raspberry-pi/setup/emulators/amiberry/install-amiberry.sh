@@ -3,7 +3,7 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-02
+# Date: 2022-01-04
 #
 # bash script to install amiberry.
 

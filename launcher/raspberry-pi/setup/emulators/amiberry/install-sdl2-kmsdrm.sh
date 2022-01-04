@@ -3,7 +3,7 @@
 # Install SDL2 KMSDRM
 # -------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-25
+# Date: 2022-01-04
 #
 # bash script to install sdl2 kmsdrm required by amiberry.
 
@@ -46,14 +46,14 @@ pushd "$tmp_dir" >/dev/null
 echo ""
 echo "Download and extract SDL2..."
 sleep 1
-wget https://libsdl.org/release/SDL2-2.0.12.tar.gz --no-check-certificate
-tar xvzf SDL2-2.0.12.tar.gz
+wget https://libsdl.org/release/SDL2-2.0.18.tar.gz --no-check-certificate
+tar xvzf SDL2-2.0.18.tar.gz
 
 # compile and install sdl2
 echo ""
 echo "Compile and install SDL2..."
 sleep 1
-pushd SDL2-2.0.12 >/dev/null
+pushd SDL2-2.0.18 >/dev/null
 ./configure --enable-video-kmsdrm --disable-video-rpi && make -j$(nproc) && sudo make install
 popd >/dev/null
 

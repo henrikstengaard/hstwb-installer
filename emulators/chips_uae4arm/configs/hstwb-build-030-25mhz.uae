@@ -1,4 +1,4 @@
-config_description=Build HstWB Installer image (030, 25MHz, 16MB Z3)
+config_description=Build HstWB Installer image (030, 25MHz, 32MB Z3)
 config_hardware=true
 config_host=true
 config_version=3.5.0
@@ -97,7 +97,7 @@ z3mapping=uae
 fastmem_size=0
 a3000mem_size=0
 mbresmem_size=0
-z3mem_size=16
+z3mem_size=32
 z3mem_start=0x10000000
 bogomem_size=0
 gfxcard_size=4

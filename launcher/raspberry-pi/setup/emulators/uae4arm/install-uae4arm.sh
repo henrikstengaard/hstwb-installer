@@ -3,7 +3,7 @@
 # Install UAE4ARM
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-12
+# Date: 2022-01-04
 #
 # bash script to install uae4arm.
 
@@ -104,7 +104,6 @@ git pull
 echo ""
 echo "Compile UAE4ARM..."
 sleep 1
-make
 make $makeargs
 popd >/dev/null
 
