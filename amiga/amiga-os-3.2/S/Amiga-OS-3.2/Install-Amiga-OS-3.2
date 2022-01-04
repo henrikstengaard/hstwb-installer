@@ -1,7 +1,7 @@
 ; Install Amiga OS 3.2
 ; --------------------
 ;
-; Date: 2021-12-29
+; Date: 2022-01-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.2 from adf files or floppy disks.
@@ -160,7 +160,14 @@ ENDIF
 echo "3.2" NOLINE >SYSTEMDIR:Prefs/AmigaOS
 echo "" NOLINE >INSTALLDIR:Prefs/Amiga-OS-3.2
 
-IF EXISTS "INSTALLDIR:Prefs/Install-Amiga-OS-321-ADF"
+; get update install
+set updateinstall "0"
+If Exists "INSTALLDIR:Prefs/Install-Amiga-OS-321-ADF"
+  set updateinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-321-ADF`"
+EndIf
+
+; install amiga os 3.2.1 update, if install update is 1
+IF "$updateinstall" EQ 1 VAL
   ; run install amiga os 3.2.1 adf
   execute "INSTALLDIR:S/Amiga-OS-3.2/Install-Adf-3.2.1"
 

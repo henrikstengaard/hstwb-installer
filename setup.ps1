@@ -2,7 +2,7 @@
 # ---------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2022-01-02
+# Date:   2022-01-03
 #
 # A powershell script to setup HstWB Installer run for an Amiga HDF file installation.
 
@@ -1707,13 +1707,27 @@ try
     UpdateInstallUserPackages $hstwb
     UpdateAssigns $hstwb
 
-    # find amiga os files
+    # find best matching amiga os set, if amiga os set is not defined. otherwise find amiga os files
     Write-Host "Finding Amiga OS sets in Amiga OS dir..."
-    $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
+    if (!$hstwb.Settings.AmigaOs.AmigaOsSet -or $hstwb.Settings.AmigaOs.AmigaOsSet -match '^\s*$')
+    {
+        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb    
+    }
+    else
+    {
+        FindAmigaOsFiles $hstwb
+    }
 
-    # find kickstart files
+    # find best matching kickstart set, if kickstart set is not defined. otherwise find kickstart files
     Write-Host "Finding Kickstart sets in Kickstart dir..."
-    $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+    if (!$hstwb.Settings.Kickstart.KickstartSet -or $hstwb.Settings.Kickstart.KickstartSet -match '^\s*$')
+    {
+        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+    }
+    else
+    {
+        FindKickstartFiles $hstwb
+    }
 
     # save settings and assigns
     Save $hstwb

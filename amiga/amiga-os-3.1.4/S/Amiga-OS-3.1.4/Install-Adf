@@ -1,7 +1,7 @@
 ; Install Adf
 ; -----------
 ;
-; Date: 2021-10-24
+; Date: 2022-01-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script to automate installation of Amiga OS 3.1.4 from adf files.
@@ -16,7 +16,9 @@ setenv amigaosdisk "ff0"
 
 ; get amiga os install
 set amigaosinstall ""
-set amigaosinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-314-ADF`"
+If Exists "INSTALLDIR:Prefs/Install-Amiga-OS-314-ADF"
+  set amigaosinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-314-ADF`"
+EndIf
 
 ; set modules name to a500, if install prefs and adf file exists
 IF "$amigaosinstall" EQ "Amiga-OS-314-A500-ADF"
@@ -114,9 +116,11 @@ Execute "INSTALLDIR:S/Amiga-OS-3.1.4/Adf-Template" "Install" "Amiga OS 3.1.4 Ins
 ; install amiga os 3.1.4 done
 echo "Done"
 
-; get icon pack install
-set updateinstall ""
-set updateinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF`"
+; get update install
+set updateinstall "0"
+If Exists "INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF"
+  set updateinstall "`type INSTALLDIR:Prefs/Install-Amiga-OS-3141-ADF`"
+EndIf
 
 ; install amiga os 3.1.4.1 update, if install update
 IF "$updateinstall" EQ 1 VAL

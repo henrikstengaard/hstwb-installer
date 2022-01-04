@@ -2,7 +2,7 @@
 # ---------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-11-02
+# Date:   2022-01-04
 #
 # A powershell module for HstWB Installer with data functions.
 
@@ -380,7 +380,7 @@ function GetFileHashes($path)
         return $fileHashes
     }
 
-    $files = Get-ChildItem -Path $path | Where-Object { ! $_.PSIsContainer }
+    $files = Get-ChildItem -Path $path -Recurse | Where-Object { ! $_.PSIsContainer }
 
     foreach ($file in $files)
     {
@@ -401,7 +401,7 @@ function FindMatchingFileHashes($hashes, $path)
 
     # index file hashes
     $fileHashesIndex = @{}
-    $fileHashes | % { $fileHashesIndex.Set_Item($_.Md5Hash, $_.File) }
+    $fileHashes | ForEach-Object { $fileHashesIndex.Set_Item($_.Md5Hash, $_.File) }
 
     # find files with matching hashes
     foreach($hash in $hashes)

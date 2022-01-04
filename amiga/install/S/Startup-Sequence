@@ -1,7 +1,7 @@
 ; Startup Sequence for HstWB Installer
 ; ------------------------------------
 ;
-; Date: 2021-11-02
+; Date: 2022-01-03
 ; Author: Henrik Noerfjand Stengaard
 ;
 ; AmigaDOS script for HstWB Installer install
@@ -69,6 +69,13 @@ echo ""
 echo "HstWB Installer is now running install."
 echo ""
 echo "*e[1mLoading Amiga OS system files:*e[0m"
+
+
+; skip to amiga os disk, if not amiga os 3.9 prefs exists
+If Not Exists "INSTALLDIR:Prefs/Amiga-OS-390"
+  SKIP amigaosdisk
+EndIf
+
 echo "Amiga OS 3.9 cd-rom in CD0:..."
 
 ; set failat to 255 for diskindrive to fail silently

@@ -2,7 +2,7 @@
 # -------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-29
+# Date:   2022-01-03
 #
 # A powershell script to run HstWB Installer automating installation of workbench, kickstart roms and packages to an Amiga HDF file.
 
@@ -2184,6 +2184,10 @@ function RunInstall($hstwb)
             $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
             Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-390'
 
+            # create amiga os 3.9 prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Amiga-OS-390'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value ''
+
             $installBoingBags = 0;
             for ($i = 1; $i -le 2; $i++)
             {
@@ -2200,14 +2204,21 @@ function RunInstall($hstwb)
             }
 
             # create install boing bag prefs file
-            $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB' -f $i)
-            Set-Content $installBoingBagPrefsFile -Value $installBoingBags
+            if ($installBoingBags -gt 0)
+            {
+                $installBoingBagPrefsFile = Join-Path $prefsDir -ChildPath ('Install-Amiga-OS-390-BB' -f $installBoingBags)
+                Set-Content $installBoingBagPrefsFile -Value $installBoingBags    
+            }
         }
 
         # find amiga os 3.2 modules adf in amiga os set
         $amigaOs32ModulesAdfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-32-[^\.]+\.adf$' }
         if ($amigaOs32ModulesAdfs)
         {
+            # create amiga os 3.2 prefs file
+            $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Amiga-OS-32-ADF'
+            Set-Content $installAmigaOsPrefsFile -NoNewline -Value ''
+
             # create install amiga os prefs file
             $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS'
             Set-Content $installAmigaOsPrefsFile -NoNewline -Value 'Amiga-OS-32-ADF'
@@ -2219,16 +2230,22 @@ function RunInstall($hstwb)
             }       
 
             # find amiga os 3.2.1 modules adf in amiga os set
-            $amigaOs321ModulesAdfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-321-[^\.]+\.adf$'}
-            if ($amigaOs321ModulesAdfs)
+            $amigaOs321Adfs = $amigaOsSetEntries | Where-Object { $_.File -and $_.Filename -match '^amiga-os-321-[^\.]+\.adf$'}
+            $amigaOs321ClassesAdf = $amigaOs321Adfs | Where-Object { $_.File -and $_.Filename -match '^amiga-os-321-classes.adf$'} | Select-Object -First 1
+            $amigaOs321UpdateAdf = $amigaOs321Adfs | Where-Object { $_.File -and $_.Filename -match '^amiga-os-321-update.adf$'} | Select-Object -First 1
+            if ($amigaOs321ClassesAdf -and $amigaOs321UpdateAdf)
             {
-                # create install amiga os prefs file
-                $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-321-ADF'
+                # create amiga os 3.2.1 prefs file
+                $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Amiga-OS-321-ADF'
                 Set-Content $installAmigaOsPrefsFile -NoNewline -Value ''
 
+                # create install amiga os prefs file
+                $installAmigaOsPrefsFile = Join-Path $prefsDir -ChildPath 'Install-Amiga-OS-321-ADF'
+                Set-Content $installAmigaOsPrefsFile -NoNewline -Value '1'
+
                 # create install amiga os 3.2.1 modules adf prefs files
-                foreach ($amigaOs321ModulesAdf in ($amigaOs321ModulesAdfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
-                    $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-321-{0}-ADF' -f $amigaOs321ModulesAdf.Model)
+                foreach ($amigaOs321ModuleAdf in ($amigaOs321Adfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
+                    $installAmigaOs32PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-321-{0}-ADF' -f $amigaOs321ModuleAdf.Model)
                     Set-Content $installAmigaOs32PrefsFile -Value ""                    
                 }            
             }
@@ -2245,7 +2262,7 @@ function RunInstall($hstwb)
             # create install amiga os 3.1.4 modules adf prefs files
             foreach ($amigaOs314ModulesAdf in ($amigaOs314ModulesAdfs | Where-Object { $_.Model -and $_.Model -notmatch '^\s*$' })) {
                 $installAmigaOs314PrefsFile = Join-Path $prefsDir -ChildPath ('Amiga-OS-314-{0}-ADF' -f $amigaOs314ModulesAdf.Model)
-                Set-Content $installAmigaOs314PrefsFile -Value ""                    
+                Set-Content $installAmigaOs314PrefsFile -Value "1"                    
             }
 
             # find amiga os 3.1.4.1 update adf in amiga os set
@@ -3751,13 +3768,27 @@ try
 
     if ($hstwb.Settings.Installer.Mode -match "^(Install|BuildSelfInstall|Test)$")
     {
-        # find amiga os files
+        # find best matching amiga os set, if amiga os set is not defined. otherwise find amiga os files
         Write-Host "Finding Amiga OS sets in Amiga OS dir..."
-        $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb
-
-        # find kickstart files
+        if (!$hstwb.Settings.AmigaOs.AmigaOsSet -or $hstwb.Settings.AmigaOs.AmigaOsSet -match '^\s*$')
+        {
+            $hstwb.Settings.AmigaOs.AmigaOsSet = FindBestMatchingAmigaOsSet $hstwb    
+        }
+        else
+        {
+            FindAmigaOsFiles $hstwb
+        }
+    
+        # find best matching kickstart set, if kickstart set is not defined. otherwise find kickstart files
         Write-Host "Finding Kickstart sets in Kickstart dir..."
-        $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+        if (!$hstwb.Settings.Kickstart.KickstartSet -or $hstwb.Settings.Kickstart.KickstartSet -match '^\s*$')
+        {
+            $hstwb.Settings.Kickstart.KickstartSet = FindBestMatchingKickstartSet $hstwb
+        }
+        else
+        {
+            FindKickstartFiles $hstwb
+        }
     }
     
     # save settings and assigns
@@ -3891,59 +3922,61 @@ try
         # find workbench adf, if installing amiga os and amiga os 3.9 iso is not present
         if ($hstwb.Settings.AmigaOs.InstallAmigaOs -eq 'Yes')
         {
+            $amigaOsSetEntries = @()
+            $amigaOsSetEntries = $hstwb.AmigaOsEntries | Where-Object { $_.Set -eq $hstwb.Settings.AmigaOs.AmigaOsSet }
+    
             # find amiga os 3.9 iso entry
-            $isoEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
+            $amigaOs39IsoEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.9 Iso' -and $_.File } | Select-Object -First 1
 
-            if ($isoEntry)
+            # set iso, if amiga os 3.9 iso entry exists
+            if ($amigaOs39IsoEntry)
             {
-                $hstwb.Paths.IsoEntry = $isoEntry
+                $hstwb.Paths.IsoEntry = $amigaOs39IsoEntry
 
                 # print amiga os 3.9 iso entry
-                Write-Host ("Amiga OS 3.9 iso: {0} '{1}'" -f $isoEntry.Name, $isoEntry.File)
+                Write-Host ("Amiga OS 3.9 iso: {0} '{1}'" -f $amigaOs39IsoEntry.Name, $amigaOs39IsoEntry.File)
             }
-            else
+
+            # find amiga os 3.2 workbench and install adf entries
+            $amigaOs32WorkbenchAdfEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.2 Workbench Disk' -and $_.File } | Select-Object -First 1
+            $amigaOs32InstallAdfEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.2 Install Disk' -and $_.File } | Select-Object -First 1
+
+            # set workbench and install adf, if amiga os 3.2 adf entries exist
+            if ($amigaOs32WorkbenchAdfEntry -and $amigaOs32InstallAdfEntry)
             {
-                # find amiga os 3.2 workbench adf entry
-                $amigaOs32WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.2 Workbench Disk' -and $_.File } | Select-Object -First 1
-                $amigaOs32InstallAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.2 Install Disk' -and $_.File } | Select-Object -First 1
+                $hstwb.Paths.WorkbenchAdfEntry = $amigaOs32WorkbenchAdfEntry
+                $hstwb.Paths.InstallAdfEntry = $amigaOs32InstallAdfEntry
 
-                if ($amigaOs32WorkbenchAdfEntry -and $amigaOs32InstallAdfEntry)
-                {
-                    $hstwb.Paths.WorkbenchAdfEntry = $amigaOs32WorkbenchAdfEntry
-                    $hstwb.Paths.InstallAdfEntry = $amigaOs32InstallAdfEntry
+                # print amiga os 3.2 workbench adf entry
+                Write-Host ("Amiga OS 3.2 Workbench adf: {0} '{1}'" -f $amigaOs32WorkbenchAdfEntry.Name, $amigaOs32WorkbenchAdfEntry.File)
+                Write-Host ("Amiga OS 3.2 Install adf: {0} '{1}'" -f $amigaOs32InstallAdfEntry.Name, $amigaOs32InstallAdfEntry.File)
+            }
 
-                    # print amiga os 3.2 workbench adf entry
-                    Write-Host ("Amiga OS 3.2 Workbench adf: {0} '{1}'" -f $amigaOs32WorkbenchAdfEntry.Name, $amigaOs32WorkbenchAdfEntry.File)
-                    Write-Host ("Amiga OS 3.2 Install adf: {0} '{1}'" -f $amigaOs32InstallAdfEntry.Name, $amigaOs32InstallAdfEntry.File)
-                }
-                else
-                {
-                    # find amiga os 3.1.4 workbench adf entry
-                    $amigaOs314WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
-                    $amigaOs314InstallAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
+            # find amiga os 3.1.4 workbench adf entry
+            $amigaOs314WorkbenchAdfEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Workbench Disk' -and $_.File } | Select-Object -First 1
+            $amigaOs314InstallAdfEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1.4 Install Disk' -and $_.File } | Select-Object -First 1
 
-                    if ($amigaOs314WorkbenchAdfEntry -and $amigaOs314InstallAdfEntry)
-                    {
-                        $hstwb.Paths.WorkbenchAdfEntry = $amigaOs314WorkbenchAdfEntry
-                        $hstwb.Paths.InstallAdfEntry = $amigaOs314InstallAdfEntry
+            # set workbench and install adf, if amiga os 3.1.4 adf entries exist
+            if ($amigaOs314WorkbenchAdfEntry -and $amigaOs314InstallAdfEntry)
+            {
+                $hstwb.Paths.WorkbenchAdfEntry = $amigaOs314WorkbenchAdfEntry
+                $hstwb.Paths.InstallAdfEntry = $amigaOs314InstallAdfEntry
 
-                        # print amiga os 3.1.4 workbench adf entry
-                        Write-Host ("Amiga OS 3.1.4 Workbench adf: {0} '{1}'" -f $amigaOs314WorkbenchAdfEntry.Name, $amigaOs314WorkbenchAdfEntry.File)
-                        Write-Host ("Amiga OS 3.1.4 Install adf: {0} '{1}'" -f $amigaOs314InstallAdfEntry.Name, $amigaOs314InstallAdfEntry.File)
-                    }
-                    else
-                    {
-                        # find amiga os 3.1 workbench adf entry
-                        $amigaOs310WorkbenchAdfEntry = $hstwb.AmigaOsEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
-                        if ($amigaOs310WorkbenchAdfEntry)
-                        {
-                            $hstwb.Paths.WorkbenchAdfEntry = $amigaOs310WorkbenchAdfEntry
+                # print amiga os 3.1.4 workbench adf entry
+                Write-Host ("Amiga OS 3.1.4 Workbench adf: {0} '{1}'" -f $amigaOs314WorkbenchAdfEntry.Name, $amigaOs314WorkbenchAdfEntry.File)
+                Write-Host ("Amiga OS 3.1.4 Install adf: {0} '{1}'" -f $amigaOs314InstallAdfEntry.Name, $amigaOs314InstallAdfEntry.File)
+            }
 
-                            # print amiga os 3.1 workbench adf entry
-                            Write-Host ("Amiga OS 3.1 Workbench adf: {0} '{1}'" -f $amigaOs310WorkbenchAdfEntry.Name, $amigaOs310WorkbenchAdfEntry.File)
-                        }
-                    }
-                }
+            # find amiga os 3.1 workbench adf entry
+            $amigaOs310WorkbenchAdfEntry = $amigaOsSetEntries | Where-Object { $_.Name -eq 'Amiga OS 3.1 Workbench Disk' -and $_.File } | Select-Object -First 1
+
+            # set workbench adf, if amiga os 3.1 adf entry exist
+            if ($amigaOs310WorkbenchAdfEntry)
+            {
+                $hstwb.Paths.WorkbenchAdfEntry = $amigaOs310WorkbenchAdfEntry
+
+                # print amiga os 3.1 workbench adf entry
+                Write-Host ("Amiga OS 3.1 Workbench adf: {0} '{1}'" -f $amigaOs310WorkbenchAdfEntry.Name, $amigaOs310WorkbenchAdfEntry.File)
             }
         }
 

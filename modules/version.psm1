@@ -2,11 +2,11 @@
 # ------------------------------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2021-12-26
+# Date:   2022-01-04
 #
 # A powershell module for HstWB Installer with current version.
 
 function HstwbInstallerVersion()
 {
-    return '1.6.1'
+    return '1.6.2'
 }
