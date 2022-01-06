@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-03-02
+# Date: 2022-01-06
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -11,17 +11,11 @@
 #set +e
 dpkg -s dialog >/dev/null 2>&1
 
-# ask to install dialog, if dialog is not installed
+# install dialog, if dialog is not installed
 if [ $? -ne 0 ]; then
-	echo "Dialog is not installed and is required by HstWB Installer"
-	echo ""
-	while true; do
-    		read -p "Do you want to install Dialog [Y/n]? " confirm
-    		case $confirm in
-			[Yy]* ) sudo apt-get install dialog; break;;
-			[Nn]* ) exit;;
-		esac
-	done
+	echo "Install dialog..."
+	sleep 1
+	sudo apt-get --assume-yes install dialog
 fi
 
 # fail, if dialog is not installed
@@ -242,6 +236,16 @@ if [ $? -eq 0 ]; then
 fi
 
 
+# force 1080p hdmi
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh -i
+
+# install sdl2 kmsdrm
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2-kmsdrm.sh
+
+# install amiberry
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
+
+
 # disable exit on eror
 set +e
 
@@ -255,5 +259,5 @@ if [ $? -eq 0 ]; then
 	# create first time use trigger
 	touch ~/.hstwb-installer/.first-time-use
 
- 	reboot
+ 	sudo reboot
 fi

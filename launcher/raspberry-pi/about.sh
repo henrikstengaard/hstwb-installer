@@ -3,7 +3,7 @@
 # About
 # -----
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-17
+# Date: 2022-01-06
 #
 # bash script to show hstwb installer about.
 
@@ -14,4 +14,4 @@ version=$(git describe --tags)
 date=$(git log -1 --format=%cd)
 
 # show about dialog
-dialog --clear --title "About HstWB Installer" --msgbox "HstWB Installer v$version\nUpdated: $date\n\nCreated and maintained by\nHenrik Nørfjand Stengaard\n\nWebsite: hstwb.firstrealize.com" 0 0
+dialog --clear --title "About HstWB Installer" --msgbox "HstWB Installer v$version\nUpdated: $date\n\nCreated and maintained by\nHenrik Nørfjand Stengaard\n\nWebsite: https://hstwb.firstrealize.com\nEmail: hstwbinstaller@gmail.com" 0 0
