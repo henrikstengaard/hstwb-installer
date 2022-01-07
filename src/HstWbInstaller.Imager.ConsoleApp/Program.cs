@@ -2,11 +2,14 @@
 
 namespace HstWbInstaller.Imager.ConsoleApp
 {
+    using System;
+    using System.Collections;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using HstWbInstaller.Imager.Core;
 
     class Program
     {
@@ -23,10 +26,24 @@ namespace HstWbInstaller.Imager.ConsoleApp
             //         dst.Write(buffer, 0, bytesRead);
             //     }
             // }
+            IPhysicalDriveManager physicalDriveManager;
+
+            if (OperatingSystem.IsWindows())
+            {
+                physicalDriveManager = new WindowsPhysicalDriveManager();
+            }
+            if (OperatingSystem.IsLinux())
+            {
+                physicalDriveManager = new LinuxPhysicalDriveManager();
+            }
+            else{
+                throw new NotImplementedException("Unsupported operating system");
+            }
             
-            var physicalDriveManager = new WindowsPhysicalDriveManager();
             var physicalDrives = physicalDriveManager.GetPhysicalDrives().ToList();
             Console.WriteLine(JsonSerializer.Serialize(physicalDrives));
+
+return;
 
             foreach (var physicalDrive in physicalDrives)
             {
