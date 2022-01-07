@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Management" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HstWbInstaller.Core\HstWbInstaller.Core.csproj" />
+      <ProjectReference Include="..\HstWbInstaller.Imager.Core\HstWbInstaller.Imager.Core.csproj" />
+    </ItemGroup>
+
+</Project>

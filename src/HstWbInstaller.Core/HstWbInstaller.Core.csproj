@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="IO\Vhds" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DiscUtils.Containers" Version="0.16.13" />
+      <PackageReference Include="DiscUtils.FileSystems" Version="0.16.13" />
+      <PackageReference Include="DiscUtils.Vhd" Version="0.16.13" />
+    </ItemGroup>
+
+</Project>
