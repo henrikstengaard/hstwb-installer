@@ -1,9 +1,10 @@
 ﻿namespace HstWbInstaller.Imager.Core
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IPhysicalDriveManager
     {
-        IEnumerable<IPhysicalDrive> GetPhysicalDrives();
+        Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives();
     }
 }

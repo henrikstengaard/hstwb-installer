@@ -1,0 +1,15 @@
+# automatically line-endings for files detected as text
+* text=auto
+
+# unix forced line-endings
+/amiga/* text eol=lf
+
+# archives
+*.lha binary
+*.lzx binary
+*.zip binary
+
+# images
+*.png binary
+*.jpg binary
+*.iff binary
