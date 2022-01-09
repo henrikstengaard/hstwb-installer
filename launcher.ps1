@@ -248,8 +248,8 @@ if (!$settingsDir)
     $settingsDir = Join-Path $env:LOCALAPPDATA -ChildPath 'HstWB Installer'
 }
 
-$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('run.lnk')
-$setupFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('setup.lnk')
+$runFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('run.cmd')
+$setupFile = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('setup.cmd')
 $settingsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-settings.ini'
 $assignsFile = Join-Path $settingsDir -ChildPath 'hstwb-installer-assigns.ini'
 $host.ui.RawUI.WindowTitle = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
