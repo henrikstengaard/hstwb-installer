@@ -1,4 +1,4 @@
-﻿namespace HstWbInstaller.Imager.ConsoleApp
+﻿namespace HstWbInstaller.Imager.ConsoleApp.Apis
 {
     using System;
     using System.Runtime.InteropServices;

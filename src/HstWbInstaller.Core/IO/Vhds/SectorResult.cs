@@ -5,6 +5,7 @@ namespace HstWbInstaller.Core.IO.Vhds
 
     public class SectorResult
     {
+        public int BytesRead { get; set; }
         public bool EndOfSectors { get; set; }
         public IEnumerable<Sector> Sectors { get; set; }
     }

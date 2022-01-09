@@ -6,12 +6,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Management" Version="6.0.0" />
+      <ProjectReference Include="..\HstWbInstaller.Core\HstWbInstaller.Core.csproj" />
+      <ProjectReference Include="..\HstWbInstaller.Imager.Core\HstWbInstaller.Imager.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HstWbInstaller.Core\HstWbInstaller.Core.csproj" />
-      <ProjectReference Include="..\HstWbInstaller.Imager.Core\HstWbInstaller.Imager.Core.csproj" />
+      <None Update="fake-lsblk.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="app.manifest">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="fake-wmic.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="27.2.1" />
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta2.21617.1" />
     </ItemGroup>
 
 </Project>

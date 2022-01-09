@@ -79,6 +79,7 @@
 
             return new SectorResult
             {
+                BytesRead = bytesRead,
                 EndOfSectors = bytesRead != bufferSize,
                 Sectors = sectors
             };

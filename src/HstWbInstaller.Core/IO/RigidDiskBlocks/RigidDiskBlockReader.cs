@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Core.IO.RigidDiskBlocks
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -150,8 +151,9 @@
             await stream.ReadBytes(4); // read reserved, unused word
             
             // calculate size of disk in bytes
-            var diskSize = cylinders * heads * sectors * blockSize;
+            var diskSize = (ulong)cylinders * heads * sectors * blockSize;
             
+            Console.WriteLine($"{cylinders} * {heads} * {sectors} * {blockSize} = {diskSize}");
             return new RigidDiskBlock
             {
                 Size = size,
@@ -252,7 +254,7 @@
             }
 
             // calculate size of partition in bytes
-            var partitionSize = (highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
+            var partitionSize = (ulong)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
 
             return new PartitionBlock
             {

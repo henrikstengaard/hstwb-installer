@@ -1,9 +1,10 @@
-﻿namespace HstWbInstaller.Imager.ConsoleApp
+﻿namespace HstWbInstaller.Imager.ConsoleApp.PhysicalDrives
 {
     using System;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Apis;
     using Microsoft.Win32.SafeHandles;
 
     public class WindowsPhysicalDriveStream : Stream
