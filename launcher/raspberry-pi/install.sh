@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-06
+# Date: 2022-01-10
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -235,6 +235,9 @@ if [ $? -eq 0 ]; then
 	fi
 fi
 
+
+# install samba
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os//install-samba.sh
 
 # force 1080p hdmi
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh -i
