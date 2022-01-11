@@ -11,7 +11,7 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "Setup Amiberry" \
 	--menu "Select option:" 0 0 0 \
-	1 "Install SDL2 KMSDRM" \
+	1 "Install SDL2" \
 	2 "Install Amiberry" \
 	3 "Disable Amiberry autostart" \
 	4 "Exit")
@@ -26,7 +26,7 @@ while true; do
 	for choice in $choices; do
 		case $choice in
                 1)
-                        ./install-sdl2-kmsdrm.sh
+                        ./install-sdl2.sh
                         ;;
 		2)
 			./install-amiberry.sh

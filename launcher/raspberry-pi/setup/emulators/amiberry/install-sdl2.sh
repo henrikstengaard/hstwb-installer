@@ -1,17 +1,18 @@
 #!/bin/bash -e
 
-# Install SDL2 KMSDRM
-# -------------------
+# Install SDL2
+# ------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-04
+# Date: 2022-01-11
 #
-# bash script to install sdl2 kmsdrm required by amiberry.
+# bash script to install sdl2 required by amiberry.
 
+SDL2_VERSION=2.0.18
 
 # show confirm dialog
 dialog --clear --stdout \
---title "Install SDL2 KMSDRM" \
---yesno "This will download, compile and install SDL2 KMSDRM from source code required by Amiberry.\n\nDo you want to download, compile and install SDL2 KMSDRM?" 0 0
+--title "Install SDL2" \
+--yesno "This will download, compile and install SDL2 v$SDL2_VERSION from source code required by Amiberry.\n\nDo you want to download, compile and install SDL2?" 0 0
 
 # exit, if no is selected
 if [ $? -ne 0 ]; then
@@ -20,10 +21,44 @@ fi
 
 clear
 
+# show select sdl2 configuration dialog
+choices=$(dialog --clear --stdout \
+--title "SDL2 configuration" \
+--menu "Select SDL2 configuration:" 0 0 0 \
+1 "Default" \
+2 "Optimized for Raspberry Pi 4 / 400, 3 (B+)" \
+3 "Optimized for Raspberry Pi 2, 1 / Zero" \
+4 "Exit")
+
+clear
+
+# exit, if cancelled
+if [ -z "$choices" ]; then
+  exit
+fi
+
+configureargs=""
+
+# choices
+for choice in $choices; do
+  case $choice in
+    2)
+      configureargs="--enable-video-kmsdrm --enable-video-opengles --enable-arm-neon --disable-video-rpi --disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
+      ;;
+    3)
+      configureargs="--enable-video-kmsdrm --enable-video-opengles --disable-video-rpi--disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
+      ;;
+    4)
+      exit
+      ;;
+  esac
+done
+
+
 # paths
 home_dir=~
 eval home_dir=$home_dir
-tmp_dir="$home_dir/.tmp-sdl2-kmsdrm"
+tmp_dir="$home_dir/.tmp-sdl2"
 
 # delete temp directory, if it exists
 if [ -d "$tmp_dir" ]; then
@@ -46,15 +81,15 @@ pushd "$tmp_dir" >/dev/null
 echo ""
 echo "Download and extract SDL2..."
 sleep 1
-wget https://libsdl.org/release/SDL2-2.0.18.tar.gz --no-check-certificate
-tar xvzf SDL2-2.0.18.tar.gz
+wget https://libsdl.org/release/SDL2-$SDL2_VERSION.tar.gz --no-check-certificate
+tar xvzf SDL2-$SDL2_VERSION.tar.gz
 
 # compile and install sdl2
 echo ""
 echo "Compile and install SDL2..."
 sleep 1
-pushd SDL2-2.0.18 >/dev/null
-./configure --enable-video-kmsdrm --disable-video-rpi && make -j$(nproc) && sudo make install
+pushd SDL2-$SDL2_VERSION >/dev/null
+./configure $configureargs && make -j$(nproc) && sudo make install
 popd >/dev/null
 
 # download and extract sdl2 image
@@ -118,4 +153,4 @@ fi
 
 
 # show success dialog
-dialog --title "Success" --msgbox "Successfully downloaded, compiled and installed SDL2 KMSDRM" 0 0
+dialog --title "Success" --msgbox "Successfully downloaded, compiled and installed SDL2 v$SDL2_VERSION" 0 0
