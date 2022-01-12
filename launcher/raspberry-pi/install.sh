@@ -245,8 +245,8 @@ $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os//install-samba
 # force 1080p hdmi
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh -i
 
-# install sdl2 kmsdrm
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2-kmsdrm.sh
+# install sdl2
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2.sh
 
 # install amiberry
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
