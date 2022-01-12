@@ -3,7 +3,7 @@
 # Install SDL2
 # ------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-11
+# Date: 2022-01-12
 #
 # bash script to install sdl2 required by amiberry.
 
@@ -69,10 +69,12 @@ fi
 mkdir -p "$tmp_dir"
 
 # install required packages to compile sdl2
-sudo apt-get --assume-yes install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+#sudo apt-get --assume-yes install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
 sudo apt-get --assume-yes update && sudo apt-get --assume-yes upgrade
-sudo apt-get --assume-yes install libfreetype6-dev libgl1-mesa-dev libgles2-mesa-dev libdrm-dev libgbm-dev libudev-dev libasound2-dev liblzma-dev libjpeg-dev libtiff-dev libwebp-dev git build-essential
-sudo apt-get --assume-yes install gir1.2-ibus-1.0 libdbus-1-dev libegl1-mesa-dev libibus-1.0-5 libibus-1.0-dev libice-dev libsm-dev libsndio-dev libwayland-bin libwayland-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev x11proto-randr-dev x11proto-scrnsaver-dev x11proto-video-dev x11proto-xinerama-dev
+#sudo apt-get --assume-yes install libfreetype6-dev libgl1-mesa-dev libgles2-mesa-dev libdrm-dev libgbm-dev libudev-dev libasound2-dev liblzma-dev libjpeg-dev libtiff-dev libwebp-dev git build-essential
+#sudo apt-get --assume-yes install gir1.2-ibus-1.0 libdbus-1-dev libegl1-mesa-dev libibus-1.0-5 libibus-1.0-dev libice-dev libsm-dev libsndio-dev libwayland-bin libwayland-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxt-dev libxv-dev x11proto-randr-dev x11proto-scrnsaver-dev x11proto-video-dev x11proto-xinerama-dev
+sudo apt-get --assume-yes install gcc g++ debhelper libasound2-dev libdbus-1-dev libegl1-mesa-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles-dev libpulse-dev libudev-dev libibus-1.0-dev libsndio-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxrandr-dev libxss-dev libxxf86vm-dev libxt-dev libxv-dev libsamplerate0-dev wayland-protocols
+
 
 # push temp directory to current directory
 pushd "$tmp_dir" >/dev/null

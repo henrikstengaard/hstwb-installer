@@ -3,9 +3,120 @@
 # Install Amiberry
 # ----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-04
+# Date: 2022-01-12
 #
 # bash script to install amiberry.
+
+
+# select raspberry pi model
+function select_raspberry_pi_model()
+{
+	# show select raspberry pi model dialog
+	choices=$(dialog --clear --stdout \
+	--title "Raspberry Pi model" \
+	--menu "Select Raspberry Pi model:" 0 0 0 \
+	1 "Raspberry Pi 4 / 400" \
+	2 "Raspberry Pi 3 (B+)" \
+	3 "Raspberry Pi 2" \
+	4 "Raspberry Pi 1 / Zero" \
+	5 "Exit")
+
+	clear
+
+	# exit, if cancelled
+	if [ -z "$choices" ]; then
+	  exit
+	fi
+
+	# choices
+	for choice in $choices; do
+	  case $choice in
+	    1)
+	      RASPBERRY_PI_MODEL="rpi4"
+	      ;;
+	    2)
+	      RASPBERRY_PI_MODEL="rpi3"
+	      ;;
+	    3)
+	      RASPBERRY_PI_MODEL="rpi2"
+	      ;;
+	    4)
+	      RASPBERRY_PI_MODEL="rpi1"
+	      ;;
+	    5)
+	      exit
+	      ;;
+	  esac
+	done
+}
+
+# select operating system
+function select_operating_system()
+{
+        # show select operating system dialog
+        choices=$(dialog --clear --stdout \
+        --title "Operating system" \
+        --menu "Select operating system:" 0 0 0 \
+        1 "32-bit" \
+        2 "64-bit" \
+        3 "Exit")
+
+        clear
+
+        # exit, if cancelled
+        if [ -z "$choices" ]; then
+          exit
+        fi
+
+        # choices
+        for choice in $choices; do
+          case $choice in
+            1)
+              OPERATING_SYSTEM="32"
+              ;;
+            2)
+              OPERATING_SYSTEM="64"
+              ;;
+            3)
+              exit
+              ;;
+          esac
+        done
+}
+
+# select sdl2 target
+function select_sdl2_target()
+{
+	# show select sdl2 target dialog
+	choices=$(dialog --clear --stdout \
+	--title "SDL2 target" \
+	--menu "Select SDL2 target:" 0 0 0 \
+	1 "SDL2" \
+	2 "SDL2 + DispmanX" \
+	3 "Exit")
+
+	clear
+
+	# exit, if cancelled
+	if [ -z "$choices" ]; then
+	  exit
+	fi
+
+	# choices
+	for choice in $choices; do
+	  case $choice in
+	    1)
+	      SDL2_TARGET="sdl2"
+	      ;;
+            2)
+              SDL2_TARGET="dmx"
+              ;;
+ 	    3)
+	      exit
+	      ;;
+	  esac
+	done
+}
 
 
 # fail, if amiberry emulator path is not set
@@ -23,6 +134,38 @@ dialog --clear --stdout \
 if [ $? -ne 0 ]; then
   exit
 fi
+
+# select raspberyr pi model
+RASPBERRY_PI_MODEL=""
+select_raspberry_pi_model
+
+# select operating system, if raspberry pi 4 / 400, 3 (B+)
+OPERATING_SYSTEM="32"
+if [ "$RASPBERRY_PI_MODEL" = "rpi4" -o "$RASPBERRY_PI_MODEL" = "rpi3" ]; then
+	select_operating_system
+fi
+
+# select sdl2 target
+SDL2_TARGET=""
+select_sdl2_target
+
+# build platform
+PLATFORM="$RASPBERRY_PI_MODEL"
+
+if [ "$OPERATING_SYSTEM" = "64" ]; then
+        PLATFORM="$PLATFORM-$OPERATING_SYSTEM-$SDL2_TARGET"
+else
+	if [ "$SDL2_TARGET" = "sdl2" ]; then
+		PLATFORM="$PLATFORM-$SDL2_TARGET"
+	fi
+fi
+
+# build makeargs
+MAKEARGS="PLATFORM=$PLATFORM"
+if [ "$RASPBERRY_PI_MODEL" != "rpi1" ]; then
+	MAKEARGS="-j2 $MAKEARGS"
+fi
+
 
 # paths
 homedir=~
@@ -126,76 +269,10 @@ for choice in $choices; do
 			tag=$(sed "${tagchoice[@]}!d" /tmp/_amiberry-tags.txt)
 			rm /tmp/_amiberry-tags.txt
 			;;
-		4)
+		3)
 			exit
 			;;
 	esac
-done
-
-# show select raspberry pi model dialog
-choices=$(dialog --clear --stdout \
---title "Raspberry Pi model" \
---menu "Select Raspberry Pi model:" 0 0 0 \
-1 "Raspberry Pi 4 / 400" \
-2 "Raspberry Pi 3 (B+)" \
-3 "Raspberry Pi 2" \
-4 "Raspberry Pi 1 / Zero" \
-5 "Exit")
-
-clear
-
-# exit, if cancelled
-if [ -z "$choices" ]; then
-  exit
-fi
-
-# choices
-for choice in $choices; do
-  case $choice in
-    1)
-      makeargs="-j2 PLATFORM=rpi4"
-      ;;
-    2)
-      makeargs="-j2 PLATFORM=rpi3"
-      ;;
-    3)
-      makeargs="-j2 PLATFORM=rpi2"
-      ;;
-    4)
-      makeargs="PLATFORM=rpi1"
-      ;;
-    5)
-      exit
-      ;;
-  esac
-done
-
-
-# show select raspberry pi model dialog
-choices=$(dialog --clear --stdout \
---title "SDL2 target" \
---menu "Select SDL2 target:" 0 0 0 \
-1 "SDL2" \
-2 "SDL2 + DispmanX" \
-3 "Exit")
-
-clear
-
-# exit, if cancelled
-if [ -z "$choices" ]; then
-  exit
-fi
-
-# choices
-for choice in $choices; do
-  case $choice in
-    1)
-      makeargs="$makeargs-sdl2"
-      ;;
-    3)
-      exit
-      ;;
-  esac
 done
 
 
@@ -224,10 +301,10 @@ fi
 
 # compile amiberry
 echo ""
-echo "Compile Amiberry $branch $tag..."
+echo "Compile Amiberry $branch $tag with make arguments '$MAKEARGS'..."
 sleep 1
 make clean
-make $makeargs
+make $MAKEARGS
 popd >/dev/null
 
 # install amiberry
