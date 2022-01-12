@@ -1,4 +1,4 @@
-config_description=Build HstWB Installer image (020, JIT, 32MB Z3)
+config_description=Build HstWB Installer image (030, JIT, 32MB Z3)
 config_hardware=true
 config_host=true
 config_version=4.3.0

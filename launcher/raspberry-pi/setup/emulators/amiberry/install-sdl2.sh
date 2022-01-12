@@ -46,7 +46,7 @@ for choice in $choices; do
       configureargs="--enable-video-kmsdrm --enable-video-opengles --enable-arm-neon --disable-video-rpi --disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
       ;;
     3)
-      configureargs="--enable-video-kmsdrm --enable-video-opengles --disable-video-rpi--disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
+      configureargs="--enable-video-kmsdrm --enable-video-opengles --disable-video-rpi --disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
       ;;
     4)
       exit
