@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-10
+# Date: 2022-01-12
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -33,6 +33,9 @@ AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
 UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
 UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
 AMIGA_EMULATOR=amiberry
+
+# fix dialog borders
+export NCURSES_NO_UTF8_ACS=1
 
 # show install dialog
 dialog --clear --stdout \
