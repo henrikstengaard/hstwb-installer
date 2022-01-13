@@ -3,7 +3,7 @@
 # Install UAE4ARM
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-04
+# Date: 2022-01-13
 #
 # bash script to install uae4arm.
 
@@ -120,3 +120,27 @@ cp -R "$uae4armdir/screenshots" "$UAE4ARM_EMULATOR_PATH"
 
 # show success dialog
 dialog --title "Success" --msgbox "Successfully installed UAE4ARM in directory \"$UAE4ARM_EMULATOR_PATH\"" 0 0
+
+
+# show default amiga emulator dialog
+dialog --clear --stdout \
+--title "Default Amiga emulator" \
+--yesno "Do you want to use UAE4ARM as default Amiga emulator?" 0 0
+
+# exit, if no is selected
+if [ $? -ne 0 ]; then
+  exit
+fi
+
+AMIGA_EMULATOR="uae4arm"
+
+# add or update amiga emulator in config, if it doesn't exist
+if [ "$(grep -i "AMIGA_EMULATOR=" ~/.hstwb-installer/config.sh)" == "" ]; then
+        echo "export AMIGA_EMULATOR=\"$AMIGA_EMULATOR\"" >>~/.hstwb-installer/config.sh
+else
+        sed -e "s/^\(export AMIGA_EMULATOR=\).*/\1\"$(echo "$AMIGA_EMULATOR" | sed -e "s/\//\\\\\//g")\"/g" ~/.hstwb-installer/config.sh >~/.hstwb-installer/_config.sh
+        mv -f ~/.hstwb-installer/_config.sh ~/.hstwb-installer/config.sh
+fi
+
+# add execute permission to config
+chmod +x ~/.hstwb-installer/config.sh

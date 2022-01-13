@@ -32,7 +32,7 @@ AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
 AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
 UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
 UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
-AMIGA_EMULATOR=amiberry
+AMIGA_EMULATOR=
 
 # fix dialog borders
 export NCURSES_NO_UTF8_ACS=1
@@ -79,7 +79,7 @@ if [ -f ~/.hstwb-installer/config.sh ]; then
 else
 	echo "#!/bin/bash -e" >~/.hstwb-installer/config.sh
 	echo "export HSTWB_INSTALLER_ROOT=\"$HSTWB_INSTALLER_ROOT\"" >>~/.hstwb-installer/config.sh
-	echo "export HSTWB_INSTALLER_BOOT=\"emulator\"" >>~/.hstwb-installer/config.sh
+	echo "export HSTWB_INSTALLER_BOOT=\"hstwb\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_HDD_PATH=\"$AMIGA_HDD_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
         echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
