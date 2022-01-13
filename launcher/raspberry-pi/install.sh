@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-12
+# Date: 2022-01-13
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -250,6 +250,13 @@ $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl
 
 # install amiberry
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
+
+# install uae4arm
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/uae4arm/install-uae4arm.sh
+
+# enable fake kms video driver
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/enable-fkms-video-driver.sh -i
+
 
 
 # disable exit on eror
