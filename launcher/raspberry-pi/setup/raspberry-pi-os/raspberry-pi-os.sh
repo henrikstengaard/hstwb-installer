@@ -20,7 +20,9 @@ while true; do
         7 "Force 1080p HDMI resolution" \
 	8 "Install Samba" \
 	9 "Expand filesystem" \
-	10 "Exit")
+        10 "Enable Fake KMS video driver" \
+        11 "Enable KMS video driver" \
+	12 "Exit")
 
 	clear
 
@@ -59,7 +61,13 @@ while true; do
 			./expand-filesystem.sh
 			;;
 		10)
-			exit
+                        ./enable-fkms-video-driver.sh
+                        ;;
+                11)
+			./enable-kms-video-driver.sh
+                        ;;
+                12)
+ 			exit
 			;;
 		esac
 	done

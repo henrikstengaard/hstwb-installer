@@ -3,7 +3,7 @@
 # Setup Amiberry
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-04
+# Date: 2022-01-13
 #
 # bash script to show setup amiberry menu.
 
@@ -13,8 +13,9 @@ while true; do
 	--menu "Select option:" 0 0 0 \
 	1 "Install SDL2" \
 	2 "Install Amiberry" \
-	3 "Disable Amiberry autostart" \
-	4 "Exit")
+        3 "Run Amiberry emulator" \
+	4 "Disable Amiberry autostart" \
+	5 "Exit")
 
 	clear
 
@@ -31,10 +32,13 @@ while true; do
 		2)
 			./install-amiberry.sh
 			;;
-		3)
+                3)
+                        ./run-amiberry-emulator.sh
+                        ;;
+		4)
 			./disable-amiberry-autostart.sh
 			;;
-		4)
+		5)
 			exit
 			;;
 		esac

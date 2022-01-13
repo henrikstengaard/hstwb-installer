@@ -3,7 +3,7 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-06
+# Date: 2022-01-13
 #
 # Bash script for first time use of Raspberry Pi.
 
@@ -37,6 +37,12 @@ if [ ! -f ~/.hstwb-installer/.first-time-use-dialog ]; then
 	touch ~/.hstwb-installer/.first-time-use-dialog
 
 fi
+
+# mount fat32 devices
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/system/mount-fat32-devices.sh --quiet
+
+# find hstwb self install
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/find-hstwb-self-install.sh --quiet
 
 # install kickstart rom
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/install-kickstart-rom.sh -i
