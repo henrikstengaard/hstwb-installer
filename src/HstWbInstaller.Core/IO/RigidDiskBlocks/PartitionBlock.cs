@@ -29,6 +29,6 @@
         public uint Baud { get; set; }
         public uint Control { get; set; }
         public uint BootBlocks { get; set; }
-        public ulong PartitionSize { get; set; }
+        public long PartitionSize { get; set; }
     }
 }

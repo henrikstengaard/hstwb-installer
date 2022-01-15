@@ -20,6 +20,6 @@ namespace HstWbInstaller.Imager.ConsoleApp.Models
         public string Model { get; set; }
 
         [JsonPropertyName("size")]
-        public ulong Size { get; set; }
+        public long Size { get; set; }
     }
 }

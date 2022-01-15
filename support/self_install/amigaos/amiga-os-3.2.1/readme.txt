@@ -1,6 +1,6 @@
 Copy Amiga OS 3.2.1 files here.
 Files with (*) are optional and not required to install Amiga OS 3.2.1, but recommended for a full installation of Amiga OS 3.2.1.
-Note Amiga OS 3.2.1 requires Amiga OS 3.2 files
+Note Amiga OS 3.2.1 requires Amiga OS 3.2 files copied.
 
 List of Hyperion Entertainment Amiga OS 3.2.1 files to copy:
 - Classes3.2.1.adf

@@ -4,7 +4,7 @@
 
     public class WindowsPhysicalDrive : GenericPhysicalDrive
     {
-        public WindowsPhysicalDrive(string path, string type, string model, ulong size) : base(
+        public WindowsPhysicalDrive(string path, string type, string model, long size) : base(
             path, type, model, size)
         {
         }

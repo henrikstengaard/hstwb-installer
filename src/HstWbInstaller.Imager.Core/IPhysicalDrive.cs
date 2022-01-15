@@ -8,7 +8,7 @@
         string Path { get; }
         string Type { get; }
         string Model { get; }
-        ulong Size { get; }
+        long Size { get; }
         RigidDiskBlock RigidDiskBlock { get; set; }
 
         Stream Open();
