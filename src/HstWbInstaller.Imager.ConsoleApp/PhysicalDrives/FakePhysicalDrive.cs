@@ -5,7 +5,7 @@ namespace HstWbInstaller.Imager.ConsoleApp.PhysicalDrives
 
     public class FakePhysicalDrive : GenericPhysicalDrive
     {
-        public FakePhysicalDrive(string path, string type, string model, ulong size) : base(path, type, model, size)
+        public FakePhysicalDrive(string path, string type, string model, long size) : base(path, type, model, size)
         {
         }
 

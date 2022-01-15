@@ -35,23 +35,60 @@ namespace HstWbInstaller.Core.Tests
             // read next sectors
             var result1 = await reader.ReadNext();
 
-            // assert
+            // assert result
             Assert.False(result1.EndOfSectors);
-            Assert.Empty(result1.Sectors);
+            var sectors = result1.Sectors.ToList();
+            Assert.Equal(3, sectors.Count);
 
+            // assert sector 1
+            var sector = sectors[0];
+            Assert.Equal(0, sector.Start);
+            Assert.Equal(SectorSize - 1, sector.End);
+            Assert.True(sector.IsZeroFilled);
+            Assert.Empty(sector.Data);
+
+            // assert sector 2
+            sector = sectors[1];
+            Assert.Equal(SectorSize, sector.Start);
+            Assert.Equal(2 * SectorSize - 1, sector.End);
+            Assert.True(sector.IsZeroFilled);
+            Assert.Empty(sector.Data);
+
+            // assert sector 3
+            sector = sectors[2];
+            Assert.Equal(2 * SectorSize, sector.Start);
+            Assert.Equal(3 * SectorSize - 1, sector.End);
+            Assert.True(sector.IsZeroFilled);
+            Assert.Empty(sector.Data);
+            
             // read next sectors
             var result2 = await reader.ReadNext();
 
             // assert result
             Assert.False(result2.EndOfSectors);
-            Assert.Single(result2.Sectors);
+            sectors = result2.Sectors.ToList();
+            Assert.Equal(3, sectors.Count);
 
-            // assert sector
-            var sector = result2.Sectors.First();
+            // assert sector 4
+            sector = sectors[0];
+            Assert.Equal(3 * SectorSize, sector.Start);
+            Assert.Equal(4 * SectorSize - 1, sector.End);
+            Assert.True(sector.IsZeroFilled);
+            Assert.Empty(sector.Data);
+
+            // assert sector 5
+            sector = sectors[1];
             Assert.Equal(4 * SectorSize, sector.Start);
+            Assert.Equal(5 * SectorSize - 1, sector.End);
+            Assert.False(sector.IsZeroFilled);
+            Assert.Equal(sector.Data, sector5);
+
+            // assert sector 6
+            sector = sectors[2];
+            Assert.Equal(5 * SectorSize, sector.Start);
             Assert.Equal(6 * SectorSize - 1, sector.End);
-            Assert.Equal(2 * SectorSize, sector.Data.Length);
-            Assert.Equal(sector.Data, sector5.Concat(sector6));
+            Assert.False(sector.IsZeroFilled);
+            Assert.Equal(sector.Data, sector6);
 
             // read next sectors
             var result3 = await reader.ReadNext();

@@ -38,7 +38,7 @@
         public string ControllerVendor { get; set; }
         public string ControllerProduct { get; set; }
         public string ControllerRevision { get; set; }
-        public ulong DiskSize { get; set; }
+        public long DiskSize { get; set; }
 
         public IEnumerable<PartitionBlock> PartitionBlocks { get; set; }
     }

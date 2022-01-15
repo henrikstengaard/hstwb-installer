@@ -151,7 +151,7 @@
             await stream.ReadBytes(4); // read reserved, unused word
             
             // calculate size of disk in bytes
-            var diskSize = (ulong)cylinders * heads * sectors * blockSize;
+            var diskSize = (long)cylinders * heads * sectors * blockSize;
             
             Console.WriteLine($"{cylinders} * {heads} * {sectors} * {blockSize} = {diskSize}");
             return new RigidDiskBlock
@@ -254,7 +254,7 @@
             }
 
             // calculate size of partition in bytes
-            var partitionSize = (ulong)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
+            var partitionSize = (long)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
 
             return new PartitionBlock
             {

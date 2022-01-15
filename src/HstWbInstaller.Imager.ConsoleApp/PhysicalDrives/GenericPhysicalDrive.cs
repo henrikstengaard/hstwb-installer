@@ -9,10 +9,10 @@ namespace HstWbInstaller.Imager.ConsoleApp.PhysicalDrives
         public string Path { get; }
         public string Type { get; }
         public string Model { get; }
-        public ulong Size { get; }
+        public long Size { get; }
         public RigidDiskBlock RigidDiskBlock { get; set; }
 
-        public GenericPhysicalDrive(string path, string type, string model, ulong size)
+        public GenericPhysicalDrive(string path, string type, string model, long size)
         {
             Path = path;
             Type = type;

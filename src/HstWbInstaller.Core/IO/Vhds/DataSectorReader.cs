@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
-    using HstwbInstaller.Core;
 
     public class DataSectorReader
     {
@@ -38,45 +37,70 @@
             var bytesRead = await stream.ReadAsync(buffer, 0, bufferSize);
             var sectors = new List<Sector>();
 
-            var start = 0;
-            int end;
-            do
+            for (var start = 0; start < bytesRead; start += sectorSize)
             {
-                for (; start < bytesRead; start += sectorSize)
-                {
-                    if (!IsSectorZeroFilled(start, start + sectorSize - 1))
-                    {
-                        break;
-                    }
-                }
+                var isZeroFilled = IsSectorZeroFilled(start, start + sectorSize - 1);
 
-                end = start;
-                for (; end < bytesRead; end += sectorSize)
+                byte[] data;
+                if (isZeroFilled)
                 {
-                    if (IsSectorZeroFilled(end, end + sectorSize - 1))
-                    {
-                        break;
-                    }
+                    data = Array.Empty<byte>();
                 }
-
-                if (start != end)
+                else
                 {
-                    var length = end - start;
-                    var data = new byte[length];
-                    Array.Copy(buffer, start, data, 0, length);
-                    sectors.Add(new Sector
-                    {
-                        Start = offset + start,
-                        End = offset + end - 1,
-                        Data = data
-                    });
+                    data = new byte[sectorSize];
+                    Array.Copy(buffer, start, data, 0, sectorSize);
                 }
                 
-                start = end;
-            } while (start < bytesRead && end < bytesRead);
+                sectors.Add(new Sector
+                {
+                    Start = offset + start,
+                    End = offset + start + sectorSize - 1,
+                    Size = sectorSize,
+                    IsZeroFilled = isZeroFilled,
+                    Data = data
+                });
+            }
 
+            // var start = 0;
+            // int end;
+            // do
+            // {
+            //     for (; start < bytesRead; start += sectorSize)
+            //     {
+            //         if (!IsSectorZeroFilled(start, start + sectorSize - 1))
+            //         {
+            //             break;
+            //         }
+            //     }
+            //
+            //     end = start;
+            //     for (; end < bytesRead; end += sectorSize)
+            //     {
+            //         if (IsSectorZeroFilled(end, end + sectorSize - 1))
+            //         {
+            //             break;
+            //         }
+            //     }
+            //
+            //     if (start != end)
+            //     {
+            //         var length = end - start;
+            //         var data = new byte[length];
+            //         Array.Copy(buffer, start, data, 0, length);
+            //         sectors.Add(new Sector
+            //         {
+            //             Start = offset + start,
+            //             End = offset + end - 1,
+            //             Data = data
+            //         });
+            //     }
+            //     
+            //     start = end;
+            // } while (start < bytesRead && end < bytesRead);
+            //
             offset += bytesRead;
-
+            
             return new SectorResult
             {
                 BytesRead = bytesRead,
@@ -89,7 +113,7 @@
         {
             for (var i = sectorStart; i <= sectorEnd; i++)
             {
-                if (buffer[i] != 0)
+                if (buffer[i] != 0 || buffer[sectorEnd - i] != 0)
                 {
                     return false;
                 }
