@@ -3,7 +3,7 @@
 # Disable autostart
 # -----------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-21
+# Date: 2022-01-16
 #
 # A bash script to disable Amiberry autostart.
 
@@ -20,7 +20,7 @@ fi
 
 # disable amiberry autostart, if it exists
 if [ -f "$AMIBERRY_CONF_PATH/autostart.uae" ]; then
-	mv -f "$AMIBERRY_CONF_PATH/autostart.uae" "$AMIBERRY_CONF_PATH/_autostart.uae"
+	mv -f "$AMIBERRY_CONF_PATH/autostart.uae" "$AMIBERRY_CONF_PATH/autostart-disabled.uae"
 fi
 
 # show success dialog
