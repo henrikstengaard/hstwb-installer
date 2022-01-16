@@ -71,10 +71,10 @@ floppy_speed=800
 ; 
 ; *** Hard Drives
 ; 
-hardfile2=rw,DH0:$[AMIGA_HDD_PATH]/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/pfs3aio,uae0
-uaehf0=hdf,rw,DH0:$[AMIGA_HDD_PATH]/dh0.hdf,32,1,2,512,0,$[AMIGA_HDD_PATH]/pfs3aio,uae0
-filesystem2=rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
-uaehf1=dir,rw,DH1:Data:$[AMIGA_HDD_PATH]/dh1/,-128
+filesystem2=rw,DH0:Workbench:$[AMIGA_HDD_PATH]/dh0/,0
+uaehf0=dir,rw,DH0:Workbench:$[AMIGA_HDD_PATH]/dh0/,0
+filesystem2=rw,DH1:Work:$[AMIGA_HDD_PATH]/dh1/,-128
+uaehf1=dir,rw,DH1:Work:$[AMIGA_HDD_PATH]/dh1/,-128
 filesystem2=rw,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
 uaehf2=dir,rw,DH2:KickstartDir:/media/hstwb-self-install/kickstart/,-128
 filesystem2=rw,DH3:AmigaOsDir:/media/hstwb-self-install/amigaos/,-128
