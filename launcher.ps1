@@ -2,9 +2,9 @@
 # --------
 #
 # Author: Henrik Noerfjand Stengaard
-# Date:   2019-03-29
+# Date:   2022-01-16
 #
-# A powershell script to launch HstWB Installer and ensure HstWB Installer for first time use.
+# A powershell script to launch HstWB Installer.
 
 
 Param(
@@ -102,7 +102,10 @@ function GuiMenu($title, $options)
     $hash = [hashtable]::Synchronized(@{}) 
     $hash.option = $null
     
-    $buttonFont = New-Object System.Drawing.Font('TopazPlus a600a1200a4000',14)
+    $privateFontCollection = New-Object System.Drawing.Text.PrivateFontCollection
+    $privateFontCollection.AddFontFile($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('fonts\TopazPlus_a1200_v1.0.ttf'));
+
+    $buttonFont = New-Object System.Drawing.Font($privateFontCollection.Families[0],14)
 
     $blueColor = [System.Drawing.Color]::FromArgb(0, 85, 170)
 
@@ -256,15 +259,6 @@ $host.ui.RawUI.WindowTitle = "HstWB Installer v{0}" -f (HstwbInstallerVersion)
 
 try
 {
-    $runSetupFirstTime = $false
-
-    if (!(Test-Path $settingsFile))
-    {
-        $runSetupFirstTime = $true
-        MessageDialog "First time use" ("It appears this is the first time you're using HstWB Installer,{1}since settings file '{0}' doesn't exist.{1}{1}HstWB Installer will now start setup to{1}create a default settings file?" -f $settingsFile, [Environment]::NewLine)
-        Setup $setupFile $settingsDir
-    }
-
     # hstwb
     $hstwb = @{
         'Paths' = @{
