@@ -612,7 +612,7 @@ function FindMatchingFileNames($kickstartEntries, $dir)
 function FindAmigaOsFiles($hstwb)
 {
     # reset amiga os dir, if it doesn't exist
-    if (!$hstwb.Settings.AmigaOs.AmigaOsDir -or !(Test-Path -Path $hstwb.Settings.AmigaOs.AmigaOsDir))
+    if (!$hstwb.Settings.AmigaOs.AmigaOsDir -or $hstwb.Settings.AmigaOs.AmigaOsDir -match '^\s*$' -or !(Test-Path -Path $hstwb.Settings.AmigaOs.AmigaOsDir))
     {
         $hstwb.Settings.AmigaOs.AmigaOsDir = ''
         return
@@ -630,9 +630,10 @@ function FindAmigaOsFiles($hstwb)
 function FindKickstartFiles($hstwb)
 {
     # reset kickstart rom dir, if it doesn't exist
-    if (!$hstwb.Settings.Kickstart.KickstartDir -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartDir))
+    if (!$hstwb.Settings.Kickstart.KickstartDir -or $hstwb.Settings.Kickstart.KickstartDir -match '^\s*$' -or !(Test-Path -Path $hstwb.Settings.Kickstart.KickstartDir))
     {
         $hstwb.Settings.Kickstart.KickstartDir = ''
+        return
     }
 
     # find matching kickstart files by md5 hash of encrypted and unencrypted kickstart roms
