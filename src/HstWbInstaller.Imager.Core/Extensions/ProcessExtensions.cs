@@ -6,7 +6,7 @@
 
     public static class ProcessExtensions
     {
-        public static async Task<string> CaptureProcessOutput(this string command, string args = null)
+        public static async Task<string> RunProcess(this string command, string args = null)
         {
             var process = Process.Start(
                 new ProcessStartInfo(command)
