@@ -153,7 +153,6 @@
             // calculate size of disk in bytes
             var diskSize = (long)cylinders * heads * sectors * blockSize;
             
-            Console.WriteLine($"{cylinders} * {heads} * {sectors} * {blockSize} = {diskSize}");
             return new RigidDiskBlock
             {
                 Size = size,
@@ -256,6 +255,8 @@
             // calculate size of partition in bytes
             var partitionSize = (long)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
 
+            var fileSystemBlockSize = sizeBlock * 4 * sectors;
+
             return new PartitionBlock
             {
                 Size = size,
@@ -285,7 +286,8 @@
                 Baud = baud,
                 Control = control,
                 BootBlocks = bootBlocks,
-                PartitionSize = partitionSize
+                PartitionSize = partitionSize,
+                FileSystemBlockSize = fileSystemBlockSize
             };
         }
     }

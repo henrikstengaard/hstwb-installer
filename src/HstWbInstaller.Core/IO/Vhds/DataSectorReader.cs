@@ -34,7 +34,10 @@
 
         public async Task<SectorResult> ReadNext()
         {
+            var startOffset = offset;
             var bytesRead = await stream.ReadAsync(buffer, 0, bufferSize);
+            var endOffset = offset + bufferSize - 1;
+
             var sectors = new List<Sector>();
 
             for (var start = 0; start < bytesRead; start += sectorSize)
@@ -103,6 +106,9 @@
             
             return new SectorResult
             {
+                Start = startOffset,
+                End = endOffset,
+                Data = buffer,
                 BytesRead = bytesRead,
                 EndOfSectors = bytesRead != bufferSize,
                 Sectors = sectors

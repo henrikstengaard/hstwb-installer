@@ -3,14 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.CommandLine;
-    using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Security.Principal;
     using System.Threading.Tasks;
-    using Commands;
-    using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Core;
-    using PhysicalDrives;
+    using Core.Commands;
+    using Core.Extensions;
+    using Core.PhysicalDrives;
+    using Presenters;
+    using OperatingSystem = Core.OperatingSystem;
 
+    // read
+    // -r "a" "d:\temp\test.vhd" -s 10000000 -f
+    // convert
+    // -c "d:\temp\test.vhd" "d:\temp\test.img"
+    // info
+    // -i "d:\Temp\16gb_pintz_and_amiga\16gb_base.hdf"
+    // blnk
+    // -b "d:\temp\blank.vhd" -s 32
     class Program
     {
         static async Task<int> Main(string[] args)
@@ -18,36 +29,61 @@
             var listOption = new Option<bool>(
                 new[] { "--list", "-l" },
                 "List physical drives.");
-            var infoOption = new Option<bool>(
+            var infoOption = new Option<string>(
                 new[] { "--info", "-i" },
-                "Display information about physical drive or image file.");
-            var readOption = new Option<bool>(
+                "Display information about physical drive or image file.")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
+            var readOption = new Option<string[]>(
                 new[] { "--read", "-r" },
-                "Read physical drive to image file.");
-            var writeOption = new Option<bool>(
+                "Read physical drive to image file.")
+            {
+                AllowMultipleArgumentsPerToken = true,
+                Arity = new ArgumentArity(2, 2)
+            };
+            var writeOption = new Option<string[]>(
                 new[] { "--write", "-w" },
-                "Write image file to physical drive.");
-            var convertOption = new Option<bool>(
+                "Write image file to physical drive.")
+            {
+                AllowMultipleArgumentsPerToken = true,
+                Arity = new ArgumentArity(2, 2)
+            };
+            var convertOption = new Option<string[]>(
                 new[] { "--convert", "-c" },
-                "Convert image file.");
-            var verifyOption = new Option<bool>(
+                "Convert image file.")
+            {
+                AllowMultipleArgumentsPerToken = true,
+                Arity = new ArgumentArity(2, 2)
+            };
+            var verifyOption = new Option<string[]>(
                 new[] { "--verify", "-v" },
-                "Convert image file.");
-            var blankOption = new Option<bool>(
+                "Verify image file.")
+            {
+                AllowMultipleArgumentsPerToken = true,
+                Arity = new ArgumentArity(2, 2)
+            };
+            var blankOption = new Option<string>(
                 new[] { "--blank", "-b" },
-                "Create blank image file.");
-            var optimizeOption = new Option<bool>(
+                "Create blank image file.")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
+            var optimizeOption = new Option<string>(
                 new[] { "--optimize", "-o" },
-                "Optimize image file.");
-            var srcOption = new Option<string>(
-                new[] { "--src", "-s" },
-                "Source image file or physical drive.");
-            var destOption = new Option<string>(
-                new[] { "--dest", "-d" },
-                "Destination image file or physical drive.");
+                "Optimize image file.")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
+            var sizeOption = new Option<long>(
+                new[] { "--size", "-s" },
+                "Size of source image file or physical drive.");
             var fakeOption = new Option<bool>(
                 new[] { "--fake", "-f" },
-                "Fake physical drives (debug only).");
+                "Fake source paths (debug only).")
+            {
+                IsHidden = true
+            };
 
             var rootCommand = new RootCommand
             {
@@ -59,136 +95,117 @@
                 verifyOption,
                 blankOption,
                 optimizeOption,
-                srcOption,
-                destOption,
+                sizeOption,
                 fakeOption
             };
             rootCommand.Description = "HstWB Installer Imager to read and write image file to and from physical drive.";
             rootCommand.SetHandler(
-                async (bool list, bool info, bool read, bool write, bool convert, bool verify, bool blank, bool optimize, string src,
-                    string dest, bool fake) =>
+                async (bool list, string info, string[] read, string[] write, string[] convert, string[] verify,
+                    string blank, string optimize, long size, bool fake) =>
                 {
-                    Arguments.CommandEnum command = Arguments.CommandEnum.None;
+                    var arguments = new Arguments();
                     if (list)
                     {
-                        command = Arguments.CommandEnum.List;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.List
+                        };
                     }
-                    else if (info)
+                    else if (!string.IsNullOrWhiteSpace(info))
                     {
-                        command = Arguments.CommandEnum.Info;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Info,
+                            SourcePath = info
+                        };
                     }
-                    else if (read)
+                    else if (read.Any())
                     {
-                        command = Arguments.CommandEnum.Read;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Read,
+                            SourcePath = read[0],
+                            DestinationPath = read[1]
+                        };
                     }
-                    else if (write)
+                    else if (write.Any())
                     {
-                        command = Arguments.CommandEnum.Write;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Write,
+                            SourcePath = write[0],
+                            DestinationPath = write[1]
+                        };
                     }
-                    else if (convert)
+                    else if (convert.Any())
                     {
-                        command = Arguments.CommandEnum.Convert;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Convert,
+                            SourcePath = convert[0],
+                            DestinationPath = convert[1]
+                        };
                     }
-                    else if (verify)
+                    else if (verify.Any())
                     {
-                        command = Arguments.CommandEnum.Verify;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Verify,
+                            SourcePath = verify[0],
+                            DestinationPath = verify[1]
+                        };
                     }
-                    else if (blank)
+                    else if (!string.IsNullOrWhiteSpace(blank))
                     {
-                        command = Arguments.CommandEnum.Blank;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Blank,
+                            SourcePath = blank
+                        };
                     }
-                    else if (optimize)
+                    else if (!string.IsNullOrWhiteSpace(optimize))
                     {
-                        command = Arguments.CommandEnum.Optimize;
+                        arguments = new Arguments
+                        {
+                            Command = Arguments.CommandEnum.Optimize,
+                            SourcePath = optimize
+                        };
                     }
-                    
-                    await Main(new Arguments
-                    {
-                        Command = command,
-                        Src = src,
-                        Dest = dest,
-                        Fake = fake
-                    });
-                }, listOption, infoOption, readOption, writeOption, convertOption, verifyOption, blankOption, optimizeOption,
-                srcOption, destOption, fakeOption);
-            return await rootCommand.InvokeAsync(args);
 
-            // using (var src = File.OpenRead(@"D:\Temp\4gb_testing2\4gb.hdf"))
-            // {
-            //     using (var dst = File.OpenWrite(@"test.hdf"))
-            //     {
-            //         var buffer = new byte[512 * 16];
-            //
-            //         var bytesRead = src.Read(buffer, 0, buffer.Length);
-            //         
-            //         dst.Write(buffer, 0, bytesRead);
-            //     }
-            // }
-            // IPhysicalDriveManager physicalDriveManager;
-            //
-            // if (windows || OperatingSystem.IsWindows())
-            // {
-            //     physicalDriveManager = new WindowsPhysicalDriveManager(fake);
-            // }
-            // else if (linux || OperatingSystem.IsLinux())
-            // {
-            //     physicalDriveManager = new LinuxPhysicalDriveManager(fake);
-            // }
-            // else
-            // {
-            //     throw new NotImplementedException("Unsupported operating system");
-            // }
-            //
-            // var physicalDrives = (await physicalDriveManager.GetPhysicalDrives()).ToList();
-            // Console.WriteLine(JsonSerializer.Serialize(physicalDrives));
-            //
-            // return 0;
-            //
-            // foreach (var physicalDrive in physicalDrives)
-            // {
-            //     Console.WriteLine(physicalDrive.Path);
-            //     var buffer = new byte[8192];
-            //
-            //     try
-            //     {
-            //         await using var stream = physicalDrive.Open();
-            //         var position = stream.Seek(0, SeekOrigin.Begin);
-            //         await stream.ReadAsync(buffer, 0, buffer.Length);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //         Console.WriteLine(
-            //             $"Failed to read first {buffer.Length} bytes from physical drive '{physicalDrive.Path}': {e}");
-            //         throw;
-            //     }
-            //
-            //     await File.WriteAllBytesAsync(physicalDrive.Path.Replace("\\", ""), buffer);
-            //
-            //     try
-            //     {
-            //         var rigidDiskBlockReader = new RigidDiskBlockReader(new MemoryStream(buffer));
-            //
-            //         var rigidDiskBlock = await rigidDiskBlockReader.Read(false);
-            //
-            //         if (rigidDiskBlock != null)
-            //         {
-            //             Console.WriteLine(JsonSerializer.Serialize(rigidDiskBlock));
-            //         }
-            //     }
-            //     catch (Exception e)
-            //     {
-            //         Console.WriteLine($"Failed to rdb from physical drive '{physicalDrive.Path}': {e}");
-            //     }
-            // }
+                    if (size != 0)
+                    {
+                        arguments.Size = size;
+                    }
+
+                    arguments.Fake = fake;
+                    await Run(arguments);
+                }, listOption, infoOption, readOption, writeOption, convertOption, verifyOption, blankOption,
+                optimizeOption,
+                sizeOption, fakeOption);
+            return await rootCommand.InvokeAsync(args);
         }
 
-        // private static JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-        // {
-        //     WriteIndented = true
-        // };
-        //
-        static async Task Main(Arguments arguments)
+        static async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives(Arguments arguments)
         {
+            if (arguments.Fake)
+            {
+                var drives = new List<FakePhysicalDrive>();
+
+                if (!string.IsNullOrWhiteSpace(arguments.SourcePath))
+                {
+                    drives.Add(new FakePhysicalDrive(arguments.SourcePath, "Fake", "Fake",
+                        arguments.Size ?? 1024 * 1024));
+                }
+
+                if (!string.IsNullOrWhiteSpace(arguments.DestinationPath))
+                {
+                    drives.Add(new FakePhysicalDrive(arguments.DestinationPath, "Fake", "Fake",
+                        arguments.Size ?? 1024 * 1024));
+                }
+
+                return drives;
+            }
+
             IPhysicalDriveManager physicalDriveManager;
 
             if (OperatingSystem.IsWindows())
@@ -204,24 +221,127 @@
                 throw new NotImplementedException("Unsupported operating system");
             }
 
-            var physicalDrives = (await physicalDriveManager.GetPhysicalDrives()).ToList();
-            if (arguments.Command == Arguments.CommandEnum.List ||
-                arguments.Command == Arguments.CommandEnum.Read ||
-                arguments.Command == Arguments.CommandEnum.Write)
+            return (await physicalDriveManager.GetPhysicalDrives()).ToList();
+        }
+
+        static async Task<bool> IsAdministrator()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                await ReadRigidDiskBlocks(physicalDrives);
+                using var identity = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
 
+            // linux root has user id 0
+            /* environment variable: EUID
+#!/bin/bash
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+             */
+            // 
+            var uidOutput = await "id".CaptureProcessOutput("-u");
+            return uidOutput.Trim().Equals("0", StringComparison.OrdinalIgnoreCase);
+        }
+
+        static async Task Run(Arguments arguments)
+        {
+            var isAdministrator = await IsAdministrator();
+
+            if (!isAdministrator)
+            {
+                Console.WriteLine("Requires administrator rights!");
+            }
+
+            var commandHelper = new CommandHelper();
+            var physicalDrives = (await GetPhysicalDrives(arguments)).ToList();
+            
             switch (arguments.Command)
             {
+                case Arguments.CommandEnum.List:
+                    var listCommand = new ListCommand(commandHelper, physicalDrives);
+                    listCommand.ListRead += (_, args) =>
+                    {
+                        //
+                        // await Task.Run(() =>
+                        // {
+                        //     Console.WriteLine(JsonSerializer.Serialize(physicalDrivesList, JsonSerializerOptions));
+                        // });
+                        InfoPresenter.PresentInfo(args.MediaInfos);
+                    };
+                    await listCommand.Execute();
+                    var listResult = await listCommand.Execute();
+                    Console.WriteLine(listResult.IsSuccess ? "Done" : $"ERROR: Read failed, {listResult.Error}");
+                    break;
                 case Arguments.CommandEnum.Info:
-                    await new ListCommand().Execute(physicalDrives, arguments);
+                    var infoCommand = new InfoCommand(commandHelper, physicalDrives, arguments.SourcePath);
+                    infoCommand.DiskInfoRead += (_, args) => { InfoPresenter.PresentInfo(args.MediaInfo); };
+                    var infoResult = await infoCommand.Execute();
+                    Console.WriteLine(infoResult.IsSuccess ? "Done" : $"ERROR: Read failed, {infoResult.Error}");
                     break;
                 case Arguments.CommandEnum.Read:
-                    await new ReadCommand().Execute(physicalDrives, arguments);
+                    Console.WriteLine("Reading physical drive to image file");
+
+                    GenericPresenter.PresentPaths(arguments);
+
+                    var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                        arguments.Size);
+                    readCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
+                    await readCommand.Execute();
+                    var readResult = await readCommand.Execute();
+                    Console.WriteLine(readResult.IsSuccess ? "Done" : $"ERROR: Read failed, {readResult.Error}");
+                    break;
+                case Arguments.CommandEnum.Convert:
+                    Console.WriteLine("Converting source image to destination image file");
+
+                    GenericPresenter.PresentPaths(arguments);
+
+                    var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                        arguments.Size);
+                    convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
+                    var convertResult = await convertCommand.Execute();
+                    Console.WriteLine(convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
+                    break;
+                case Arguments.CommandEnum.Write:
+                    Console.WriteLine("Writing source image file to physical drive");
+
+                    GenericPresenter.PresentPaths(arguments);
+
+                    var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                        arguments.Size);
+                    writeCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
+                    var writeResult = await writeCommand.Execute();
+                    Console.WriteLine(writeResult.IsSuccess ? "Done" : $"ERROR: Write failed, {writeResult.Error}");
+                    break;
+                case Arguments.CommandEnum.Verify:
+                    Console.WriteLine("Verifying source image to destination");
+
+                    GenericPresenter.PresentPaths(arguments);
+
+                    var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                        arguments.Size);
+                    verifyCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
+                    var verifyResult = await verifyCommand.Execute();
+                    Console.WriteLine(verifyResult.IsSuccess ? "Done" : $"ERROR: Verify failed, {verifyResult.Error}");
+                    break;
+                case Arguments.CommandEnum.Blank:
+                    Console.WriteLine("Creating blank image");
+                    Console.WriteLine($"Path: {arguments.SourcePath}");
+                    var blankCommand = new BlankCommand(commandHelper, arguments.SourcePath, arguments.Size);
+                    var blankResult = await blankCommand.Execute();
+                    Console.WriteLine(blankResult.IsSuccess ? "Done" : $"ERROR: Blank failed, {blankResult.Error}");
+                    break;
+                case Arguments.CommandEnum.Optimize:
+                    Console.WriteLine("Optimizing image file");
+                    Console.WriteLine($"Path: {arguments.SourcePath}");
+                    var optimizeCommand = new OptimizeCommand(commandHelper, arguments.SourcePath);
+                    var optimizeResult = await optimizeCommand.Execute();
+                    Console.WriteLine(optimizeResult.IsSuccess ? "Done" : $"ERROR: Optimize failed, {optimizeResult.Error}");
                     break;
             }
-            
+
             // var srcPhysicalDrive =
             //     physicalDrives.FirstOrDefault(x => x.Path.Equals(src, StringComparison.OrdinalIgnoreCase));
             // await using var srcStream = srcPhysicalDrive == null ? File.OpenRead(src) : srcPhysicalDrive.Open();
@@ -289,36 +409,6 @@
             // } while (bytesRead == buffer.Length);
             //
             // Console.WriteLine($"Done");
-        }
-
-        static async Task ReadRigidDiskBlocks(IEnumerable<IPhysicalDrive> physicalDrives)
-        {
-            var buffer = new byte[8192];
-            foreach (var physicalDrive in physicalDrives)
-            {
-                try
-                {
-                    await using var stream = physicalDrive.Open();
-                    stream.Seek(0, SeekOrigin.Begin);
-                    await stream.ReadAsync(buffer, 0, buffer.Length);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(
-                        $"Failed to read first {buffer.Length} bytes from physical drive '{physicalDrive.Path}': {e}");
-                }
-
-                try
-                {
-                    var rigidDiskBlockReader = new RigidDiskBlockReader(new MemoryStream(buffer));
-
-                    physicalDrive.RigidDiskBlock = await rigidDiskBlockReader.Read(false);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Failed to rigid disk block from physical drive '{physicalDrive.Path}': {e}");
-                }
-            }
         }
     }
 }
