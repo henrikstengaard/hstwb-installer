@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HstWbInstaller.ConsoleApp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HstWbInstaller.Core.Tests", "HstWbInstaller.Core.Tests\HstWbInstaller.Core.Tests.csproj", "{A6F9F945-B03F-4AF0-B885-943D583B0330}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HstWbInstaller.Imager.Core.Tests", "HstWbInstaller.Imager.Core.Tests\HstWbInstaller.Imager.Core.Tests.csproj", "{9BCF2252-4FF4-434F-8392-8CE08150CFFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{A6F9F945-B03F-4AF0-B885-943D583B0330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6F9F945-B03F-4AF0-B885-943D583B0330}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6F9F945-B03F-4AF0-B885-943D583B0330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BCF2252-4FF4-434F-8392-8CE08150CFFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BCF2252-4FF4-434F-8392-8CE08150CFFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BCF2252-4FF4-434F-8392-8CE08150CFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BCF2252-4FF4-434F-8392-8CE08150CFFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

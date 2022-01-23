@@ -1,7 +1,18 @@
 ﻿namespace HstWbInstaller.Core.IO.RigidDiskBlocks
 {
+    using System;
+
     public class PartitionBlock
     {
+        [Flags]
+        public enum PartitionFlagsEnum
+        {
+            Bootable = 1,
+            NoMount = 2,
+            Raid = 4,
+            Lvm = 8
+        }
+        
         public uint Size { get; set; }
         public int Checksum { get; set; }
         public uint HostId { get; set; }
@@ -30,5 +41,6 @@
         public uint Control { get; set; }
         public uint BootBlocks { get; set; }
         public long PartitionSize { get; set; }
+        public uint FileSystemBlockSize { get; set; }
     }
 }
