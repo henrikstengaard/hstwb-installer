@@ -4,12 +4,9 @@
     using System.Collections.Generic;
     using System.CommandLine;
     using System.Linq;
-    using System.Runtime.InteropServices;
-    using System.Security.Principal;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
-    using Core.Extensions;
     using Core.PhysicalDrives;
     using Presenters;
     using OperatingSystem = Core.OperatingSystem;
@@ -22,6 +19,7 @@
     // -i "d:\Temp\16gb_pintz_and_amiga\16gb_base.hdf"
     // blnk
     // -b "d:\temp\blank.vhd" -s 32
+    // https://github.com/dotnet/command-line-api/blob/72e86ec7615c0c8ecb6a13e34a5c0a97e9309909/docs/Your-first-app-with-System-CommandLine.md
     class Program
     {
         static async Task<int> Main(string[] args)
@@ -224,31 +222,10 @@
             return (await physicalDriveManager.GetPhysicalDrives()).ToList();
         }
 
-        static async Task<bool> IsAdministrator()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                using var identity = WindowsIdentity.GetCurrent();
-                var principal = new WindowsPrincipal(identity);
-                return principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
-
-            // linux root has user id 0
-            /* environment variable: EUID
-#!/bin/bash
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
-fi
-             */
-            // 
-            var uidOutput = await "id".CaptureProcessOutput("-u");
-            return uidOutput.Trim().Equals("0", StringComparison.OrdinalIgnoreCase);
-        }
 
         static async Task Run(Arguments arguments)
         {
-            var isAdministrator = await IsAdministrator();
+            var isAdministrator = await OperatingSystem.IsAdministrator();
 
             if (!isAdministrator)
             {
