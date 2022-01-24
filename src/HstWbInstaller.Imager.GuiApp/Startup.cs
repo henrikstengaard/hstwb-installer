@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +7,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace HstWbInstaller.Imager.GuiApp
 {
+    using System.IO;
+    using System.Threading.Tasks;
+    using ElectronNET.API;
+    using ElectronNET.API.Entities;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -66,6 +70,37 @@ namespace HstWbInstaller.Imager.GuiApp
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            Task.Run(() => ElectronBootstrap(env));
+        }
+
+        private async Task ElectronBootstrap(IWebHostEnvironment env)
+        {
+            if (!HybridSupport.IsElectronActive)
+            {
+                return;
+            }
+            
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(
+                new BrowserWindowOptions
+                {
+                    Width = 800,
+                    Height = 600,
+                    Center = true,
+                    BackgroundColor = "#1A2933",
+                    Frame = false,
+                    WebPreferences = new WebPreferences
+                    {
+                        NodeIntegration = true, 
+                    },
+                    Show = false,
+                    Icon = Path.Combine(env.ContentRootPath, "hstwb-installer.ico")
+                });
+            
+            await browserWindow.WebContents.Session.ClearCacheAsync();
+
+            browserWindow.OnClosed += () => Electron.App.Quit();
+            browserWindow.OnReadyToShow += () => browserWindow.Show();
         }
     }
 }
