@@ -91,7 +91,7 @@ namespace HstWbInstaller.Imager.GuiApp
                     Frame = false,
                     WebPreferences = new WebPreferences
                     {
-                        NodeIntegration = true, 
+                        NodeIntegration = true
                     },
                     Show = false,
                     Icon = Path.Combine(env.ContentRootPath, "hstwb-installer.ico")
@@ -101,6 +101,14 @@ namespace HstWbInstaller.Imager.GuiApp
 
             browserWindow.OnClosed += () => Electron.App.Quit();
             browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.OnMaximize += () => Electron.IpcMain.Send(browserWindow, "window-maximized");
+            browserWindow.OnUnmaximize += () => Electron.IpcMain.Send(browserWindow, "window-unmaximized");
+            browserWindow.WebContents.OpenDevTools();
+            
+            Electron.IpcMain.On("minimize-window", (args) => browserWindow.Minimize());
+            Electron.IpcMain.On("maximize-window", (args) => browserWindow.Maximize());
+            Electron.IpcMain.On("unmaximize-window", (args) => browserWindow.Unmaximize());
+            Electron.IpcMain.On("close-window", (args) => browserWindow.Close());
         }
     }
 }

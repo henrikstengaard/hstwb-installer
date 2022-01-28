@@ -41,3 +41,18 @@ cmd, cd directory with .csproj
 electronize init
 
 electronize start
+
+
+
+
+## Remove unused
+
+PS ClientApp> npm uninstall bootstrap
+PS ClientApp> npm uninstall jquery
+
+
+## update create react app
+
+npm install react-scripts@latest
+
+npm audit fix
