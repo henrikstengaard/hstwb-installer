@@ -1,18 +1,31 @@
-import 'bootstrap/dist/css/bootstrap.css';
+import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import { createTheme } from '@material-ui/core/styles'
+import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles'
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
+const theme = createTheme({
+    typography: {
+        fontFamily: [
+            'topazplus_a600a1200a4000Rg',
+            'Segoe UI',            
+            'sans-serif',
+        ].join(','),
+    },
+})
 
 ReactDOM.render(
-  <BrowserRouter basename={baseUrl}>
-    <App />
-  </BrowserRouter>,
-  rootElement);
+    <MuiThemeProvider theme={theme}>
+        <BrowserRouter basename={baseUrl}>
+            <App />
+        </BrowserRouter>
+    </MuiThemeProvider>,
+    rootElement);
 
 registerServiceWorker();
 

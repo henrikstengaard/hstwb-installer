@@ -1,0 +1,25 @@
+﻿@font-face {
+    font-family: 'topazplus_a600a1200a4000Rg';
+    src: url('./fonts/topazplus_a1200_v1.0-webfont.woff2') format('woff2'),
+    url('./fonts/topazplus_a1200_v1.0-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: 'topazplus_a600a1200a4000Rg', 'Segoe UI', sans-serif;
+    background-color: white;
+    background-image: url('./assets/background.svg');
+    background-repeat: repeat-y;
+    background-attachment: initial;
+    background-position: 125% 45%;
+    background-size: 75%;
+    color: black;
+    height: 100%;
+    margin: 0;
+}
