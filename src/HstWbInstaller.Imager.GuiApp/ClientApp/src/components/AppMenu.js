@@ -1,11 +1,11 @@
 ﻿import * as React from 'react'
 import {useHistory} from 'react-router-dom'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import Link from '@material-ui/core/Link'
-import Popover from '@material-ui/core/Popover'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Link from '@mui/material/Link'
+import Popover from '@mui/material/Popover'
 
 export default function AppMenu() {
     const history = useHistory()
