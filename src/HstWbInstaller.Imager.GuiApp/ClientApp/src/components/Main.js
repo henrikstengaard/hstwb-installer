@@ -1,18 +1,17 @@
 import React from 'react'
 import {useHistory} from 'react-router-dom'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
-import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function Main() {
     const history = useHistory()
 
     return (
-        <React.Fragment>
         <Box sx={{ m: 1 }}>
             <Grid container spacing={1}>
                 <Grid item xs={6}>
@@ -168,6 +167,5 @@ export default function Main() {
                 </Grid>
             </Grid>
         </Box>
-        </React.Fragment>
     )
 }
