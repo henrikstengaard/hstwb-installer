@@ -25,13 +25,7 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="hdd" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="long-arrow-alt-right" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
+                                        <FontAwesomeIcon icon="upload" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
                                 <Typography>
@@ -52,18 +46,32 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="long-arrow-alt-right" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="hdd" size="2x" />
+                                        <FontAwesomeIcon icon="download" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
-                                
                                 <Typography>
                                     Write image file to physical drive.
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+                <Grid item xs={6}>
+                    <Card>
+                        <CardActionArea onClick={() => history.push('/info')}>
+                            <CardContent>
+                                <Grid container alignItems="center" spacing={2}>
+                                    <Grid item>
+                                        <Typography variant="h3">
+                                            Info
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <FontAwesomeIcon icon="info" size="2x" style={{verticalAlign: 'text-top' }} />
+                                    </Grid>
+                                </Grid>
+                                <Typography>
+                                    Display information about physical drive or image file.
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
@@ -80,13 +88,7 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="long-arrow-alt-right" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
+                                        <FontAwesomeIcon icon="exchange-alt" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
                                 <Typography>
@@ -98,7 +100,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/convert')}>
+                        <CardActionArea onClick={() => history.push('/verify')}>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -107,13 +109,7 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="exchange-alt" size="2x" />
-                                    </Grid>
-                                    <Grid item>
-                                        <FontAwesomeIcon icon="hdd" size="2x" />
+                                        <FontAwesomeIcon icon="check" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
                                 <Typography>
@@ -134,7 +130,7 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="file" size="2x" />
+                                        <FontAwesomeIcon icon="plus" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
                                 <Typography>
@@ -155,7 +151,7 @@ export default function Main() {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <FontAwesomeIcon icon="magic" size="2x" />
+                                        <FontAwesomeIcon icon="magic" size="2x" style={{verticalAlign: 'text-top' }} />
                                     </Grid>
                                 </Grid>
                                 <Typography>

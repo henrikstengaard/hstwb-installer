@@ -16,7 +16,7 @@
     {
         private readonly bool fake;
 
-        public WindowsPhysicalDriveManager(bool fake)
+        public WindowsPhysicalDriveManager(bool fake = false)
         {
             this.fake = fake;
         }
@@ -27,11 +27,13 @@
 
             var removableMedias = wmicDiskDrives.Where(x =>
                 x.MediaType.Equals("Removable Media", StringComparison.OrdinalIgnoreCase) ||
-                x.MediaType.Equals("External hard disk media", StringComparison.OrdinalIgnoreCase));
+                x.MediaType.Equals("External hard disk media", StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
             if (fake)
             {
-                return removableMedias.Select(x => new FakePhysicalDrive(x.Name, x.MediaType, x.Model, x.Size)).ToList();
+                    return removableMedias.Select(x => new FakePhysicalDrive(x.Name, x.MediaType, x.Model, x.Size))
+                        .ToList();
             }
             
             return removableMedias.Select(x => new WindowsPhysicalDrive(x.Name, x.MediaType, x.Model, x.Size));

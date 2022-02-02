@@ -15,10 +15,28 @@ const theme = createTheme({
             'Segoe UI',            
             'sans-serif',
         ].join(','),
-        h6: {
-            fontSize: '14px'
-        },
     },
+    components: {
+        MuiTypography: {
+            styleOverrides: {
+                h1: {
+                    fontSize: '0.8rem'
+                },
+                h2: {
+                    fontSize: '2rem'
+                },
+                h3: {
+                    fontSize: '1.5rem'
+                },
+                h4: {
+                    fontSize: '1.2rem'
+                },
+                h6: {
+                    fontSize: '1rem'
+                }
+            }
+        }
+    }
 })
 
 ReactDOM.render(

@@ -43,8 +43,8 @@ export default function Titlebar() {
             <Toolbar disableGutters style={{minHeight: '32px'}}>
                 <img src="icons/icon-192x192.png" height="20px" alt="HstWB Installer app icon"
                      style={{paddingLeft: '2px', paddingRight: '2px'}}/>
-                <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                    HstWB Installer Imager
+                <Typography variant="h1" component="div" sx={{flexGrow: 1}}>
+                    HstWB Imager
                 </Typography>
                 <Box style={{WebkitAppRegion: 'no-drag'}}>
                     <IconButton

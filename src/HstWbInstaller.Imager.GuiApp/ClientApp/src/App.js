@@ -18,11 +18,15 @@ import {
     faCheck,
     faPlus,
     faQuestion,
-    faHome
+    faHome,
+    faSyncAlt,
+    faEllipsisH,
+    faBan,
+    faInfo
 } from '@fortawesome/free-solid-svg-icons'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
-import GlobalStyles from '@mui/material/GlobalStyles'
+// import GlobalStyles from '@mui/material/GlobalStyles'
 import { BrowserRouter } from 'react-router-dom'
 import Main from './components/Main'
 import Read from './pages/Read'
@@ -46,7 +50,11 @@ library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight,
     faCheck,
     faPlus,
     faQuestion,
-    faHome)
+    faHome,
+    faSyncAlt,
+    faEllipsisH,
+    faBan,
+    faInfo)
 
 export default class App extends Component {
     static displayName = App.name;
@@ -55,7 +63,7 @@ export default class App extends Component {
         return (
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                <GlobalStyles styles={{ h2: { marginTop: '0' } }} />
+                {/*<GlobalStyles styles={{ h2: { fontsize: '1rem' } }} />*/}
                 <Titlebar />
                 <Navigation />
                 <Content />
