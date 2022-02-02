@@ -89,6 +89,11 @@ export default function Navigation() {
             path: '/write'
         },
         {
+            text: 'Info',
+            icon: 'info',
+            path: '/info'
+        },
+        {
             text: 'Convert',
             icon: 'exchange-alt',
             path: '/convert'

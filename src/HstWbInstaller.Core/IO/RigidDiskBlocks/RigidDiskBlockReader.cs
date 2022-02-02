@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
+    using Extensions;
 
     public class RigidDiskBlockReader
     {
@@ -257,6 +259,19 @@
 
             var fileSystemBlockSize = sizeBlock * 4 * sectors;
 
+            var partitionFlags = (PartitionBlock.PartitionFlagsEnum)flags;
+
+            var bootable = partitionFlags.HasFlag(PartitionBlock.PartitionFlagsEnum.Bootable);
+            var noMount = partitionFlags.HasFlag(PartitionBlock.PartitionFlagsEnum.NoMount);
+
+            var dosIdentifier = new byte[3];
+            Array.Copy(dosType, 0, dosIdentifier, 0, 3);
+            var dosTypeFormatted = $"{Encoding.GetEncoding("ISO-8859-1").GetString(dosIdentifier)}\\{dosType[3]}";
+            var dosTypeHex = $"0x{dosType.FormatHex()}";
+            
+            var maskHex = $"0x{mask.FormatHex()}";
+            var maxTransferHex = $"0x{maxTransfer.FormatHex()}";
+            
             return new PartitionBlock
             {
                 Size = size,
@@ -280,14 +295,20 @@
                 NumBuffer = numBuffer,
                 BufMemType = bufMemType,
                 MaxTransfer = maxTransfer,
+                MaxTransferHex = maxTransferHex,
                 Mask = mask,
+                MaskHex = maskHex,
                 BootPriority = bootPriority,
                 DosType = dosType,
+                DosTypeFormatted = dosTypeFormatted,
+                DosTypeHex = dosTypeHex,
                 Baud = baud,
                 Control = control,
                 BootBlocks = bootBlocks,
                 PartitionSize = partitionSize,
-                FileSystemBlockSize = fileSystemBlockSize
+                FileSystemBlockSize = fileSystemBlockSize,
+                Bootable = bootable,
+                NoMount = noMount
             };
         }
     }

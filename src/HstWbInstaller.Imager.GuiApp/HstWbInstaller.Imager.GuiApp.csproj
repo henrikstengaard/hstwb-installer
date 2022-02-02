@@ -49,4 +49,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HstWbInstaller.Imager.Core\HstWbInstaller.Imager.Core.csproj" />
+  </ItemGroup>
 </Project>

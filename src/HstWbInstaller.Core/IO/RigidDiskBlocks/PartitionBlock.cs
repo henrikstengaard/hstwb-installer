@@ -34,13 +34,19 @@
         public uint NumBuffer { get; set; }
         public uint BufMemType { get; set; }
         public uint MaxTransfer { get; set; }
+        public string MaxTransferHex { get; set; }
         public uint Mask { get; set; }
+        public string MaskHex { get; set; }
         public uint BootPriority { get; set; }
         public byte[] DosType { get; set; }
+        public string DosTypeFormatted { get; set; }
+        public string DosTypeHex { get; set; }
         public uint Baud { get; set; }
         public uint Control { get; set; }
         public uint BootBlocks { get; set; }
         public long PartitionSize { get; set; }
         public uint FileSystemBlockSize { get; set; }
+        public bool Bootable { get; set; }
+        public bool NoMount { get; set; }
     }
 }
