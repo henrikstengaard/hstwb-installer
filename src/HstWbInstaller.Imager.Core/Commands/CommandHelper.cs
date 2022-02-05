@@ -150,8 +150,7 @@
             RigidDiskBlock rigidDiskBlock = null;
             try
             {
-                var rigidDiskBlockReader = new RigidDiskBlockReader(new MemoryStream(buffer));
-                rigidDiskBlock = await rigidDiskBlockReader.Read(false);
+                rigidDiskBlock = await RigidDiskBlockReader.Read(new MemoryStream(buffer));
                 stream.Seek(0, SeekOrigin.Begin);
             }
             catch (Exception e)

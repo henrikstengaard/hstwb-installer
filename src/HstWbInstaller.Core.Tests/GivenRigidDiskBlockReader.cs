@@ -14,11 +14,8 @@
             // arrange hard file
             var hardFile = new MemoryStream(await File.ReadAllBytesAsync(@"TestData\test.hdf"));
 
-            // arrange rigid disk block reader
-            var rigidRigidBlockReader = new RigidDiskBlockReader(hardFile);
-
             // act read rigid disk block from hard file
-            var rigidDiskBlock = await rigidRigidBlockReader.Read();
+            var rigidDiskBlock = await RigidDiskBlockReader.Read(hardFile);
 
             // assert rigid disk block
             Assert.NotNull(rigidDiskBlock);
@@ -30,11 +27,11 @@
             Assert.NotEmpty(rigidDiskBlock.PartitionBlocks);
             var partitionBlocks = rigidDiskBlock.PartitionBlocks.ToList();
             Assert.Equal(2, partitionBlocks.Count);
-            
+
             // assert partition 1
             var partition1 = partitionBlocks[0];
             Assert.Equal("DH0", partition1.DriveName);
-            
+
             // assert partition 2
             var partition2 = partitionBlocks[1];
             Assert.Equal("DH1", partition2.DriveName);
