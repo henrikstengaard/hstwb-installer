@@ -24,6 +24,10 @@
     {
         static async Task<int> Main(string[] args)
         {
+            var mbrTest = new MbrTest();
+            mbrTest.Create();
+            mbrTest.Read();
+            
             var listOption = new Option<bool>(
                 new[] { "--list", "-l" },
                 "List physical drives.");
