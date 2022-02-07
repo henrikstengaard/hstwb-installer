@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Threading.Tasks;
+    using Extensions;
 
     public static class FileSystemHeaderBlockWriter
     {

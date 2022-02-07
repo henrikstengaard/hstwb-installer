@@ -12,7 +12,7 @@
         public async Task WhenAmigaHardFileThenRigidDiskBlockIsValid()
         {
             // arrange hard file
-            var hardFile = new MemoryStream(await File.ReadAllBytesAsync(@"TestData\test.hdf"));
+            var hardFile = new MemoryStream(await File.ReadAllBytesAsync(Path.Combine("TestData", "rigid-disk-block.img")));
 
             // act read rigid disk block from hard file
             var rigidDiskBlock = await RigidDiskBlockReader.Read(hardFile);

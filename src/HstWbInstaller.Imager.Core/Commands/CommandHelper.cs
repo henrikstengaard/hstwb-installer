@@ -136,26 +136,32 @@
         
         public virtual async Task<RigidDiskBlock> GetRigidDiskBlock(Stream stream)
         {
-            var buffer = new byte[16 * 512];
             try
             {
                 stream.Seek(0, SeekOrigin.Begin);
-                await stream.ReadAsync(buffer, 0, buffer.Length);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new Exception($"Failed to read first {buffer.Length} bytes from stream: {e}");
+                return null;
             }
 
-            RigidDiskBlock rigidDiskBlock = null;
+            RigidDiskBlock rigidDiskBlock;
             try
             {
-                rigidDiskBlock = await RigidDiskBlockReader.Read(new MemoryStream(buffer));
+                rigidDiskBlock = await RigidDiskBlockReader.Read(stream);
+            }
+            catch (Exception)
+            {
+                rigidDiskBlock = null;
+            }
+            
+            try
+            {
                 stream.Seek(0, SeekOrigin.Begin);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new Exception($"Failed to rigid disk block from stream: {e}");
+                return null;
             }
             
             return rigidDiskBlock;
