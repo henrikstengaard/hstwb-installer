@@ -21,5 +21,23 @@
                 .Select(x => x.Select(v => v.Value).ToList())
                 .ToList();
         }
+        
+        public static int Search(this byte[] data, byte[] pattern)
+        {
+            var maxFirstCharSlot = data.Length - pattern.Length + 1;
+            for (var i = 0; i < maxFirstCharSlot; i++)
+            {
+                if (data[i] != pattern[0]) // compare only first byte
+                    continue;
+        
+                // found a match on first byte, now try to match rest of the pattern
+                for (var j = pattern.Length - 1; j >= 1; j--) 
+                {
+                    if (data[i + j] != pattern[j]) break;
+                    if (j == 1) return i;
+                }
+            }
+            return -1;
+        }
     }
 }

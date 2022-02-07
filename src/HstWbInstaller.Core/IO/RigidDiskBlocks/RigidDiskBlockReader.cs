@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Threading.Tasks;
+    using Extensions;
 
     // http://lclevy.free.fr/adflib/adf_info.html#p65
     // http://amigadev.elowar.com/read/ADCD_2.1/Devices_Manual_guide/node0079.html
