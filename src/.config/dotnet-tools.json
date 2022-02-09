@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "paket": {
+      "version": "5.257.0",
+      "commands": [
+        "paket"
+      ]
+    },
+    "electronnet.cli": {
+      "version": "13.5.1",
+      "commands": [
+        "electronize"
+      ]
+    }
+  }
+}
