@@ -66,7 +66,7 @@
 
             return new LoadSegBlock
             {
-                Size = size,
+                BlockBytes = blockBytes,
                 Checksum = checksum,
                 HostId = hostId,
                 NextLoadSegBlock = nextLoadSegBlock,

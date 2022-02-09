@@ -11,6 +11,7 @@
     {
         public static async Task<RigidDiskBlock> Read(Stream stream)
         {
+            var diskSize = stream.Length;
             var rdbIndex = 0;
             var blockSize = 512;
             var rdbLocationLimit = 16;
@@ -40,15 +41,16 @@
                 return null;
             }
 
+            rigidDiskBlock.DiskSize = diskSize;
             rigidDiskBlock.PartitionBlocks = await PartitionBlockReader.Read(rigidDiskBlock, stream);
             rigidDiskBlock.BadBlocks = await BadBlockReader.Read(rigidDiskBlock, stream);
 
             return rigidDiskBlock;
         }
 
-        public static async Task<RigidDiskBlock> Parse(byte[] bytes)
+        public static async Task<RigidDiskBlock> Parse(byte[] blockBytes)
         {
-            var blockStream = new MemoryStream(bytes);
+            var blockStream = new MemoryStream(blockBytes);
 
             var magic = await blockStream.ReadAsciiString(); // Identifier 32 bit word : 'RDSK'
             if (!magic.Equals(BlockIdentifiers.RigidDiskBlock))
@@ -56,7 +58,7 @@
                 return null;
             }
 
-            var size = await blockStream.ReadUInt32(); // Size of the structure for checksums
+            await blockStream.ReadUInt32(); // Size of the structure for checksums
             var checksum = await blockStream.ReadInt32(); // Checksum of the structure
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host, not really used
             var blockSize = await blockStream.ReadUInt32(); // Size of disk blocks
@@ -67,11 +69,8 @@
             var driveInitCode = await blockStream.ReadUInt32(); // Drive specific init code
             var bootBlockList = await blockStream.ReadUInt32(); // Amiga OS 4 Boot Blocks
 
-            // read reserved, unused word, need to be set to $ffffffff
-            for (var i = 0; i < 5; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
+            // skip reserved
+            blockStream.Seek(4 * 5, SeekOrigin.Current);
 
             // physical drive characteristics
             var cylinders = await blockStream.ReadUInt32(); // Number of the cylinders of the drive
@@ -80,22 +79,16 @@
             var interleave = await blockStream.ReadUInt32(); // Interleave 
             var parkingZone = await blockStream.ReadUInt32(); // Head parking cylinder
 
-            // read reserved, unused word, need to be set to $ffffffff
-            for (var i = 0; i < 3; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
+            // skip reserved
+            blockStream.Seek(4 * 3, SeekOrigin.Current);
 
             var writePreComp = await blockStream.ReadUInt32(); // Starting cylinder of write pre-compensation 
             var reducedWrite = await blockStream.ReadUInt32(); // Starting cylinder of reduced write current
             var stepRate = await blockStream.ReadUInt32(); // Step rate of the drive
 
-            // read reserved, unused word, need to be set to $ffffffff
-            for (var i = 0; i < 5; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
-
+            // skip reserved
+            blockStream.Seek(4 * 5, SeekOrigin.Current);
+            
             // logical drive characteristics
             var rdbBlockLo = await blockStream.ReadUInt32(); // low block of range reserved for hardblocks
             var rdbBlockHi = await blockStream.ReadUInt32(); // high block of range for these hardblocks
@@ -106,22 +99,24 @@
             var highRsdkBlock =
                 await blockStream.ReadUInt32(); // highest block used by RDSK (not including replacement bad blocks)
 
-            await blockStream.ReadBytes(4); // read reserved, unused word
+            // skip reserved
+            blockStream.Seek(4, SeekOrigin.Current);
 
             // drive identification
-            var diskVendor = await blockStream.ReadString(8);
-            var diskProduct = await blockStream.ReadString(16);
-            var diskRevision = await blockStream.ReadString(4);
-            var controllerVendor = await blockStream.ReadString(8);
-            var controllerProduct = await blockStream.ReadString(16);
-            var controllerRevision = await blockStream.ReadString(4);
+            var diskVendor = (await blockStream.ReadBytes(8)).ReadNullTerminatedString().Trim();
+            var diskProduct = (await blockStream.ReadBytes(16)).ReadNullTerminatedString().Trim();
+            var diskRevision = (await blockStream.ReadBytes(4)).ReadNullTerminatedString().Trim();
+            var controllerVendor = (await blockStream.ReadBytes(8)).ReadNullTerminatedString().Trim();
+            var controllerProduct = (await blockStream.ReadBytes(16)).ReadNullTerminatedString().Trim();
+            var controllerRevision = (await blockStream.ReadBytes(4)).ReadNullTerminatedString().Trim();
 
-            await blockStream.ReadBytes(4); // read reserved, unused word
+            // skip reserved
+            blockStream.Seek(4, SeekOrigin.Current);
 
             // calculate size of disk in bytes
             var diskSize = (long)cylinders * heads * sectors * blockSize;
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(bytes, 8);
+            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {
@@ -130,7 +125,7 @@
 
             return new RigidDiskBlock
             {
-                Size = size,
+                BlockBytes = blockBytes,
                 Checksum = checksum,
                 HostId = hostId,
                 BlockSize = blockSize,

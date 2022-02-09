@@ -56,7 +56,7 @@
                 throw new IOException("Invalid bad block identifier");
             }
             
-            var size = await blockStream.ReadUInt32(); // Size of the structure for checksums
+            await blockStream.ReadUInt32(); // Size of the structure for checksums
             var checksum = await blockStream.ReadInt32(); // Checksum of the structure
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host, not really used
             var nextBadBlock = await blockStream.ReadUInt32(); // next BadBlock block
@@ -72,7 +72,7 @@
 
             return new BadBlock
             {
-                Size = size,
+                BlockBytes = blockBytes,
                 Checksum = checksum,
                 HostId = hostId,
                 NextBadBlock = nextBadBlock,

@@ -19,9 +19,9 @@
 
             // assert rigid disk block
             Assert.NotNull(rigidDiskBlock);
-            Assert.Equal("UAE     ", rigidDiskBlock.DiskVendor);
-            Assert.Equal("HstWB 4GB       ", rigidDiskBlock.DiskProduct);
-            Assert.Equal("0.4 ", rigidDiskBlock.DiskRevision);
+            Assert.Equal("UAE", rigidDiskBlock.DiskVendor);
+            Assert.Equal("HstWB 4GB", rigidDiskBlock.DiskProduct);
+            Assert.Equal("0.4", rigidDiskBlock.DiskRevision);
 
             // assert number of partitions
             Assert.NotEmpty(rigidDiskBlock.PartitionBlocks);

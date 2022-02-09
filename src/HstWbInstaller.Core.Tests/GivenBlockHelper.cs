@@ -15,14 +15,12 @@
         {
             var pfs3AioBytes = await File.ReadAllBytesAsync(@"TestData\pfs3aio");
             
-            var pfs3AioStream = new MemoryStream(pfs3AioBytes);
-
             var fileSystemHeaderBlock =
-                await BlockHelper.CreateFileSystemHeaderBlock(FormatHelper.FormatDosType("PDS", 3), 19, 2,
-                    pfs3AioStream);
+                BlockHelper.CreateFileSystemHeaderBlock(FormatHelper.FormatDosType("PDS", 3), 19, 2,
+                    pfs3AioBytes);
 
             Assert.Equal(1245186U, fileSystemHeaderBlock.Version);
-            var loadSegBlockCount = Math.Ceiling((double)pfs3AioStream.Length / (512 - 5 * 4));
+            var loadSegBlockCount = Math.Ceiling((double)pfs3AioBytes.Length / (512 - 5 * 4));
             Assert.Equal(loadSegBlockCount, fileSystemHeaderBlock.LoadSegBlocks.Count());
 
             var actualPfs3AioBytes = new List<byte>();

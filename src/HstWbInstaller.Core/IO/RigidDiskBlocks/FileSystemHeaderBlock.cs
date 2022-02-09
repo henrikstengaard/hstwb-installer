@@ -1,18 +1,22 @@
 ﻿namespace HstWbInstaller.Core.IO.RigidDiskBlocks
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using Extensions;
 
-    public class FileSystemHeaderBlock
+    public class FileSystemHeaderBlock : BlockBase
     {
-        public uint Size { get; set; }
-        public int Checksum { get; set; }
         public uint HostId { get; set; }
         public uint NextFileSysHeaderBlock { get; set; }
         public uint Flags { get; set; }
+        
         public byte[] DosType { get; set; }
+        public string DosTypeFormatted => DosType.FormatDosType();
+        public string DosTypeHex => $"0x{DosType.FormatHex()}";
+
         public uint Version { get; set; }
-        public uint MajorVersion { get; set; }
-        public uint MinorVersion { get; set; }
+        public uint MajorVersion => Version >> 16;
+        public uint MinorVersion => Version & 0xFFFF;
         
         /// <summary>
         /// bits set for those of the following that need to be
@@ -29,8 +33,6 @@
         public int Startup { get; set; }
         public int SegListBlocks { get; set; }
         public int GlobalVec { get; set; }
-        public string DosTypeFormatted { get; set; }
-        public string DosTypeHex { get; set; }
         
         public IEnumerable<LoadSegBlock> LoadSegBlocks { get; set; }
 
@@ -41,6 +43,8 @@
             Flags = 0;
             PatchFlags = 384;
             GlobalVec = -1;
+            
+            LoadSegBlocks = Enumerable.Empty<LoadSegBlock>();
         }
     }
 }

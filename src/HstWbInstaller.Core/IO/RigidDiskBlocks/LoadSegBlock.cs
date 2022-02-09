@@ -2,10 +2,8 @@
 {
     using System;
 
-    public class LoadSegBlock
+    public class LoadSegBlock : BlockBase
     {
-        public uint Size { get; set; }
-        public int Checksum { get; set; }
         public uint HostId { get; set; }
         public int NextLoadSegBlock { get; set; }
         public byte[] Data { get; set; }

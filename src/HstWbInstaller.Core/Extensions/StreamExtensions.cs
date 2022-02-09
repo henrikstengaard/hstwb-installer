@@ -110,11 +110,10 @@
         public static async Task<long> Find(this Stream stream, byte[] pattern)
         {
             var chunkSize = 32768;
-            long position;
             byte[] chunk;
             do
             {
-                position = stream.Position;
+                var position = stream.Position;
                 chunk = await stream.ReadBytes(chunkSize);
 
                 if (chunk.Length == 0)

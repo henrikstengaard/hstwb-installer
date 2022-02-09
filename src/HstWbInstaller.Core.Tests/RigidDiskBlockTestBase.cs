@@ -13,6 +13,8 @@
             
             var blocksPerCylinder = rigidDiskBlock.Heads * rigidDiskBlock.Sectors;
             var cylinders = (uint)Math.Floor((double)size / (blocksPerCylinder * rigidDiskBlock.BlockSize));
+
+            rigidDiskBlock.DiskSize = size;
             rigidDiskBlock.Cylinders = cylinders;
             rigidDiskBlock.ParkingZone = cylinders;
             rigidDiskBlock.ReducedWrite = cylinders;
@@ -40,11 +42,8 @@
 
         protected async Task<FileSystemHeaderBlock> CreateFileSystemHeaderBlock()
         {
-            await using var pfs3AioStream = new MemoryStream(await File.ReadAllBytesAsync(@"TestData\pfs3aio"));
-
-            return
-                await BlockHelper.CreateFileSystemHeaderBlock(FormatHelper.FormatDosType("PDS", 3), 19, 2,
-                    pfs3AioStream);
+            return BlockHelper.CreateFileSystemHeaderBlock(FormatHelper.FormatDosType("PDS", 3), 19, 2,
+                    await File.ReadAllBytesAsync(@"TestData\pfs3aio"));
         }
     }
 }

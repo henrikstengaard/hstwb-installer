@@ -6,7 +6,11 @@
 
     public static class FormatHelper
     {
-        
+        public static byte[] FormatDosType(string dosType)
+        {
+            return FormatDosType(dosType.Substring(0, 3), Convert.ToByte(dosType[3]));
+        }
+
         public static byte[] FormatDosType(string identifier, byte version)
         {
             if (identifier.Length != 3)

@@ -8,23 +8,26 @@
     {
         public static async Task<byte[]> BuildBlock(FileSystemHeaderBlock fileSystemHeaderBlock)
         {
-            var blockStream = new MemoryStream(BlockSize.FileSystemHeaderBlock * 4);
+            var blockStream =
+                new MemoryStream(
+                    fileSystemHeaderBlock.BlockBytes == null || fileSystemHeaderBlock.BlockBytes.Length == 0
+                        ? new byte[BlockSize.FileSystemHeaderBlock * 4]
+                        : fileSystemHeaderBlock.BlockBytes);
 
             await blockStream.WriteAsciiString(BlockIdentifiers.FileSystemHeaderBlock);
             await blockStream.WriteLittleEndianUInt32(BlockSize.FileSystemHeaderBlock); // size
-            await blockStream.WriteLittleEndianInt32(0); // checksum, calculated when block is built
+
+            // skip checksum, calculated when block is built
+            blockStream.Seek(4, SeekOrigin.Current);
+
             await blockStream.WriteLittleEndianUInt32(fileSystemHeaderBlock
                 .HostId); // SCSI Target ID of host, not really used 
             await blockStream.WriteLittleEndianUInt32(fileSystemHeaderBlock
                 .NextFileSysHeaderBlock); // Block number of the next FileSysHeaderBlock
             await blockStream.WriteLittleEndianUInt32(fileSystemHeaderBlock.Flags); // Flags
-// 11 diff
-            // read reserved, unused word
-            var reservedBytes = new byte[4];
-            for (var i = 0; i < 2; i++)
-            {
-                await blockStream.WriteBytes(reservedBytes);
-            }
+
+            // skip reserved
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
 
             await blockStream
                 .WriteBytes(fileSystemHeaderBlock
@@ -43,30 +46,15 @@
                 .SegListBlocks); // first of linked list of LoadSegBlocks
             await blockStream.WriteLittleEndianInt32(fileSystemHeaderBlock.GlobalVec);
 
-            // read reserved, unused word
-            for (var i = 0; i < 23 + 21; i++)
-            {
-                await blockStream.WriteBytes(reservedBytes);
-            }
+            // skip reserved
+            blockStream.Seek((23 + 21) * 4, SeekOrigin.Current);
 
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            await BlockHelper.UpdateChecksum(blockBytes, 8);
+            fileSystemHeaderBlock.Checksum = await BlockHelper.UpdateChecksum(blockBytes, 8);
+            fileSystemHeaderBlock.BlockBytes = blockBytes;
 
             return blockBytes;
         }
-
-        // public static async Task<byte[]> WriteBlock(RigidDiskBlock rigidDiskBlock,
-        //     FileSystemHeaderBlock fileSystemHeaderBlock, Stream stream, long offset)
-        // {
-        //     // calculate file system header block offset
-        //     var blockOffset = rigidDiskBlock.BlockSize * fileSysHdrList;
-        //
-        //     // seek partition block offset
-        //     stream.Seek(fileSystemHeaderBlockOffset, SeekOrigin.Begin);
-        //
-        //
-        //     fileSystemHeaderBlock.
-        // }
     }
 }

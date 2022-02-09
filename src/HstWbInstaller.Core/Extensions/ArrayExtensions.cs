@@ -22,7 +22,7 @@
                 .ToList();
         }
         
-        public static int Search(this byte[] data, byte[] pattern)
+        public static int IndexOf(this byte[] data, byte[] pattern)
         {
             var maxFirstCharSlot = data.Length - pattern.Length + 1;
             for (var i = 0; i < maxFirstCharSlot; i++)

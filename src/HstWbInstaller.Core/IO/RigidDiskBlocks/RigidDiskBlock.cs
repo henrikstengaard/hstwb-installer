@@ -2,12 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Threading.Tasks;
     using Extensions;
 
-    public class RigidDiskBlock
+    public class RigidDiskBlock : BlockBase
     {
         // [Flags]
         // public enum RigidDiskBlockFlagsEnum
@@ -17,13 +15,6 @@
         //     Raid = 4,
         //     Lvm = 8
         // }
-        
-        public uint Size { get; set; }
-        
-        /// <summary>
-        /// checksum
-        /// </summary>
-        public int Checksum { get; set; }
         
         /// <summary>
         /// SCSI Target ID of host (== 7 for IDE and ZIP disks)
@@ -164,7 +155,7 @@
             ControllerVendor = string.Empty;
             CylBlocks = 1008;
             DiskProduct = "HstWB Imager";
-            DiskRevision = "0.4";
+            DiskRevision = "0.1";
             DiskVendor = "HstWB";
             DriveInitCode = BlockIdentifiers.EndOfBlock;
             FileSysHdrList = BlockIdentifiers.EndOfBlock;
@@ -182,10 +173,37 @@
             Cylinders = 0; // set to size of disk
             LoCylinder = 0; // first usable cylinder
             HiCylinder = 0; // last usable cylinder
-            HighRsdkBlock = 179; //
+            HighRsdkBlock = 0;
             ParkingZone = Cylinders; // set to last cylinder
             ReducedWrite = Cylinders; // set to last cylinder
             WritePreComp = Cylinders; // set to last cylinder
+
+            PartitionBlocks = Enumerable.Empty<PartitionBlock>();
+            FileSystemHeaderBlocks = Enumerable.Empty<FileSystemHeaderBlock>();
+            BadBlocks = Enumerable.Empty<BadBlock>();
+        }
+
+        public static RigidDiskBlock Create(long size)
+        {
+            size = size.ToSectorSize();
+            var rigidDiskBlock = new RigidDiskBlock();
+
+            var blocksPerCylinder = rigidDiskBlock.Heads * rigidDiskBlock.Sectors;
+            var cylinderSize = blocksPerCylinder * rigidDiskBlock.BlockSize;
+            var cylinders = (uint)Math.Floor((double)size / cylinderSize);
+
+            rigidDiskBlock.DiskSize = (long)cylinders * cylinderSize;
+            rigidDiskBlock.Cylinders = cylinders;
+            rigidDiskBlock.ParkingZone = cylinders;
+            rigidDiskBlock.ReducedWrite = cylinders;
+            rigidDiskBlock.WritePreComp = cylinders;
+
+            var rdbEndOffset = rigidDiskBlock.RdbBlockHi * 512;
+
+            rigidDiskBlock.LoCylinder = (uint)Math.Ceiling((double)rdbEndOffset / cylinderSize);
+            rigidDiskBlock.HiCylinder = rigidDiskBlock.Cylinders - 1;
+
+            return rigidDiskBlock;
         }
     }
 }
