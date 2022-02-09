@@ -18,6 +18,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Git version tag
+        id: version
+        run: |
+          echo "::set-output name=version::`echo 0.1.$(git rev-list --count head)`"
+
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
         with:
@@ -28,5 +33,5 @@ jobs:
         run: dotnet tool restore
 
       - name: Electronize build
-        working-directory: ./src
+        working-directory: ./src/HstWbInstaller.Imager.GuiApp
         run: dotnet electronize build /target win
