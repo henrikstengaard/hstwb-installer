@@ -17,6 +17,13 @@
         private static readonly Regex
             DateRegex = new("\\((\\d+)\\.(\\d+)\\.(\\d+)\\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        public static string Read(byte[] data)
+        {
+            var versionIndex = data.IndexOf(Encoding.ASCII.GetBytes("$VER"));
+
+            return versionIndex == -1 ? null : data.ReadNullTerminatedString(versionIndex);
+        }
+
         public static async Task<string> Read(Stream stream)
         {
             var versionIndex = await stream.Find(Encoding.ASCII.GetBytes("$VER"));
@@ -33,7 +40,7 @@
 
             return await stream.ReadNullTerminatedString();
         }
-
+        
         public static FileVersion Parse(string version)
         {
             var versionMatch = VersionRegex.Match(version);

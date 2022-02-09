@@ -66,17 +66,14 @@
                 return null;
             }
 
-            var size = await blockStream.ReadUInt32(); // Size of the structure for checksums
+            await blockStream.ReadUInt32(); // Size of the structure for checksums
             var checksum = await blockStream.ReadInt32(); // Checksum of the structure
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host, not really used 
             var nextPartitionBlock = await blockStream.ReadUInt32(); // Block number of the next PartitionBlock
             var flags = await blockStream.ReadUInt32(); // Part Flags (NOMOUNT and BOOTABLE)
 
-            // read reserved, unused word
-            for (var i = 0; i < 2; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
+            // skip reserved
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
 
             var devFlags = await blockStream.ReadUInt32(); // Preferred flags for OpenDevice
             var driveNameLength =
@@ -88,11 +85,8 @@
                 await blockStream.ReadBytes(31 - driveNameLength);
             }
 
-            // read reserved, unused word
-            for (var i = 0; i < 15; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
+            // skip reserved
+            blockStream.Seek(4 * 15, SeekOrigin.Current);
 
             var sizeOfVector = await blockStream.ReadUInt32(); // Size of Environment vector
             var sizeBlock = await blockStream.ReadUInt32(); // Size of the blocks in 32 bit words, usually 128
@@ -115,12 +109,9 @@
             var control = await blockStream.ReadUInt32(); // Control word for handler/filesystem 
             var bootBlocks = await blockStream.ReadUInt32(); // Number of blocks containing boot code 
 
-            // read reserved, unused word
-            for (var i = 0; i < 12; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
-
+            // skip reserved
+            blockStream.Seek(4 * 12, SeekOrigin.Current);
+            
             // calculate size of partition in bytes
             var partitionSize = (long)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
 
@@ -133,20 +124,9 @@
 
             var fileSystemBlockSize = sizeBlock * 4 * sectors;
 
-            var partitionFlags = (PartitionBlock.PartitionFlagsEnum)flags;
-
-            var bootable = partitionFlags.HasFlag(PartitionBlock.PartitionFlagsEnum.Bootable);
-            var noMount = partitionFlags.HasFlag(PartitionBlock.PartitionFlagsEnum.NoMount);
-
-            var dosTypeFormatted = dosType.FormatDosType();
-            var dosTypeHex = $"0x{dosType.FormatHex()}";
-
-            var maskHex = $"0x{mask.FormatHex()}";
-            var maxTransferHex = $"0x{maxTransfer.FormatHex()}";
-
             return new PartitionBlock
             {
-                Size = size,
+                BlockBytes = blockBytes,
                 Checksum = checksum,
                 HostId = hostId,
                 NextPartitionBlock = nextPartitionBlock,
@@ -167,20 +147,14 @@
                 NumBuffer = numBuffer,
                 BufMemType = bufMemType,
                 MaxTransfer = maxTransfer,
-                MaxTransferHex = maxTransferHex,
                 Mask = mask,
-                MaskHex = maskHex,
                 BootPriority = bootPriority,
                 DosType = dosType,
-                DosTypeFormatted = dosTypeFormatted,
-                DosTypeHex = dosTypeHex,
                 Baud = baud,
                 Control = control,
                 BootBlocks = bootBlocks,
                 PartitionSize = partitionSize,
                 FileSystemBlockSize = fileSystemBlockSize,
-                Bootable = bootable,
-                NoMount = noMount
             };
         }
     }

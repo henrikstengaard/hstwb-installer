@@ -14,19 +14,25 @@
                 throw new ArgumentException("Load seg block data must be dividable by 4", nameof(LoadSegBlock.Data));
             }
 
-            var maxSize = 512 - (5 * 4);
-            if (loadSegBlock.Data.Length > maxSize)
+            var structureSize = 5 * 4;
+            var maxDataSize = 512 - structureSize;
+            if (loadSegBlock.Data.Length > maxDataSize)
             {
-                throw new ArgumentException($"Load seg block data is larger than max size {maxSize}",
+                throw new ArgumentException($"Load seg block data is larger than max data size {maxDataSize}",
                     nameof(LoadSegBlock.Data));
             }
 
-            var size = loadSegBlock.Data.Length / 4 + 5;
-            var blockStream = new MemoryStream(size);
+            var blockStream = new MemoryStream(loadSegBlock.BlockBytes == null || loadSegBlock.BlockBytes.Length == 0
+                ? new byte[structureSize + loadSegBlock.Data.Length]
+                : loadSegBlock.BlockBytes);
+            var size = (structureSize + loadSegBlock.Data.Length) / 4;
 
             await blockStream.WriteAsciiString(BlockIdentifiers.LoadSegBlock);
             await blockStream.WriteLittleEndianUInt32((uint)size); // size
-            await blockStream.WriteLittleEndianInt32(0); // checksum, calculated when block is built
+
+            // skip checksum, calculated when block is built
+            blockStream.Seek(4, SeekOrigin.Current);
+
             await blockStream.WriteLittleEndianUInt32(loadSegBlock.HostId); // SCSI Target ID of host, not really used 
             await blockStream.WriteLittleEndianInt32(loadSegBlock
                 .NextLoadSegBlock); // Block number of the next PartitionBlock
@@ -35,7 +41,8 @@
 
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            await BlockHelper.UpdateChecksum(blockBytes, 8);
+            loadSegBlock.Checksum = await BlockHelper.UpdateChecksum(blockBytes, 8);
+            loadSegBlock.BlockBytes = blockBytes;
 
             return blockBytes;
         }

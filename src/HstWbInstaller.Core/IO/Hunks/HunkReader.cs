@@ -105,12 +105,14 @@
 
             do
             {
+                // // the number of offsets for a given hunk. If this value is zero, then it indicates the immediate end of this block.
                 var numOffsets = await stream.ReadUInt32();
                 if (numOffsets == 0)
                 {
                     break;
                 }
 
+                // // The number of the hunk the offsets are to point into.
                 var hunkNumber = await stream.ReadUInt32();
                 hunkOffsets.Add(hunkNumber);
 
@@ -125,30 +127,6 @@
             {
                 Offsets = hunkOffsets
             };
-
-            // // the number of offsets for a given hunk. If this value is zero, then it indicates the immediate end of this block.
-            // var offsetCount = await stream.ReadUInt32();
-            //
-            // if (offsetCount == 0)
-            // {
-            //     return new ReLoc32();
-            // }
-            //
-            // // The number of the hunk the offsets are to point into.
-            // var hunkCount = await stream.ReadUInt32();
-            //
-            // var offsets = new List<uint>();
-            // for (var i = 0; i < offsetCount; i++)
-            // {
-            //     // Offset in the current CODE or DATA hunk to relocate.
-            //     var offset = await stream.ReadUInt32();
-            //     offsets.Add(offset);
-            // }
-            //
-            // return new ReLoc32
-            // {
-            //     Offsets = offsets
-            // };
         }
 
         public static async Task<string> ReadString(Stream stream)

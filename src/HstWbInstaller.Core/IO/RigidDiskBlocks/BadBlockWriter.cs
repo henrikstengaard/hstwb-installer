@@ -14,31 +14,38 @@
                 throw new ArgumentException("Bad block data must be dividable by 4", nameof(BadBlock.Data));
             }
 
-            var maxSize = 512 - (6 * 4);
-            if (badBlock.Data.Length > maxSize)
+            var structureSize = 6 * 4;
+            var maxDataSize = 512 - structureSize;
+            if (badBlock.Data.Length > maxDataSize)
             {
-                throw new ArgumentException($"Bad block data is larger than max size {maxSize}",
+                throw new ArgumentException($"Bad block data is larger than max data size {maxDataSize}",
                     nameof(LoadSegBlock.Data));
             }
 
-            var size = badBlock.Data.Length / 4 + 6;
-            var blockStream = new MemoryStream(size);
+            var blockStream = new MemoryStream(badBlock.BlockBytes == null || badBlock.BlockBytes.Length == 0
+                ? new byte[structureSize + badBlock.Data.Length]
+                : badBlock.BlockBytes);
+            var size = (structureSize + badBlock.Data.Length) / 4;
 
             await blockStream.WriteAsciiString(BlockIdentifiers.BadBlock);
             await blockStream.WriteLittleEndianUInt32((uint)size); // size
-            await blockStream.WriteLittleEndianInt32(0); // checksum, calculated when block is built
+
+            // skip checksum, calculated when block is built
+            blockStream.Seek(4, SeekOrigin.Current);
+
             await blockStream.WriteLittleEndianUInt32(badBlock.HostId); // SCSI Target ID of host, not really used 
             await blockStream.WriteLittleEndianUInt32(badBlock.NextBadBlock); // next BadBlock block
-            
-            // reserved
-            await blockStream.WriteBytes(new byte[4]);
+
+            // skip reserved
+            blockStream.Seek(4, SeekOrigin.Current);
 
             // bad block data
             await blockStream.WriteBytes(badBlock.Data);
 
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            await BlockHelper.UpdateChecksum(blockBytes, 8);
+            badBlock.Checksum = await BlockHelper.UpdateChecksum(blockBytes, 8);
+            badBlock.BlockBytes = blockBytes;
 
             return blockBytes;
         }

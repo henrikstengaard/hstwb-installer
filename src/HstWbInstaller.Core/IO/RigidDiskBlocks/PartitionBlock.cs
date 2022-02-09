@@ -1,8 +1,10 @@
 ﻿namespace HstWbInstaller.Core.IO.RigidDiskBlocks
 {
     using System;
+    using System.Linq;
+    using Extensions;
 
-    public class PartitionBlock
+    public class PartitionBlock : BlockBase
     {
         [Flags]
         public enum PartitionFlagsEnum
@@ -13,8 +15,6 @@
             Lvm = 8
         }
         
-        public uint Size { get; set; }
-        public int Checksum { get; set; }
         public uint HostId { get; set; }
         public uint NextPartitionBlock { get; set; }
         public uint Flags { get; set; }
@@ -65,25 +65,26 @@
         public uint NumBuffer { get; set; }
         public uint BufMemType { get; set; }
         public uint MaxTransfer { get; set; }
-        public string MaxTransferHex { get; set; }
-        
+        public string MaxTransferHex => $"0x{MaxTransfer.FormatHex()}";
+
         /// <summary>
         /// Address mask to block out certain memory often 0xffff fffe
         /// </summary>
         public uint Mask { get; set; }
-        public string MaskHex { get; set; }
+        public string MaskHex => $"0x{Mask.FormatHex()}";
         
         /// <summary>
         /// boot priority for autoboot
         /// </summary>
         public uint BootPriority { get; set; }
-        
+
         /// <summary>
         /// dostype for filesystem (DOS3, PDS3)
         /// </summary>
         public byte[] DosType { get; set; }
-        public string DosTypeFormatted { get; set; }
-        public string DosTypeHex { get; set; }
+
+        public string DosTypeFormatted => DosType.FormatDosType();
+        public string DosTypeHex => $"0x{DosType.FormatHex()}";
         
         public uint Baud { get; set; }
         public uint Control { get; set; }
@@ -91,8 +92,8 @@
         
         public long PartitionSize { get; set; }
         public uint FileSystemBlockSize { get; set; }
-        public bool Bootable { get; set; }
-        public bool NoMount { get; set; }
+        public bool Bootable => ((PartitionFlagsEnum)Flags).HasFlag(PartitionFlagsEnum.Bootable);
+        public bool NoMount => ((PartitionFlagsEnum)Flags).HasFlag(PartitionFlagsEnum.NoMount);
 
         public PartitionBlock()
         {
@@ -103,11 +104,10 @@
             BufMemType = 0;
             Control = 0;
             DevFlags = 0;
-            //Flags 1
-            //HighCyl: 610
             HostId = 7;
+            HighCyl = 0; // calculated when added to rigid disk block
             Interleave = 0;
-            //LowCyl: 2
+            LowCyl = 0; // calculated when added to rigid disk block
             Mask = 2147483646;
             MaxTransfer = 130560;
             NumBuffer = 30;
@@ -118,6 +118,43 @@
             SizeBlock = 128; // block size 512 
             SizeOfVector = 16;
             Surfaces = 16; // heads
+            FileSystemBlockSize = SizeBlock * 4 * Sectors;
+        }
+
+        public static PartitionBlock Create(RigidDiskBlock rigidDiskBlock, byte[] dosType, string driveName, long size = 0, bool bootable = false)
+        {
+            var lastPartitionBlock = rigidDiskBlock.PartitionBlocks.LastOrDefault();
+            var lowCyl = lastPartitionBlock == null ? rigidDiskBlock.LoCylinder : lastPartitionBlock.HighCyl + 1;
+
+            uint cylinders;
+            if (size > 0)
+            {
+                size = size.ToSectorSize();
+                var blocksPerCylinder = rigidDiskBlock.Heads * rigidDiskBlock.Sectors;
+                cylinders = (uint)Math.Floor((double)size / (blocksPerCylinder * rigidDiskBlock.BlockSize));
+            }
+            else
+            {
+                cylinders = lastPartitionBlock == null
+                    ? rigidDiskBlock.Cylinders
+                    : rigidDiskBlock.Cylinders - lowCyl;
+            }
+
+            var highCyl = lowCyl + cylinders - 1 > rigidDiskBlock.HiCylinder
+                ? rigidDiskBlock.HiCylinder
+                : lowCyl + cylinders - 1;
+
+            var partitionBlock = new PartitionBlock
+            {
+                PartitionSize = cylinders * rigidDiskBlock.Heads * rigidDiskBlock.Sectors * rigidDiskBlock.BlockSize,
+                DosType = dosType,
+                DriveName = driveName,
+                Flags = bootable ? (uint)PartitionFlagsEnum.Bootable : 0,
+                LowCyl = lowCyl,
+                HighCyl = highCyl
+            };
+
+            return partitionBlock;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿namespace HstWbInstaller.Core.IO.RigidDiskBlocks
 {
-    using System;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
 
@@ -10,11 +8,16 @@
     {
         public static async Task<byte[]> BuildBlock(RigidDiskBlock rigidDiskBlock)
         {
-            var blockStream = new MemoryStream(BlockSize.RigidDiskBlock * 4);
+            var blockStream =
+                new MemoryStream(rigidDiskBlock.BlockBytes == null || rigidDiskBlock.BlockBytes.Length == 0
+                    ? new byte[BlockSize.RigidDiskBlock * 4]
+                    : rigidDiskBlock.BlockBytes);
 
             await blockStream.WriteAsciiString(BlockIdentifiers.RigidDiskBlock);
             await blockStream.WriteLittleEndianUInt32(BlockSize.RigidDiskBlock); // size
-            await blockStream.WriteLittleEndianInt32(0); // checksum, calculated when block is built
+
+            // skip checksum, calculated when block is built
+            blockStream.Seek(4, SeekOrigin.Current);
 
             await blockStream.WriteLittleEndianUInt32(rigidDiskBlock.HostId); // SCSI Target ID of host, not really used
             await blockStream.WriteLittleEndianUInt32(rigidDiskBlock.BlockSize); // Size of disk blocks
@@ -114,139 +117,103 @@
 
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            await BlockHelper.UpdateChecksum(blockBytes, 8);
+            rigidDiskBlock.Checksum = await BlockHelper.UpdateChecksum(blockBytes, 8);
+            rigidDiskBlock.BlockBytes = blockBytes;
 
             return blockBytes;
         }
 
-        public static async Task WriteBlock(RigidDiskBlock rigidDiskBlock, Stream stream, long offset = 0)
+        public static async Task WriteBlock(RigidDiskBlock rigidDiskBlock, Stream stream)
         {
-            if (offset % 512 != 0)
-            {
-                throw new ArgumentException("Offset must be dividable by 512", nameof(offset));
-            }
+            // update block pointers to maintain rigid disk block structure
+            BlockHelper.UpdateBlockPointers(rigidDiskBlock);
 
-            var highRsdkBlock = 1U;
-            
-            var rigidDiskBlockIndex = offset == 0 ? 0 : (uint)offset / 512;
-            var partitionBlockIndex = rigidDiskBlockIndex + 1;
-            rigidDiskBlock.PartitionList = partitionBlockIndex;
-            
-            var partitionBlocks = rigidDiskBlock.PartitionBlocks.ToList();
-
-            for (var p = 0; p < partitionBlocks.Count; p++)
-            {
-                var partitionBlock = partitionBlocks[p];
-                
-                partitionBlock.NextPartitionBlock = p < partitionBlocks.Count - 1
-                    ? (uint)(partitionBlockIndex + p + 1)
-                    : BlockIdentifiers.EndOfBlock;
-
-                if (partitionBlockIndex + p > highRsdkBlock)
-                {
-                    highRsdkBlock = (uint)(partitionBlockIndex + p);
-                }
-            }
-
-            var fileSystemHeaderBlocks = rigidDiskBlock.FileSystemHeaderBlocks.ToList();
-            var fileSystemHeaderBlockIndex = (uint)(partitionBlockIndex + partitionBlocks.Count);
-            rigidDiskBlock.FileSysHdrList = fileSystemHeaderBlockIndex;
-            
-            for (var f = 0; f < fileSystemHeaderBlocks.Count; f++)
-            {
-                var fileSystemHeaderBlock = fileSystemHeaderBlocks[f];
-                var loadSegBlocks = fileSystemHeaderBlock.LoadSegBlocks.ToList();
-
-                fileSystemHeaderBlock.NextFileSysHeaderBlock = f < partitionBlocks.Count - 1
-                    ? (uint)(fileSystemHeaderBlockIndex + f + 1 + loadSegBlocks.Count)
-                    : BlockIdentifiers.EndOfBlock;
-                fileSystemHeaderBlock.SegListBlocks = (int)(fileSystemHeaderBlockIndex + f + 1);
-
-                if (fileSystemHeaderBlockIndex + f + loadSegBlocks.Count > highRsdkBlock)
-                {
-                    highRsdkBlock = (uint)(fileSystemHeaderBlockIndex + f + loadSegBlocks.Count);
-                }
-                
-                for (var l = 0; l < loadSegBlocks.Count; l++)
-                {
-                    var loadSegBlock = loadSegBlocks[l];
-
-                    loadSegBlock.NextLoadSegBlock = l < loadSegBlocks.Count - 1
-                        ? (int)(fileSystemHeaderBlockIndex + f + 2 + l)
-                        : -1;
-                    
-                }
-            }
-
-            rigidDiskBlock.HighRsdkBlock = highRsdkBlock;
-            
             // seek rigid disk block offset
-            stream.Seek(rigidDiskBlockIndex * 512, SeekOrigin.Begin);
+            stream.Seek(rigidDiskBlock.RdbBlockLo * 512, SeekOrigin.Begin);
 
             var rigidDiskBlockBytes = await BuildBlock(rigidDiskBlock);
 
             await stream.WriteBytes(rigidDiskBlockBytes);
-            
-            // seek partition block index offset
-            stream.Seek(partitionBlockIndex * 512, SeekOrigin.Begin);
 
-            foreach (var partitionBlock in rigidDiskBlock.PartitionBlocks)
+            if (rigidDiskBlock.PartitionList != BlockIdentifiers.EndOfBlock)
             {
-                var partitionBlockBytes = await PartitionBlockWriter.BuildBlock(partitionBlock);
-                
-                await stream.WriteBytes(partitionBlockBytes);
+                // seek partition block index offset
+                stream.Seek(rigidDiskBlock.PartitionList * 512, SeekOrigin.Begin);
 
-                // calculate partition start offset
-                // var partitionStartOffset = (rigidDiskBlock.RdbBlockHi + 1 + partitionBlock.LowCyl - partitionBlock.Reserved) * 512;
-                //
-                // // seek next partition block index offset
-                // stream.Seek(partitionStartOffset, SeekOrigin.Begin);
-                //
-                // await stream.WriteBytes(partitionBlock.DosType);
-                
-                if (partitionBlock.NextPartitionBlock == BlockIdentifiers.EndOfBlock)
+                foreach (var partitionBlock in rigidDiskBlock.PartitionBlocks)
                 {
-                    break;
-                }
-                
-                // seek next partition block index offset
-                stream.Seek(partitionBlock.NextPartitionBlock * 512, SeekOrigin.Begin);
-            }
+                    var partitionBlockBytes = await PartitionBlockWriter.BuildBlock(partitionBlock);
 
-            // seek file system header block index offset
-            stream.Seek(fileSystemHeaderBlockIndex * 512, SeekOrigin.Begin);
-            
-            foreach (var fileSystemHeaderBlock in rigidDiskBlock.FileSystemHeaderBlocks)
-            {
-                var fileSystemHeaderBytes = await FileSystemHeaderBlockWriter.BuildBlock(fileSystemHeaderBlock);
-                
-                await stream.WriteBytes(fileSystemHeaderBytes);
+                    await stream.WriteBytes(partitionBlockBytes);
 
-                // seek load seg block index offset
-                stream.Seek(fileSystemHeaderBlock.SegListBlocks * 512, SeekOrigin.Begin);
-                
-                foreach (var loadSegBlock in fileSystemHeaderBlock.LoadSegBlocks)
-                {
-                    var loadSegBlockBytes = await LoadSegBlockWriter.BuildBlock(loadSegBlock);
-                
-                    await stream.WriteBytes(loadSegBlockBytes);
-                    
-                    if (loadSegBlock.NextLoadSegBlock == -1)
+                    if (partitionBlock.NextPartitionBlock == BlockIdentifiers.EndOfBlock)
                     {
                         break;
                     }
-                
-                    // seek next load seg block index offset
-                    stream.Seek(loadSegBlock.NextLoadSegBlock * 512, SeekOrigin.Begin);
-                }
 
-                if (fileSystemHeaderBlock.NextFileSysHeaderBlock == BlockIdentifiers.EndOfBlock)
-                {
-                    break;
+                    // seek next partition block index offset
+                    stream.Seek(partitionBlock.NextPartitionBlock * 512, SeekOrigin.Begin);
                 }
-                
-                // seek next file system header block index offset
-                stream.Seek(fileSystemHeaderBlock.NextFileSysHeaderBlock * 512, SeekOrigin.Begin);
+            }
+
+            if (rigidDiskBlock.FileSysHdrList != BlockIdentifiers.EndOfBlock)
+            {
+                // seek file system header block index offset
+                stream.Seek(rigidDiskBlock.FileSysHdrList * 512, SeekOrigin.Begin);
+
+                foreach (var fileSystemHeaderBlock in rigidDiskBlock.FileSystemHeaderBlocks)
+                {
+                    var fileSystemHeaderBytes = await FileSystemHeaderBlockWriter.BuildBlock(fileSystemHeaderBlock);
+
+                    await stream.WriteBytes(fileSystemHeaderBytes);
+
+                    // seek load seg block index offset
+                    stream.Seek(fileSystemHeaderBlock.SegListBlocks * 512, SeekOrigin.Begin);
+
+                    foreach (var loadSegBlock in fileSystemHeaderBlock.LoadSegBlocks)
+                    {
+                        var loadSegBlockBytes = await LoadSegBlockWriter.BuildBlock(loadSegBlock);
+
+                        await stream.WriteBytes(loadSegBlockBytes);
+
+                        if (loadSegBlock.NextLoadSegBlock == -1)
+                        {
+                            break;
+                        }
+
+                        // seek next load seg block index offset
+                        stream.Seek(loadSegBlock.NextLoadSegBlock * 512, SeekOrigin.Begin);
+                    }
+
+                    if (fileSystemHeaderBlock.NextFileSysHeaderBlock == BlockIdentifiers.EndOfBlock)
+                    {
+                        break;
+                    }
+
+                    // seek next file system header block index offset
+                    stream.Seek(fileSystemHeaderBlock.NextFileSysHeaderBlock * 512, SeekOrigin.Begin);
+                }
+            }
+
+            if (rigidDiskBlock.BadBlockList != BlockIdentifiers.EndOfBlock)
+            {
+                // seek bad block index offset
+                stream.Seek(rigidDiskBlock.BadBlockList * 512, SeekOrigin.Begin);
+
+                foreach (var badBlock in rigidDiskBlock.BadBlocks)
+                {
+                    var badBlockBytes = await BadBlockWriter.BuildBlock(badBlock);
+
+                    await stream.WriteBytes(badBlockBytes);
+
+                    if (badBlock.NextBadBlock == BlockIdentifiers.EndOfBlock)
+                    {
+                        break;
+                    }
+
+                    // seek next bad block index offset
+                    stream.Seek(badBlock.NextBadBlock * 512, SeekOrigin.Begin);
+                }
             }
         }
     }

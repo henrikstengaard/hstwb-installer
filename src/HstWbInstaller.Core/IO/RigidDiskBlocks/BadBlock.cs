@@ -2,10 +2,8 @@
 {
     using System;
 
-    public class BadBlock
+    public class BadBlock : BlockBase
     {
-        public uint Size { get; set; }
-        public int Checksum { get; set; }
         public uint HostId { get; set; }
         public uint NextBadBlock { get; set; }
         public byte[] Data { get; set; }

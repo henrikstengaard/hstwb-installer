@@ -59,7 +59,7 @@
                 throw new IOException("Invalid file system header block identifier");
             }
 
-            var size = await blockStream.ReadUInt32(); // Size of the structure for checksums
+            await blockStream.ReadUInt32(); // Size of the structure for checksums
             var checksum = await blockStream.ReadInt32(); // Checksum of the structure
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host, not really used
             var nextFileSysHeaderBlock = await blockStream.ReadUInt32(); // Block number of the next FileSysHeaderBlock
@@ -86,14 +86,8 @@
             var segListBlocks = await blockStream.ReadInt32(); // first of linked list of LoadSegBlocks
             var globalVec = await blockStream.ReadInt32();
 
-            var majorVersion = version >> 16;
-            var minorVersion = version & 0xFFFF;
-            
-            // read reserved, unused word
-            for (var i = 0; i < 23 + 21; i++)
-            {
-                await blockStream.ReadBytes(4);
-            }
+            // skip reserved
+            blockStream.Seek(4 * (23 + 21), SeekOrigin.Current);
 
             var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
 
@@ -102,20 +96,15 @@
                 throw new IOException("Invalid file system header block checksum");
             }
 
-            var dosTypeFormatted = dosType.FormatDosType();
-            var dosTypeHex = $"0x{dosType.FormatHex()}";
-
             return new FileSystemHeaderBlock
             {
-                Size = size,
+                BlockBytes = blockBytes,
                 Checksum = checksum,
                 HostId = hostId,
                 NextFileSysHeaderBlock = nextFileSysHeaderBlock,
                 Flags = flags,
                 DosType = dosType,
                 Version = version,
-                MajorVersion = majorVersion,
-                MinorVersion = minorVersion,
                 PatchFlags = patchFlags,
                 Type = type,
                 Task = task,
@@ -125,9 +114,7 @@
                 Priority = priority,
                 Startup = startup,
                 SegListBlocks = segListBlocks,
-                GlobalVec = globalVec,
-                DosTypeFormatted = dosTypeFormatted,
-                DosTypeHex = dosTypeHex
+                GlobalVec = globalVec
             };
         }
     }
