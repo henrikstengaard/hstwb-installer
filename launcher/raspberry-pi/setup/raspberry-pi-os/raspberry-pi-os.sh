@@ -3,7 +3,7 @@
 # Setup Raspberry Pi OS
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-02
+# Date: 2022-01-12
 #
 # bash script to show setup raspberry pi os menu.
 
@@ -13,12 +13,16 @@ while true; do
 	--menu "Select option:" 0 0 0 \
 	1 "Raspberry Pi Software Configuration Tool (raspi-conf)" \
 	2 "Change Volume" \
-	3 "Set audio output to HDMI" \
-	4 "Set audio output to Jack" \
-	5 "Change boot" \
-        6 "Force 1080p HDMI resolution" \
-	7 "Expand filesystem" \
-	8 "Exit")
+	3 "Change asound card" \
+	4 "Set audio output to HDMI" \
+	5 "Set audio output to Jack" \
+	6 "Change boot" \
+        7 "Force 1080p HDMI resolution" \
+	8 "Install Samba" \
+	9 "Expand filesystem" \
+        10 "Enable Fake KMS video driver" \
+        11 "Enable KMS video driver" \
+	12 "Exit")
 
 	clear
 
@@ -35,23 +39,35 @@ while true; do
 		2)
 			sudo alsamixer
 			;;
-		3)
+                3)
+                        ./change-asound-card.sh
+                        ;;
+ 		4)
 			./audio-output-hdmi.sh
 			;;
-		4)
+		5)
 			./audio-output-jack.sh
 			;;
-		5)
+		6)
 			./change-boot.sh
 			;;
-		6)
+		7)
 			./force-1080p-hdmi.sh
 			;;
-		7)
+                8)
+                        ./install-samba.sh
+                        ;;
+		9)
 			./expand-filesystem.sh
 			;;
-		8)
-			exit
+		10)
+                        ./enable-fkms-video-driver.sh
+                        ;;
+                11)
+			./enable-kms-video-driver.sh
+                        ;;
+                12)
+ 			exit
 			;;
 		esac
 	done

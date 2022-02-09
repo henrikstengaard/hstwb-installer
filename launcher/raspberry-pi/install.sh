@@ -3,7 +3,7 @@
 # HstWB Installer Install
 # -----------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-03-02
+# Date: 2022-01-13
 #
 # A bash script to install HstWB Installer launcher for Raspberry Pi.
 
@@ -11,17 +11,11 @@
 #set +e
 dpkg -s dialog >/dev/null 2>&1
 
-# ask to install dialog, if dialog is not installed
+# install dialog, if dialog is not installed
 if [ $? -ne 0 ]; then
-	echo "Dialog is not installed and is required by HstWB Installer"
-	echo ""
-	while true; do
-    		read -p "Do you want to install Dialog [Y/n]? " confirm
-    		case $confirm in
-			[Yy]* ) sudo apt-get install dialog; break;;
-			[Nn]* ) exit;;
-		esac
-	done
+	echo "Install dialog..."
+	sleep 1
+	sudo apt-get --assume-yes install dialog
 fi
 
 # fail, if dialog is not installed
@@ -38,7 +32,10 @@ AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
 AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
 UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
 UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
-AMIGA_EMULATOR=amiberry
+AMIGA_EMULATOR=
+
+# fix dialog borders
+export NCURSES_NO_UTF8_ACS=1
 
 # show install dialog
 dialog --clear --stdout \
@@ -82,7 +79,7 @@ if [ -f ~/.hstwb-installer/config.sh ]; then
 else
 	echo "#!/bin/bash -e" >~/.hstwb-installer/config.sh
 	echo "export HSTWB_INSTALLER_ROOT=\"$HSTWB_INSTALLER_ROOT\"" >>~/.hstwb-installer/config.sh
-	echo "export HSTWB_INSTALLER_BOOT=\"emulator\"" >>~/.hstwb-installer/config.sh
+	echo "export HSTWB_INSTALLER_BOOT=\"hstwb\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_HDD_PATH=\"$AMIGA_HDD_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
         echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
@@ -242,6 +239,26 @@ if [ $? -eq 0 ]; then
 fi
 
 
+# install samba
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os//install-samba.sh
+
+# force 1080p hdmi
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh -i
+
+# install sdl2
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2.sh
+
+# install amiberry
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
+
+# install uae4arm
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/uae4arm/install-uae4arm.sh
+
+# enable fake kms video driver
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/enable-fkms-video-driver.sh -i
+
+
+
 # disable exit on eror
 set +e
 
@@ -255,5 +272,5 @@ if [ $? -eq 0 ]; then
 	# create first time use trigger
 	touch ~/.hstwb-installer/.first-time-use
 
- 	reboot
+ 	sudo reboot
 fi

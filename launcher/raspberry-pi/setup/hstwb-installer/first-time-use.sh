@@ -3,9 +3,9 @@
 # First Time Use
 # --------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2022-01-04
+# Date: 2022-01-13
 #
-# Bash script for first time use of Amibian.
+# Bash script for first time use of Raspberry Pi.
 
 function delete_triggers()
 {
@@ -38,20 +38,11 @@ if [ ! -f ~/.hstwb-installer/.first-time-use-dialog ]; then
 
 fi
 
-# expand filesystem, if its trigger exists
-if [ ! -f ~/.hstwb-installer/.expand-filesystem ]; then
-	touch ~/.hstwb-installer/.expand-filesystem
-	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/expand-filesystem.sh
-fi
+# mount fat32 devices
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/system/mount-fat32-devices.sh --quiet
 
-# force 1080p hdmi
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/raspberry-pi-os/force-1080p-hdmi.sh
-
-# install sdl2 kmsdrm
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-sdl2-kmsdrm.sh
-
-# install amiberry
-$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/amiberry/install-amiberry.sh
+# find hstwb self install
+$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/hstwb-installer/find-hstwb-self-install.sh --quiet
 
 # install kickstart rom
 $HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/install-kickstart-rom.sh -i

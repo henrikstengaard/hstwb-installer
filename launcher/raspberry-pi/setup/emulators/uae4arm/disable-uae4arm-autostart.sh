@@ -3,7 +3,7 @@
 # Disable UAE4ARM autostart
 # -------------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-12
+# Date: 2022-01-16
 #
 # A bash script to disable UAE4ARM autostart.
 
@@ -20,7 +20,7 @@ fi
 
 # disable uae4arm autostart, if it exists
 if [ -f "$UAE4ARM_CONF_PATH/autostart.uae" ]; then
-	mv -f "$UAE4ARM_CONF_PATH/autostart.uae" "$UAE4ARM_CONF_PATH/_autostart.uae"
+	mv -f "$UAE4ARM_CONF_PATH/autostart.uae" "$UAE4ARM_CONF_PATH/autostart-disabled.uae"
 fi
 
 # show success dialog

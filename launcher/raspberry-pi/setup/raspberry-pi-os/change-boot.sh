@@ -3,7 +3,7 @@
 # Change Boot
 # -----------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2020-12-19
+# Date: 2022-01-11
 #
 # bash script to change boot menu.
 
@@ -26,7 +26,7 @@ choices=$(dialog --clear --stdout \
 --menu "Select what to start at boot:" 0 0 0 \
 1 "Emulator" \
 2 "HstWB Installer" \
-3 "Amibian menu" \
+3 "Shell" \
 4 "Exit")
 
 clear
@@ -46,7 +46,7 @@ for choice in $choices; do
       change_boot hstwb
       ;;
     3)
-      change_boot menu
+      change_boot shell
       ;;
     4)
       exit

@@ -8,6 +8,12 @@ set amigaosversion "All"'
 ; get amiga os from amiga os prefs, if it exists
 IF EXISTS "SYSTEMDIR:Prefs/AmigaOS"
   set amigaosversion "`type "SYSTEMDIR:Prefs/AmigaOS"`"
+
+  ; set amiga os to 3.2, if amiga os version is 3.2.1
+  IF "$amigaosversion" EQ "3.2.1"
+    set amigaosversion "3.2"
+  ENDIF
+
   SKIP verifyamigaos
 ENDIF
 

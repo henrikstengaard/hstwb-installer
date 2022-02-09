@@ -3,7 +3,7 @@
 # Run Amiga Emulator
 # ------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-12
+# Date: 2021-01-13
 #
 # A bash script to run Amiga emulator.
 
@@ -34,6 +34,10 @@ case $i in
 esac
 done
 
+# change amiga emulator, if amiga emulator is not selected
+if [ -z "$AMIGA_EMULATOR" ]; then
+	$HSTWB_INSTALLER_ROOT/launcher/raspberry-pi/setup/emulators/change-amiga-emulator.sh
+fi
 
 case "$AMIGA_EMULATOR" in
 amiberry)
@@ -83,6 +87,10 @@ uae4arm)
 
         ./uae4arm $uae4armargs
 	popd >/dev/null
+	;;
+*)
+	dialog --clear --title "ERROR" --msgbox "ERROR: Amiga emulator is not defined!\n\nPlease change Amiga emulator first!" 0 0
+	exit 1
 	;;
 esac
 
