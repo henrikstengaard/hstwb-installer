@@ -1,5 +1,3 @@
-﻿import React from 'react'
-
 export class ElectronIpc {
     constructor() {
         if (!window.require) {

@@ -1,13 +1,13 @@
-﻿import React from 'react'
+import React from 'react'
 import {useHistory} from 'react-router-dom'
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Toolbar from '@mui/material/Toolbar';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
+// import CssBaseline from '@mui/material/CssBaseline';
+// import Toolbar from '@mui/material/Toolbar';
+// import Divider from '@mui/material/Divider';
+// import IconButton from '@mui/material/IconButton';
 // import MenuIcon from '@mui/icons-material/Menu';
 // import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 // import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -61,16 +61,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Navigation() {
     const history = useHistory()
-    const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
     
     const items = [
         {

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import {Route} from 'react-router';
 import Main from "./Main";

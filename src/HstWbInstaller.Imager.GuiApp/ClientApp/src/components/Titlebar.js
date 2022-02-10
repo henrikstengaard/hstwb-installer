@@ -1,5 +1,4 @@
-﻿import React from 'react'
-import {useHistory} from "react-router-dom"
+import React from 'react'
 import Box from '@mui/material/Box'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -9,7 +8,6 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {ElectronIpc} from "../utils/ElectronIpc"
 
 export default function Titlebar() {
-    // const history = useHistory()
     const [maximized, setMaximized] = React.useState(false)
     const electronIpc = new ElectronIpc()
 
