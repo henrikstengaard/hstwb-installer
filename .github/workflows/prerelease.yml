@@ -31,10 +31,9 @@ jobs:
           echo "TARGET=win" >> $GITHUB_ENV
           echo "ARTIFACT=./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe" >> $GITHUB_ENV
         if: matrix.os == 'windows-latest'
-
-      - name: Set build
-        id: build
-        run: echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
+        
+      - name: Set version
+        run: echo "VERSION=0.1.`echo $(git rev-list --count HEAD)`"
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
