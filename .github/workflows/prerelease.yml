@@ -23,7 +23,7 @@ jobs:
       - name: npm install
         working-directory: ./src
         run: |
-          cd HstWbInstaller.Imager.GuiApp
+          cd HstWbInstaller.Imager.GuiApp/ClientApp
           npm install
 
 #      - name: Git version tag
