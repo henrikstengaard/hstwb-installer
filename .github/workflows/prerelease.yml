@@ -33,5 +33,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Electronize build
-        working-directory: ./src/HstWbInstaller.Imager.GuiApp
-        run: dotnet electronize build /target win
+        working-directory: ./src
+        run: |
+          cd HstWbInstaller.Imager.GuiApp
+          dotnet electronize build /target win
