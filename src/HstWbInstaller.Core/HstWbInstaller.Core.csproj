@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="DiscUtils.Containers" Version="0.16.13" />
       <PackageReference Include="DiscUtils.FileSystems" Version="0.16.13" />
