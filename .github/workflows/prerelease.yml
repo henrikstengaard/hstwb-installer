@@ -28,8 +28,8 @@ jobs:
 
       - name: Set windows release
         run: |
-          echo "::set-env name=TARGET::win"
-          echo "::set-env name=ARTIFACT::./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe"
+          echo "TARGET=win" >> $GITHUB_ENV
+          echo "ARTIFACT=./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe" >> $GITHUB_ENV
         if: matrix.os == 'windows-latest'
 
       - name: Set build
