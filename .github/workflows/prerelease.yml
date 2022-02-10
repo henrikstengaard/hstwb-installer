@@ -36,7 +36,7 @@ jobs:
         working-directory: ./src
         shell: pwsh
         run: |
-          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count HEAD) >> $env:GITHUB_ENV
+          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
 
       - name: show version
         run: |
