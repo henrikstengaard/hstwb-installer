@@ -18,10 +18,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Git version tag
+      - name: Set version
         id: version
         run: |
-          echo "::set-output name=version::`echo 0.1.$(git rev-list --count head)`"
+          echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
+          echo "${{ version }}"
+
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
