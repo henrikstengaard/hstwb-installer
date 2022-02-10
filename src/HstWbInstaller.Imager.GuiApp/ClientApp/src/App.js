@@ -27,16 +27,16 @@ import {
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 // import GlobalStyles from '@mui/material/GlobalStyles'
-import { BrowserRouter } from 'react-router-dom'
-import Main from './components/Main'
-import Read from './pages/Read'
-import Write from './pages/Write'
-import Convert from './pages/Convert'
-import Verify from './pages/Verify'
-import Blank from './pages/Blank'
-import Optimize from './pages/Optimize'
-import {FetchData} from './components/FetchData';
-import {Counter} from './components/Counter';
+// import { BrowserRouter } from 'react-router-dom'
+// import Main from './components/Main'
+// import Read from './pages/Read'
+// import Write from './pages/Write'
+// import Convert from './pages/Convert'
+// import Verify from './pages/Verify'
+// import Blank from './pages/Blank'
+// import Optimize from './pages/Optimize'
+// import {FetchData} from './components/FetchData';
+// import {Counter} from './components/Counter';
 
 import './custom.css'
 import Titlebar from "./components/Titlebar";

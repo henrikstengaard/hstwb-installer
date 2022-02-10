@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -19,21 +19,18 @@ export default function Read() {
         loading: false
     });
     
-    const handleGetMedias = React.useCallback(() => {
-        async function getMedias() {
-            const response = await fetch('list');
-            const data = await response.json();
-            setState({ medias: data, loading: false });
-        }
-        getMedias()
-    })
+    async function getMedias() {
+        const response = await fetch('list');
+        const data = await response.json();
+        setState({ medias: data, loading: false });
+    }
 
     React.useEffect(() => {
         if (state.medias) {
             return
         }
-        handleGetMedias()
-    }, [handleGetMedias])
+        getMedias()
+    }, [state.medias, getMedias])
     
     const handleChangeSource = (event) =>{
         setState({ ...state, source: event.target.value})
@@ -96,7 +93,7 @@ export default function Read() {
                         fullWidth
                         id="destination-file"
                         label="Destination file"
-                        defaultValue="c:\temp\4gb.img"
+                        defaultValue="c:\\temp\\4gb.img"
                     />
                 </Grid>
                 <Grid item>
