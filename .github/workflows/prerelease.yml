@@ -50,3 +50,7 @@ jobs:
         run: |
           cd HstWbInstaller.Imager.GuiApp
           dotnet electronize build /target ${{ env.TARGET }}
+
+      - name: List output files
+        run: |
+          dir "./src/HstWbInstaller.Imager.GuiApp/bin/Desktop"
