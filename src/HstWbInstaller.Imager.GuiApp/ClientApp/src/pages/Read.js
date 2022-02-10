@@ -19,18 +19,21 @@ export default function Read() {
         loading: false
     });
     
-    async function getMedias() {
-        const response = await fetch('list');
-        const data = await response.json();
-        setState({ medias: data, loading: false });
-    }
+    const handleGetMedias = React.useCallback(() => {
+        async function getMedias() {
+            const response = await fetch('list');
+            const data = await response.json();
+            setState({ medias: data, loading: false });
+        }
+        getMedias()
+    }, [setState])
 
     React.useEffect(() => {
         if (state.medias) {
             return
         }
-        getMedias()
-    }, [state.medias, getMedias])
+        handleGetMedias()
+    }, [state.medias, handleGetMedias])
     
     const handleChangeSource = (event) =>{
         setState({ ...state, source: event.target.value})
