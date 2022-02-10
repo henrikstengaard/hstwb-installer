@@ -32,8 +32,22 @@ jobs:
           echo "ARTIFACT=./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe" >> $GITHUB_ENV
         if: matrix.os == 'windows-latest'
         
-#      - name: Set version
-#        run: echo "VERSION=0.1.`echo $(git rev-list --count HEAD)`"
+      - name: Set version
+        run: echo "BUILD_VERSION=0.1.$(git rev-list --count HEAD)" >> $GITHUB_ENV
+
+      - name: Electron manifest version
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "\"buildVersion\": \"0.1.0\""
+          replace: "\"buildVersion\": \"${{ env.BUILD_VERSION }}\""
+          include: "**/HstWbInstaller.Imager.GuiApp/electron.manifest.json"
+
+      - name: Package json version
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "\"version\": \"0.1.0\""
+          replace: "\"version\": \"${{ env.BUILD_VERSION }}\""
+          include: "**/HstWbInstaller.Imager.GuiApp/ClientApp/package.json"
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
