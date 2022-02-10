@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "::set-env name=TARGET::win"
           echo "::set-env name=ARTIFACT::./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe"
-        if: matrix.os == "windows-latest"
+        if: matrix.os == 'windows-latest'
 
       - name: Set build
         id: build
