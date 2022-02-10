@@ -18,14 +18,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
-        
-      - name: npm install
-        working-directory: ./src
-        run: |
-          cd HstWbInstaller.Imager.GuiApp/ClientApp
-          npm install
-
 #      - name: Git version tag
 #        id: version
 #        run: echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
