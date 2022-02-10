@@ -18,7 +18,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Set version
+      - name: Git version tag
         id: version
         run: |
           echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
