@@ -33,11 +33,12 @@ jobs:
         if: matrix.os == 'windows-latest'
         
       - name: Set version
+        working-directory: ./src
+        shell: pwsh
         run: |
-          echo "BUILD_VERSION=0.1.$(git rev-list --count HEAD)" >> $env:GITHUB_ENV
-        if: matrix.os == 'windows-latest'
+          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count HEAD) >> $env:GITHUB_ENV
 
-      - name: Set version
+      - name: show version
         run: |
           echo "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
 
