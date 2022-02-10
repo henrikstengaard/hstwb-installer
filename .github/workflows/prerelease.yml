@@ -33,16 +33,21 @@ jobs:
         if: matrix.os == 'windows-latest'
         
       - name: Set version
-        run: echo "BUILD_VERSION=0.1.$(git rev-list --count HEAD)" >> $GITHUB_ENV
+        run: |
+          echo "BUILD_VERSION=0.1.$(git rev-list --count HEAD)" >> $GITHUB_ENV
+
+      - name: Set version
+        run: |
+          echo "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
 
       - name: Electron manifest version
         working-directory: ./src
-        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '""0.1.0""', '""${{ env.BUILD_VERSION }}""'))"
+        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
         if: matrix.os == 'windows-latest'
 
       - name: Package json version
         working-directory: ./src
-        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '""0.1.0""', '""${{ env.BUILD_VERSION }}""'))"
+        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
         if: matrix.os == 'windows-latest'
 
       - name: Setup .NET Core 5.0
