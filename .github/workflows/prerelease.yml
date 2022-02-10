@@ -6,21 +6,35 @@ name: Prerelease
 # Allows you to run this workflow manually from the Actions tab
 on: [workflow_dispatch]
 
+# default environment variables
+env:
+  TARGET: 'win'
+  ARTIFACT: './src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe'
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: windows-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-#      - name: Git version tag
-#        id: version
-#        run: echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
+      - name: Set windows release
+        if: ${{ matrix.os == "windows-latest" }}
+        run: |
+          echo "::set-env name=TARGET::win"
+          echo "::set-env name=ARTIFACT::./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe"
+
+      - name: Set build
+        id: build
+        run: echo "::set-output name=version::`echo 0.1.$(git rev-list --count HEAD)`"
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
@@ -35,4 +49,4 @@ jobs:
         working-directory: ./src
         run: |
           cd HstWbInstaller.Imager.GuiApp
-          dotnet electronize build /target win
+          dotnet electronize build /target ${{ env.TARGET }}
