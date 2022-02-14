@@ -27,6 +27,12 @@
             return partialData;
         }
 
+        public static async Task WriteByte(this Stream stream, byte value)
+        {
+            var data = new[] { value };
+            await stream.WriteAsync(data, 0, data.Length);
+        }
+        
         public static async Task WriteBytes(this Stream stream, byte[] data)
         {
             await stream.WriteAsync(data, 0, data.Length);
