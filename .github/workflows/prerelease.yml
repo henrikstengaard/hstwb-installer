@@ -9,7 +9,7 @@ on: [workflow_dispatch]
 # default environment variables
 env:
   TARGET: 'win'
-  ARTIFACT: './src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.0.0.exe'
+  ARTIFACT_FILTER: '*.exe'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -29,9 +29,10 @@ jobs:
           fetch-depth: 0
 
       - name: Set windows release
+        shell: pwsh
         run: |
-          echo "TARGET=win" >> $env:GITHUB_ENV
-          echo "ARTIFACT=./src/HstWbInstaller.Imager.GuiApp/bin/Desktop/HstWbInstaller.Imager.GuiApp Setup 1.2.3.exe" >> $env:GITHUB_ENV
+          "TARGET=win" >> $env:GITHUB_ENV
+          "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
         
       - name: Set version
@@ -41,15 +42,16 @@ jobs:
           "BUILD_VERSION=0.1.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
 
       - name: show version
+        shell: pwsh
         run: |
-          echo "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
+          "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
 
-      - name: Electron manifest version
+      - name: Update Electron manifest version
         working-directory: ./src
         run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
         if: matrix.os == 'windows-latest'
 
-      - name: Package json version
+      - name: Update package json version
         working-directory: ./src
         run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
         if: matrix.os == 'windows-latest'
@@ -61,14 +63,17 @@ jobs:
 
       - name: Restore tool
         working-directory: ./src
+        shell: pwsh
         run: dotnet tool restore
 
       - name: Electronize build
         working-directory: ./src
+        shell: pwsh
         run: |
           cd HstWbInstaller.Imager.GuiApp
           dotnet electronize build /target ${{ env.TARGET }}
 
       - name: List output files
+        shell: pwsh
         run: |
-          dir "./src/HstWbInstaller.Imager.GuiApp/bin/Desktop"
+          (gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName
