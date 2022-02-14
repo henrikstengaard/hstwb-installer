@@ -14,6 +14,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HstWbInstaller.Imager.Core.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HstWbInstaller.Imager.GuiApp", "HstWbInstaller.Imager.GuiApp\HstWbInstaller.Imager.GuiApp.csproj", "{8D55F534-F3FD-4BA7-8781-13EEA8F53475}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{0F77FBC1-964C-4DB6-89FA-DFE7E3A96833}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\prerelease.yml = ..\.github\workflows\prerelease.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

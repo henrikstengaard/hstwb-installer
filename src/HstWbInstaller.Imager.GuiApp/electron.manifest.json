@@ -1,15 +1,15 @@
 {
-  "executable": "HstWbInstaller.Imager",
+  "executable": "HstWbInstaller.Imager.GuiApp",
   "splashscreen": {
     "imageFile": ""
   },
-  "name": "HstWbInstaller.Imager",
+  "name": "HstWbInstaller.Imager.GuiApp",
   "author": "",
   "singleInstance": false,
   "environment": "Production",
   "build": {
-    "appId": "com.HstWbInstaller.Imager",
-    "productName": "HstWbInstaller.Imager",
+    "appId": "com.HstWbInstaller.Imager.GuiApp.app",
+    "productName": "HstWbInstaller.Imager.GuiApp",
     "copyright": "Copyright © 2022",
     "buildVersion": "0.1.0",
     "compression": "maximum",

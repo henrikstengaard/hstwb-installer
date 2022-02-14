@@ -28,13 +28,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set windows release
+      - name: Set Windows release
         shell: pwsh
         run: |
           "TARGET=win" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
         
+      - name: Set macOS release
+        shell: pwsh
+        run: |
+          "TARGET=osx" >> $env:GITHUB_ENV
+          "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
+        if: matrix.os == 'macos-latest'
+
+      - name: Set Linux release
+        shell: pwsh
+        run: |
+          "TARGET=linux" >> $env:GITHUB_ENV
+          "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
+        if: matrix.os == 'macos-latest'
+      
       - name: Set version
         working-directory: ./src
         shell: pwsh
