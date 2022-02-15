@@ -150,10 +150,10 @@ SKIP BACK continue
 LAB installentry
 
 IF $lhaentry EQ 1 VAL
-  lha -m1 x "{entryfile}" "$entrydir/"
+  lha -N -m1 -q x "{entryfile}" "$entrydir/"
 ENDIF
 IF $lzxentry EQ 1 VAL
-  unlzx -m x "{entryfile}" "$entrydir/"
+  unlzx -m -q x "{entryfile}" "$entrydir/"
 ENDIF
 IF $zipentry EQ 1 VAL
   unzip -o -x "{entryfile}" -d "$entrydir/"
