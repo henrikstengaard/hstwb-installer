@@ -1,21 +1,30 @@
 {
   "executable": "HstWbInstaller.Imager.GuiApp",
   "splashscreen": {
-    "imageFile": ""
+    "imageFile": "/wwwroot/assets/electronnet-splashscreen-2.jpg"
   },
   "name": "HstWbInstaller.Imager.GuiApp",
-  "author": "",
+  "author": "Henrik Nørfjand Stengaard",
   "singleInstance": false,
   "environment": "Production",
   "build": {
     "appId": "com.HstWbInstaller.Imager.GuiApp.app",
-    "productName": "HstWbInstaller.Imager.GuiApp",
+    "productName": "HstWbInstaller Imager",
     "copyright": "Copyright © 2022",
     "buildVersion": "0.1.0",
     "compression": "maximum",
     "directories": {
       "output": "../../../bin/Desktop"
     },
+    "win": {
+      "icon": "/wwwroot/assets/icons/icon.ico"
+    },
+    "mac": {
+      "icon": "/wwwroot/assets/icons/icon.icns"
+    },
+    "linux": {
+      "icon": "/wwwroot/assets/icons"
+    },    
     "extraResources": [
       {
         "from": "./bin",

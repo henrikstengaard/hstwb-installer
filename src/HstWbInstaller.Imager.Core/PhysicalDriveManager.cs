@@ -5,16 +5,21 @@
 
     public static class PhysicalDriveManager
     {
-        public static IPhysicalDriveManager Create(bool fake = false)
+        public static IPhysicalDriveManager Create()
         {
             if (OperatingSystem.IsWindows())
             {
-                return new WindowsPhysicalDriveManager(fake);
+                return new WindowsPhysicalDriveManager();
+            }
+
+            if (OperatingSystem.IsMacOs())
+            {
+                return new MacOsPhysicalDriveManager();
             }
 
             if (OperatingSystem.IsLinux())
             {
-                return new LinuxPhysicalDriveManager(fake);
+                return new LinuxPhysicalDriveManager();
             }
             
             throw new NotImplementedException("Unsupported operating system");

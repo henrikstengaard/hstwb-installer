@@ -16,7 +16,7 @@
         [HttpGet]
         public async Task<IEnumerable<MediaInfo>> Get()
         {
-            var physicalDriveManager = PhysicalDriveManager.Create(true);
+            var physicalDriveManager = PhysicalDriveManager.Create();
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
 
             var commandHelper = new CommandHelper();

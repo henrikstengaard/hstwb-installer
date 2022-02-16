@@ -1,0 +1,15 @@
+{
+   "blockdevices": [
+      {"type":"disk", "name":"sda", "rm":false, "model":"WDC_WDS500G2B0B-00YS70", "path":"/dev/sda", "size":500107862016, "vendor":"Argon   ",
+         "children": [
+            {"type":"part", "name":"sda1", "rm":false, "model":null, "path":"/dev/sda1", "size":268435456, "vendor":null},
+            {"type":"part", "name":"sda2", "rm":false, "model":null, "path":"/dev/sda2", "size":499838361088, "vendor":null}
+         ]
+      },
+      {"type":"disk", "name":"sdb", "rm":true, "model":"Cruzer_Fit", "path":"/dev/sdb", "size":15682240512, "vendor":"SanDisk'",
+         "children": [
+            {"type":"part", "name":"sdb1", "rm":true, "model":null, "path":"/dev/sdb1", "size":15682224128, "vendor":null}
+         ]
+      }
+   ]
+}
