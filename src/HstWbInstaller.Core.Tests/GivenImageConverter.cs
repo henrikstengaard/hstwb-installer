@@ -7,21 +7,13 @@
 
     public class GivenImageConverter
     {
-        [Fact]
+        [Fact(Skip = "For testing")]
         public void When()
         {
             var image = (Bitmap)Image.FromFile(@"TestData\screenshot.png");
-            var cpnvertedImage = IO.Images.ImageConverter.ConvertTo4BppIndexedImage(image, PixelFormat.Format4bppIndexed);
-        }
-        
-        [Fact]
-        public void When2()
-        {
-            var image = (Bitmap)Image.FromFile(@"TestData\AGA-Background.png");
-            var ags2BackgroundImage = Ags2ImageConverter.ConvertToAgs2BackgroundImage(image, PixelFormat.Format8bppIndexed,
-                Color.White, Color.Black);
+            var convertedImage = IO.Images.ImageConverter.ConvertTo4BppIndexedImage(image, PixelFormat.Format4bppIndexed);
             
-            ags2BackgroundImage.Save("ags2.png");
+            Assert.Equal(PixelFormat.Format4bppIndexed, convertedImage.PixelFormat);
         }
     }
 }

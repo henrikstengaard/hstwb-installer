@@ -21,5 +21,8 @@ namespace HstWbInstaller.Imager.Core.Models
 
         [JsonPropertyName("size")]
         public long Size { get; set; }
+        
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; }
     }
 }

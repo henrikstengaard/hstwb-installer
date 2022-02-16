@@ -208,20 +208,7 @@
                 return drives;
             }
 
-            IPhysicalDriveManager physicalDriveManager;
-
-            if (OperatingSystem.IsWindows())
-            {
-                physicalDriveManager = new WindowsPhysicalDriveManager(arguments.Fake);
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                physicalDriveManager = new LinuxPhysicalDriveManager(arguments.Fake);
-            }
-            else
-            {
-                throw new NotImplementedException("Unsupported operating system");
-            }
+            var physicalDriveManager = PhysicalDriveManager.Create();
 
             return (await physicalDriveManager.GetPhysicalDrives()).ToList();
         }

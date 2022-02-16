@@ -10,13 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="fake-lsblk.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="app.manifest">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="fake-wmic.csv">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

@@ -7,7 +7,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace HstWbInstaller.Imager.GuiApp
 {
+    using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
@@ -91,11 +93,12 @@ namespace HstWbInstaller.Imager.GuiApp
                     Frame = false,
                     WebPreferences = new WebPreferences
                     {
-                        NodeIntegration = true
+                        NodeIntegration = true,
                     },
                     Show = false,
                     Icon = Path.Combine(env.ContentRootPath, "hstwb-installer.ico")
                 });
+            browserWindow.SetMenu(Array.Empty<MenuItem>());
             
             await browserWindow.WebContents.Session.ClearCacheAsync();
 
@@ -103,7 +106,7 @@ namespace HstWbInstaller.Imager.GuiApp
             browserWindow.OnReadyToShow += () => browserWindow.Show();
             browserWindow.OnMaximize += () => Electron.IpcMain.Send(browserWindow, "window-maximized");
             browserWindow.OnUnmaximize += () => Electron.IpcMain.Send(browserWindow, "window-unmaximized");
-            browserWindow.WebContents.OpenDevTools();
+            //browserWindow.WebContents.OpenDevTools();
             
             Electron.IpcMain.On("minimize-window", (args) => browserWindow.Minimize());
             Electron.IpcMain.On("maximize-window", (args) => browserWindow.Maximize());
