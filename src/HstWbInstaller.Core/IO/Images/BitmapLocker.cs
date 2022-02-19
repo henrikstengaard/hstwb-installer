@@ -7,6 +7,7 @@
 
     /// <summary>
     /// https://stackoverflow.com/questions/51071944/how-can-i-work-with-1-bit-and-4-bit-images
+    /// https://stackoverflow.com/questions/2593212/editing-8bpp-indexed-bitmaps
     /// </summary>
     public class BitmapLocker : IDisposable
     {

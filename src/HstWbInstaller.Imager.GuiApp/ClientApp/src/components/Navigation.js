@@ -18,8 +18,8 @@ import ListItemText from '@mui/material/ListItemText';
 // import MailIcon from '@mui/icons-material/Mail';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
-const drawerOpenWidth = 160;
-const drawerClosedWidth = 50;
+const drawerOpenWidth = 180;
+const drawerClosedWidth = 62;
 
 const openedMixin = (theme) => ({
     width: drawerOpenWidth,
@@ -103,6 +103,11 @@ export default function Navigation() {
             text: 'Optimize',
             icon: 'magic',
             path: '/optimize'
+        },
+        {
+            text: 'Partition',
+            icon: 'hdd',
+            path: '/partition'
         },
         {
             text: 'About',

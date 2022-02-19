@@ -22,10 +22,13 @@ import {
     faSyncAlt,
     faEllipsisH,
     faBan,
-    faInfo
+    faInfo,
+    faArrowLeft
 } from '@fortawesome/free-solid-svg-icons'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
+import ProgressBackdrop from "./components/ProgressBackdrop"
+
 // import GlobalStyles from '@mui/material/GlobalStyles'
 // import { BrowserRouter } from 'react-router-dom'
 // import Main from './components/Main'
@@ -42,6 +45,7 @@ import './custom.css'
 import Titlebar from "./components/Titlebar";
 import Navigation from "./components/Navigation";
 import Content from "./components/Content";
+import {ProgressProvider} from "./components/ProgressContext";
 
 library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight, 
     faExchangeAlt, faBars, faWindowMinimize, faWindowMaximize, faWindowRestore, faWindowClose,
@@ -54,7 +58,8 @@ library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight,
     faSyncAlt,
     faEllipsisH,
     faBan,
-    faInfo)
+    faInfo,
+    faArrowLeft)
 
 export default class App extends Component {
     static displayName = App.name;
@@ -63,10 +68,17 @@ export default class App extends Component {
         return (
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                {/*<GlobalStyles styles={{ h2: { fontsize: '1rem' } }} />*/}
                 <Titlebar />
-                <Navigation />
-                <Content />
+                {/*<ProgressProvider>*/}
+                {/*        <Navigation />*/}
+                {/*        <Content />*/}
+                {/*</ProgressProvider>                    */}
+                <ProgressProvider>
+                    <ProgressBackdrop>
+                        <Navigation />
+                        <Content />
+                    </ProgressBackdrop>
+                </ProgressProvider>
             </Box>
         );
     }

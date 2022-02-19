@@ -8,11 +8,14 @@ using Microsoft.Extensions.Hosting;
 namespace HstWbInstaller.Imager.GuiApp
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using Hubs;
+    using Models;
+    using Services;
 
     public class Startup
     {
@@ -26,6 +29,7 @@ namespace HstWbInstaller.Imager.GuiApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
 
             services.AddControllersWithViews();
 
@@ -33,6 +37,15 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
+            });
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(100));
+            services.AddSingleton<IActiveBackgroundTaskList>(new ActiveBackgroundTaskList());
+            services.AddSingleton(new AppState
+            {
+                IsElectronActive = HybridSupport.IsElectronActive,
+                UseFake = Debugger.IsAttached
             });
         }
 
@@ -58,6 +71,8 @@ namespace HstWbInstaller.Imager.GuiApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ProgressHub>("/hubs/progress");
+                endpoints.MapHub<ShowDialogResultHub>("/hubs/show-dialog-result");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
@@ -106,12 +121,13 @@ namespace HstWbInstaller.Imager.GuiApp
             browserWindow.OnReadyToShow += () => browserWindow.Show();
             browserWindow.OnMaximize += () => Electron.IpcMain.Send(browserWindow, "window-maximized");
             browserWindow.OnUnmaximize += () => Electron.IpcMain.Send(browserWindow, "window-unmaximized");
-            //browserWindow.WebContents.OpenDevTools();
             
-            Electron.IpcMain.On("minimize-window", (args) => browserWindow.Minimize());
-            Electron.IpcMain.On("maximize-window", (args) => browserWindow.Maximize());
-            Electron.IpcMain.On("unmaximize-window", (args) => browserWindow.Unmaximize());
-            Electron.IpcMain.On("close-window", (args) => browserWindow.Close());
+            browserWindow.WebContents.OpenDevTools();
+            
+            Electron.IpcMain.On("minimize-window", _ => browserWindow.Minimize());
+            Electron.IpcMain.On("maximize-window", _ => browserWindow.Maximize());
+            Electron.IpcMain.On("unmaximize-window", _ => browserWindow.Unmaximize());
+            Electron.IpcMain.On("close-window", _ => browserWindow.Close());
         }
     }
 }
