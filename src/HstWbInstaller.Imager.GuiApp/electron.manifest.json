@@ -1,7 +1,7 @@
 {
   "executable": "HstWbInstaller.Imager.GuiApp",
   "splashscreen": {
-    "imageFile": "/wwwroot/assets/electronnet-splashscreen-2.jpg"
+    "imageFile": "/splashscreen.png"
   },
   "name": "HstWbInstaller.Imager.GuiApp",
   "author": "Henrik Nørfjand Stengaard",
@@ -17,14 +17,11 @@
       "output": "../../../bin/Desktop"
     },
     "win": {
-      "icon": "/wwwroot/assets/icons/icon.ico"
+      "icon": "/hstwb-installer.ico"
     },
     "mac": {
-      "icon": "/wwwroot/assets/icons/icon.icns"
+      "icon": "/hstwb-installer.icns"
     },
-    "linux": {
-      "icon": "/wwwroot/assets/icons"
-    },    
     "extraResources": [
       {
         "from": "./bin",

@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material'
 import App from './App'
 import registerServiceWorker from './registerServiceWorker'
+import {AppStateProvider} from "./components/AppStateContext";
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -40,12 +41,13 @@ const theme = createTheme({
 })
 
 ReactDOM.render(
-    <MuiThemeProvider theme={theme}>
-        <BrowserRouter basename={baseUrl}>
-            <App />
-        </BrowserRouter>
-    </MuiThemeProvider>,
+    <AppStateProvider>
+        <MuiThemeProvider theme={theme}>
+            <BrowserRouter basename={baseUrl}>
+                <App />
+            </BrowserRouter>
+        </MuiThemeProvider>
+    </AppStateProvider>,
     rootElement);
 
 registerServiceWorker();
-

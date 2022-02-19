@@ -9,6 +9,7 @@ import Convert from "../pages/Convert";
 import Verify from "../pages/Verify";
 import Blank from "../pages/Blank";
 import Optimize from "../pages/Optimize";
+import Partition from "../pages/Partition";
 
 export default function Content() {
     return (
@@ -21,6 +22,7 @@ export default function Content() {
             <Route path='/verify' component={Verify}/>
             <Route path='/blank' component={Blank}/>
             <Route path='/optimize' component={Optimize}/>
+            <Route path='/partition' component={Partition}/>
         </Box>
     )
 }
