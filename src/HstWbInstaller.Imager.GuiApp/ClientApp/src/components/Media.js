@@ -168,18 +168,29 @@ export default function Media({media} = {}) {
                                 <img src="icons/amiga-check-logo.png" height="14px" alt="Amiga logo" style={{verticalAlign: 'text-top' }} /> RDB, {rigidDiskBlock.name}, {formatBytes(rigidDiskBlock.size)}
                             </td>
                         </tr>
-                        <tr>
-                            {rigidDiskBlock.partitions.map((partition, index) => (
-                                <td
-                                    key={index}
-                                    width={`${partition.percentSize}%`}
-                                    style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
-                                >
-                                    <div style={{backgroundColor: 'rgb(210,210,255)', width: '100%', height: '20px'}}/>
-                                    {partition.name}, {partition.fileSystem}, {formatBytes(partition.size)}
-                                </td>
-                            ))}
-                        </tr>
+                        {rigidDiskBlock.partitions.length > 0 && (
+                            <React.Fragment>
+                                <tr>
+                                    {rigidDiskBlock.partitions.map((partition, index) => (
+                                        <td
+                                            key={index}
+                                            width={`${partition.percentSize}%`}
+                                            style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                        >
+                                            <div style={{backgroundColor: 'rgb(210,210,255)', width: '100%', height: '20px', padding: '1px'}}>{partition.name}</div>
+                                            {/*{partition.name}, {partition.fileSystem}, {formatBytes(partition.size)}*/}
+                                        </td>
+                                    ))}
+                                </tr>
+                                {rigidDiskBlock.partitions.map((partition, index) => (
+                                    <tr key={index}>
+                                        <td colSpan={rigidDiskBlock.partitions.length}>
+                                            {partition.name}:, {partition.fileSystem}, {formatBytes(partition.size)}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </React.Fragment>
+                        )}
                         </tbody>
                     </table>
                 </React.Fragment>

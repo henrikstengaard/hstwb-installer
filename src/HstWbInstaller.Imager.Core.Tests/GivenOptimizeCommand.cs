@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using Commands;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
@@ -23,10 +24,11 @@
             // var bytes = fakeCommandHelper.CreateTestData();
             fakeCommandHelper.WriteableMedias.Add(new Media(path, Media.MediaType.Raw, false,
                 new MemoryStream(new byte[16384])));
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // optimize
             var optimizeCommand = new OptimizeCommand(fakeCommandHelper, path);
-            var result = await optimizeCommand.Execute();
+            var result = await optimizeCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // assert media contains optimized rigid disk block size

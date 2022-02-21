@@ -1,14 +1,14 @@
-import React from 'react'
-import {useHistory} from 'react-router-dom'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+﻿import {useHistory} from "react-router-dom";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import React from "react";
 
-export default function Main() {
+export default function Start() {
     const history = useHistory()
 
     return (
@@ -16,7 +16,7 @@ export default function Main() {
             <Grid container spacing={1}>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/read')}>
+                        <CardActionArea onClick={() => history.push('/read')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -29,7 +29,7 @@ export default function Main() {
                                     </Grid>
                                 </Grid>
                                 <Typography>
-                                    Read physical drive to image file.
+                                    Read physical disk to image file.
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
@@ -37,7 +37,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/write')}>
+                        <CardActionArea onClick={() => history.push('/write')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -50,7 +50,7 @@ export default function Main() {
                                     </Grid>
                                 </Grid>
                                 <Typography>
-                                    Write image file to physical drive.
+                                    Write image file to physical disk.
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
@@ -58,7 +58,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/info')}>
+                        <CardActionArea onClick={() => history.push('/info')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -71,7 +71,7 @@ export default function Main() {
                                     </Grid>
                                 </Grid>
                                 <Typography>
-                                    Display information about physical drive or image file.
+                                    Display information about physical disk or image file.
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
@@ -79,7 +79,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/convert')}>
+                        <CardActionArea onClick={() => history.push('/convert')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -100,7 +100,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/verify')}>
+                        <CardActionArea onClick={() => history.push('/verify')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -113,7 +113,7 @@ export default function Main() {
                                     </Grid>
                                 </Grid>
                                 <Typography>
-                                    Verify image file and physical drive.
+                                    Verify image file and physical disk.
                                 </Typography>
                             </CardContent>
                         </CardActionArea>
@@ -121,7 +121,7 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/blank')}>
+                        <CardActionArea onClick={() => history.push('/blank')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>
@@ -142,7 +142,28 @@ export default function Main() {
                 </Grid>
                 <Grid item xs={6}>
                     <Card>
-                        <CardActionArea onClick={() => history.push('/optimize')}>
+                        <CardActionArea onClick={() => history.push('/partition')} disableRipple>
+                            <CardContent>
+                                <Grid container alignItems="center" spacing={2}>
+                                    <Grid item>
+                                        <Typography variant="h3">
+                                            Partition
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <FontAwesomeIcon icon="hdd" size="2x" style={{verticalAlign: 'text-top' }} />
+                                    </Grid>
+                                </Grid>
+                                <Typography>
+                                    Edit partition table for physical disk or image file.
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+                <Grid item xs={6}>
+                    <Card>
+                        <CardActionArea onClick={() => history.push('/optimize')} disableRipple>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={2}>
                                     <Grid item>

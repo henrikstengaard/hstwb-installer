@@ -8,7 +8,7 @@
         public static void Present(DataProcessedEventArgs args)
         {
             Console.WriteLine(
-                $"{args.PercentComplete:F1}% ({args.TotalBytesProcessed} / {args.TotalBytes} bytes)");
+                $"{args.PercentComplete:F1}% ({args.BytesProcessed} / {args.BytesTotal} bytes)");
         }
 
         public static void PresentPaths(Arguments arguments)

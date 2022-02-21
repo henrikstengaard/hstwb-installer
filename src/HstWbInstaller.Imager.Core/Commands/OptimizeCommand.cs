@@ -1,6 +1,7 @@
 ﻿namespace HstWbInstaller.Imager.Core.Commands
 {
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
 
@@ -15,7 +16,7 @@
             this.path = path;
         }
         
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             if (commandHelper.IsVhd(path))
             {

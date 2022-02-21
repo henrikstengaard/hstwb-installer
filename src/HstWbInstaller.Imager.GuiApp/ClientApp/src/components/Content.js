@@ -1,7 +1,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import {Route} from 'react-router';
-import Main from "./Main";
+import Start from "../pages/Start";
 import Read from "../pages/Read";
 import Write from "../pages/Write";
 import Info from "../pages/Info";
@@ -14,7 +14,7 @@ import Partition from "../pages/Partition";
 export default function Content() {
     return (
         <Box component="main" sx={{flexGrow: 1, marginTop: '32px', p: 3}}>
-            <Route exact path='/' component={Main}/>
+            <Route exact path='/' component={Start}/>
             <Route path='/read' component={Read}/>
             <Route path='/write' component={Write}/>
             <Route path='/info' component={Info}/>

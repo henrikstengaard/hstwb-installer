@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
 
@@ -26,7 +27,7 @@
             this.size = size;
         }
 
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             var physicalDrivesList = physicalDrives.ToList();
             using var sourceMedia = commandHelper.GetReadableMedia(physicalDrivesList, sourcePath, false);
@@ -42,16 +43,20 @@
             var imageConverter = new ImageConverter();
             imageConverter.DataProcessed += (_, e) =>
             {
-                OnDataProcessed(e.PercentComplete, e.BytesProcessed, e.TotalBytesProcessed, e.TotalBytes);
+                OnDataProcessed(e.PercentComplete, e.BytesProcessed, e.BytesRemaining, e.BytesTotal, e.TimeElapsed,
+                    e.TimeRemaining, e.TimeTotal);
             };
-            await imageConverter.Convert(sourceStream, destinationStream, writeSize);
+            await imageConverter.Convert(token, sourceStream, destinationStream, writeSize);
             
             return new Result();
         }
 
-        private void OnDataProcessed(double percentComplete, long bytesProcessed, long totalBytesProcessed, long totalBytes)
+        private void OnDataProcessed(double percentComplete, long bytesProcessed, long bytesRemaining, long bytesTotal,
+            TimeSpan timeElapsed, TimeSpan timeTotal, TimeSpan timeRemaining)
         {
-            DataProcessed?.Invoke(this, new DataProcessedEventArgs(percentComplete, bytesProcessed, totalBytesProcessed, totalBytes));
+            DataProcessed?.Invoke(this,
+                new DataProcessedEventArgs(percentComplete, bytesProcessed, bytesRemaining, bytesTotal, timeElapsed,
+                    timeRemaining, timeTotal));
         }
     }
 }

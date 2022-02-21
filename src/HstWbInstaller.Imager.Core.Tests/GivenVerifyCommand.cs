@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using Commands;
     using Models;
@@ -17,6 +18,7 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper(new[] { sourcePath, destinationPath });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // act - verify source img to destination img
             var verifyCommand =
@@ -26,13 +28,13 @@
             {
                 dataProcessedEventArgs = args;
             };
-            await verifyCommand.Execute();
+            await verifyCommand.Execute(cancellationTokenSource.Token);
 
             Assert.NotNull(dataProcessedEventArgs);
             Assert.NotEqual(0, dataProcessedEventArgs.PercentComplete);
             Assert.NotEqual(0, dataProcessedEventArgs.BytesProcessed);
-            Assert.NotEqual(0, dataProcessedEventArgs.TotalBytesProcessed);
-            Assert.NotEqual(0, dataProcessedEventArgs.TotalBytes);
+            Assert.Equal(0, dataProcessedEventArgs.BytesRemaining);
+            Assert.NotEqual(0, dataProcessedEventArgs.BytesTotal);
             
             // assert data is identical
             var sourceBytes = fakeCommandHelper.GetMedia(sourcePath).GetBytes();
@@ -47,6 +49,7 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.vhd";
             var fakeCommandHelper = new FakeCommandHelper(new[] { sourcePath });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // arrange destination vhd has copy of source img data
             var sourceBytes = fakeCommandHelper.GetMedia(sourcePath).GetBytes();
@@ -54,7 +57,7 @@
 
             // act - verify source img to destination img
             var verifyCommand = new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
-            var result = await verifyCommand.Execute();
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // delete destination path vhd
@@ -69,11 +72,12 @@
             var destinationPath = $"{Guid.NewGuid()}.img";
             var size = 16 * 512;
             var fakeCommandHelper = new FakeCommandHelper(new[] { sourcePath, destinationPath });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // act - verify source img to destination img
             var verifyCommand = new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath,
                 destinationPath, size);
-            var result = await verifyCommand.Execute();
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // assert data is identical
@@ -92,6 +96,7 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
@@ -108,7 +113,7 @@
             // act - verify source img to destination img
             var verifyCommand =
                 new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
-            var result = await verifyCommand.Execute();
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
             Assert.Equal(typeof(ByteNotEqualError), result.Error.GetType());
             var byteNotEqualError = (ByteNotEqualError)result.Error;
@@ -124,6 +129,7 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
@@ -139,7 +145,7 @@
             // act - verify source img to destination img
             var verifyCommand =
                 new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
-            var result = await verifyCommand.Execute();
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
 
             Assert.Equal(typeof(SizeNotEqualError), result.Error.GetType());

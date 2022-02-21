@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
     using Models;
@@ -19,7 +20,7 @@
 
         public event EventHandler<ListReadEventArgs> ListRead;
 
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             var mediaInfos = new List<MediaInfo>();
             foreach (var physicalDrive in physicalDrives)

@@ -1,59 +1,112 @@
 ﻿namespace HstWbInstaller.Imager.Core
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
+    using Commands;
+    using Helpers;
+    using HstWbInstaller.Core;
 
     public class ImageVerifier
     {
         private readonly int bufferSize;
         
-        public event EventHandler<DataProcessedEventArgs> DataVerified;
+        public event EventHandler<DataProcessedEventArgs> DataProcessed;
 
         public ImageVerifier(int bufferSize = 1024 * 1024)
         {
             this.bufferSize = bufferSize;
         }
 
-        public async Task<bool> Verify(Stream source, Stream destination, long size)
+        public async Task<Result> Verify(CancellationToken token, Stream source, Stream destination, long size)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            // var srcBuffer = new byte[bufferSize];
+            // var destBuffer = new byte[bufferSize];
+            //
+            // var bytesProcessed = 0L;
+            // int srcBytesRead;
+            // int destBytesRead;
+            // do
+            // {
+            //     var chunkSize = Convert.ToInt32(bytesProcessed + bufferSize >= size ? size - bytesProcessed : bufferSize);
+            //     
+            //     srcBytesRead = await source.ReadAsync(srcBuffer, 0, chunkSize);
+            //     destBytesRead = await destination.ReadAsync(destBuffer, 0, chunkSize);
+            //
+            //     if (srcBytesRead != destBytesRead)
+            //     {
+            //         return false;
+            //     }
+            //     
+            //     for (var i = 0; i < srcBytesRead; i++)
+            //     {
+            //         if (srcBuffer[i] != destBuffer[i])
+            //         {
+            //             return false;
+            //         }
+            //     }
+            //     
+            //     bytesProcessed += chunkSize;
+            //     var bytesRemaining = size - bytesProcessed;
+            //     var percentComplete = bytesProcessed == 0 ? 0 : (double)100 / size * bytesProcessed;
+            //     var timeElapsed = stopwatch.Elapsed;
+            //     var timeRemaining = TimeHelper.CalculateTimeRemaining(percentComplete, timeElapsed);
+            //     var timeTotal = timeElapsed + timeRemaining;
+            //     
+            //     OnDataProcessed(percentComplete, bytesProcessed, bytesRemaining, size, timeElapsed, timeRemaining, timeTotal);
+            // } while (srcBytesRead == bufferSize && destBytesRead == srcBytesRead);
+
             var srcBuffer = new byte[bufferSize];
             var destBuffer = new byte[bufferSize];
-
-            var totalBytesVerified = 0L;
             int srcBytesRead;
-            int destBytesRead;
+            long offset = 0;
             do
             {
-                var chunkSize = Convert.ToInt32(totalBytesVerified + bufferSize >= size ? size - totalBytesVerified : bufferSize);
+                if (token.IsCancellationRequested)
+                {
+                    return new Result<Error>(new Error("Cancelled"));
+                }
                 
-                srcBytesRead = await source.ReadAsync(srcBuffer, 0, chunkSize);
-                destBytesRead = await destination.ReadAsync(destBuffer, 0, chunkSize);
-
+                var verifyBytes = Convert.ToInt32(offset + bufferSize > size ? size - offset : bufferSize);
+                srcBytesRead = await source.ReadAsync(srcBuffer, 0, verifyBytes, token);
+                var destBytesRead = await destination.ReadAsync(destBuffer, 0, verifyBytes, token);
+                
                 if (srcBytesRead != destBytesRead)
                 {
-                    return false;
+                    return new Result(new SizeNotEqualError(offset + srcBytesRead, offset + destBytesRead));
                 }
                 
-                for (var i = 0; i < srcBytesRead; i++)
+                for (int i = 0; i < verifyBytes; i++)
                 {
-                    if (srcBuffer[i] != destBuffer[i])
+                    if (srcBuffer[i] == destBuffer[i])
                     {
-                        return false;
+                        continue;
                     }
+                    
+                    return new Result(new ByteNotEqualError(offset + i, srcBuffer[i], destBuffer[i]));
                 }
+            
+                offset += verifyBytes;
+                var bytesRemaining = size - offset;
+                var percentComplete = offset == 0 ? 0 : Math.Round((double)100 / size * offset, 1);
+                var timeElapsed = stopwatch.Elapsed;
+                var timeRemaining = TimeHelper.CalculateTimeRemaining(percentComplete, timeElapsed);
+                var timeTotal = timeElapsed + timeRemaining;
                 
-                totalBytesVerified += chunkSize;
-                var percentComplete = totalBytesVerified == 0 ? 0 : (double)100 / size * totalBytesVerified;
-                OnDataVerified(percentComplete, chunkSize, totalBytesVerified, size);
-            } while (srcBytesRead == bufferSize && destBytesRead == srcBytesRead);
-
-            return true;
+                OnDataProcessed(percentComplete, offset, bytesRemaining, size, timeElapsed, timeRemaining, timeTotal);
+            } while (srcBytesRead == bufferSize && offset < size);            
+            
+            return new Result();
         }
 
-        private void OnDataVerified(double percentComplete, long bytesVerified, long totalBytesVerified, long totalBytes)
+        private void OnDataProcessed(double percentComplete, long bytesProcessed, long bytesRemaining, long bytesTotal, TimeSpan timeElapsed, TimeSpan timeRemaining, TimeSpan timeTotal)
         {
-            DataVerified?.Invoke(this, new DataProcessedEventArgs(percentComplete, bytesVerified, totalBytesVerified, totalBytes));
+            DataProcessed?.Invoke(this, new DataProcessedEventArgs(percentComplete, bytesProcessed, bytesRemaining, bytesTotal, timeElapsed, timeRemaining, timeTotal));
         }
     }
 }

@@ -1,4 +1,4 @@
-import { get } from 'lodash'
+import {get, isNil} from 'lodash'
 import React from 'react'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -11,16 +11,25 @@ import Card from "@mui/material/Card"
 import CardContent from "@mui/material/CardContent"
 import Typography from "@mui/material/Typography"
 import {HubConnectionBuilder} from '@microsoft/signalr'
+import Stack from "@mui/material/Stack";
+import {formatBytes} from "../utils/Format";
 
-// const Content = styled('div')(({theme}) => ({
-//     position: 'relative',
-//     zIndex: 1
-// }));
+const initialState = {
+    title: '',
+    show: false,
+    percentComplete: null,
+    bytesProcessed: null,
+    bytesRemaining: null,
+    bytesTotal: null,
+    millisecondsElapsed: null,
+    millisecondsRemaining: null,
+    millisecondsTotal: null
+}
 
 const StyledBackdrop = styled(Backdrop)(({theme}) => ({
     position: 'fixed',
     zIndex: 5000,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)'
+    backgroundColor: 'rgba(0, 0, 0, 0.7)'
 }));
 
 export default function ProgressBackdrop(props) {
@@ -28,11 +37,7 @@ export default function ProgressBackdrop(props) {
         children
     } = props
 
-    const [state, setState] = React.useState({
-        title: '',
-        show: false,
-        percentComplete: null
-    });
+    const [state, setState] = React.useState({ ...initialState });
     const [connection, setConnection] = React.useState(null);
 
     React.useEffect(() => {
@@ -53,6 +58,12 @@ export default function ProgressBackdrop(props) {
                         state.title = progress.title
                         state.show = !isComplete
                         state.percentComplete = progress.percentComplete
+                        state.bytesProcessed = isComplete ? null : progress.bytesProcessed
+                        state.bytesRemaining = isComplete ? null : progress.bytesRemaining
+                        state.bytesTotal = isComplete ? null : progress.bytesTotal
+                        state.millisecondsElapsed = isComplete ? null : progress.millisecondsElapsed
+                        state.millisecondsRemaining = isComplete ? null : progress.millisecondsRemaining
+                        state.millisecondsTotal = isComplete ? null : progress.millisecondsTotal
                         setState({...state})
                     });
                 })
@@ -63,10 +74,14 @@ export default function ProgressBackdrop(props) {
     const {
         title,
         show,
-        percentComplete
+        percentComplete,
+        bytesProcessed,
+        bytesRemaining,
+        bytesTotal,
+        millisecondsElapsed,
+        millisecondsRemaining,
+        millisecondsTotal
     } = state
-
-    console.log(state)
     
     const handleCancel = async () => {
         const response = await fetch('cancel', {method: 'POST'});
@@ -74,30 +89,29 @@ export default function ProgressBackdrop(props) {
             console.error("Failed to cancel")
         }
 
-        setState({
-            ...state,
-            title: '',
-            show: false,
-            percentComplete: null
-        })
+        setState({ ...initialState })
     }
 
     const renderProgress = (percentComplete) => {
-        return <LinearProgress variant="determinate" color="primary" value={percentComplete || 0} sx={{mt: 1}}/>
+        return <LinearProgress variant="determinate" color="primary" value={isNil(percentComplete) ? 1 : percentComplete} sx={{mt: 1}}/>
     }
 
-    const renderPercentage = (percentComplete) => {
-        if (percentComplete == null) {
+    const renderText = (text) => {
+        if (isNil(text)) {
             return null
         }
 
         return (
-            <Typography variant="caption" component="div" color="text.secondary">
-                {`${percentComplete}%`}
+            <Typography variant="caption" align="center" component="div" color="text.secondary">
+                {text}
             </Typography>
         )
     }
-
+    
+    const percentageText = isNil(percentComplete) ? null : `${percentComplete} %`
+    const bytesText = !isNil(bytesProcessed) && !isNil(bytesTotal) && !isNil(bytesRemaining) ? `${formatBytes(bytesProcessed)} of ${formatBytes(bytesTotal)} processed, ${formatBytes(bytesRemaining)} remaining` : null
+    const timeText = !isNil(millisecondsElapsed) && !isNil(millisecondsTotal) && !isNil(millisecondsRemaining) ? `${millisecondsElapsed} of ${millisecondsTotal} elapsed, ${millisecondsRemaining} remaining` : null
+    
     return (
         <React.Fragment>
             {children}
@@ -120,7 +134,17 @@ export default function ProgressBackdrop(props) {
                                 display: 'flex',
                                 justifyContent: 'center'
                             }}>
-                                {renderPercentage(percentComplete)}
+                                <Stack direction="column" spacing={1}>
+                                    {renderText(percentageText)}
+                                    {renderText(bytesText)}
+                                    {renderText(timeText)}
+                                </Stack>
+                            </Box>
+                            <Box sx={{
+                                mt: 1,
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}>
                                 <Button
                                     variant="contained"
                                     startIcon={<FontAwesomeIcon icon="ban"/>}

@@ -7,9 +7,9 @@
     {
         public static string FormatBytes(this long size, int precision = 1)
         {
-            var unit = Math.Log(size, 1024);
+            var unit = size == 0 ? 0 : Math.Log(size, 1024);
             var units = new[] { "bytes", "KB", "MB", "GB", "TB" };
-            var formattedSize = Math.Round(Math.Pow(1024, unit - Math.Floor(unit)), precision);
+            var formattedSize = size == 0 ? 0 : Math.Round(Math.Pow(1024, unit - Math.Floor(unit)), precision);
             var formattedUnit = units[Convert.ToInt32(Math.Floor(unit))];
             return $"{formattedSize} {formattedUnit}";
         }
