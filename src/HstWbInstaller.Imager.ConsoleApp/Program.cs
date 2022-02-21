@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.CommandLine;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
@@ -225,6 +226,7 @@
 
             var commandHelper = new CommandHelper();
             var physicalDrives = (await GetPhysicalDrives(arguments)).ToList();
+            var cancellationTokenSource = new CancellationTokenSource();
             
             switch (arguments.Command)
             {
@@ -239,14 +241,13 @@
                         // });
                         InfoPresenter.PresentInfo(args.MediaInfos);
                     };
-                    await listCommand.Execute();
-                    var listResult = await listCommand.Execute();
+                    var listResult = await listCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(listResult.IsSuccess ? "Done" : $"ERROR: Read failed, {listResult.Error}");
                     break;
                 case Arguments.CommandEnum.Info:
                     var infoCommand = new InfoCommand(commandHelper, physicalDrives, arguments.SourcePath);
                     infoCommand.DiskInfoRead += (_, args) => { InfoPresenter.PresentInfo(args.MediaInfo); };
-                    var infoResult = await infoCommand.Execute();
+                    var infoResult = await infoCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(infoResult.IsSuccess ? "Done" : $"ERROR: Read failed, {infoResult.Error}");
                     break;
                 case Arguments.CommandEnum.Read:
@@ -257,8 +258,7 @@
                     var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
                         arguments.Size);
                     readCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    await readCommand.Execute();
-                    var readResult = await readCommand.Execute();
+                    var readResult = await readCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(readResult.IsSuccess ? "Done" : $"ERROR: Read failed, {readResult.Error}");
                     break;
                 case Arguments.CommandEnum.Convert:
@@ -269,7 +269,7 @@
                     var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
                         arguments.Size);
                     convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var convertResult = await convertCommand.Execute();
+                    var convertResult = await convertCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
                     break;
                 case Arguments.CommandEnum.Write:
@@ -280,7 +280,7 @@
                     var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
                         arguments.Size);
                     writeCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var writeResult = await writeCommand.Execute();
+                    var writeResult = await writeCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(writeResult.IsSuccess ? "Done" : $"ERROR: Write failed, {writeResult.Error}");
                     break;
                 case Arguments.CommandEnum.Verify:
@@ -291,21 +291,21 @@
                     var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
                         arguments.Size);
                     verifyCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var verifyResult = await verifyCommand.Execute();
+                    var verifyResult = await verifyCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(verifyResult.IsSuccess ? "Done" : $"ERROR: Verify failed, {verifyResult.Error}");
                     break;
                 case Arguments.CommandEnum.Blank:
                     Console.WriteLine("Creating blank image");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
                     var blankCommand = new BlankCommand(commandHelper, arguments.SourcePath, arguments.Size);
-                    var blankResult = await blankCommand.Execute();
+                    var blankResult = await blankCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(blankResult.IsSuccess ? "Done" : $"ERROR: Blank failed, {blankResult.Error}");
                     break;
                 case Arguments.CommandEnum.Optimize:
                     Console.WriteLine("Optimizing image file");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
                     var optimizeCommand = new OptimizeCommand(commandHelper, arguments.SourcePath);
-                    var optimizeResult = await optimizeCommand.Execute();
+                    var optimizeResult = await optimizeCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(optimizeResult.IsSuccess ? "Done" : $"ERROR: Optimize failed, {optimizeResult.Error}");
                     break;
             }

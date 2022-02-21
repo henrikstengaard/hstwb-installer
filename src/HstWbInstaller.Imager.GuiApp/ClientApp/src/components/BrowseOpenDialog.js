@@ -1,18 +1,18 @@
-import { get, isNil } from 'lodash'
+﻿import { get, isNil } from 'lodash'
 import React from "react";
 import {AppStateContext} from "./AppStateContext";
 import IconButton from "@mui/material/IconButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {HubConnectionBuilder} from "@microsoft/signalr";
 
-export default function BrowseSaveDialog(props) {
+export default function BrowseOpenDialog(props) {
     const {
         id,
-        title = 'Save file',
+        title = 'Open file',
         fileFilters = [],
         onChange
     } = props
-    
+
     const appState = React.useContext(AppStateContext)
     const [ connection, setConnection ] = React.useState(null);
 
@@ -48,11 +48,11 @@ export default function BrowseSaveDialog(props) {
     const handleBrowseClick = async () => {
         if (!appState || !appState.isElectronActive)
         {
-            console.error('Browse save dialog is only available with Electron')
+            console.error('Browse open dialog is only available with Electron')
             return
         }
-        
-        const response = await fetch('show-save-dialog', {
+
+        const response = await fetch('show-open-dialog', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -65,13 +65,15 @@ export default function BrowseSaveDialog(props) {
             })
         });
         if (!response.ok) {
-            console.error('Failed to show save dialog')
+            console.error('Failed to show open dialog')
         }
     }
-    
+
     return (
-        <IconButton aria-label="browse" disableRipple onClick={async () => await handleBrowseClick()}>
-            <FontAwesomeIcon icon="ellipsis-h"/>
-        </IconButton>
+        <React.Fragment>
+            <IconButton aria-label="browse" disableRipple onClick={async () => await handleBrowseClick()}>
+                <FontAwesomeIcon icon="ellipsis-h"/>
+            </IconButton>
+        </React.Fragment>
     )
 }

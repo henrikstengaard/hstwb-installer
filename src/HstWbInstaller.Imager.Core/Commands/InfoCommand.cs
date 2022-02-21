@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
 
@@ -20,7 +21,7 @@
 
         public event EventHandler<InfoReadEventArgs> DiskInfoRead;
         
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             var sourceMedia = commandHelper.GetReadableMedia(physicalDrives, path);
             await using var sourceStream = sourceMedia.Stream;

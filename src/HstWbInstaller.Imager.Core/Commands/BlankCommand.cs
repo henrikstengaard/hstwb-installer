@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
 
@@ -18,7 +19,7 @@
             this.size = size;
         }
         
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             if (size is null or <= 0)
             {
