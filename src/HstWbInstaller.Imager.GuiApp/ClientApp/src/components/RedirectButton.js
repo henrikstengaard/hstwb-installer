@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import {useHistory} from 'react-router-dom'
 import Button from "../components/Button"
 import {isNil} from "lodash"

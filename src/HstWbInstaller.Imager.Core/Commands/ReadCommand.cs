@@ -58,7 +58,7 @@
         }
 
         private void OnDataProcessed(double percentComplete, long bytesProcessed, long bytesRemaining, long bytesTotal,
-            TimeSpan timeElapsed, TimeSpan timeTotal, TimeSpan timeRemaining)
+            TimeSpan timeElapsed, TimeSpan timeRemaining, TimeSpan timeTotal)
         {
             DataProcessed?.Invoke(this,
                 new DataProcessedEventArgs(percentComplete, bytesProcessed, bytesRemaining, bytesTotal, timeElapsed,

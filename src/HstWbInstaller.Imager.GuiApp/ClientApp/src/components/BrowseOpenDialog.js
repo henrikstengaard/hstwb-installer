@@ -1,4 +1,4 @@
-﻿import { get, isNil } from 'lodash'
+import { get, isNil } from 'lodash'
 import React from "react";
 import {AppStateContext} from "./AppStateContext";
 import IconButton from "@mui/material/IconButton";

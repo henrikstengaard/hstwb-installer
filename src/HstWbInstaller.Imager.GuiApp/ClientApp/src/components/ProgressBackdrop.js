@@ -12,7 +12,7 @@ import CardContent from "@mui/material/CardContent"
 import Typography from "@mui/material/Typography"
 import {HubConnectionBuilder} from '@microsoft/signalr'
 import Stack from "@mui/material/Stack";
-import {formatBytes} from "../utils/Format";
+import {formatBytes, formatMilliseconds} from "../utils/Format";
 
 const initialState = {
     title: '',
@@ -37,7 +37,7 @@ export default function ProgressBackdrop(props) {
         children
     } = props
 
-    const [state, setState] = React.useState({ ...initialState });
+    const [state, setState] = React.useState({...initialState});
     const [connection, setConnection] = React.useState(null);
 
     React.useEffect(() => {
@@ -82,18 +82,19 @@ export default function ProgressBackdrop(props) {
         millisecondsRemaining,
         millisecondsTotal
     } = state
-    
+
     const handleCancel = async () => {
         const response = await fetch('cancel', {method: 'POST'});
         if (!response.ok) {
             console.error("Failed to cancel")
         }
 
-        setState({ ...initialState })
+        setState({...initialState})
     }
 
     const renderProgress = (percentComplete) => {
-        return <LinearProgress variant="determinate" color="primary" value={isNil(percentComplete) ? 1 : percentComplete} sx={{mt: 1}}/>
+        return <LinearProgress variant="determinate" color="primary"
+                               value={isNil(percentComplete) ? 1 : percentComplete} sx={{mt: 1}}/>
     }
 
     const renderText = (text) => {
@@ -107,11 +108,15 @@ export default function ProgressBackdrop(props) {
             </Typography>
         )
     }
-    
-    const percentageText = isNil(percentComplete) ? null : `${percentComplete} %`
-    const bytesText = !isNil(bytesProcessed) && !isNil(bytesTotal) && !isNil(bytesRemaining) ? `${formatBytes(bytesProcessed)} of ${formatBytes(bytesTotal)} processed, ${formatBytes(bytesRemaining)} remaining` : null
-    const timeText = !isNil(millisecondsElapsed) && !isNil(millisecondsTotal) && !isNil(millisecondsRemaining) ? `${millisecondsElapsed} of ${millisecondsTotal} elapsed, ${millisecondsRemaining} remaining` : null
-    
+
+    const percentageText = isNil(percentComplete) ? null : `${parseFloat(percentComplete).toFixed(1)} %`
+    const bytesText = !isNil(bytesProcessed) && !isNil(bytesTotal) && !isNil(bytesRemaining)
+        ? `${formatBytes(bytesProcessed)} of ${formatBytes(bytesTotal)} processed, ${formatBytes(bytesRemaining)} remaining`
+        : null
+    const timeText = !isNil(millisecondsElapsed) && !isNil(millisecondsTotal) && !isNil(millisecondsRemaining)
+        ? `${formatMilliseconds(millisecondsElapsed)} elapsed of ${formatMilliseconds(millisecondsTotal)}, ${formatMilliseconds(millisecondsRemaining)} remaining`
+        : null
+
     return (
         <React.Fragment>
             {children}

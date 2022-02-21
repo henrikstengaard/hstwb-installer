@@ -63,7 +63,11 @@ export default function Read() {
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
                 <Grid item xs={12} sm={6}>
                     <MediaSelectField
-                        label={<React.Fragment><FontAwesomeIcon icon="hdd"/> Source disk</React.Fragment>}
+                        label={
+                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                <FontAwesomeIcon icon="hdd" style={{marginRight: '5px'}} /> Source disk
+                            </div>
+                        }
                         id="source-disk"
                         path={get(sourceMedia, 'path') || ''}
                         onChange={(media) => handleChange({
@@ -77,7 +81,11 @@ export default function Read() {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         id="destination-file"
-                        label={<React.Fragment><FontAwesomeIcon icon="file" /> Destination file</React.Fragment>}
+                        label={
+                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Destination file
+                            </div>
+                        }
                         value={destinationPath || ''}
                         endAdornment={
                             <BrowseSaveDialog

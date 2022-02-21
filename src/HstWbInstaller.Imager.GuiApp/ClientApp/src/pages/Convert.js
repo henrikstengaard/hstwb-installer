@@ -9,7 +9,6 @@ import BrowseSaveDialog from "../components/BrowseSaveDialog";
 import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
-import Media from "../components/Media";
 import BrowseOpenDialog from "../components/BrowseOpenDialog";
 
 const initialState = {
@@ -42,7 +41,7 @@ export default function Convert() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Reading disk '${sourcePath}' to file '${destinationPath}'`,
+                title: `Reading file '${sourcePath}' to file '${destinationPath}'`,
                 sourcePath,
                 destinationPath
             })
@@ -64,7 +63,11 @@ export default function Convert() {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         id="source-path"
-                        label={<React.Fragment><FontAwesomeIcon icon="file" /> Source image file</React.Fragment>}
+                        label={
+                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Source image file
+                            </div>
+                        }
                         value={sourcePath || ''}
                         endAdornment={
                             <BrowseOpenDialog
@@ -95,7 +98,11 @@ export default function Convert() {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         id="destination-path"
-                        label={<React.Fragment><FontAwesomeIcon icon="file" /> Destination image file</React.Fragment>}
+                        label={
+                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Destination image file
+                            </div>
+                        }
                         value={destinationPath || ''}
                         endAdornment={
                             <BrowseSaveDialog

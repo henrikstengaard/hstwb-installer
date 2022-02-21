@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import {isNil} from "lodash";
 import SelectField from "./SelectField";
 
@@ -27,7 +27,7 @@ export default function MediaSelectField(props) {
         }
 
         getMedias()
-    }, [setState])
+    }, [setState, state])
 
     React.useEffect(() => {
         if (!isNil(state.medias)) {
