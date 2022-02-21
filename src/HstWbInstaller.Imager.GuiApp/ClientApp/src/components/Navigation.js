@@ -65,7 +65,7 @@ export default function Navigation() {
     
     const items = [
         {
-            text: 'Main',
+            text: 'Start',
             icon: 'home',
             path: '/'
         },

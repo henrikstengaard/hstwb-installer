@@ -2,7 +2,6 @@ import React from 'react'
 import Title from "../components/Title";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import TextField from "../components/TextField";
 import {get, isNil, set} from "lodash";
@@ -55,15 +54,6 @@ export default function Info() {
         })
     }
     
-    const handleOpenFile = async (path) => {
-        setState({
-            ...state,
-            imagePath: path
-        })
-        
-        await getMediaInfo(path)
-    }
-
     const handleCancel = () => {
         setState({ ...initialState })
     }
@@ -84,7 +74,11 @@ export default function Info() {
                 <Grid item xs={12} sm={6}>
                     <TextField
                         id="image-path"
-                        label={<React.Fragment><FontAwesomeIcon icon="file" /> Image file</React.Fragment>}
+                        label={
+                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Image file
+                            </div>
+                        }
                         value={imagePath || ''}
                         endAdornment={
                             <BrowseOpenDialog
@@ -135,7 +129,6 @@ export default function Info() {
             </Grid>
             {mediaInfo && (
                 <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                    <Grid item sx={{minWidth: 50}}/>
                     <Grid item xs={12} sm={6}>
                         <Media media={mediaInfo}/>
                     </Grid>

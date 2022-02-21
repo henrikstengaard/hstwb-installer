@@ -1,14 +1,12 @@
 import React from 'react'
 import Box from "@mui/material/Box";
 import Title from "../components/Title";
-export default function Blank() {
+export default function About() {
     return (
         <Box>
             <Title
-                text="Blank"
-                description="Create blank image file."
+                text="About"
             />
-            Not implemented yet.
         </Box>
     )
 }

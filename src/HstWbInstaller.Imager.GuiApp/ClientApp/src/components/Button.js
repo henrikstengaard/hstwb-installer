@@ -1,4 +1,4 @@
-﻿import {isNil} from "lodash";
+import {isNil} from "lodash";
 import React from 'react'
 import {Button as MuiButton} from "@mui/material";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";

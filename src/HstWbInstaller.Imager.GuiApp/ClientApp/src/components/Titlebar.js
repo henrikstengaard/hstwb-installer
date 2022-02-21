@@ -34,7 +34,7 @@ export default function Titlebar() {
         <AppBar
             position="fixed"
             sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 1,
+                zIndex: (theme) => theme.zIndex.drawer + 10000,
                 WebkitAppRegion: 'drag',
                 userSelect: 'none'
             }}>
