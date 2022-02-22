@@ -17,6 +17,7 @@ import {formatBytes, formatMilliseconds} from "../utils/Format";
 const initialState = {
     title: '',
     show: false,
+    isComplete: false,
     percentComplete: null,
     bytesProcessed: null,
     bytesRemaining: null,
@@ -56,7 +57,8 @@ export default function ProgressBackdrop(props) {
                     connection.on('UpdateProgress', progress => {
                         const isComplete = get(progress, 'isComplete') || false
                         state.title = progress.title
-                        state.show = !isComplete
+                        state.isComplete = isComplete
+                        state.show = true
                         state.percentComplete = progress.percentComplete
                         state.bytesProcessed = isComplete ? null : progress.bytesProcessed
                         state.bytesRemaining = isComplete ? null : progress.bytesRemaining
@@ -74,6 +76,7 @@ export default function ProgressBackdrop(props) {
     const {
         title,
         show,
+        isComplete,
         percentComplete,
         bytesProcessed,
         bytesRemaining,
@@ -92,9 +95,8 @@ export default function ProgressBackdrop(props) {
         setState({...initialState})
     }
 
-    const renderProgress = (percentComplete) => {
-        return <LinearProgress variant="determinate" color="primary"
-                               value={isNil(percentComplete) ? 1 : percentComplete} sx={{mt: 1}}/>
+    const handleOk = async () => {
+        setState({...initialState})
     }
 
     const renderText = (text) => {
@@ -109,13 +111,86 @@ export default function ProgressBackdrop(props) {
         )
     }
 
-    const percentageText = isNil(percentComplete) ? null : `${parseFloat(percentComplete).toFixed(1)} %`
-    const bytesText = !isNil(bytesProcessed) && !isNil(bytesTotal) && !isNil(bytesRemaining)
-        ? `${formatBytes(bytesProcessed)} of ${formatBytes(bytesTotal)} processed, ${formatBytes(bytesRemaining)} remaining`
-        : null
-    const timeText = !isNil(millisecondsElapsed) && !isNil(millisecondsTotal) && !isNil(millisecondsRemaining)
-        ? `${formatMilliseconds(millisecondsElapsed)} elapsed of ${formatMilliseconds(millisecondsTotal)}, ${formatMilliseconds(millisecondsRemaining)} remaining`
-        : null
+    const renderProgress = ({
+                                isComplete,
+                                percentComplete,
+                                bytesProcessed,
+                                bytesRemaining,
+                                bytesTotal,
+                                millisecondsElapsed,
+                                millisecondsRemaining,
+                                millisecondsTotal
+                            }) => {
+        if (isComplete) {
+            return (
+                <React.Fragment>
+                    <Box sx={{
+                        mt: 1,
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}>
+                        <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom', color: 'rgb(51, 204, 51)'}}>
+                            <FontAwesomeIcon icon="check" style={{marginRight: '5px'}}/> Completed successfully
+                        </div>
+                    </Box>
+                    <Box sx={{
+                        mt: 1,
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}>
+                        <Button
+                            variant="contained"
+                            onClick={() => handleOk()}
+                        >
+                            Ok
+                        </Button>
+                    </Box>
+                </React.Fragment>
+            )
+        }
+
+
+        const percentageText = isNil(percentComplete) ? null : `${parseFloat(percentComplete).toFixed(1)} %`
+        const bytesText = !isNil(bytesProcessed) && !isNil(bytesTotal) && !isNil(bytesRemaining)
+            ? `${formatBytes(bytesProcessed)} of ${formatBytes(bytesTotal)} processed, ${formatBytes(bytesRemaining)} remaining`
+            : null
+        const timeText = !isNil(millisecondsElapsed) && !isNil(millisecondsTotal) && !isNil(millisecondsRemaining)
+            ? `${formatMilliseconds(millisecondsElapsed)} elapsed of ${formatMilliseconds(millisecondsTotal)}, ${formatMilliseconds(millisecondsRemaining)} remaining`
+            : null
+
+        return (
+            <React.Fragment>
+                <LinearProgress
+                    variant="determinate"
+                    color="primary"
+                    value={isNil(percentComplete) ? 0 : percentComplete} sx={{mt: 1}}/>
+                <Box sx={{
+                    mt: 1,
+                    display: 'flex',
+                    justifyContent: 'center'
+                }}>
+                    <Stack direction="column" spacing={1}>
+                        {renderText(percentageText)}
+                        {renderText(bytesText)}
+                        {renderText(timeText)}
+                    </Stack>
+                </Box>
+                <Box sx={{
+                    mt: 1,
+                    display: 'flex',
+                    justifyContent: 'center'
+                }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<FontAwesomeIcon icon="ban"/>}
+                        onClick={() => handleCancel()}
+                    >
+                        Cancel
+                    </Button>
+                </Box>
+            </React.Fragment>
+        )
+    }
 
     return (
         <React.Fragment>
@@ -133,31 +208,16 @@ export default function ProgressBackdrop(props) {
                                     {title || ''}
                                 </Typography>
                             </Box>
-                            {renderProgress(percentComplete)}
-                            <Box sx={{
-                                mt: 1,
-                                display: 'flex',
-                                justifyContent: 'center'
-                            }}>
-                                <Stack direction="column" spacing={1}>
-                                    {renderText(percentageText)}
-                                    {renderText(bytesText)}
-                                    {renderText(timeText)}
-                                </Stack>
-                            </Box>
-                            <Box sx={{
-                                mt: 1,
-                                display: 'flex',
-                                justifyContent: 'center'
-                            }}>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<FontAwesomeIcon icon="ban"/>}
-                                    onClick={() => handleCancel()}
-                                >
-                                    Cancel
-                                </Button>
-                            </Box>
+                            {renderProgress({
+                                isComplete,
+                                percentComplete,
+                                bytesProcessed,
+                                bytesRemaining,
+                                bytesTotal,
+                                millisecondsElapsed,
+                                millisecondsRemaining,
+                                millisecondsTotal
+                            })}
                         </CardContent>
                     </Card>
                 </Container>

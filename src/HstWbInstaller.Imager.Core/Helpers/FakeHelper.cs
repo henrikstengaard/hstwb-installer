@@ -5,12 +5,14 @@
 
     public static class FakeHelper
     {
+        public const string Path = "fake";
+        
         public static MediaInfo CreateFakeMediaInfo()
         {
             var dosType = new byte[] { 80, 68, 84, 3 };
             return new MediaInfo
             {
-                Path = "fake",
+                Path = Path,
                 DiskSize = 1024L * 1024 * 1000 * 16,
                 Model = "SanDisk 16GB",
                 IsPhysicalDrive = true,

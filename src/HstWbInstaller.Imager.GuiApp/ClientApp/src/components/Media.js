@@ -1,21 +1,23 @@
 import React from "react";
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import Paper from '@mui/material/Paper';
+import {get} from "lodash";
 import PropTypes from 'prop-types';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Typography from "@mui/material/Typography";
 import {formatBytes} from "../utils/Format";
 import Box from "@mui/material/Box";
+import MediaDetails from "./MediaDetails";
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <div
@@ -26,8 +28,8 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                <Box sx={{mt: 2}}>
+                    {children}
                 </Box>
             )}
         </div>
@@ -55,7 +57,7 @@ export default function Media({media} = {}) {
     };
 
     console.log(media)
-    
+
     // const partitions = media.rigidDiskBlock.partitionBlocks.map(partitionBlock => ({
     //     percentSize: Math.round((100.0 / media.rigidDiskBlock.diskSize) * partitionBlock.partitionSize),
     //     driveName: partitionBlock.driveName
@@ -67,7 +69,7 @@ export default function Media({media} = {}) {
         percentUnused: unusedBytes > 0 ? Math.round((100.0 / media.diskSize) * unusedBytes) : 0,
         unusedBytes
     }
-    
+
     const rigidDiskBlock = media.rigidDiskBlock ? {
         name: media.rigidDiskBlock.diskProduct ? media.rigidDiskBlock.diskProduct : '',
         size: media.rigidDiskBlock.diskSize,
@@ -78,11 +80,13 @@ export default function Media({media} = {}) {
             size: partitionBlock.partitionSize
         }))
     } : null
-    
+
     console.log(rigidDiskBlock)
+
+
     return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{width: '100%'}}>
+            <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
                 <Tabs value={value} onChange={handleChange} aria-label="information tabs">
                     <Tab label="Overview" {...a11yProps(0)} />
                     <Tab label="Details" {...a11yProps(1)} />
@@ -148,62 +152,75 @@ export default function Media({media} = {}) {
                 <Typography variant="h4">
                     Disk information
                 </Typography>
-                <table style={{width: '100%', display: 'inline-table', border: '1px solid black', borderCollapse: 'collapse'}}>
+                <table style={{
+                    width: '100%',
+                    display: 'inline-table',
+                    border: '1px solid black',
+                    borderCollapse: 'collapse'
+                }}>
                     <tbody>
                     <tr>
                         <td
                             colSpan={disk.unusedBytes > 0 ? 2 : 1}
-                            style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                            style={{padding: '5px', border: '1px solid black', verticalAlign: 'top'}}
                         >
-                            <FontAwesomeIcon icon="hdd" style={{verticalAlign: 'text-top' }}/> Disk, {media.model}, {formatBytes(media.diskSize)}
+                            <FontAwesomeIcon icon="hdd"
+                                             style={{verticalAlign: 'text-top'}}/> Disk, {media.model}, {formatBytes(media.diskSize)}
                         </td>
                     </tr>
                     <tr>
                         {rigidDiskBlock && (
                             <td
                                 width={`${disk.rigidDiskBlockPercentSize}%`}
-                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top'}}
                             >
                                 <div style={{backgroundColor: 'rgb(210,210,255)', width: '100%', height: '20px'}}/>
-                                <img src="icons/amiga-check-logo.png" height="14px" alt="Amiga logo" style={{verticalAlign: 'text-top' }} /> RDB, {rigidDiskBlock.name}, {formatBytes(rigidDiskBlock.size)}
+                                <img src="icons/amiga-check-logo.png" height="14px" alt="Amiga logo"
+                                     style={{verticalAlign: 'text-top'}}/> RDB, {rigidDiskBlock.name}, {formatBytes(rigidDiskBlock.size)}
                             </td>
                         )}
-    
+
                         {!rigidDiskBlock && (
                             <td
                                 width="100%"
-                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top'}}
                             >
                                 <div style={{backgroundColor: 'rgb(210,210,255)', width: '100%', height: '20px'}}/>
                             </td>
                         )}
-    
+
                         {disk.unusedBytes > 0 && (
                             <td
                                 width={`${disk.percentUnused}%`}
-                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top'}}
                             >
                                 <div style={{backgroundColor: 'rgb(200,200,200)', width: '100%', height: '20px'}}/>
                                 Unused, {formatBytes(disk.unusedBytes)}
                             </td>
-                        )}                    
+                        )}
                     </tr>
                     </tbody>
                 </table>
-    
+
                 {rigidDiskBlock && (
                     <React.Fragment>
-                        <Typography variant="h4" sx={{ mt: 1 }}>
+                        <Typography variant="h4" sx={{mt: 1}}>
                             Rigid Disk Block information
                         </Typography>
-                        <table style={{width: '100%', display: 'inline-table', border: '1px solid black', borderCollapse: 'collapse'}}>
+                        <table style={{
+                            width: '100%',
+                            display: 'inline-table',
+                            border: '1px solid black',
+                            borderCollapse: 'collapse'
+                        }}>
                             <tbody>
                             <tr>
                                 <td
                                     colSpan={rigidDiskBlock.partitions.length}
-                                    style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                    style={{padding: '5px', border: '1px solid black', verticalAlign: 'top'}}
                                 >
-                                    <img src="icons/amiga-check-logo.png" height="14px" alt="Amiga logo" style={{verticalAlign: 'text-top' }} /> RDB, {rigidDiskBlock.name}, {formatBytes(rigidDiskBlock.size)}
+                                    <img src="icons/amiga-check-logo.png" height="14px" alt="Amiga logo"
+                                         style={{verticalAlign: 'text-top'}}/> RDB, {rigidDiskBlock.name}, {formatBytes(rigidDiskBlock.size)}
                                 </td>
                             </tr>
                             {rigidDiskBlock.partitions.length > 0 && (
@@ -213,17 +230,29 @@ export default function Media({media} = {}) {
                                             <td
                                                 key={index}
                                                 width={`${partition.percentSize}%`}
-                                                style={{padding: '5px', border: '1px solid black', verticalAlign: 'top' }}
+                                                style={{
+                                                    padding: '5px',
+                                                    border: '1px solid black',
+                                                    verticalAlign: 'top'
+                                                }}
                                             >
-                                                <div style={{backgroundColor: 'rgb(210,210,255)', width: '100%', height: '20px', padding: '1px'}}>{partition.name}</div>
+                                                <div style={{
+                                                    backgroundColor: 'rgb(210,210,255)',
+                                                    width: '100%',
+                                                    minHeight: '20px',
+                                                    padding: '2px'
+                                                }}>{partition.name}</div>
                                                 {/*{partition.name}, {partition.fileSystem}, {formatBytes(partition.size)}*/}
                                             </td>
                                         ))}
                                     </tr>
                                     {rigidDiskBlock.partitions.map((partition, index) => (
                                         <tr key={index}>
-                                            <td colSpan={rigidDiskBlock.partitions.length}>
-                                                {partition.name}:, {partition.fileSystem}, {formatBytes(partition.size)}
+                                            <td
+                                                colSpan={rigidDiskBlock.partitions.length}
+                                                style={{padding: '2px 5px 2px 5px', verticalAlign: 'top'}}
+                                            >
+                                                {partition.name}: {partition.fileSystem}, {formatBytes(partition.size)}
                                             </td>
                                         </tr>
                                     ))}
@@ -235,8 +264,8 @@ export default function Media({media} = {}) {
                 )}
             </TabPanel>
             <TabPanel value={value} index={1}>
-                details
+                <MediaDetails media={media} />
             </TabPanel>
-        </Box>            
+        </Box>
     )
 }

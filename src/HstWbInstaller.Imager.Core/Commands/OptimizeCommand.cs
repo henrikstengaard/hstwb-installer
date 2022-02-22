@@ -23,8 +23,12 @@
                 return new Result(new UnsupportedImageError(path));
             }
 
-            using var media = commandHelper.GetWritableMedia(Enumerable.Empty<IPhysicalDrive>(), path);
-
+            var mediaResult = commandHelper.GetWritableMedia(Enumerable.Empty<IPhysicalDrive>(), path);
+            if (mediaResult.IsFaulted)
+            {
+                return new Result(mediaResult.Error);
+            }
+            using var media = mediaResult.Value;
             await using var stream = media.Stream;
             var currentSize = stream.Length;
 

@@ -1,18 +1,30 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
+    using Core.Helpers;
     using Extensions;
+    using Hubs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Models;
+    using Models.Requests;
 
     [ApiController]
     [Route("info")]
     public class InfoController : ControllerBase
     {
+        private readonly AppState appState;
+        private readonly IHubContext<ErrorHub> errorHubContext;
+
+        public InfoController(AppState appState, IHubContext<ErrorHub> errorHubContext)
+        {
+            this.appState = appState;
+            this.errorHubContext = errorHubContext;
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(InfoRequest request)
         {
@@ -21,6 +33,11 @@
                 return BadRequest(ModelState);
             }
 
+            if (appState.UseFake && request.Path == FakeHelper.Path)
+            {
+                return Ok(FakeHelper.CreateFakeMediaInfo().ToViewModel());
+            }
+            
             var physicalDriveManager = PhysicalDriveManager.Create();
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
             
@@ -37,7 +54,8 @@
             var result = await infoCommand.Execute(cancellationTokenSource.Token);
             if (result.IsFaulted)
             {
-                throw new Exception(result.Error.Message);
+                await errorHubContext.SendError(result.Error.Message, cancellationTokenSource.Token);
+                return BadRequest();
             }
             
             return Ok(mediaInfo?.ToViewModel());

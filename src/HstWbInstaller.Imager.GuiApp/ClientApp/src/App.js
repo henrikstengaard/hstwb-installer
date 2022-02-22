@@ -23,29 +23,18 @@ import {
     faEllipsisH,
     faBan,
     faInfo,
-    faArrowLeft
+    faArrowLeft,
+    faTimes
 } from '@fortawesome/free-solid-svg-icons'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import ProgressBackdrop from "./components/ProgressBackdrop"
-
-// import GlobalStyles from '@mui/material/GlobalStyles'
-// import { BrowserRouter } from 'react-router-dom'
-// import Main from './components/Main'
-// import Read from './pages/Read'
-// import Write from './pages/Write'
-// import Convert from './pages/Convert'
-// import Verify from './pages/Verify'
-// import Blank from './pages/Blank'
-// import Optimize from './pages/Optimize'
-// import {FetchData} from './components/FetchData';
-// import {Counter} from './components/Counter';
-
 import './custom.css'
 import Titlebar from "./components/Titlebar";
 import Navigation from "./components/Navigation";
 import Content from "./components/Content";
 import {ProgressProvider} from "./components/ProgressContext";
+import ErrorSnackBar from "./components/ErrorSnackBar";
 
 library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight, 
     faExchangeAlt, faBars, faWindowMinimize, faWindowMaximize, faWindowRestore, faWindowClose,
@@ -59,7 +48,8 @@ library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight,
     faEllipsisH,
     faBan,
     faInfo,
-    faArrowLeft)
+    faArrowLeft,
+    faTimes)
 
 export default class App extends Component {
     static displayName = App.name;
@@ -69,12 +59,9 @@ export default class App extends Component {
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <Titlebar />
-                {/*<ProgressProvider>*/}
-                {/*        <Navigation />*/}
-                {/*        <Content />*/}
-                {/*</ProgressProvider>                    */}
                 <ProgressProvider>
                     <ProgressBackdrop>
+                        <ErrorSnackBar />
                         <Navigation />
                         <Content />
                     </ProgressBackdrop>

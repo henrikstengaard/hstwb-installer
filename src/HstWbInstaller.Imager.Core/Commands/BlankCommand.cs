@@ -26,7 +26,13 @@
                 throw new ArgumentNullException(nameof(size));
             }
             
-            using var media = commandHelper.GetWritableMedia(Enumerable.Empty<IPhysicalDrive>(), path, size.Value, false);
+            var mediaResult = commandHelper.GetWritableMedia(Enumerable.Empty<IPhysicalDrive>(), path, size.Value, false);
+            if (mediaResult.IsFaulted)
+            {
+                return new Result(mediaResult.Error);
+            }
+
+            using var media = mediaResult.Value;
             await using var stream = media.Stream;
 
             if (!commandHelper.IsVhd(path))

@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Commands;
+    using HstWbInstaller.Core;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
 
@@ -25,7 +26,7 @@
             foreach (var readableMediaPath in readableMediaPaths ?? Enumerable.Empty<string>())
             {
                 var data = File.Exists(readableMediaPath) ? File.ReadAllBytes(readableMediaPath) : CreateTestData(); 
-                ReadableMedias.Add(new Media(readableMediaPath, Media.MediaType.Raw, false,
+                ReadableMedias.Add(new Media(readableMediaPath, Path.GetFileName(readableMediaPath), Media.MediaType.Raw, false,
                     new MemoryStream(data)));
             }
 
@@ -37,7 +38,7 @@
                     continue;
                 }
                 
-                WriteableMedias.Add(new Media(writeableMediaPath, Media.MediaType.Raw, false,
+                WriteableMedias.Add(new Media(writeableMediaPath, Path.GetFileName(writeableMediaPath), Media.MediaType.Raw, false,
                     new MemoryStream()));
             }
 
@@ -65,20 +66,20 @@
             return data;
         }
 
-        public override Media GetReadableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path,
+        public override Result<Media> GetReadableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path,
             bool allowPhysicalDrive = true)
         {
             return path.EndsWith(".img", StringComparison.OrdinalIgnoreCase)
-                ? ReadableMedias.Concat(WriteableMedias)
-                    .FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
+                ? new Result<Media>(ReadableMedias.Concat(WriteableMedias)
+                    .FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)))
                 : base.GetReadableMedia(physicalDrives, path, allowPhysicalDrive);
         }
 
-        public override Media GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long? size = null,
+        public override Result<Media> GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long? size = null,
             bool allowPhysicalDrive = true)
         {
             return path.EndsWith(".img", StringComparison.OrdinalIgnoreCase)
-                ? WriteableMedias.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase))
+                ? new Result<Media>(WriteableMedias.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase)))
                 : base.GetWritableMedia(physicalDrives, path, size, allowPhysicalDrive);
         }
 

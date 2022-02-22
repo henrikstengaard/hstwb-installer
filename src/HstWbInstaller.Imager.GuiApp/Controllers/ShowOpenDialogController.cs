@@ -1,7 +1,5 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using ElectronNET.API;

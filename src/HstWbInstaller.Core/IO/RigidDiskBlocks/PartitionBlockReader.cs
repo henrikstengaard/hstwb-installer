@@ -122,7 +122,7 @@
                 throw new Exception("Invalid partition block checksum");
             }
 
-            var fileSystemBlockSize = sizeBlock * 4 * sectors;
+            var fileSystemBlockSize = sizeBlock * 4;
 
             return new PartitionBlock
             {

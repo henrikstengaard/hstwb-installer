@@ -8,35 +8,47 @@
     using DiscUtils;
     using DiscUtils.Streams;
     using DiscUtils.Vhd;
+    using HstWbInstaller.Core;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
 
     public class CommandHelper : ICommandHelper
     {
-        public virtual Media GetReadableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, bool allowPhysicalDrive = true)
+        public virtual Result<Media> GetReadableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, bool allowPhysicalDrive = true)
         {
             var physicalDrive = physicalDrives.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
 
             if (!allowPhysicalDrive && physicalDrive != null)
             {
-                throw new ArgumentException("Physical drive is not allowed");
+                return new Result<Media>(new Error("Physical drive is not allowed"));
             }
             
             if (physicalDrive != null)
             {
-                return new Media(path, Media.MediaType.Raw, true, physicalDrive.Open());
+                return new Result<Media>(new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open()));
+            }
+
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return new Result<Media>(new PathNotFoundError($"Path '{path ?? "null"}' not found", nameof(path)));
             }
             
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return new Result<Media>(new PathNotFoundError($"Path '{path ?? "null"}' not found", nameof(path)));
+            }
+
+            var model = Path.GetFileName(path);
             if (!IsVhd(path))
             {
-                return new Media(path, Media.MediaType.Raw, false, File.Open(path, FileMode.Open, FileAccess.Read));
+                return new Result<Media>(new Media(path, model, Media.MediaType.Raw, false, File.Open(path, FileMode.Open, FileAccess.Read)));
             }
 
             DiscUtils.Containers.SetupHelper.SetupContainers();
             DiscUtils.FileSystems.SetupHelper.SetupFileSystems();
             var vhdDisk = VirtualDisk.OpenDisk(path, FileAccess.Read);
             vhdDisk.Content.Position = 0;
-            return new VhdMedia(path, Media.MediaType.Vhd, false, vhdDisk);
+            return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk));
         }
 
         public virtual Stream CreateWriteableStream(string path)
@@ -44,18 +56,18 @@
             return File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
-        public virtual Media GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long? size = null, bool allowPhysicalDrive = true)
+        public virtual Result<Media> GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long? size = null, bool allowPhysicalDrive = true)
         {
             var physicalDrive = physicalDrives.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
 
             if (!allowPhysicalDrive && physicalDrive != null)
             {
-                throw new ArgumentException("Physical drive is not allowed");
+                return new Result<Media>(new Error("Physical drive is not allowed"));
             }
             
             if (physicalDrive != null)
             {
-                return new Media(path, Media.MediaType.Raw, true, physicalDrive.Open());
+                return new Result<Media>(new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open()));
             }
 
             if (string.IsNullOrWhiteSpace(path))
@@ -72,9 +84,10 @@
 
             var stream = CreateWriteableStream(path);
 
+            var model = Path.GetFileName(path);
             if (!IsVhd(path))
             {
-                return new Media(path, Media.MediaType.Raw, false, stream);
+                return new Result<Media>(new Media(path, model, Media.MediaType.Raw, false, stream));
             }
 
             if (size == null)
@@ -83,7 +96,7 @@
             }
 
             var vhdDisk = Disk.InitializeDynamic(stream, Ownership.None, GetVhdSize(size.Value));
-            return new VhdMedia(path, Media.MediaType.Vhd, false, vhdDisk, stream);
+            return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk, stream));
         }
 
         public virtual Media GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long size, bool allowPhysicalDrive = true)
@@ -97,7 +110,7 @@
             
             if (physicalDrive != null)
             {
-                return new Media(path, Media.MediaType.Raw, true, physicalDrive.Open());
+                return new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open());
             }
 
             if (string.IsNullOrWhiteSpace(path))
@@ -114,13 +127,14 @@
 
             var stream = CreateWriteableStream(path);
 
+            var model = Path.GetFileName(path);
             if (!IsVhd(path))
             {
-                return new Media(path, Media.MediaType.Raw, false, stream);
+                return new Media(path, model, Media.MediaType.Raw, false, stream);
             }
 
             var vhdDisk = Disk.InitializeDynamic(stream, Ownership.None, GetVhdSize(size));
-            return new VhdMedia(path, Media.MediaType.Vhd, false, vhdDisk, stream);
+            return new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk, stream);
         }
         
         public virtual long GetVhdSize(long size)

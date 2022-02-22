@@ -88,6 +88,16 @@
             }
         }
 
+        public static async Task<short> ReadInt16(this Stream stream)
+        {
+            return LittleEndianConverter.ConvertToInt16(await stream.ReadBytes(2));
+        }
+
+        public static async Task<ushort> ReadUInt16(this Stream stream)
+        {
+            return LittleEndianConverter.ConvertToUInt16(await stream.ReadBytes(2));
+        }
+        
         public static async Task<int> ReadInt32(this Stream stream)
         {
             return LittleEndianConverter.ConvertToInt32(await stream.ReadBytes(4));

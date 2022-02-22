@@ -23,7 +23,12 @@
         
         public override async Task<Result> Execute(CancellationToken token)
         {
-            var sourceMedia = commandHelper.GetReadableMedia(physicalDrives, path);
+            var sourceMediaResult = commandHelper.GetReadableMedia(physicalDrives, path);
+            if (sourceMediaResult.IsFaulted)
+            {
+                return new Result(sourceMediaResult.Error);
+            }
+            using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
             var diskSize = sourceStream.Length;
 
@@ -31,6 +36,7 @@
             OnDiskInfoRead(new MediaInfo
             {
                 Path = path,
+                Model = sourceMedia.Model,
                 IsPhysicalDrive = sourceMedia.IsPhysicalDrive,
                 Type = sourceMedia.Type,
                 DiskSize = diskSize,

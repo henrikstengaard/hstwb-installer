@@ -101,13 +101,13 @@
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
             sourceBytes[offsetWithError] = sourceByte;
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
                 new MemoryStream(sourceBytes)));
 
             // create destination
             var destinationBytesWithError = fakeCommandHelper.CreateTestData();
             destinationBytesWithError[offsetWithError] = destinationByte;
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
                 new MemoryStream(destinationBytesWithError)));
 
             // act - verify source img to destination img
@@ -133,13 +133,13 @@
 
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
                 new MemoryStream(sourceBytes)));
 
             // create destination
             var destinationBytesChunk = new byte[Convert.ToInt32(sourceBytes.Length / 2)];
             Array.Copy(sourceBytes, 0, destinationBytesChunk, 0, destinationBytesChunk.Length);
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
                 new MemoryStream(destinationBytesChunk)));
 
             // act - verify source img to destination img

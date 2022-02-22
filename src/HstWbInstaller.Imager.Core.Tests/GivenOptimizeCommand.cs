@@ -22,7 +22,7 @@
                 DiskSize = rigidDiskBlockSize
             });
             // var bytes = fakeCommandHelper.CreateTestData();
-            fakeCommandHelper.WriteableMedias.Add(new Media(path, Media.MediaType.Raw, false,
+            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, Media.MediaType.Raw, false,
                 new MemoryStream(new byte[16384])));
             var cancellationTokenSource = new CancellationTokenSource();
 

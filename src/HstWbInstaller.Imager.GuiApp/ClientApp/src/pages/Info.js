@@ -8,28 +8,39 @@ import {get, isNil, set} from "lodash";
 import BrowseOpenDialog from "../components/BrowseOpenDialog";
 import Media from "../components/Media";
 import Stack from "@mui/material/Stack";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
+import MediaSelectField from "../components/MediaSelectField";
 
 const initialState = {
     medias: null,
     mediaInfo: null,
-    mediaPath: null,
-    imagePath: null
+    path: null,
+    sourceType: 'image-file'
 }
 
 export default function Info() {
     const [state, setState] = React.useState({ ...initialState })
+    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const {
         mediaInfo,
-        mediaPath,
-        imagePath
+        path,
+        sourceType
     } = state
 
-    const getInfoDisabled = isNil(mediaPath) && isNil(imagePath)
+    const getInfoDisabled = isNil(path)
 
     const handleChange = ({name, value}) => {
+        if (name === 'sourceType') {
+            state.path = null
+            state.mediaInfo = null
+        }
         set(state, name, value)
         setState({...state})
     }
@@ -45,8 +56,16 @@ export default function Info() {
                 path
             })
         });
+        
+        state.path = path
+        
         if (!response.ok) {
             console.error('Failed to read')
+            setState({
+                ...state,
+                mediaInfo: null
+            })
+            return
         }
         setState({
             ...state,
@@ -58,12 +77,6 @@ export default function Info() {
         setState({ ...initialState })
     }
     
-    const handleGetInfo = async () => {
-        await getMediaInfo(isNil(mediaPath) ? imagePath : mediaPath)
-    }
-
-    console.log(mediaInfo)
-    
     return (
         <React.Fragment>
             <Title
@@ -72,41 +85,72 @@ export default function Info() {
             />
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
                 <Grid item xs={12} sm={6}>
-                    <TextField
-                        id="image-path"
-                        label={
-                            <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
-                                <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Image file
-                            </div>
-                        }
-                        value={imagePath || ''}
-                        endAdornment={
-                            <BrowseOpenDialog
-                                id="browse-image-path"
-                                title="Select image file"
-                                fileFilters={[{
-                                    name: 'Image file',
-                                    extensions: ['img', 'hdf']
-                                }, {
-                                    name: 'Virtual hard disk',
-                                    extensions: ['vhd']
-                                }]}
-                                onChange={(result) => handleChange({
-                                    name: 'imagePath',
-                                    value: result.path
-                                })}
-                            />
-                        }
-                        onChange={(event) => handleChange({
-                            name: 'imagePath',
-                            value: get(event, 'target.value'
-                            )
-                        })}
-                    />
+                    <FormControl>
+                        <FormLabel id="source-type-label">Source</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-labelledby="source-type-label"
+                            name="source-type"
+                            value={sourceType || ''}
+                            onChange={(event) => handleChange({
+                                name: 'sourceType',
+                                value: event.target.value
+                            })}
+                        >
+                            <FormControlLabel value="image-file" control={<Radio />} label="Image file" />
+                            <FormControlLabel value="physical-disk" control={<Radio />} label="Physical disk" />
+                        </RadioGroup>
+                    </FormControl>
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6} ali>
+                <Grid item xs={12} sm={6}>
+                    {sourceType === 'image-file' && (
+                        <TextField
+                            id="image-path"
+                            label={
+                                <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                    <FontAwesomeIcon icon="file" style={{marginRight: '5px'}} /> Image file
+                                </div>
+                            }
+                            value={path || ''}
+                            endAdornment={
+                                <BrowseOpenDialog
+                                    id="browse-image-path"
+                                    title="Select image file"
+                                    onChange={async (path) => await getMediaInfo(path)}
+                                />
+                            }
+                            onChange={(event) => handleChange({
+                                name: 'path',
+                                value: get(event, 'target.value'
+                                )
+                            })}
+                            onKeyDown={async (event) => {
+                                if (event.key !== 'Enter') {
+                                    return
+                                }
+                                await getMediaInfo(path)
+                            }}
+                        />
+                    )}
+                    {sourceType === 'physical-disk' && (
+                        <MediaSelectField
+                            label={
+                                <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
+                                    <FontAwesomeIcon icon="hdd" style={{marginRight: '5px'}} /> Physical disk
+                                </div>
+                            }
+                            id="media-path"
+                            path={path || ''}
+                            session={session}
+                            onChange={async (media) => await getMediaInfo(media.path)}
+                        />
+                    )}
+                    </Grid>
+            </Grid>
+            <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
+                <Grid item xs={12} sm={6}>
                     <Box display="flex" justifyContent="flex-end">
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <RedirectButton
@@ -117,9 +161,15 @@ export default function Info() {
                                 Cancel
                             </RedirectButton>
                             <Button
+                                icon="sync-alt"
+                                onClick={() => updateSession()}
+                            >
+                                Update
+                            </Button>
+                            <Button
                                 disabled={getInfoDisabled}
                                 icon="info"
-                                onClick={async () => await handleGetInfo()}
+                                onClick={async () => await getMediaInfo(path)}
                             >
                                 Get info
                             </Button>

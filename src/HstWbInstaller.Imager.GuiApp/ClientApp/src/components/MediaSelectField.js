@@ -3,7 +3,8 @@ import {isNil} from "lodash";
 import SelectField from "./SelectField";
 
 const initialState = {
-    medias: null
+    medias: null,
+    session: null
 }
 
 export default function MediaSelectField(props) {
@@ -11,7 +12,8 @@ export default function MediaSelectField(props) {
         id,
         label,
         path,
-        onChange
+        onChange,
+        session
     } = props
     
     const [state, setState] = React.useState({...initialState})
@@ -22,19 +24,20 @@ export default function MediaSelectField(props) {
             const data = await response.json();
             setState({
                 ...state,
-                medias: data
+                medias: data,
+                session: session
             })
         }
 
         getMedias()
-    }, [setState, state])
+    }, [setState, state, session])
 
     React.useEffect(() => {
-        if (!isNil(state.medias)) {
+        if (session === state.session) {
             return
         }
         handleGetMedias()
-    }, [state.medias, handleGetMedias])
+    }, [session, state.medias, state.session, handleGetMedias])
 
     const {
         medias,

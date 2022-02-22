@@ -1,6 +1,5 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -9,17 +8,21 @@
     using Core.Commands;
     using Core.Helpers;
     using Extensions;
+    using Hubs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Models;
 
     [ApiController]
     [Route("list")]
     public class ListController : ControllerBase
     {
+        private readonly IHubContext<ErrorHub> errorHubContext;
         private readonly AppState appState;
 
-        public ListController(AppState appState)
+        public ListController(IHubContext<ErrorHub> errorHubContext, AppState appState)
         {
+            this.errorHubContext = errorHubContext;
             this.appState = appState;
         }
 
@@ -39,7 +42,8 @@
             var result = await listCommand.Execute(cancellationTokenSource.Token);
             if (result.IsFaulted)
             {
-                throw new Exception(result.Error.Message);
+                await errorHubContext.SendError(result.Error.Message, cancellationTokenSource.Token);
+                return BadRequest();
             }
 
             if (appState.UseFake)

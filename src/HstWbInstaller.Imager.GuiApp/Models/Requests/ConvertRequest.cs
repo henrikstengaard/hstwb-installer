@@ -4,8 +4,13 @@
 
     public class ConvertRequest
     {
-        [Required] public string Title { get; set; }
-        [Required] public string SourcePath { get; set; }
-        [Required] public string DestinationPath { get; set; }
+        [Required]
+        public string Title { get; set; }
+
+        [Required]
+        public string SourcePath { get; set; }
+        
+        [Required]
+        public string DestinationPath { get; set; }
     }
 }

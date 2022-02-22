@@ -73,16 +73,9 @@ export default function Convert() {
                             <BrowseOpenDialog
                                 id="browse-source-path"
                                 title="Select source image file"
-                                fileFilters={[{
-                                    name: 'Image file',
-                                    extensions: ['img', 'hdf']
-                                }, {
-                                    name: 'Virtual hard disk',
-                                    extensions: ['vhd']
-                                }]}
-                                onChange={(result) => handleChange({
+                                onChange={(path) => handleChange({
                                     name: 'sourcePath',
-                                    value: result.path
+                                    value: path
                                 })}
                             />
                         }
@@ -108,16 +101,9 @@ export default function Convert() {
                             <BrowseSaveDialog
                                 id="browse-destination-path"
                                 title="Select destination image file"
-                                fileFilters={[{
-                                    name: 'Image file',
-                                    extensions: ['img', 'hdf']
-                                }, {
-                                    name: 'Virtual hard disk',
-                                    extensions: ['vhd']
-                                }]}
-                                onChange={(result) => handleChange({
+                                onChange={(path) => handleChange({
                                     name: 'destinationPath',
-                                    value: result.path
+                                    value: path
                                 })}
                             />
                         }

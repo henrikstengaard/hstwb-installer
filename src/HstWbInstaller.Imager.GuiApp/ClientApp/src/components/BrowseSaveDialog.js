@@ -9,7 +9,13 @@ export default function BrowseSaveDialog(props) {
     const {
         id,
         title = 'Save file',
-        fileFilters = [],
+        fileFilters = [{
+            name: 'Image file',
+            extensions: ['img', 'hdf']
+        }, {
+            name: 'Virtual hard disk',
+            extensions: ['vhd']
+        }],
         onChange
     } = props
     
@@ -30,7 +36,6 @@ export default function BrowseSaveDialog(props) {
             connection.start()
                 .then(result => {
                     connection.on('ShowDialogResult', showDialogResult => {
-                        console.log(showDialogResult)
                         if (get(showDialogResult, 'isSuccess') !== true || get(showDialogResult, 'id') !== id) {
                             return
                         }
@@ -38,6 +43,7 @@ export default function BrowseSaveDialog(props) {
                         if (isNil(onChange)) {
                             return
                         }
+                        
                         onChange(showDialogResult.paths[0])
                     });
                 })
