@@ -19,6 +19,7 @@ const initialState = {
 
 export default function Read() {
     const [state, setState] = React.useState({...initialState})
+    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const {
         sourceMedia,
@@ -70,6 +71,7 @@ export default function Read() {
                         }
                         id="source-disk"
                         path={get(sourceMedia, 'path') || ''}
+                        session={session}
                         onChange={(media) => handleChange({
                             name: 'sourceMedia',
                             value: media
@@ -98,9 +100,9 @@ export default function Read() {
                                     name: 'Virtual hard disk',
                                     extensions: ['vhd']
                                 }]}
-                                onChange={(result) => handleChange({
+                                onChange={(path) => handleChange({
                                     name: 'destinationPath',
-                                    value: result.path
+                                    value: path
                                 })}
                             />
                         }
@@ -125,6 +127,7 @@ export default function Read() {
                             </RedirectButton>
                             <Button
                                 icon="sync-alt"
+                                onClick={() => updateSession()}
                             >
                                 Update
                             </Button>

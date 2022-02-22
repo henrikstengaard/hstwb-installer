@@ -1,7 +1,5 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using ElectronNET.API;
@@ -35,29 +33,6 @@
                 return BadRequest(ModelState);
             }
 
-            // var browserWindow = Electron.WindowManager.BrowserWindows.FirstOrDefault();
-            // if (browserWindow == null)
-            // {
-            //     return Ok();
-            // }
-            //
-            // var path = await Electron.Dialog.ShowSaveDialogAsync(browserWindow, new SaveDialogOptions
-            // {
-            //     Title = model.Title,
-            //     Filters = model.FileFilters.Select(x => new FileFilter
-            //     {
-            //         Name = x.Name,
-            //         Extensions = x.Extensions.ToArray()
-            //     }).ToArray(),
-            //     DefaultPath = model.Path
-            // });
-            //
-            // await showDialogResultContext.Clients.All.SendAsync("ShowDialogResult", new ShowDialogResult
-            // {
-            //     IsSuccess = !string.IsNullOrWhiteSpace(path),
-            //     Paths = new []{ path }
-            // });            
-            
             await backgroundTaskQueue.QueueBackgroundWorkItemAsync(ShowSaveDialogWorkItem, new ShowDialogBackgroundTask
             {
                 Id = model.Id,

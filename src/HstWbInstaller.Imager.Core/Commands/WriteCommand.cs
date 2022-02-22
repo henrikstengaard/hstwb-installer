@@ -30,14 +30,24 @@
         public override async Task<Result> Execute(CancellationToken token)
         {
             var physicalDrivesList = physicalDrives.ToList();
-            using var sourceMedia = commandHelper.GetReadableMedia(physicalDrivesList, sourcePath, false);
+            var sourceMediaResult = commandHelper.GetReadableMedia(physicalDrivesList, sourcePath, false);
+            if (sourceMediaResult.IsFaulted)
+            {
+                return new Result(sourceMediaResult.Error);
+            }
+            using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
 
             var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(sourceStream);
 
             var writeSize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
 
-            using var destinationMedia = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, writeSize);
+            var destinationMediaResult = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, writeSize);
+            if (destinationMediaResult.IsFaulted)
+            {
+                return new Result(destinationMediaResult.Error);
+            }
+            using var destinationMedia = destinationMediaResult.Value;
             await using var destinationStream = destinationMedia.Stream;
 
             var imageConverter = new ImageConverter();

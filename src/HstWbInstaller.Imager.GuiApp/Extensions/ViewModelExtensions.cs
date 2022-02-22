@@ -11,8 +11,8 @@
         {
             return new MediaInfoViewModel
             {
-                Model = mediaInfo.Model,
                 Path = mediaInfo.Path,
+                Model = mediaInfo.Model,
                 DiskSize = mediaInfo.DiskSize,
                 IsPhysicalDrive = mediaInfo.IsPhysicalDrive,
                 RigidDiskBlock = mediaInfo.RigidDiskBlock?.ToViewModel()
@@ -79,12 +79,13 @@
         {
             return new FileSystemHeaderBlockViewModel
             {
+                Size = fileSystemHeaderBlock.LoadSegBlocks.Sum(x => x.Data.Length),
                 DosType = fileSystemHeaderBlock.DosType,
                 DosTypeFormatted = fileSystemHeaderBlock.DosTypeFormatted,
                 DosTypeHex = fileSystemHeaderBlock.DosTypeHex,
                 Version = fileSystemHeaderBlock.Version,
-                MajorVersion = fileSystemHeaderBlock.MajorVersion,
-                MinorVersion = fileSystemHeaderBlock.MinorVersion
+                VersionFormatted = fileSystemHeaderBlock.VersionFormatted,
+                FileSystemName = fileSystemHeaderBlock.FileSystemName
             };
         }
     }

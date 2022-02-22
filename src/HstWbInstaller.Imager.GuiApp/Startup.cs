@@ -71,6 +71,7 @@ namespace HstWbInstaller.Imager.GuiApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ErrorHub>("/hubs/error");
                 endpoints.MapHub<ProgressHub>("/hubs/progress");
                 endpoints.MapHub<ShowDialogResultHub>("/hubs/show-dialog-result");
                 endpoints.MapControllerRoute(

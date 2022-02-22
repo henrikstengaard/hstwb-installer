@@ -14,14 +14,16 @@
         }
 
         public string Path;
+        public string Model;
         public bool IsPhysicalDrive;
         public MediaType Type;
 
         public readonly Stream Stream;
 
-        public Media(string path, MediaType type, bool isPhysicalDrive, Stream stream)
+        public Media(string path, string model, MediaType type, bool isPhysicalDrive, Stream stream)
         {
             Path = path;
+            Model = model;
             Type = type;
             IsPhysicalDrive = isPhysicalDrive; 
             Stream = stream;

@@ -15,8 +15,7 @@
         public string DosTypeHex => $"0x{DosType.FormatHex()}";
 
         public uint Version { get; set; }
-        public uint MajorVersion => Version >> 16;
-        public uint MinorVersion => Version & 0xFFFF;
+        public string VersionFormatted => $"{Version >> 16}.{Version & 0xFFFF}";
         
         /// <summary>
         /// bits set for those of the following that need to be
@@ -33,6 +32,7 @@
         public int Startup { get; set; }
         public int SegListBlocks { get; set; }
         public int GlobalVec { get; set; }
+        public string FileSystemName { get; set; }
         
         public IEnumerable<LoadSegBlock> LoadSegBlocks { get; set; }
 
@@ -43,6 +43,7 @@
             Flags = 0;
             PatchFlags = 384;
             GlobalVec = -1;
+            FileSystemName = string.Empty;
             
             LoadSegBlocks = Enumerable.Empty<LoadSegBlock>();
         }

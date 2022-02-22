@@ -1,16 +1,16 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
     using System;
-    using System.Diagnostics;
-    using System.Globalization;
     using System.Threading.Tasks;
-    using Core.Extensions;
+    using Core;
+    using Core.Commands;
+    using Extensions;
     using Hubs;
-    using Humanizer;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using Models;
     using Models.BackgroundTasks;
+    using Models.Requests;
     using Services;
 
     [ApiController]
@@ -18,11 +18,14 @@
     public class ReadController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;
+        private readonly IHubContext<ErrorHub> errorHubContext;
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public ReadController(IHubContext<ProgressHub> progressHubContext, IBackgroundTaskQueue backgroundTaskQueue)
+        public ReadController(IHubContext<ProgressHub> progressHubContext, IHubContext<ErrorHub> errorHubContext,
+            IBackgroundTaskQueue backgroundTaskQueue)
         {
             this.progressHubContext = progressHubContext;
+            this.errorHubContext = errorHubContext;
             this.backgroundTaskQueue = backgroundTaskQueue;
         }
 
@@ -51,53 +54,48 @@
                 return;
             }
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var percentComplete = 0;
-
-            var bytesTotal = 100 * 1024 * 1024;
-            while (!context.Token.IsCancellationRequested && percentComplete <= 100)
+            try
             {
-                try
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(300), context.Token);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Prevent throwing if the Delay is cancelled
-                }
+                var physicalDriveManager = PhysicalDriveManager.Create();
+                var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
 
-                if (context.Token.IsCancellationRequested)
+                var commandHelper = new CommandHelper();
+                var readCommand =
+                    new ReadCommand(commandHelper, physicalDrives, readBackgroundTask.SourcePath, readBackgroundTask.DestinationPath);
+                readCommand.DataProcessed += async (_, args) =>
                 {
-                    break;
+                    await progressHubContext.SendProgress(new Progress
+                    {
+                        Title = readBackgroundTask.Title,
+                        IsComplete = false,
+                        PercentComplete = args.PercentComplete,
+                        BytesProcessed = args.BytesProcessed,
+                        BytesRemaining = args.BytesRemaining,
+                        BytesTotal = args.BytesTotal,
+                        MillisecondsElapsed = args.PercentComplete > 0 ? (long)args.TimeElapsed.TotalMilliseconds : new long?(),
+                        MillisecondsRemaining = args.PercentComplete > 0 ? (long)args.TimeRemaining.TotalMilliseconds : new long?(),
+                        MillisecondsTotal = args.PercentComplete > 0 ? (long)args.TimeTotal.TotalMilliseconds : new long?()
+                    }, context.Token);                
+                };
+
+                var result = await readCommand.Execute(context.Token);
+                if (result.IsFaulted)
+                {
+                    await errorHubContext.SendError(result.Error.Message, context.Token);
+                    return;
                 }
-
-                var remainingTime = percentComplete > 0 ? TimeSpan.FromMilliseconds((double)stopwatch.ElapsedMilliseconds / percentComplete *
-                                                                              (100 - percentComplete)) : TimeSpan.Zero;
-
-                await progressHubContext.Clients.All.SendAsync("UpdateProgress", new Progress
+            
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = readBackgroundTask.Title,
-                    IsComplete = false,
-                    PercentComplete = percentComplete,
-                    BytesProcessed = percentComplete * 1024 * 1024,
-                    BytesRemaining = (100 - percentComplete) * 1024 * 1024,
-                    BytesTotal = bytesTotal,
-                    MillisecondsElapsed = percentComplete > 0 ? (long)stopwatch.Elapsed.TotalMilliseconds : new long?(),
-                    MillisecondsRemaining = percentComplete > 0 ? (long)remainingTime.TotalMilliseconds : new long?(),
-                    MillisecondsTotal = percentComplete > 0 ? (long)(stopwatch.Elapsed.TotalMilliseconds + remainingTime.TotalMilliseconds) : new long?()
+                    IsComplete = true,
+                    PercentComplete = 100
                 }, context.Token);
-
-                percentComplete++;
             }
-
-            await progressHubContext.Clients.All.SendAsync("UpdateProgress", new Progress
+            catch (Exception e)
             {
-                Title = readBackgroundTask.Title,
-                IsComplete = true,
-                PercentComplete = 100
-            }, context.Token);
+                await errorHubContext.SendError(e.Message, context.Token);
+            }
         }
     }
 }

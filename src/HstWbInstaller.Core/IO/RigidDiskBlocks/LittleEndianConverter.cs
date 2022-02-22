@@ -24,15 +24,36 @@
         }
         
         // convert iso-8859-1 bytes to string
-        public static string ConvertToIso88591String(byte[] bytes)
+        public static string ConvertToIso88591String(byte[] bytes, int length = 0)
         {
-            return Iso88591.GetString(bytes);
+            if (length == 0)
+            {
+                return Iso88591.GetString(bytes);
+            }
+
+            var stringBytes = new byte[length];
+            Array.Copy(bytes, 0, stringBytes, 0, length);
+            return Iso88591.GetString(stringBytes);
         }
 
         // convert string to iso-8859-1 bytes
         public static byte[] ConvertToIso88591Bytes(string value)
         {
             return Iso88591.GetBytes(value);
+        }
+
+        // convert bytes from little endian to int16
+        public static short ConvertToInt16(byte[] bytes)
+        {
+            Array.Reverse(bytes);
+            return BitConverter.ToInt16(bytes, 0);
+        }
+
+        // convert bytes from little endian to uint16
+        public static ushort ConvertToUInt16(byte[] bytes)
+        {
+            Array.Reverse(bytes);
+            return BitConverter.ToUInt16(bytes, 0);
         }
         
         // convert bytes from little endian to int32
