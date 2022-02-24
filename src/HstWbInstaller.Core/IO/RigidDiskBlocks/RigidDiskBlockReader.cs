@@ -11,7 +11,6 @@
     {
         public static async Task<RigidDiskBlock> Read(Stream stream)
         {
-            var diskSize = stream.Length;
             var rdbIndex = 0;
             var blockSize = 512;
             var rdbLocationLimit = 16;
@@ -41,7 +40,6 @@
                 return null;
             }
 
-            rigidDiskBlock.DiskSize = diskSize;
             rigidDiskBlock.PartitionBlocks = await PartitionBlockReader.Read(rigidDiskBlock, stream);
             rigidDiskBlock.BadBlocks = await BadBlockReader.Read(rigidDiskBlock, stream);
 

@@ -25,6 +25,9 @@
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            source.Seek(0, SeekOrigin.Begin);
+            destination.Seek(0, SeekOrigin.Begin);
             
             var dataSectorReader = new DataSectorReader(source, bufferSize: bufferSize);
             

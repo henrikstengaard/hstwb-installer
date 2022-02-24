@@ -9,6 +9,11 @@
     public static class DeviceApi
     {
         #region Constants
+        
+        public const uint FSCTL_LOCK_VOLUME = 0x00090018;
+        public const uint FSCTL_UNLOCK_VOLUME = 0x0009001c;
+        public const uint FSCTL_DISMOUNT_VOLUME = 0x00090020;
+        
         /// <summary>
         /// The maximum length of a path in characters.
         /// </summary>
@@ -231,6 +236,9 @@
             ref uint lpBytesReturned,
             IntPtr lpOverlapped);
 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool CloseHandle(SafeFileHandle handle);
+        
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool SetFilePointerEx(
             SafeFileHandle hFile,

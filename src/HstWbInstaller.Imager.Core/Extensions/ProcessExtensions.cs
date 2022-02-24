@@ -6,7 +6,26 @@
 
     public static class ProcessExtensions
     {
-        public static async Task<string> RunProcess(this string command, string args = null)
+        public static string RunProcess(this string command, string args = null)
+        {
+            var process = Process.Start(
+                new ProcessStartInfo(command)
+                {
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    Arguments = args ?? string.Empty
+                });
+        
+            if (process == null)
+            {
+                throw new IOException($"Failed to start process command '{command}'");
+            }
+        
+            return process.StandardOutput.ReadToEnd();
+        }
+
+        public static async Task<string> RunProcessAsync(this string command, string args = null)
         {
             var process = Process.Start(
                 new ProcessStartInfo(command)

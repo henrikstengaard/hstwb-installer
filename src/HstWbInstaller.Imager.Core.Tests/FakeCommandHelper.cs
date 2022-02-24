@@ -83,24 +83,24 @@
                 : base.GetWritableMedia(physicalDrives, path, size, allowPhysicalDrive);
         }
 
-        public void CreateWritableMedia(string path, long size)
-        {
-            using var media = GetWritableMedia(new List<IPhysicalDrive>(), path, size, false);
-        }
-
-        public async Task AppendWriteableMediaData(string path, long size, byte[] data = null)
-        {
-            var destinationMedia = GetWritableMedia(new List<IPhysicalDrive>(), path,
-                size, false);
-            var destinationStream = destinationMedia.Stream;
-            if (data == null)
-            {
-                return;
-            }
-
-            await destinationStream.WriteAsync(data, 0, data.Length);
-        }
-
+        // public void CreateWritableMedia(string path, long size)
+        // {
+        //     var mediaResult = GetWritableMedia(new List<IPhysicalDrive>(), path, size, false);
+        //     using var media = mediaResult.Value;
+        // }
+        //
+        // public async Task AppendWriteableMediaData(string path, long size, byte[] data = null)
+        // {
+        //     var destinationMediaResult = GetWritableMedia(new List<IPhysicalDrive>(), path,
+        //         size, false);
+        //     var destinationStream = destinationMediaResult.Value.Stream;
+        //     if (data == null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     await destinationStream.WriteAsync(data, 0, data.Length);
+        // }
         
         public async Task AppendWriteableMediaDataVhd(string path, long size, byte[] data = null)
         {
@@ -109,8 +109,9 @@
                 throw new ArgumentException("Path is not vhd", nameof(path));
             }
             
-            using var destinationMedia = GetWritableMedia(new List<IPhysicalDrive>(), path,
+            var destinationMediaResult = GetWritableMedia(new List<IPhysicalDrive>(), path,
                 size, false);
+            using var destinationMedia = destinationMediaResult.Value;
             await using var destinationStream = destinationMedia.Stream;
             if (data == null)
             {

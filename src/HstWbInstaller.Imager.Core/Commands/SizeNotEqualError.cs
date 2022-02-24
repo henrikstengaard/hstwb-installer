@@ -4,13 +4,20 @@
 
     public class SizeNotEqualError : Error
     {
-        public long SourceSize;
-        public long DestinationSize;
+        /// <summary>
+        /// offset where size started to differ
+        /// </summary>
+        public long Offset;
         
-        public SizeNotEqualError(long sourceSize, long destinationSize)
+        /// <summary>
+        /// expected size
+        /// </summary>
+        public long Size;
+        
+        public SizeNotEqualError(long offset, long size)
         {
-            SourceSize = sourceSize;
-            DestinationSize = destinationSize;
+            Offset = offset;
+            Size = size;
         }
     }
 }

@@ -2,9 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
+    using HstWbInstaller.Core.Extensions;
+    using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
 
     public class ListCommand : CommandBase
@@ -28,7 +31,9 @@
                 await using var sourceStream = physicalDrive.Open();
                 var diskSize = sourceStream.Length;
 
-                var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(sourceStream);
+                var firstBytes = await sourceStream.ReadBytes(512 * 2048);
+                var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+
                 mediaInfos.Add(new MediaInfo
                 {
                     Path = physicalDrive.Path,

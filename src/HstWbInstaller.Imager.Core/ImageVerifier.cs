@@ -25,6 +25,9 @@
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             
+            source.Seek(0, SeekOrigin.Begin);
+            destination.Seek(0, SeekOrigin.Begin);
+            
             // var srcBuffer = new byte[bufferSize];
             // var destBuffer = new byte[bufferSize];
             //
@@ -73,14 +76,24 @@
                 }
                 
                 var verifyBytes = Convert.ToInt32(offset + bufferSize > size ? size - offset : bufferSize);
-                srcBytesRead = await source.ReadAsync(srcBuffer, 0, verifyBytes, token);
-                var destBytesRead = await destination.ReadAsync(destBuffer, 0, verifyBytes, token);
-                
+                srcBytesRead = await source.ReadAsync(srcBuffer, 0, srcBuffer.Length, token);
+                var destBytesRead = await destination.ReadAsync(destBuffer, 0, srcBuffer.Length, token);
+
+                if (size < bufferSize)
+                {
+                    verifyBytes = (int)size;
+                }
+
                 if (srcBytesRead != destBytesRead)
                 {
-                    return new Result(new SizeNotEqualError(offset + srcBytesRead, offset + destBytesRead));
+                    verifyBytes = Math.Min(srcBytesRead, destBytesRead);
                 }
                 
+                if (verifyBytes < bufferSize && offset + verifyBytes != size)
+                {
+                    return new Result(new SizeNotEqualError(offset, size));
+                }
+
                 for (int i = 0; i < verifyBytes; i++)
                 {
                     if (srcBuffer[i] == destBuffer[i])

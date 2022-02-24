@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
@@ -137,7 +138,8 @@
                 new MemoryStream(sourceBytes)));
 
             // create destination
-            var destinationBytesChunk = new byte[Convert.ToInt32(sourceBytes.Length / 2)];
+            var destinationSize = sourceBytes.Length / 2;
+            var destinationBytesChunk = new byte[Convert.ToInt32(destinationSize)];
             Array.Copy(sourceBytes, 0, destinationBytesChunk, 0, destinationBytesChunk.Length);
             fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
                 new MemoryStream(destinationBytesChunk)));
@@ -150,8 +152,63 @@
 
             Assert.Equal(typeof(SizeNotEqualError), result.Error.GetType());
             var sizeNotEqualError = (SizeNotEqualError)result.Error;
-            Assert.Equal(sourceBytes.Length, sizeNotEqualError.SourceSize);
-            Assert.Equal(destinationBytesChunk.Length, sizeNotEqualError.DestinationSize);
+            Assert.Equal(0, sizeNotEqualError.Offset);
+            Assert.Equal(sourceBytes.Length, sizeNotEqualError.Size);
+        }
+
+        [Fact]
+        public async Task WhenVerifySourceSmallerThanDestinationThenDataIsIdentical()
+        {
+            // arrange
+            var sourcePath = $"{Guid.NewGuid()}.img";
+            var destinationPath = $"{Guid.NewGuid()}.img";
+            var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
+            var testDataBytes = fakeCommandHelper.CreateTestData();
+
+            // create source
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+                new MemoryStream(testDataBytes)));
+            
+            // create destination
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+                new MemoryStream(testDataBytes.Concat(testDataBytes).ToArray())));
+            
+            // act - verify source img to destination img
+            var verifyCommand =
+                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
+            Assert.True(result.IsSuccess);
+        }
+        
+        [Fact]
+        public async Task WhenVerifySourceIsLargerThanDestinationThenResultIsSizeNotEqualError()
+        {
+            // arrange
+            var sourcePath = $"{Guid.NewGuid()}.img";
+            var destinationPath = $"{Guid.NewGuid()}.img";
+            var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
+            var testDataBytes = fakeCommandHelper.CreateTestData();
+
+            // create source
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+                new MemoryStream(testDataBytes.Concat(testDataBytes).ToArray())));
+            
+            // create destination
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+                new MemoryStream(testDataBytes)));
+            
+            // act - verify source img to destination img
+            var verifyCommand =
+                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var result = await verifyCommand.Execute(cancellationTokenSource.Token);
+            Assert.False(result.IsSuccess);
+            
+            Assert.Equal(typeof(SizeNotEqualError), result.Error.GetType());
+            var sizeNotEqualError = (SizeNotEqualError)result.Error;
+            Assert.Equal(0, sizeNotEqualError.Offset);
+            Assert.Equal(testDataBytes.Length * 2, sizeNotEqualError.Size);
         }
     }
 }

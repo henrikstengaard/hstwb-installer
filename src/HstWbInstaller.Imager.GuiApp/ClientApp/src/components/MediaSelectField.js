@@ -1,6 +1,7 @@
 import React from "react";
 import {isNil} from "lodash";
 import SelectField from "./SelectField";
+import {formatBytes} from "../utils/Format";
 
 const initialState = {
     medias: null,
@@ -58,7 +59,7 @@ export default function MediaSelectField(props) {
             value={path || ''}
             options={(medias || []).map((media) => {
                 return {
-                    title: media.model,
+                    title: `${media.model} (${formatBytes(media.diskSize)})`,
                     value: media.path
                 }
             })}

@@ -4,6 +4,8 @@
     {
         public string Title { get; set; }
         public bool IsComplete { get; set; }
+        public bool HasError { get; set; }
+        public string ErrorMessage { get; set; }
         public double PercentComplete { get; set; }
         public long? BytesTotal { get; set; }
         public long? BytesProcessed { get; set; }

@@ -19,7 +19,7 @@ namespace HstWbInstaller.Imager.Core
         
         // https://github.com/dotnet/standard/issues/779
         // https://github.com/dotnet/runtime/issues/25118
-        public static async Task<bool> IsAdministrator()
+        public static bool IsAdministrator()
         {
             if (IsWindows())
             {
@@ -37,9 +37,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
              */
             // 
-            var uidOutput = await "id".RunProcess("-u");
+            var uidOutput = "id".RunProcess("-u");
             return uidOutput.Trim().Equals("0", StringComparison.OrdinalIgnoreCase);
         }
-
     }
 }

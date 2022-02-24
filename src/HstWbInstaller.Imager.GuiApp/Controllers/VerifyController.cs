@@ -79,22 +79,26 @@
                 };
 
                 var result = await verifyCommand.Execute(context.Token);
-                if (result.IsFaulted)
-                {
-                    await errorHubContext.SendError(result.Error.Message, context.Token);
-                    return;
-                }
             
                 await progressHubContext.SendProgress(new Progress
                 {
                     Title = verifyBackgroundTask.Title,
                     IsComplete = true,
+                    HasError = result.IsFaulted,
+                    ErrorMessage = result.IsFaulted ? result.Error.Message : null,
                     PercentComplete = 100
                 }, context.Token);
             }
             catch (Exception e)
             {
-                await errorHubContext.SendError(e.Message, context.Token);
+                await progressHubContext.SendProgress(new Progress
+                {
+                    Title = verifyBackgroundTask.Title,
+                    IsComplete = true,
+                    HasError = true,
+                    ErrorMessage = e.Message,
+                    PercentComplete = 100
+                }, context.Token);
             }
         }
     }
