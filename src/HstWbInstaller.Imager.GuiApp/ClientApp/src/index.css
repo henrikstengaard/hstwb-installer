@@ -22,8 +22,10 @@ body {
     color: black;
     height: 100%;
     margin: 0;
+    overflow-y: hidden;
 }
 
 #root {
     height: 100%;
+    overflow-y: auto;
 }

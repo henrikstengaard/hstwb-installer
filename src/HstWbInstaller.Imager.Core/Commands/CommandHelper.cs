@@ -67,6 +67,7 @@
             
             if (physicalDrive != null)
             {
+                physicalDrive.SetWritable(true);
                 return new Result<Media>(new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open()));
             }
 
@@ -99,43 +100,43 @@
             return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk, stream));
         }
 
-        public virtual Media GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long size, bool allowPhysicalDrive = true)
-        {
-            var physicalDrive = physicalDrives.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-
-            if (!allowPhysicalDrive && physicalDrive != null)
-            {
-                throw new ArgumentException("Physical drive is not allowed");
-            }
-            
-            if (physicalDrive != null)
-            {
-                return new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open());
-            }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentNullException(path);
-            }
-
-            var destDir = Path.GetDirectoryName(path);
-
-            if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir))
-            {
-                Directory.CreateDirectory(destDir);
-            }
-
-            var stream = CreateWriteableStream(path);
-
-            var model = Path.GetFileName(path);
-            if (!IsVhd(path))
-            {
-                return new Media(path, model, Media.MediaType.Raw, false, stream);
-            }
-
-            var vhdDisk = Disk.InitializeDynamic(stream, Ownership.None, GetVhdSize(size));
-            return new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk, stream);
-        }
+        // public virtual Media GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long size, bool allowPhysicalDrive = true)
+        // {
+        //     var physicalDrive = physicalDrives.FirstOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+        //
+        //     if (!allowPhysicalDrive && physicalDrive != null)
+        //     {
+        //         throw new ArgumentException("Physical drive is not allowed");
+        //     }
+        //     
+        //     if (physicalDrive != null)
+        //     {
+        //         return new Media(path, physicalDrive.Model, Media.MediaType.Raw, true, physicalDrive.Open());
+        //     }
+        //
+        //     if (string.IsNullOrWhiteSpace(path))
+        //     {
+        //         throw new ArgumentNullException(path);
+        //     }
+        //
+        //     var destDir = Path.GetDirectoryName(path);
+        //
+        //     if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir))
+        //     {
+        //         Directory.CreateDirectory(destDir);
+        //     }
+        //
+        //     var stream = CreateWriteableStream(path);
+        //
+        //     var model = Path.GetFileName(path);
+        //     if (!IsVhd(path))
+        //     {
+        //         return new Media(path, model, Media.MediaType.Raw, false, stream);
+        //     }
+        //
+        //     var vhdDisk = Disk.InitializeDynamic(stream, Ownership.None, GetVhdSize(size));
+        //     return new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk, stream);
+        // }
         
         public virtual long GetVhdSize(long size)
         {

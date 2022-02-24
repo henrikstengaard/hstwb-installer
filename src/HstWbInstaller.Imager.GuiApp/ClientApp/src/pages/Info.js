@@ -27,7 +27,7 @@ const initialState = {
 export default function Info() {
     const [state, setState] = React.useState({ ...initialState })
     const [session, updateSession] = React.useReducer((x) => x + 1, 0)
-
+    
     const {
         mediaInfo,
         path,
@@ -84,7 +84,7 @@ export default function Info() {
                 description="Display information about physical disk or image file."
             />
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <FormControl>
                         <FormLabel id="source-type-label">Source</FormLabel>
                         <RadioGroup
@@ -104,7 +104,7 @@ export default function Info() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     {sourceType === 'image-file' && (
                         <TextField
                             id="image-path"
@@ -150,7 +150,7 @@ export default function Info() {
                     </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <Box display="flex" justifyContent="flex-end">
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <RedirectButton
@@ -179,7 +179,7 @@ export default function Info() {
             </Grid>
             {mediaInfo && (
                 <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <Media media={mediaInfo}/>
                     </Grid>
                 </Grid>

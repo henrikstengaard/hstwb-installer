@@ -2,33 +2,29 @@
 {
     using System;
     using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Apis;
-    using Microsoft.Win32.SafeHandles;
 
     public class WindowsPhysicalDriveStream : Stream
     {
-        private readonly SafeFileHandle safeFileHandle;
+        private readonly bool writable;
+        // private const int BLOCK_SIZE = 16384; //512;
+        // private readonly SafeFileHandle safeFileHandle;
+        private readonly Win32RawDisk win32RawDisk;
 
-        public WindowsPhysicalDriveStream(string path)
+        public WindowsPhysicalDriveStream(string path, long size, bool writable)
         {
-            safeFileHandle = DeviceApi.CreateFile(path,
-                DeviceApi.GENERIC_READ,
-                DeviceApi.FILE_SHARE_READ | DeviceApi.FILE_SHARE_WRITE,
-                IntPtr.Zero,
-                DeviceApi.OPEN_EXISTING,
-                DeviceApi.FILE_ATTRIBUTE_READONLY,
-                IntPtr.Zero);
+            this.writable = writable;
+            this.Length = size;
+            this.win32RawDisk = new Win32RawDisk(path, writable);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                safeFileHandle.Dispose();
-                safeFileHandle.Close();
+                win32RawDisk.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -39,46 +35,51 @@
                 throw new ArgumentException("'Only offset 0 is allow", nameof(offset));
             }
             
-            if (!DeviceApi.ReadFile(safeFileHandle, buffer, Convert.ToUInt32(count), out var bytesRead, IntPtr.Zero))
-            {
-                throw new IOException($"ReadFile failed with bytes to read length {count}");
-            }
-
-            return Convert.ToInt32(bytesRead);
+            return Convert.ToInt32(win32RawDisk.Read(buffer));
         }
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            return await Task.Run(() => this.Read(buffer, offset, count), cancellationToken);
-        }
+        // public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
+        //     CancellationToken cancellationToken)
+        // {
+        //     return await Task.Run(() => this.Read(buffer, offset, count), cancellationToken);
+        // }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            if (!Enum.TryParse<DeviceApi.EMoveMethod>(origin.ToString(), out var moveMethod))
-            {
-                throw new ArgumentOutOfRangeException(nameof(origin));
-            }
-
-            if (!DeviceApi.SetFilePointerEx(safeFileHandle, offset, out var newOffset, moveMethod))
-            {
-                throw new IOException($"SetFilePointerEx failed with offset {offset} and origin {origin}");
-            }
-
-            return newOffset;
+            return win32RawDisk.Seek(offset, origin);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (!DeviceApi.WriteFile(safeFileHandle, buffer, Convert.ToUInt32(count), out _, IntPtr.Zero))
+            if (offset != 0)
             {
-                throw new IOException($"WriteFile failed with data length {count}");
+                throw new ArgumentException("'Only offset 0 is allow", nameof(offset));
             }
+
+            win32RawDisk.Write(buffer);
+            
+            // var bufferOffset = 0;
+            // do
+            // {
+            //     var blockSize = Math.Min(count - bufferOffset, BLOCK_SIZE);
+            //     var block = new byte[blockSize];
+            //     Array.Copy(buffer, bufferOffset, block, 0, blockSize);
+            //     if (!DeviceApi.WriteFile(safeFileHandle, block, Convert.ToUInt32(blockSize), out var bytesWritten,
+            //             IntPtr.Zero))
+            //     {
+            //         int error = Marshal.GetLastWin32Error();
+            //         throw new IOException($"WriteFile failed with data length {count}");
+            //     }
+            //
+            //     bufferOffset += blockSize;
+            //     Seek(blockSize, SeekOrigin.Current);
+            // } while (bufferOffset < count);
         }
-        
-        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            await Task.Run(() => this.Write(buffer, offset, count), cancellationToken);
-        }
+
+        // public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        // {
+        //     await Task.Run(() => this.Write(buffer, offset, count), cancellationToken);
+        // }
 
         public override void Flush()
         {
@@ -90,7 +91,7 @@
         public override bool CanRead => true;
         public override bool CanSeek => true;
         public override bool CanWrite => true;
-        public override long Length => throw new NotSupportedException("Physical device doesn't support get length");
+        public override long Length { get; }
         public override long Position { get; set; }
     }
 }

@@ -18,6 +18,8 @@ const initialState = {
     title: '',
     show: false,
     isComplete: false,
+    hasError: false,
+    errorMessage: null,
     percentComplete: null,
     bytesProcessed: null,
     bytesRemaining: null,
@@ -56,9 +58,12 @@ export default function ProgressBackdrop(props) {
                 .then(result => {
                     connection.on('UpdateProgress', progress => {
                         const isComplete = get(progress, 'isComplete') || false
+                        const hasError = get(progress, 'hasError') || false
                         state.title = progress.title
                         state.isComplete = isComplete
                         state.show = true
+                        state.hasError = hasError
+                        state.errorMessage = progress.errorMessage
                         state.percentComplete = progress.percentComplete
                         state.bytesProcessed = isComplete ? null : progress.bytesProcessed
                         state.bytesRemaining = isComplete ? null : progress.bytesRemaining
@@ -77,6 +82,8 @@ export default function ProgressBackdrop(props) {
         title,
         show,
         isComplete,
+        hasError,
+        errorMessage,
         percentComplete,
         bytesProcessed,
         bytesRemaining,
@@ -121,7 +128,7 @@ export default function ProgressBackdrop(props) {
                                 millisecondsRemaining,
                                 millisecondsTotal
                             }) => {
-        if (isComplete) {
+        if (isComplete || hasError) {
             return (
                 <React.Fragment>
                     <Box sx={{
@@ -130,7 +137,7 @@ export default function ProgressBackdrop(props) {
                         justifyContent: 'center'
                     }}>
                         <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom', color: 'rgb(51, 204, 51)'}}>
-                            <FontAwesomeIcon icon="check" style={{marginRight: '5px'}}/> Completed successfully
+                            <FontAwesomeIcon icon={hasError ? 'times' : 'check'} style={{marginRight: '5px'}}/> {hasError ? `Failed: ${errorMessage || ''}` : 'Completed successfully'}'
                         </div>
                     </Box>
                     <Box sx={{

@@ -1,0 +1,6 @@
+﻿
+Node,Antecedent,Dependent
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskDrive.DeviceID="\\.\PHYSICALDRIVE0",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #0","
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskDrive.DeviceID="\\.\PHYSICALDRIVE1",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #1, Partition #0","
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskDrive.DeviceID="\\.\PHYSICALDRIVE1",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #1, Partition #1","
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskDrive.DeviceID="\\.\PHYSICALDRIVE1",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #1, Partition #2","

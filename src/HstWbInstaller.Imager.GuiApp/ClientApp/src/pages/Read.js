@@ -62,7 +62,7 @@ export default function Read() {
                 description="Read physical disk to image file."
             />
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <MediaSelectField
                         label={
                             <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
@@ -80,7 +80,7 @@ export default function Read() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <TextField
                         id="destination-file"
                         label={
@@ -115,7 +115,7 @@ export default function Read() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <Box display="flex" justifyContent="flex-end">
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <RedirectButton
@@ -144,7 +144,7 @@ export default function Read() {
             </Grid>
             {sourceMedia && (
                 <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12}>
                         <Media media={sourceMedia}/>
                     </Grid>
                 </Grid>

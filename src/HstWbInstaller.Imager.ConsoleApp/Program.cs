@@ -217,7 +217,7 @@
 
         static async Task Run(Arguments arguments)
         {
-            var isAdministrator = await OperatingSystem.IsAdministrator();
+            var isAdministrator = OperatingSystem.IsAdministrator();
 
             if (!isAdministrator)
             {

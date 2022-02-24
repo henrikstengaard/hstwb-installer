@@ -37,8 +37,9 @@ export default function Titlebar() {
                 zIndex: (theme) => theme.zIndex.drawer + 10000,
                 WebkitAppRegion: 'drag',
                 userSelect: 'none'
-            }}>
-            <Toolbar disableGutters style={{minHeight: '32px'}}>
+            }}
+        >
+            <Toolbar disableGutters style={{minHeight: '32px', padding: '7px'}}>
                 <img src="icons/icon-192x192.png" height="20px" alt="HstWB Installer app icon"
                      style={{paddingLeft: '2px', paddingRight: '2px'}}/>
                 <Typography variant="h1" component="div" sx={{flexGrow: 1}}>

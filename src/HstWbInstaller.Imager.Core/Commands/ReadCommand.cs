@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
+    using HstWbInstaller.Core.Extensions;
 
     public class ReadCommand : CommandBase
     {
@@ -38,7 +40,8 @@
             using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
 
-            var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(sourceStream);
+            var firstBytes = await sourceStream.ReadBytes(512 * 2048);
+            var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
 
             var readSize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
 

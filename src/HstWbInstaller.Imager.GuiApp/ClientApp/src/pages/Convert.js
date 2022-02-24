@@ -41,7 +41,7 @@ export default function Convert() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Reading file '${sourcePath}' to file '${destinationPath}'`,
+                title: `Converting file '${sourcePath}' to file '${destinationPath}'`,
                 sourcePath,
                 destinationPath
             })
@@ -60,7 +60,7 @@ export default function Convert() {
                 description="Convert image file from one format to another."
             />
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <TextField
                         id="source-path"
                         label={
@@ -88,7 +88,7 @@ export default function Convert() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <TextField
                         id="destination-path"
                         label={
@@ -116,7 +116,7 @@ export default function Convert() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} lg={6}>
                     <Box display="flex" justifyContent="flex-end">
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <RedirectButton

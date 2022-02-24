@@ -44,6 +44,7 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSingleton<IActiveBackgroundTaskList>(new ActiveBackgroundTaskList());
             services.AddSingleton(new AppState
             {
+                IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
                 UseFake = Debugger.IsAttached
             });
