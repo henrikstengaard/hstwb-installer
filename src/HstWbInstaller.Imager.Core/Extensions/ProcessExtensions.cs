@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Imager.Core.Extensions
 {
+    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
@@ -19,10 +20,15 @@
         
             if (process == null)
             {
-                throw new IOException($"Failed to start process command '{command}'");
+                throw new IOException($"Failed to start process command '{command}' {(string.IsNullOrWhiteSpace(args) ? string.Empty : $" with arguments '{args}'")}");
             }
         
-            return process.StandardOutput.ReadToEnd();
+            var stdOut = process.StandardOutput.ReadToEnd();
+#if DEBUG
+            Console.WriteLine(stdOut);
+            Debug.WriteLine(stdOut);
+#endif
+            return stdOut;
         }
 
         public static async Task<string> RunProcessAsync(this string command, string args = null)
@@ -38,10 +44,15 @@
         
             if (process == null)
             {
-                throw new IOException($"Failed to start process command '{command}'");
+                throw new IOException($"Failed to start process command '{command}' {(string.IsNullOrWhiteSpace(args) ? string.Empty : $" with arguments '{args}'")}");
             }
         
-            return await process.StandardOutput.ReadToEndAsync();
+            var stdOut = await process.StandardOutput.ReadToEndAsync();
+#if DEBUG
+            Console.WriteLine(stdOut);
+            Debug.WriteLine(stdOut);
+#endif
+            return stdOut;
         }
     }
 }

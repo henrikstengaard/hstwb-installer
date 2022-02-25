@@ -2,14 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Extensions;
     using Models;
 
-    public class WindowsPhysicalDriveManager : PhysicalDriveManagerBase
+    public class WindowsPhysicalDriveManager : IPhysicalDriveManager
     {
-        public override async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
+        public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
             if (!OperatingSystem.IsWindows())
             {
@@ -48,41 +48,17 @@
 
         private async Task<string> GetWmicDiskDriveListCsv()
         {
-            return await RunProcess("wmic", "diskdrive list /format:csv");
+            return await "wmic".RunProcessAsync("diskdrive list /format:csv");
         }
 
         private async Task<string> GetWmicWin32DiskDriveToDiskPartitionPath()
         {
-            return await RunProcess("wmic", "path Win32_DiskDriveToDiskPartition get * /format:csv");
+            return await "wmic".RunProcessAsync("path Win32_DiskDriveToDiskPartition get * /format:csv");
         }
 
         private async Task<string> GetWmicWin32LogicalDiskToPartitionPath()
         {
-            return await RunProcess("wmic", "path Win32_LogicalDiskToPartition get * /format:csv");
-        }
-    }
-
-    public abstract class PhysicalDriveManagerBase : IPhysicalDriveManager
-    {
-        public abstract Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives();
-
-        protected async Task<string> RunProcess(string fileName, string arguments = null)
-        {
-            var process = Process.Start(
-                new ProcessStartInfo(fileName, arguments ?? string.Empty)
-                {
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                });
-
-            if (process == null)
-            {
-                throw new NotSupportedException(
-                    $"Failed to run {{fileName}} {(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
-            }
-
-            return await process.StandardOutput.ReadToEndAsync();
+            return await "wmic".RunProcessAsync("path Win32_LogicalDiskToPartition get * /format:csv");
         }
     }
 }
