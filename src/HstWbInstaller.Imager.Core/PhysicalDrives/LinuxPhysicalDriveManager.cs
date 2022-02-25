@@ -5,12 +5,18 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Extensions;
     using OperatingSystem = OperatingSystem;
 
     public class LinuxPhysicalDriveManager : IPhysicalDriveManager
     {
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
+            if (!OperatingSystem.IsLinux())
+            {
+                throw new NotSupportedException("Linux physical drive manager is not running on Linux environment");
+            }
+
             var lsBlkJson = await GetLsBlkJson();
 
             var lsBlk = LsBlkReader.ParseLsBlk(lsBlkJson);
@@ -32,25 +38,7 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
 
         private async Task<string> GetLsBlkJson()
         {
-            if (!OperatingSystem.IsLinux())
-            {
-                throw new NotSupportedException("Linux physical drive manager is not running on Linux environment");
-            }
-
-            var process = Process.Start(
-                new ProcessStartInfo("lsblk", "-ba -o TYPE,NAME,RM,MODEL,PATH,SIZE,VENDOR --json")
-                {
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                });
-
-            if (process == null)
-            {
-                throw new NotSupportedException("Failed to run lsblk");
-            }
-
-            return await process.StandardOutput.ReadToEndAsync();
+            return await "lsblk".RunProcessAsync("-ba -o TYPE,NAME,RM,MODEL,PATH,SIZE,VENDOR --json");
         }
     }
 }

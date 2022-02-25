@@ -2,18 +2,23 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Extensions;
     using OperatingSystem = OperatingSystem;
 
     public class MacOsPhysicalDriveManager : IPhysicalDriveManager
     {
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
-            var listOutput = await RunDiskUtil("list -plist external");
+            if (!OperatingSystem.IsMacOs())
+            {
+                throw new NotSupportedException("MacOS physical drive manager is not running on macOS environment");
+            }
+            
+            var listOutput = await GetDiskUtilExternalDisks();
 
             var disks = DiskUtilReader.ParseList(new MemoryStream(Encoding.UTF8.GetBytes(listOutput))).ToList();
 
@@ -21,7 +26,7 @@
             
             foreach (var disk in disks)
             {
-                var infoOutput = await RunDiskUtil($"info -plist {disk}");
+                var infoOutput = await GetDiskUtilInfoDisk(disk);
 
                 var info = DiskUtilReader.ParseInfo(new MemoryStream(Encoding.UTF8.GetBytes(infoOutput)));
                 
@@ -31,27 +36,14 @@
             return physicalDrives;
         }
 
-        private async Task<string> RunDiskUtil(string arguments)
+        private async Task<string> GetDiskUtilExternalDisks()
         {
-            if (!OperatingSystem.IsMacOs())
-            {
-                throw new NotSupportedException("MacOS physical drive manager is not running on macOS environment");
-            }
-            
-            var process = Process.Start(
-                new ProcessStartInfo("diskutil", arguments)
-                {
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                });
-            
-            if (process == null)
-            {
-                throw new NotSupportedException("Failed to run diskutil");
-            }
-            
-            return await process.StandardOutput.ReadToEndAsync();
+            return await "diskutil".RunProcessAsync("list -plist external");
+        }
+
+        private async Task<string> GetDiskUtilInfoDisk(string disk)
+        {
+            return await "diskutil".RunProcessAsync($"info -plist {disk}");
         }
     }
 }
