@@ -64,24 +64,29 @@ export default function MediaOverview(props) {
                             </TableCell>
                         </TableRow>
                     )}
-                    <TableRow>
-                        <TableCell>
-                            <StyledAccordionSummary
-                                expandIcon={<FontAwesomeIcon icon={rdbExpanded ? 'chevron-up' : 'chevron-down'}/>}
-                                onClick={() => handleChange({ name: 'rdbExpanded', value: !rdbExpanded})}
-                            >
-                                <Typography>
-                                    {`Rigid disk block: ${media.rigidDiskBlock.diskProduct}, ${formatBytes(media.rigidDiskBlock.diskSize)}`}
-                                </Typography>
-                            </StyledAccordionSummary>
-                        </TableCell>
-                    </TableRow>
-                    {rdbExpanded && (
-                        <TableRow>
-                            <TableCell>
-                                <RigidDiskBlockOverview rigidDiskBlock={media.rigidDiskBlock} />
-                            </TableCell>
-                        </TableRow>
+                    
+                    {media.rigidDiskBlock && (
+                        <React.Fragment>
+                            <TableRow>
+                                <TableCell>
+                                    <StyledAccordionSummary
+                                        expandIcon={<FontAwesomeIcon icon={rdbExpanded ? 'chevron-up' : 'chevron-down'}/>}
+                                        onClick={() => handleChange({ name: 'rdbExpanded', value: !rdbExpanded})}
+                                    >
+                                        <Typography>
+                                            {`Rigid disk block: ${media.rigidDiskBlock.diskProduct}, ${formatBytes(media.rigidDiskBlock.diskSize)}`}
+                                        </Typography>
+                                    </StyledAccordionSummary>
+                                </TableCell>
+                            </TableRow>
+                            {rdbExpanded && (
+                                <TableRow>
+                                    <TableCell>
+                                        <RigidDiskBlockOverview rigidDiskBlock={media.rigidDiskBlock} />
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </React.Fragment>                        
                     )}
                 </TableBody>
             </Table>

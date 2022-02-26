@@ -4,9 +4,12 @@ export const AppStateContext = React.createContext(null)
 export const AppStateDispatchContext = React.createContext(null)
 
 function initialState() {
+    const version = document.getElementById('root').getAttribute('data-version')
     return {
+        isAdministrator: false,
         isElectronActive: false,
-        useFake: false
+        useFake: false,
+        version
     }
 }
 

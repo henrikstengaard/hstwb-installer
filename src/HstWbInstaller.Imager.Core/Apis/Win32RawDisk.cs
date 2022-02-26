@@ -5,6 +5,11 @@
     using System.Runtime.InteropServices;
     using Microsoft.Win32.SafeHandles;
 
+    // https://github.com/shinchiro/WinFileIO/blob/master/WinFileIO.cs
+    // https://stackoverflow.com/questions/12081343/c-sharp-writefile-stops-writing-at-sector-242-on-usb-drives
+    // https://forums.codeguru.com/showthread.php?559101-Direct-write-to-HardDisk-WriteFile-returns-5-access-denied-error
+    // https://stackoverflow.com/questions/39154020/mainwindow-createfile-always-returns-1?rq=1
+    // http://buiba.blogspot.com/2009/06/using-winapi-createfile-readfile.html
     public class Win32RawDisk : IDisposable
     {
         private readonly bool writeable;
@@ -21,6 +26,11 @@
                 DeviceApi.OPEN_EXISTING,
                 0,
                 IntPtr.Zero);
+
+            if (safeFileHandle.IsInvalid)
+            {
+                throw new IOException($"Path '{path}' is invalid");
+            }
             
             if (writeable && !LockDevice())
             {

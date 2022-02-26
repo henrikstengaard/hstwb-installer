@@ -12,6 +12,28 @@
     public class GivenOptimizeCommand : CommandTestBase
     {
         [Fact]
+        public async Task WhenOptimizeImgWithoutRigidDiskBlockThenSizeIsNotChanged()
+        {
+            // arrange
+            var path = $"{Guid.NewGuid()}.img";
+            var fakeCommandHelper = new FakeCommandHelper();
+            var bytes = fakeCommandHelper.CreateTestData();
+            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, Media.MediaType.Raw, false,
+                new MemoryStream(bytes)));
+            var cancellationTokenSource = new CancellationTokenSource();
+            
+            // optimize
+            var optimizeCommand = new OptimizeCommand(fakeCommandHelper, path);
+            var result = await optimizeCommand.Execute(cancellationTokenSource.Token);
+            Assert.True(result.IsSuccess);
+
+            // assert bytes and media optimized bytes are identical
+            var optimizedBytes = fakeCommandHelper.GetMedia(path).GetBytes();
+            Assert.Equal(bytes.Length, optimizedBytes.Length);
+            Assert.Equal(bytes, optimizedBytes);
+        }
+
+        [Fact]
         public async Task WhenOptimizeImgWithRigidDiskBlockThenSizeIsChanged()
         {
             // arrange

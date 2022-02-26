@@ -14,6 +14,7 @@ export default function TextField(props) {
         value = '',
         disabled,
         error = null,
+        inputProps = null,
         inputRef = null,
         endAdornment = null,
         onChange,
@@ -36,6 +37,9 @@ export default function TextField(props) {
                 return
             }
             onKeyDown(event)
+        }
+        if (!isNil(inputProps)) {
+            outlinedInputProps.inputProps = inputProps
         }
     }
     

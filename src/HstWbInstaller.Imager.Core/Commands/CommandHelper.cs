@@ -53,7 +53,7 @@
 
         public virtual Stream CreateWriteableStream(string path)
         {
-            return File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            return File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
         public virtual Result<Media> GetWritableMedia(IEnumerable<IPhysicalDrive> physicalDrives, string path, long? size = null, bool allowPhysicalDrive = true)

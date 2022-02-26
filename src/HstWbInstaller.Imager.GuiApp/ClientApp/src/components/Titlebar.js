@@ -30,6 +30,8 @@ export default function Titlebar() {
     electronIpc.on({event: 'window-maximized', callback: () => setMaximized(true)})
     electronIpc.on({event: 'window-unmaximized', callback: () => setMaximized(false)})
 
+    const version = document.getElementById('root').getAttribute('data-version')
+    
     return (
         <AppBar
             position="fixed"
@@ -43,7 +45,7 @@ export default function Titlebar() {
                 <img src="icons/icon-192x192.png" height="20px" alt="HstWB Installer app icon"
                      style={{paddingLeft: '2px', paddingRight: '2px'}}/>
                 <Typography variant="h1" component="div" sx={{flexGrow: 1}}>
-                    HstWB Imager
+                    HstWB Imager v{version}
                 </Typography>
                 <Box style={{WebkitAppRegion: 'no-drag'}}>
                     <IconButton
