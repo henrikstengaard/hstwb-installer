@@ -178,9 +178,9 @@ export default function MediaDetails(props) {
         if (!fields) {
             return null
         }
-        return fields.map((field) => {
+        return fields.map((field, index) => {
             return (
-                <TableRow>
+                <TableRow key={index}>
                     <TableCell>
                         {field.label}
                     </TableCell>

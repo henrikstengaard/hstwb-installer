@@ -10,7 +10,6 @@
         [Required]
         public string Path { get; set; }
         
-        [Required]
         public long Size { get; set; }
     }
 }

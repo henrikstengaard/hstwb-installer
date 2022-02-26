@@ -77,7 +77,6 @@ export default function RigidDiskBlockOverview(props) {
     }
 
     partitions.sort(function(a, b){return a.start - b.start})
-    console.log(partitions)
     
     const partColor = (part) => {
         switch (part.type) {

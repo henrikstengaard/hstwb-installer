@@ -12,6 +12,7 @@
     using Extensions;
     using RigidDiskBlocks;
 
+    
     public static class IffImageWriter
     {
         /// <summary>
