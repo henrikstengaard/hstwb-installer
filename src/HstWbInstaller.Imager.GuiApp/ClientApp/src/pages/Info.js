@@ -46,7 +46,7 @@ export default function Info() {
     }
 
     const getMediaInfo = async (path) => {
-        const response = await fetch('info', {
+        const response = await fetch('api/info', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

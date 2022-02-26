@@ -58,7 +58,7 @@ export default function BrowseSaveDialog(props) {
             return
         }
         
-        const response = await fetch('show-save-dialog', {
+        const response = await fetch('api/show-save-dialog', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

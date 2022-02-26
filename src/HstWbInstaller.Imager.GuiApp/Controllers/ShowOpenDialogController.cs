@@ -13,7 +13,7 @@
     using FileFilter = ElectronNET.API.Entities.FileFilter;
 
     [ApiController]
-    [Route("show-open-dialog")]
+    [Route("api/show-open-dialog")]
     public class ShowOpenDialogController : ControllerBase
     {
         private readonly IBackgroundTaskQueue backgroundTaskQueue;

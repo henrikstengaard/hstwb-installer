@@ -14,7 +14,7 @@
     using Models;
 
     [ApiController]
-    [Route("list")]
+    [Route("api/list")]
     public class ListController : ControllerBase
     {
         private readonly IHubContext<ErrorHub> errorHubContext;

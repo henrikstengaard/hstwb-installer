@@ -12,7 +12,7 @@
     using FileFilter = ElectronNET.API.Entities.FileFilter;
 
     [ApiController]
-    [Route("show-save-dialog")]
+    [Route("api/show-save-dialog")]
     public class ShowSaveDialogController : ControllerBase
     {
         private readonly IBackgroundTaskQueue backgroundTaskQueue;

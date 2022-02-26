@@ -58,7 +58,7 @@ export default function BrowseOpenDialog(props) {
             return
         }
 
-        const response = await fetch('show-open-dialog', {
+        const response = await fetch('api/show-open-dialog', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

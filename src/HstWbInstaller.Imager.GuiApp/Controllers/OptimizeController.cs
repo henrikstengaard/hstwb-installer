@@ -14,7 +14,7 @@
     using Services;
 
     [ApiController]
-    [Route("optimize")]
+    [Route("api/optimize")]
     public class OptimizeController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;

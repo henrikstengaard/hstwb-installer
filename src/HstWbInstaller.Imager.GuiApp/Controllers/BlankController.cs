@@ -14,7 +14,7 @@
     using Services;
 
     [ApiController]
-    [Route("blank")]
+    [Route("api/blank")]
     public class BlankController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;

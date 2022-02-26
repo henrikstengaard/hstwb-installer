@@ -94,7 +94,7 @@ export default function ProgressBackdrop(props) {
     } = state
 
     const handleCancel = async () => {
-        const response = await fetch('cancel', {method: 'POST'});
+        const response = await fetch('api/cancel', {method: 'POST'});
         if (!response.ok) {
             console.error("Failed to cancel")
         }
@@ -137,7 +137,7 @@ export default function ProgressBackdrop(props) {
                         justifyContent: 'center'
                     }}>
                         <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom', color: 'rgb(51, 204, 51)'}}>
-                            <FontAwesomeIcon icon={hasError ? 'times' : 'check'} style={{marginRight: '5px'}}/> {hasError ? `Failed: ${errorMessage || ''}` : 'Completed successfully'}'
+                            <FontAwesomeIcon icon={hasError ? 'times' : 'check'} style={{marginRight: '5px'}}/> {hasError ? `Failed: ${errorMessage || ''}` : 'Completed successfully'}
                         </div>
                     </Box>
                     <Box sx={{

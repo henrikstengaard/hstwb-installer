@@ -7,7 +7,7 @@
     /// cancel controller to cancel active background task list
     /// </summary>
     [ApiController]
-    [Route("cancel")]
+    [Route("api/cancel")]
     public class CancelController : ControllerBase
     {
         private readonly IActiveBackgroundTaskList activeBackgroundTaskList;

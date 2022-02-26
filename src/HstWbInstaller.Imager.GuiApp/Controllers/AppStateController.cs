@@ -7,7 +7,7 @@
     /// get app state
     /// </summary>
     [ApiController]
-    [Route("app-state")]
+    [Route("api/app-state")]
     public class AppStateController : ControllerBase
     {
         private readonly AppState appState;

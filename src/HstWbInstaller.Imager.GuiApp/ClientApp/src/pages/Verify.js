@@ -52,7 +52,7 @@ export default function Verify() {
     }
 
     const handleVerify = async (sourcePath, destinationPath) => {
-        const response = await fetch('verify', {
+        const response = await fetch('api/verify', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

@@ -36,7 +36,7 @@ export default function Read() {
     }
 
     const handleRead = async () => {
-        const response = await fetch('read', {
+        const response = await fetch('api/read', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
