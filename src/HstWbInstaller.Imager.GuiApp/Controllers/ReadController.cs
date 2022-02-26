@@ -14,7 +14,7 @@
     using Services;
 
     [ApiController]
-    [Route("read")]
+    [Route("api/read")]
     public class ReadController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;

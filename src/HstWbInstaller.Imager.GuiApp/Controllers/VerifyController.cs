@@ -14,21 +14,19 @@
     using Services;
 
     [ApiController]
-    [Route("verify")]
+    [Route("api/verify")]
     public class VerifyController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;
-        private readonly IHubContext<ErrorHub> errorHubContext;
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public VerifyController(IHubContext<ProgressHub> progressHubContext, IHubContext<ErrorHub> errorHubContext,
+        public VerifyController(IHubContext<ProgressHub> progressHubContext,
             IBackgroundTaskQueue backgroundTaskQueue)
         {
             this.progressHubContext = progressHubContext;
-            this.errorHubContext = errorHubContext;
             this.backgroundTaskQueue = backgroundTaskQueue;
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Post(VerifyRequest request)
         {
@@ -43,7 +41,7 @@
                 SourcePath = request.SourcePath,
                 DestinationPath = request.DestinationPath
             });
-            
+
             return Ok();
         }
 
@@ -61,7 +59,8 @@
 
                 var commandHelper = new CommandHelper();
                 var verifyCommand =
-                    new VerifyCommand(commandHelper, physicalDrives, verifyBackgroundTask.SourcePath, verifyBackgroundTask.DestinationPath);
+                    new VerifyCommand(commandHelper, physicalDrives, verifyBackgroundTask.SourcePath,
+                        verifyBackgroundTask.DestinationPath);
                 verifyCommand.DataProcessed += async (_, args) =>
                 {
                     await progressHubContext.SendProgress(new Progress
@@ -72,14 +71,20 @@
                         BytesProcessed = args.BytesProcessed,
                         BytesRemaining = args.BytesRemaining,
                         BytesTotal = args.BytesTotal,
-                        MillisecondsElapsed = args.PercentComplete > 0 ? (long)args.TimeElapsed.TotalMilliseconds : new long?(),
-                        MillisecondsRemaining = args.PercentComplete > 0 ? (long)args.TimeRemaining.TotalMilliseconds : new long?(),
-                        MillisecondsTotal = args.PercentComplete > 0 ? (long)args.TimeTotal.TotalMilliseconds : new long?()
-                    }, context.Token);                
+                        MillisecondsElapsed = args.PercentComplete > 0
+                            ? (long)args.TimeElapsed.TotalMilliseconds
+                            : new long?(),
+                        MillisecondsRemaining = args.PercentComplete > 0
+                            ? (long)args.TimeRemaining.TotalMilliseconds
+                            : new long?(),
+                        MillisecondsTotal = args.PercentComplete > 0
+                            ? (long)args.TimeTotal.TotalMilliseconds
+                            : new long?()
+                    }, context.Token);
                 };
 
                 var result = await verifyCommand.Execute(context.Token);
-            
+
                 await progressHubContext.SendProgress(new Progress
                 {
                     Title = verifyBackgroundTask.Title,

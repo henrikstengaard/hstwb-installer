@@ -35,7 +35,7 @@ export default function Write() {
     }
 
     const handleWrite = async () => {
-        const response = await fetch('write', {
+        const response = await fetch('api/write', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

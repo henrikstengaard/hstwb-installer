@@ -62,6 +62,8 @@
         
         private static long GetLongNumber(NSDictionary dict, string key)
         {
+            var o = dict.ObjectForKey(key);
+            Console.WriteLine($"{key} = {o.ToXmlPropertyList()}");
             var numberObject = dict.ObjectForKey(key) as NSNumber;
 
             return numberObject?.ToLong() ?? 0;

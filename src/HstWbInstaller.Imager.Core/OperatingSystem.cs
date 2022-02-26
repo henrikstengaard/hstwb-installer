@@ -21,12 +21,16 @@ namespace HstWbInstaller.Imager.Core
         // https://github.com/dotnet/runtime/issues/25118
         public static bool IsAdministrator()
         {
+#if Windows
             if (IsWindows())
             {
+#pragma warning disable CA1416
                 using var identity = WindowsIdentity.GetCurrent();
                 var principal = new WindowsPrincipal(identity);
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
+#pragma warning restore CA1416
             }
+#endif
 
             // linux root has user id 0
             /* environment variable: EUID

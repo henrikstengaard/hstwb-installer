@@ -14,7 +14,7 @@
     using Services;
 
     [ApiController]
-    [Route("convert")]
+    [Route("api/convert")]
     public class ConvertController : ControllerBase
     {
         private readonly IHubContext<ProgressHub> progressHubContext;

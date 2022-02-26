@@ -1,5 +1,5 @@
 import {formatBytes} from "../utils/Format";
-import {get} from "lodash";
+import {get, isNil, set} from "lodash";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import React from "react";
@@ -7,14 +7,30 @@ import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import Typography from "@mui/material/Typography";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import {styled} from "@mui/material/styles";
+
+const StyledAccordionSummary = styled(AccordionSummary)(({theme}) => ({
+    padding: 0,
+    color: theme.palette.primary.main
+}));
 
 export default function MediaDetails(props) {
     const {
         media
     } = props
 
+    const [state, setState] = React.useState({});
+
+    const handleChange = (id, expanded) => {
+        set(state, id, !expanded)
+        setState({...state})
+    }
+    
     const disk = {
-        label: 'Disk',
+        label: `Disk: ${media.model}, ${formatBytes(media.diskSize)}`,
         fields: [{
             label: 'Model',
             value: media.model
@@ -28,7 +44,7 @@ export default function MediaDetails(props) {
     }
 
     const rigidDiskBlock = media.rigidDiskBlock ? {
-        label: 'Rigid disk block',
+        label: `Rigid disk block: ${media.rigidDiskBlock.diskProduct}, ${formatBytes(media.rigidDiskBlock.diskSize)}`,
         fields: [{
             label: 'Manufacturers Name',
             value: media.rigidDiskBlock.diskVendor
@@ -76,7 +92,7 @@ export default function MediaDetails(props) {
     
     const fileSystems = (get(media, 'rigidDiskBlock.fileSystemHeaderBlocks') || []).map((fileSystem, index) => {
         return {
-            label: `File system ${(index + 1)}`,
+            label: `File system ${(index + 1)}: ${fileSystem.dosTypeFormatted}`,
             fields: [{
                 label: 'DOS Type',
                 value: `${fileSystem.dosTypeHex} (${fileSystem.dosTypeFormatted})`
@@ -95,7 +111,7 @@ export default function MediaDetails(props) {
 
     const partitions = (get(media, 'rigidDiskBlock.partitionBlocks') || []).map((partition, index) => {
         return {
-            label: `Partition ${(index + 1)}`,
+            label: `Partition ${(index + 1)}: ${partition.driveName}, ${formatBytes(partition.partitionSize)}`,
             fields: [{
                 label: 'Device Name',
                 value: partition.driveName
@@ -180,15 +196,27 @@ export default function MediaDetails(props) {
         <TableContainer component={Paper}>
             <Table size="small" aria-label="media details">
                 <TableBody>
-                    {sections.map((section, index) => (
-                        <React.Fragment key={index}>
-                            <TableRow>
-                                <TableCell colSpan="2"
-                                           style={{textDecoration: 'underline', backgroundColor: 'rgb(184, 222, 245)'}}>{section.label}</TableCell>
-                            </TableRow>
-                            {renderFields(section.fields)}
-                        </React.Fragment>
-                    ))}
+                    {sections.map((section, index) => {
+                        const id = index.toString()
+                        const expanded = isNil(state[id]) ? true : get(state , id)
+                        return (
+                            <React.Fragment key={index}>
+                                <TableRow>
+                                    <TableCell colSpan="2">
+                                        <StyledAccordionSummary
+                                            expandIcon={<FontAwesomeIcon icon={expanded ? 'chevron-up' : 'chevron-down'}/>}
+                                            onClick={() => handleChange(index, expanded)}
+                                        >
+                                            <Typography>
+                                                {section.label}
+                                            </Typography>
+                                        </StyledAccordionSummary>
+                                    </TableCell>
+                                </TableRow>
+                                {expanded && renderFields(section.fields)}
+                            </React.Fragment>
+                        )}
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>

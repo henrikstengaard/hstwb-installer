@@ -13,7 +13,7 @@
     using Models.Requests;
 
     [ApiController]
-    [Route("info")]
+    [Route("api/info")]
     public class InfoController : ControllerBase
     {
         private readonly AppState appState;

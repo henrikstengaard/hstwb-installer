@@ -33,7 +33,7 @@ export function AppStateProvider(props) {
 
     const handleAppState = React.useCallback(() => {
         async function fetchAppState() {
-            const response = await fetch('app-state');
+            const response = await fetch('api/app-state');
             const appState = response.ok ? await response.json() : initialState();
             
             dispatch({

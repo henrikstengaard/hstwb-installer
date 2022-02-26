@@ -34,7 +34,7 @@ export default function Convert() {
     }
 
     const handleConvert = async () => {
-        const response = await fetch('convert', {
+        const response = await fetch('api/convert', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
