@@ -37,6 +37,7 @@ import Navigation from "./components/Navigation";
 import Content from "./components/Content";
 import {ProgressProvider} from "./components/ProgressContext";
 import ErrorSnackBar from "./components/ErrorSnackBar";
+import License from "./components/License";
 
 library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight, 
     faExchangeAlt, faBars, faWindowMinimize, faWindowMaximize, faWindowRestore, faWindowClose,
@@ -63,13 +64,15 @@ export default class App extends Component {
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <Titlebar />
-                <ProgressProvider>
-                    <ProgressBackdrop>
-                        <ErrorSnackBar />
-                        <Navigation />
-                        <Content />
-                    </ProgressBackdrop>
-                </ProgressProvider>
+                <License>
+                    <ProgressProvider>
+                        <ProgressBackdrop>
+                            <ErrorSnackBar />
+                            <Navigation />
+                            <Content />
+                        </ProgressBackdrop>
+                    </ProgressProvider>
+                </License>
             </Box>
         );
     }

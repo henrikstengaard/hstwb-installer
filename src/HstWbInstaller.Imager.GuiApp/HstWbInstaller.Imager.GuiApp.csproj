@@ -59,4 +59,8 @@
   <ItemGroup>
     <ProjectReference Include="..\HstWbInstaller.Imager.Core\HstWbInstaller.Imager.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="license.txt" />
+    <EmbeddedResource Include="license.txt" />
+  </ItemGroup>
 </Project>

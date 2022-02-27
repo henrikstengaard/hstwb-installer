@@ -10,11 +10,13 @@ import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import SelectField from "../components/SelectField";
+import CheckboxField from "../components/CheckboxField";
 
 const initialState = {
     path: null,
     size: 16,
-    unit: 'gb'
+    unit: 'gb',
+    compatibleSize: true
 }
 
 const unitOptions = [{
@@ -41,7 +43,8 @@ export default function Blank() {
     const {
         path,
         size,
-        unit
+        unit,
+        compatibleSize
     } = state
     
     const handleBlank = async () => {
@@ -56,7 +59,8 @@ export default function Blank() {
                 title: `Creating ${size} ${unitOption.title} blank image '${path}'`,
                 path,
                 size: (size * unitOption.size),
-                unit
+                unit,
+                compatibleSize
             })
         });
 
@@ -148,6 +152,19 @@ export default function Blank() {
                         onChange={(value) => handleChange({
                             name: 'unit',
                             value: value
+                        })}
+                    />
+                </Grid>
+            </Grid>
+            <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
+                <Grid item xs={12} lg={6}>
+                    <CheckboxField
+                        id="compatible-size"
+                        label="Compatible size with various SD/CF-cards, SSD and hard-disk brands"
+                        value={compatibleSize}
+                        onChange={(checked) => handleChange({
+                            name: 'compatibleSize',
+                            value: checked
                         })}
                     />
                 </Grid>

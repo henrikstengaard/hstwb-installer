@@ -13,6 +13,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using System.Threading.Tasks;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using Helpers;
     using Hubs;
     using Models;
     using Services;
@@ -44,6 +45,7 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSingleton<IActiveBackgroundTaskList>(new ActiveBackgroundTaskList());
             services.AddSingleton(new AppState
             {
+                IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed("HstWB Imager"),
                 IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
                 UseFake = Debugger.IsAttached

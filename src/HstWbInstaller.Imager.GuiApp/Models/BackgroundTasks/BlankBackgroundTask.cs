@@ -9,5 +9,6 @@
         public string Title { get; set; }
         public string Path { get; set; }
         public long Size { get; set; }
+        public bool CompatibleSize { get; set; }
     }
 }

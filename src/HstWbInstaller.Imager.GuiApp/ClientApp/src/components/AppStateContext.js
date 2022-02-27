@@ -6,6 +6,7 @@ export const AppStateDispatchContext = React.createContext(null)
 function initialState() {
     const version = document.getElementById('root').getAttribute('data-version')
     return {
+        isLicenseAgreed: false,
         isAdministrator: false,
         isElectronActive: false,
         useFake: false,
