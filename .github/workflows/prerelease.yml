@@ -10,6 +10,8 @@ on: [workflow_dispatch]
 env:
   TARGET: 'win'
   ARTIFACT_FILTER: '*.exe'
+  ARTIFACT_NAME: 'HstWB Imager 0.1.0.exe'
+  ARTIFACT_CONTENT_TYPE: 'HstWB Imager 0.1.0.exe'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,11 +30,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set version
+        working-directory: ./src
+        shell: pwsh
+        run: |
+          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
+          "BUILD_VERSION_SHA={0}" -f (git log --pretty=format:'%h' -n 1 $env:GITHUB_REF) >> $env:GITHUB_ENV
+
+      - name: Show version
+        shell: pwsh
+        run: |
+          "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
+          "BUILD_VERSION_SHA: ${{ env.BUILD_VERSION_SHA }}"
+
       - name: Set Windows release
         shell: pwsh
         run: |
           "TARGET=win" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe" >> $env:GITHUB_ENV
+          "ARTIFACT_CONTENT_TYPE=application/zip" >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
         
       - name: Set macOS release
@@ -40,35 +57,36 @@ jobs:
         run: |
           "TARGET=osx" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg" >> $env:GITHUB_ENV
+          "ARTIFACT_CONTENT_TYPE=application/octet-stream" >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
 
       - name: Set Linux release
         shell: pwsh
         run: |
           "TARGET=linux" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
+          "ARTIFACT_FILTER=*.AppImage" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage" >> $env:GITHUB_ENV
+          "ARTIFACT_CONTENT_TYPE=application/octet-stream" >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
       
-      - name: Set version
-        working-directory: ./src
-        shell: pwsh
-        run: |
-          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
-
-      - name: show version
-        shell: pwsh
-        run: |
-          "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
-
       - name: Update Electron manifest version
+        shell: pwsh
         working-directory: ./src
-        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
-        if: matrix.os == 'windows-latest'
+        run: |
+          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
 
       - name: Update package json version
+        shell: pwsh
         working-directory: ./src
-        run: powershell -Command "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
-        if: matrix.os == 'windows-latest'
+        run: |
+          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
+
+      - name: Update env
+        shell: pwsh
+        working-directory: ./src
+        run: |
+          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\.env', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\.env') -replace '0.1.0', '${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}'))"
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
@@ -87,7 +105,29 @@ jobs:
           cd HstWbInstaller.Imager.GuiApp
           dotnet electronize build /target ${{ env.TARGET }}
 
-      - name: List output files
+      - name: Set artifact release path
         shell: pwsh
         run: |
-          (gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName
+          "ARTIFACT_RELEASE_PATH={0}" -f ((gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName) >> $env:GITHUB_ENV
+
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: true
+          prerelease: true
+          release_name: HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
+          tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ARTIFACT_RELEASE_PATH }}
+          asset_name: ${{ env.ARTIFACT_NAME }}
+          asset_content_type: ${{ env.ARTIFACT_CONTENT_TYPE }}
