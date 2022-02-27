@@ -41,7 +41,8 @@
             {
                 Title = request.Title,
                 Path = request.Path,
-                Size = request.Size
+                Size = request.Size,
+                CompatibleSize = request.CompatibleSize
             });
             
             return Ok();            
@@ -66,7 +67,8 @@
                 }, cancellationTokenSource.Token);                
 
                 var commandHelper = new CommandHelper();
-                var blankCommand = new BlankCommand(commandHelper, blankBackgroundTask.Path, blankBackgroundTask.Size);
+                var blankCommand = new BlankCommand(commandHelper, blankBackgroundTask.Path,
+                    blankBackgroundTask.CompatibleSize ? Convert.ToInt64(blankBackgroundTask.Size * 0.95) : blankBackgroundTask.Size);
 
                 var result = await blankCommand.Execute(cancellationTokenSource.Token);
                 if (result.IsFaulted)
