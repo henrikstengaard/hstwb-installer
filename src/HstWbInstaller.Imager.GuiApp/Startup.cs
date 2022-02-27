@@ -125,8 +125,12 @@ namespace HstWbInstaller.Imager.GuiApp
             browserWindow.OnReadyToShow += () => browserWindow.Show();
             browserWindow.OnMaximize += () => Electron.IpcMain.Send(browserWindow, "window-maximized");
             browserWindow.OnUnmaximize += () => Electron.IpcMain.Send(browserWindow, "window-unmaximized");
-            
-            browserWindow.WebContents.OpenDevTools();
+
+            var debugFile = Path.Combine(ApplicationDataHelper.GetApplicationDataDir("HstWB Imager"), "debug.txt");
+            if (File.Exists(debugFile))
+            {
+                browserWindow.WebContents.OpenDevTools();
+            }
             
             Electron.IpcMain.On("minimize-window", _ => browserWindow.Minimize());
             Electron.IpcMain.On("maximize-window", _ => browserWindow.Maximize());
