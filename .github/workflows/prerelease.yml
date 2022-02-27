@@ -118,7 +118,7 @@ jobs:
           prerelease: true
           release_name: HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
           tag_name: ${{ github.ref }}
-          body_path: CHANGELOG.md
+          body: Prelease
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
