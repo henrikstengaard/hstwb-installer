@@ -50,17 +50,20 @@ jobs:
         run: |
           "TARGET=win" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_WINDOWS=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb.imager.artifact-file.win" >> $env:GITHUB_ENV
+          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe'
+          "$artifactName" > hstwb.imager.artifact-name.win.txt
+          "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb.imager.release-name.txt
         if: matrix.os == 'windows-latest'
-        
+
       - name: Set macOS release
         shell: pwsh
         run: |
           "TARGET=osx" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_MACOS=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb.imager.artifact-file.osx" >> $env:GITHUB_ENV
+          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg'
+          "$artifactName" > hstwb.imager.artifact-name.osx.txt
         if: matrix.os == 'macos-latest'
 
       - name: Set Linux release
@@ -68,8 +71,9 @@ jobs:
         run: |
           "TARGET=linux" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.AppImage" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_LINUX=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb.imager.artifact-file.linux" >> $env:GITHUB_ENV
+          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage'
+          "$artifactName" > hstwb.imager.artifact-name.linux.txt
         if: matrix.os == 'ubuntu-latest'
 
       - name: Update Electron manifest version
@@ -112,30 +116,71 @@ jobs:
         run: |
           "ARTIFACT_PATH={0}" -f ((gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName) >> $env:GITHUB_ENV
 
-      - name: Upload artifact path
+      - name: Upload artifact file
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: hstwb.imager.artifact-file.${{ env.TARGET }}
           path: ${{ env.ARTIFACT_PATH }}
+
+      - name: Upload artifact name
+        uses: actions/upload-artifact@v2
+        with:
+          name: hstwb.imager.artifact-name.${{ env.TARGET }}
+          path: hstwb.imager.artifact-name.${{ env.TARGET }}.txt
+
+      - name: Upload release name
+        uses: actions/upload-artifact@v2
+        with:
+          name: hstwb.imager.release-name
+          path: hstwb.imager.release-name.txt
+        if: matrix.os == 'windows-latest'
 
   publish:
     needs: build
     runs-on: windows-latest
     steps:
-      - name: Download Windows artifact
+      - name: Download Windows artifact file
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME_WINDOWS }}
+          name: hstwb.imager.artifact-file.win
 
-      - name: Download macOS artifact
+      - name: Download Windows artifact name
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME_MACOS }}
+          name: hstwb.imager.artifact-name.win
 
-      - name: Download Linux artifact
+      - name: Download macOS artifact file
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME_LINUX }}
+          name: hstwb.imager.artifact-file.osx
+
+      - name: Download macOS artifact name
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb.imager.artifact-name.osx
+
+      - name: Download Linux artifact file
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb.imager.artifact-file.linux
+
+      - name: Download Linux artifact name
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb.imager.artifact-name.linux
+
+      - name: Download release name
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb.imager.release-name
+  
+      - name: Set release and artifact names 
+        shell: pwsh
+        run: |
+          "RELEASE_NAME={0}" -f (gc hstwb.imager.release-name.txt) >> $env:GITHUB_ENV
+          "ARTIFACT_NAME_WIN={0}" -f (gc hstwb.imager.artifact-name.win.txt) >> $env:GITHUB_ENV
+          "ARTIFACT_NAME_OSX={0}" -f (gc hstwb.imager.artifact-name.osx.txt) >> $env:GITHUB_ENV
+          "ARTIFACT_NAME_LINUX={0}" -f (gc hstwb.imager.artifact-name.linux.txt) >> $env:GITHUB_ENV
 
       - name: Create release
         uses: actions/create-release@v1
@@ -143,9 +188,9 @@ jobs:
         with:
           draft: true
           prerelease: true
-          release_name: HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
+          release_name: ${{ env.RELEASE_NAME }}
           tag_name: ${{ github.ref }}
-          body: Prerelease of HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
+          body: Prerelease of ${{ env.RELEASE_NAME }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -155,8 +200,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_WINDOWS }}
-          asset_name: ${{ env.ARTIFACT_NAME_WINDOWS }}
+          asset_path: ${{ env.ARTIFACT_NAME_WIN }}
+          asset_name: ${{ env.ARTIFACT_NAME_WIN }}
           asset_content_type: 'application/octet-stream'
 
       - name: Upload macOS artifact
@@ -165,8 +210,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_MACOS }}
-          asset_name: ${{ env.ARTIFACT_NAME_MACOS }}
+          asset_path: ${{ env.ARTIFACT_NAME_OSX }}
+          asset_name: ${{ env.ARTIFACT_NAME_OSX }}
           asset_content_type: 'application/octet-stream'
 
       - name: Upload Linux artifact
