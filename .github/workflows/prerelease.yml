@@ -120,6 +120,7 @@ jobs:
 
   publish:
     needs: build
+    runs-on: windows-latest
     steps:
       - name: Download Windows artifact
         uses: actions/download-artifact@v2
