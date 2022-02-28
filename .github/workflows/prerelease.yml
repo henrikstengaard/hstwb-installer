@@ -53,6 +53,7 @@ jobs:
           "ARTIFACT_NAME=hstwb.imager.artifact-file.win" >> $env:GITHUB_ENV
           $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe'
           "$artifactName" > hstwb.imager.artifact-name.win.txt
+          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
           "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb.imager.release-name.txt
         if: matrix.os == 'windows-latest'
 
@@ -64,6 +65,7 @@ jobs:
           "ARTIFACT_NAME=hstwb.imager.artifact-file.osx" >> $env:GITHUB_ENV
           $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg'
           "$artifactName" > hstwb.imager.artifact-name.osx.txt
+          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
 
       - name: Set Linux release
@@ -74,6 +76,7 @@ jobs:
           "ARTIFACT_NAME=hstwb.imager.artifact-file.linux" >> $env:GITHUB_ENV
           $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage'
           "$artifactName" > hstwb.imager.artifact-name.linux.txt
+          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
         if: matrix.os == 'ubuntu-latest'
 
       - name: Update Electron manifest version
@@ -114,7 +117,9 @@ jobs:
       - name: Set artifact path
         shell: pwsh
         run: |
-          "ARTIFACT_PATH={0}" -f ((gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName) >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_FILENAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_FILENAME }}' >> $env:GITHUB_ENV
 
       - name: Upload artifact file
         uses: actions/upload-artifact@v2
