@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {
     faUpload,
@@ -56,24 +56,20 @@ library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight,
     faArrowLeft,
     faTimes)
 
-export default class App extends Component {
-    static displayName = App.name;
-
-    render() {
-        return (
-            <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
-                <Titlebar />
-                <License>
-                    <ProgressProvider>
-                        <ProgressBackdrop>
-                            <ErrorSnackBar />
-                            <Navigation />
-                            <Content />
-                        </ProgressBackdrop>
-                    </ProgressProvider>
-                </License>
-            </Box>
-        );
-    }
+export default function App() {
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <Titlebar />
+            <License>
+                <ProgressProvider>
+                    <ProgressBackdrop>
+                        <ErrorSnackBar />
+                        <Navigation />
+                        <Content />
+                    </ProgressBackdrop>
+                </ProgressProvider>
+            </License>
+        </Box>
+    )
 }

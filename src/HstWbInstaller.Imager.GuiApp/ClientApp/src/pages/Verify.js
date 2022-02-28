@@ -15,8 +15,10 @@ import MediaSelectField from "../components/MediaSelectField";
 import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     destinationPath: null,
     sourceMedia: null,
     sourcePath: null,
@@ -28,6 +30,7 @@ export default function Verify() {
     const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const {
+        confirmOpen,
         destinationPath,
         sourceMedia,
         sourcePath,
@@ -51,7 +54,7 @@ export default function Verify() {
         setState({...state})
     }
 
-    const handleVerify = async (sourcePath, destinationPath) => {
+    const handleVerify = async () => {
         const response = await fetch('api/verify', {
             method: 'POST',
             headers: {
@@ -76,12 +79,30 @@ export default function Verify() {
         })
     }
 
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleVerify()
+    }
+
     const handleCancel = () => {
         setState({ ...initialState })
     }
     
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-verify"
+                open={confirmOpen}
+                title="Verify"
+                description={`Do you want to verify '${isNil(sourceMedia) ? sourcePath : sourceMedia.model}' and '${destinationPath}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />
             <Title
                 text="Verify"
                 description="Verify image files or physical disk and image file comparing them byte by byte."
@@ -197,9 +218,12 @@ export default function Verify() {
                             <Button
                                 disabled={verifyDisabled}
                                 icon="check"
-                                onClick={async () => await handleVerify(sourcePath, destinationPath)}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
-                                Verify
+                                Start verify
                             </Button>
                         </Stack>
                     </Box>

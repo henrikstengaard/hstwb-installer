@@ -10,8 +10,10 @@ import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import BrowseOpenDialog from "../components/BrowseOpenDialog";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     sourcePath: null,
     destinationMedia: null
 }
@@ -21,6 +23,7 @@ export default function Write() {
     const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const {
+        confirmOpen,
         sourcePath,
         destinationMedia
     } = state
@@ -42,7 +45,7 @@ export default function Write() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Write file '${sourcePath}' to disk '${destinationMedia.model}'`,
+                title: `Write file '${sourcePath}' to disk '${get(destinationMedia, 'model') || ''}'`,
                 sourcePath,
                 destinationPath: destinationMedia.path,
             })
@@ -52,10 +55,28 @@ export default function Write() {
         }
     }
 
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleWrite()
+    }
+    
     const writeDisabled = isNil(sourcePath) || isNil(destinationMedia)
 
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-write"
+                open={confirmOpen}
+                title="Write"
+                description={`Do you want to write file '${sourcePath}' to disk '${get(destinationMedia, 'model') || ''}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />
             <Title
                 text="Write"
                 description="Write image file to physical disk."
@@ -133,7 +154,10 @@ export default function Write() {
                             <Button
                                 disabled={writeDisabled}
                                 icon="download"
-                                onClick={async () => await handleWrite()}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
                                 Start write
                             </Button>

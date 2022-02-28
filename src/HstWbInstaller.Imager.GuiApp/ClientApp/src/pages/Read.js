@@ -11,8 +11,10 @@ import Title from "../components/Title";
 import TextField from '../components/TextField'
 import RedirectButton from "../components/RedirectButton";
 import MediaSelectField from "../components/MediaSelectField";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     sourceMedia: null,
     destinationPath: null
 }
@@ -22,6 +24,7 @@ export default function Read() {
     const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const {
+        confirmOpen,
         sourceMedia,
         destinationPath
     } = state
@@ -43,7 +46,7 @@ export default function Read() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Reading disk '${sourceMedia.model}' to file '${destinationPath}'`,
+                title: `Reading disk '${get(sourceMedia, 'model') || ''}' to file '${destinationPath}'`,
                 sourcePath: sourceMedia.path,
                 destinationPath
             })
@@ -53,10 +56,28 @@ export default function Read() {
         }
     }
 
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleRead()
+    }
+    
     const readDisabled = isNil(sourceMedia) || isNil(destinationPath)
 
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-read"
+                open={confirmOpen}
+                title="Read"
+                description={`Do you want to read disk '${get(sourceMedia, 'model') || ''}' to file '${destinationPath}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />
             <Title
                 text="Read"
                 description="Read physical disk to image file."
@@ -134,7 +155,10 @@ export default function Read() {
                             <Button
                                 disabled={readDisabled}
                                 icon="upload"
-                                onClick={async () => await handleRead()}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
                                 Start read
                             </Button>

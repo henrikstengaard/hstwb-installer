@@ -21,15 +21,20 @@ export default function MediaSelectField(props) {
 
     const handleGetMedias = React.useCallback(() => {
         async function getMedias() {
-            const response = await fetch('api/list');
-            const data = await response.json();
+            const response = await fetch('api/list', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = response.ok ? await response.json() : [];
             setState({
                 ...state,
                 medias: data,
                 session: session
             })
         }
-
         getMedias()
     }, [setState, state, session])
 

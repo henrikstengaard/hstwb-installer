@@ -4,7 +4,7 @@ import Title from "../components/Title";
 import Grid from "@mui/material/Grid";
 import TextField from "../components/TextField";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import BrowseSaveDialog from "../components/BrowseOpenDialog";
+import BrowseSaveDialog from "../components/BrowseSaveDialog";
 import {get, isNil, set} from "lodash";
 import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
@@ -124,7 +124,7 @@ export default function Blank() {
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
-                <Grid item xs={11} lg={5}>
+                <Grid item xs={8} lg={4}>
                     <TextField
                         label="Size"
                         id="size"
@@ -143,7 +143,7 @@ export default function Blank() {
                         }}
                     />
                 </Grid>
-                <Grid item xs={1} lg={1}>
+                <Grid item xs={4} lg={2}>
                     <SelectField
                         label="Unit"
                         id="unit"
