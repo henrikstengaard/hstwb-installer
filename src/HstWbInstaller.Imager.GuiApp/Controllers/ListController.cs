@@ -26,8 +26,8 @@
             this.appState = appState;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpPost]
+        public async Task<IActionResult> Post()
         {
             var physicalDriveManager = PhysicalDriveManager.Create();
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
@@ -37,7 +37,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             IEnumerable<MediaInfo> mediaInfos = null;
-            listCommand.ListRead += (sender, args) => { mediaInfos = args.MediaInfos; };
+            listCommand.ListRead += (_, args) => { mediaInfos = args.MediaInfos; };
 
             var result = await listCommand.Execute(cancellationTokenSource.Token);
             if (result.IsFaulted)

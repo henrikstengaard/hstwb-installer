@@ -10,8 +10,10 @@ import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import BrowseOpenDialog from "../components/BrowseOpenDialog";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     sourcePath: null,
     destinationPath: null
 }
@@ -20,6 +22,7 @@ export default function Convert() {
     const [state, setState] = React.useState({...initialState})
 
     const {
+        confirmOpen,
         sourcePath,
         destinationPath
     } = state
@@ -50,11 +53,29 @@ export default function Convert() {
             console.error('Failed to convert')
         }
     }
+    
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleConvert()
+    }
 
     const convertDisabled = isNil(sourcePath) || isNil(destinationPath)
 
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-convert"
+                open={confirmOpen}
+                title="Convert"
+                description={`Do you want to convert file '${sourcePath}' to file '${destinationPath}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />            
             <Title
                 text="Convert"
                 description="Convert image file from one format to another."
@@ -129,7 +150,10 @@ export default function Convert() {
                             <Button
                                 disabled={convertDisabled}
                                 icon="exchange-alt"
-                                onClick={async () => await handleConvert()}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
                                 Start convert
                             </Button>
