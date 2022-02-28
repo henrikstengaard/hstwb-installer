@@ -83,19 +83,19 @@ jobs:
         shell: pwsh
         working-directory: ./src
         run: |
-          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
+          [System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\electron.manifest.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))
 
       - name: Update package json version
         shell: pwsh
         working-directory: ./src
         run: |
-          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))"
+          [System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))
 
       - name: Update index html
         shell: pwsh
         working-directory: ./src
         run: |
-          "[System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\public\index.html', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\public\index.html') -replace '0.1.0', '${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}'))"
+          [System.IO.File]::WriteAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\public\index.html', ([System.IO.File]::ReadAllText('.\HstWbInstaller.Imager.GuiApp\ClientApp\public\index.html') -replace '0.1.0', '${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}'))
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
