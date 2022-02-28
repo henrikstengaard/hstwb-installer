@@ -19,10 +19,10 @@
     "win": {
       "target": "nsis",
       "requestedExecutionLevel": "requireAdministrator",
-      "icon": "hstwb-installer.ico"
+      "icon": "../../../hstwb-installer.ico"
     },
     "mac": {
-      "icon": "hstwb-installer.icns"
+      "icon": "../../../hstwb-installer.icns"
     },
     "nsis": {
       "guid": "4bae923c-ea2c-4eee-9a47-ba053b7b78e5",
