@@ -119,7 +119,7 @@ jobs:
         run: |
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_FILENAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_FILENAME }}' >> $env:GITHUB_ENV
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_FILENAME }})' >> $env:GITHUB_ENV
 
       - name: Upload artifact file
         uses: actions/upload-artifact@v2
