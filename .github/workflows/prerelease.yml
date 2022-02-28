@@ -10,8 +10,10 @@ on: [workflow_dispatch]
 env:
   TARGET: 'win'
   ARTIFACT_FILTER: '*.exe'
-  ARTIFACT_NAME: 'HstWB Imager 0.1.0.exe'
-  ARTIFACT_CONTENT_TYPE: 'HstWB Imager 0.1.0.exe'
+  ARTIFACT_NAME: 'HstWB Imager 0.1.0 Windows.exe'
+  ARTIFACT_NAME_WINDOWS: 'HstWB Imager 0.1.0 Windows.exe'
+  ARTIFACT_NAME_MACOS: 'HstWB Imager 0.1.0 macOS.dmg'
+  ARTIFACT_NAME_LINUX: 'HstWB Imager 0.1.0 Linux.AppImage'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -21,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
         
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -49,7 +51,7 @@ jobs:
           "TARGET=win" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
           "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe" >> $env:GITHUB_ENV
-          "ARTIFACT_CONTENT_TYPE=application/zip" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME_WINDOWS=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows.exe" >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
         
       - name: Set macOS release
@@ -58,7 +60,7 @@ jobs:
           "TARGET=osx" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
           "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg" >> $env:GITHUB_ENV
-          "ARTIFACT_CONTENT_TYPE=application/octet-stream" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME_MACOS=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS.dmg" >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
 
       - name: Set Linux release
@@ -67,9 +69,9 @@ jobs:
           "TARGET=linux" >> $env:GITHUB_ENV
           "ARTIFACT_FILTER=*.AppImage" >> $env:GITHUB_ENV
           "ARTIFACT_NAME=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage" >> $env:GITHUB_ENV
-          "ARTIFACT_CONTENT_TYPE=application/octet-stream" >> $env:GITHUB_ENV
-        if: matrix.os == 'macos-latest'
-      
+          "ARTIFACT_NAME_LINUX=HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux.AppImage" >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Update Electron manifest version
         shell: pwsh
         working-directory: ./src
@@ -105,10 +107,34 @@ jobs:
           cd HstWbInstaller.Imager.GuiApp
           dotnet electronize build /target ${{ env.TARGET }}
 
-      - name: Set artifact release path
+      - name: Set artifact path
         shell: pwsh
         run: |
-          "ARTIFACT_RELEASE_PATH={0}" -f ((gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName) >> $env:GITHUB_ENV
+          "ARTIFACT_PATH={0}" -f ((gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName) >> $env:GITHUB_ENV
+
+      - name: Upload artifact path
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+
+  publish:
+    needs: build
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME_WINDOWS }}
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME_MACOS }}
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME_LINUX }}
 
       - name: Create release
         uses: actions/create-release@v1
@@ -118,16 +144,36 @@ jobs:
           prerelease: true
           release_name: HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
           tag_name: ${{ github.ref }}
-          body_path: CHANGELOG.md
+          body: Prerelease of HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Upload artifact
+      - name: Upload Windows artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_RELEASE_PATH }}
-          asset_name: ${{ env.ARTIFACT_NAME }}
-          asset_content_type: ${{ env.ARTIFACT_CONTENT_TYPE }}
+          asset_path: ${{ env.ARTIFACT_NAME_WINDOWS }}
+          asset_name: ${{ env.ARTIFACT_NAME_WINDOWS }}
+          asset_content_type: 'application/octet-stream'
+
+      - name: Upload macOS artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ARTIFACT_NAME_MACOS }}
+          asset_name: ${{ env.ARTIFACT_NAME_MACOS }}
+          asset_content_type: 'application/octet-stream'
+
+      - name: Upload Linux artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ARTIFACT_NAME_LINUX }}
+          asset_name: ${{ env.ARTIFACT_NAME_LINUX }}
+          asset_content_type: 'application/octet-stream'
