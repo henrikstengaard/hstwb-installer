@@ -7,10 +7,18 @@
     using System.Text;
     using System.Threading.Tasks;
     using Extensions;
+    using Microsoft.Extensions.Logging;
     using OperatingSystem = OperatingSystem;
 
     public class MacOsPhysicalDriveManager : IPhysicalDriveManager
     {
+        private readonly ILogger<MacOsPhysicalDriveManager> logger;
+
+        public MacOsPhysicalDriveManager(ILogger<MacOsPhysicalDriveManager> logger)
+        {
+            this.logger = logger;
+        }
+
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
             if (!OperatingSystem.IsMacOs())
@@ -38,12 +46,16 @@
 
         private async Task<string> GetDiskUtilExternalDisks()
         {
-            return await "diskutil".RunProcessAsync("list -plist external");
+            var output = await "diskutil".RunProcessAsync("list -plist external");
+            logger.LogDebug(output);
+            return output;
         }
 
         private async Task<string> GetDiskUtilInfoDisk(string disk)
         {
-            return await "diskutil".RunProcessAsync($"info -plist {disk}");
+            var output = await "diskutil".RunProcessAsync($"info -plist {disk}");
+            logger.LogDebug(output);
+            return output;
         }
     }
 }

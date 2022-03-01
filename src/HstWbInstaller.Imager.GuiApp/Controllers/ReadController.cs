@@ -20,13 +20,15 @@
         private readonly IHubContext<ProgressHub> progressHubContext;
         private readonly IHubContext<ErrorHub> errorHubContext;
         private readonly IBackgroundTaskQueue backgroundTaskQueue;
+        private readonly PhysicalDriveManagerFactory physicalDriveManagerFactory;
 
         public ReadController(IHubContext<ProgressHub> progressHubContext, IHubContext<ErrorHub> errorHubContext,
-            IBackgroundTaskQueue backgroundTaskQueue)
+            IBackgroundTaskQueue backgroundTaskQueue, PhysicalDriveManagerFactory physicalDriveManagerFactory)
         {
             this.progressHubContext = progressHubContext;
             this.errorHubContext = errorHubContext;
             this.backgroundTaskQueue = backgroundTaskQueue;
+            this.physicalDriveManagerFactory = physicalDriveManagerFactory;
         }
 
         [HttpPost]
@@ -56,7 +58,7 @@
 
             try
             {
-                var physicalDriveManager = PhysicalDriveManager.Create();
+                var physicalDriveManager = physicalDriveManagerFactory.Create();
                 var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
 
                 var commandHelper = new CommandHelper();

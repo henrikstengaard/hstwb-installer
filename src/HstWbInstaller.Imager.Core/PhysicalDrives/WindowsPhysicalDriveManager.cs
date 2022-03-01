@@ -5,10 +5,18 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
+    using Microsoft.Extensions.Logging;
     using Models;
 
     public class WindowsPhysicalDriveManager : IPhysicalDriveManager
     {
+        private readonly ILogger<WindowsPhysicalDriveManager> logger;
+
+        public WindowsPhysicalDriveManager(ILogger<WindowsPhysicalDriveManager> logger)
+        {
+            this.logger = logger;
+        }
+
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
             if (!OperatingSystem.IsWindows())
@@ -48,17 +56,23 @@
 
         private async Task<string> GetWmicDiskDriveListCsv()
         {
-            return await "wmic".RunProcessAsync("diskdrive list /format:csv");
+            var output = await "wmic".RunProcessAsync("diskdrive list /format:csv");
+            logger.LogDebug(output);
+            return output;
         }
 
         private async Task<string> GetWmicWin32DiskDriveToDiskPartitionPath()
         {
-            return await "wmic".RunProcessAsync("path Win32_DiskDriveToDiskPartition get * /format:csv");
+            var output = await "wmic".RunProcessAsync("path Win32_DiskDriveToDiskPartition get * /format:csv");
+            logger.LogDebug(output);
+            return output;
         }
 
         private async Task<string> GetWmicWin32LogicalDiskToPartitionPath()
         {
-            return await "wmic".RunProcessAsync("path Win32_LogicalDiskToPartition get * /format:csv");
+            var output = await "wmic".RunProcessAsync("path Win32_LogicalDiskToPartition get * /format:csv");
+            logger.LogDebug(output);
+            return output;
         }
     }
 }

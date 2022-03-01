@@ -51,6 +51,11 @@
             await File.WriteAllTextAsync(licenseAgreedPath, licenseText);
         }
 
+        public static bool HasDebugEnabled(string appName)
+        {
+            return File.Exists(Path.Combine(GetApplicationDataDir(appName), "debug.txt"));
+        }
+
         private static Stream GetEmbeddedResourceStream(Assembly assembly, string resourceName)
         {
             var matchedResourceName = assembly.GetManifestResourceNames()

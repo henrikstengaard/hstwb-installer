@@ -134,7 +134,10 @@ export default function Navigation() {
                 {items.map((item, index) => (
                     <ListItem button key={index} onClick={() => handleRedirect(item.path)}>
                         <ListItemIcon>
-                            <FontAwesomeIcon icon={item.icon}/>
+                            <FontAwesomeIcon
+                                icon={item.icon}
+                                style={{ minWidth: '18px' }}
+                            />
                         </ListItemIcon>
                         <ListItemText primary={item.text} />
                     </ListItem>
@@ -142,9 +145,12 @@ export default function Navigation() {
             </List>
             <Box sx={{flexGrow: 1 }} />
             <List >
-                <ListItem button onClick={() => handleOpen()} sx={{ width: '100%'}}>
-                    <ListItemIcon >
-                        <FontAwesomeIcon icon={open ? 'chevron-left' : 'chevron-right'}/>
+                <ListItem button onClick={() => handleOpen()} sx={{ width: '100%' }}>
+                    <ListItemIcon>
+                        <FontAwesomeIcon
+                            icon={open ? 'chevron-left' : 'chevron-right'}
+                            style={{ minWidth: '18px' }}
+                        />
                     </ListItemIcon>
                 </ListItem>
             </List>

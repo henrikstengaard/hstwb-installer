@@ -2,14 +2,21 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
+    using Microsoft.Extensions.Logging;
     using OperatingSystem = OperatingSystem;
 
     public class LinuxPhysicalDriveManager : IPhysicalDriveManager
     {
+        private readonly ILogger<LinuxPhysicalDriveManager> logger;
+
+        public LinuxPhysicalDriveManager(ILogger<LinuxPhysicalDriveManager> logger)
+        {
+            this.logger = logger;
+        }
+
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
             if (!OperatingSystem.IsLinux())
@@ -38,7 +45,9 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
 
         private async Task<string> GetLsBlkJson()
         {
-            return await "lsblk".RunProcessAsync("-ba -o TYPE,NAME,RM,MODEL,PATH,SIZE,VENDOR --json");
+            var output = await "lsblk".RunProcessAsync("-ba -o TYPE,NAME,RM,MODEL,PATH,SIZE,VENDOR --json");
+            logger.LogDebug(output);
+            return output;
         }
     }
 }

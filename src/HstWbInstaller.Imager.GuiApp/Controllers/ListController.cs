@@ -19,23 +19,26 @@
     {
         private readonly IHubContext<ErrorHub> errorHubContext;
         private readonly AppState appState;
+        private readonly PhysicalDriveManagerFactory physicalDriveManagerFactory;
 
-        public ListController(IHubContext<ErrorHub> errorHubContext, AppState appState)
+        public ListController(IHubContext<ErrorHub> errorHubContext, AppState appState,
+            PhysicalDriveManagerFactory physicalDriveManagerFactory)
         {
             this.errorHubContext = errorHubContext;
             this.appState = appState;
+            this.physicalDriveManagerFactory = physicalDriveManagerFactory;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var physicalDriveManager = PhysicalDriveManager.Create();
+            var physicalDriveManager = physicalDriveManagerFactory.Create();
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
 
             var commandHelper = new CommandHelper();
             var listCommand = new ListCommand(commandHelper, physicalDrives);
             var cancellationTokenSource = new CancellationTokenSource();
-            
+
             IEnumerable<MediaInfo> mediaInfos = null;
             listCommand.ListRead += (_, args) => { mediaInfos = args.MediaInfos; };
 
@@ -50,7 +53,7 @@
             {
                 mediaInfos = mediaInfos.Concat(new[] { FakeHelper.CreateFakeMediaInfo() });
             }
-            
+
             return Ok(mediaInfos.Select(x => x.ToViewModel()));
         }
     }

@@ -18,11 +18,14 @@
     {
         private readonly AppState appState;
         private readonly IHubContext<ErrorHub> errorHubContext;
+        private readonly PhysicalDriveManagerFactory physicalDriveManagerFactory;
 
-        public InfoController(AppState appState, IHubContext<ErrorHub> errorHubContext)
+        public InfoController(AppState appState, IHubContext<ErrorHub> errorHubContext,
+            PhysicalDriveManagerFactory physicalDriveManagerFactory)
         {
             this.appState = appState;
             this.errorHubContext = errorHubContext;
+            this.physicalDriveManagerFactory = physicalDriveManagerFactory;
         }
 
         [HttpPost]
@@ -37,27 +40,24 @@
             {
                 return Ok(FakeHelper.CreateFakeMediaInfo().ToViewModel());
             }
-            
-            var physicalDriveManager = PhysicalDriveManager.Create();
+
+            var physicalDriveManager = physicalDriveManagerFactory.Create();
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
-            
+
             var commandHelper = new CommandHelper();
             var infoCommand = new InfoCommand(commandHelper, physicalDrives, request.Path);
             var cancellationTokenSource = new CancellationTokenSource();
 
-            MediaInfo mediaInfo = null;            
-            infoCommand.DiskInfoRead += (_, args) =>
-            {
-                mediaInfo = args.MediaInfo;
-            };
-            
+            MediaInfo mediaInfo = null;
+            infoCommand.DiskInfoRead += (_, args) => { mediaInfo = args.MediaInfo; };
+
             var result = await infoCommand.Execute(cancellationTokenSource.Token);
             if (result.IsFaulted)
             {
                 await errorHubContext.SendError(result.Error.Message, cancellationTokenSource.Token);
                 return BadRequest();
             }
-            
+
             return Ok(mediaInfo?.ToViewModel());
         }
     }

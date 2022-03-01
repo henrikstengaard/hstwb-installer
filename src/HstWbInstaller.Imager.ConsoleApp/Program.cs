@@ -9,6 +9,7 @@
     using Core;
     using Core.Commands;
     using Core.PhysicalDrives;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Presenters;
     using OperatingSystem = Core.OperatingSystem;
 
@@ -28,7 +29,7 @@
             var mbrTest = new MbrTest();
             mbrTest.Create();
             mbrTest.Read();
-            
+
             var listOption = new Option<bool>(
                 new[] { "--list", "-l" },
                 "List physical drives.");
@@ -209,7 +210,7 @@
                 return drives;
             }
 
-            var physicalDriveManager = PhysicalDriveManager.Create();
+            var physicalDriveManager = new PhysicalDriveManagerFactory(new NullLoggerFactory()).Create();
 
             return (await physicalDriveManager.GetPhysicalDrives()).ToList();
         }
@@ -227,7 +228,7 @@
             var commandHelper = new CommandHelper();
             var physicalDrives = (await GetPhysicalDrives(arguments)).ToList();
             var cancellationTokenSource = new CancellationTokenSource();
-            
+
             switch (arguments.Command)
             {
                 case Arguments.CommandEnum.List:
@@ -255,7 +256,8 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     readCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
                     var readResult = await readCommand.Execute(cancellationTokenSource.Token);
@@ -266,18 +268,21 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
                     var convertResult = await convertCommand.Execute(cancellationTokenSource.Token);
-                    Console.WriteLine(convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
+                    Console.WriteLine(
+                        convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
                     break;
                 case Arguments.CommandEnum.Write:
                     Console.WriteLine("Writing source image file to physical drive");
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     writeCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
                     var writeResult = await writeCommand.Execute(cancellationTokenSource.Token);
@@ -288,7 +293,8 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     verifyCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
                     var verifyResult = await verifyCommand.Execute(cancellationTokenSource.Token);
@@ -306,77 +312,11 @@
                     Console.WriteLine($"Path: {arguments.SourcePath}");
                     var optimizeCommand = new OptimizeCommand(commandHelper, arguments.SourcePath);
                     var optimizeResult = await optimizeCommand.Execute(cancellationTokenSource.Token);
-                    Console.WriteLine(optimizeResult.IsSuccess ? "Done" : $"ERROR: Optimize failed, {optimizeResult.Error}");
+                    Console.WriteLine(optimizeResult.IsSuccess
+                        ? "Done"
+                        : $"ERROR: Optimize failed, {optimizeResult.Error}");
                     break;
             }
-
-            // var srcPhysicalDrive =
-            //     physicalDrives.FirstOrDefault(x => x.Path.Equals(src, StringComparison.OrdinalIgnoreCase));
-            // await using var srcStream = srcPhysicalDrive == null ? File.OpenRead(src) : srcPhysicalDrive.Open();
-            // var destPhysicalDrive =
-            //     physicalDrives.FirstOrDefault(x => x.Path.Equals(dest, StringComparison.OrdinalIgnoreCase));
-            // await using var destStream = destPhysicalDrive == null
-            //     ? File.Open(dest, FileMode.Create, FileAccess.ReadWrite)
-            //     : destPhysicalDrive.Open();
-            //
-            // if (srcPhysicalDrive == null &&
-            //     destPhysicalDrive == null &&
-            //     src.Equals(dest, StringComparison.OrdinalIgnoreCase))
-            // {
-            //     Console.WriteLine("Trim");
-            // }
-            //
-            // Console.WriteLine("Source: {src}");
-            // Console.WriteLine("Destination: {dest}");
-            //
-            // ulong srcSize;
-            // if (srcPhysicalDrive != null)
-            // {
-            //     srcSize = srcPhysicalDrive.RigidDiskBlock?.DiskSize ?? srcPhysicalDrive.Size;
-            // }
-            // else
-            // {
-            //     srcSize = Convert.ToUInt64(srcStream.Length);
-            // }
-            //
-            // Console.WriteLine($"{srcSize} bytes");
-            //
-            // ulong bytesWritten = 0;
-            //
-            // if (dest.EndsWith(".vhd"))
-            // {
-            //     Console.WriteLine("Vhd");
-            //     var vhd = new VhdConverter();
-            //     vhd.DataTransferred += (o, e) =>
-            //     {
-            //         if (e.BytesTransferred == 0)
-            //         {
-            //             return;
-            //         }
-            //
-            //         bytesWritten += (ulong)e.BytesTransferred;
-            //         var pct = bytesWritten == 0 ? 0 : ((double)100 / srcSize) * bytesWritten;
-            //         Console.WriteLine($"{pct} ({bytesWritten} / {srcSize})");
-            //     };
-            //     await vhd.ConvertImgToVhd(srcStream, destStream, Convert.ToInt64(srcSize));
-            //     Console.WriteLine($"Done");
-            //     return;
-            // }
-            //
-            // Console.WriteLine("Img");
-            // buffer = new byte[1024 * 1024];
-            // int bytesRead;
-            // do
-            // {
-            //     bytesRead = await srcStream.ReadAsync(buffer, 0, buffer.Length);
-            //     bytesWritten += (ulong)bytesRead;
-            //     await destStream.WriteAsync(buffer, 0, bytesRead);
-            //
-            //     var pct = bytesWritten == 0 ? 0 : ((double)100 / srcSize) * bytesWritten;
-            //     Console.WriteLine($"{pct}");
-            // } while (bytesRead == buffer.Length);
-            //
-            // Console.WriteLine($"Done");
         }
     }
 }

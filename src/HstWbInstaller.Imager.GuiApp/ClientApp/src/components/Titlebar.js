@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {ElectronIpc} from "../utils/ElectronIpc"
+import {HSTWB_INSTALLER_VERSION} from '../Constants'
 
 export default function Titlebar() {
     const [maximized, setMaximized] = React.useState(false)
@@ -30,8 +31,6 @@ export default function Titlebar() {
     electronIpc.on({event: 'window-maximized', callback: () => setMaximized(true)})
     electronIpc.on({event: 'window-unmaximized', callback: () => setMaximized(false)})
 
-    const version = document.getElementById('root').getAttribute('data-version')
-    
     return (
         <AppBar
             position="fixed"
@@ -45,7 +44,7 @@ export default function Titlebar() {
                 <img src="icons/icon-192x192.png" height="20px" alt="HstWB Installer app icon"
                      style={{paddingLeft: '2px', paddingRight: '2px'}}/>
                 <Typography variant="h1" component="div" sx={{flexGrow: 1}}>
-                    HstWB Imager v{version}
+                    HstWB Imager v{HSTWB_INSTALLER_VERSION}
                 </Typography>
                 <Box style={{WebkitAppRegion: 'no-drag'}}>
                     <IconButton

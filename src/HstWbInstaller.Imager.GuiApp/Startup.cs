@@ -11,10 +11,12 @@ namespace HstWbInstaller.Imager.GuiApp
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
+    using Core;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
     using Helpers;
     using Hubs;
+    using Middlewares;
     using Models;
     using Services;
 
@@ -45,16 +47,19 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSingleton<IActiveBackgroundTaskList>(new ActiveBackgroundTaskList());
             services.AddSingleton(new AppState
             {
-                IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed("HstWB Imager"),
+                IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
                 IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
                 UseFake = Debugger.IsAttached
             });
+            services.AddSingleton<PhysicalDriveManagerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -126,8 +131,7 @@ namespace HstWbInstaller.Imager.GuiApp
             browserWindow.OnMaximize += () => Electron.IpcMain.Send(browserWindow, "window-maximized");
             browserWindow.OnUnmaximize += () => Electron.IpcMain.Send(browserWindow, "window-unmaximized");
 
-            var debugFile = Path.Combine(ApplicationDataHelper.GetApplicationDataDir("HstWB Imager"), "debug.txt");
-            if (File.Exists(debugFile))
+            if (ApplicationDataHelper.HasDebugEnabled(Constants.AppName))
             {
                 browserWindow.WebContents.OpenDevTools();
             }
