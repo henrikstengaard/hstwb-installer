@@ -23,12 +23,7 @@
                 throw new IOException($"Failed to start process command '{command}' {(string.IsNullOrWhiteSpace(args) ? string.Empty : $" with arguments '{args}'")}");
             }
         
-            var stdOut = process.StandardOutput.ReadToEnd();
-#if DEBUG
-            Console.WriteLine(stdOut);
-            Debug.WriteLine(stdOut);
-#endif
-            return stdOut;
+            return process.StandardOutput.ReadToEnd();
         }
 
         public static async Task<string> RunProcessAsync(this string command, string args = null)
@@ -47,12 +42,7 @@
                 throw new IOException($"Failed to start process command '{command}' {(string.IsNullOrWhiteSpace(args) ? string.Empty : $" with arguments '{args}'")}");
             }
         
-            var stdOut = await process.StandardOutput.ReadToEndAsync();
-#if DEBUG
-            Console.WriteLine(stdOut);
-            Debug.WriteLine(stdOut);
-#endif
-            return stdOut;
+            return await process.StandardOutput.ReadToEndAsync();
         }
     }
 }

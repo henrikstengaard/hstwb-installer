@@ -36,7 +36,7 @@ jobs:
         working-directory: ./src
         shell: pwsh
         run: |
-          "BUILD_VERSION=0.1.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
+          "BUILD_VERSION=0.9.{0}" -f (git rev-list --count $env:GITHUB_REF) >> $env:GITHUB_ENV
           "BUILD_VERSION_SHA={0}" -f (git log --pretty=format:'%h' -n 1 $env:GITHUB_REF) >> $env:GITHUB_ENV
 
       - name: Show version
@@ -91,11 +91,17 @@ jobs:
         run: |
           [System.IO.File]::WriteAllText('HstWbInstaller.Imager.GuiApp/ClientApp/package.json', ([System.IO.File]::ReadAllText('HstWbInstaller.Imager.GuiApp/ClientApp/package.json') -replace '0.1.0', '${{ env.BUILD_VERSION }}'))
 
-      - name: Update index html
+      - name: Update index html version
         shell: pwsh
         working-directory: ./src
         run: |
           [System.IO.File]::WriteAllText('HstWbInstaller.Imager.GuiApp/ClientApp/public/index.html', ([System.IO.File]::ReadAllText('HstWbInstaller.Imager.GuiApp/ClientApp/public/index.html') -replace '0.1.0', '${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}'))
+
+      - name: Update constants version
+        shell: pwsh
+        working-directory: ./src
+        run: |
+          [System.IO.File]::WriteAllText('HstWbInstaller.Imager.GuiApp/ClientApp/src/Constants.js', ([System.IO.File]::ReadAllText('HstWbInstaller.Imager.GuiApp/ClientApp/src/Constants.js') -replace '0.1.0', '${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}'))
 
       - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1

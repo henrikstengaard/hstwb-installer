@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.Extensions;
-    using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
 
     public class ListCommand : CommandBase
