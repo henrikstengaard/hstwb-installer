@@ -40,7 +40,7 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
                     x.Removable).ToList();
 
             return diskBlockDevices.Select(x =>
-                new GenericPhysicalDrive(x.Path, x.Type, string.Concat(x.Vendor, " ", x.Model), x.Size));
+                new GenericPhysicalDrive(x.Path, x.Type, string.Concat(x.Vendor, " ", x.Model), x.Size ?? 0));
         }
 
         private async Task<string> GetLsBlkJson()
