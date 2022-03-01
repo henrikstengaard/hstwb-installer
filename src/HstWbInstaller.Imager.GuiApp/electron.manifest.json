@@ -24,6 +24,9 @@
     "mac": {
       "icon": "../../../hstwb-installer.icns"
     },
+    "linux": {
+      "icon": "../../../hstwb-installer.icns"
+    },
     "nsis": {
       "guid": "4bae923c-ea2c-4eee-9a47-ba053b7b78e5",
       "oneClick": true,
