@@ -10,12 +10,15 @@ namespace HstWbInstaller.Imager.GuiApp
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Core;
+    using Core.Helpers;
+    using Core.Models;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
-    using Helpers;
     using Hubs;
+    using Microsoft.AspNetCore.Hosting.Server.Features;
     using Middlewares;
     using Models;
     using Services;
@@ -32,7 +35,11 @@ namespace HstWbInstaller.Imager.GuiApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+                o.MaximumReceiveMessageSize = 1024 * 1024;
+            });
 
             services.AddControllersWithViews();
 
@@ -44,20 +51,26 @@ namespace HstWbInstaller.Imager.GuiApp
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(100));
+
+            services.AddHostedService<BackgroundTaskService>();
             services.AddSingleton<IActiveBackgroundTaskList>(new ActiveBackgroundTaskList());
             services.AddSingleton(new AppState
             {
+                AppPath = AppContext.BaseDirectory,
                 IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
                 IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
                 UseFake = Debugger.IsAttached
             });
             services.AddSingleton<PhysicalDriveManagerFactory>();
+            services.AddSingleton<WorkerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppState appState)
         {
+            appState.BaseUrl = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.FirstOrDefault(x => x.StartsWith("https"));
+            
             app.UseMiddleware<ExceptionMiddleware>();
             
             if (env.IsDevelopment())
@@ -82,6 +95,8 @@ namespace HstWbInstaller.Imager.GuiApp
                 endpoints.MapHub<ErrorHub>("/hubs/error");
                 endpoints.MapHub<ProgressHub>("/hubs/progress");
                 endpoints.MapHub<ShowDialogResultHub>("/hubs/show-dialog-result");
+                endpoints.MapHub<WorkerHub>("/hubs/worker");
+                endpoints.MapHub<ResultHub>("/hubs/result");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

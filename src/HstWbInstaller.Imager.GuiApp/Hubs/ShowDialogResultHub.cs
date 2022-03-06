@@ -1,14 +1,16 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Hubs
 {
     using System.Threading.Tasks;
+    using Core.Models;
     using Microsoft.AspNetCore.SignalR;
     using Models;
 
     public class ShowDialogResultHub : Hub
     {
-        public async Task SendShowDialogResult(ShowDialogResult showDialogResult)
+        [HubMethodName(Constants.HubMethodNames.ShowDialogResult)]
+        public async Task ShowDialogResult(ShowDialogResult showDialogResult)
         {
-            await Clients.All.SendAsync("ShowDialogResult", showDialogResult);
-        }        
+            await Clients.Others.SendAsync(Constants.HubMethodNames.ShowDialogResult, showDialogResult);
+        }
     }
 }

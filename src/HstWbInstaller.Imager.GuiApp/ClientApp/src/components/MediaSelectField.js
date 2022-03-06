@@ -2,10 +2,12 @@ import React from "react";
 import {isNil} from "lodash";
 import SelectField from "./SelectField";
 import {formatBytes} from "../utils/Format";
+import {HubConnectionBuilder} from "@microsoft/signalr";
+import {Api} from "../utils/Api";
 
 const initialState = {
-    medias: null,
-    session: null
+    loading: true,
+    medias: null
 }
 
 export default function MediaSelectField(props) {
@@ -14,41 +16,63 @@ export default function MediaSelectField(props) {
         label,
         path,
         onChange,
-        session
     } = props
     
+    const api = new Api()
+    
     const [state, setState] = React.useState({...initialState})
+    const [connection, setConnection] = React.useState(null);
+
+    const {
+        loading,
+        medias
+    } = state
+
+    React.useEffect(() => {
+        if (!isNil(connection)) {
+            return
+        }
+        
+        const newConnection = new HubConnectionBuilder()
+            .withUrl('/hubs/result')
+            .withAutomaticReconnect()
+            .build();
+        
+        setConnection(newConnection)
+    }, [connection, setConnection]);
+
+    React.useEffect(() => {
+        if (connection && connection.state !== "Connected") {
+            connection.start()
+                .then(result => {
+                    connection.on('List', mediaInfos => {
+                        setState({
+                            medias: mediaInfos || []
+                        })
+                    });
+                })
+                .catch(e => console.log('Connection failed: ', e));
+        }
+    }, [connection, setState, state]);
 
     const handleGetMedias = React.useCallback(() => {
         async function getMedias() {
-            const response = await fetch('api/list', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            });
-            const data = response.ok ? await response.json() : [];
+            await api.list()
             setState({
                 ...state,
-                medias: data,
-                session: session
+                loading: false
             })
         }
         getMedias()
-    }, [setState, state, session])
+    }, [setState, state])
 
     React.useEffect(() => {
-        if (session === state.session) {
+        if (!loading) {
             return
         }
         handleGetMedias()
-    }, [session, state.medias, state.session, handleGetMedias])
+    }, [state.session, handleGetMedias])
 
-    const {
-        medias,
-    } = state
-    
     const handleChange = (path) => {
         if (isNil(onChange)) {
             return

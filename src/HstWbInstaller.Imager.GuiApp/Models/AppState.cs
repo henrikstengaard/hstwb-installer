@@ -6,5 +6,8 @@
         public bool IsAdministrator { get; set; }
         public bool IsElectronActive { get; set; }
         public bool UseFake { get; set; }
+        public string BaseUrl { get; set; }
+        public string AppPath { get; set; }
+        
     }
 }

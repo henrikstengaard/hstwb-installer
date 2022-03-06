@@ -11,6 +11,7 @@ import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import BrowseOpenDialog from "../components/BrowseOpenDialog";
 import ConfirmDialog from "../components/ConfirmDialog";
+import {Api} from "../utils/Api";
 
 const initialState = {
     confirmOpen: false,
@@ -20,7 +21,9 @@ const initialState = {
 
 export default function Write() {
     const [state, setState] = React.useState({...initialState})
-    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+
+    const api = new Api()
 
     const {
         confirmOpen,
@@ -65,6 +68,10 @@ export default function Write() {
         }
         await handleWrite()
     }
+
+    const handleUpdate = async () => {
+        await api.list()
+    }
     
     const writeDisabled = isNil(sourcePath) || isNil(destinationMedia)
 
@@ -95,13 +102,6 @@ export default function Write() {
                             <BrowseOpenDialog
                                 id="browse-source-path"
                                 title="Select source image file"
-                                fileFilters={[{
-                                    name: 'Image file',
-                                    extensions: ['img', 'hdf']
-                                }, {
-                                    name: 'Virtual hard disk',
-                                    extensions: ['vhd']
-                                }]}
                                 onChange={(path) => handleChange({
                                     name: 'sourcePath',
                                     value: path
@@ -126,7 +126,6 @@ export default function Write() {
                         }
                         id="destination-media"
                         path={get(destinationMedia, 'path') || ''}
-                        session={session}
                         onChange={(media) => handleChange({
                             name: 'destinationMedia',
                             value: media
@@ -147,7 +146,7 @@ export default function Write() {
                             </RedirectButton>
                             <Button
                                 icon="sync-alt"
-                                onClick={() => updateSession()}
+                                onClick={async () => handleUpdate()}
                             >
                                 Update
                             </Button>

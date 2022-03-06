@@ -21,6 +21,7 @@
         }
 
         public event EventHandler<ListReadEventArgs> ListRead;
+        public IEnumerable<MediaInfo> Result;
 
         public override async Task<Result> Execute(CancellationToken token)
         {
@@ -29,7 +30,7 @@
             {
                 await using var sourceStream = physicalDrive.Open();
                 var diskSize = sourceStream.Length;
-
+                
                 var firstBytes = await sourceStream.ReadBytes(512 * 2048);
                 var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
 
@@ -43,6 +44,8 @@
                     RigidDiskBlock = rigidDiskBlock
                 });
             }
+
+            Result = mediaInfos;
 
             OnListRead(mediaInfos);
 

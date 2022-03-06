@@ -1,15 +1,8 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System;
     using System.Threading.Tasks;
-    using Core;
-    using Core.Commands;
-    using Extensions;
-    using Hubs;
+    using Core.Models.BackgroundTasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.SignalR;
-    using Models;
-    using Models.BackgroundTasks;
     using Models.Requests;
     using Services;
 
@@ -17,87 +10,31 @@
     [Route("api/read")]
     public class ReadController : ControllerBase
     {
-        private readonly IHubContext<ProgressHub> progressHubContext;
-        private readonly IHubContext<ErrorHub> errorHubContext;
-        private readonly IBackgroundTaskQueue backgroundTaskQueue;
-        private readonly PhysicalDriveManagerFactory physicalDriveManagerFactory;
+        private readonly WorkerService workerService;
 
-        public ReadController(IHubContext<ProgressHub> progressHubContext, IHubContext<ErrorHub> errorHubContext,
-            IBackgroundTaskQueue backgroundTaskQueue, PhysicalDriveManagerFactory physicalDriveManagerFactory)
+        public ReadController(WorkerService workerService)
         {
-            this.progressHubContext = progressHubContext;
-            this.errorHubContext = errorHubContext;
-            this.backgroundTaskQueue = backgroundTaskQueue;
-            this.physicalDriveManagerFactory = physicalDriveManagerFactory;
+            this.workerService = workerService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ReadRequest model)
+        public async Task<IActionResult> Post(ReadRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await backgroundTaskQueue.QueueBackgroundWorkItemAsync(ReadWorkItem, new ReadBackgroundTask
+            var readBackgroundTask = new ReadBackgroundTask
             {
-                Title = model.Title,
-                SourcePath = model.SourcePath,
-                DestinationPath = model.DestinationPath
-            });
+                Title = request.Title,
+                SourcePath = request.SourcePath,
+                DestinationPath = request.DestinationPath
+            };
+
+            await workerService.EnqueueAsync(readBackgroundTask);
 
             return Ok();
-        }
-
-        private async ValueTask ReadWorkItem(IBackgroundTaskContext context)
-        {
-            if (context.BackgroundTask is not ReadBackgroundTask readBackgroundTask)
-            {
-                return;
-            }
-
-            try
-            {
-                var physicalDriveManager = physicalDriveManagerFactory.Create();
-                var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
-
-                var commandHelper = new CommandHelper();
-                var readCommand =
-                    new ReadCommand(commandHelper, physicalDrives, readBackgroundTask.SourcePath, readBackgroundTask.DestinationPath);
-                readCommand.DataProcessed += async (_, args) =>
-                {
-                    await progressHubContext.SendProgress(new Progress
-                    {
-                        Title = readBackgroundTask.Title,
-                        IsComplete = false,
-                        PercentComplete = args.PercentComplete,
-                        BytesProcessed = args.BytesProcessed,
-                        BytesRemaining = args.BytesRemaining,
-                        BytesTotal = args.BytesTotal,
-                        MillisecondsElapsed = args.PercentComplete > 0 ? (long)args.TimeElapsed.TotalMilliseconds : new long?(),
-                        MillisecondsRemaining = args.PercentComplete > 0 ? (long)args.TimeRemaining.TotalMilliseconds : new long?(),
-                        MillisecondsTotal = args.PercentComplete > 0 ? (long)args.TimeTotal.TotalMilliseconds : new long?()
-                    }, context.Token);                
-                };
-
-                var result = await readCommand.Execute(context.Token);
-                if (result.IsFaulted)
-                {
-                    await errorHubContext.SendError(result.Error.Message, context.Token);
-                    return;
-                }
-            
-                await progressHubContext.SendProgress(new Progress
-                {
-                    Title = readBackgroundTask.Title,
-                    IsComplete = true,
-                    PercentComplete = 100
-                }, context.Token);
-            }
-            catch (Exception e)
-            {
-                await errorHubContext.SendError(e.Message, context.Token);
-            }
         }
     }
 }

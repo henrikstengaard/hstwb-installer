@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Core.Models.BackgroundTasks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
@@ -31,12 +32,15 @@
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                logger.LogDebug("Dequeuing background task");
+                
                 var queuedBackgroundTask =
                     await TaskQueue.DequeueAsync(stoppingToken);
 
                 var workItemTokenSource = new CancellationTokenSource();
                 using CancellationTokenSource linkedTokenSource =
                     CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, workItemTokenSource.Token);
+
                 try
                 {
                     activeTaskList.Add(new ActiveBackgroundWorkItem
@@ -44,20 +48,24 @@
                         TokenSource = linkedTokenSource
                     });
 
-                    await queuedBackgroundTask.WorkItem(new BackgroundTaskContext(linkedTokenSource.Token, queuedBackgroundTask.BackgroundTask));
+                    logger.LogDebug($"Running background task '{queuedBackgroundTask.BackgroundTask.GetType().FullName}'");
+                    
+                    await queuedBackgroundTask.WorkItem(new BackgroundTaskContext(linkedTokenSource.Token,
+                        queuedBackgroundTask.BackgroundTask));
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException e)
                 {
-                    linkedTokenSource.Token.ThrowIfCancellationRequested();
+                    logger.LogError(e,
+                        "OperationCanceledException");
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex,
                         "Error occurred executing {WorkItem}.", nameof(queuedBackgroundTask));
                 }
-            }
 
-            activeTaskList.Reset();
+                activeTaskList.Reset();
+            }
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
@@ -66,23 +74,5 @@
 
             await base.StopAsync(stoppingToken);
         }
-    }
-
-    public interface IBackgroundTaskContext
-    {
-        CancellationToken Token { get; }
-        IBackgroundTask BackgroundTask { get; }
-    }
-
-    public class BackgroundTaskContext : IBackgroundTaskContext
-    {
-        public BackgroundTaskContext(CancellationToken token, IBackgroundTask backgroundTask)
-        {
-            Token = token;
-            BackgroundTask = backgroundTask;
-        }
-
-        public CancellationToken Token { get; }
-        public IBackgroundTask BackgroundTask { get; }
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace HstWbInstaller.Imager.GuiApp.Helpers
+﻿namespace HstWbInstaller.Imager.Core.Helpers
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -46,7 +45,7 @@
             }
 
             var licenseText =
-                await (new StreamReader(GetEmbeddedResourceStream(assembly, "license.txt"))).ReadToEndAsync();
+                await (new StreamReader(EmbeddedResourceHelper.GetEmbeddedResourceStream(assembly, "license.txt"))).ReadToEndAsync();
 
             await File.WriteAllTextAsync(licenseAgreedPath, licenseText);
         }
@@ -54,19 +53,6 @@
         public static bool HasDebugEnabled(string appName)
         {
             return File.Exists(Path.Combine(GetApplicationDataDir(appName), "debug.txt"));
-        }
-
-        private static Stream GetEmbeddedResourceStream(Assembly assembly, string resourceName)
-        {
-            var matchedResourceName = assembly.GetManifestResourceNames()
-                .FirstOrDefault(x => x.IndexOf(resourceName, StringComparison.OrdinalIgnoreCase) >= 0);
-
-            if (string.IsNullOrEmpty(matchedResourceName))
-            {
-                return null;
-            }
-
-            return assembly.GetManifestResourceStream(matchedResourceName);
         }
     }
 }

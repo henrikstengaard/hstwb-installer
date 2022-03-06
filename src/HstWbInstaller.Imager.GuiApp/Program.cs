@@ -5,29 +5,78 @@ namespace HstWbInstaller.Imager.GuiApp
 {
     using System;
     using System.IO;
-    using System.Linq;
+    using System.Threading.Tasks;
+    using Bootstrappers;
+    using Core.Helpers;
+    using Core.Models;
     using ElectronNET.API;
-#if RELEASE
-    using Helpers;
-    using Models;
-#endif
     using Serilog;
     using Serilog.Events;
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            if (args.Length == 5 && 
+                args[0].Equals("--worker", StringComparison.OrdinalIgnoreCase) && 
+                args[1].Equals("--baseurl", StringComparison.OrdinalIgnoreCase) && 
+                !string.IsNullOrWhiteSpace(args[2]) &&
+                args[3].Equals("--process-id", StringComparison.OrdinalIgnoreCase) &&
+                !string.IsNullOrWhiteSpace(args[4]))
+            {
+                var baseUrl = args[2];
+                if (!int.TryParse(args[4], out var processId))
+                {
+                    processId = 0;
+                }
+                await WorkerBootstrapper.Start(baseUrl, processId);
+                return;
+            }
+
+            var hasDebugEnabled = ApplicationDataHelper.HasDebugEnabled(Constants.AppName);
 #if RELEASE
+            SetupReleaseLogging(hasDebugEnabled);
+#else
+            SetupDebugLogging();
+#endif
+
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e, "Host terminated unexpectedly");
+                throw;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        }
+
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .UseSerilog()
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseElectron(args);
+                    webBuilder.UseStartup<Startup>();
+                });
+
+        private static void SetupReleaseLogging(bool hasDebugEnabled)
+        {
             var logFilePath = Path.Combine(ApplicationDataHelper.GetApplicationDataDir(Constants.AppName), "logs",
-                "log.txt");
-            if (ApplicationDataHelper.HasDebugEnabled(Constants.AppName))
+                "log-imager.txt");
+            if (hasDebugEnabled)
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .WriteTo.File(
                         logFilePath,
-                        rollingInterval: RollingInterval.Day)
+                        rollingInterval: RollingInterval.Day,
+                        outputTemplate:
+                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{NewLine}{Exception}")
                     .CreateLogger();
             }
             else
@@ -36,40 +85,23 @@ namespace HstWbInstaller.Imager.GuiApp
                     .MinimumLevel.Error()
                     .WriteTo.File(
                         logFilePath,
-                        rollingInterval: RollingInterval.Day)
+                        rollingInterval: RollingInterval.Day,
+                        outputTemplate:
+                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{NewLine}{Exception}")
                     .CreateLogger();
             }
-#else
+        }
+
+        private static void SetupDebugLogging()
+        {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .WriteTo.File(Path.Combine("logs", "log.txt"),rollingInterval: RollingInterval.Day,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{Exception}")
+                .WriteTo.File(Path.Combine("logs", "log-imager.txt"),rollingInterval: RollingInterval.Day,
+                    outputTemplate:
+                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{NewLine}{Exception}")
                 .CreateLogger();
-#endif
-
-            try
-            {
-                CreateHostBuilder(args).Build().Run();
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseElectron(args);
-                    webBuilder.UseStartup<Startup>();
-                });
     }
 }

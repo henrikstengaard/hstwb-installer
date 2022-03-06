@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Core.Models.BackgroundTasks;
 
     public interface IBackgroundTaskQueue
     {
