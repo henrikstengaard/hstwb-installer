@@ -1,14 +1,16 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Hubs
 {
     using System.Threading.Tasks;
+    using Core.Models;
+    using Core.Models.BackgroundTasks;
     using Microsoft.AspNetCore.SignalR;
-    using Models;
 
     public class ProgressHub : Hub
     {
-        public async Task SendProgress(Progress progress)
+        [HubMethodName(Constants.HubMethodNames.UpdateProgress)]
+        public async Task UpdateProgress(Progress progress)
         {
-            await Clients.All.SendAsync("UpdateProgress", progress);
-        }        
+            await Clients.Others.SendAsync(Constants.HubMethodNames.UpdateProgress, progress);
+        }
     }
 }

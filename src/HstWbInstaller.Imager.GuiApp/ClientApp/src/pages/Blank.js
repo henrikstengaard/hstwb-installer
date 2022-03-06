@@ -160,7 +160,7 @@ export default function Blank() {
                 <Grid item xs={12} lg={6}>
                     <CheckboxField
                         id="compatible-size"
-                        label="Compatible size with various SD/CF-cards, SSD and hard-disk brands"
+                        label="Size compatible with various SD/CF-cards, SSD and hard-disk brands"
                         value={compatibleSize}
                         onChange={(checked) => handleChange({
                             name: 'compatibleSize',

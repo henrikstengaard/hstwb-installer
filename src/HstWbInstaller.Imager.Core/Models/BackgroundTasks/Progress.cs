@@ -1,4 +1,4 @@
-﻿namespace HstWbInstaller.Imager.GuiApp.Models
+﻿namespace HstWbInstaller.Imager.Core.Models.BackgroundTasks
 {
     public class Progress
     {

@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Services
 {
+    using System;
     using System.Collections.Concurrent;
 
     public class ActiveBackgroundTaskList : IActiveBackgroundTaskList
@@ -11,6 +12,8 @@
             list = new ConcurrentBag<ActiveBackgroundWorkItem>();
         }
 
+        public int Count => list.Count;
+        
         public void Add(ActiveBackgroundWorkItem activeBackgroundWorkItem)
         {
             list.Add(activeBackgroundWorkItem);
@@ -25,7 +28,14 @@
         {
             while (list.TryTake(out var activeBackgroundWorkItem))
             {
-                activeBackgroundWorkItem.TokenSource.Cancel();
+                try
+                {
+                    activeBackgroundWorkItem.TokenSource.Cancel();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
     }

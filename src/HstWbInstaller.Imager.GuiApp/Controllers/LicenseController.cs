@@ -1,8 +1,8 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
     using System.Threading.Tasks;
+    using Core.Helpers;
     using ElectronNET.API;
-    using Helpers;
     using Microsoft.AspNetCore.Mvc;
     using Models.Requests;
 

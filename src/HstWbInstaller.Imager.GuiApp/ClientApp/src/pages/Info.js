@@ -16,6 +16,8 @@ import FormLabel from '@mui/material/FormLabel';
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import MediaSelectField from "../components/MediaSelectField";
+import {HubConnectionBuilder} from "@microsoft/signalr";
+import {Api} from "../utils/Api";
 
 const initialState = {
     medias: null,
@@ -26,7 +28,35 @@ const initialState = {
 
 export default function Info() {
     const [state, setState] = React.useState({ ...initialState })
-    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    const [connection, setConnection] = React.useState(null);
+
+    const api = new Api()
+    
+    React.useEffect(() => {
+        const newConnection = new HubConnectionBuilder()
+            .withUrl('/hubs/result')
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(newConnection);
+    }, []);
+
+    React.useEffect(() => {
+        if (connection && connection.state !== "Connected") {
+            connection.start()
+                .then(result => {
+                    connection.on('Info', mediaInfo => {
+                        setState({
+                            ...state,
+                            path: mediaInfo.path,
+                            mediaInfo
+                        })
+                    });
+                })
+                .catch(e => console.log('Connection failed: ', e));
+        }
+    }, [connection, setState, state]);
     
     const {
         mediaInfo,
@@ -56,25 +86,23 @@ export default function Info() {
                 path
             })
         });
-        
-        state.path = path
-        
         if (!response.ok) {
-            console.error('Failed to read')
-            setState({
-                ...state,
-                mediaInfo: null
-            })
-            return
+            console.error('Failed to get info')
         }
+        
         setState({
             ...state,
-            mediaInfo: await response.json()
+            path: path,
+            mediaInfo: null
         })
     }
     
     const handleCancel = () => {
         setState({ ...initialState })
+    }
+    
+    const handleUpdate = async () => {
+        await api.list()
     }
     
     return (
@@ -143,7 +171,6 @@ export default function Info() {
                             }
                             id="media-path"
                             path={path || ''}
-                            session={session}
                             onChange={async (media) => await getMediaInfo(media.path)}
                         />
                     )}
@@ -162,7 +189,7 @@ export default function Info() {
                             </RedirectButton>
                             <Button
                                 icon="sync-alt"
-                                onClick={() => updateSession()}
+                                onClick={async () => handleUpdate()}
                             >
                                 Update
                             </Button>

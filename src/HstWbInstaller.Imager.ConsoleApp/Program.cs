@@ -3,11 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.CommandLine;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
+    using Core.Helpers;
     using Core.PhysicalDrives;
     using Microsoft.Extensions.Logging.Abstractions;
     using Presenters;
@@ -26,6 +29,35 @@
     {
         static async Task<int> Main(string[] args)
         {
+            var workerFileName = $"HstWbInstaller.Imager.GuiApp.exe";
+            var currentProcessId = Process.GetCurrentProcess().Id;
+            var processes = Process.GetProcesses();
+
+            foreach (var process in processes)
+            {
+                try
+                {
+                    if (process.Id == currentProcessId ||
+                        process.ProcessName.IndexOf("HstWbInstaller.Imager.GuiApp", StringComparison.OrdinalIgnoreCase) < 0 ||
+                        process.MainModule == null ||
+                        process.MainModule.FileName == null ||
+                        process.MainModule.FileName.IndexOf(workerFileName, StringComparison.OrdinalIgnoreCase) < 0)
+                    {
+                        continue;
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+
+                var kill = process.MainModule.FileName;
+                //process.Kill();
+            }            
+            
+            //var process = ElevateHelper.StartElevatedProcess("HstWB Installer", "cmd.exe");
+            // await process.WaitForExitAsync();
+            
             var mbrTest = new MbrTest();
             mbrTest.Create();
             mbrTest.Read();

@@ -16,6 +16,7 @@ import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import ConfirmDialog from "../components/ConfirmDialog";
+import {Api} from "../utils/Api";
 
 const initialState = {
     confirmOpen: false,
@@ -27,8 +28,10 @@ const initialState = {
 
 export default function Verify() {
     const [state, setState] = React.useState({ ...initialState })
-    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
+    const api = new Api()
+    
     const {
         confirmOpen,
         destinationPath,
@@ -92,6 +95,10 @@ export default function Verify() {
 
     const handleCancel = () => {
         setState({ ...initialState })
+    }
+    
+    const handleUpdate = async () => {
+        await api.list()
     }
     
     return (
@@ -164,7 +171,6 @@ export default function Verify() {
                             }
                             id="source-media-path"
                             path={sourcePath || ''}
-                            session={session}
                             onChange={(media) => handleMediaChange(media)}
                         />
                     )}
@@ -211,7 +217,7 @@ export default function Verify() {
                             </RedirectButton>
                             <Button
                                 icon="sync-alt"
-                                onClick={() => updateSession()}
+                                onClick={async () => handleUpdate()}
                             >
                                 Update
                             </Button>

@@ -67,7 +67,7 @@
                 var timeTotal = timeElapsed + timeRemaining;
                 
                 OnDataProcessed(percentComplete, bytesProcessed, bytesRemaining, size, timeElapsed, timeRemaining, timeTotal);
-            } while (bytesRead < size && !sectorResult.EndOfSectors);
+            } while (sectorResult.BytesRead == bufferSize && bytesRead < size && !sectorResult.EndOfSectors);
 
             return new Result();
         }

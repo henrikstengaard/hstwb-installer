@@ -1,4 +1,4 @@
-﻿namespace HstWbInstaller.Imager.GuiApp.Models.BackgroundTasks
+﻿namespace HstWbInstaller.Imager.Core.Models.BackgroundTasks
 {
     using System.Collections.Generic;
     using System.Linq;

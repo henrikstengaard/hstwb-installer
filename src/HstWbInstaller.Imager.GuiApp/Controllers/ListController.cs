@@ -1,60 +1,27 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Core;
-    using Core.Commands;
-    using Core.Helpers;
-    using Extensions;
-    using Hubs;
+    using Core.Models.BackgroundTasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.SignalR;
-    using Models;
+    using Services;
 
     [ApiController]
     [Route("api/list")]
     public class ListController : ControllerBase
     {
-        private readonly IHubContext<ErrorHub> errorHubContext;
-        private readonly AppState appState;
-        private readonly PhysicalDriveManagerFactory physicalDriveManagerFactory;
+        private readonly WorkerService workerService;
 
-        public ListController(IHubContext<ErrorHub> errorHubContext, AppState appState,
-            PhysicalDriveManagerFactory physicalDriveManagerFactory)
+        public ListController(WorkerService workerService)
         {
-            this.errorHubContext = errorHubContext;
-            this.appState = appState;
-            this.physicalDriveManagerFactory = physicalDriveManagerFactory;
+            this.workerService = workerService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var physicalDriveManager = physicalDriveManagerFactory.Create();
-            var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
-
-            var commandHelper = new CommandHelper();
-            var listCommand = new ListCommand(commandHelper, physicalDrives);
-            var cancellationTokenSource = new CancellationTokenSource();
-
-            IEnumerable<MediaInfo> mediaInfos = null;
-            listCommand.ListRead += (_, args) => { mediaInfos = args.MediaInfos; };
-
-            var result = await listCommand.Execute(cancellationTokenSource.Token);
-            if (result.IsFaulted)
-            {
-                await errorHubContext.SendError(result.Error.Message, cancellationTokenSource.Token);
-                return BadRequest();
-            }
-
-            if (appState.UseFake)
-            {
-                mediaInfos = mediaInfos.Concat(new[] { FakeHelper.CreateFakeMediaInfo() });
-            }
-
-            return Ok(mediaInfos.Select(x => x.ToViewModel()));
+            await workerService.EnqueueAsync(new ListBackgroundTask());
+            
+            return Ok();            
         }
     }
 }

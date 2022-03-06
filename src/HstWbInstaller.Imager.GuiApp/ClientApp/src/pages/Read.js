@@ -12,6 +12,7 @@ import TextField from '../components/TextField'
 import RedirectButton from "../components/RedirectButton";
 import MediaSelectField from "../components/MediaSelectField";
 import ConfirmDialog from "../components/ConfirmDialog";
+import {Api} from "../utils/Api";
 
 const initialState = {
     confirmOpen: false,
@@ -21,8 +22,10 @@ const initialState = {
 
 export default function Read() {
     const [state, setState] = React.useState({...initialState})
-    const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
+    const api = new Api()
+    
     const {
         confirmOpen,
         sourceMedia,
@@ -66,6 +69,10 @@ export default function Read() {
         }
         await handleRead()
     }
+
+    const handleUpdate = async () => {
+        await api.list()
+    }
     
     const readDisabled = isNil(sourceMedia) || isNil(destinationPath)
 
@@ -92,7 +99,6 @@ export default function Read() {
                         }
                         id="source-disk"
                         path={get(sourceMedia, 'path') || ''}
-                        session={session}
                         onChange={(media) => handleChange({
                             name: 'sourceMedia',
                             value: media
@@ -114,13 +120,6 @@ export default function Read() {
                             <BrowseSaveDialog
                                 id="read-destination-path"
                                 title="Select destination image"
-                                fileFilters={[{
-                                    name: 'Image file',
-                                    extensions: ['img', 'hdf']
-                                }, {
-                                    name: 'Virtual hard disk',
-                                    extensions: ['vhd']
-                                }]}
                                 onChange={(path) => handleChange({
                                     name: 'destinationPath',
                                     value: path
@@ -148,7 +147,7 @@ export default function Read() {
                             </RedirectButton>
                             <Button
                                 icon="sync-alt"
-                                onClick={() => updateSession()}
+                                onClick={async () => handleUpdate()}
                             >
                                 Update
                             </Button>

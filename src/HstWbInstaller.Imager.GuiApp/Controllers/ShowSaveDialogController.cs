@@ -2,12 +2,12 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Core.Models.BackgroundTasks;
     using ElectronNET.API;
     using Hubs;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using Models;
-    using Models.BackgroundTasks;
     using Services;
     using FileFilter = ElectronNET.API.Entities.FileFilter;
 
@@ -38,7 +38,7 @@
                 Id = model.Id,
                 Title = model.Title,
                 Path = model.Path,
-                FileFilters = model.FileFilters.Select(x => new Models.BackgroundTasks.FileFilter
+                FileFilters = model.FileFilters.Select(x => new Core.Models.BackgroundTasks.FileFilter
                 {
                     Name = x.Name,
                     Extensions = x.Extensions

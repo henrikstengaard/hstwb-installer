@@ -1,14 +1,16 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Hubs
 {
     using System.Threading.Tasks;
+    using Core.Models;
+    using Core.Models.BackgroundTasks;
     using Microsoft.AspNetCore.SignalR;
-    using Models;
 
     public class ErrorHub : Hub
     {
-        public async Task SendError(ErrorViewModel errorViewModel)
+        [HubMethodName(Constants.HubMethodNames.UpdateError)]
+        public async Task UpdateError(Error error)
         {
-            await Clients.All.SendAsync("UpdateError", errorViewModel);
-        }        
+            await Clients.Others.SendAsync(Constants.HubMethodNames.UpdateError, error);
+        }
     }
 }
