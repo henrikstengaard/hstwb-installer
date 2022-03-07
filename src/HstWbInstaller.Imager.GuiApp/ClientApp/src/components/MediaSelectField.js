@@ -18,7 +18,7 @@ export default function MediaSelectField(props) {
         onChange,
     } = props
     
-    const api = new Api()
+    const api = React.useMemo(() => new Api(), []);
     
     const [state, setState] = React.useState({...initialState})
     const [connection, setConnection] = React.useState(null);
@@ -64,14 +64,14 @@ export default function MediaSelectField(props) {
             })
         }
         getMedias()
-    }, [setState, state])
+    }, [api, setState, state])
 
     React.useEffect(() => {
         if (!loading) {
             return
         }
         handleGetMedias()
-    }, [state.session, handleGetMedias])
+    }, [loading, state.session, handleGetMedias])
 
     const handleChange = (path) => {
         if (isNil(onChange)) {

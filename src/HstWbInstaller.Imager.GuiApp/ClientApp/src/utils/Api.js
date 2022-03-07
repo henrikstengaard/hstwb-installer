@@ -1,4 +1,4 @@
-﻿export class Api {
+export class Api {
     async list() {
         const response = await fetch('api/list', {
             method: 'POST',
