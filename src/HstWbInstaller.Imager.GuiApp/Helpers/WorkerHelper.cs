@@ -8,7 +8,11 @@
         public static string GetWorkerFileName()
         {
             var executingFile = ApplicationDataHelper.GetExecutingFile();
-            return $"{Path.GetFileNameWithoutExtension(executingFile)}.exe";
+            return Path.GetExtension(executingFile) switch
+            {
+                ".dll" => $"{Path.GetFileNameWithoutExtension(executingFile)}.exe",
+                _ => Path.GetFileName(executingFile)
+            };
         }
     }
 }
