@@ -25,12 +25,13 @@
         public void WhenCreateLinuxPkExecProcessStartInfoThenArgumentsWillElevateCommand()
         {
             var processStartInfo = ElevateHelper.CreateLinuxPkExecProcessStartInfo(@"/home/hst/hstwb-imager");
-            var path =
-                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst{Path.DirectorySeparatorChar}";
+            var workingDirectory =
+                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst";
+            var fileName = $".{Path.DirectorySeparatorChar}hstwb-imager";
 
             Assert.Equal("/usr/bin/pkexec", processStartInfo.FileName);
             Assert.Equal(String.Empty, processStartInfo.WorkingDirectory);
-            Assert.Equal($"--disable-internal-agent /bin/bash -c \"cd \\\"{path}\"; \\\"hstwb-imager\\\"\"",
+            Assert.Equal($"--disable-internal-agent /bin/bash -c \"cd \\\"{workingDirectory}\\\"; \\\"{fileName}\\\";\"",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }
@@ -40,13 +41,14 @@
         {
             var processStartInfo =
                 ElevateHelper.CreateMacOsOsascriptProcessStartInfo("HstWB Imager", @"/home/hst/hstwb-imager");
-            var path =
-                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst{Path.DirectorySeparatorChar}";
+            var workingDirectory =
+                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst";
+            var fileName = $".{Path.DirectorySeparatorChar}hstwb-imager";
             
-            Assert.Equal("osascript", processStartInfo.FileName);
+            Assert.Equal("/usr/bin/osascript", processStartInfo.FileName);
             Assert.Equal(String.Empty, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-e 'do shell script \"/bin/bash -c \"cd \\\"{path}\"; \\\"hstwb-imager\\\"\"\" with prompt \"HstWB Imager\" with administrator privileges'",
+                $"-e 'do shell script \"/bin/bash -c \\\"cd \\\"{workingDirectory}\\\"; \\\"{fileName}\\\";\\\"\" with prompt \"HstWB Imager\" with administrator privileges'",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }
