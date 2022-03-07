@@ -116,7 +116,7 @@
 
             var args = string.Join(" ", osaScriptArgs);
 
-            return new ProcessStartInfo("osascript")
+            return new ProcessStartInfo("/usr/bin/osascript")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
@@ -148,7 +148,7 @@
             };
         }
 
-        public static Process StartElevatedProcess(string prompt, string command, string arguments = null,
+        public static ProcessStartInfo GetElevatedProcessStartInfo(string prompt, string command, string arguments = null,
             bool showWindow = false)
         {
             ProcessStartInfo processStartInfo;
@@ -169,12 +169,17 @@
                 throw new NotSupportedException("Operating system is not supported");
             }
 
+            return processStartInfo;
+        }
+        
+        public static Process StartElevatedProcess(ProcessStartInfo processStartInfo)
+        {
             var process = Process.Start(processStartInfo);
 
             if (process == null)
             {
                 throw new IOException(
-                    $"Failed to start elevated process command '{command}' {(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" with arguments '{arguments}'")}");
+                    $"Failed to start elevated process file name '{processStartInfo.FileName}' {(string.IsNullOrWhiteSpace(processStartInfo.Arguments) ? string.Empty : $" with arguments '{processStartInfo.Arguments}'")}");
             }
 
             return process;
