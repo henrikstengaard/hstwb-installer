@@ -20,6 +20,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using Helpers;
     using Hubs;
     using Microsoft.AspNetCore.Hosting.Server.Features;
+    using Microsoft.Extensions.Logging;
     using Middlewares;
     using Models;
     using Services;
@@ -69,9 +70,11 @@ namespace HstWbInstaller.Imager.GuiApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppState appState)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppState appState, ILogger<Startup> logger)
         {
-            appState.BaseUrl = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.FirstOrDefault(x => x.StartsWith("https"));
+            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToList();
+            logger.LogDebug($"Addresses = '{string.Join(",", addresses)}'");
+            appState.BaseUrl = addresses.FirstOrDefault(x => x.StartsWith("https"));
             
             app.UseMiddleware<ExceptionMiddleware>();
             

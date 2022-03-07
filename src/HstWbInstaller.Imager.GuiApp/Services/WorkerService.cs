@@ -73,9 +73,13 @@
             var currentProcessId = Process.GetCurrentProcess().Id;
             var arguments = $"--worker --baseurl \"{appState.BaseUrl}\" --process-id {currentProcessId}";
             logger.LogDebug($"Starting worker '{workerPath}' with arguments '{arguments}'");
-            
-            this.workerProcess = ElevateHelper.StartElevatedProcess(Constants.AppName, workerPath, arguments,
+
+            var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(Constants.AppName, workerPath, arguments,
                 Debugger.IsAttached || ApplicationDataHelper.HasDebugEnabled(Constants.AppName));
+
+            logger.LogDebug($"Worker process file name '{processStartInfo.FileName}' with arguments '{processStartInfo.Arguments}'");
+            
+            this.workerProcess = ElevateHelper.StartElevatedProcess(processStartInfo);
 
             if (!workerProcess.HasExited)
             {
