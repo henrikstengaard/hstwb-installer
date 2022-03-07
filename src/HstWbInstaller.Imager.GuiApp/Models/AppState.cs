@@ -8,6 +8,6 @@
         public bool UseFake { get; set; }
         public string BaseUrl { get; set; }
         public string AppPath { get; set; }
-        
+        public string ExecutingFile { get; set; }
     }
 }

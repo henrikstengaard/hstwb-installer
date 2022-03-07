@@ -57,6 +57,7 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSingleton(new AppState
             {
                 AppPath = AppContext.BaseDirectory,
+                ExecutingFile = ApplicationDataHelper.GetExecutingFile(),
                 IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
                 IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,

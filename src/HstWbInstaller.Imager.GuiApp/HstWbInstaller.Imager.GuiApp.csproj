@@ -69,7 +69,6 @@
     <EmbeddedResource Include="license.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Helpers" />
     <Folder Include="Models\BackgroundTasks" />
   </ItemGroup>
 </Project>
