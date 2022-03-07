@@ -9,6 +9,7 @@
     using Core;
     using Core.Helpers;
     using Core.Models;
+    using Helpers;
     using Microsoft.AspNetCore.SignalR.Client;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -162,7 +163,7 @@
 
         private static void KillOtherWorkers(ILogger<Program> logger, int processId)
         {
-            var workerFileName = $"{Path.GetFileNameWithoutExtension(typeof(Program).Assembly.Location)}.exe";
+            var workerFileName = WorkerHelper.GetWorkerFileName();
             var currentProcessId = Process.GetCurrentProcess().Id;
             var processes = Process.GetProcesses();
 

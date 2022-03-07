@@ -55,8 +55,8 @@
         public async Task<bool> Start()
         {
             SetIsReady(false);
-            
-            var workerFileName = $"{Path.GetFileNameWithoutExtension(typeof(Program).Assembly.Location)}.exe";
+
+            var workerFileName = $"{Path.GetFileNameWithoutExtension(appState.ExecutingFile)}.exe";
             var workerPath = Path.Combine(
                 appState.AppPath,
                 workerFileName);
@@ -89,31 +89,6 @@
             return true;
         }
 
-        // public async Task RunBackgroundTask<T>(T backgroundTask)
-        // {
-        //     if (!IsRunning())
-        //     {
-        //         if (!await Start())
-        //         {
-        //             return;
-        //         }
-        //     }
-        //
-        //     await clientBackgroundTaskQueue.EnqueueAsync(new Core.Models.BackgroundTasks.BackgroundTask
-        //     {
-        //         Type = backgroundTask.GetType().Name,
-        //         Payload = JsonSerializer.Serialize(backgroundTask)
-        //     });
-        //
-        //     //await this.workerHubContext.RunBackgroundTask(backgroundTask);
-        //     //
-        //     // await this.workerHubContext.RunBackgroundTask(new RunBackgroundTask
-        //     // {
-        //     //     Type = typeof(T).FullName,
-        //     //     Payload = JsonSerializer.Serialize(backgroundTask)
-        //     // });
-        // }
-        
         public async Task EnqueueAsync<T>(T backgroundTask)
         {
             if (backgroundTask == null)
