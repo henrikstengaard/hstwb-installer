@@ -37,7 +37,7 @@ namespace HstWbInstaller.Imager.GuiApp
         {
             services.AddSignalR(o =>
             {
-                o.EnableDetailedErrors = true;
+                o.EnableDetailedErrors = ApplicationDataHelper.HasDebugEnabled(Constants.AppName);
                 o.MaximumReceiveMessageSize = 1024 * 1024;
             });
 
