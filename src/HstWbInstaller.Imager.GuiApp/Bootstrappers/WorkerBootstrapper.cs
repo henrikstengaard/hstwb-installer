@@ -163,7 +163,8 @@
 
         private static void KillOtherWorkers(ILogger<Program> logger, int processId)
         {
-            var workerFileName = WorkerHelper.GetWorkerFileName();
+            var executingFile = WorkerHelper.GetExecutingFile();
+            var workerFileName = WorkerHelper.GetWorkerFileName(executingFile);
             var currentProcessId = Process.GetCurrentProcess().Id;
             var processes = Process.GetProcesses();
 

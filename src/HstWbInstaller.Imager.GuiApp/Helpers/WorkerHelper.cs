@@ -1,13 +1,18 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Helpers
 {
+    using System;
     using System.IO;
-    using Core.Helpers;
+    using System.Linq;
 
     public static class WorkerHelper
     {
-        public static string GetWorkerFileName()
+        public static string GetExecutingFile()
         {
-            var executingFile = ApplicationDataHelper.GetExecutingFile();
+            return Environment.GetCommandLineArgs().FirstOrDefault();
+        }
+        
+        public static string GetWorkerFileName(string executingFile)
+        {
             return Path.GetExtension(executingFile) switch
             {
                 ".dll" => $"{Path.GetFileNameWithoutExtension(executingFile)}.exe",

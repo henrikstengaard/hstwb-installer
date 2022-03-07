@@ -17,6 +17,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using Core.Models;
     using ElectronNET.API;
     using ElectronNET.API.Entities;
+    using Helpers;
     using Hubs;
     using Microsoft.AspNetCore.Hosting.Server.Features;
     using Middlewares;
@@ -57,7 +58,7 @@ namespace HstWbInstaller.Imager.GuiApp
             services.AddSingleton(new AppState
             {
                 AppPath = AppContext.BaseDirectory,
-                ExecutingFile = ApplicationDataHelper.GetExecutingFile(),
+                ExecutingFile = WorkerHelper.GetExecutingFile(),
                 IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
                 IsAdministrator = Core.OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
