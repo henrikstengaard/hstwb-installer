@@ -11,6 +11,7 @@
     using Core.Helpers;
     using Core.Models;
     using Extensions;
+    using Helpers;
     using Hubs;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
@@ -56,7 +57,7 @@
         {
             SetIsReady(false);
 
-            var workerFileName = $"{Path.GetFileNameWithoutExtension(appState.ExecutingFile)}.exe";
+            var workerFileName = WorkerHelper.GetWorkerFileName(appState.ExecutingFile);
             var workerPath = Path.Combine(
                 appState.AppPath,
                 workerFileName);

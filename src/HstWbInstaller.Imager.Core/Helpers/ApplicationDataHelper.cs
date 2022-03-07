@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -10,11 +9,6 @@
     public static class ApplicationDataHelper
     {
         private static readonly Regex WhitespaceRegex = new("\\s+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        public static string GetExecutingFile()
-        {
-            return Environment.GetCommandLineArgs().FirstOrDefault();
-        }
         
         public static string GetApplicationDataDir(string appName)
         {
