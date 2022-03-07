@@ -74,7 +74,8 @@ namespace HstWbInstaller.Imager.GuiApp
         {
             var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToList();
             logger.LogDebug($"Addresses = '{string.Join(",", addresses)}'");
-            appState.BaseUrl = addresses.FirstOrDefault(x => x.StartsWith("https"));
+            appState.BaseUrl = addresses.FirstOrDefault(x => x.StartsWith("https")) ?? addresses.FirstOrDefault();
+            logger.LogDebug($"Base url = '{appState.BaseUrl}'");
             
             app.UseMiddleware<ExceptionMiddleware>();
             
@@ -117,10 +118,11 @@ namespace HstWbInstaller.Imager.GuiApp
                 }
             });
 
-            Task.Run(() => ElectronBootstrap(env));
+            logger.LogDebug($"AppPath = '{appState.AppPath}'");            
+            Task.Run(() => ElectronBootstrap(appState.AppPath));
         }
 
-        private async Task ElectronBootstrap(IWebHostEnvironment env)
+        private async Task ElectronBootstrap(string appPath)
         {
             if (!HybridSupport.IsElectronActive)
             {
@@ -140,7 +142,7 @@ namespace HstWbInstaller.Imager.GuiApp
                         NodeIntegration = true,
                     },
                     Show = false,
-                    Icon = Path.Combine(env.ContentRootPath, "hstwb-installer.ico")
+                    Icon = Path.Combine(appPath, "ClientApp", "build", "icon.ico")
                 });
             browserWindow.SetMenu(Array.Empty<MenuItem>());
             

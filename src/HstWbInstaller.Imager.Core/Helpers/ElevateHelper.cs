@@ -27,7 +27,7 @@
             //return string.Join("; ", args);
         }
 
-        public static string[] GetBashArgs(string command, string arguments = null)
+        public static string[] GetBashArgs(string command, string arguments = null, bool escapeQuotes = false)
         {
             var commandArgs = new List<string>();
             if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(command)))
@@ -36,13 +36,14 @@
             }
 
             commandArgs.Add(
-                $"\"{Path.GetFileName(command)}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
+                $"\".{Path.DirectorySeparatorChar}{Path.GetFileName(command)}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")};");
 
+            var commandLineArg = string.Join(" ", commandArgs);
             return new[]
             {
                 "/bin/bash",
                 "-c",
-                $"\"{string.Join(" ", commandArgs).Replace("\"", "\\\"")}\"",
+                $"\"{(escapeQuotes ? commandLineArg.Replace("\"", "\\\"") : commandLineArg)}\""
             };
         }
 
@@ -84,7 +85,7 @@
                 "--disable-internal-agent"
             });
 
-            var args = string.Join(" ", pkExecArgs.Concat(GetBashArgs(command, arguments)));
+            var args = string.Join(" ", pkExecArgs.Concat(GetBashArgs(command, arguments, true)));
 
             return new ProcessStartInfo("/usr/bin/pkexec")
             {
@@ -111,7 +112,7 @@
             var osaScriptArgs = new List<string>(new[]
             {
                 "-e",
-                $"'do shell script \"{string.Join(" ", GetBashArgs(command, arguments))}\" with prompt \"{prompt}\" with administrator privileges'"
+                $"'do shell script \"{string.Join(" ", GetBashArgs(command, arguments)).Replace("\"", "\\\"")}\" with prompt \"{prompt}\" with administrator privileges'"
             });
 
             var args = string.Join(" ", osaScriptArgs);
