@@ -39,7 +39,7 @@
             KillOtherWorkers(logger, processId);
 
             logger.LogDebug($"Connecting to base url '{baseUrl}'");
-            
+
             var progressHubConnection = new HubConnectionBuilder()
                 .WithUrl($"{baseUrl}/hubs/progress")
                 .WithAutomaticReconnect()
@@ -115,15 +115,15 @@
 
             var backgroundTaskHandler = new BackgroundTaskHandler(
                 loggerFactory.CreateLogger<BackgroundTaskHandler>(),
-                progressHubConnection, 
+                progressHubConnection,
                 errorHubConnection,
                 resultHubConnection,
                 physicalDriveManagerFactory.Create(),
                 activeBackgroundTaskList,
                 backgroundTaskQueue);
-            
+
             await queuedHostedService.StartAsync(CancellationToken.None);
-            
+
             workerHubConnection.On<BackgroundTask>(Constants.HubMethodNames.RunBackgroundTask, async (task) =>
             {
                 logger.LogDebug($"Start handle background task type '{task.Type}' with payload '{task.Payload}'");
@@ -152,7 +152,7 @@
                         "Failed to cancel background task");
                 }
             });
-            
+
             logger.LogDebug("Worker is ready");
 
             while (true)
@@ -174,7 +174,8 @@
                 {
                     if (process.Id == currentProcessId ||
                         process.Id == processId ||
-                        process.ProcessName.IndexOf("HstWbInstaller.Imager.GuiApp", StringComparison.OrdinalIgnoreCase) < 0 ||
+                        process.ProcessName.IndexOf("HstWbInstaller.Imager.GuiApp",
+                            StringComparison.OrdinalIgnoreCase) < 0 ||
                         process.MainModule == null ||
                         process.MainModule.FileName == null ||
                         process.MainModule.FileName.IndexOf(workerFileName, StringComparison.OrdinalIgnoreCase) < 0)

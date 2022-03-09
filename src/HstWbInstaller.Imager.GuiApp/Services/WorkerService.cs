@@ -57,12 +57,12 @@
         {
             SetIsReady(false);
 
-            var workerFileName = WorkerHelper.GetWorkerFileName(appState.ExecutingFile);
+            var workerCommand = WorkerHelper.GetWorkerFileName(appState.ExecutingFile);
             var workerPath = Path.Combine(
                 appState.AppPath,
-                workerFileName);
+                workerCommand);
 
-            logger.LogDebug($"WorkerPath = '{workerPath}'");
+            logger.LogDebug($"Worker path = '{workerPath}'");
             
             if (!File.Exists(workerPath))
             {
@@ -74,8 +74,8 @@
             var arguments = $"--worker --baseurl \"{appState.BaseUrl}\" --process-id {currentProcessId}";
             logger.LogDebug($"Starting worker '{workerPath}' with arguments '{arguments}'");
 
-            var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(Constants.AppName, workerPath, arguments,
-                Debugger.IsAttached || ApplicationDataHelper.HasDebugEnabled(Constants.AppName));
+            var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(Constants.AppName, workerCommand, arguments,
+                appState.AppPath, Debugger.IsAttached || ApplicationDataHelper.HasDebugEnabled(Constants.AppName));
 
             logger.LogDebug($"Worker process file name '{processStartInfo.FileName}' with arguments '{processStartInfo.Arguments}'");
             
@@ -89,7 +89,7 @@
             var message =
                 $"Failed to start worker '{workerPath}'. Process exited with error code {workerProcess.ExitCode}";
             await errorHubContext.SendError(message);
-            logger.LogError($"Failed to start worker '{workerFileName}', error code {workerProcess.ExitCode}");
+            logger.LogError($"Failed to start worker '{workerCommand}', error code {workerProcess.ExitCode}");
 
             return true;
         }
@@ -143,11 +143,8 @@
 
         public void SetIsReady(bool value)
         {
-            if (value && !IsRunning())
-            {
-                return;
-            }
-            
+            logger.LogDebug($"Set is ready = {value}");
+
             lock (LockObject)
             {
                 this.isReady = value;

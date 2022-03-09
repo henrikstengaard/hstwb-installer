@@ -10,14 +10,15 @@
         [Fact]
         public void WhenCreateWindowsRunasProcessStartInfoThenArgumentsWillElevateCommand()
         {
+            var command = "hstwb-imager";
+            var arguments = string.Empty;
+            var workingDirectory = @"c:\program files\hstwb-installer";
             var processStartInfo =
-                ElevateHelper.CreateWindowsRunasProcessStartInfo(@"c:\program files\hstwb-installer\hstwb-imager");
-            var path =
-                $"c:{Path.DirectorySeparatorChar}program files{Path.DirectorySeparatorChar}hstwb-installer";
+                ElevateHelper.CreateWindowsRunasProcessStartInfo(command, arguments, workingDirectory);
 
-            Assert.Equal("hstwb-imager", processStartInfo.FileName);
-            Assert.Equal(path, processStartInfo.WorkingDirectory);
-            Assert.Equal(string.Empty, processStartInfo.Arguments);
+            Assert.Equal(command, processStartInfo.FileName);
+            Assert.Equal(workingDirectory, processStartInfo.WorkingDirectory);
+            Assert.Equal(arguments, processStartInfo.Arguments);
             Assert.Equal("runas", processStartInfo.Verb);
         }
 
@@ -39,16 +40,18 @@
         [Fact]
         public void WhenCreateMacOsOsascriptProcessStartInfoThenArgumentsWillElevateCommand()
         {
-            var processStartInfo =
-                ElevateHelper.CreateMacOsOsascriptProcessStartInfo("HstWB Imager", @"/home/hst/hstwb-imager");
+            var prompt = "HstWB Imager";
+            var command = "hstwb-imager";
+            var arguments = string.Empty;
             var workingDirectory =
-                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst";
-            var fileName = $".{Path.DirectorySeparatorChar}hstwb-imager";
+                "/home/hst";
+            var processStartInfo =
+                ElevateHelper.CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory);
             
-            Assert.Equal("/usr/bin/osascript", processStartInfo.FileName);
-            Assert.Equal(String.Empty, processStartInfo.WorkingDirectory);
+            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal(string.Empty, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-e 'do shell script \"/bin/bash -c \\\"cd \\\"{workingDirectory}\\\"; \\\"{fileName}\\\";\\\"\" with prompt \"HstWB Imager\" with administrator privileges'",
+                $"-c \"osascript -e 'do shell script \\\"cd '\\\"{workingDirectory}\\\"'; '\\\"{command}\\\"'\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }

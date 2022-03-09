@@ -45,11 +45,15 @@
                 {
                     var backgroundTask = (await workerService.DequeueAsync()).LastOrDefault();
 
+                    logger.LogDebug("Dequeued run background task");
+                    
                     if (!workerService.IsReady() || backgroundTask == null)
                     {
                         continue;
                     }
 
+                    logger.LogDebug("Worker hub run background task");
+                    
                     await workerHubContext.RunBackgroundTask(backgroundTask, token: stoppingToken);
                 }
                 catch (Exception e)

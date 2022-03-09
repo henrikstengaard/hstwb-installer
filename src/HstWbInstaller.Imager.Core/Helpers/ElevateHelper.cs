@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using OperatingSystem = OperatingSystem;
 
     public static class ElevateHelper
@@ -78,7 +79,7 @@
         /// <param name="showWindow"></param>
         /// <returns></returns>
         public static ProcessStartInfo CreateLinuxPkExecProcessStartInfo(string command, string arguments = null,
-            bool showWindow = true)
+            string workingDirectory = null, bool showWindow = true)
         {
             var pkExecArgs = new List<string>(new[]
             {
@@ -98,33 +99,45 @@
             };
         }
 
+        private static Regex osaScriptArgumentRegex =
+            new Regex("\"([^\"]*)\"", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         /// <summary>
         /// create mac os osascript process start info to run command with administrator privileges
         /// </summary>
         /// <param name="prompt"></param>
         /// <param name="command"></param>
         /// <param name="arguments"></param>
+        /// <param name="workingDirectory"></param>
         /// <param name="showWindow"></param>
         /// <returns></returns>
         public static ProcessStartInfo CreateMacOsOsascriptProcessStartInfo(string prompt, string command,
-            string arguments = null, bool showWindow = false)
+            string arguments = null, string workingDirectory = null, bool showWindow = false)
         {
+            var scriptArgs = new List<string>();
+            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                scriptArgs.Add($"cd \"{workingDirectory}\"");
+            }
+            scriptArgs.Add($"\"{command}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
+            var script = osaScriptArgumentRegex.Replace(string.Join("; ", scriptArgs), "'\\\"$1\\\"'");
+            
             var osaScriptArgs = new List<string>(new[]
             {
-                "-e",
-                $"'do shell script \"{string.Join(" ", GetBashArgs(command, arguments)).Replace("\"", "\\\"")}\" with prompt \"{prompt}\" with administrator privileges'"
+                "-c",
+                $"\"osascript -e 'do shell script \\\"{script}\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\""
             });
 
             var args = string.Join(" ", osaScriptArgs);
 
-            return new ProcessStartInfo("/usr/bin/osascript")
+            return new ProcessStartInfo("/bin/bash")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
                 CreateNoWindow = !showWindow,
                 WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
-                Arguments = args,
+                Arguments = args
             };
         }
 
@@ -133,37 +146,38 @@
         /// </summary>
         /// <param name="command"></param>
         /// <param name="arguments"></param>
+        /// <param name="workingDirectory"></param>
         /// <param name="showWindow"></param>
         /// <returns></returns>
         public static ProcessStartInfo CreateWindowsRunasProcessStartInfo(string command, string arguments = null,
-            bool showWindow = false)
+            string workingDirectory = null, bool showWindow = false)
         {
             return new ProcessStartInfo(Path.GetFileName(command))
             {
                 CreateNoWindow = !showWindow,
                 WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
-                Arguments = arguments,
-                WorkingDirectory = Path.GetDirectoryName(command) ?? string.Empty,
+                Arguments = arguments ?? string.Empty,
+                WorkingDirectory = workingDirectory ?? string.Empty,
                 Verb = "runas"
             };
         }
 
-        public static ProcessStartInfo GetElevatedProcessStartInfo(string prompt, string command, string arguments = null,
-            bool showWindow = false)
+        public static ProcessStartInfo GetElevatedProcessStartInfo(string prompt, string command,
+            string arguments = null, string workingDirectory = null, bool showWindow = false)
         {
             ProcessStartInfo processStartInfo;
             if (OperatingSystem.IsWindows())
             {
-                processStartInfo = CreateWindowsRunasProcessStartInfo(command, arguments, showWindow);
+                processStartInfo = CreateWindowsRunasProcessStartInfo(command, arguments, workingDirectory, showWindow);
             }
             else if (OperatingSystem.IsMacOs())
             {
-                processStartInfo = CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, showWindow);
+                processStartInfo = CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory, showWindow);
             }
             else if (OperatingSystem.IsLinux())
             {
-                processStartInfo = CreateLinuxPkExecProcessStartInfo(command, arguments, showWindow);
+                processStartInfo = CreateLinuxPkExecProcessStartInfo(command, arguments, workingDirectory, showWindow);
             }
             else
             {
@@ -172,7 +186,7 @@
 
             return processStartInfo;
         }
-        
+
         public static Process StartElevatedProcess(ProcessStartInfo processStartInfo)
         {
             var process = Process.Start(processStartInfo);
