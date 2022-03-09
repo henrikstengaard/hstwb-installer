@@ -119,7 +119,7 @@
             {
                 scriptArgs.Add($"cd \"{workingDirectory}\"");
             }
-            scriptArgs.Add($"\"{command}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
+            scriptArgs.Add($"\"{(command.StartsWith("/") ? command : $"./{command}")}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
             var script = osaScriptArgumentRegex.Replace(string.Join("; ", scriptArgs), "'\\\"$1\\\"'");
             
             var osaScriptArgs = new List<string>(new[]
