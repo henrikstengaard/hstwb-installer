@@ -51,7 +51,25 @@
             Assert.Equal("/bin/bash", processStartInfo.FileName);
             Assert.Equal(string.Empty, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-c \"osascript -e 'do shell script \\\"cd '\\\"{workingDirectory}\\\"'; '\\\"{command}\\\"'\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
+                $"-c \"osascript -e 'do shell script \\\"cd '\\\"{workingDirectory}\\\"'; '\\\"./{command}\\\"'\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
+                processStartInfo.Arguments);
+            Assert.Equal(string.Empty, processStartInfo.Verb);
+        }
+        
+        [Fact]
+        public void WhenCreateMacOsOsascriptProcessStartInfoWithoutWorkingDirectoryThenArgumentsWillElevateCommand()
+        {
+            var prompt = "HstWB Imager";
+            var command = "/home/hst/hstwb-imager";
+            var arguments = string.Empty;
+            var workingDirectory = string.Empty;
+            var processStartInfo =
+                ElevateHelper.CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory);
+            
+            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal(string.Empty, processStartInfo.WorkingDirectory);
+            Assert.Equal(
+                $"-c \"osascript -e 'do shell script \\\"'\\\"{command}\\\"'\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }
