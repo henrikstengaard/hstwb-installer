@@ -85,6 +85,7 @@ export default function MediaSelectField(props) {
         <SelectField
             label={label}
             id={id}
+            emptyLabel="None available"
             value={path || ''}
             options={(medias || []).map((media) => {
                 return {
