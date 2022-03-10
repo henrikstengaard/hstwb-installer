@@ -1,6 +1,5 @@
 ﻿namespace HstWbInstaller.Imager.Core.PhysicalDrives
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -62,11 +61,14 @@
         
         private static long GetLongNumber(NSDictionary dict, string key)
         {
-            var o = dict.ObjectForKey(key);
-            Console.WriteLine($"{key} = {o.ToXmlPropertyList()}");
-            var numberObject = dict.ObjectForKey(key) as NSNumber;
+            var nsNumber = dict.ObjectForKey(key) as NSNumber;
 
-            return numberObject?.ToLong() ?? 0;
+            if (nsNumber == null)
+            {
+                return 0;
+            }
+
+            return !long.TryParse(nsNumber.ToString().Trim('\"'), out var longValue) ? 0 : longValue;
         }
     }
 }

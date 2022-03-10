@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.Extensions;
+    using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
 
     public class ListCommand : CommandBase
@@ -21,7 +22,6 @@
         }
 
         public event EventHandler<ListReadEventArgs> ListRead;
-        public IEnumerable<MediaInfo> Result;
 
         public override async Task<Result> Execute(CancellationToken token)
         {
@@ -29,10 +29,18 @@
             foreach (var physicalDrive in physicalDrives)
             {
                 await using var sourceStream = physicalDrive.Open();
+
                 var diskSize = sourceStream.Length;
-                
-                var firstBytes = await sourceStream.ReadBytes(512 * 2048);
-                var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+                RigidDiskBlock rigidDiskBlock = null;
+                try
+                {
+                    var firstBytes = await sourceStream.ReadBytes(512 * 2048);
+                    rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
 
                 mediaInfos.Add(new MediaInfo
                 {
@@ -44,8 +52,6 @@
                     RigidDiskBlock = rigidDiskBlock
                 });
             }
-
-            Result = mediaInfos;
 
             OnListRead(mediaInfos);
 
