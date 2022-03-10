@@ -233,6 +233,7 @@
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .WriteTo.File(
                         logFilePath,
                         rollingInterval: RollingInterval.Day,
