@@ -6,6 +6,7 @@
     using Microsoft.Win32.SafeHandles;
 
     // https://github.com/shinchiro/WinFileIO/blob/master/WinFileIO.cs
+    // https://stackoverflow.com/questions/15185295/why-raw-disk-read-in-c-sharp-reads-from-slightly-shifted-offset
     // https://stackoverflow.com/questions/12081343/c-sharp-writefile-stops-writing-at-sector-242-on-usb-drives
     // https://forums.codeguru.com/showthread.php?559101-Direct-write-to-HardDisk-WriteFile-returns-5-access-denied-error
     // https://stackoverflow.com/questions/39154020/mainwindow-createfile-always-returns-1?rq=1

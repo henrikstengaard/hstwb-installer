@@ -46,7 +46,7 @@
 
             DiscUtils.Containers.SetupHelper.SetupContainers();
             DiscUtils.FileSystems.SetupHelper.SetupFileSystems();
-            var vhdDisk = VirtualDisk.OpenDisk(path, FileAccess.Read);
+            var vhdDisk = VirtualDisk.OpenDisk(new Uri(path).AbsoluteUri, FileAccess.Read);
             vhdDisk.Content.Position = 0;
             return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk));
         }
