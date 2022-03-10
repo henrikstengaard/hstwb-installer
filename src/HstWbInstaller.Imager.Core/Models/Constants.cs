@@ -12,7 +12,8 @@
             public const string List = "List";
             public const string RunBackgroundTask = "RunBackgroundTask";
             public const string CancelBackgroundTask = "CancelBackgroundTask";
-            public const string WorkerReady = "WorkerReady";
+            public const string WorkerProcess = "WorkerProcess";
+            public const string WorkerPing = "WorkerPing";
             public const string ShowDialogResult = "ShowDialogResult";
         }
     }

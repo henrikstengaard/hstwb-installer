@@ -9,6 +9,7 @@
     using Core;
     using Core.Helpers;
     using Core.Models;
+    using Extensions;
     using Helpers;
     using Microsoft.AspNetCore.SignalR.Client;
     using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,10 @@
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
             var logger = serviceProvider.GetService<ILogger<Program>>();
 
-            KillOtherWorkers(logger, processId);
+            if (processId > 0)
+            {
+                KillOtherWorkers(logger, processId);
+            }
 
             logger.LogDebug($"Connecting to base url '{baseUrl}'");
 
@@ -153,16 +157,42 @@
                 }
             });
 
+            var workerProcessId = Process.GetCurrentProcess().Id;
+            logger.LogDebug($"Worker process id '{workerProcessId}'");
+            
+            await workerHubConnection.WorkerProcess(workerProcessId);
+            
             logger.LogDebug("Worker is ready");
 
+            var pingFailed = 0;
+            var maxPingFailed = 3;
             while (true)
             {
-                await Task.Delay(1000);
+                await Task.Delay(5000);
+
+                try
+                {
+                    await workerHubConnection.WorkerPing();
+                    pingFailed = 0;
+                }
+                catch (Exception)
+                {
+                    pingFailed++;
+                }
+
+                if (pingFailed <= maxPingFailed)
+                {
+                    continue;
+                }
+                logger.LogInformation($"Stopping worker after ping failed {maxPingFailed} times");
+                return;
             }
         }
 
         private static void KillOtherWorkers(ILogger<Program> logger, int processId)
         {
+            logger.LogDebug($"Killing other workers except process id = '{processId}'");
+
             var executingFile = WorkerHelper.GetExecutingFile();
             var workerFileName = WorkerHelper.GetWorkerFileName(executingFile);
             var currentProcessId = Process.GetCurrentProcess().Id;
@@ -170,6 +200,8 @@
 
             foreach (var process in processes)
             {
+                logger.LogDebug($"Process id = '{process.Id}', name = '{process.ProcessName}'");
+                
                 try
                 {
                     if (process.Id == currentProcessId ||
@@ -188,7 +220,7 @@
                     continue;
                 }
 
-                logger.LogDebug($"Killing worker process id {process.Id}: {process.ProcessName}");
+                logger.LogDebug($"Killing worker process id '{process.Id}', name '{process.ProcessName}'");
                 process.Kill();
             }
         }

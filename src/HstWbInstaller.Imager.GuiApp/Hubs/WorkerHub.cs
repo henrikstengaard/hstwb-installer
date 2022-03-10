@@ -4,6 +4,7 @@
     using Core.Models;
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
+    using Models;
     using Services;
     using BackgroundTask = Core.Models.BackgroundTasks.BackgroundTask;
 
@@ -23,12 +24,20 @@
         {
             await Clients.Others.SendAsync(Constants.HubMethodNames.RunBackgroundTask, backgroundTask);
         }
-        
-        public override Task OnConnectedAsync()
+
+        [HubMethodName(Constants.HubMethodNames.WorkerProcess)]
+        public Task WorkerProcess(WorkerProcessViewModel workerProcessViewModel)
         {
             logger.LogDebug("Worker connected");
-            this.workerService.SetIsReady(true);
-            return base.OnConnectedAsync();
+            this.workerService.SetWorkerProcessId(workerProcessViewModel.ProcessId);
+            return Task.CompletedTask;
+        }
+        
+        [HubMethodName(Constants.HubMethodNames.WorkerPing)]
+        public Task WorkerPing()
+        {
+            logger.LogDebug("Worker ping");
+            return Task.CompletedTask;
         }
     }
 }

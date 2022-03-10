@@ -25,8 +25,7 @@
         private readonly BlockingCollection<Core.Models.BackgroundTasks.BackgroundTask> queue;
         private static readonly object LockObject = new();
         
-        private Process workerProcess;
-        private bool isReady;
+        private int workerProcessId;
 
         public WorkerService(ILogger<WorkerService> logger, AppState appState, IHubContext<ErrorHub> errorHubContext)
         {
@@ -34,29 +33,42 @@
             this.appState = appState;
             this.errorHubContext = errorHubContext;
             this.queue = new BlockingCollection<Core.Models.BackgroundTasks.BackgroundTask>(new ConcurrentQueue<Core.Models.BackgroundTasks.BackgroundTask>());
-            this.workerProcess = null;
-            this.isReady = false;
-
-            AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-            {
-                if (!IsRunning())
-                {
-                    return;
-                }
-                
-                this.workerProcess.Kill();
-            };
+            this.workerProcessId = 0;
         }
 
         public bool IsRunning()
         {
-            return workerProcess is { HasExited: false };
+            lock (LockObject)
+            {
+                if (workerProcessId == 0)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    var process = Process.GetProcessById(workerProcessId);
+                    if (process.HasExited)
+                    {
+                        logger.LogDebug($"Worker process id {workerProcessId} has exited");
+                        SetWorkerProcessId(0);
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, $"Failed to get worker process id {workerProcessId}");
+                    SetWorkerProcessId(0);
+                    return false;
+                }
+
+                logger.LogDebug($"Worker process id {workerProcessId} is running");
+                return true;
+            }
         }
 
         public async Task<bool> Start()
         {
-            SetIsReady(false);
-
             var workerCommand = WorkerHelper.GetWorkerFileName(appState.ExecutingFile);
             var workerPath = Path.Combine(
                 appState.AppPath,
@@ -71,7 +83,7 @@
             }
 
             var currentProcessId = Process.GetCurrentProcess().Id;
-            var arguments = $"--worker --baseurl \"{appState.BaseUrl}\" --process-id {currentProcessId}";
+            var arguments = $"--worker --baseurl {appState.BaseUrl} --process-id {currentProcessId}";
             logger.LogDebug($"Starting worker '{workerPath}' with arguments '{arguments}'");
 
             var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(Constants.AppName, workerCommand, arguments,
@@ -79,9 +91,9 @@
 
             logger.LogDebug($"Worker process file name '{processStartInfo.FileName}' with arguments '{processStartInfo.Arguments}'");
             
-            this.workerProcess = ElevateHelper.StartElevatedProcess(processStartInfo);
+            var workerProcess = ElevateHelper.StartElevatedProcess(processStartInfo);
 
-            if (!workerProcess.HasExited)
+            if (!workerProcess.HasExited || workerProcess.ExitCode == 0)
             {
                 return true;
             }
@@ -90,7 +102,7 @@
                 $"Failed to start worker '{workerPath}'. Process exited with error code {workerProcess.ExitCode}";
             await errorHubContext.SendError(message);
             logger.LogError($"Failed to start worker '{workerCommand}', error code {workerProcess.ExitCode}");
-
+            
             return true;
         }
 
@@ -101,20 +113,17 @@
                 throw new ArgumentNullException(nameof(backgroundTask));
             }
 
-            if (!IsRunning())
-            {
-                if (!await Start())
-                {
-                    return;
-                }
-            }
-            
             logger.LogDebug($"Enqueue background task type '{backgroundTask.GetType().Name}'");
             this.queue.Add(new Core.Models.BackgroundTasks.BackgroundTask
             {
                 Type = backgroundTask.GetType().Name,
                 Payload = JsonSerializer.Serialize(backgroundTask)
             });
+            
+            if (!IsRunning())
+            {
+                await Start();
+            }
         }
 
         public Task<IEnumerable<Core.Models.BackgroundTasks.BackgroundTask>> DequeueAsync()
@@ -137,17 +146,17 @@
         {
             lock (LockObject)
             {
-                return IsRunning() && isReady;
+                return workerProcessId != 0;
             }
         }
 
-        public void SetIsReady(bool value)
+        public void SetWorkerProcessId(int processId)
         {
-            logger.LogDebug($"Set is ready = {value}");
+            logger.LogDebug($"Set worker process id = {processId}");
 
             lock (LockObject)
             {
-                this.isReady = value;
+                this.workerProcessId = processId;
             }
         }
     }

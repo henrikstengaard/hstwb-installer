@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Extensions
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -31,6 +32,23 @@
                     Message = message
                 }
             }, token);
+        }
+
+        public static async Task WorkerProcess(this HubConnection hubConnection,
+            int processId, CancellationToken token = default)
+        {
+            await hubConnection.InvokeCoreAsync(Constants.HubMethodNames.WorkerProcess, new object[]
+            {
+                new WorkerProcessViewModel
+                {
+                    ProcessId = processId
+                }
+            }, token);
+        }
+
+        public static async Task WorkerPing(this HubConnection hubConnection, CancellationToken token = default)
+        {
+            await hubConnection.InvokeCoreAsync(Constants.HubMethodNames.WorkerPing, Array.Empty<object>(), token);
         }
         
         public static async Task SendInfoResult(this HubConnection hubConnection,
