@@ -17,15 +17,17 @@
 
         public override Stream Open()
         {
-            if (Writable)
+            if (!Writable)
             {
-                foreach (var driveLetter in DriveLetters.ToList())
-                {
-                    string path = @"\\.\" + driveLetter + @"";
-                    using var win32RawDisk = new Win32RawDisk(path, true);
-                }
+                return new WindowsPhysicalDriveStream(Path, Writable);
             }
-            return new WindowsPhysicalDriveStream(Path, Size, Writable);
+            
+            foreach (var path in DriveLetters.ToList().Select(driveLetter => @"\\.\" + driveLetter + @""))
+            {
+                using var win32RawDisk = new Win32RawDisk(path, true);
+            }
+
+            return new WindowsPhysicalDriveStream(Path, Writable);
         }
     }
 }

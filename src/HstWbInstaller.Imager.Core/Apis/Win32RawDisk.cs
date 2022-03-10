@@ -110,9 +110,24 @@
                 return newOffset;
             }
             var error = Marshal.GetLastWin32Error();
-            throw new IOException($"Failed to SetFilePointerEx offset {offset} and origin {origin} returned Win32 error {error}");
+            throw new IOException($"Failed to seek position offset {offset} and origin {origin}, SetFilePointerEx returned Win32 error {error}");
         }        
 
+        public long Position()
+        {
+            if (DeviceApi.SetFilePointerEx(safeFileHandle, 0, out var offset, DeviceApi.EMoveMethod.Current))
+            {
+                return offset;
+            }
+            var error = Marshal.GetLastWin32Error();
+            throw new IOException($"Failed to get position, SetFilePointerEx returned Win32 error {error}");
+        }        
+
+        public long Size()
+        {
+            return Seek(0, SeekOrigin.End);
+        }        
+        
         protected virtual void Dispose(bool disposing)
         {
             if (disposed)
