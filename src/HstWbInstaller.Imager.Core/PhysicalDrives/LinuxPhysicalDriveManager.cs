@@ -4,9 +4,9 @@ namespace HstWbInstaller.Imager.Core.PhysicalDrives
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Extensions;
+    using HstWbInstaller.Core.Extensions;
     using Microsoft.Extensions.Logging;
-    using OperatingSystem = OperatingSystem;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class LinuxPhysicalDriveManager : IPhysicalDriveManager
     {

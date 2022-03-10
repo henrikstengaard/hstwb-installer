@@ -11,6 +11,7 @@
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
     using Models;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class CommandHelper : ICommandHelper
     {
@@ -46,7 +47,11 @@
 
             DiscUtils.Containers.SetupHelper.SetupContainers();
             DiscUtils.FileSystems.SetupHelper.SetupFileSystems();
-            var vhdDisk = VirtualDisk.OpenDisk(new Uri(path).AbsoluteUri, FileAccess.Read);
+            
+            // quirk to fix discutils internal combine paths strictly using backslash
+            var discUtilsPath = OperatingSystem.IsWindows() ? path : path.Replace("/", "\\");
+
+            var vhdDisk = VirtualDisk.OpenDisk(discUtilsPath, FileAccess.Read);
             vhdDisk.Content.Position = 0;
             return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk));
         }

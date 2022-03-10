@@ -15,7 +15,7 @@
     using Core.PhysicalDrives;
     using Microsoft.Extensions.Logging.Abstractions;
     using Presenters;
-    using OperatingSystem = Core.OperatingSystem;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     // read
     // -r "a" "d:\temp\test.vhd" -s 10000000 -f

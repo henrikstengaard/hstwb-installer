@@ -24,6 +24,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using Middlewares;
     using Models;
     using Services;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class Startup
     {
@@ -61,7 +62,7 @@ namespace HstWbInstaller.Imager.GuiApp
                 AppPath = AppContext.BaseDirectory,
                 ExecutingFile = WorkerHelper.GetExecutingFile(),
                 IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
-                IsAdministrator = Core.OperatingSystem.IsAdministrator(),
+                IsAdministrator = OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
                 UseFake = Debugger.IsAttached
             });
