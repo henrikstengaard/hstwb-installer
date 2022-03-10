@@ -3,6 +3,7 @@
     using System;
     using Microsoft.Extensions.Logging;
     using PhysicalDrives;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class PhysicalDriveManagerFactory
     {

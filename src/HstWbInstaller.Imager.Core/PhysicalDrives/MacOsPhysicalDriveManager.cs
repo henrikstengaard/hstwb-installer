@@ -6,9 +6,9 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Extensions;
+    using HstWbInstaller.Core.Extensions;
     using Microsoft.Extensions.Logging;
-    using OperatingSystem = OperatingSystem;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class MacOsPhysicalDriveManager : IPhysicalDriveManager
     {

@@ -5,8 +5,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Text.RegularExpressions;
-    using OperatingSystem = OperatingSystem;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public static class ElevateHelper
     {

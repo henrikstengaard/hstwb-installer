@@ -1,9 +1,8 @@
-namespace HstWbInstaller.Imager.Core
+namespace HstWbInstaller.Core
 {
     using System;
     using System.Runtime.InteropServices;
     using System.Security.Principal;
-    using System.Threading.Tasks;
     using Extensions;
 
     public static class OperatingSystem
@@ -21,7 +20,6 @@ namespace HstWbInstaller.Imager.Core
         // https://github.com/dotnet/runtime/issues/25118
         public static bool IsAdministrator()
         {
-#if Windows
             if (IsWindows())
             {
 #pragma warning disable CA1416
@@ -30,7 +28,6 @@ namespace HstWbInstaller.Imager.Core
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
 #pragma warning restore CA1416
             }
-#endif
 
             // linux root has user id 0
             /* environment variable: EUID

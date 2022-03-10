@@ -1,6 +1,5 @@
-﻿namespace HstWbInstaller.Imager.Core.Extensions
+﻿namespace HstWbInstaller.Core.Extensions
 {
-    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
