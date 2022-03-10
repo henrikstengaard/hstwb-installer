@@ -17,18 +17,34 @@ namespace HstWbInstaller.Imager.GuiApp
     {
         public static async Task Main(string[] args)
         {
-            if (args.Length == 5 && 
-                args[0].Equals("--worker", StringComparison.OrdinalIgnoreCase) && 
-                args[1].Equals("--baseurl", StringComparison.OrdinalIgnoreCase) && 
-                !string.IsNullOrWhiteSpace(args[2]) &&
-                args[3].Equals("--process-id", StringComparison.OrdinalIgnoreCase) &&
-                !string.IsNullOrWhiteSpace(args[4]))
+            var worker = false;
+            var baseUrl = string.Empty;
+            int processId = 0;
+            
+            for (var i = 0; i < args.Length; i++)
             {
-                var baseUrl = args[2];
-                if (!int.TryParse(args[4], out var processId))
+                if (args[i].Equals("--worker", StringComparison.OrdinalIgnoreCase))
                 {
-                    processId = 0;
+                    worker = true;
                 }
+
+                if (args[i].Equals("--baseurl", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+                {
+                    baseUrl = args[i + 1];
+                }
+                
+                if (args[i].Equals("--process-id", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+                {
+                    if (!int.TryParse(args[i + 1], out processId))
+                    {
+                        processId = 0;
+                    }
+                }
+            }
+
+            if (worker &&
+                !string.IsNullOrWhiteSpace(baseUrl))
+            {
                 await WorkerBootstrapper.Start(baseUrl, processId);
                 return;
             }
@@ -98,7 +114,7 @@ namespace HstWbInstaller.Imager.GuiApp
                 .Enrich.FromLogContext()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .WriteTo.File(Path.Combine("logs", "log-imager.txt"),rollingInterval: RollingInterval.Day,
+                .WriteTo.File(Path.Combine("logs", "log-imager.txt"), rollingInterval: RollingInterval.Day,
                     outputTemplate:
                     "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{NewLine}{Exception}")
                 .CreateLogger();

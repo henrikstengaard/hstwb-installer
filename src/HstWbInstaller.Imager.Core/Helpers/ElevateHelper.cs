@@ -99,9 +99,6 @@
             };
         }
 
-        private static Regex osaScriptArgumentRegex =
-            new Regex("\"([^\"]*)\"", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
         /// <summary>
         /// create mac os osascript process start info to run command with administrator privileges
         /// </summary>
@@ -114,13 +111,7 @@
         public static ProcessStartInfo CreateMacOsOsascriptProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null, bool showWindow = false)
         {
-            var scriptArgs = new List<string>();
-            if (!string.IsNullOrWhiteSpace(workingDirectory))
-            {
-                scriptArgs.Add($"cd \"{workingDirectory}\"");
-            }
-            scriptArgs.Add($"\"{(command.StartsWith("/") ? command : $"./{command}")}\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}");
-            var script = osaScriptArgumentRegex.Replace(string.Join("; ", scriptArgs), "'\\\"$1\\\"'");
+            var script = $"{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
             
             var osaScriptArgs = new List<string>(new[]
             {
@@ -137,7 +128,8 @@
                 CreateNoWindow = !showWindow,
                 WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
-                Arguments = args
+                Arguments = args,
+                WorkingDirectory = workingDirectory ?? string.Empty
             };
         }
 
@@ -154,6 +146,8 @@
         {
             return new ProcessStartInfo(Path.GetFileName(command))
             {
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
                 CreateNoWindow = !showWindow,
                 WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
                 UseShellExecute = true,

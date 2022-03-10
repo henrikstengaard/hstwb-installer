@@ -1,8 +1,5 @@
 {
   "executable": "HstWbInstaller.Imager.GuiApp",
-  "splashscreen": {
-    "imageFile": "splashscreen.png"
-  },
   "name": "HstWbInstaller.Imager.GuiApp",
   "author": "Henrik Nørfjand Stengaard",
   "singleInstance": false,
