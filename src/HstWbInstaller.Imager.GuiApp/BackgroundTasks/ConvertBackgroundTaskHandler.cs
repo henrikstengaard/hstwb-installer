@@ -7,14 +7,19 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.Logging;
 
     public class ConvertBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
         private readonly IPhysicalDriveManager physicalDriveManager;
 
-        public ConvertBackgroundTaskHandler(HubConnection progressHubConnection, IPhysicalDriveManager physicalDriveManager)
+        public ConvertBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
+            HubConnection progressHubConnection, IPhysicalDriveManager physicalDriveManager)
         {
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
             this.physicalDriveManager = physicalDriveManager;
         }
@@ -32,7 +37,7 @@
 
                 var commandHelper = new CommandHelper();
                 var convertCommand =
-                    new ConvertCommand(commandHelper, physicalDrives, convertBackgroundTask.SourcePath, convertBackgroundTask.DestinationPath);
+                    new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, physicalDrives, convertBackgroundTask.SourcePath, convertBackgroundTask.DestinationPath);
                 convertCommand.DataProcessed += async (_, args) =>
                 {
                     await progressHubConnection.UpdateProgress(new Progress

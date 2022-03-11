@@ -13,8 +13,11 @@
     using Core.Extensions;
     using Core.Helpers;
     using Core.PhysicalDrives;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using Presenters;
+    using Serilog;
     using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     // read
@@ -257,6 +260,17 @@
 
         static async Task Run(Arguments arguments)
         {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+            
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
+                .BuildServiceProvider();
+
+            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+
             var isAdministrator = OperatingSystem.IsAdministrator();
 
             if (!isAdministrator)
@@ -271,7 +285,7 @@
             switch (arguments.Command)
             {
                 case Arguments.CommandEnum.List:
-                    var listCommand = new ListCommand(commandHelper, physicalDrives);
+                    var listCommand = new ListCommand(loggerFactory.CreateLogger<ListCommand>(), commandHelper, physicalDrives);
                     listCommand.ListRead += (_, args) =>
                     {
                         //
@@ -285,7 +299,7 @@
                     Console.WriteLine(listResult.IsSuccess ? "Done" : $"ERROR: Read failed, {listResult.Error}");
                     break;
                 case Arguments.CommandEnum.Info:
-                    var infoCommand = new InfoCommand(commandHelper, physicalDrives, arguments.SourcePath);
+                    var infoCommand = new InfoCommand(loggerFactory.CreateLogger<InfoCommand>(), commandHelper, physicalDrives, arguments.SourcePath);
                     infoCommand.DiskInfoRead += (_, args) => { InfoPresenter.PresentInfo(args.MediaInfo); };
                     var infoResult = await infoCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(infoResult.IsSuccess ? "Done" : $"ERROR: Read failed, {infoResult.Error}");
@@ -295,7 +309,7 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                    var readCommand = new ReadCommand(loggerFactory.CreateLogger<ReadCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
                         arguments.DestinationPath,
                         arguments.Size);
                     readCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
@@ -307,7 +321,7 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                    var convertCommand = new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
                         arguments.DestinationPath,
                         arguments.Size);
                     convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
@@ -320,7 +334,7 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                    var writeCommand = new WriteCommand(loggerFactory.CreateLogger<WriteCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
                         arguments.DestinationPath,
                         arguments.Size);
                     writeCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
@@ -332,7 +346,7 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath,
+                    var verifyCommand = new VerifyCommand(loggerFactory.CreateLogger<VerifyCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
                         arguments.DestinationPath,
                         arguments.Size);
                     verifyCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
@@ -342,14 +356,14 @@
                 case Arguments.CommandEnum.Blank:
                     Console.WriteLine("Creating blank image");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
-                    var blankCommand = new BlankCommand(commandHelper, arguments.SourcePath, arguments.Size);
+                    var blankCommand = new BlankCommand(loggerFactory.CreateLogger<BlankCommand>(), commandHelper, arguments.SourcePath, arguments.Size);
                     var blankResult = await blankCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(blankResult.IsSuccess ? "Done" : $"ERROR: Blank failed, {blankResult.Error}");
                     break;
                 case Arguments.CommandEnum.Optimize:
                     Console.WriteLine("Optimizing image file");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
-                    var optimizeCommand = new OptimizeCommand(commandHelper, arguments.SourcePath);
+                    var optimizeCommand = new OptimizeCommand(loggerFactory.CreateLogger<OptimizeCommand>(), commandHelper, arguments.SourcePath);
                     var optimizeResult = await optimizeCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(optimizeResult.IsSuccess
                         ? "Done"

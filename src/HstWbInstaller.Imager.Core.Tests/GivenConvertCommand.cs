@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenConvertCommand : CommandTestBase
@@ -21,7 +22,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             // act - convert source img to destination img
-            var convertCommand = new ConvertCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
             convertCommand.DataProcessed += (_, args) =>
             {
@@ -53,7 +54,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             // act - convert source img to destination img
-            var convertCommand = new ConvertCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, size);
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, size);
             var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -74,7 +75,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             // act - read source img to destination vhd
-            var convertCommand = new ConvertCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath);
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -104,7 +105,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             // act - read source img to destination vhd
-            var convertCommand = new ConvertCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath, size);
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath, size);
             var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 

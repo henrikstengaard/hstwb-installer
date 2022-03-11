@@ -119,6 +119,7 @@
 
             var backgroundTaskHandler = new BackgroundTaskHandler(
                 loggerFactory.CreateLogger<BackgroundTaskHandler>(),
+                loggerFactory,
                 progressHubConnection,
                 errorHubConnection,
                 resultHubConnection,

@@ -10,15 +10,20 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.Logging;
 
     public class WriteBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
         private readonly IPhysicalDriveManager physicalDriveManager;
 
-        public WriteBackgroundTaskHandler(HubConnection progressHubConnection,
+        public WriteBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
+            HubConnection progressHubConnection,
             IPhysicalDriveManager physicalDriveManager)
         {
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
             this.physicalDriveManager = physicalDriveManager;
         }
@@ -36,7 +41,7 @@
 
                 var commandHelper = new CommandHelper();
                 var writeCommand =
-                    new WriteCommand(commandHelper, physicalDrives, writeBackgroundTask.SourcePath,
+                    new WriteCommand(loggerFactory.CreateLogger<WriteCommand>(), commandHelper, physicalDrives, writeBackgroundTask.SourcePath,
                         writeBackgroundTask.DestinationPath);
                 writeCommand.DataProcessed += async (_, args) =>
                 {

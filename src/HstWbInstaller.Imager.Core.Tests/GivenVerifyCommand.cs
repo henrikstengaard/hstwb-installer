@@ -7,6 +7,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Models;
     using Xunit;
 
@@ -23,7 +24,7 @@
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
             verifyCommand.DataProcessed += (_, args) =>
             {
@@ -57,7 +58,7 @@
             await fakeCommandHelper.AppendWriteableMediaDataVhd(destinationPath, sourceBytes.Length, sourceBytes);
 
             // act - verify source img to destination img
-            var verifyCommand = new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -76,7 +77,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - verify source img to destination img
-            var verifyCommand = new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath,
+            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath,
                 destinationPath, size);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
@@ -113,7 +114,7 @@
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
             Assert.Equal(typeof(ByteNotEqualError), result.Error.GetType());
@@ -146,7 +147,7 @@
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
 
@@ -176,7 +177,7 @@
             
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
         }
@@ -201,7 +202,7 @@
             
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
             

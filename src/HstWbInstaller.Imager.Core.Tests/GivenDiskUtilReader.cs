@@ -13,7 +13,11 @@
             var disks = DiskUtilReader.ParseList(File.OpenRead(@"TestData\diskutil-list.plist")).ToList();
             
             Assert.Single(disks);
-            Assert.Equal("disk2", disks[0]);
+            var disk = disks.First();
+            Assert.Equal("disk2", disk.DeviceIdentifier);
+            Assert.Single(disk.Partitions);
+            var partition = disk.Partitions.First();
+            Assert.Equal("disk2s1", partition.DeviceIdentifier);
         }
         
         [Fact]

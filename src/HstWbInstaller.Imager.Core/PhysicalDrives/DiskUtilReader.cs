@@ -2,29 +2,82 @@
 {
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using Claunia.PropertyList;
     using Models;
 
     public static class DiskUtilReader
     {
-        public static IEnumerable<string> ParseList(Stream stream)
+        public static IEnumerable<DiskUtilDisk> ParseList(Stream stream)
         {
             var pList = PropertyListParser.Parse(stream) as NSDictionary;
 
             if (pList == null)
             {
-                throw new IOException("Invalid plist");
+                throw new IOException("Invalid diskutil info plist");
             }
             
-            var wholeDisks = pList.ObjectForKey("WholeDisks") as NSArray;
+            var allDisksAndPartitions = pList.ObjectForKey("AllDisksAndPartitions") as NSArray;
 
-            if (wholeDisks == null)
+            if (allDisksAndPartitions == null)
             {
-                throw new IOException("Invalid plist");
+                throw new IOException("Invalid AllDisksAndPartitions key");
+            }
+
+            return ParseDisks(allDisksAndPartitions);
+        }
+
+        private static IEnumerable<DiskUtilDisk> ParseDisks(NSArray allDisksAndPartitions)
+        {
+            foreach (var item in allDisksAndPartitions)
+            {
+                var dict = item as NSDictionary;
+                
+                if (dict == null)
+                {
+                    throw new IOException("Invalid AllDisksAndPartitions item");
+                }
+
+                yield return ParseDisk(dict);
+            }
+        }
+
+        private static DiskUtilDisk ParseDisk(NSDictionary dict)
+        {
+            var partitions = dict.ObjectForKey("Partitions") as NSArray;
+
+            if (partitions == null)
+            {
+                throw new IOException("Invalid Partitions key");
             }
             
-            return wholeDisks.OfType<NSString>().Select(x => x.Content);
+            return new DiskUtilDisk
+            {
+                DeviceIdentifier = GetString(dict, "DeviceIdentifier"),
+                Partitions = ParsePartitions(partitions)
+            };
+        }
+
+        private static IEnumerable<DiskUtilPartition> ParsePartitions(NSArray partitions)
+        {
+            foreach (var item in partitions)
+            {
+                var dict = item as NSDictionary;
+
+                if (dict == null)
+                {
+                    throw new IOException("Invalid Partitions item");
+                }
+
+                yield return ParsePartition(dict);
+            }
+        }
+        
+        private static DiskUtilPartition ParsePartition(NSDictionary dict)
+        {
+            return new DiskUtilPartition
+            {
+                DeviceIdentifier = GetString(dict, "DeviceIdentifier")
+            };
         }
         
         public static DiskUtilInfo ParseInfo(Stream stream)
@@ -33,7 +86,7 @@
 
             if (pList == null)
             {
-                throw new IOException("Invalid plist");
+                throw new IOException("Invalid diskutil info plist");
             }
             
             var busProtocol = GetString(pList, "BusProtocol");
@@ -56,7 +109,12 @@
         {
             var stringObject = dict.ObjectForKey(key) as NSString;
 
-            return stringObject == null ? string.Empty : stringObject.Content;
+            if (stringObject == null)
+            {
+                throw new IOException($"Invalid {key} key");
+            }
+
+            return stringObject.Content;
         }
         
         private static long GetLongNumber(NSDictionary dict, string key)

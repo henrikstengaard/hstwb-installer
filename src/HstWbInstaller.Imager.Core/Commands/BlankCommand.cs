@@ -5,15 +5,18 @@
     using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
+    using Microsoft.Extensions.Logging;
 
     public class BlankCommand : CommandBase
     {
+        private readonly ILogger<BlankCommand> logger;
         private readonly ICommandHelper commandHelper;
         private readonly string path;
         private readonly long? size;
 
-        public BlankCommand(ICommandHelper commandHelper, string path, long? size)
+        public BlankCommand(ILogger<BlankCommand> logger, ICommandHelper commandHelper, string path, long? size)
         {
+            this.logger = logger;
             this.commandHelper = commandHelper;
             this.path = path;
             this.size = size;
@@ -25,6 +28,8 @@
             {
                 throw new ArgumentNullException(nameof(size));
             }
+            
+            logger.LogDebug($"Path '{path}', size '{size.Value}'");
             
             var mediaResult = commandHelper.GetWritableMedia(Enumerable.Empty<IPhysicalDrive>(), path, size.Value, false);
             if (mediaResult.IsFaulted)

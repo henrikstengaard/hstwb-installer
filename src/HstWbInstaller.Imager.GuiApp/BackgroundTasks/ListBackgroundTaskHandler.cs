@@ -7,19 +7,22 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
-    using Models;
+    using Microsoft.Extensions.Logging;
 
     public class ListBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection resultHubConnection;
         private readonly HubConnection errorHubConnection;
         private readonly IPhysicalDriveManager physicalDriveManager;
 
         public ListBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
             HubConnection resultHubConnection,
             HubConnection errorHubConnection,
             IPhysicalDriveManager physicalDriveManager)
         {
+            this.loggerFactory = loggerFactory;
             this.resultHubConnection = resultHubConnection;
             this.errorHubConnection = errorHubConnection;
             this.physicalDriveManager = physicalDriveManager;
@@ -30,7 +33,7 @@
             var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
 
             var commandHelper = new CommandHelper();
-            var listCommand = new ListCommand(commandHelper, physicalDrives);
+            var listCommand = new ListCommand(loggerFactory.CreateLogger<ListCommand>(), commandHelper, physicalDrives);
 
             listCommand.ListRead += async (_, args) =>
             {

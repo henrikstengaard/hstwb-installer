@@ -6,13 +6,18 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.Logging;
 
     public class BlankBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
 
-        public BlankBackgroundTaskHandler(HubConnection progressHubConnection)
+        public BlankBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
+            HubConnection progressHubConnection)
         {
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
         }
 
@@ -33,7 +38,7 @@
                 }, context.Token);                
 
                 var commandHelper = new CommandHelper();
-                var blankCommand = new BlankCommand(commandHelper, blankBackgroundTask.Path,
+                var blankCommand = new BlankCommand(loggerFactory.CreateLogger<BlankCommand>(), commandHelper, blankBackgroundTask.Path,
                     blankBackgroundTask.CompatibleSize ? Convert.ToInt64(blankBackgroundTask.Size * 0.95) : blankBackgroundTask.Size);
 
                 var result = await blankCommand.Execute(context.Token);
