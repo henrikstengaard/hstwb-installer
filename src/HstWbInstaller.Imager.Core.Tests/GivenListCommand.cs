@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Models;
     using PhysicalDrives;
     using Xunit;
@@ -22,7 +23,7 @@
             var fakeCommandHelper = new FakeCommandHelper();
             var cancellationTokenSource = new CancellationTokenSource();
             
-            var listCommand = new ListCommand(fakeCommandHelper, physicalDrives);
+            var listCommand = new ListCommand(new NullLogger<ListCommand>(), fakeCommandHelper, physicalDrives);
             IEnumerable<MediaInfo> mediaInfos = null;
             listCommand.ListRead += (sender, args) =>
             {
@@ -55,7 +56,7 @@
             var fakeCommandHelper = new FakeCommandHelper(new[] { path });
             var cancellationTokenSource = new CancellationTokenSource();
             
-            var listCommand = new ListCommand(fakeCommandHelper, physicalDrives);
+            var listCommand = new ListCommand(new NullLogger<ListCommand>(), fakeCommandHelper, physicalDrives);
             IEnumerable<MediaInfo> mediaInfos = null;
             listCommand.ListRead += (sender, args) =>
             {

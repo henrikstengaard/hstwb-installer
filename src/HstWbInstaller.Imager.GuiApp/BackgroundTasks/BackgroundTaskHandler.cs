@@ -13,6 +13,7 @@
     public class BackgroundTaskHandler
     {
         private readonly ILogger<BackgroundTaskHandler> logger;
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
         private readonly HubConnection errorHubConnection;
         private readonly HubConnection resultHubConnection;
@@ -20,7 +21,8 @@
         private readonly ActiveBackgroundTaskList activeBackgroundTaskList;
         private readonly BackgroundTaskQueue backgroundTaskQueue; 
         
-        public BackgroundTaskHandler(ILogger<BackgroundTaskHandler> logger, 
+        public BackgroundTaskHandler(ILogger<BackgroundTaskHandler> logger,
+            ILoggerFactory loggerFactory,
             HubConnection progressHubConnection,
             HubConnection errorHubConnection,
             HubConnection resultHubConnection,
@@ -29,6 +31,7 @@
             BackgroundTaskQueue backgroundTaskQueue)
         {
             this.logger = logger;
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
             this.errorHubConnection = errorHubConnection;
             this.resultHubConnection = resultHubConnection;
@@ -73,8 +76,6 @@
 
             logger.LogDebug($"Resolved background task handler '{handler.GetType().FullName}'");
             
-            logger.LogDebug($"resultHubConnection = {resultHubConnection.State}");
-            
             await backgroundTaskQueue.QueueBackgroundWorkItemAsync(handler.Handle, task);
         }
 
@@ -111,14 +112,14 @@
         {
             return backgroundTask switch
             {
-                ListBackgroundTask => new ListBackgroundTaskHandler(resultHubConnection, errorHubConnection, physicalDriveManager),
-                InfoBackgroundTask => new InfoBackgroundTaskHandler(resultHubConnection, errorHubConnection, physicalDriveManager),
-                ReadBackgroundTask => new ReadBackgroundTaskHandler(progressHubConnection, physicalDriveManager),
-                WriteBackgroundTask => new WriteBackgroundTaskHandler(progressHubConnection, physicalDriveManager),
-                VerifyBackgroundTask => new VerifyBackgroundTaskHandler(progressHubConnection, physicalDriveManager),
-                ConvertBackgroundTask => new ConvertBackgroundTaskHandler(progressHubConnection, physicalDriveManager),
-                BlankBackgroundTask => new BlankBackgroundTaskHandler(progressHubConnection),
-                OptimizeBackgroundTask => new OptimizeBackgroundTaskHandler(progressHubConnection),
+                ListBackgroundTask => new ListBackgroundTaskHandler(loggerFactory, resultHubConnection, errorHubConnection, physicalDriveManager),
+                InfoBackgroundTask => new InfoBackgroundTaskHandler(loggerFactory, resultHubConnection, errorHubConnection, physicalDriveManager),
+                ReadBackgroundTask => new ReadBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
+                WriteBackgroundTask => new WriteBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
+                VerifyBackgroundTask => new VerifyBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
+                ConvertBackgroundTask => new ConvertBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
+                BlankBackgroundTask => new BlankBackgroundTaskHandler(loggerFactory, progressHubConnection),
+                OptimizeBackgroundTask => new OptimizeBackgroundTaskHandler(loggerFactory, progressHubConnection),
                 _ => null
             };
         }

@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenBlankCommand : CommandTestBase
@@ -19,7 +20,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - create blank
-            var blankCommand = new BlankCommand(fakeCommandHelper, path, size);
+            var blankCommand = new BlankCommand(new NullLogger<BlankCommand>(), fakeCommandHelper, path, size);
             var result = await blankCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -39,7 +40,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - create blank
-            var blankCommand = new BlankCommand(fakeCommandHelper, path, size);
+            var blankCommand = new BlankCommand(new NullLogger<BlankCommand>(), fakeCommandHelper, path, size);
             var result = await blankCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 

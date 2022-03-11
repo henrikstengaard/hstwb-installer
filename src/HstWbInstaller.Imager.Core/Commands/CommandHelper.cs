@@ -48,10 +48,7 @@
             DiscUtils.Containers.SetupHelper.SetupContainers();
             DiscUtils.FileSystems.SetupHelper.SetupFileSystems();
             
-            // quirk to fix discutils internal combine paths strictly using backslash
-            var discUtilsPath = OperatingSystem.IsWindows() ? path : path.Replace("/", "\\");
-
-            var vhdDisk = VirtualDisk.OpenDisk(discUtilsPath, FileAccess.Read);
+            var vhdDisk = VirtualDisk.OpenDisk(path, FileAccess.Read);
             vhdDisk.Content.Position = 0;
             return new Result<Media>(new VhdMedia(path, model, Media.MediaType.Vhd, false, vhdDisk));
         }

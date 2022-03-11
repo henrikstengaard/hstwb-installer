@@ -7,14 +7,19 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.Logging;
 
     public class ReadBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
         private readonly IPhysicalDriveManager physicalDriveManager;
 
-        public ReadBackgroundTaskHandler(HubConnection progressHubConnection, IPhysicalDriveManager physicalDriveManager)
+        public ReadBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
+            HubConnection progressHubConnection, IPhysicalDriveManager physicalDriveManager)
         {
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
             this.physicalDriveManager = physicalDriveManager;
         }
@@ -25,14 +30,15 @@
             {
                 return;
             }
-            
+
             try
             {
                 var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
-            
+
                 var commandHelper = new CommandHelper();
                 var readCommand =
-                    new ReadCommand(commandHelper, physicalDrives, readBackgroundTask.SourcePath, readBackgroundTask.DestinationPath);
+                    new ReadCommand(loggerFactory.CreateLogger<ReadCommand>(), commandHelper, physicalDrives,
+                        readBackgroundTask.SourcePath, readBackgroundTask.DestinationPath);
                 readCommand.DataProcessed += async (_, args) =>
                 {
                     await progressHubConnection.UpdateProgress(new Progress
@@ -43,14 +49,20 @@
                         BytesProcessed = args.BytesProcessed,
                         BytesRemaining = args.BytesRemaining,
                         BytesTotal = args.BytesTotal,
-                        MillisecondsElapsed = args.PercentComplete > 0 ? (long)args.TimeElapsed.TotalMilliseconds : new long?(),
-                        MillisecondsRemaining = args.PercentComplete > 0 ? (long)args.TimeRemaining.TotalMilliseconds : new long?(),
-                        MillisecondsTotal = args.PercentComplete > 0 ? (long)args.TimeTotal.TotalMilliseconds : new long?()
-                    }, context.Token);                
+                        MillisecondsElapsed = args.PercentComplete > 0
+                            ? (long)args.TimeElapsed.TotalMilliseconds
+                            : new long?(),
+                        MillisecondsRemaining = args.PercentComplete > 0
+                            ? (long)args.TimeRemaining.TotalMilliseconds
+                            : new long?(),
+                        MillisecondsTotal = args.PercentComplete > 0
+                            ? (long)args.TimeTotal.TotalMilliseconds
+                            : new long?()
+                    }, context.Token);
                 };
-            
+
                 var result = await readCommand.Execute(context.Token);
-            
+
                 await progressHubConnection.UpdateProgress(new Progress
                 {
                     Title = readBackgroundTask.Title,

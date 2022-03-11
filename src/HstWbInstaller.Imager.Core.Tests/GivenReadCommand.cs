@@ -9,6 +9,7 @@ namespace HstWbInstaller.Imager.Core.Tests
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     public class GivenReadCommand : CommandTestBase
     {
@@ -22,7 +23,7 @@ namespace HstWbInstaller.Imager.Core.Tests
             var cancellationTokenSource = new CancellationTokenSource();
             
             // act - read source img to destination img
-            var readCommand = new ReadCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var readCommand = new ReadCommand(new NullLogger<ReadCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
             readCommand.DataProcessed += (_, args) =>
             {
@@ -54,7 +55,7 @@ namespace HstWbInstaller.Imager.Core.Tests
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - read source img to destination img
-            var readCommand = new ReadCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, size);
+            var readCommand = new ReadCommand(new NullLogger<ReadCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, size);
             var result = await readCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -78,7 +79,7 @@ namespace HstWbInstaller.Imager.Core.Tests
             Assert.False(File.Exists(destinationPath));
             
             // act: read source img to destination vhd
-            var readCommand = new ReadCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath);
+            var readCommand = new ReadCommand(new NullLogger<ReadCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await readCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -108,7 +109,7 @@ namespace HstWbInstaller.Imager.Core.Tests
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - read source img to destination vhd
-            var readCommand = new ReadCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath, size);
+            var readCommand = new ReadCommand(new NullLogger<ReadCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath, size);
             var result = await readCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 

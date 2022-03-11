@@ -8,15 +8,18 @@
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.Extensions;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using Microsoft.Extensions.Logging;
 
     public class InfoCommand : CommandBase
     {
+        private readonly ILogger<InfoCommand> logger;
         private readonly ICommandHelper commandHelper;
         private readonly IEnumerable<IPhysicalDrive> physicalDrives;
         private readonly string path;
 
-        public InfoCommand(ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string path)
+        public InfoCommand(ILogger<InfoCommand> logger, ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string path)
         {
+            this.logger = logger;
             this.commandHelper = commandHelper;
             this.physicalDrives = physicalDrives;
             this.path = path;
@@ -33,18 +36,21 @@
             }
             using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
-            var diskSize = sourceStream.Length;
 
-            RigidDiskBlock rigidDiskBlock;
-            if (sourceMediaResult.Value.IsPhysicalDrive)
+            RigidDiskBlock rigidDiskBlock = null;
+            try
             {
                 var firstBytes = await sourceStream.ReadBytes(512 * 2048);
                 rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
             }
-            else
+            catch (Exception)
             {
-                rigidDiskBlock = await commandHelper.GetRigidDiskBlock(sourceStream);
+                // ignored
             }
+            
+            var diskSize = sourceStream.Length;
+            
+            logger.LogDebug($"Path '{path}', disk size '{diskSize}'");
             
             OnDiskInfoRead(new MediaInfo
             {

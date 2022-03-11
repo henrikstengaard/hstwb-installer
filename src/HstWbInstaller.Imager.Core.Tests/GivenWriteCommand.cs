@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenWriteCommand : CommandTestBase
@@ -21,7 +22,7 @@
 
             // act - write source img to destination img
             var writeCommand =
-                new WriteCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new WriteCommand(new NullLogger<WriteCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
             writeCommand.DataProcessed += (_, args) =>
             {
@@ -55,7 +56,7 @@
             var sourceBytes = fakeCommandHelper.GetMedia(sourcePath).GetBytes();
 
             // act - write source img to destination vhd
-            var writeCommand = new WriteCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, sourceBytes.Length);
+            var writeCommand = new WriteCommand(new NullLogger<WriteCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, sourceBytes.Length);
             var result = await writeCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 

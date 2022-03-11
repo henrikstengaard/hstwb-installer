@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenInfoCommand : CommandTestBase
@@ -19,7 +20,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // read info from path
-            var infoCommand = new InfoCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
+            var infoCommand = new InfoCommand(new NullLogger<InfoCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
             MediaInfo mediaInfo = null;
             infoCommand.DiskInfoRead += (_, args) =>
             {
@@ -43,7 +44,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // read info from path
-            var infoCommand = new InfoCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
+            var infoCommand = new InfoCommand(new NullLogger<InfoCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
             MediaInfo mediaInfo = null;
             infoCommand.DiskInfoRead += (_, args) =>
             {

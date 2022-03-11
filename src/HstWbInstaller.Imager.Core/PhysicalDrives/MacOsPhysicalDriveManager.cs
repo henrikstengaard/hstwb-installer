@@ -34,11 +34,12 @@
             
             foreach (var disk in disks)
             {
-                var infoOutput = await GetDiskUtilInfoDisk(disk);
+                var partitionDevices = disk.Partitions.Select(x => x.DeviceIdentifier).ToList();
+                var infoOutput = await GetDiskUtilInfoDisk(disk.DeviceIdentifier);
 
                 var info = DiskUtilReader.ParseInfo(new MemoryStream(Encoding.UTF8.GetBytes(infoOutput)));
                 
-                physicalDrives.Add(new GenericPhysicalDrive(info.DeviceNode, info.MediaType, info.IoRegistryEntryName, info.Size));
+                physicalDrives.Add(new MacOsPhysicalDrive(info.DeviceNode, info.MediaType, info.IoRegistryEntryName, info.Size, partitionDevices));
             }
             
             return physicalDrives;

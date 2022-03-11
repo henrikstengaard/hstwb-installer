@@ -8,9 +8,12 @@
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.Extensions;
+    using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using Microsoft.Extensions.Logging;
 
     public class ReadCommand : CommandBase
     {
+        private readonly ILogger<ReadCommand> logger;
         private readonly ICommandHelper commandHelper;
         private readonly IEnumerable<IPhysicalDrive> physicalDrives;
         private readonly string sourcePath;
@@ -19,9 +22,10 @@
 
         public event EventHandler<DataProcessedEventArgs> DataProcessed;
         
-        public ReadCommand(ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string sourcePath,
+        public ReadCommand(ILogger<ReadCommand> logger, ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string sourcePath,
             string destinationPath, long? size = null)
         {
+            this.logger = logger;
             this.commandHelper = commandHelper;
             this.physicalDrives = physicalDrives;
             this.sourcePath = sourcePath;
@@ -40,11 +44,21 @@
             using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
 
-            var firstBytes = await sourceStream.ReadBytes(512 * 2048);
-            var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+            RigidDiskBlock rigidDiskBlock = null;
+            try
+            {
+                var firstBytes = await sourceStream.ReadBytes(512 * 2048);
+                rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             var readSize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
 
+            logger.LogDebug($"Size '{readSize}'");
+            
             var destinationMediaResult = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, readSize, false);
             if (destinationMediaResult.IsFaulted)
             {

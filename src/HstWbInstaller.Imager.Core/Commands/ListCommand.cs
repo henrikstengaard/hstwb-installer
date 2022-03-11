@@ -8,15 +8,18 @@
     using HstWbInstaller.Core;
     using HstWbInstaller.Core.Extensions;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using Microsoft.Extensions.Logging;
     using Models;
 
     public class ListCommand : CommandBase
     {
+        private readonly ILogger<ListCommand> logger;
         private readonly ICommandHelper commandHelper;
         private readonly IEnumerable<IPhysicalDrive> physicalDrives;
 
-        public ListCommand(ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives)
+        public ListCommand(ILogger<ListCommand> logger, ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives)
         {
+            this.logger = logger;
             this.commandHelper = commandHelper;
             this.physicalDrives = physicalDrives;
         }
@@ -30,7 +33,6 @@
             {
                 await using var sourceStream = physicalDrive.Open();
 
-                var diskSize = sourceStream.Length;
                 RigidDiskBlock rigidDiskBlock = null;
                 try
                 {
@@ -41,7 +43,11 @@
                 {
                     // ignored
                 }
+                
+                var diskSize = sourceStream.Length;
 
+                logger.LogDebug($"Path '{physicalDrive.Path}', disk size '{diskSize}'");
+                
                 mediaInfos.Add(new MediaInfo
                 {
                     Path = physicalDrive.Path,

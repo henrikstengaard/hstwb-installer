@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Commands;
     using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Models;
     using Xunit;
 
@@ -23,7 +24,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
             
             // optimize
-            var optimizeCommand = new OptimizeCommand(fakeCommandHelper, path);
+            var optimizeCommand = new OptimizeCommand(new NullLogger<OptimizeCommand>(), fakeCommandHelper, path);
             var result = await optimizeCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
@@ -49,7 +50,7 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // optimize
-            var optimizeCommand = new OptimizeCommand(fakeCommandHelper, path);
+            var optimizeCommand = new OptimizeCommand(new NullLogger<OptimizeCommand>(), fakeCommandHelper, path);
             var result = await optimizeCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 

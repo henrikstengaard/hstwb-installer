@@ -6,13 +6,18 @@
     using Core.Models.BackgroundTasks;
     using Extensions;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.Logging;
 
     public class OptimizeBackgroundTaskHandler : IBackgroundTaskHandler
     {
+        private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection progressHubConnection;
 
-        public OptimizeBackgroundTaskHandler(HubConnection progressHubConnection)
+        public OptimizeBackgroundTaskHandler(
+            ILoggerFactory loggerFactory,
+            HubConnection progressHubConnection)
         {
+            this.loggerFactory = loggerFactory;
             this.progressHubConnection = progressHubConnection;
         }
 
@@ -33,7 +38,7 @@
                 }, context.Token);
 
                 var commandHelper = new CommandHelper();
-                var optimizeCommand = new OptimizeCommand(commandHelper, optimizeBackgroundTask.Path);
+                var optimizeCommand = new OptimizeCommand(loggerFactory.CreateLogger<OptimizeCommand>(),commandHelper, optimizeBackgroundTask.Path);
 
                 var result = await optimizeCommand.Execute(context.Token);
 
