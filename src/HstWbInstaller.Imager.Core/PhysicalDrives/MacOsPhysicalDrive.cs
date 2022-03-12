@@ -17,7 +17,7 @@
 
         public override Stream Open()
         {
-            $"unmountDisk unmountDisk {Path}".RunProcess();
+            "diskutil".RunProcess($"unmountDisk {Path}");
             return File.Open(Path, FileMode.Open, Writable ? FileAccess.ReadWrite : FileAccess.Read);
         }
     }

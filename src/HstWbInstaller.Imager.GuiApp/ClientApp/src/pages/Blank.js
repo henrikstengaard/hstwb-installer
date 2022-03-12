@@ -11,8 +11,10 @@ import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
 import SelectField from "../components/SelectField";
 import CheckboxField from "../components/CheckboxField";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     path: null,
     size: 16,
     unit: 'gb',
@@ -41,6 +43,7 @@ export default function Blank() {
     const [state, setState] = React.useState({ ...initialState })
 
     const {
+        confirmOpen,
         path,
         size,
         unit,
@@ -63,10 +66,6 @@ export default function Blank() {
                 compatibleSize
             })
         });
-
-        state.path = path
-        setState({...state,})
-
         if (!response.ok) {
             console.error('Failed to create blank')
         }
@@ -80,11 +79,29 @@ export default function Blank() {
     const handleCancel = () => {
         setState({ ...initialState })
     }
+
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleBlank()
+    }
     
     const blankDisabled = isNil(path) || size <= 0
     
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-blank"
+                open={confirmOpen}
+                title="Blank"
+                description={`Do you want to create blank image file file '${path}' with size '${size} ${unit.toUpperCase()}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />
             <Title
                 text="Blank"
                 description="Create blank image file."
@@ -183,7 +200,10 @@ export default function Blank() {
                             <Button
                                 disabled={blankDisabled}
                                 icon="plus"
-                                onClick={async () => await handleBlank()}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
                                 Create blank image
                             </Button>
