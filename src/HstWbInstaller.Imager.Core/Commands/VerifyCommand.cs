@@ -63,9 +63,15 @@
             using var destinationMedia = destinationMediaResult.Value;
             await using var destinationStream = destinationMedia.Stream;
 
-            var verifySize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
+            logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
+            
+            var streamSize = sourceStream.Length;
+            logger.LogDebug($"Stream size '{streamSize}'");
+            
+            var verifySize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? streamSize;
 
-            logger.LogDebug($"Size '{verifySize}'");
+            logger.LogDebug($"Rigid disk block size '{(rigidDiskBlock == null ? "N/A" : rigidDiskBlock.DiskSize)}'");
+            logger.LogDebug($"Verify size '{verifySize}'");
             
             // var bufferSize = 512 * 512;
             // var srcBuffer = new byte[bufferSize];

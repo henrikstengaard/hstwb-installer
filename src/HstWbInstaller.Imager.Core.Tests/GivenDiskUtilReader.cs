@@ -15,9 +15,23 @@
             Assert.Single(disks);
             var disk = disks.First();
             Assert.Equal("disk2", disk.DeviceIdentifier);
+            Assert.Equal(15682240512, disk.Size);
             Assert.Single(disk.Partitions);
             var partition = disk.Partitions.First();
             Assert.Equal("disk2s1", partition.DeviceIdentifier);
+            Assert.Equal(15682224128, partition.Size);
+        }
+
+        [Fact]
+        public void WhenParseListOutputFromDiskUtilWithoutPartitionsThenDisksAreReturned()
+        {
+            var disks = DiskUtilReader.ParseList(File.OpenRead(@"TestData\diskutil-list-no-partitions.plist")).ToList();
+            
+            Assert.Single(disks);
+            var disk = disks.First();
+            Assert.Equal("disk2", disk.DeviceIdentifier);
+            Assert.Equal(15682240512, disk.Size);
+            Assert.Empty(disk.Partitions);
         }
         
         [Fact]

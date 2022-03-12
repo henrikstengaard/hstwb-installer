@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Imager.Core.PhysicalDrives
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using Claunia.PropertyList;
@@ -41,24 +42,25 @@
             }
         }
 
-        private static DiskUtilDisk ParseDisk(NSDictionary dict)
+        private static DiskUtilDisk ParseDisk(NSDictionary allDisksAndPartitionsDictionary)
         {
-            var partitions = dict.ObjectForKey("Partitions") as NSArray;
-
-            if (partitions == null)
-            {
-                throw new IOException("Invalid Partitions key");
-            }
-            
             return new DiskUtilDisk
             {
-                DeviceIdentifier = GetString(dict, "DeviceIdentifier"),
-                Partitions = ParsePartitions(partitions)
+                DeviceIdentifier = GetString(allDisksAndPartitionsDictionary, "DeviceIdentifier"),
+                Size = GetLongNumber(allDisksAndPartitionsDictionary, "Size"),
+                Partitions = ParsePartitions(allDisksAndPartitionsDictionary)
             };
         }
 
-        private static IEnumerable<DiskUtilPartition> ParsePartitions(NSArray partitions)
+        private static IEnumerable<DiskUtilPartition> ParsePartitions(NSDictionary allDisksAndPartitionsDictionary)
         {
+            var partitions = allDisksAndPartitionsDictionary.ObjectForKey("Partitions") as NSArray;
+
+            if (partitions == null)
+            {
+                yield break;
+            }
+            
             foreach (var item in partitions)
             {
                 var dict = item as NSDictionary;
@@ -76,7 +78,8 @@
         {
             return new DiskUtilPartition
             {
-                DeviceIdentifier = GetString(dict, "DeviceIdentifier")
+                DeviceIdentifier = GetString(dict, "DeviceIdentifier"),
+                Size = GetLongNumber(dict, "Size")
             };
         }
         
@@ -91,7 +94,7 @@
             
             var busProtocol = GetString(pList, "BusProtocol");
             var ioRegistryEntryName = GetString(pList, "IORegistryEntryName");
-            var size = GetLongNumber(pList, "TotalSize");
+            var size = GetLongNumber(pList, "Size");
             var deviceNode = GetString(pList, "DeviceNode");
             var mediaType = GetString(pList, "MediaType");
 
@@ -123,10 +126,20 @@
 
             if (nsNumber == null)
             {
-                return 0;
+                return -1;
             }
-
-            return !long.TryParse(nsNumber.ToString().Trim('\"'), out var longValue) ? 0 : longValue;
+            
+            switch (nsNumber.GetNSNumberType())
+            {
+                case NSNumber.BOOLEAN:
+                    return nsNumber.ToBool() ? 1 : 0;
+                case NSNumber.INTEGER:
+                    return nsNumber.ToLong();
+                case NSNumber.REAL:
+                    return Convert.ToInt64(nsNumber.ToDouble());
+                default:
+                    return -1;
+            }
         }
     }
 }

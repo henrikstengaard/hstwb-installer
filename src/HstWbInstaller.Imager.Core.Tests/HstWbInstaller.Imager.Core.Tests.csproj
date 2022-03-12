@@ -43,6 +43,9 @@
       <None Update="TestData\wmic-Win32_LogicalDiskToPartition.csv">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="TestData\diskutil-list-no-partitions.plist">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
