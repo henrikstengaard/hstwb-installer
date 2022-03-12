@@ -20,7 +20,6 @@ import {Api} from "../utils/Api";
 
 const initialState = {
     confirmOpen: false,
-    destinationPath: null,
     sourceMedia: null,
     sourcePath: null,
     sourceType: 'image-file'
@@ -28,13 +27,12 @@ const initialState = {
 
 export default function Verify() {
     const [state, setState] = React.useState({ ...initialState })
-    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
+    const [destinationPath, setDestinationPath] = React.useState(null)
 
     const api = new Api()
     
     const {
         confirmOpen,
-        destinationPath,
         sourceMedia,
         sourcePath,
         sourceType
@@ -65,7 +63,7 @@ export default function Verify() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Verify '${isNil(sourceMedia) ? sourcePath : sourceMedia.model}' and '${destinationPath}'`,
+                title: `Verify ${(sourceType === 'image-file' ? 'image file' : 'disk')} '${isNil(sourceMedia) ? sourcePath : sourceMedia.model}' and image file '${destinationPath}'`,
                 sourcePath,
                 destinationPath 
             })
@@ -183,17 +181,10 @@ export default function Verify() {
                             <BrowseOpenDialog
                                 id="browse-destination-path"
                                 title="Select destination image file"
-                                onChange={(path) => handleChange({
-                                    name: 'destinationPath',
-                                    value: path
-                                })}
+                                onChange={(path) => setDestinationPath(path)}
                             />
                         }
-                        onChange={(event) => handleChange({
-                            name: 'destinationPath',
-                            value: get(event, 'target.value'
-                            )
-                        })}
+                        onChange={(event) => setDestinationPath(get(event, 'target.value'))}
                     />
                 </Grid>
             </Grid>

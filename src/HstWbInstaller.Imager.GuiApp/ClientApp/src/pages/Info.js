@@ -22,14 +22,13 @@ import {Api} from "../utils/Api";
 const initialState = {
     medias: null,
     mediaInfo: null,
-    path: null,
     sourceType: 'image-file'
 }
 
 export default function Info() {
     const [state, setState] = React.useState({ ...initialState })
-    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
     const [connection, setConnection] = React.useState(null);
+    const [path, setPath] = React.useState(null)
 
     const api = new Api()
     
@@ -47,9 +46,9 @@ export default function Info() {
             connection.start()
                 .then(result => {
                     connection.on('Info', mediaInfo => {
+                        setPath(mediaInfo.path)
                         setState({
                             ...state,
-                            path: mediaInfo.path,
                             mediaInfo
                         })
                     });
@@ -60,7 +59,6 @@ export default function Info() {
     
     const {
         mediaInfo,
-        path,
         sourceType
     } = state
 
@@ -68,7 +66,7 @@ export default function Info() {
 
     const handleChange = ({name, value}) => {
         if (name === 'sourceType') {
-            state.path = null
+            setPath(null)
             state.mediaInfo = null
         }
         set(state, name, value)
@@ -89,10 +87,10 @@ export default function Info() {
         if (!response.ok) {
             console.error('Failed to get info')
         }
-        
+
+        setPath(path)
         setState({
             ...state,
-            path: path,
             mediaInfo: null
         })
     }
@@ -149,11 +147,7 @@ export default function Info() {
                                     onChange={async (path) => await getMediaInfo(path)}
                                 />
                             }
-                            onChange={(event) => handleChange({
-                                name: 'path',
-                                value: get(event, 'target.value'
-                                )
-                            })}
+                            onChange={(event) => setPath(get(event, 'target.value'))}
                             onKeyDown={async (event) => {
                                 if (event.key !== 'Enter') {
                                     return
