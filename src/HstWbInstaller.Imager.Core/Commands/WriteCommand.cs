@@ -54,10 +54,16 @@
             {
                 // ignored
             }
-            
-            var writeSize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
 
-            logger.LogDebug($"Size '{writeSize}'");
+            logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
+            
+            var streamSize = sourceStream.Length;
+            logger.LogDebug($"Stream size '{streamSize}'");
+
+            var writeSize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? streamSize;
+
+            logger.LogDebug($"Rigid disk block size '{(rigidDiskBlock == null ? "N/A" : rigidDiskBlock.DiskSize)}'");
+            logger.LogDebug($"Write size '{writeSize}'");
             
             var destinationMediaResult = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, writeSize);
             if (destinationMediaResult.IsFaulted)

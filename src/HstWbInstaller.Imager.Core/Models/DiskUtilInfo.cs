@@ -14,6 +14,7 @@
     public class DiskUtilDisk
     {
         public string DeviceIdentifier { get; set; }
+        public long Size { get; set; }
         public IEnumerable<DiskUtilPartition> Partitions { get; set; }
 
         public DiskUtilDisk()
@@ -21,10 +22,4 @@
             Partitions = new List<DiskUtilPartition>();
         }
     }
-    
-    public class DiskUtilPartition
-    {
-        public string DeviceIdentifier { get; set; }
-    }
-    
 }

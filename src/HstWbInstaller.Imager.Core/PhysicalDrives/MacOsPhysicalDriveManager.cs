@@ -38,6 +38,11 @@
                 var infoOutput = await GetDiskUtilInfoDisk(disk.DeviceIdentifier);
 
                 var info = DiskUtilReader.ParseInfo(new MemoryStream(Encoding.UTF8.GetBytes(infoOutput)));
+
+                if (info.BusProtocol.Equals("Disk Image", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
                 
                 physicalDrives.Add(new MacOsPhysicalDrive(info.DeviceNode, info.MediaType, info.IoRegistryEntryName, info.Size, partitionDevices));
             }
