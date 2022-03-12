@@ -9,8 +9,10 @@ import BrowseOpenDialog from "../components/BrowseOpenDialog";
 import Stack from "@mui/material/Stack";
 import RedirectButton from "../components/RedirectButton";
 import Button from "../components/Button";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const initialState = {
+    confirmOpen: false,
     path: null
 }
 
@@ -18,6 +20,7 @@ export default function Optimize() {
     const [state, setState] = React.useState({ ...initialState })
 
     const {
+        confirmOpen,
         path
     } = state
 
@@ -33,10 +36,6 @@ export default function Optimize() {
                 path
             })
         });
-
-        state.path = path
-        setState({...state,})
-
         if (!response.ok) {
             console.error('Failed to optimize image')
         }
@@ -51,10 +50,28 @@ export default function Optimize() {
         setState({ ...initialState })
     }
 
+    const handleConfirm = async (confirmed) => {
+        setState({
+            ...state,
+            confirmOpen: false
+        })
+        if (!confirmed) {
+            return
+        }
+        await handleOptimize()
+    }
+    
     const optimizeDisabled = isNil(path)
 
     return (
         <Box>
+            <ConfirmDialog
+                id="confirm-optimize"
+                open={confirmOpen}
+                title="Optimize"
+                description={`Do you want to optimize image file '${path}'?`}
+                onClose={async (confirmed) => await handleConfirm(confirmed)}
+            />
             <Title
                 text="Optimize"
                 description="Optimize image file."
@@ -84,6 +101,12 @@ export default function Optimize() {
                             value: get(event, 'target.value'
                             )}
                         )}
+                        onKeyDown={async (event) => {
+                            if (event.key !== 'Enter') {
+                                return
+                            }
+                            await handleOptimize()
+                        }}
                     />
                 </Grid>
             </Grid>
@@ -101,7 +124,10 @@ export default function Optimize() {
                             <Button
                                 disabled={optimizeDisabled}
                                 icon="magic"
-                                onClick={async () => await handleOptimize()}
+                                onClick={async () => handleChange({
+                                    name: 'confirmOpen',
+                                    value: true
+                                })}
                             >
                                 Optimize image
                             </Button>
