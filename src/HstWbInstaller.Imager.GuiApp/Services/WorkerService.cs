@@ -86,7 +86,8 @@
             var arguments = $"--worker --baseurl {appState.BaseUrl} --process-id {currentProcessId}";
             logger.LogDebug($"Starting worker '{workerPath}' with arguments '{arguments}'");
 
-            var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(Constants.AppName, workerCommand, arguments,
+            var processStartInfo = ElevateHelper.GetElevatedProcessStartInfo(
+                $"{Constants.AppName} needs administrator privileges for raw disk access", workerCommand, arguments,
                 appState.AppPath, Debugger.IsAttached || ApplicationDataHelper.HasDebugEnabled(Constants.AppName));
 
             logger.LogDebug($"Worker process file name '{processStartInfo.FileName}' with arguments '{processStartInfo.Arguments}'");

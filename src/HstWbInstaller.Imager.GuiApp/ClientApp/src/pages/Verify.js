@@ -70,16 +70,9 @@ export default function Verify() {
                 destinationPath 
             })
         });
-
-        state.sourcePath = sourcePath
-        state.destinationPath = destinationPath
-
         if (!response.ok) {
             console.error('Failed to verify')
         }
-        setState({
-            ...state,
-        })
     }
 
     const handleConfirm = async (confirmed) => {

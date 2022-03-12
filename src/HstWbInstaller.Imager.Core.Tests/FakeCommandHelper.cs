@@ -26,7 +26,7 @@
             foreach (var readableMediaPath in readableMediaPaths ?? Enumerable.Empty<string>())
             {
                 var data = File.Exists(readableMediaPath) ? File.ReadAllBytes(readableMediaPath) : CreateTestData(); 
-                ReadableMedias.Add(new Media(readableMediaPath, Path.GetFileName(readableMediaPath), Media.MediaType.Raw, false,
+                ReadableMedias.Add(new Media(readableMediaPath, Path.GetFileName(readableMediaPath), data.Length, Media.MediaType.Raw, false,
                     new MemoryStream(data)));
             }
 
@@ -38,7 +38,7 @@
                     continue;
                 }
                 
-                WriteableMedias.Add(new Media(writeableMediaPath, Path.GetFileName(writeableMediaPath), Media.MediaType.Raw, false,
+                WriteableMedias.Add(new Media(writeableMediaPath, Path.GetFileName(writeableMediaPath), 0, Media.MediaType.Raw, false,
                     new MemoryStream()));
             }
 
