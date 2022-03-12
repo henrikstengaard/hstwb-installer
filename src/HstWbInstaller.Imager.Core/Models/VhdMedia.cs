@@ -8,8 +8,8 @@
         private readonly VirtualDisk disk;
         private readonly Stream stream;
 
-        public VhdMedia(string path, string model, MediaType type, bool isPhysicalDrive, VirtualDisk disk, Stream stream = null) 
-            : base(path, model, type, isPhysicalDrive, disk.Content)
+        public VhdMedia(string path, string model, long size, MediaType type, bool isPhysicalDrive, VirtualDisk disk, Stream stream = null) 
+            : base(path, model, size, type, isPhysicalDrive, disk.Content)
         {
             this.disk = disk;
             this.stream = stream;

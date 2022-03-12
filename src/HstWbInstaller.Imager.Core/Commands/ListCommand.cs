@@ -43,9 +43,14 @@
                 {
                     // ignored
                 }
-                
-                var diskSize = sourceStream.Length;
 
+                logger.LogDebug($"Physical drive size '{physicalDrive.Size}'");
+                
+                var streamSize = sourceStream.Length;
+                logger.LogDebug($"Stream size '{streamSize}'");
+
+                var diskSize = streamSize is > 0 ? streamSize : physicalDrive.Size;
+                
                 logger.LogDebug($"Path '{physicalDrive.Path}', disk size '{diskSize}'");
                 
                 mediaInfos.Add(new MediaInfo

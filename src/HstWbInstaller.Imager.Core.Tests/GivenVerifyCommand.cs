@@ -24,12 +24,10 @@
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(),
+                    sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
-            verifyCommand.DataProcessed += (_, args) =>
-            {
-                dataProcessedEventArgs = args;
-            };
+            verifyCommand.DataProcessed += (_, args) => { dataProcessedEventArgs = args; };
             await verifyCommand.Execute(cancellationTokenSource.Token);
 
             Assert.NotNull(dataProcessedEventArgs);
@@ -37,7 +35,7 @@
             Assert.NotEqual(0, dataProcessedEventArgs.BytesProcessed);
             Assert.Equal(0, dataProcessedEventArgs.BytesRemaining);
             Assert.NotEqual(0, dataProcessedEventArgs.BytesTotal);
-            
+
             // assert data is identical
             var sourceBytes = fakeCommandHelper.GetMedia(sourcePath).GetBytes();
             var destinationBytes = fakeCommandHelper.GetMedia(destinationPath).GetBytes();
@@ -58,14 +56,15 @@
             await fakeCommandHelper.AppendWriteableMediaDataVhd(destinationPath, sourceBytes.Length, sourceBytes);
 
             // act - verify source img to destination img
-            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper,
+                new List<IPhysicalDrive>(), sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // delete destination path vhd
             File.Delete(destinationPath);
         }
-        
+
         [Fact]
         public async Task WhenVerifySourceToImgDestinationWithSizeThenReadDataIsIdentical()
         {
@@ -77,7 +76,8 @@
             var cancellationTokenSource = new CancellationTokenSource();
 
             // act - verify source img to destination img
-            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath,
+            var verifyCommand = new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper,
+                new List<IPhysicalDrive>(), sourcePath,
                 destinationPath, size);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
@@ -103,18 +103,21 @@
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
             sourceBytes[offsetWithError] = sourceByte;
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, sourceBytes.Length,
+                Media.MediaType.Raw, false,
                 new MemoryStream(sourceBytes)));
 
             // create destination
             var destinationBytesWithError = fakeCommandHelper.CreateTestData();
             destinationBytesWithError[offsetWithError] = destinationByte;
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath,
+                destinationBytesWithError.Length, Media.MediaType.Raw, false,
                 new MemoryStream(destinationBytesWithError)));
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(),
+                    sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
             Assert.Equal(typeof(ByteNotEqualError), result.Error.GetType());
@@ -135,19 +138,22 @@
 
             // create source
             var sourceBytes = fakeCommandHelper.CreateTestData();
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, sourceBytes.Length,
+                Media.MediaType.Raw, false,
                 new MemoryStream(sourceBytes)));
 
             // create destination
             var destinationSize = sourceBytes.Length / 2;
             var destinationBytesChunk = new byte[Convert.ToInt32(destinationSize)];
             Array.Copy(sourceBytes, 0, destinationBytesChunk, 0, destinationBytesChunk.Length);
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, destinationSize,
+                Media.MediaType.Raw, false,
                 new MemoryStream(destinationBytesChunk)));
 
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(),
+                    sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
 
@@ -168,20 +174,23 @@
             var testDataBytes = fakeCommandHelper.CreateTestData();
 
             // create source
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, testDataBytes.Length,
+                Media.MediaType.Raw, false,
                 new MemoryStream(testDataBytes)));
-            
+
             // create destination
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, testDataBytes.Length * 2,
+                Media.MediaType.Raw, false,
                 new MemoryStream(testDataBytes.Concat(testDataBytes).ToArray())));
-            
+
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(),
+                    sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
         }
-        
+
         [Fact]
         public async Task WhenVerifySourceIsLargerThanDestinationThenResultIsSizeNotEqualError()
         {
@@ -193,19 +202,22 @@
             var testDataBytes = fakeCommandHelper.CreateTestData();
 
             // create source
-            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(sourcePath, sourcePath, testDataBytes.Length * 2,
+                Media.MediaType.Raw, false,
                 new MemoryStream(testDataBytes.Concat(testDataBytes).ToArray())));
-            
+
             // create destination
-            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, Media.MediaType.Raw, false,
+            fakeCommandHelper.ReadableMedias.Add(new Media(destinationPath, destinationPath, testDataBytes.Length,
+                Media.MediaType.Raw, false,
                 new MemoryStream(testDataBytes)));
-            
+
             // act - verify source img to destination img
             var verifyCommand =
-                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+                new VerifyCommand(new NullLogger<VerifyCommand>(), fakeCommandHelper, new List<IPhysicalDrive>(),
+                    sourcePath, destinationPath);
             var result = await verifyCommand.Execute(cancellationTokenSource.Token);
             Assert.False(result.IsSuccess);
-            
+
             Assert.Equal(typeof(SizeNotEqualError), result.Error.GetType());
             var sizeNotEqualError = (SizeNotEqualError)result.Error;
             Assert.Equal(0, sizeNotEqualError.Offset);

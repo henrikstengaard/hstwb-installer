@@ -19,7 +19,7 @@
             var path = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper();
             var bytes = fakeCommandHelper.CreateTestData();
-            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, Media.MediaType.Raw, false,
+            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, bytes.Length, Media.MediaType.Raw, false,
                 new MemoryStream(bytes)));
             var cancellationTokenSource = new CancellationTokenSource();
             
@@ -45,7 +45,7 @@
                 DiskSize = rigidDiskBlockSize
             });
             // var bytes = fakeCommandHelper.CreateTestData();
-            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, Media.MediaType.Raw, false,
+            fakeCommandHelper.WriteableMedias.Add(new Media(path, path, rigidDiskBlockSize, Media.MediaType.Raw, false,
                 new MemoryStream(new byte[16384])));
             var cancellationTokenSource = new CancellationTokenSource();
 
