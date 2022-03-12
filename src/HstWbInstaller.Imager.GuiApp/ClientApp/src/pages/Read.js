@@ -13,6 +13,7 @@ import RedirectButton from "../components/RedirectButton";
 import MediaSelectField from "../components/MediaSelectField";
 import ConfirmDialog from "../components/ConfirmDialog";
 import {Api} from "../utils/Api";
+import {formatBytes} from "../utils/Format";
 
 const initialState = {
     confirmOpen: false,
@@ -22,7 +23,6 @@ const initialState = {
 
 export default function Read() {
     const [state, setState] = React.useState({...initialState})
-    // const [session, updateSession] = React.useReducer((x) => x + 1, 0)
 
     const api = new Api()
     
@@ -31,6 +31,8 @@ export default function Read() {
         sourceMedia,
         destinationPath
     } = state
+
+    const sourceDisk = isNil(sourceMedia) ? '' : `${sourceMedia.model} (${formatBytes(sourceMedia.diskSize)})`
 
     const handleChange = ({name, value}) => {
         set(state, name, value)
@@ -49,7 +51,7 @@ export default function Read() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Reading disk '${get(sourceMedia, 'model') || ''}' to file '${destinationPath}'`,
+                title: `Reading disk '${sourceDisk}' to file '${destinationPath}'`,
                 sourcePath: sourceMedia.path,
                 destinationPath
             })
@@ -82,7 +84,7 @@ export default function Read() {
                 id="confirm-read"
                 open={confirmOpen}
                 title="Read"
-                description={`Do you want to read disk '${get(sourceMedia, 'model') || ''}' to file '${destinationPath}'?`}
+                description={`Do you want to read disk '${sourceDisk}' to file '${destinationPath}'?`}
                 onClose={async (confirmed) => await handleConfirm(confirmed)}
             />
             <Title
