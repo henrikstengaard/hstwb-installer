@@ -10,17 +10,13 @@
         {
             return Environment.GetCommandLineArgs().FirstOrDefault();
         }
-        
+
         public static string GetWorkerFileName(string executingFile)
         {
-            if (!OperatingSystem.IsWindows())
-            {
-                return Path.GetFileName(executingFile);
-            }
-            
             return Path.GetExtension(executingFile) switch
             {
-                ".dll" => $"{Path.GetFileNameWithoutExtension(executingFile)}.exe",
+                ".dll" => string.Concat(Path.GetFileNameWithoutExtension(executingFile),
+                    OperatingSystem.IsWindows() ? ".exe" : string.Empty),
                 _ => Path.GetFileName(executingFile)
             };
         }
