@@ -32,10 +32,10 @@
             var processStartInfo =
                 ElevateHelper.CreateLinuxPkExecProcessStartInfo(command, arguments, workingDirectory);
             
-            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal("/usr/bin/pkexec", processStartInfo.FileName);
             Assert.Equal(workingDirectory, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-c \"pkexec ./{command} {arguments}\"",
+                $"bash -c \"./{command} {arguments}\"",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }

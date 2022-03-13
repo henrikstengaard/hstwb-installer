@@ -85,13 +85,14 @@
 
             var bashArgs = new List<string>(new[]
             {
+                "bash",
                 "-c",
-                $"\"pkexec {script}\""
+                $"\"{script}\""
             });
             
             var args = string.Join(" ", bashArgs);
             
-            return new ProcessStartInfo("/bin/bash")
+            return new ProcessStartInfo("/usr/bin/pkexec")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
