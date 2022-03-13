@@ -75,19 +75,23 @@
         /// </summary>
         /// <param name="command"></param>
         /// <param name="arguments"></param>
+        /// <param name="workingDirectory"></param>
         /// <param name="showWindow"></param>
         /// <returns></returns>
         public static ProcessStartInfo CreateLinuxPkExecProcessStartInfo(string command, string arguments = null,
             string workingDirectory = null, bool showWindow = true)
         {
-            var pkExecArgs = new List<string>(new[]
+            var script = $"{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+
+            var bashArgs = new List<string>(new[]
             {
-                "--disable-internal-agent"
+                "-c",
+                $"\"pkexec {script}\""
             });
-
-            var args = string.Join(" ", pkExecArgs.Concat(GetBashArgs(command, arguments, true)));
-
-            return new ProcessStartInfo("/usr/bin/pkexec")
+            
+            var args = string.Join(" ", bashArgs);
+            
+            return new ProcessStartInfo("/bin/bash")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
@@ -95,6 +99,7 @@
                 WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
                 Arguments = args,
+                WorkingDirectory = workingDirectory ?? string.Empty
             };
         }
 

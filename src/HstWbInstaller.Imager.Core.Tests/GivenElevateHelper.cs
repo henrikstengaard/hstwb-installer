@@ -25,14 +25,17 @@
         [Fact]
         public void WhenCreateLinuxPkExecProcessStartInfoThenArgumentsWillElevateCommand()
         {
-            var processStartInfo = ElevateHelper.CreateLinuxPkExecProcessStartInfo(@"/home/hst/hstwb-imager");
+            var command = "hstwb-imager";
+            var arguments = "--worker";
             var workingDirectory =
-                $"{Path.DirectorySeparatorChar}home{Path.DirectorySeparatorChar}hst";
-            var fileName = $".{Path.DirectorySeparatorChar}hstwb-imager";
-
-            Assert.Equal("/usr/bin/pkexec", processStartInfo.FileName);
-            Assert.Equal(String.Empty, processStartInfo.WorkingDirectory);
-            Assert.Equal($"--disable-internal-agent /bin/bash -c \"cd \\\"{workingDirectory}\\\"; \\\"{fileName}\\\";\"",
+                "/home/hst";
+            var processStartInfo =
+                ElevateHelper.CreateLinuxPkExecProcessStartInfo(command, arguments, workingDirectory);
+            
+            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal(workingDirectory, processStartInfo.WorkingDirectory);
+            Assert.Equal(
+                $"-c \"pkexec ./{command} {arguments}\"",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }
