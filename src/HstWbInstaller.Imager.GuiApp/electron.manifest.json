@@ -4,6 +4,8 @@
   "author": "Henrik Nørfjand Stengaard",
   "singleInstance": false,
   "environment": "Production",
+  "electronPort": 42000,
+  "aspCoreBackendPort": 42001,
   "build": {
     "appId": "com.HstWbInstaller.Imager.GuiApp.app",
     "productName": "HstWB Imager",
