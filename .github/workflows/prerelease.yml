@@ -83,7 +83,7 @@ jobs:
         run: |
           "TARGET=linux-x64;x64" >> $env:GITHUB_ENV
           "ELECTRON_ARCH=x64" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*x64.AppImage" >> $env:GITHUB_ENV
+          "ARTIFACT_FILTER=*.AppImage" >> $env:GITHUB_ENV
           "ARTIFACT_NAME=hstwb.imager.artifact-file.linux-x64" >> $env:GITHUB_ENV
           $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux 64-bit.AppImage'
           "$artifactName" > hstwb.imager.artifact-name.linux-x64.txt
