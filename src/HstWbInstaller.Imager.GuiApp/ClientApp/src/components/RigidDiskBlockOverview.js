@@ -52,8 +52,8 @@ export default function RigidDiskBlockOverview(props) {
         if (partition.start > currentStart) {
             const unusedCylinders = partition.start - 1 - currentStart
             partitions.push({
-                name: 'Unused',
-                type: 'unused',
+                name: 'Unallocated',
+                type: 'unallocated',
                 start: currentStart,
                 end: unusedCylinders,
                 size: unusedCylinders * cylinderSize,
@@ -67,8 +67,8 @@ export default function RigidDiskBlockOverview(props) {
     {
         const unusedCylinders = rigidDiskBlock.cylinders - currentStart + 1
         partitions.push({
-            name: 'Unused',
-            type: 'unused',
+            name: 'Unallocated',
+            type: 'unallocated',
             start: currentStart,
             end: rigidDiskBlock.cylinders,
             size: unusedCylinders * cylinderSize,
@@ -84,7 +84,7 @@ export default function RigidDiskBlockOverview(props) {
                 return '#008000'
             case "partition":
                 return '#800080'
-            case "unused":
+            case "unallocated":
                 return '#808080'
             default:
                 return '#ffff00'
