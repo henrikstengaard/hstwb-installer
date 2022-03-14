@@ -257,11 +257,15 @@
 
         private static void SetupDebugLogging()
         {
+            var logFilePath = Path.Combine(Path.GetDirectoryName(WorkerHelper.GetExecutingFile()), "logs",
+                "log-imager.txt");
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .WriteTo.File(Path.Combine("logs", "log-worker.txt"), rollingInterval: RollingInterval.Day,
+                .WriteTo.File(
+                    logFilePath,
+                    rollingInterval: RollingInterval.Day,
                     outputTemplate:
                     "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}) {Message}{NewLine}{Exception}")
                 .WriteTo.Console()
