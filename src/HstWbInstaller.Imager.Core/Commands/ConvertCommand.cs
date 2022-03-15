@@ -56,13 +56,11 @@
                 // ignored
             }
 
-            logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
-            
-            var streamSize = sourceStream.Length;
-            logger.LogDebug($"Stream size '{streamSize}'");
-            
-            var convertSize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? streamSize;
+            var sourceSize = sourceMedia.Size;
+            var convertSize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? sourceSize;
 
+            logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
+            logger.LogDebug($"Source size '{sourceSize}'");
             logger.LogDebug($"Rigid disk block size '{(rigidDiskBlock == null ? "N/A" : rigidDiskBlock.DiskSize)}'");
             logger.LogDebug($"Convert size '{convertSize}'");
             

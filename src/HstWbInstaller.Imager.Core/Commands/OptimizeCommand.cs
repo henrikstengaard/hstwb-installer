@@ -63,7 +63,10 @@
             }
 
             // optimize
-            stream.SetLength(rigidDiskBlock.DiskSize);
+            var optimizedSize = rigidDiskBlock.DiskSize;
+            stream.SetLength(optimizedSize);
+
+            logger.LogDebug($"Optimized size '{optimizedSize}'");
             
             return new Result();
         }
