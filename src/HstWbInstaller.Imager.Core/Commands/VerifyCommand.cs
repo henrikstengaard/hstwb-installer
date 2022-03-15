@@ -62,47 +62,14 @@
             }
             using var destinationMedia = destinationMediaResult.Value;
             await using var destinationStream = destinationMedia.Stream;
+            
+            var sourceSize = sourceMedia.Size;
+            var verifySize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? sourceSize;
 
             logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
-            
-            var streamSize = sourceStream.Length;
-            logger.LogDebug($"Stream size '{streamSize}'");
-            
-            var verifySize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? streamSize;
-
+            logger.LogDebug($"Source size '{sourceSize}'");
             logger.LogDebug($"Rigid disk block size '{(rigidDiskBlock == null ? "N/A" : rigidDiskBlock.DiskSize)}'");
             logger.LogDebug($"Verify size '{verifySize}'");
-            
-            // var bufferSize = 512 * 512;
-            // var srcBuffer = new byte[bufferSize];
-            // var destBuffer = new byte[bufferSize];
-            // int srcBytesRead;
-            // long offset = 0;
-            // do
-            // {
-            //     var verifyBytes = Convert.ToInt32(offset + bufferSize > verifySize ? verifySize - offset : bufferSize);
-            //     srcBytesRead = await sourceStream.ReadAsync(srcBuffer, 0, verifyBytes);
-            //     var destBytesRead = await destinationStream.ReadAsync(destBuffer, 0, verifyBytes);
-            //     
-            //     if (srcBytesRead != destBytesRead)
-            //     {
-            //         return new Result(new SizeNotEqualError(offset + srcBytesRead, offset + destBytesRead));
-            //     }
-            //     
-            //     for (int i = 0; i < verifyBytes; i++)
-            //     {
-            //         if (srcBuffer[i] == destBuffer[i])
-            //         {
-            //             continue;
-            //         }
-            //         
-            //         return new Result(new ByteNotEqualError(offset + i, srcBuffer[i], destBuffer[i]));
-            //     }
-            //
-            //     offset += verifyBytes;
-            //     var percentComplete = offset == 0 ? 0 : (double)100 / verifySize * offset;
-            //     OnDataProcessed(percentComplete, verifyBytes, offset, verifySize);
-            // } while (srcBytesRead == bufferSize && offset < verifySize);
 
             var imageVerifier = new ImageVerifier();
             imageVerifier.DataProcessed += (_, e) =>
