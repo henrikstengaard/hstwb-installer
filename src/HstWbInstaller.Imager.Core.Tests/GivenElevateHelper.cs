@@ -51,10 +51,10 @@
             var processStartInfo =
                 ElevateHelper.CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory);
             
-            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal("/usr/bin/osascript", processStartInfo.FileName);
             Assert.Equal(workingDirectory, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-c \"osascript -e 'do shell script \\\"./{command} {arguments}\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
+                $"-e 'do shell script \"sudo \\\"./{command}\\\" {arguments}\" with prompt \"{prompt}\" with administrator privileges'",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }
@@ -69,10 +69,10 @@
             var processStartInfo =
                 ElevateHelper.CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory);
             
-            Assert.Equal("/bin/bash", processStartInfo.FileName);
+            Assert.Equal("/usr/bin/osascript", processStartInfo.FileName);
             Assert.Equal(string.Empty, processStartInfo.WorkingDirectory);
             Assert.Equal(
-                $"-c \"osascript -e 'do shell script \\\"{command} {arguments}\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\"",
+                $"-e 'do shell script \"sudo \\\"{command}\\\" {arguments}\" with prompt \"{prompt}\" with administrator privileges'",
                 processStartInfo.Arguments);
             Assert.Equal(string.Empty, processStartInfo.Verb);
         }

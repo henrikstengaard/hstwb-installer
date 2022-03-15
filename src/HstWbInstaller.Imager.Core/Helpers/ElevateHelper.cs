@@ -116,17 +116,12 @@
         public static ProcessStartInfo CreateMacOsOsascriptProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null, bool showWindow = false)
         {
-            var script = $"{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+            var script = $"sudo \\\"{(command.StartsWith("/") ? command : $"./{command}")}\\\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
             
-            var osaScriptArgs = new List<string>(new[]
-            {
-                "-c",
-                $"\"osascript -e 'do shell script \\\"{script}\\\" with prompt \\\"{prompt}\\\" with administrator privileges'\""
-            });
+            var args =
+                $"-e 'do shell script \"{script}\" with prompt \"{prompt}\" with administrator privileges'";
 
-            var args = string.Join(" ", osaScriptArgs);
-
-            return new ProcessStartInfo("/bin/bash")
+            return new ProcessStartInfo("/usr/bin/osascript")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
