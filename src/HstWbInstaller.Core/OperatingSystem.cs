@@ -15,6 +15,8 @@ namespace HstWbInstaller.Core
 
         public static bool IsLinux() =>
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        public static string OsDescription => RuntimeInformation.OSDescription;
         
         // https://github.com/dotnet/standard/issues/779
         // https://github.com/dotnet/runtime/issues/25118
