@@ -13,6 +13,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using Serilog;
     using Serilog.Events;
     using Helpers;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     public class Program
     {
@@ -56,6 +57,8 @@ namespace HstWbInstaller.Imager.GuiApp
 #else
             SetupDebugLogging();
 #endif
+            Log.Information("Imager starting");
+            Log.Information($"OS: {OperatingSystem.OsDescription}");
 
             try
             {

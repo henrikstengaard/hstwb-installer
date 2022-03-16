@@ -134,6 +134,39 @@
         }
 
         /// <summary>
+        /// create mac os osascript process start info to run command with terminal sudo
+        /// </summary>
+        /// <param name="prompt"></param>
+        /// <param name="command"></param>
+        /// <param name="arguments"></param>
+        /// <param name="workingDirectory"></param>
+        /// <returns></returns>
+        public static ProcessStartInfo CreateMacOsOsascriptSudoProcessStartInfo(string prompt, string command,
+            string arguments = null, string workingDirectory = null)
+        {
+            var script = $"echo \\\"{prompt}\\\";cd \\\"{workingDirectory}\\\";sudo \\\"{(command.StartsWith("/") ? command : $"./{command}")}\\\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+
+            var args = new[]
+            {
+                "-e 'tell application \"Terminal\"'",
+                "-e 'activate'",
+                $"-e 'do script \"{script}\"'",
+                "-e 'end tell'"
+            };
+
+            return new ProcessStartInfo("/usr/bin/osascript")
+            {
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = true,
+                Arguments = string.Join(" ", args),
+                WorkingDirectory = workingDirectory ?? string.Empty
+            };
+        }
+        
+        /// <summary>
         /// create windows runas process start info to run command with administrator privileges
         /// </summary>
         /// <param name="command"></param>
@@ -167,7 +200,7 @@
             }
             else if (OperatingSystem.IsMacOs())
             {
-                processStartInfo = CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory, showWindow);
+                processStartInfo = CreateMacOsOsascriptSudoProcessStartInfo(prompt, command, arguments, workingDirectory);
             }
             else if (OperatingSystem.IsLinux())
             {
