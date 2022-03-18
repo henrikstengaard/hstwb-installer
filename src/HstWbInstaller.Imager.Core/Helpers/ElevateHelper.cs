@@ -144,22 +144,22 @@
         public static ProcessStartInfo CreateMacOsOsascriptSudoProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null)
         {
-            var script = $"echo \\\"{prompt}\\\";cd \\\"{workingDirectory}\\\";sudo \\\"{(command.StartsWith("/") ? command : $"./{command}")}\\\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+            var script = $"echo '{prompt}';cd '{workingDirectory}';sudo bash -c '{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")} &'";
 
             var args = new[]
             {
-                "-e 'tell application \"Terminal\"'",
-                "-e 'activate'",
-                $"-e 'do script \"{script}\"'",
-                "-e 'end tell'"
+                "-e \"tell application \\\"Terminal\\\"\"",
+                "-e \"activate\"",
+                $"-e \"do script \\\"{script}\\\"\"",
+                "-e \"end tell\""
             };
 
             return new ProcessStartInfo("/usr/bin/osascript")
             {
                 RedirectStandardOutput = false,
                 RedirectStandardError = false,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = false,
+                WindowStyle = ProcessWindowStyle.Normal,
                 UseShellExecute = true,
                 Arguments = string.Join(" ", args),
                 WorkingDirectory = workingDirectory ?? string.Empty
