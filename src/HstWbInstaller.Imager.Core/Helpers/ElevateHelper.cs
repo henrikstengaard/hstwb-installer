@@ -144,13 +144,21 @@
         public static ProcessStartInfo CreateMacOsOsascriptSudoProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null)
         {
-            var script = $"echo '{prompt}';cd '{workingDirectory}';sudo bash -c '{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")} &'";
+            var script = $"echo '{prompt}';cd '{workingDirectory}';sudo bash -c '{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")} >/dev/null &'";
 
             var args = new[]
             {
                 "-e \"tell application \\\"Terminal\\\"\"",
                 "-e \"activate\"",
-                $"-e \"do script \\\"{script}\\\"\"",
+                $"-e \"set tabId to do script \\\"{script}\\\"\"",
+                "-e \"set windowId to the id of window 1 where its tab 1 = tabId\"",
+
+                "-e \"repeat\"",
+                "-e \"delay 0.1\"",
+                "-e \"if not busy of tabId then exit repeat\"",
+                "-e \"end repeat\"",
+
+                "-e \"close window id windowId\"",
                 "-e \"end tell\""
             };
 
