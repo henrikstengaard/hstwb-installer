@@ -16,13 +16,42 @@
       "output": "../../../bin/Desktop"
     },
     "win": {
-      "target": "nsis",
+      "target": [{
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]        
+      },{
+        "target": "zip",
+        "arch": [
+          "x64"
+        ]
+      }],
       "icon": "../../../hstwb-installer.ico"
     },
     "mac": {
+      "target": [{
+        "target": "dmg",
+        "arch": [
+          "x64"
+        ]
+      }],
       "icon": "../../../hstwb-installer.icns"
     },
     "linux": {
+      "target": [{
+        "target": "AppImage",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      },{
+        "target": "deb",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }],
       "icon": "../../../hstwb-installer.icns"
     },
     "nsis": {
