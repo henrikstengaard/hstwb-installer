@@ -1,5 +1,8 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
+    using System.Threading.Tasks;
+    using Core.Helpers;
+    using Core.Models;
     using Microsoft.AspNetCore.Mvc;
     using Models;
 
@@ -18,8 +21,10 @@
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
+            appState.Settings = await ApplicationDataHelper.ReadSettings<Settings>(Constants.AppName);
+
             return Ok(appState);
         }
     }

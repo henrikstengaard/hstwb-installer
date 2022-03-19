@@ -11,6 +11,7 @@ namespace HstWbInstaller.Imager.GuiApp
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Core;
     using Core.Helpers;
@@ -44,7 +45,10 @@ namespace HstWbInstaller.Imager.GuiApp
                 o.MaximumReceiveMessageSize = 1024 * 1024;
             });
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -64,7 +68,10 @@ namespace HstWbInstaller.Imager.GuiApp
                 IsLicenseAgreed = ApplicationDataHelper.IsLicenseAgreed(Constants.AppName),
                 IsAdministrator = OperatingSystem.IsAdministrator(),
                 IsElectronActive = HybridSupport.IsElectronActive,
-                UseFake = Debugger.IsAttached
+                UseFake = Debugger.IsAttached,
+                IsWindows = OperatingSystem.IsWindows(),
+                IsMacOs = OperatingSystem.IsMacOs(),
+                IsLinux = OperatingSystem.IsLinux()
             });
             services.AddSingleton<PhysicalDriveManagerFactory>();
             services.AddSingleton<WorkerService>();

@@ -11,6 +11,7 @@ import Blank from "../pages/Blank";
 import Optimize from "../pages/Optimize";
 import Partition from "../pages/Partition";
 import About from "../pages/About";
+import Settings from "../pages/Settings";
 
 export default function Content() {
     return (
@@ -24,6 +25,7 @@ export default function Content() {
             <Route path='/blank' component={Blank}/>
             <Route path='/optimize' component={Optimize}/>
             <Route path='/partition' component={Partition}/>
+            <Route path='/settings' component={Settings}/>
             <Route path='/about' component={About}/>
         </Box>
     )

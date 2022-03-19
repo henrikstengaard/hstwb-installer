@@ -1,6 +1,8 @@
 import React from 'react';
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {
+    faCog,
+    faToolbox,
     faUpload,
     faDownload,
     faMagic,
@@ -39,7 +41,10 @@ import {ProgressProvider} from "./components/ProgressContext";
 import ErrorSnackBar from "./components/ErrorSnackBar";
 import License from "./components/License";
 
-library.add(faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight, 
+library.add(
+    faCog,
+    faToolbox,
+    faUpload, faDownload, faMagic, faHdd, faFile, faLongArrowAltRight, 
     faExchangeAlt, faBars, faWindowMinimize, faWindowMaximize, faWindowRestore, faWindowClose,
     faChevronLeft,
     faChevronRight,
