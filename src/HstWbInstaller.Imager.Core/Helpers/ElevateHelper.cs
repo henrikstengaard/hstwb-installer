@@ -81,7 +81,8 @@
         public static ProcessStartInfo CreateLinuxPkExecProcessStartInfo(string command, string arguments = null,
             string workingDirectory = null, bool showWindow = true)
         {
-            var script = $"{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+            var script =
+                $"{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
 
             var bashArgs = new List<string>(new[]
             {
@@ -89,9 +90,9 @@
                 "-c",
                 $"\"{script}\""
             });
-            
+
             var args = string.Join(" ", bashArgs);
-            
+
             return new ProcessStartInfo("/usr/bin/pkexec")
             {
                 RedirectStandardOutput = false,
@@ -116,8 +117,9 @@
         public static ProcessStartInfo CreateMacOsOsascriptProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null, bool showWindow = false)
         {
-            var script = $"sudo \\\"{(command.StartsWith("/") ? command : $"./{command}")}\\\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
-            
+            var script =
+                $"sudo \\\"{(command.StartsWith("/") ? command : $"./{command}")}\\\"{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")}";
+
             var args =
                 $"-e 'do shell script \"{script}\" with prompt \"{prompt}\" with administrator privileges'";
 
@@ -144,20 +146,40 @@
         public static ProcessStartInfo CreateMacOsOsascriptSudoProcessStartInfo(string prompt, string command,
             string arguments = null, string workingDirectory = null)
         {
-            var script = $"echo '{prompt}';cd '{workingDirectory}';sudo bash -c '{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")} >/dev/null &'";
+            var scriptLines = new List<string>
+            {
+                $"echo '{prompt}'"
+            };
+
+            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                scriptLines.Add($"cd '{workingDirectory}'");
+            }
+
+            scriptLines.Add(
+                $"sudo bash -c '{(command.StartsWith("/") ? command : $"./{command}")}{(string.IsNullOrWhiteSpace(arguments) ? string.Empty : $" {arguments}")} >/dev/null &'");
+            
+            var script = string.Join("; ", scriptLines);
 
             var args = new[]
             {
+                // open new terminal window
                 "-e \"tell application \\\"Terminal\\\"\"",
                 "-e \"activate\"",
+
+                // set tab
                 $"-e \"set tabId to do script \\\"{script}\\\"\"",
+
+                // get window for tab 1
                 "-e \"set windowId to the id of window 1 where its tab 1 = tabId\"",
 
+                // wait until tabid is complete (not busy)
                 "-e \"repeat\"",
                 "-e \"delay 0.1\"",
                 "-e \"if not busy of tabId then exit repeat\"",
                 "-e \"end repeat\"",
 
+                // close window and terminal
                 "-e \"close window id windowId\"",
                 "-e \"end tell\""
             };
@@ -173,7 +195,7 @@
                 WorkingDirectory = workingDirectory ?? string.Empty
             };
         }
-        
+
         /// <summary>
         /// create windows runas process start info to run command with administrator privileges
         /// </summary>
@@ -199,7 +221,7 @@
         }
 
         public static ProcessStartInfo GetElevatedProcessStartInfo(string prompt, string command,
-            string arguments = null, string workingDirectory = null, bool showWindow = false)
+            string arguments = null, string workingDirectory = null, bool showWindow = false, bool osaScriptSudo = false)
         {
             ProcessStartInfo processStartInfo;
             if (OperatingSystem.IsWindows())
@@ -208,7 +230,9 @@
             }
             else if (OperatingSystem.IsMacOs())
             {
-                processStartInfo = CreateMacOsOsascriptSudoProcessStartInfo(prompt, command, arguments, workingDirectory);
+                processStartInfo = osaScriptSudo
+                    ? CreateMacOsOsascriptSudoProcessStartInfo(prompt, command, arguments, workingDirectory)
+                    : CreateMacOsOsascriptProcessStartInfo(prompt, command, arguments, workingDirectory);
             }
             else if (OperatingSystem.IsLinux())
             {

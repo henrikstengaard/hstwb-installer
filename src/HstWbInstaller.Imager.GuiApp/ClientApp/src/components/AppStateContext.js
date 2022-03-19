@@ -55,8 +55,6 @@ export function AppStateProvider(props) {
         handleAppState()
     }, [handleAppState])
     
-    console.log('appState', state)
-    
     return (
         <AppStateContext.Provider value={state}>
             <AppStateDispatchContext.Provider value={dispatch}>

@@ -110,10 +110,15 @@ export default function Navigation() {
             path: '/partition'
         },
         {
+            text: 'Settings',
+            icon: 'cog',
+            path: '/settings'
+        },
+        {
             text: 'About',
             icon: 'question',
             path: '/about'
-        },
+        }
     ]
     
     const handleOpen = () => {
