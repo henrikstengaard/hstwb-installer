@@ -126,7 +126,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.win-x64.exe'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.exe' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'windows-latest'
@@ -145,7 +144,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.win-x64.zip'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-win.zip' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'windows-latest'
@@ -164,7 +162,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.osx-x64.dmg'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.dmg' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'macos-latest'
@@ -183,7 +180,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.linux-x64.AppImage'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.AppImage' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
@@ -202,7 +198,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.linux-arm64.AppImage'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-arm64.AppImage' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
@@ -221,7 +216,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.linux-x64.deb'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_amd64.deb' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
@@ -240,7 +234,6 @@ jobs:
         run: |
           $artifactName='hstwb-imager.linux-arm64.deb'
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_arm64.deb' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName $artifactName
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
