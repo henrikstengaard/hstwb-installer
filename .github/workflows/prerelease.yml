@@ -25,13 +25,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            target: win-x64
+            target: win
           - os: macos-latest
-            target: osx-x64
+            target: osx
           - os: ubuntu-latest
-            target: linux-x64
-          - os: ubuntu-latest
-            target: linux-arm64
+            target: linux
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -53,54 +51,25 @@ jobs:
           "BUILD_VERSION: ${{ env.BUILD_VERSION }}"
           "BUILD_VERSION_SHA: ${{ env.BUILD_VERSION_SHA }}"
 
-      - name: Set Windows 64-bit release
+      - name: Set Windows target
         shell: pwsh
         run: |
-          "TARGET=win-x64;x64" >> $env:GITHUB_ENV
-          "ELECTRON_ARCH=x64" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*.exe" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=hstwb.imager.artifact-file.win-x64" >> $env:GITHUB_ENV
-          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Windows 64-bit.exe'
-          "$artifactName" > hstwb.imager.artifact-name.win-x64.txt
-          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
-          "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb.imager.release-name.txt
+          "TARGET=win" >> $env:GITHUB_ENV
+          "${{ env.BUILD_VERSION }}-imager" > hstwb.imager.release-tag.txt
+          "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb.imager.release-version.txt
         if: matrix.os == 'windows-latest'
 
-      - name: Set macOS 64-bit release
+      - name: Set macOS target
         shell: pwsh
         run: |
-          "TARGET=osx-x64;x64" >> $env:GITHUB_ENV
-          "ELECTRON_ARCH=x64" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*.dmg" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=hstwb.imager.artifact-file.osx-x64" >> $env:GITHUB_ENV
-          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} macOS 64-bit.dmg'
-          "$artifactName" > hstwb.imager.artifact-name.osx-x64.txt
-          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
+          "TARGET=osx" >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
 
-      - name: Set Linux 64-bit release
+      - name: Set Linux target
         shell: pwsh
         run: |
-          "TARGET=linux-x64;x64" >> $env:GITHUB_ENV
-          "ELECTRON_ARCH=x64" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*.AppImage" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=hstwb.imager.artifact-file.linux-x64" >> $env:GITHUB_ENV
-          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux 64-bit.AppImage'
-          "$artifactName" > hstwb.imager.artifact-name.linux-x64.txt
-          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
-        if: matrix.os == 'ubuntu-latest' && matrix.target == 'linux-x64'
-
-      - name: Set Linux ARM64 release
-        shell: pwsh
-        run: |
-          "TARGET=linux-arm64;arm64" >> $env:GITHUB_ENV
-          "ELECTRON_ARCH=arm64" >> $env:GITHUB_ENV
-          "ARTIFACT_FILTER=*arm64.AppImage" >> $env:GITHUB_ENV
-          "ARTIFACT_NAME=hstwb.imager.artifact-file.linux-arm64" >> $env:GITHUB_ENV
-          $artifactName='HstWB Imager ${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }} Linux ARM64.AppImage'
-          "$artifactName" > hstwb.imager.artifact-name.linux-arm64.txt
-          "ARTIFACT_FILENAME=$artifactName" >> $env:GITHUB_ENV
-        if: matrix.os == 'ubuntu-latest' && matrix.target == 'linux-arm64'
+          "TARGET=linux" >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Update Electron manifest version
         shell: pwsh
@@ -141,91 +110,200 @@ jobs:
         shell: pwsh
         run: |
           cd HstWbInstaller.Imager.GuiApp
-          dotnet electronize build /target custom "${{ env.TARGET }}" /electron-arch ${{ env.ELECTRON_ARCH }}
+          dotnet electronize build /target ${{ env.TARGET }}
 
-      - name: Set artifact path
+      # upload release tag
+      - name: Upload release tag artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: hstwb.imager.release-tag
+          path: hstwb.imager.release-tag.txt
+        if: matrix.os == 'windows-latest'
+
+      # upload release version
+      - name: Upload release version artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: hstwb.imager.release-version
+          path: hstwb.imager.release-version.txt
+        if: matrix.os == 'windows-latest'
+
+      # windows nsis
+      - name: Set Windows 64-bit nsis artifact
         shell: pwsh
         run: |
-          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '${{ env.ARTIFACT_FILTER }}' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_FILENAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_FILENAME }}') >> $env:GITHUB_ENV
-
-      - name: Upload artifact file
-        uses: actions/upload-artifact@v2
-        with:
-          name: hstwb.imager.artifact-file.${{ matrix.target }}
-          path: ${{ env.ARTIFACT_PATH }}
-
-      - name: Upload artifact name
-        uses: actions/upload-artifact@v2
-        with:
-          name: hstwb.imager.artifact-name.${{ matrix.target }}
-          path: hstwb.imager.artifact-name.${{ matrix.target }}.txt
-
-      - name: Upload release name
-        uses: actions/upload-artifact@v2
-        with:
-          name: hstwb.imager.release-name
-          path: hstwb.imager.release-name.txt
+          "ARTIFACT_NAME='hstwb-imager.win-x64.exe'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.exe' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
+
+      - name: Upload Windows 64-bit nsis artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'windows-latest'
+
+      # windows 64-bit zip
+      - name: Set Windows 64-bit zip artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.win-x64.zip'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.zip' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'windows-latest'
+
+      - name: Upload Windows 64-bit zip artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'windows-latest'
+
+      # macos 64-bit dmg
+      - name: Set macOS 64-bit dmg artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.osx-x64.dmg'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.dmg' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'macos-latest'
+
+      - name: Upload macOS 64-bit dmg artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'macos-latest'
+
+      # linux 64-bit appimage
+      - name: Set Linux 64-bit appimage artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.linux-x64.AppImage'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.AppImage' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload Linux 64-bit appimage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'ubuntu-latest'
+
+      # linux arm64 appimage
+      - name: Set Linux arm64 appimage artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.linux-arm64.AppImage'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-arm64.AppImage' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload Linux 64-bit appimage artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'ubuntu-latest'
+
+      # linux 64-bit deb
+      - name: Set Linux 64-bit deb artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.linux-x64.deb'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_amd64.deb' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload Linux 64-bit deb artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'ubuntu-latest'
+
+      # linux arm64 deb
+      - name: Set Linux arm64 deb artifact
+        shell: pwsh
+        run: |
+          "ARTIFACT_NAME='hstwb-imager.linux-arm64.deb'" >> $env:GITHUB_ENV
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_arm64.deb' | Select-Object -First 1).FullName
+          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
+          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload Linux arm64 deb artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_PATH }}
+        if: matrix.os == 'ubuntu-latest'
 
   publish:
     needs: build
     runs-on: windows-latest
     steps:
-      - name: Download Windows 64-bit artifact file
+      - name: Download release tag artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-file.win-x64
+          name: hstwb-imager.release-tag
 
-      - name: Download Windows 64-bit artifact name
+      - name: Download release version artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-name.win-x64
+          name: hstwb-imager.release-version
+      
+        # windows
+      - name: Download Windows 64-bit nsis artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb-imager.win-x64.exe
 
-      - name: Download macOS 64-bit artifact file
+      - name: Download Windows 64-bit zip artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-file.osx-x64
+          name: hstwb-imager.win-x64.zip
 
-      - name: Download macOS 64-bit artifact name
+        # macos
+      - name: Download macOS 64-bit dmg artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-name.osx-x64
+          name: hstwb-imager.osx-x64.dmg
 
-      - name: Download Linux 64-bit artifact file
+        # linux
+      - name: Download Linux 64-bit appimage artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-file.linux-x64
+          name: hstwb-imager.linux-x64.AppImage
 
-      - name: Download Linux 64-bit artifact name
+      - name: Download Linux arm64-bit appimage artifact
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-name.linux-x64
+          name: hstwb-imager.linux-arm64.AppImage
+
+      - name: Download Linux 64-bit deb artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: hstwb-imager.linux-x64.deb
 
       - name: Download Linux ARM64 artifact file
         uses: actions/download-artifact@v2
         with:
-          name: hstwb.imager.artifact-file.linux-arm64
+          name: hstwb-imager.linux-arm64.deb
 
-      - name: Download Linux ARM64 artifact name
-        uses: actions/download-artifact@v2
-        with:
-          name: hstwb.imager.artifact-name.linux-arm64
-
-      - name: Download release name
-        uses: actions/download-artifact@v2
-        with:
-          name: hstwb.imager.release-name
-  
-      - name: Set release and artifact names 
+      - name: Set release version
         shell: pwsh
         run: |
-          "RELEASE_NAME={0}" -f (gc hstwb.imager.release-name.txt) >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_WIN_X64={0}" -f (gc hstwb.imager.artifact-name.win-x64.txt) >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_OSX_X64={0}" -f (gc hstwb.imager.artifact-name.osx-x64.txt) >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_LINUX_X64={0}" -f (gc hstwb.imager.artifact-name.linux-x64.txt) >> $env:GITHUB_ENV
-          "ARTIFACT_NAME_LINUX_ARM64={0}" -f (gc hstwb.imager.artifact-name.linux-arm64.txt) >> $env:GITHUB_ENV
+          "RELEASE_TAG={0}" -f (gc hstwb.imager.release-tag.txt) >> $env:GITHUB_ENV
+          "RELEASE_VERSION={0}" -f (gc hstwb.imager.release-version.txt) >> $env:GITHUB_ENV
 
       - name: Create release
         uses: actions/create-release@v1
@@ -233,48 +311,81 @@ jobs:
         with:
           draft: true
           prerelease: true
-          release_name: ${{ env.RELEASE_NAME }}
-          tag_name: ${{ github.ref }}
-          body: Prerelease of ${{ env.RELEASE_NAME }}
+          release_name: ${{ env.RELEASE_VERSION }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          body: Prerelease of ${{ env.RELEASE_VERSION }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Upload Windows 64-bit artifact
+        # windows
+      - name: Upload Windows 64-bit nsis artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_WIN_X64 }}
-          asset_name: ${{ env.ARTIFACT_NAME_WIN_X64 }}
+          asset_path: hstwb-imager.win-x64.exe
+          asset_name: '${{ env.RELEASE_VERSION }} Windows 64-bit.exe'
           asset_content_type: 'application/octet-stream'
 
-      - name: Upload macOS 64-bit artifact
+      - name: Upload Windows 64-bit zip artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_OSX_X64 }}
-          asset_name: ${{ env.ARTIFACT_NAME_OSX_X64 }}
+          asset_path: hstwb-imager.win-x64.zip
+          asset_name: '${{ env.RELEASE_VERSION }} Windows 64-bit.zip'
           asset_content_type: 'application/octet-stream'
 
-      - name: Upload Linux 64-bit artifact
+        # macos
+      - name: Upload macOS 64-bit dmg artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_LINUX_X64 }}
-          asset_name: ${{ env.ARTIFACT_NAME_LINUX_X64 }}
+          asset_path: hstwb-imager.osx-x64.dmg
+          asset_name: '${{ env.RELEASE_VERSION }} macOS 64-bit.dmg'
           asset_content_type: 'application/octet-stream'
 
-      - name: Upload Linux ARM64 artifact
+        # linux
+      - name: Upload Linux 64-bit appimage artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ARTIFACT_NAME_LINUX_ARM64 }}
-          asset_name: ${{ env.ARTIFACT_NAME_LINUX_ARM64 }}
+          asset_path: hstwb-imager.linux-x64.AppImage
+          asset_name: '${{ env.RELEASE_VERSION }} Linux 64-bit.AppImage'
+          asset_content_type: 'application/octet-stream'
+
+      - name: Upload Linux arm64 appimage artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: hstwb-imager.linux-arm64.AppImage
+          asset_name: '${{ env.RELEASE_VERSION }} Linux ARM64.AppImage'
+          asset_content_type: 'application/octet-stream'
+          
+      - name: Upload Linux 64-bit deb artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: hstwb-imager.linux-x64.deb
+          asset_name: '${{ env.RELEASE_VERSION }} Linux 64-bit.deb'
+          asset_content_type: 'application/octet-stream'
+
+      - name: Upload Linux arm64 deb artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: hstwb-imager.linux-arm64.deb
+          asset_name: '${{ env.RELEASE_VERSION }} Linux ARM64.deb'
           asset_content_type: 'application/octet-stream'
