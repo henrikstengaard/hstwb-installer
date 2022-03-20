@@ -302,8 +302,8 @@ jobs:
       - name: Set release version
         shell: pwsh
         run: |
-          "RELEASE_TAG={0}" -f (gc hstwb.imager.release-tag.txt) >> $env:GITHUB_ENV
-          "RELEASE_VERSION={0}" -f (gc hstwb.imager.release-version.txt) >> $env:GITHUB_ENV
+          "RELEASE_TAG={0}" -f (gc hstwb-imager.release-tag.txt) >> $env:GITHUB_ENV
+          "RELEASE_VERSION={0}" -f (gc hstwb-imager.release-version.txt) >> $env:GITHUB_ENV
 
       - name: Create release
         uses: actions/create-release@v1
