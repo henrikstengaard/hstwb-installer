@@ -133,7 +133,7 @@ jobs:
         shell: pwsh
         run: |
           "ARTIFACT_NAME=hstwb-imager.win-x64.exe" >> $env:GITHUB_ENV
-          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.exe' | Select-Object -First 1).FullName
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.exe' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
@@ -150,7 +150,7 @@ jobs:
         shell: pwsh
         run: |
           "ARTIFACT_NAME=hstwb-imager.win-x64.zip" >> $env:GITHUB_ENV
-          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.zip' | Select-Object -First 1).FullName
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-win.zip' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
         if: matrix.os == 'windows-latest'
@@ -167,7 +167,7 @@ jobs:
         shell: pwsh
         run: |
           "ARTIFACT_NAME=hstwb-imager.osx-x64.dmg" >> $env:GITHUB_ENV
-          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.dmg' | Select-Object -First 1).FullName
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.dmg' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
         if: matrix.os == 'macos-latest'
