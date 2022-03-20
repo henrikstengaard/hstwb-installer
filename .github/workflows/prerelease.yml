@@ -6,15 +6,6 @@ name: Prerelease
 # Allows you to run this workflow manually from the Actions tab
 on: [workflow_dispatch]
 
-# default environment variables
-env:
-  TARGET: 'win'
-  ARTIFACT_FILTER: '*.exe'
-  ARTIFACT_NAME: 'HstWB Imager 0.1.0 Windows.exe'
-  ARTIFACT_NAME_WINDOWS: 'HstWB Imager 0.1.0 Windows.exe'
-  ARTIFACT_NAME_MACOS: 'HstWB Imager 0.1.0 macOS.dmg'
-  ARTIFACT_NAME_LINUX: 'HstWB Imager 0.1.0 Linux.AppImage'
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -130,121 +121,135 @@ jobs:
 
       # windows nsis
       - name: Set Windows 64-bit nsis artifact
+        id: windows_x64_nsis
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.win-x64.exe" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.win-x64.exe
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.exe' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'windows-latest'
 
       - name: Upload Windows 64-bit nsis artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.windows_x64_nsis.outputs.artifact_name }}
+          path: ${{ steps.windows_x64_nsis.outputs.artifact_path }}
         if: matrix.os == 'windows-latest'
 
       # windows 64-bit zip
       - name: Set Windows 64-bit zip artifact
+        id: windows_x64_zip
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.win-x64.zip" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.win-x64.zip
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-win.zip' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'windows-latest'
 
       - name: Upload Windows 64-bit zip artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.windows_x64_zip.outputs.artifact_name }}
+          path: ${{ steps.windows_x64_zip.outputs.artifact_path }}
         if: matrix.os == 'windows-latest'
 
       # macos 64-bit dmg
       - name: Set macOS 64-bit dmg artifact
+        id: macos_x64_dmg
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.osx-x64.dmg" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.osx-x64.dmg
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.dmg' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'macos-latest'
 
       - name: Upload macOS 64-bit dmg artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.macos_x64_dmg.outputs.artifact_name }}
+          path: ${{ steps.macos_x64_dmg.outputs.artifact_path }}
         if: matrix.os == 'macos-latest'
 
       # linux 64-bit appimage
       - name: Set Linux 64-bit appimage artifact
+        id: linux_x64_appimage
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.linux-x64.AppImage" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.linux-x64.AppImage
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.AppImage' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
 
       - name: Upload Linux 64-bit appimage artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.linux_x64_appimage.outputs.artifact_name }}
+          path: ${{ steps.linux_x64_appimage.outputs.artifact_path }}
         if: matrix.os == 'ubuntu-latest'
 
       # linux arm64 appimage
       - name: Set Linux arm64 appimage artifact
+        id: linux_arm64_appimage
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.linux-arm64.AppImage" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.linux-arm64.AppImage
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-arm64.AppImage' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
 
       - name: Upload Linux 64-bit appimage artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.linux_arm64_appimage.outputs.artifact_name }}
+          path: ${{ steps.linux_arm64_appimage.outputs.artifact_path }}
         if: matrix.os == 'ubuntu-latest'
 
       # linux 64-bit deb
       - name: Set Linux 64-bit deb artifact
+        id: linux_x64_deb
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.linux-x64.deb" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.linux-x64.deb
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_amd64.deb' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
 
       - name: Upload Linux 64-bit deb artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.linux_x64_deb.outputs.artifact_name }}
+          path: ${{ steps.linux_x64_deb.outputs.artifact_path }}
         if: matrix.os == 'ubuntu-latest'
 
       # linux arm64 deb
       - name: Set Linux arm64 deb artifact
+        id: linux_arm64_deb
         shell: pwsh
         run: |
-          "ARTIFACT_NAME=hstwb-imager.linux-arm64.deb" >> $env:GITHUB_ENV
+          $artifactName=hstwb-imager.linux-arm64.deb
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_arm64.deb' | Select-Object -First 1).FullName
-          Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
-          "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
+          Rename-Item $artifactFile -NewName $artifactName
+          "::set-output name=artifact_name::$artifactName"
+          "::set-output name=artifact_path::$artifactFile"
         if: matrix.os == 'ubuntu-latest'
 
       - name: Upload Linux arm64 deb artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.ARTIFACT_PATH }}
+          name: ${{ steps.linux_arm64_deb.outputs.artifact_name }}
+          path: ${{ steps.linux_arm64_deb.outputs.artifact_path }}
         if: matrix.os == 'ubuntu-latest'
 
   publish:
