@@ -132,7 +132,7 @@ jobs:
       - name: Set Windows 64-bit nsis artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.win-x64.exe'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.win-x64.exe" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.exe' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -149,7 +149,7 @@ jobs:
       - name: Set Windows 64-bit zip artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.win-x64.zip'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.win-x64.zip" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.zip' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -166,7 +166,7 @@ jobs:
       - name: Set macOS 64-bit dmg artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.osx-x64.dmg'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.osx-x64.dmg" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*.dmg' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -183,7 +183,7 @@ jobs:
       - name: Set Linux 64-bit appimage artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.linux-x64.AppImage'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.linux-x64.AppImage" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}.AppImage' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -200,7 +200,7 @@ jobs:
       - name: Set Linux arm64 appimage artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.linux-arm64.AppImage'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.linux-arm64.AppImage" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}-arm64.AppImage' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -217,7 +217,7 @@ jobs:
       - name: Set Linux 64-bit deb artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.linux-x64.deb'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.linux-x64.deb" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_amd64.deb' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
@@ -234,7 +234,7 @@ jobs:
       - name: Set Linux arm64 deb artifact
         shell: pwsh
         run: |
-          "ARTIFACT_NAME='hstwb-imager.linux-arm64.deb'" >> $env:GITHUB_ENV
+          "ARTIFACT_NAME=hstwb-imager.linux-arm64.deb" >> $env:GITHUB_ENV
           $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter '*${{ env.BUILD_VERSION }}_arm64.deb' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName '${{ env.ARTIFACT_NAME }}'
           "ARTIFACT_PATH={0}" -f (Join-Path (Split-Path $artifactFile -Parent) -ChildPath '${{ env.ARTIFACT_NAME }}') >> $env:GITHUB_ENV
