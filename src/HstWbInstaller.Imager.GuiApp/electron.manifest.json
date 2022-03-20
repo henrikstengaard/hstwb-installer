@@ -1,7 +1,7 @@
 {
   "executable": "HstWbInstaller.Imager.GuiApp",
   "name": "HstWbInstaller.Imager.GuiApp",
-  "author": "Henrik Nørfjand Stengaard",
+  "author": "Henrik Nørfjand Stengaard <hstwbinstaller@gmail.com>",
   "singleInstance": false,
   "environment": "Production",
   "electronPort": 42000,
