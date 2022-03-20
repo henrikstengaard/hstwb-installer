@@ -55,8 +55,8 @@ jobs:
         shell: pwsh
         run: |
           "TARGET=win" >> $env:GITHUB_ENV
-          "${{ env.BUILD_VERSION }}-imager" > hstwb.imager.release-tag.txt
-          "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb.imager.release-version.txt
+          "${{ env.BUILD_VERSION }}-imager" > hstwb-imager.release-tag.txt
+          "HstWB Imager v${{ env.BUILD_VERSION }}-${{ env.BUILD_VERSION_SHA }}" > hstwb-imager.release-version.txt
         if: matrix.os == 'windows-latest'
 
       - name: Set macOS target
