@@ -86,16 +86,16 @@
             //Console.WriteLine(task == null ? "task is null" : task.GetType().FullName);
             switch (backgroundTask.Type)
             {
-                case nameof(InfoBackgroundTask):
-                    return JsonSerializer.Deserialize<InfoBackgroundTask>(backgroundTask.Payload);
+                case nameof(PhysicalDriveInfoBackgroundTask):
+                    return JsonSerializer.Deserialize<PhysicalDriveInfoBackgroundTask>(backgroundTask.Payload);
                 case nameof(ListBackgroundTask):
                     return JsonSerializer.Deserialize<ListBackgroundTask>(backgroundTask.Payload);
                 case nameof(ReadBackgroundTask):
                     return JsonSerializer.Deserialize<ReadBackgroundTask>(backgroundTask.Payload);
                 case nameof(WriteBackgroundTask):
                     return JsonSerializer.Deserialize<WriteBackgroundTask>(backgroundTask.Payload);
-                case nameof(VerifyBackgroundTask):
-                    return JsonSerializer.Deserialize<VerifyBackgroundTask>(backgroundTask.Payload);
+                case nameof(PhysicalDriveVerifyBackgroundTask):
+                    return JsonSerializer.Deserialize<PhysicalDriveVerifyBackgroundTask>(backgroundTask.Payload);
                 case nameof(ConvertBackgroundTask):
                     return JsonSerializer.Deserialize<ConvertBackgroundTask>(backgroundTask.Payload);
                 case nameof(BlankBackgroundTask):
@@ -113,13 +113,10 @@
             return backgroundTask switch
             {
                 ListBackgroundTask => new ListBackgroundTaskHandler(loggerFactory, resultHubConnection, errorHubConnection, physicalDriveManager),
-                InfoBackgroundTask => new InfoBackgroundTaskHandler(loggerFactory, resultHubConnection, errorHubConnection, physicalDriveManager),
+                PhysicalDriveInfoBackgroundTask => new PhysicalDriveInfoBackgroundTaskHandler(loggerFactory, resultHubConnection, errorHubConnection, physicalDriveManager),
                 ReadBackgroundTask => new ReadBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
                 WriteBackgroundTask => new WriteBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
-                VerifyBackgroundTask => new VerifyBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
-                ConvertBackgroundTask => new ConvertBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
-                BlankBackgroundTask => new BlankBackgroundTaskHandler(loggerFactory, progressHubConnection),
-                OptimizeBackgroundTask => new OptimizeBackgroundTaskHandler(loggerFactory, progressHubConnection),
+                PhysicalDriveVerifyBackgroundTask => new PhysicalDriveVerifyBackgroundTaskHandler(loggerFactory, progressHubConnection, physicalDriveManager),
                 _ => null
             };
         }

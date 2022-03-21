@@ -1,8 +1,12 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
     using System.Threading.Tasks;
+    using BackgroundTasks;
     using Core.Models.BackgroundTasks;
+    using Hubs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
+    using Microsoft.Extensions.Logging;
     using Models.Requests;
     using Services;
 
@@ -10,11 +14,16 @@
     [Route("api/optimize")]
     public class OptimizeController : ControllerBase
     {
-        private readonly WorkerService workerService;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly IHubContext<ProgressHub> progressHubContext;
+        private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public OptimizeController(WorkerService workerService)
+        public OptimizeController(ILoggerFactory loggerFactory, IHubContext<ProgressHub> progressHubContext,
+            IBackgroundTaskQueue backgroundTaskQueue)
         {
-            this.workerService = workerService;
+            this.loggerFactory = loggerFactory;
+            this.progressHubContext = progressHubContext;
+            this.backgroundTaskQueue = backgroundTaskQueue;
         }
         
         [HttpPost]
@@ -25,11 +34,13 @@
                 return BadRequest(ModelState);
             }
             
-            await workerService.EnqueueAsync(new OptimizeBackgroundTask
+            var task = new OptimizeBackgroundTask
             {
                 Title = request.Title,
                 Path = request.Path
-            });
+            };
+            var handler = new OptimizeBackgroundTaskHandler(loggerFactory, progressHubContext);
+            await backgroundTaskQueue.QueueBackgroundWorkItemAsync(handler.Handle, task);
             
             return Ok();            
         }

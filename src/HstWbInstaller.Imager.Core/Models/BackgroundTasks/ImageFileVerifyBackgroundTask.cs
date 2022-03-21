@@ -2,7 +2,7 @@
 {
     using System.Threading;
 
-    public class VerifyBackgroundTask : IBackgroundTask
+    public class ImageFileVerifyBackgroundTask : IBackgroundTask
     {
         public string Title { get; set; }
         public string SourcePath { get; set; }

@@ -8,14 +8,14 @@
     using Microsoft.AspNetCore.SignalR.Client;
     using Microsoft.Extensions.Logging;
 
-    public class InfoBackgroundTaskHandler : IBackgroundTaskHandler
+    public class PhysicalDriveInfoBackgroundTaskHandler : IBackgroundTaskHandler
     {
         private readonly ILoggerFactory loggerFactory;
         private readonly HubConnection resultHubConnection;
         private readonly HubConnection errorHubConnection;
         private readonly IPhysicalDriveManager physicalDriveManager;
 
-        public InfoBackgroundTaskHandler(ILoggerFactory loggerFactory, HubConnection resultHubConnection,
+        public PhysicalDriveInfoBackgroundTaskHandler(ILoggerFactory loggerFactory, HubConnection resultHubConnection,
             HubConnection errorHubConnection,
             IPhysicalDriveManager physicalDriveManager)
         {
@@ -27,7 +27,7 @@
 
         public async ValueTask Handle(IBackgroundTaskContext context)
         {
-            if (context.BackgroundTask is not InfoBackgroundTask infoBackgroundTask)
+            if (context.BackgroundTask is not PhysicalDriveInfoBackgroundTask infoBackgroundTask)
             {
                 return;
             }

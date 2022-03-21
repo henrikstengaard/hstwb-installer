@@ -4,6 +4,15 @@
 
     public class InfoRequest
     {
+        public enum SourceTypeEnum
+        {
+            ImageFile,
+            PhysicalDisk
+        }
+        
+        [Required] 
+        public SourceTypeEnum SourceType { get; set; }
+
         [Required] 
         public string Path { get; set; }
     }
