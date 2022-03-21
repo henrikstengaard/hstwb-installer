@@ -46,7 +46,7 @@ export default function Settings() {
     }]
     
     const {
-        macOsElevateMethod = 'osascriptSudo'
+        macOsElevateMethod = 'OsascriptSudo'
     } = settings
     
     return (

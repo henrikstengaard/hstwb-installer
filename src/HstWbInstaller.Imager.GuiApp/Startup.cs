@@ -140,8 +140,8 @@ namespace HstWbInstaller.Imager.GuiApp
             var browserWindow = await Electron.WindowManager.CreateWindowAsync(
                 new BrowserWindowOptions
                 {
-                    Width = 800,
-                    Height = 600,
+                    Width = 1000,
+                    Height = 800,
                     Center = true,
                     BackgroundColor = "#1A2933",
                     Frame = false,
@@ -152,7 +152,7 @@ namespace HstWbInstaller.Imager.GuiApp
                     Show = false,
                     Icon = Path.Combine(appPath, "ClientApp", "build", "icon.ico")
                 });
-            browserWindow.SetMenu(Array.Empty<MenuItem>());
+            browserWindow.RemoveMenu();
             
             await browserWindow.WebContents.Session.ClearCacheAsync();
 

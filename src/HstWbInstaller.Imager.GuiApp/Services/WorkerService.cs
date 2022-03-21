@@ -69,7 +69,7 @@
 
         public async Task<bool> Start()
         {
-            var settings = await ApplicationDataHelper.ReadSettings<Settings>(Constants.AppName);
+            var settings = await ApplicationDataHelper.ReadSettings<Settings>(Constants.AppName) ?? new Settings();
             
             var workerCommand = WorkerHelper.GetWorkerFileName(appState.ExecutingFile);
             var workerPath = Path.Combine(
