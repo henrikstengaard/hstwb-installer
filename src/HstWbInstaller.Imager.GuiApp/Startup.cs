@@ -140,8 +140,8 @@ namespace HstWbInstaller.Imager.GuiApp
             var browserWindow = await Electron.WindowManager.CreateWindowAsync(
                 new BrowserWindowOptions
                 {
-                    Width = 1000,
-                    Height = 800,
+                    Width = 1280,
+                    Height = 720,
                     Center = true,
                     BackgroundColor = "#1A2933",
                     Frame = false,
