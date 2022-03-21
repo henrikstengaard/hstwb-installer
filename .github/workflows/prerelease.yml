@@ -102,6 +102,11 @@ jobs:
         run: |
           cd HstWbInstaller.Imager.GuiApp
           dotnet electronize build /target ${{ env.TARGET }}
+          
+      - name: List Electron output
+        shell: pwsh
+        run: |
+          dir './src/HstWbInstaller.Imager.GuiApp/bin/Desktop'
 
       # upload release tag
       - name: Upload release tag artifact
@@ -123,11 +128,11 @@ jobs:
 
       # windows 64-bit setup exe
       - name: Set Windows 64-bit setup artifact
-        id: windows_x64_nsis
+        id: windows_x64_setup
         shell: pwsh
         run: |
           $artifactName='hstwb-imager.win-x64-setup.exe'
-          $artifactFile=(Join-Path './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -ChildPath 'HstWB Imager Setup ${{ env.BUILD_VERSION }}.exe')
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter 'HstWB Imager Setup ${{ env.BUILD_VERSION }}.exe' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName $artifactName
           $artifactPath=(Join-Path (Split-Path $artifactFile -Parent) -ChildPath $artifactName)
           "::set-output name=artifact_name::$artifactName"
@@ -137,8 +142,8 @@ jobs:
       - name: Upload Windows 64-bit nsis artifact
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ steps.windows_x64_nsis.outputs.artifact_name }}"
-          path: "${{ steps.windows_x64_nsis.outputs.artifact_path }}"
+          name: "${{ steps.windows_x64_setup.outputs.artifact_name }}"
+          path: "${{ steps.windows_x64_setup.outputs.artifact_path }}"
           retention-days: 3
         if: matrix.os == 'windows-latest'
 
@@ -148,18 +153,18 @@ jobs:
         shell: pwsh
         run: |
           $artifactName='hstwb-imager.win-x64-portable.exe'
-          $artifactFile=(Join-Path './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -ChildPath 'HstWB Imager ${{ env.BUILD_VERSION }}.exe')
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter 'HstWB Imager ${{ env.BUILD_VERSION }}.exe' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName $artifactName
           $artifactPath=(Join-Path (Split-Path $artifactFile -Parent) -ChildPath $artifactName)
           "::set-output name=artifact_name::$artifactName"
           "::set-output name=artifact_path::$artifactPath"
         if: matrix.os == 'windows-latest'
 
-      - name: Upload Windows 64-bit zip artifact
+      - name: Upload Windows 64-bit portable artifact
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ steps.windows_x64_zip.outputs.artifact_name }}"
-          path: "${{ steps.windows_x64_zip.outputs.artifact_path }}"
+          name: "${{ steps.windows_x64_portable.outputs.artifact_name }}"
+          path: "${{ steps.windows_x64_portable.outputs.artifact_path }}"
           retention-days: 3
         if: matrix.os == 'windows-latest'
 
@@ -169,7 +174,7 @@ jobs:
         shell: pwsh
         run: |
           $artifactName='hstwb-imager.win-x64.zip'
-          $artifactFile=(Join-Path './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -ChildPath 'HstWB Imager-${{ env.BUILD_VERSION }}-win.zip')
+          $artifactFile=(gci './src/HstWbInstaller.Imager.GuiApp/bin/Desktop' -Filter 'HstWB Imager-${{ env.BUILD_VERSION }}-win.zip' | Select-Object -First 1).FullName
           Rename-Item $artifactFile -NewName $artifactName
           $artifactPath=(Join-Path (Split-Path $artifactFile -Parent) -ChildPath $artifactName)
           "::set-output name=artifact_name::$artifactName"
