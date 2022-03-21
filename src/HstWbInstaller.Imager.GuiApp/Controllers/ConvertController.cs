@@ -1,8 +1,12 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
     using System.Threading.Tasks;
+    using BackgroundTasks;
     using Core.Models.BackgroundTasks;
+    using Hubs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
+    using Microsoft.Extensions.Logging;
     using Models.Requests;
     using Services;
 
@@ -10,11 +14,16 @@
     [Route("api/convert")]
     public class ConvertController : ControllerBase
     {
-        private readonly WorkerService workerService;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly IHubContext<ProgressHub> progressHubContext;
+        private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public ConvertController(WorkerService workerService)
+        public ConvertController(ILoggerFactory loggerFactory, IHubContext<ProgressHub> progressHubContext,
+            IBackgroundTaskQueue backgroundTaskQueue)
         {
-            this.workerService = workerService;
+            this.loggerFactory = loggerFactory;
+            this.progressHubContext = progressHubContext;
+            this.backgroundTaskQueue = backgroundTaskQueue;
         }
         
         [HttpPost]
@@ -25,12 +34,14 @@
                 return BadRequest(ModelState);
             }
 
-            await workerService.EnqueueAsync(new ConvertBackgroundTask
+            var task = new ConvertBackgroundTask
             {
                 Title = request.Title,
                 SourcePath = request.SourcePath,
                 DestinationPath = request.DestinationPath
-            });
+            };
+            var handler = new ConvertBackgroundTaskHandler(loggerFactory, progressHubContext);
+            await backgroundTaskQueue.QueueBackgroundWorkItemAsync(handler.Handle, task);
             
             return Ok();
         }

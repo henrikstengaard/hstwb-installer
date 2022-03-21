@@ -5,20 +5,21 @@
     using Core.Commands;
     using Core.Models.BackgroundTasks;
     using Extensions;
-    using Microsoft.AspNetCore.SignalR.Client;
+    using Hubs;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
 
     public class OptimizeBackgroundTaskHandler : IBackgroundTaskHandler
     {
         private readonly ILoggerFactory loggerFactory;
-        private readonly HubConnection progressHubConnection;
+        private readonly IHubContext<ProgressHub> progressHubContext;
 
         public OptimizeBackgroundTaskHandler(
             ILoggerFactory loggerFactory,
-            HubConnection progressHubConnection)
+            IHubContext<ProgressHub> progressHubContext)
         {
             this.loggerFactory = loggerFactory;
-            this.progressHubConnection = progressHubConnection;
+            this.progressHubContext = progressHubContext;
         }
 
         public async ValueTask Handle(IBackgroundTaskContext context)
@@ -30,7 +31,7 @@
 
             try
             {
-                await progressHubConnection.UpdateProgress(new Progress
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = optimizeBackgroundTask.Title,
                     IsComplete = false,
@@ -44,7 +45,7 @@
 
                 await Task.Delay(1000, context.Token);
 
-                await progressHubConnection.UpdateProgress(new Progress
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = optimizeBackgroundTask.Title,
                     IsComplete = true,
@@ -55,7 +56,7 @@
             }
             catch (Exception e)
             {
-                await progressHubConnection.UpdateProgress(new Progress
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = optimizeBackgroundTask.Title,
                     IsComplete = true,

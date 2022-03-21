@@ -321,7 +321,7 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var convertCommand = new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
+                    var convertCommand = new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, arguments.SourcePath,
                         arguments.DestinationPath,
                         arguments.Size);
                     convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };

@@ -5,6 +5,7 @@
     using Core.Models;
     using Core.Models.BackgroundTasks;
     using Microsoft.AspNetCore.SignalR;
+    using Models;
     using BackgroundTask = Core.Models.BackgroundTasks.BackgroundTask;
 
     public static class HubExtensions
@@ -22,6 +23,12 @@
             {
                 Message = message
             }, token);
+        }
+
+        public static async Task SendInfoResult<THub>(this IHubContext<THub> hubContext, 
+            MediaInfoViewModel mediaInfo, CancellationToken token = default) where THub : Hub
+        {
+            await hubContext.Clients.All.SendAsync(Constants.HubMethodNames.Info, mediaInfo, token);
         }
         
         public static async Task RunBackgroundTask<THub>(this IHubContext<THub> hubContext, 

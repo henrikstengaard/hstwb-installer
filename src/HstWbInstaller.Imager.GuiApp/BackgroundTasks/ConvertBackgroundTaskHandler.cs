@@ -1,27 +1,28 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.BackgroundTasks
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
     using Core.Models.BackgroundTasks;
     using Extensions;
+    using Hubs;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.AspNetCore.SignalR.Client;
     using Microsoft.Extensions.Logging;
 
     public class ConvertBackgroundTaskHandler : IBackgroundTaskHandler
     {
         private readonly ILoggerFactory loggerFactory;
-        private readonly HubConnection progressHubConnection;
-        private readonly IPhysicalDriveManager physicalDriveManager;
+        private readonly IHubContext<ProgressHub> progressHubContext;
 
         public ConvertBackgroundTaskHandler(
             ILoggerFactory loggerFactory,
-            HubConnection progressHubConnection, IPhysicalDriveManager physicalDriveManager)
+            IHubContext<ProgressHub> progressHubContext)
         {
             this.loggerFactory = loggerFactory;
-            this.progressHubConnection = progressHubConnection;
-            this.physicalDriveManager = physicalDriveManager;
+            this.progressHubContext = progressHubContext;
         }
 
         public async ValueTask Handle(IBackgroundTaskContext context)
@@ -33,14 +34,12 @@
 
             try
             {
-                var physicalDrives = await physicalDriveManager.GetPhysicalDrives();
-
                 var commandHelper = new CommandHelper();
                 var convertCommand =
-                    new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, physicalDrives, convertBackgroundTask.SourcePath, convertBackgroundTask.DestinationPath);
+                    new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, convertBackgroundTask.SourcePath, convertBackgroundTask.DestinationPath);
                 convertCommand.DataProcessed += async (_, args) =>
                 {
-                    await progressHubConnection.UpdateProgress(new Progress
+                    await progressHubContext.SendProgress(new Progress
                     {
                         Title = convertBackgroundTask.Title,
                         IsComplete = false,
@@ -56,7 +55,7 @@
 
                 var result = await convertCommand.Execute(context.Token);
             
-                await progressHubConnection.UpdateProgress(new Progress
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = convertBackgroundTask.Title,
                     IsComplete = true,
@@ -67,7 +66,7 @@
             }
             catch (Exception e)
             {
-                await progressHubConnection.UpdateProgress(new Progress
+                await progressHubContext.SendProgress(new Progress
                 {
                     Title = convertBackgroundTask.Title,
                     IsComplete = true,

@@ -1,8 +1,12 @@
 ﻿namespace HstWbInstaller.Imager.GuiApp.Controllers
 {
     using System.Threading.Tasks;
+    using BackgroundTasks;
     using Core.Models.BackgroundTasks;
+    using Hubs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
+    using Microsoft.Extensions.Logging;
     using Models.Requests;
     using Services;
 
@@ -10,11 +14,16 @@
     [Route("api/blank")]
     public class BlankController : ControllerBase
     {
-        private readonly WorkerService workerService;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly IHubContext<ProgressHub> progressHubContext;
+        private readonly IBackgroundTaskQueue backgroundTaskQueue;
 
-        public BlankController(WorkerService workerService)
+        public BlankController(ILoggerFactory loggerFactory, IHubContext<ProgressHub> progressHubContext,
+            IBackgroundTaskQueue backgroundTaskQueue)
         {
-            this.workerService = workerService;
+            this.loggerFactory = loggerFactory;
+            this.progressHubContext = progressHubContext;
+            this.backgroundTaskQueue = backgroundTaskQueue;
         }
 
         [HttpPost]
@@ -25,15 +34,17 @@
                 return BadRequest(ModelState);
             }
 
-            await workerService.EnqueueAsync(new BlankBackgroundTask
+            var task = new BlankBackgroundTask
             {
                 Title = request.Title,
                 Path = request.Path,
                 Size = request.Size,
                 CompatibleSize = request.CompatibleSize
-            });
-            
-            return Ok();            
+            };
+            var handler = new BlankBackgroundTaskHandler(loggerFactory, progressHubContext);
+            await backgroundTaskQueue.QueueBackgroundWorkItemAsync(handler.Handle, task);
+
+            return Ok();
         }
     }
 }

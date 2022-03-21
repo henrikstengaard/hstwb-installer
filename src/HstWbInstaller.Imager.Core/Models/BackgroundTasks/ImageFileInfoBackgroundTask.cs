@@ -2,7 +2,7 @@
 {
     using System.Threading;
 
-    public class InfoBackgroundTask : IBackgroundTask
+    public class ImageFileInfoBackgroundTask : IBackgroundTask
     {
         public string Path { get; set; }
         public CancellationToken Token { get; set; }

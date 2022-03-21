@@ -22,7 +22,7 @@ import {Api} from "../utils/Api";
 const initialState = {
     medias: null,
     mediaInfo: null,
-    sourceType: 'image-file'
+    sourceType: 'ImageFile'
 }
 
 export default function Info() {
@@ -81,6 +81,7 @@ export default function Info() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                sourceType,
                 path
             })
         });
@@ -123,15 +124,15 @@ export default function Info() {
                                 value: event.target.value
                             })}
                         >
-                            <FormControlLabel value="image-file" control={<Radio />} label="Image file" />
-                            <FormControlLabel value="physical-disk" control={<Radio />} label="Physical disk" />
+                            <FormControlLabel value="ImageFile" control={<Radio />} label="Image file" />
+                            <FormControlLabel value="PhysicalDisk" control={<Radio />} label="Physical disk" />
                         </RadioGroup>
                     </FormControl>
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
                 <Grid item xs={12} lg={6}>
-                    {sourceType === 'image-file' && (
+                    {sourceType === 'ImageFile' && (
                         <TextField
                             id="image-path"
                             label={
@@ -156,7 +157,7 @@ export default function Info() {
                             }}
                         />
                     )}
-                    {sourceType === 'physical-disk' && (
+                    {sourceType === 'PhysicalDisk' && (
                         <MediaSelectField
                             label={
                                 <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>

@@ -22,7 +22,7 @@ const initialState = {
     confirmOpen: false,
     sourceMedia: null,
     sourcePath: null,
-    sourceType: 'image-file'
+    sourceType: 'ImageFile'
 }
 
 export default function Verify() {
@@ -63,7 +63,8 @@ export default function Verify() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: `Verify ${(sourceType === 'image-file' ? 'image file' : 'disk')} '${isNil(sourceMedia) ? sourcePath : sourceMedia.model}' and image file '${destinationPath}'`,
+                title: `Verify ${(sourceType === 'ImageFile' ? 'image file' : 'disk')} '${isNil(sourceMedia) ? sourcePath : sourceMedia.model}' and image file '${destinationPath}'`,
+                sourceType,
                 sourcePath,
                 destinationPath 
             })
@@ -119,15 +120,15 @@ export default function Verify() {
                                 value: event.target.value
                             })}
                         >
-                            <FormControlLabel value="image-file" control={<Radio />} label="Image file" />
-                            <FormControlLabel value="physical-disk" control={<Radio />} label="Physical disk" />
+                            <FormControlLabel value="ImageFile" control={<Radio />} label="Image file" />
+                            <FormControlLabel value="PhysicalDisk" control={<Radio />} label="Physical disk" />
                         </RadioGroup>
                     </FormControl>
                 </Grid>
             </Grid>
             <Grid container spacing="2" direction="row" alignItems="center" sx={{mt: 2}}>
                 <Grid item xs={12} lg={6}>
-                    {sourceType === 'image-file' && (
+                    {sourceType === 'ImageFile' && (
                         <TextField
                             id="source-image-path"
                             label={
@@ -153,7 +154,7 @@ export default function Verify() {
                             })}
                         />
                     )}
-                    {sourceType === 'physical-disk' && (
+                    {sourceType === 'PhysicalDisk' && (
                         <MediaSelectField
                             label={
                                 <div style={{display: 'flex', alignItems: 'center', verticalAlign: 'bottom'}}>
