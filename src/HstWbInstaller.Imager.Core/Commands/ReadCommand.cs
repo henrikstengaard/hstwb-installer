@@ -83,7 +83,7 @@
                 OnDataProcessed(e.PercentComplete, e.BytesProcessed, e.BytesRemaining, e.BytesTotal, e.TimeElapsed,
                     e.TimeRemaining, e.TimeTotal);
             };
-            await imageConverter.Convert(token, sourceStream, destinationStream, readSize, commandHelper.IsVhd(sourcePath));
+            await imageConverter.Convert(token, sourceStream, destinationStream, readSize, isVhd);
             
             return new Result();
         }
