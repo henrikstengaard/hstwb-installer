@@ -35,7 +35,7 @@ export default function About() {
                 HstWB Imager v{HSTWB_INSTALLER_VERSION}.
             </Typography>
             <Typography sx={{ mt: 2 }}>
-                HstWB Imager is an imaging tool to read and write raw disk images to and from physical drives with support for Amiga rigid disk block (RDSK, partition table used by Amiga computers).
+                HstWB Imager is a disk imaging tool to read and write raw disk images to and from physical drives with support for Amiga rigid disk block (RDB, partition table used by Amiga computers).
                 This is useful for creating images on modern computers and write them to physical drives such as hard disks, SSD, CF- and MicroSD-cards or creating images of physical drives for backup or tweaking with Amiga emulators much faster than real Amiga hardware.
             </Typography>
             <Typography sx={{ mt: 2 }}>

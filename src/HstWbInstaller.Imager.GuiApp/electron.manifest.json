@@ -57,6 +57,8 @@
           "arm64"
         ]
       }],
+      "synopsis": "Disk imaging tool",
+      "description": "Disk imaging tool to read and write raw disk images to and from physical drives with support for Amiga rigid disk block (RDB)",
       "icon": "../../../hstwb-installer.icns"
     },
     "nsis": {
