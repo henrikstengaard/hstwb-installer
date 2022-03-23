@@ -115,7 +115,7 @@
             // calculate size of partition in bytes
             var partitionSize = (long)(highCyl - lowCyl + 1) * surfaces * blocksPerTrack * rigidDiskBlock.BlockSize;
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
+            var calculatedChecksum = await ChecksumHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {

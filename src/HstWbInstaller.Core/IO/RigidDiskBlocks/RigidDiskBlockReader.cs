@@ -114,7 +114,7 @@
             // calculate size of disk in bytes
             var diskSize = (long)cylinders * heads * sectors * blockSize;
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
+            var calculatedChecksum = await ChecksumHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {

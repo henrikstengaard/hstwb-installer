@@ -6,7 +6,7 @@
 
     public class GivenAdfCreator
     {
-        [Fact]
+        [Fact(Skip = "Manual")]
         public async Task WhenCreateBlankAdfThenAdfIsValid()
         {
             var adfBytes = await Adf.CreateBlank("HstWB");

@@ -194,7 +194,7 @@
 
             rigidDiskBlock.DiskSize = (long)cylinders * cylinderSize;
             rigidDiskBlock.Cylinders = cylinders;
-            rigidDiskBlock.ParkingZone = cylinders;
+            rigidDiskBlock.ParkingZone = cylinders - 1;
             rigidDiskBlock.ReducedWrite = cylinders;
             rigidDiskBlock.WritePreComp = cylinders;
 
