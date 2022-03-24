@@ -6,6 +6,7 @@
     /// </summary>
     public class BitmapBlock
     {
+        public uint Offset { get; set; }
         public byte[] BlockBytes { get; set; }
         public int Checksum { get; set; }
         

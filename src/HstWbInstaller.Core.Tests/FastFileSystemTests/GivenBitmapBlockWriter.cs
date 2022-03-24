@@ -22,7 +22,7 @@
             }
 
             // arrange - calculate root block offset for double density floppy disk
-            var rootBlockOffset = FastFileSystemBlockHelper.CalculateRootBlockOffset(
+            var rootBlockOffset = FastFileSystemHelper.CalculateRootBlockOffset(
                 FloppyDiskConstants.DoubleDensity.LowCyl,
                 FloppyDiskConstants.DoubleDensity.HighCyl,
                 FloppyDiskConstants.DoubleDensity.ReservedBlocks,

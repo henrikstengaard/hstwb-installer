@@ -12,6 +12,12 @@
         public uint HashtableSize { get; set; }
         public int BitmapFlags { get; set; }
         public uint BitmapBlocksOffset { get; set; }
+        
+        /// <summary>
+        /// first bitmap extension block (when there's more than 25 bitmap blocks)
+        /// </summary>
+        public uint BitmapExtensionBlocksOffset { get; set; }
+        
         public string DiskName { get; set; }
         public DateTime RootAlterationDate { get; set; }
         public DateTime DiskAlterationDate { get; set; }

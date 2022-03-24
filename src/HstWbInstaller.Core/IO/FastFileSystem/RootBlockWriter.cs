@@ -8,7 +8,7 @@
 
     public static class RootBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(RootBlock rootBlock, uint blockSize = 512)
+        public static async Task<byte[]> BuildBlock(RootBlock rootBlock, uint blockSize)
         {
             var blockStream =
                 new MemoryStream(
@@ -26,14 +26,15 @@
 
             var bitmapBlocks = rootBlock.BitmapBlocks.ToList();
 
-            if (bitmapBlocks.Count > 25)
-            {
-                throw new Exception("extended bitmap blocks not supported!");
-            }
-            
-            for (var i = 0U; i < bitmapBlocks.Count; i++)
+            for (var i = 0U; i < bitmapBlocks.Count && i < 25; i++)
             {
                 await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapBlocksOffset + i);
+            }
+
+            // write first bitmap extension block pointer
+            if (bitmapBlocks.Count > 25 && rootBlock.BitmapExtensionBlocksOffset != 0)
+            {
+                await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapExtensionBlocksOffset);
             }
             
             blockStream.Seek(blockSize - 92, SeekOrigin.Begin);
