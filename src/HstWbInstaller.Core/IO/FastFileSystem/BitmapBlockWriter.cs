@@ -19,7 +19,7 @@
 
             foreach (var map in bitmapBlock.BlockFree.ChunkBy(32))
             {
-                var mapBytes = MapBlockHelper.ConvertMapToByteArray(map.ToArray());
+                var mapBytes = MapBlockHelper.ConvertBlockFreeMapToByteArray(map.ToArray());
                 await blockStream.WriteBytes(mapBytes);
             }
                 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
 
@@ -20,11 +21,22 @@
             blockStream.Seek(12, SeekOrigin.Begin);
             await blockStream.WriteLittleEndianUInt32(rootBlock.HashtableSize); // ht_size
             
-            blockStream.Seek(312, SeekOrigin.Begin);
-            await blockStream.WriteLittleEndianInt32(rootBlock.BitmapFlags); // bm_flag				
-            await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapBlocksOffset); // bm_pages (sector with bitmap block)
+            blockStream.Seek(blockSize - 200, SeekOrigin.Begin);
+            await blockStream.WriteLittleEndianInt32(rootBlock.BitmapFlags); // bm_flag
+
+            var bitmapBlocks = rootBlock.BitmapBlocks.ToList();
+
+            if (bitmapBlocks.Count > 25)
+            {
+                throw new Exception("extended bitmap blocks not supported!");
+            }
             
-            blockStream.Seek(420, SeekOrigin.Begin);
+            for (var i = 0U; i < bitmapBlocks.Count; i++)
+            {
+                await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapBlocksOffset + i);
+            }
+            
+            blockStream.Seek(blockSize - 92, SeekOrigin.Begin);
             
             // last root alteration date
             await DateHelper.WriteDate(blockStream, rootBlock.RootAlterationDate);
@@ -37,7 +49,7 @@
             await blockStream.WriteString(diskName, 30);
 
             // last disk alteration date
-            blockStream.Seek(472, SeekOrigin.Begin);
+            blockStream.Seek(blockSize - 40, SeekOrigin.Begin);
             if (rootBlock.DiskAlterationDate == DateTime.MinValue)
             {
                 await blockStream.WriteLittleEndianInt32(0); // days since 1 jan 78
@@ -52,7 +64,7 @@
             // filesystem creation date
             await DateHelper.WriteDate(blockStream, rootBlock.FileSystemCreationDate);
             
-            blockStream.Seek(504, SeekOrigin.Begin);
+            blockStream.Seek(blockSize - 8, SeekOrigin.Begin);
             await blockStream.WriteLittleEndianUInt32(rootBlock.FirstDirectoryCacheBlock); // FFS: first directory cache block, 0 otherwise
             await blockStream.WriteLittleEndianUInt32(rootBlock.BlockSecondaryType); // block secondary type = ST_ROOT (value 1)
             

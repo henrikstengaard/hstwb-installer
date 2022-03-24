@@ -76,7 +76,7 @@
             // Assert.Equal(rigidDiskBlockJson,actualRigidDiskBlockJson);
         }
 
-        [Fact]
+        [Fact(Skip = "Manual test")]
         public async Task Format()
         {
             var size = 47480832;

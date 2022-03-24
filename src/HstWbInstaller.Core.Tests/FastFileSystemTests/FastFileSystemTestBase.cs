@@ -74,7 +74,10 @@
                 await blockStream.WriteBytes(freeSectorBytes);
             }
             
+            // 27 * 32 + 14
+            
             // allocated blocks
+            // bits: 11111111111111110011111111111111
             var rootBitmapBytes = new byte[] { 0xff, 0xff, 0x3f, 0xff };
             await blockStream.WriteBytes(rootBitmapBytes);
             

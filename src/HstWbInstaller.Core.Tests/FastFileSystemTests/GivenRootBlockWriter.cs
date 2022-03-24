@@ -19,7 +19,8 @@
                 BitmapBlocksOffset = 881,
                 RootAlterationDate = now,
                 DiskAlterationDate = DateTime.MinValue,
-                FileSystemCreationDate = now
+                FileSystemCreationDate = now,
+                BitmapBlocks = new []{new BitmapBlock()} // dummy used for writing bitmap block
             };
             
             // act - build root block bytes
