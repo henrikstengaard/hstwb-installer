@@ -17,7 +17,7 @@
             
             await blockStream.WriteLittleEndianInt32(0); // checksum
 
-            foreach (var map in bitmapBlock.BlockFree.ChunkBy(32))
+            foreach (var map in bitmapBlock.BlocksFreeMap.ChunkBy(32))
             {
                 var mapBytes = MapBlockHelper.ConvertBlockFreeMapToByteArray(map.ToArray());
                 await blockStream.WriteBytes(mapBytes);

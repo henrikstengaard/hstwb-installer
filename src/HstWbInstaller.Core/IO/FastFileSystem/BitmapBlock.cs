@@ -10,6 +10,6 @@
         public byte[] BlockBytes { get; set; }
         public int Checksum { get; set; }
         
-        public bool[] BlockFree { get; set; }
+        public bool[] BlocksFreeMap { get; set; }
     }
 }

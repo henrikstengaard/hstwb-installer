@@ -26,13 +26,13 @@
 
             var bitmapBlocks = rootBlock.BitmapBlocks.ToList();
 
-            for (var i = 0U; i < bitmapBlocks.Count && i < 25; i++)
+            for (var i = 0U; i < bitmapBlocks.Count; i++)
             {
                 await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapBlocksOffset + i);
             }
 
             // write first bitmap extension block pointer
-            if (bitmapBlocks.Count > 25 && rootBlock.BitmapExtensionBlocksOffset != 0)
+            if (rootBlock.BitmapExtensionBlocksOffset != 0)
             {
                 await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapExtensionBlocksOffset);
             }

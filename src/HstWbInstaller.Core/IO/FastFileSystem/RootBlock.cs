@@ -5,6 +5,7 @@
 
     public class RootBlock
     {
+        public uint Offset { get; set; }
         public byte[] BlockBytes { get; set; }
         public int Checksum { get; set; }
         
@@ -30,6 +31,7 @@
         public uint BlockSecondaryType { get; set; }
 
         public IEnumerable<BitmapBlock> BitmapBlocks { get; set; }
+        public IEnumerable<BitmapExtensionBlock> BitmapExtensionBlocks { get; set; }
 
         public RootBlock()
         {
@@ -43,6 +45,9 @@
             RootAlterationDate = now;
             DiskAlterationDate = now;
             FileSystemCreationDate = now;
+
+            BitmapBlocks = new List<BitmapBlock>();
+            BitmapExtensionBlocks = new List<BitmapExtensionBlock>();
         }
     }
 }

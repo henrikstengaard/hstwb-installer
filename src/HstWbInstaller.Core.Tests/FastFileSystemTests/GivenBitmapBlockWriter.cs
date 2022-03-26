@@ -22,7 +22,7 @@
             }
 
             // arrange - calculate root block offset for double density floppy disk
-            var rootBlockOffset = FastFileSystemHelper.CalculateRootBlockOffset(
+            var rootBlockOffset = OffsetHelper.CalculateRootBlockOffset(
                 FloppyDiskConstants.DoubleDensity.LowCyl,
                 FloppyDiskConstants.DoubleDensity.HighCyl,
                 FloppyDiskConstants.DoubleDensity.ReservedBlocks,
@@ -35,7 +35,7 @@
             blockFree[bitmapBlockOffset - bootBlocks] = false;
             var bitmapBlock = new BitmapBlock
             {
-                BlockFree = blockFree
+                BlocksFreeMap = blockFree
             };
 
             // act - build bitmap block bytes

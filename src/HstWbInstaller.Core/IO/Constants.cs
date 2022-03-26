@@ -2,6 +2,6 @@
 {
     public class Constants
     {
-        public const int CHECKSUM_SIZE = 4;
+        public const int LongSize = 4;
     }
 }

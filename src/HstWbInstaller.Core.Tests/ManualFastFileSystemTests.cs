@@ -10,17 +10,17 @@
 
     public class ManualFastFileSystemTests
     {
-        [Fact(Skip = "Manual")]
+        [Fact]
         public async Task Format()
         {
             var rigidDiskBlock = await RigidDiskBlock
                 .Create(300.MB())
-                .AddFileSystem("DOS3", await File.ReadAllBytesAsync("FastFileSystem"))
+                .AddFileSystem("DOS3", await File.ReadAllBytesAsync(@"d:\Temp\4gb\pc\ffs\FFS.40.1"))
                 .AddPartition("DH0", bootable: true)
-                .WriteToFile("hstwb.hdf");
+                .WriteToFile(@"d:\temp\partitioned_with_hstwb2.hdf");
 
-            await using var stream = File.OpenWrite("hstwb.hdf");
-            await FastFileSystemHelper.FormatPartition(stream, rigidDiskBlock.PartitionBlocks.First(), "WorkbenchHstWB");
+            await using var stream = File.OpenWrite(@"d:\temp\partitioned_with_hstwb2.hdf");
+            await FastFileSystemFormatter.FormatPartition(stream, rigidDiskBlock.PartitionBlocks.First(), "WorkbenchHstWB");
         }
     }
 }
