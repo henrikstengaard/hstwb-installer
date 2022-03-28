@@ -44,6 +44,9 @@
       <None Update="TestData\Pfs3RootBlock">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="TestData\Lha\amiga.lha">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
