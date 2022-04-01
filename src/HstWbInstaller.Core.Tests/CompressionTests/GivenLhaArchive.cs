@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using IO.Lha;
@@ -18,7 +19,7 @@
             var lhaReader = new LhaReader(stream, Encoding.GetEncoding("ISO-8859-1"));
 
             // act - read entries from lha file
-            var entrieNames = new List<string>();
+            var entries = new List<LzHeader>();
             LzHeader header;
             do
             {
@@ -29,13 +30,13 @@
                     continue;
                 }
 
-                entrieNames.Add(header.Name);
+                entries.Add(header);
             } while (header != null);
             
             // assert - entries have been read from lha file
-            Assert.NotEmpty(entrieNames);
+            Assert.NotEmpty(entries);
             var expectedEntryNames = new[] { "test.txt", "test1.info", @"test1\test1.txt", @"test1\test2.info", @"test1\test2\test2.txt" };
-            Assert.Equal(expectedEntryNames, entrieNames);
+            Assert.Equal(expectedEntryNames, entries.Select(x => x.Name));
         }
     }
 }

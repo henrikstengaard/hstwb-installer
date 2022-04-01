@@ -38,5 +38,62 @@
         public const int UNIX_OTHER_WRITE_PERM = 0000002;
         public const int UNIX_OTHER_EXEC_PERM = 0000001;
         public const int UNIX_RW_RW_RW = 0000666;
+
+        public const string LZHUFF0_METHOD = "-lh0-";
+        public const string LZHUFF1_METHOD = "-lh1-";
+        public const string LZHUFF2_METHOD = "-lh2-";
+        public const string LZHUFF3_METHOD = "-lh3-";
+        public const string LZHUFF4_METHOD = "-lh4-";
+        public const string LZHUFF5_METHOD = "-lh5-";
+        public const string LZHUFF6_METHOD = "-lh6-";
+        public const string LZHUFF7_METHOD = "-lh7-";
+        public const string LARC_METHOD = "-lzs-";
+        public const string LARC5_METHOD = "-lz5-";
+        public const string LARC4_METHOD = "-lz4-";
+        public const string LZHDIRS_METHOD = "-lhd-";
+        public const string PMARC0_METHOD = "-pm0-";
+        public const string PMARC2_METHOD = "-pm2-";
+        
+        public const int LZHUFF0_DICBIT = 0;      /* no compress */
+        public const int LZHUFF1_DICBIT = 12;      /* 2^12 =  4KB sliding dictionary */
+        public const int LZHUFF2_DICBIT = 13;      /* 2^13 =  8KB sliding dictionary */
+        public const int LZHUFF3_DICBIT = 13;      /* 2^13 =  8KB sliding dictionary */
+        public const int LZHUFF4_DICBIT = 12;      /* 2^12 =  4KB sliding dictionary */
+        public const int LZHUFF5_DICBIT = 13;      /* 2^13 =  8KB sliding dictionary */
+        public const int LZHUFF6_DICBIT = 15;      /* 2^15 = 32KB sliding dictionary */
+        public const int LZHUFF7_DICBIT = 16;      /* 2^16 = 64KB sliding dictionary */
+        public const int LARC_DICBIT = 11;      /* 2^11 =  2KB sliding dictionary */
+        public const int LARC5_DICBIT = 12;      /* 2^12 =  4KB sliding dictionary */
+        public const int LARC4_DICBIT = 0;      /* no compress */
+        public const int PMARC0_DICBIT = 0;      /* no compress */
+        public const int PMARC2_DICBIT = 13;      /* 2^13 =  8KB sliding dictionary */
+        
+//#ifdef SUPPORT_LH7
+        public const int MAX_DICBIT = LZHUFF7_DICBIT; /* lh7 use 16bits */
+// #endif
+// #ifndef SUPPORT_LH7
+// #define MAX_DICBIT LZHUFF6_DICBIT /* lh6 use 15bits */
+// #endif
+
+        public const int MAX_DICSIZ = (1 << MAX_DICBIT);
+
+        public const byte UCHAR_MAX = (1<<8)-1;
+        
+        /* slide.c */
+        public const short MAXMATCH = 256; /* formerly F (not more than UCHAR_MAX + 1) */
+        public const byte THRESHOLD = 3;   /* choose optimal value */
+
+        public const byte USHRT_BIT = 16; /* (CHAR_BIT * sizeof(ushort)) */
+        public const byte NP = (MAX_DICBIT + 1);
+        public const byte NT = (USHRT_BIT + 3);
+        public const short NC = (UCHAR_MAX + MAXMATCH + 2 - THRESHOLD);
+
+        public const byte PBIT = 5;       /* smallest integer such that (1 << PBIT) > * NP */
+        public const byte TBIT = 5;       /* smallest integer such that (1 << TBIT) > * NT */
+        public const byte CBIT = 9;       /* smallest integer such that (1 << CBIT) > * NC */ 
+        
+        /*      #if NT > NP #define NPT NT #else #define NPT NP #endif  */
+        public const byte NPT = 0x80;
+        
     }
 }
