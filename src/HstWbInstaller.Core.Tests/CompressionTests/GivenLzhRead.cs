@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using IO.Lha.Decode;
     using Xunit;
+    using Constants = IO.Lha.Decode.Constants;
 
     public class GivenLzhRead
     {
