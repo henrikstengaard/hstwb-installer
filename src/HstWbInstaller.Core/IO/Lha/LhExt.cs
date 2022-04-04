@@ -5,7 +5,10 @@
 
     public class LhExt
     {
-        private readonly Lha lha;
+        //private readonly Lha lha;
+        private readonly bool verifyMode;
+        private readonly bool textMode;
+        private readonly bool extract_broken_archive;
 
         private readonly CrcIo crcIo;
         // https://github.com/jca02266/lha/blob/803fc759edd4786b7c775dea420792650934f922/src/lhext.c
@@ -59,10 +62,12 @@ static struct decode_option decode_define[] = {
     };
          */
         
-        public LhExt(Lha lha, CrcIo crcIo)
+        public LhExt(bool verifyMode = false, bool textMode = false, bool extractBrokenArchive = false)
         {
-            this.lha = lha;
-            this.crcIo = crcIo;
+            this.verifyMode = verifyMode;
+            this.textMode = textMode;
+            this.crcIo = new CrcIo(verifyMode);
+            this.extract_broken_archive = extractBrokenArchive;
         }
 
         public string[] methods =
@@ -101,26 +106,27 @@ static struct decode_option decode_define[] = {
             //     }
             // }
             
-            
-
             var method = methods.FirstOrDefault(x => x == hdr.Method);
 
             if (string.IsNullOrWhiteSpace(method))
             {
                 throw new IOException($"Unknown method \"{method}\"; \"{hdr.Name}\" will be skipped ...");
             }
+            
+            var crc = DecodeLzHuf(input, output, hdr, out var readSize);
 
-
-            var crc = DecodeLzHuf(input, output, hdr, out var read_size);
-
-
+            if (hdr.PackedSize != readSize)
+            {
+                throw new IOException($"Read size {readSize} doesnt match packed size {hdr.PackedSize}");
+            }
+            
             if (hdr.HasCrc && crc != hdr.Crc)
             {
                 throw new IOException($"CRC error: \"{hdr.Name}\"");
             }
         }
 
-        public int DecodeLzHuf(Stream input, Stream output, LzHeader hdr, out int read_size)
+        public uint DecodeLzHuf(Stream input, Stream output, LzHeader hdr, out int read_size)
         {
             read_size = 0;
             // https://github.com/jca02266/lha/blob/03475355bc6311f7f816ea9a88fb34a0029d975b/src/extract.c
@@ -143,7 +149,7 @@ static struct decode_option decode_define[] = {
                 _ => Constants.LZHUFF5_METHOD_NUM
             };
             
-            lha.dicbit = hdr.Method switch
+            var dicbit = hdr.Method switch
             {
                 Constants.LZHUFF0_METHOD => /* -lh0- */ Constants.LZHUFF0_DICBIT,
                 Constants.LZHUFF1_METHOD => /* -lh1- */ Constants.LZHUFF1_DICBIT,
@@ -161,47 +167,49 @@ static struct decode_option decode_define[] = {
                 _ => Constants.LZHUFF5_DICBIT
             };
 
-            int crc = 0;
-            if (lha.dicbit == 0)
+            // reset crc
+            crcIo.InitializeCrc();
+
+            if (dicbit == 0)
             {
                 /* LZHUFF0_DICBIT or LARC4_DICBIT or PMARC0_DICBIT*/
                 // *read_sizep = copyfile(infp, (verify_mode ? NULL : outfp), original_size, 2, &crc);
-                read_size = Util.CopyFile(input, lha.verifyMode ? null : output, (int)hdr.OriginalSize, lha.textMode, 2, crcIo);
+                read_size = Util.CopyFile(input, verifyMode ? null : output, (int)hdr.OriginalSize, textMode, crcIo);
             }
             else
             {
-                crc = Decode(input, output, lha, method, (int)hdr.OriginalSize, (int)hdr.PackedSize);
+                read_size = Decode(input, output, method, dicbit, (int)hdr.OriginalSize, (int)hdr.PackedSize);
                 //read_size =  interface.read_size;
             }
 
-            return crc;
+            return crcIo.crc;
         }
 
-        private int Decode(Stream input, Stream output, Lha lha, int method, int origsize, int compsize)
+        private int Decode(Stream input, Stream output, int method, int dicbit, int origsize, int packed)
         {
             // infile = interface->infile;
             // outfile = interface->outfile;
             // dicbit = interface->dicbit;
             // origsize = interface->original;
             // compsize = interface->packed;
-            // decode_set = decode_define[interface->method - 1];          
+            // decode_set = decode_define[interface->method - 1];
             var decode_set = decoders[method - 1];
 
-            var huf = new Huf(input, lha, origsize, compsize);
-
+            var bitIo = new BitIo(input, origsize, packed);
+            var huf = new Huf(dicbit, bitIo, crcIo);
             
             //uint i, c;
             //uint dicsiz1, adjust;
             
             // https://github.com/jca02266/lha/blob/master/src/slide.c
-            crcIo.InitializeCrc();
-            var dicsiz = 1L << lha.dicbit;
+            //crcIo.InitializeCrc();
+            var dicsiz = 1L << dicbit;
             // dtext = (unsigned char *)xmalloc(dicsiz);
             var dtext = new byte[dicsiz];
 
             for (var i = 0; i < dicsiz; i++)
             {
-                dtext[i] = (byte)(lha.extract_broken_archive ? 0 : ' ');
+                dtext[i] = (byte)(extract_broken_archive ? 0 : ' ');
             }
 
             decode_set.DecodeStart(huf);
@@ -220,7 +228,7 @@ static struct decode_option decode_define[] = {
                 if (c < 256) {
                     dtext[loc++] = (byte)c;
                     if (loc == dicsiz) {
-                        //fwrite_crc(&crc, dtext, dicsiz, outfile);
+                        crcIo.fwrite_crc(dtext, (int)dicsiz, output);
                         loc = 0;
                     }
                     decode_count++;
@@ -255,7 +263,7 @@ static struct decode_option decode_define[] = {
             //interface->read_size = interface->packed - compsize;
             //read_size = interface->packed - compsize;
 
-            return (int)crcIo.crc;            
+            return packed - bitIo.compsize;            
         }
     }
 }

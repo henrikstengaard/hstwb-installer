@@ -4,20 +4,25 @@
 
     public class CrcIo
     {
-        private readonly Lha lha;
+        private readonly bool verifyMode;
+        //private readonly Lha lha;
         // https://github.com/jca02266/lha/blob/03475355bc6311f7f816ea9a88fb34a0029d975b/src/crcio.c
 
         private const int EOF = -1;
         public uint crc;
 
+        private const ushort CRCPOLY = 0xA001;      /* CRC-16 (x^16+x^15+x^2+1) */
+
         private uint[] crctable;
         //private int dispflg;
 
-        public CrcIo(Lha lha)
+        public CrcIo(bool verifyMode = false)
         {
-            this.lha = lha;
+            this.verifyMode = verifyMode;
+            //this.lha = lha;
             crc = 0;
             crctable = new uint[Constants.UCHAR_MAX + 1];
+            make_crctable();
         }
         
 #if EUC
@@ -66,7 +71,7 @@
                         break;
                     if (c == '\n') {
                         getc_euc_cache = c;
-                        ++lha.origsize;
+                        //++lha.origsize;
                         c = '\r';
                     }
 #if EUC
@@ -116,7 +121,7 @@
             // FILE *fp;
 
             calccrc(p, (uint)n);
-            if (output == null || lha.verifyMode)
+            if (output == null || verifyMode)
             {
                 return;
             }
@@ -134,6 +139,21 @@
             // }
         }        
         
+        public void make_crctable()
+        {
+            uint i, j, r;
+
+            for (i = 0; i <= Constants.UCHAR_MAX; i++) {
+                r = i;
+                for (j = 0; j < Constants.CHAR_BIT; j++)
+                    if ((r & 1) != 0)
+                        r = (r >> 1) ^ CRCPOLY;
+                    else
+                        r >>= 1;
+                crctable[i] = r;
+            }
+        }
+        
         public uint calccrc(byte[] buf, uint n)
         {
             // unsigned int crc;
@@ -148,6 +168,5 @@
             }
             return crc;
         }
-
     }
 }

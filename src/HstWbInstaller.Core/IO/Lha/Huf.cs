@@ -1,10 +1,10 @@
 ﻿namespace HstWbInstaller.Core.IO.Lha
 {
     using System;
-    using System.IO;
 
     public class Huf
     {
+        private readonly int dicbit;
         private const int N1 = 286;             /* alphabet size */
         private const int N2 = 2 * N1 - 1;    /* # of nodes in Huffman tree */        
         private const int NP = 8 * 1024 / 64;
@@ -15,7 +15,6 @@
             new [] {3, 0x01, 0x04, 0x0c, 0x18, 0x30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},   /* old compatible */
             new [] {2, 0x01, 0x01, 0x03, 0x06, 0x0D, 0x1F, 0x4E, 0, 0, 0, 0, 0, 0, 0, 0}    /* 8K buf */
         };        
-        private readonly Lha lha;
 
         // https://github.com/jca02266/lha/blob/03475355bc6311f7f816ea9a88fb34a0029d975b/src/huf.c
         private readonly BitIo bitIo;
@@ -61,11 +60,11 @@
         public int pbit;
         public int np;
         
-        public Huf(Stream stream, Lha lha, int origsize, int compsize)
+        public Huf(int dicbit, BitIo bitIo, CrcIo crcIo)
         {
-            this.lha = lha;
-            bitIo = new BitIo(stream, origsize, compsize);
-            crcIo = new CrcIo(lha);
+            this.dicbit = dicbit;
+            this.bitIo = bitIo;
+            this.crcIo = crcIo;
             
             left = new ushort[2 * Constants.NC - 1];
             right = new ushort[2 * Constants.NC - 1];
@@ -316,13 +315,13 @@
         /* lh4, 5, 6, 7 */
         public void decode_start_st1()
         {
-            switch (lha.dicbit) {
+            switch (dicbit) {
                 case Constants.LZHUFF4_DICBIT:
                 case Constants.LZHUFF5_DICBIT: pbit = 4; np = Constants.LZHUFF5_DICBIT + 1; break;
                 case Constants.LZHUFF6_DICBIT: pbit = 5; np = Constants.LZHUFF6_DICBIT + 1; break;
                 case Constants.LZHUFF7_DICBIT: pbit = 5; np = Constants.LZHUFF7_DICBIT + 1; break;
                 default:
-                    throw new Exception($"Cannot use {(1 << lha.dicbit)} bytes dictionary");
+                    throw new Exception($"Cannot use {(1 << dicbit)} bytes dictionary");
             }
 
             bitIo.InitGetBits();
@@ -474,7 +473,7 @@
             MakeTable(N1, c_len, 12, c_table);
         }
         
-/* ------------------------------------------------------------------------ */
+        /* ------------------------------------------------------------------------ */
         public void read_tree_p()
         {
             /* read tree from file */

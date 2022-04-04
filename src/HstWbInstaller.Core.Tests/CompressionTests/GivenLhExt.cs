@@ -10,28 +10,22 @@
         [Fact]
         public async Task WhenExtractUncompressedLh0DataThenBytesAreEqual()
         {
-            // arrange - lha0 uncompressed entry (bytes extracted from header end to next header)
-            var lha5CompressedBytes = await File.ReadAllBytesAsync(@"TestData\lha\test.txt.lh0.bin");
-            var input = new MemoryStream(lha5CompressedBytes);
-            var output = new MemoryStream();
-
-            var lha = new Lha
-            {
-                compsize = 15,
-                origsize = 15,
-            };
-
+            // arrange - lh0 uncompressed entry (bytes extracted from header end to next header)
             var header = new LzHeader
             {
                 Method = Constants.LZHUFF0_METHOD,
-                Name = "test1.info",
+                Name = "test.txt",
                 OriginalSize = 15,
                 PackedSize = 15,
+                HasCrc = true,
+                Crc = 17248
             };
+            var lh0CompressedBytes = await File.ReadAllBytesAsync(@"TestData\lha\test.txt.lh0.bin");
+            var input = new MemoryStream(lh0CompressedBytes);
+            var output = new MemoryStream();
 
-            // act - extract lha0 uncompressed header
-            var crcIo = new CrcIo(lha);
-            var lhExt = new LhExt(lha, crcIo);
+            // act - extract lh0 uncompressed header
+            var lhExt = new LhExt();
             lhExt.ExtractOne(input, output, header);
 
             // assert - compare uncompressed with expected bytes
@@ -43,28 +37,22 @@
         [Fact]
         public async Task WhenExtractCompressedLh5DataThenBytesAreEqual()
         {
-            // arrange - lha5 compressed entry (bytes extracted from header end to next header)
-            var lha5CompressedBytes = await File.ReadAllBytesAsync(@"TestData\lha\test1.info.lh5.bin");
-            var input = new MemoryStream(lha5CompressedBytes);
-            var output = new MemoryStream();
-
-            var lha = new Lha
-            {
-                compsize = 435,
-                origsize = 900,
-            };
-
+            // arrange - lh5 compressed entry (bytes extracted from header end to next header)
             var header = new LzHeader
             {
                 Method = Constants.LZHUFF5_METHOD,
                 Name = "test1.info",
                 OriginalSize = 900,
                 PackedSize = 435,
+                HasCrc = true,
+                Crc = 11704
             };
+            var lh5CompressedBytes = await File.ReadAllBytesAsync(@"TestData\lha\test1.info.lh5.bin");
+            var input = new MemoryStream(lh5CompressedBytes);
+            var output = new MemoryStream();
 
             // act - extract lha5 compressed header
-            var crcIo = new CrcIo(lha);
-            var lhExt = new LhExt(lha, crcIo);
+            var lhExt = new LhExt();
             lhExt.ExtractOne(input, output, header);
 
             // assert - compare uncompressed with expected bytes

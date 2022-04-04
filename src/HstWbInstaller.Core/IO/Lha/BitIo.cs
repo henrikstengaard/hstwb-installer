@@ -17,8 +17,8 @@
         
         public bool unpackable;
         // https://github.com/jca02266/lha/blob/master/src/lha.h#L362
-        private int origsize;
-        private int compsize; 
+        public int origsize;
+        public int compsize; 
         
         public BitIo(Stream stream, int origsize, int compsize)
         {

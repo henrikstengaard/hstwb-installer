@@ -1,42 +1,47 @@
 ﻿namespace HstWbInstaller.Core.Tests.CompressionTests
 {
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Extensions;
     using IO.Lha;
     using Xunit;
 
     public class GivenLhaArchive
     {
         [Fact]
-        public async Task WhenReadAmigaLhaFileThenHeadersAreReturned()
+        public async Task WhenExtractLhaEntriesDataThenDataIsReturned()
         {
             // arrange - open lha file
             var path = @"TestData\Lha\amiga.lha";
             await using var stream = File.OpenRead(path);
             var lhaReader = new LhaReader(stream, Encoding.GetEncoding("ISO-8859-1"));
+            var lhExt = new LhExt();
 
-            // act - read entries from lha file
-            var entries = new List<LzHeader>();
+            // act - read entries from lha file until header is null
             LzHeader header;
             do
             {
+                // read next header
                 header = await lhaReader.Read();
 
+                // skip, if header is null (end of archive)
                 if (header == null)
                 {
                     continue;
                 }
 
-                entries.Add(header);
+                // read packed bytes for entry
+                var packedBytes = await stream.ReadBytes((int)header.PackedSize);
+                
+                // extract packed bytes for entry
+                var input = new MemoryStream(packedBytes);
+                var output = new MemoryStream();
+                lhExt.ExtractOne(input, output, header);
+                
+                // assert - header original size is equal to uncompressed output
+                Assert.Equal(header.OriginalSize, output.Length);
             } while (header != null);
-            
-            // assert - entries have been read from lha file
-            Assert.NotEmpty(entries);
-            var expectedEntryNames = new[] { "test.txt", "test1.info", @"test1\test1.txt", @"test1\test2.info", @"test1\test2\test2.txt" };
-            Assert.Equal(expectedEntryNames, entries.Select(x => x.Name));
         }
     }
 }

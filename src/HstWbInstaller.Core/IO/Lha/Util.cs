@@ -8,7 +8,7 @@
         //private static bool text_mode;
         // https://github.com/jca02266/lha/blob/03475355bc6311f7f816ea9a88fb34a0029d975b/src/util.c
 
-        public static int CopyFile(Stream source, Stream destination, int size, bool text_mode, int text_flg, CrcIo crcIo)
+        public static int CopyFile(Stream source, Stream destination, int size, bool textMode, CrcIo crcIo)
         {
             /* return: size of source file */
             // FILE *f1;
@@ -21,19 +21,18 @@
             // char* buf;
             int rsize = 0;
 
-            if (!text_mode)
-                text_flg = 0;
-
             //buf = (char *)xmalloc(BUFFERSIZE);
             var buf = new byte[Constants.BUFFERSIZE];
-            //if (!crc.HasValue)
-            //    crc = CrcIo.InitializeCrc();
-            if (text_flg != 0)
+            // if (!crc.HasValue)
+            //     crc = CrcIo.InitializeCrc();
+            if (!textMode)
+            {
                 crcIo.init_code_cache();
+            }
             while (size > 0)
             {
                 /* read */
-                if (text_flg == 1)
+                if (textMode)
                 {
                     xsize = (ushort)crcIo.fread_txt(buf, Constants.BUFFERSIZE, source);
                     if (xsize == 0)
