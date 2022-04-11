@@ -19,15 +19,15 @@
         {
             if (!Writable)
             {
-                return new WindowsPhysicalDriveStream(Path, Writable);
+                return new WindowsPhysicalDriveStream(Path, Size, Writable);
             }
             
             foreach (var path in DriveLetters.ToList().Select(driveLetter => @"\\.\" + driveLetter + @""))
             {
-                using var win32RawDisk = new Win32RawDisk(path, true);
+                using var win32RawDisk = new Win32RawDisk(path, Size, true);
             }
 
-            return new WindowsPhysicalDriveStream(Path, Writable);
+            return new WindowsPhysicalDriveStream(Path, Size, Writable);
         }
     }
 }

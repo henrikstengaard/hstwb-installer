@@ -51,7 +51,7 @@
                 .Join(wmicLogicalDiskToPartitions, disk => disk.Dependent, logical => logical.Antecedent,
                     (_, logical) => logical.Dependent);
             return new WindowsPhysicalDrive(wmicDiskDrive.Name, wmicDiskDrive.MediaType, wmicDiskDrive.Model,
-                wmicDiskDrive.Size, driveLetters);
+                wmicDiskDrive.Size ?? 0, driveLetters);
         }
 
         private async Task<string> GetWmicDiskDriveListCsv()

@@ -34,6 +34,18 @@
         }
 
         [Fact]
+        public async Task WhenParseCsvOutputFromWmicWithoutSizeThenWmicDiskDrivesAreReturned()
+        {
+            var wmicDiskDrives = WmicReader.ParseWmicCsv<WmicDiskDrive>(await File.ReadAllTextAsync(@"TestData\wmic-diskdrive-list-0-size.csv")).ToList();
+
+            Assert.NotNull(wmicDiskDrives);
+            Assert.Single(wmicDiskDrives);
+
+            var wmicDiskDrive1 = wmicDiskDrives[0];
+            Assert.Null(wmicDiskDrive1.Size);
+        }
+        
+        [Fact]
         public async Task WhenParseCsvOutputFromWmicDiskDriveToDiskPartitionThenWmicDiskDriveToDiskPartitionsAreReturned()
         {
             var wmicDiskDriveToDiskPartitions = WmicReader

@@ -10,10 +10,10 @@
         // private readonly SafeFileHandle safeFileHandle;
         private readonly Win32RawDisk win32RawDisk;
 
-        public WindowsPhysicalDriveStream(string path, bool writable)
+        public WindowsPhysicalDriveStream(string path, long size, bool writable)
         {
             this.CanWrite = writable;
-            this.win32RawDisk = new Win32RawDisk(path, writable);
+            this.win32RawDisk = new Win32RawDisk(path, size, writable);
         }
 
         protected override void Dispose(bool disposing)
@@ -45,7 +45,7 @@
         {
             if (offset != 0)
             {
-                throw new ArgumentException("'Only offset 0 is allow", nameof(offset));
+                throw new ArgumentException("Only offset 0 is allow", nameof(offset));
             }
 
             win32RawDisk.Write(buffer);

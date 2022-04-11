@@ -1,0 +1,6 @@
+﻿
+
+Node,Availability,BytesPerSector,Capabilities,CapabilityDescriptions,CompressionMethod,ConfigManagerErrorCode,ConfigManagerUserConfig,DefaultBlockSize,Description,DeviceID,ErrorCleared,ErrorDescription,ErrorMethodology,Index,InstallDate,InterfaceType,LastErrorCode,Manufacturer,MaxBlockSize,MaxMediaSize,MediaLoaded,MediaType,MinBlockSize,Model,Name,NeedsCleaning,NumberOfMediaSupported,Partitions,PNPDeviceID,PowerManagementCapabilities,PowerManagementSupported,SCSIBus,SCSILogicalUnit,SCSIPort,SCSITargetId,SectorsPerTrack,Signature,Size,Status,StatusInfo,SystemName,TotalCylinders,TotalHeads,TotalSectors,TotalTracks,TracksPerCylinder
+
+DESKTOP-3LFFCTK,,,,,,0,FALSE,,Disk drive,\\.\PHYSICALDRIVE2,,,,2,,USB,,(Standard disk drives),,,TRUE,,,Generic STORAGE DEVICE USB Device,\\.\PHYSICALDRIVE2,,,0,USBSTOR\DISK&amp;VEN_GENERIC&amp;PROD_STORAGE_DEVICE&amp;REV_9451\000000009451&amp;0,,,0,0,0,0,,0,,OK,,DESKTOP-3LFFCTK,,,,,
+

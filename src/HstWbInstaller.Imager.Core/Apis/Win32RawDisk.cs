@@ -13,12 +13,14 @@
     // http://buiba.blogspot.com/2009/06/using-winapi-createfile-readfile.html
     public class Win32RawDisk : IDisposable
     {
+        private readonly long size;
         private readonly bool writeable;
         private readonly SafeFileHandle safeFileHandle;
         private bool disposed;
 
-        public Win32RawDisk(string path, bool writeable = false)
+        public Win32RawDisk(string path, long size, bool writeable = false)
         {
+            this.size = size;
             this.writeable = writeable;
             safeFileHandle = DeviceApi.CreateFile(path,
                 writeable ? DeviceApi.GENERIC_READ | DeviceApi.GENERIC_WRITE : DeviceApi.GENERIC_READ,
@@ -126,7 +128,7 @@
 
         public long Size()
         {
-            return Seek(0, SeekOrigin.End);
+            return size;
         }        
         
         protected virtual void Dispose(bool disposing)
