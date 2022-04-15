@@ -6,6 +6,9 @@
     /// </summary>
     public class CachedBlock
     {
+        private readonly int blockSize;
+
+        private readonly globaldata g;
         /* Cached blocks in general
         */
         // struct cachedblock
@@ -46,11 +49,83 @@
         //UBYTE	dummy;					// pad to make offset even
         
         public IBlock blk;
-        
-        public anodeblock ANodeBlock => blk as anodeblock;
-        public indexblock IndexBlock => blk as indexblock;
-        public rootblockextension rblkextension => blk as rootblockextension;
-        public deldirblock deldirblock => blk as deldirblock;
-        public BitmapBlock BitmapBlock => blk as BitmapBlock;
+
+        public CachedBlock(int blockSize, globaldata g)
+        {
+            this.blockSize = blockSize;
+            this.g = g;
+        }
+
+        public anodeblock ANodeBlock
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new anodeblock(blockSize);
+                }
+                return blk as anodeblock;
+            }
+        }
+
+        public indexblock IndexBlock
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new indexblock(blockSize);
+                }
+                return blk as indexblock;
+            }
+        }
+
+        public rootblockextension rblkextension
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new rootblockextension(blockSize);
+                }
+                return blk as rootblockextension;
+            }
+        }
+
+        public deldirblock deldirblock
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new deldirblock(blockSize);
+                }
+                return blk as deldirblock;
+            }
+        }
+
+        public dirblock dirblock
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new dirblock(blockSize);
+                }
+                return blk as dirblock;
+            }
+        }
+
+        public BitmapBlock BitmapBlock
+        {
+            get
+            {
+                if (blk == null)
+                {
+                    blk = new BitmapBlock(blockSize, g);
+                }
+                return blk as BitmapBlock;
+            }
+        }
     }
 }

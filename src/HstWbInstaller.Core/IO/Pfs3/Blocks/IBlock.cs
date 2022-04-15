@@ -6,7 +6,7 @@
     public interface IBlock
     {
         ushort id { get; set; }
-        ushort not_used { get; set; }
+        ushort not_used_1 { get; set; }
         uint datestamp { get; set; }
     }
 }

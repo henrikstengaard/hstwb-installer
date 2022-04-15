@@ -113,11 +113,21 @@
             await stream.WriteBytes(LittleEndianConverter.ConvertToAsciiBytes(value));
         }
 
+        public static async Task WriteLittleEndianInt16(this Stream stream, short value)
+        {
+            await stream.WriteBytes(LittleEndianConverter.ConvertToBytes(value));
+        }
+        
         public static async Task WriteLittleEndianInt32(this Stream stream, int value)
         {
             await stream.WriteBytes(LittleEndianConverter.ConvertToBytes(value));
         }
 
+        public static async Task WriteLittleEndianUInt16(this Stream stream, ushort value)
+        {
+            await stream.WriteBytes(LittleEndianConverter.ConvertToBytes(value));
+        }
+        
         public static async Task WriteLittleEndianUInt32(this Stream stream, uint value)
         {
             await stream.WriteBytes(LittleEndianConverter.ConvertToBytes(value));

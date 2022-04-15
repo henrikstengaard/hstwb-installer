@@ -1,6 +1,7 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
     using System;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Directory
@@ -8,7 +9,7 @@
         public static bool IsDelDir(objectinfo oi) => oi.deldir.special == Constants.SPECIAL_DELDIR;
         public static bool IsDelFile(objectinfo oi) => oi.deldir.special == Constants.SPECIAL_DELFILE;
         
-        public static CachedBlock MakeDirBlock(uint blocknr, uint anodenr, uint rootanodenr, uint parentnr, globaldata g)
+        public static async Task<CachedBlock> MakeDirBlock(uint blocknr, uint anodenr, uint rootanodenr, uint parentnr, globaldata g)
         {
             // struct canode anode;
             // struct cdirblock *blk;
@@ -23,10 +24,10 @@
                 blocknr = blocknr,
                 next = 0
             };
-            anodes.SaveAnode(anode, anodenr, g);
+            await anodes.SaveAnode(anode, anodenr, g);
 
-            var blk = Lru.AllocLRU(g);
-            var dirblock = new dirblock();
+            var blk = await Lru.AllocLRU(g);
+            var dirblock = new dirblock((int)g.blocksize);
             dirblock.anodenr = rootanodenr;
             dirblock.parent = parentnr;
             blk.blk = dirblock;
@@ -35,7 +36,7 @@
             blk.oldblocknr = 0;
             blk.changeflag = true;
 
-            Init.Hash(blk, volume.dirblks, Constants.HASHM_DIR);
+            Macro.Hash(blk, volume.dirblks, Constants.HASHM_DIR);
             Cache.LOCK(blk, g);
             return blk;
         }      
@@ -46,11 +47,11 @@
  * There must be a currentvolume
  * Returns error (0 = success)
  */
-        public static void SetDeldir(int nbr, globaldata g) 
+        public static async Task SetDeldir(int nbr, globaldata g) 
         {
             var rext = g.currentvolume.rblkextension;
             //struct cdeldirblock *ddblk, *next;
-            CachedBlock ddblk, next;
+            CachedBlock ddblk;
             lockentry list;
             int i;
             //ULONG error = 0;
@@ -79,7 +80,7 @@
                 }
             }
 
-            Update.UpdateDisk(g);
+            await Update.UpdateDisk(g);
 
             /* flush cache */
             for (var node = Macro.HeadOf(g.currentvolume.deldirblks); node != null && node.Next != null; node = node.Next)
@@ -104,7 +105,7 @@
             /* allocate wanted ones */
             for (i = rext_blk.deldirsize; i < nbr; i++)
             {
-                if (NewDeldirBlock((ushort)i,g) == null)
+                if (await NewDeldirBlock((ushort)i,g) == null)
                 {
                     nbr = i+1;
                     // error = ERROR_DISK_FULL;
@@ -125,11 +126,11 @@
             rext_blk.deldirsize = (ushort)nbr;
             g.deldirenabled = nbr > 0;
 
-            Update.MakeBlockDirty(rext, g);
-            Update.UpdateDisk(g);
+            await Update.MakeBlockDirty(rext, g);
+            await Update.UpdateDisk(g);
         }
         
-        public static CachedBlock NewDeldirBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> NewDeldirBlock(ushort seqnr, globaldata g)
         {
             // cdeldirblock
             var volume = g.currentvolume;
@@ -146,7 +147,7 @@
             }
 
             /* alloc block and LRU slot */
-            if ((ddblk = Lru.AllocLRU(g)) == null || (blocknr = Allocation.AllocReservedBlock(g)) == 0 )
+            if ((ddblk = await Lru.AllocLRU(g)) == null || (blocknr = Allocation.AllocReservedBlock(g)) == 0 )
             {
                 if (ddblk != null)
                     Lru.FreeLRU(ddblk, g);

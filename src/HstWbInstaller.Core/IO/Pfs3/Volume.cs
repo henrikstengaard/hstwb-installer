@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Volume
@@ -10,15 +11,13 @@
  * uses g->geom!
  * returns 0 is fails
  */
-        public static volumedata MakeVolumeData(RootBlock rootblock, globaldata g)
+        public static async Task<volumedata> MakeVolumeData(RootBlock rootblock, globaldata g)
         {
             //  struct volumedata *volume;
             //  struct MinList *list;
             //
             // ENTER("MakeVolumeData");
 
-            listentry list;
-            
             // volume = AllocMemPR (sizeof(struct volumedata), g);
             var volume = new volumedata
             {
@@ -72,11 +71,12 @@
             /* load rootblock extension (if it is present) */
             if (rootblock.Extension > 0 && rootblock.Options.HasFlag(RootBlock.DiskOptionsEnum.MODE_EXTENSION))
             {
-                var rext = new CachedBlock();
+                var rext = new CachedBlock((int)g.blocksize, g);
             
                 // rext = AllocBufmemR(sizeof(struct cachedblock) +rootblock->reserved_blksize, g);
                 // memset(rext, 0, sizeof(struct cachedblock) +rootblock->reserved_blksize);
-                if (!Disk.RawRead(volume.rescluster, rootblock.Extension, g, out var blk))
+                IBlock blk;
+                if ((blk = await Disk.RawRead<rootblockextension>(volume.rescluster, rootblock.Extension, g)) == null)
                 {
                     throw new IOException("AFS_ERROR_READ_EXTENSION");
                 }
@@ -152,8 +152,15 @@
             //         node = next;
             //     }
             // }
-            FreeMinList(volume.anblks, g);
-            FreeMinList(volume.dirblks, g);
+            foreach (var list in volume.anblks)
+            {
+                FreeMinList(list, g);
+            }
+            foreach (var list in volume.dirblks)
+            {
+                FreeMinList(list, g);
+            }
+            
             FreeMinList(volume.indexblks, g);
             FreeMinList(volume.bmblks, g);
             FreeMinList(volume.superblks, g);

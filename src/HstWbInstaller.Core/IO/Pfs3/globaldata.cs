@@ -44,6 +44,7 @@
         public Stream stream;
         
         public ushort infoblockshift;
+        public bool updateok;
 
         public globaldata(Stream stream)
         {
@@ -51,10 +52,13 @@
             glob_anodedata = new anode_data_s();
             glob_allocdata = new allocation_data_s();
             this.stream = stream;
+            dc = new diskcache();
         }
 
         public uint TotalSectors { get; set; }
         public bool SuperMode { get; set; }
-        public RootBlock Rootblock { get; set; }
+        
+        public diskcache dc;                /* cache to make '196 byte mode' faster */
+
     }
 }

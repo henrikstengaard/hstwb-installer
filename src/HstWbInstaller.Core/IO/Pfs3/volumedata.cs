@@ -15,8 +15,8 @@
 //#endif
 
         public LinkedList<lockentry> fileentries; /* all locks and open files             */
-        public LinkedList<CachedBlock> anblks; //[Constants.HASHM_ANODE+1];   /* anode block hash table           */
-        public LinkedList<CachedBlock> dirblks; //[Constants.HASHM_DIR+1];    /* dir block hash table             */
+        public LinkedList<CachedBlock>[] anblks; //[Constants.HASHM_ANODE+1];   /* anode block hash table           */
+        public LinkedList<CachedBlock>[] dirblks; //[Constants.HASHM_DIR+1];    /* dir block hash table             */
         public LinkedList<CachedBlock> indexblks; /* cached index blocks              */
         public LinkedList<CachedBlock> bmblks; /* cached bitmap blocks                 */
         public LinkedList<CachedBlock> superblks; /* cached super blocks					*/
@@ -35,8 +35,8 @@
         public volumedata()
         {
             fileentries = new LinkedList<lockentry>();
-            anblks = new LinkedList<CachedBlock>();
-            dirblks = new LinkedList<CachedBlock>();
+            anblks = new LinkedList<CachedBlock>[Constants.HASHM_ANODE + 1];
+            dirblks = new LinkedList<CachedBlock>[Constants.HASHM_DIR + 1];
             indexblks = new LinkedList<CachedBlock>();
             bmblks = new LinkedList<CachedBlock>();
             superblks = new LinkedList<CachedBlock>();
@@ -44,6 +44,16 @@
             bmindexblks = new LinkedList<CachedBlock>();
             anodechainlist = new LinkedList<string>();
             notifylist = new LinkedList<string>();
+
+            for (var i = 0; i < anblks.Length; i++)
+            {
+                anblks[i] = new LinkedList<CachedBlock>();
+            }
+            
+            for (var i = 0; i < dirblks.Length; i++)
+            {
+                dirblks[i] = new LinkedList<CachedBlock>();
+            }
         }
     }
 }

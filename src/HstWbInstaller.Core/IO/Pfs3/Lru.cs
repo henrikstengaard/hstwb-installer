@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Lru
@@ -10,7 +11,7 @@
         private const int MIN_BUFFERS = 10;
         private const int MAX_BUFFERS = 600;
         private const int NEW_LRU_ENTRIES = 5;
-        
+
 /* Allocate LRU queue
 */
         public static void InitLRU(globaldata g, ushort reservedBlksize)
@@ -41,20 +42,15 @@
 
             g.glob_lrudata.LRUarray =
                 new LinkedList<CachedBlock>(Enumerable.Range(1, (int)g.glob_lrudata.poolsize)
-                    .Select(_ => new CachedBlock()));
+                    .Select(_ => new CachedBlock((int)g.blocksize, g)));
         }
-        
-        public static CachedBlock CheckCache(LinkedList<CachedBlock> list, ushort mask, uint blocknr, globaldata g)
-        {
-            var head = (blocknr / 2) & mask;
-            var index = 0;
-            for (var block = list.First; block != null && block.Next != null; index++, block = block.Next)
-            {
-                if (index < head)
-                {
-                    continue;
-                }
 
+        public static CachedBlock CheckCache(LinkedList<CachedBlock>[] list, ushort mask, uint blocknr, globaldata g)
+        {
+            for (var block = Macro.HeadOf(list[(blocknr / 2) & mask]);
+                 block != null && block.Next != null;
+                 block = block.Next)
+            {
                 if (block.Value.blocknr == blocknr)
                 {
                     MakeLRU(block.Value, g);
@@ -79,7 +75,7 @@
             //MinRemove(LRU_CHAIN(blk));                          \
             //memset(blk, 0, SIZEOF_CACHEDBLOCK);              \
             Macro.MinRemove(blk, g);
-            
+
             //MinAddHead(&g->glob_lrudata.LRUpool, LRU_CHAIN(blk));            \
             Macro.MinAddHead(g.glob_lrudata.LRUpool, blk);
         }
@@ -88,7 +84,7 @@
 ** it current LRU.
 ** Returns NULL if none available
 */
-        public static CachedBlock AllocLRU(globaldata g)
+        public static async Task<CachedBlock> AllocLRU(globaldata g)
         {
             // struct lru_cachedblock* lrunode;
             // struct lru_cachedblock** nlru;
@@ -108,10 +104,12 @@
             retry:
             if (g.glob_lrudata.LRUpool.Count == 0)
             {
-                for(lrunode = g.glob_lrudata.LRUqueue.Last; lrunode != null && lrunode.Previous != null; lrunode = lrunode.Previous)
-                // for (lrunode = (struct lru_cachedblock *)g->glob_lrudata.LRUqueue.mlh_TailPred;
-                // lrunode->prev;
-                // lrunode = lrunode->prev)
+                for (lrunode = g.glob_lrudata.LRUqueue.Last;
+                     lrunode != null && lrunode.Previous != null;
+                     lrunode = lrunode.Previous)
+                    // for (lrunode = (struct lru_cachedblock *)g->glob_lrudata.LRUqueue.mlh_TailPred;
+                    // lrunode->prev;
+                    // lrunode = lrunode->prev)
                 {
                     /* skip locked blocks */
                     if (Cache.ISLOCKED(lrunode.Value, g))
@@ -122,7 +120,8 @@
                         //DB(Trace(1, "AllocLRU", "ResToBeFreed %lx\n", &lrunode->cblk));
                         ResToBeFreed(lrunode.Value.oldblocknr, g);
                         Update.UpdateDatestamp(lrunode.Value, g);
-                        if (!Disk.RawWrite(g.stream, lrunode.Value.blk, g.currentvolume.rescluster, lrunode.Value.blocknr, g))
+                        if (!(await Disk.RawWrite(g.stream, lrunode.Value.blk, g.currentvolume.rescluster,
+                                lrunode.Value.blocknr, g)))
                         {
                             // ULONG args[2];
                             // args[0] = lrunode->cblk.blocknr;
@@ -151,7 +150,8 @@
                     break;
                 // nlru[j + g->glob_lrudata.poolsize] = AllocVec((sizeof(struct lru_cachedblock) +SIZEOF_RESBLOCK)
                 //     , g->dosenvec->de_BufMemType | MEMF_CLEAR);
-                
+                nlru[j + g.glob_lrudata.poolsize] = new CachedBlock((int)g.blocksize, g);
+
                 if (nlru[j + g.glob_lrudata.poolsize] == null)
                 {
                     while (j >= 0)
@@ -167,8 +167,8 @@
 
             if (nlru == null)
             {
-                /* No suitable block found -> we are in trouble */
-                //NormalErrorMsg(AFS_ERROR_OUT_OF_BUFFERS, NULL, 1);
+            //     /* No suitable block found -> we are in trouble */
+            //     //NormalErrorMsg(AFS_ERROR_OUT_OF_BUFFERS, NULL, 1);
                 retries++;
                 if (retries > 3)
                     return null;
@@ -182,7 +182,8 @@
             for (j = 0; j < NEW_LRU_ENTRIES; j++, g.glob_lrudata.poolsize++)
             {
                 //MinAddHead(&g->glob_lrudata.LRUpool, g.glob_lrudata.LRUarray[g.glob_lrudata.poolsize]);
-                Macro.MinAddHead(g.glob_lrudata.LRUpool, g.glob_lrudata.LRUarray.ElementAt((int)g.glob_lrudata.poolsize));
+                Macro.MinAddHead(g.glob_lrudata.LRUpool,
+                    g.glob_lrudata.LRUarray.ElementAt((int)g.glob_lrudata.poolsize));
             }
 
             g.NumBuffers = g.glob_lrudata.poolsize;
@@ -201,13 +202,13 @@
             Cache.LOCK(lrunode.Value, g);
             return lrunode.Value;
         }
-        
+
 /* Adds a block to the ReservedToBeFreedCache
  */
         public static void ResToBeFreed(uint blocknr, globaldata g)
         {
             var alloc_data = g.glob_allocdata;
-        
+
             /* bug 00116, 13 June 1998 */
             if (blocknr != 0)
             {
@@ -230,6 +231,7 @@
                         // FreeMem(alloc_data.reservedtobefreed, sizeof(*newbuffer) * alloc_data.rtbf_size);
                         Array.Copy(alloc_data.reservedtobefreed, 0, newbuffer, 0, alloc_data.rtbf_size);
                     }
+
                     alloc_data.reservedtobefreed = newbuffer;
                     alloc_data.rtbf_size = newsize;
                     alloc_data.reservedtobefreed[alloc_data.rtbf_index++] = blocknr;
@@ -245,11 +247,11 @@
 //                  * updated
 //                  */
 //                 FreeReservedBlock (blocknr, g);
-                    Allocation.FreeReservedBlock (blocknr, g);
+                    Allocation.FreeReservedBlock(blocknr, g);
                 }
             }
         }
-        
+
 /* Makes a cached block ready for reuse:
 ** - Remove from queue
 ** - (dirblock) Decouple all references to the block
@@ -281,12 +283,12 @@
                     if (le.le.info.file.dirblock == block)
                     {
                         le.le.dirblocknr = block.blocknr;
-                        
+
                         // le->le.dirblockoffset = (UBYTE *)le->le.info.file.direntry - (UBYTE *)block;
                         // TODO: How to do calculate dirblockoffset in C#
                         // le.le.dirblockoffset = le.le.info.file.direntry - block;
 // #if DELDIR
-                        le.le.info.deldir.special = Constants.SPECIAL_FLUSHED;  /* flushed reference */
+                        le.le.info.deldir.special = Constants.SPECIAL_FLUSHED; /* flushed reference */
 // #else
 //                      le.Value.le.info.direntry = null;
 // #endif
@@ -302,7 +304,7 @@
                         // le.nextdirblockoffset = le.nextentry.direntry - block;
 // #if DELDIR
 // le->nextentry.direntry = (struct direntry *)SPECIAL_FLUSHED;
-        				le.nextentry.direntry = new direntry
+                        le.nextentry.direntry = new direntry
                         {
                             next = Constants.SPECIAL_FLUSHED
                         };

@@ -1,6 +1,7 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
     using System;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Allocation
@@ -9,7 +10,7 @@
  * the following routines (NewBitmapBlock & NewBitmapIndexBlock are
  * primarily (read only) used by Format
  */
-        public static CachedBlock NewBitmapBlock(uint seqnr, globaldata g)
+        public static async Task<CachedBlock> NewBitmapBlock(uint seqnr, globaldata g)
         {
             CachedBlock blok;
             CachedBlock indexblock;
@@ -23,13 +24,13 @@
             /* get indexblock */
             indexblnr = seqnr / andata.indexperblock;
             indexoffset = seqnr % andata.indexperblock;
-            if ((indexblock = GetBitmapIndex((ushort)indexblnr, g)) == null)
-                if ((indexblock = NewBitmapIndexBlock((ushort)indexblnr, g)) == null)
+            if ((indexblock = await GetBitmapIndex((ushort)indexblnr, g)) == null)
+                if ((indexblock = await NewBitmapIndexBlock((ushort)indexblnr, g)) == null)
                     return null;
 
             oldlock = indexblock.used;
             Cache.LOCK(indexblock, g);
-            if ((blok = Lru.AllocLRU(g)) == null || (blocknr = AllocReservedBlock(g)) == 0)
+            if ((blok = await Lru.AllocLRU(g)) == null || (blocknr = AllocReservedBlock(g)) == 0)
             {
                 return null;
             }
@@ -39,9 +40,12 @@
             blok.volume = volume;
             blok.blocknr = blocknr;
             blok.used = 0;
-            var blok_blk = blok.BitmapBlock;
-            blok_blk.id = Constants.BMBLKID;
-            blok_blk.seqnr = seqnr;
+            var blok_blk = new BitmapBlock((int)g.blocksize, g)
+            {
+                id = Constants.BMBLKID,
+                seqnr = seqnr
+            };
+            blok.blk = blok_blk;
             blok.changeflag = true;
 
             /* fill bitmap */
@@ -53,19 +57,19 @@
             }
 
             Macro.MinAddHead(volume.bmblks, blok);
-            Update.MakeBlockDirty(indexblock, g);
+            await Update.MakeBlockDirty(indexblock, g);
             indexblock.used = oldlock;  	   // unlock;
 
             return blok;
         }
         
-        public static CachedBlock NewBitmapIndexBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> NewBitmapIndexBlock(ushort seqnr, globaldata g)
         {
             CachedBlock blok;
             var volume = g.currentvolume;
 
             if (seqnr > (g.SuperMode ? Constants.MAXBITMAPINDEX : Constants.MAXSMALLBITMAPINDEX) ||
-                (blok = Lru.AllocLRU(g)) == null)
+                (blok = await Lru.AllocLRU(g)) == null)
             {
                 return null;
             }
@@ -167,7 +171,7 @@
             }
         }
         
-        public static CachedBlock GetBitmapIndex(ushort nr, globaldata g)
+        public static async Task<CachedBlock> GetBitmapIndex(ushort nr, globaldata g)
         {
             uint blocknr;
             CachedBlock indexblk;
@@ -187,13 +191,15 @@
             /* not in cache, put it in */
             if (nr > (g.SuperMode ? Constants.MAXBITMAPINDEX : Constants.MAXSMALLBITMAPINDEX) ||
                 (blocknr = volume.rootblk.idx.large.bitmapindex[nr]) == 0 ||
-                (indexblk = Lru.AllocLRU(g)) == null)
+                (indexblk = await Lru.AllocLRU(g)) == null)
             {
                 return null;
             }
 
             // DB(Trace(10,"GetBitmapIndex", "seqnr = %ld blocknr = %lx\n", nr, blocknr));
-            if (!Disk.RawRead(g.currentvolume.rescluster, blocknr, g, out var blk)) {
+            IBlock blk;
+            if ((blk = await Disk.RawRead<BitmapBlock>(g.currentvolume.rescluster, blocknr, g)) == null)
+            {
                 Lru.FreeLRU(indexblk, g);
                 return null;
             }
@@ -222,6 +228,116 @@
 
             Cache.LOCK(indexblk, g);
             return indexblk;
+        }
+        
+/*
+ * Update bitmap
+ */
+        public static async Task UpdateFreeList(globaldata g)
+        {
+            CachedBlock bitmap = null;
+            ushort i;
+            uint longnr, blocknr, bmseqnr, newbmseqnr, bmoffset, bitnr;
+            var alloc_data = g.glob_allocdata;
+
+            /* sort the free list */
+            // not done right now
+
+            /* free all blocks in list */
+            bmseqnr = UInt32.MaxValue;
+            for (i = 0; i < alloc_data.tobefreed_index; i++)
+            {
+                for ( blocknr = alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
+                     blocknr < alloc_data.tobefreed[i][Constants.TBF_SIZE] + alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
+                     blocknr++ )
+                {
+                    /* now free block blocknr */
+                    bitnr = blocknr - alloc_data.bitmapstart;
+                    longnr = bitnr / 32;
+                    newbmseqnr = longnr / alloc_data.longsperbmb;
+                    bmoffset = longnr % alloc_data.longsperbmb;
+                    if(newbmseqnr != bmseqnr)
+                    {
+                        bmseqnr = newbmseqnr;
+                        bitmap = await GetBitmapBlock(bmseqnr, g);
+                    }
+                    bitmap.BitmapBlock.bitmap[bmoffset] |= (uint)(1<<(int)(31-(bitnr % 32)));
+                    await Update.MakeBlockDirty(bitmap, g);
+                }
+
+                alloc_data.clean_blocksfree += alloc_data.tobefreed[i][Constants.TBF_SIZE];
+            }
+
+            /* update global data */
+            /* alloc_data.alloc_available should already be equal blocksfree - alwaysfree */
+            alloc_data.tobefreed_index = 0;
+            alloc_data.tbf_resneed = 0;
+            g.RootBlock.BlocksFree = alloc_data.clean_blocksfree;
+            g.currentvolume.rootblockchangeflag = true;
+        }
+        
+/* this routine is analogous GetAnodeBlock()
+ * GetBitmapIndex is analogous GetIndexBlock()
+ */
+        public static async Task<CachedBlock> GetBitmapBlock(uint seqnr, globaldata g)
+        {
+            uint blocknr, temp;
+            CachedBlock bmb;
+            CachedBlock indexblock;
+            var volume = g.currentvolume;
+            var andata = g.glob_anodedata;
+
+            /* check cache */
+            for (var node = Macro.HeadOf(volume.bmblks); node != null && node.Next != null; node = node.Next)
+            {
+                bmb = node.Value;
+                if (bmb.BitmapBlock.seqnr == seqnr)
+                {
+                    Lru.MakeLRU(bmb, g);
+                    return bmb;
+                }
+            }
+
+            /* not in cache, put it in */
+            /* get the indexblock */
+            temp = Init.divide(seqnr, andata.indexperblock);
+            if ((indexblock = await GetBitmapIndex((ushort)temp /* & 0xffff */, g)) == null)
+                return null;
+
+            /* get blocknr */
+            if ((blocknr = (uint)indexblock.IndexBlock.index[temp>>16]) == 0 ||
+                (bmb = await Lru.AllocLRU(g)) == null)
+                return null;
+
+            // DB(Trace(10,"GetBitmapBlock", "seqnr = %ld blocknr = %lx\n", seqnr, blocknr));
+
+            /* read it */
+            var blk = await Disk.RawRead<BitmapBlock>(g.currentvolume.rescluster, blocknr, g);
+            if (blk == null)
+            {
+                Lru.FreeLRU(bmb, g);
+                return null;
+            }
+
+            /* check it */
+            if (bmb.blk.id != Constants.BMBLKID)
+            {
+                // ULONG args[2];
+                // args[0] = bmb->blk.id;
+                // args[1] = blocknr;
+                Lru.FreeLRU(bmb, g);
+                // ErrorMsg (AFS_ERROR_DNV_WRONG_BMID, args, g);
+                return null;
+            }
+	
+            /* initialize it */
+            bmb.volume = volume;
+            bmb.blocknr = blocknr;
+            bmb.used = 0;
+            bmb.changeflag = false;
+            Macro.MinAddHead(volume.bmblks, bmb);
+
+            return bmb;
         }
     }
 }

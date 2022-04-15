@@ -128,10 +128,6 @@
         public const int ID_VALIDATING = 81; /* Disk is currently being validated */
         public const int ID_VALIDATED = 82; /* Disk is consistent and writeable */
 
-        /* cache grootte */
-        public const int RTBF_CACHE_SIZE = 512;
-        public const int TBF_CACHE_SIZE = 256;
-
         /* Cache hashing table mask values for dir and anode */
         public const int HASHM_DIR = 0x1f;
         public const int HASHM_ANODE = 0x7;
@@ -153,5 +149,26 @@
         /* maximum number of entries per block, max deldirblock seqnr */
         public const int DELENTRIES_PER_BLOCK = 31;
         public const int MAXDELDIR = 31;
+
+        public const int DATACACHELEN = 32;
+        public const int DATACACHEMASK = DATACACHELEN - 1;
+        
+/* cache grootte */
+            public const int RTBF_CACHE_SIZE = 512;
+            public const int TBF_CACHE_SIZE = 256;
+
+/* update thresholds */
+            public const int RTBF_THRESHOLD = 256;
+            public const int RTBF_CHECK_TH = 128;
+            public const int RTBF_POSTPONED_TH = 48;
+            public const int TBF_THRESHOLD = 252;
+            public const int RESFREE_THRESHOLD = 10;
+
+/* indices in tobefreed array */
+            public const int TBF_BLOCKNR = 0;
+            public const int TBF_SIZE = 1;
+
+/* buffer for AllocReservedBlockSave */
+            public const int RESERVED_BUFFER = 10;
     }
 }

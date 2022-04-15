@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Init
@@ -29,7 +30,22 @@
             g.directsize = 16 * 1024 >> i;
             
             /* mode now always big */
-            g.harddiskmode = true;       
+            g.harddiskmode = true;     
+            
+            /* data cache */
+            g.dc = new diskcache
+            {
+                size = Constants.DATACACHELEN,
+                mask = Constants.DATACACHEMASK,
+                roving = 0,
+                ref_ = new reftable[Constants.DATACACHELEN],
+                data = new byte[Constants.DATACACHELEN * g.blocksize]
+            };
+
+            for (i = 0; i < g.dc.ref_.Length; i++)
+            {
+                g.dc.ref_[i] = new reftable();
+            }
         }
         
         /* Reconfigure the filesystem from a rootblock
@@ -37,12 +53,12 @@
         ** g->firstblock and g->lastblock.
         ** rootblockextension must have been loaded
         */
-        public static void InitModules(volumedata volume, bool formatting, globaldata g)
+        public static async Task InitModules(volumedata volume, bool formatting, globaldata g)
         {
             var rootBlock = volume.rootblk;
             var blk = volume.rblkextension.rblkextension;
 
-            g.Rootblock = rootBlock;
+            g.RootBlock = rootBlock;
             g.uip = false;
             g.harddiskmode = rootBlock.Options.HasFlag(RootBlock.DiskOptionsEnum.MODE_HARDDISK);
             g.anodesplitmode = rootBlock.Options.HasFlag(RootBlock.DiskOptionsEnum.MODE_SPLITTED_ANODES);
@@ -55,7 +71,7 @@
             g.largefile = rootBlock.Options.HasFlag(RootBlock.DiskOptionsEnum.MODE_LARGEFILE) && 
                           g.dirextension && Constants.LARGE_FILE_SIZE;
 
-            InitAnodes(volume, formatting, g);
+            await InitAnodes(volume, formatting, g);
             InitAllocation(volume, g);
 
             if (!formatting)
@@ -64,7 +80,7 @@
             }
         }
         
-        public static void InitAnodes(volumedata volume, bool formatting, globaldata g)
+        public static async Task InitAnodes(volumedata volume, bool formatting, globaldata g)
         {
             if(!g.harddiskmode)
             {
@@ -84,13 +100,13 @@
                 ((Constants.MAXSUPER+1) * andata.indexperblock * andata.indexperblock * andata.anodesperblock - 1) :
                 (Constants.MAXSMALLINDEXNR * andata.indexperblock - 1));
             andata.reserved = (ushort)(andata.anodesperblock - Constants.RESERVEDANODES);
-            anodes.MakeAnodeBitmap(formatting, g);
+            await anodes.MakeAnodeBitmap(formatting, g);
         }
         
 /* MODE_BIG has indexblocks, and negative blocknrs indicating freenode
 ** blocks instead of anodeblocks
 */
-        public static CachedBlock big_GetAnodeBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> big_GetAnodeBlock(ushort seqnr, globaldata g)
         {
             uint blocknr;
             uint temp;
@@ -103,7 +119,7 @@
 
             /* not in cache, put it in */
             /* get the indexblock */
-            var indexblock = anodes.GetIndexBlock((ushort)temp /*& 0xffff*/, g);
+            var indexblock = await anodes.GetIndexBlock((ushort)temp /*& 0xffff*/, g);
             if (indexblock == null)
             {
                 //DBERR(ErrorTrace(5, "GetAnodeBlock","ERR: index not found. %lu %lu %08lx\n", seqnr, andata.indexperblock, temp));
@@ -122,7 +138,7 @@
             if (ablock != null)
                 return ablock;
 
-            if ((ablock = Lru.AllocLRU(g)) == null)
+            if ((ablock = await Lru.AllocLRU(g)) == null)
             {
                 //     DBERR(ErrorTrace(5,"GetAnodeBlock","ERR: alloclru failed\n"));
                 return null;
@@ -131,7 +147,8 @@
             //DBERR(ErrorTrace(10,"GetAnodeBlock", "seqnr = %lu blocknr = %lu\n", seqnr, blocknr));
 
             /* read it */
-            if (!Disk.RawRead(g.currentvolume.rescluster, blocknr, g, out var blk))
+            IBlock blk;
+            if ((blk = await Disk.RawRead<anodeblock>(g.currentvolume.rescluster, blocknr, g)) == null)
             {
                 //DB(Trace(5,"GetAnodeBlock","Read ERR: seqnr = %lu blocknr = %lx\n", seqnr, blocknr));
                 Lru.FreeLRU(ablock, g);
@@ -156,7 +173,7 @@
             ablock.blocknr    = blocknr;
             ablock.used       = 0;
             ablock.changeflag = false;
-            Hash(ablock, volume.anblks, Constants.HASHM_ANODE);
+            Macro.Hash(ablock, volume.anblks, Constants.HASHM_ANODE);
 
             return ablock;
         }
@@ -184,9 +201,15 @@
                 alloc_data.no_bmb = t;
                 alloc_data.bitmapstart = (uint)(rootblock.LastReserved + 1);
                 //memset (alloc_data.tobefreed, 0, TBF_CACHE_SIZE*2*sizeof(ULONG));
+                alloc_data.tobefreed = new uint[Constants.TBF_CACHE_SIZE][];
+                for (var i = 0; i < Constants.TBF_CACHE_SIZE; i++)
+                {
+                    alloc_data.tobefreed[i] = new uint[2];
+                }
                 alloc_data.tobefreed_index = 0;
                 alloc_data.tbf_resneed = 0;
                 //alloc_data.res_bitmap = (bitmapblock_t *)(rootblock+1);   /* bitmap directly behind rootblock */
+                alloc_data.res_bitmap = new BitmapBlock((int)g.blocksize, g);
 
                 if (volume.rblkextension != null)
                 {
@@ -229,25 +252,6 @@
             /* NOTE: I doubt anything depends on this, but lets simulate 68k divu overflow anyway - Piru */
             if (q > 65535UL) return d0;
             return ((d0 % d1) << 16) | q;
-        }
-
-        public static void Hash(CachedBlock blk, LinkedList<CachedBlock> list, int mask)
-        {
-            //MinAddHead(&list[(blk->blocknr/2)&mask], blk)
-            
-            var head = (blk.blocknr / 2) & mask;
-            var index = 0;
-            LinkedListNode<CachedBlock> node;
-            for (node = list.First; index < head && node != null && node.Next != null; index++, node = node.Next)
-            {
-            }
-
-            if (node == null)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            
-            list.AddBefore(node, blk);
         }
     }
 }

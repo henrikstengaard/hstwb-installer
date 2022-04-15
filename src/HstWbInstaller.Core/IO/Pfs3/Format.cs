@@ -13,11 +13,16 @@
         {
             // format.c, FDSFormat()
             
+            // g->firstblock = g->dosenvec->de_LowCyl * geom->dg_CylSectors;
+            // g->lastblock = (g->dosenvec->de_HighCyl + 1) *  geom->dg_CylSectors - 1;
+            var blocksPerCylinder = partitionBlock.Sectors * partitionBlock.BlocksPerTrack * partitionBlock.Surfaces;
             var g = new globaldata(stream)
             {
                 NumBuffers = partitionBlock.NumBuffer,
                 blocksize = partitionBlock.FileSystemBlockSize,
-                TotalSectors = Convert.ToUInt32(Math.Ceiling((double)partitionBlock.PartitionSize / partitionBlock.FileSystemBlockSize))
+                TotalSectors = (partitionBlock.HighCyl - partitionBlock.LowCyl + 1) * blocksPerCylinder,
+                firstblock = partitionBlock.LowCyl * blocksPerCylinder,
+                lastblock = (partitionBlock.HighCyl + 1) * blocksPerCylinder - 1
             };
             
             /* remove error-induced soft protect */
@@ -83,7 +88,7 @@
             /*  make volumedata BEFORE rext ! (bug 00135) */
             // g->currentvolume = volume = MakeVolumeData (rootblock, g);
             volumedata volume;
-            g.currentvolume = volume = Volume.MakeVolumeData(rootBlock, g);
+            g.currentvolume = volume = await Volume.MakeVolumeData(rootBlock, g);
 
             /* add extension */
             // if (!(rext = MakeFormatRBlkExtension (rootblock, g))) {
@@ -93,16 +98,16 @@
             g.currentvolume.rblkextension = MakeFormatRBlkExtension(rootBlock, g);
             rootBlock.Options |= RootBlock.DiskOptionsEnum.MODE_EXTENSION;
             
-            Init.InitModules(g.currentvolume, true, g);
+            await Init.InitModules(g.currentvolume, true, g);
 
-            MakeBitmap(g);
+            await MakeBitmap(g);
 
             uint i;
             do {
-                i = anodes.AllocAnode(0, g);
+                i = await anodes.AllocAnode(0, g);
             } while (i < Constants.ANODE_ROOTDIR - 1);
 
-            MakeRootDir(g);
+            await MakeRootDir(g);
             
             // #if DELDIR
             //  /* add deldir */
@@ -111,12 +116,12 @@
             //  g->dirty = TRUE;
             // #endif
             
-            Directory.SetDeldir(2, g);
+            await Directory.SetDeldir(2, g);
             rootBlock.Options |= RootBlock.DiskOptionsEnum.MODE_DELDIR | RootBlock.DiskOptionsEnum.MODE_SUPERDELDIR;
             g.dirty = true;
 
             //
-            Update.UpdateDisk(g);
+            await Update.UpdateDisk(g);
             Volume.FreeVolumeResources(volume, g);
             g.currentvolume = null;
             //
@@ -181,25 +186,25 @@
             return rootBlock;
         }
         
-        public static void MakeBitmap(globaldata g)
+        public static async Task MakeBitmap(globaldata g)
         {
             var alloc_data = g.glob_allocdata;
             
             /* use no_bmb as calculated by InitAllocation */
             for (uint i = 0; i < alloc_data.no_bmb; i++)
             {
-                Allocation.NewBitmapBlock(i,g);
+                await Allocation.NewBitmapBlock(i,g);
             }
         }
 
-        public static void MakeRootDir(globaldata g)
+        public static async Task MakeRootDir(globaldata g)
         {
             CachedBlock blk;
             uint blocknr, anodenr;
 
             blocknr = Allocation.AllocReservedBlock(g);
-            anodenr = anodes.AllocAnode(0, g);
-            blk = Directory.MakeDirBlock(blocknr, anodenr, anodenr, 0, g);
+            anodenr = await anodes.AllocAnode(0, g);
+            blk = await Directory.MakeDirBlock(blocknr, anodenr, anodenr, 0, g);
         }        
 
         public static CachedBlock MakeFormatRBlkExtension(RootBlock rootBlock, globaldata g)
@@ -208,12 +213,12 @@
             // return FALSE;
             //memset (rext, 0, sizeof(struct cachedblock) + rbl->reserved_blksize);
 
-            var rext = new CachedBlock
+            var rext = new CachedBlock((int)g.blocksize, g)
             {
                 volume = g.currentvolume,
                 blocknr = (uint)rootBlock.Extension,
                 changeflag = true,
-                blk = new rootblockextension
+                blk = new rootblockextension((int)g.blocksize)
                 {
                     id = Constants.EXTENSIONID,
                     pfs2version = (Constants.VERNUM << 16) + Constants.REVNUM,
@@ -255,7 +260,7 @@
             //FreeBufmem(*rbl, g);
             //*rbl = newrootblock;
             //bmb = (bitmapblock_t *)(*rbl+1);		/* bitmap directly behind rootblock */
-            var bmb = new BitmapBlock();
+            var bmb = new BitmapBlock((int)g.blocksize, g);
 
             /* init bitmapblock header */
             bmb.id = Constants.BMBLKID;

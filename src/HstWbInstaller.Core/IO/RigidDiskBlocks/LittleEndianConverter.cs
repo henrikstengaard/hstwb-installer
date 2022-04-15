@@ -94,6 +94,8 @@
             return bytes;
         }
         
+        
+        
         /*
          * # get little endian unsigned short bytes
 function GetLittleEndianUnsignedShortBytes([uint16]$value)

@@ -1,6 +1,8 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
     using System;
+    using System.IO;
+    using System.Threading.Tasks;
     using Blocks;
 
     public class anodes
@@ -13,7 +15,7 @@
          * get indexblock nr
          * returns NULL if failure
          */
-        public static CachedBlock GetIndexBlock(ushort nr, globaldata g)
+        public static async Task<CachedBlock> GetIndexBlock(ushort nr, globaldata g)
         {
             uint blocknr, temp;
             CachedBlock indexblk;
@@ -39,7 +41,7 @@
             {
                 /* temp is chopped by auto cast */
                 temp = Init.divide(nr, andata.indexperblock);
-                if ((superblk = GetSuperBlock((ushort)temp, g)) == null)
+                if ((superblk = await GetSuperBlock((ushort)temp, g)) == null)
                 {
                     //DBERR(ErrorTrace(5, "GetIndexBlock", "ERR: superblock not found. %lu %lu %08lx\n", nr, andata.indexperblock, temp));
                     return null;
@@ -58,7 +60,7 @@
             }
 
             /* allocate space from cache */
-            if ((indexblk = Lru.AllocLRU(g)) == null)
+            if ((indexblk = await Lru.AllocLRU(g)) == null)
             {
                 //DBERR(ErrorTrace(5, "GetIndexBlock", "ERR: AllocLRU. %lu %lu %08lx %lu\n", nr, andata.indexperblock, temp, blocknr));
                 return null;
@@ -70,14 +72,16 @@
             //     FreeLRU ((struct cachedblock *)indexblk);
             //     return NULL;
             // }
-            if (!Disk.RawRead(g.currentvolume.rescluster, blocknr, g, out var blk))
+            IBlock blk;
+            if ((blk = await Disk.RawRead<indexblock>(g.currentvolume.rescluster, blocknr, g)) == null)
             {
-                //     FreeLRU ((struct cachedblock *)indexblk);
+                Lru.FreeLRU(indexblk, g);
                 return null;
             }
 
-            var indexblk_blk = indexblk.IndexBlock;
-            if (indexblk_blk.id == Constants.IBLKID)
+            indexblk.blk = blk;
+
+            if (blk.id == Constants.IBLKID)
             {
                 indexblk.volume = volume;
                 indexblk.blocknr = blocknr;
@@ -93,7 +97,7 @@
                 // args[2] = blocknr;
                 // args[3] = nr;
                 // args[4] = andata.indexperblock;
-                // FreeLRU ((struct cachedblock *)indexblk);
+                Lru.FreeLRU(indexblk, g);
                 // ErrorMsg (AFS_ERROR_DNV_WRONG_INDID, args, g);
                 return null;
             }
@@ -101,7 +105,7 @@
             return indexblk;
         }
 
-        public static CachedBlock GetSuperBlock(ushort nr, globaldata g)
+        public static async Task<CachedBlock> GetSuperBlock(ushort nr, globaldata g)
         {
             uint blocknr;
             CachedBlock superblk;
@@ -142,7 +146,7 @@
             //     DBERR(ErrorTrace(1, "GetSuperBlock", "ERR: AllocLRU error. %lu %lu\n", nr, blocknr));
             //     return NULL;
             // }
-            if ((superblk = Lru.AllocLRU(g)) == null)
+            if ((superblk = await Lru.AllocLRU(g)) == null)
             {
                 return null;
             }
@@ -155,8 +159,10 @@
             //     return NULL;
             // }
             //var superblk = IndexBlockReader.Read(g.currentvolume.rescluster, blocknr);
-            if (!Disk.RawRead(g.currentvolume.rescluster, blocknr, g, out var blk))
+            IBlock blk;
+            if ((blk = await Disk.RawRead<indexblock>(g.currentvolume.rescluster, blocknr, g)) == null)
             {
+                Lru.FreeLRU(superblk, g);
                 return null;
             }
 
@@ -178,7 +184,7 @@
                 // args[2] = blocknr;
                 // args[3] = nr;
                 // args[4] = 0;
-                // FreeLRU ((struct cachedblock *)superblk);
+                Lru.FreeLRU(superblk, g);
                 // ErrorMsg (AFS_ERROR_DNV_WRONG_INDID, args, g);
                 return null;
             }
@@ -186,14 +192,14 @@
             return superblk;
         }
         
-        public static CachedBlock NewSuperBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> NewSuperBlock(ushort seqnr, globaldata g)
         {
             CachedBlock blok;
             var volume = g.currentvolume;
 
             // DBERR(blok = NULL;)
 
-            if ((seqnr > Constants.MAXSUPER) || (blok = Lru.AllocLRU(g)) == null)
+            if ((seqnr > Constants.MAXSUPER) || (blok = await Lru.AllocLRU(g)) == null)
             {
                 // DBERR(ErrorTrace(1, "NewSuperBlock", "ERR: out of bounds or LRU error. %lu %p\n", seqnr, blok));
                 return null;
@@ -235,7 +241,7 @@
  *   available, the anodebitmap is updated, otherwise the anode is
  *   taken.
  */
-        public static void MakeAnodeBitmap(bool formatting, globaldata g)
+        public static async Task MakeAnodeBitmap(bool formatting, globaldata g)
         {
             CachedBlock iblk;
             CachedBlock sblk;
@@ -267,7 +273,7 @@
                         throw new Exception("AFS_ERROR_ANODE_ERROR");
                     }
 
-                    sblk = GetSuperBlock((ushort)s, g);
+                    sblk = await GetSuperBlock((ushort)s, g);
 
                     //DBERR(if (!sblk) ErrorTrace(1, "MakeAnodeBitmap", "ERR: GetSuperBlock returned NULL!. %ld\n", s));
 
@@ -289,7 +295,7 @@
                     throw new Exception("AFS_ERROR_ANODE_ERROR");
                 }
 
-                iblk = GetIndexBlock((ushort)(s * andata.indexperblock + i), g);
+                iblk = await GetIndexBlock((ushort)(s * andata.indexperblock + i), g);
 
                 //DBERR(if (!iblk) ErrorTrace(1, "MakeAnodeBitmap", "ERR: GetIndexBlock returned NULL!. %ld %ld\n", s, i));
 
@@ -322,9 +328,52 @@
             }
         }
 
+/*
+ * Retrieve an anode from disk
+ */
+        public static async Task GetAnode(canode anode, uint anodenr, globaldata g)
+        {
+            uint temp;
+            ushort seqnr, anodeoffset;
+            CachedBlock ablock;
+            var andata = g.glob_anodedata;
+
+            if(g.anodesplitmode)
+            {
+                var split = Macro.SplitAnodenr(anodenr);
+                // anodenr_t *split = (anodenr_t *)&anodenr;
+                seqnr = split.seqnr;
+                anodeoffset = split.offset;
+            }
+            else
+            {
+                temp		 = Init.divide(anodenr, andata.anodesperblock);
+                seqnr        = (ushort)temp;				// 1e block = 0
+                anodeoffset  = (ushort)(temp >> 16);
+            }
+	
+            ablock = await big_GetAnodeBlock(seqnr, g);
+            if(ablock != null)
+            {
+                var ablock_blk = ablock.ANodeBlock;
+                anode.clustersize = ablock_blk.nodes[anodeoffset].clustersize;
+                anode.blocknr     = ablock_blk.nodes[anodeoffset].blocknr;
+                anode.next        = ablock_blk.nodes[anodeoffset].next;
+                anode.nr          = anodenr;
+            }
+            else
+            {
+                anode.clustersize = anode.next = 0;
+                //anode.blocknr     = ~0UL;
+                // ErrorMsg (AFS_ERROR_DNV_ALLOC_INFO, NULL);
+                // DBERR(ErrorTrace(5,"GetAnode","ERR: anode = 0x%lx\n",anodenr));
+                throw new IOException($"GetAnode: ERR: anode = {anodenr}");
+            }
+        }
+        
 /* saves and anode..
 */
-        public static void SaveAnode(canode anode, uint anodenr, globaldata g)
+        public static async Task SaveAnode(canode anode, uint anodenr, globaldata g)
         {
             // anode anode
             uint temp;
@@ -349,14 +398,14 @@
             anode.nr = anodenr;
 
             /* Save Anode */
-            var ablock = Macro.GetAnodeBlock(seqnr, g);
+            var ablock = await Macro.GetAnodeBlock(seqnr, g);
             if (ablock != null)
             {
                 var anode_blk = ablock.ANodeBlock;
                 anode_blk.nodes[anodeoffset].clustersize = anode.clustersize;
                 anode_blk.nodes[anodeoffset].blocknr = anode.blocknr;
                 anode_blk.nodes[anodeoffset].next = anode.next;
-                Update.MakeBlockDirty(ablock, g);
+                await Update.MakeBlockDirty(ablock, g);
             }
             else
             {
@@ -369,7 +418,7 @@
 /* allocates an anode and marks it as reserved
  * connect is anodenr to connect to (0 = no connection)
  */
-        public static uint AllocAnode(uint connect, globaldata g)
+        public static async Task<uint> AllocAnode(uint connect, globaldata g)
         {
             int i, j, k = 0;
             CachedBlock ablock = null;
@@ -382,7 +431,7 @@
             if (connect != 0 && g.anodesplitmode)
             {
                 /* try to place new anode in same block */
-                ablock = Init.big_GetAnodeBlock((ushort)(seqnr = connect >> 16), g);
+                ablock = await Init.big_GetAnodeBlock((ushort)(seqnr = connect >> 16), g);
                 if (ablock != null)
                 {
                     anodes = ablock.ANodeBlock.nodes;
@@ -407,7 +456,7 @@
                             if ((field & (1 << j)) != 0)
                             {
                                 seqnr = (uint)(i * 32 + 31 - j);
-                                ablock = Init.big_GetAnodeBlock((ushort)seqnr, g);
+                                ablock = await Init.big_GetAnodeBlock((ushort)seqnr, g);
                                 if (ablock != null)
                                 {
                                     anodes = ablock.ANodeBlock.nodes;
@@ -438,7 +487,9 @@
             {
                 /* give up connect mode and try again */
                 if (connect != 0)
-                    return AllocAnode(0, g);
+                {
+                    return await AllocAnode(0, g);
+                }
 
                 /* start over if not started from start of list;
                  * else make new block
@@ -446,11 +497,11 @@
                 if (andata.curranseqnr != 0)
                 {
                     andata.curranseqnr = 0;
-                    return AllocAnode(0, g);
+                    return await AllocAnode(0, g);
                 }
                 else
                 {
-                    if ((ablock = big_NewAnodeBlock((ushort)seqnr, g)) == null)
+                    if ((ablock = await big_NewAnodeBlock((ushort)seqnr, g)) == null)
                         return 0;
                     anodes = ablock.ANodeBlock.nodes;
                     k = 0;
@@ -468,16 +519,90 @@
             anodes[k].blocknr = 0xffffffff;
             anodes[k].next = 0;
 
-            Update.MakeBlockDirty(ablock, g);
+            await Update.MakeBlockDirty(ablock, g);
             andata.curranseqnr = (ushort)seqnr;
 
             if (g.anodesplitmode)
-                return (uint)(seqnr << 16 | k);
+                return (seqnr << 16 | (uint)k);
             else
                 return (uint)(seqnr * andata.anodesperblock + k);
         }
         
-        public static CachedBlock big_NewAnodeBlock(ushort seqnr, globaldata g)
+/* MODE_BIG has indexblocks, and negative blocknrs indicating freenode
+** blocks instead of anodeblocks
+*/
+        public static async Task<CachedBlock> big_GetAnodeBlock(ushort seqnr, globaldata g)
+        {
+            uint blocknr;
+            uint temp;
+            CachedBlock ablock;
+            CachedBlock indexblock;
+            var volume = g.currentvolume;
+            var andata = g.glob_anodedata;
+
+            temp = Init.divide(seqnr, andata.indexperblock);
+
+            /* not in cache, put it in */
+            /* get the indexblock */
+            if ((indexblock = await GetIndexBlock((ushort)temp /*& 0xffff*/, g)) == null)
+            {
+                // DBERR(ErrorTrace(5, "GetAnodeBlock","ERR: index not found. %lu %lu %08lx\n", seqnr, andata.indexperblock, temp));
+                return null;
+            }
+
+            /* get blocknr */
+            if ((blocknr = (uint)indexblock.IndexBlock.index[temp >> 16]) == 0)
+            {
+                // DBERR(ErrorTrace(5,"GetAnodeBlock","ERR: index zero %lu %lu %08lx\n", seqnr, andata.indexperblock, temp));
+                return null;
+            }
+
+            /* check cache */
+            ablock = Lru.CheckCache(volume.anblks, Constants.HASHM_ANODE, blocknr, g);
+            if (ablock != null)
+                return ablock;
+
+            if ((ablock = await Lru.AllocLRU(g)) == null)
+            {
+                // DBERR(ErrorTrace(5,"GetAnodeBlock","ERR: alloclru failed\n"));
+                return null;
+            }
+
+            // DBERR(ErrorTrace(10,"GetAnodeBlock", "seqnr = %lu blocknr = %lu\n", seqnr, blocknr));
+
+            /* read it */
+            IBlock blk;
+            if ((blk = await Disk.RawRead<anodeblock>(g.currentvolume.rescluster, blocknr, g)) == null)
+            {
+                // DB(Trace(5,"GetAnodeBlock","Read ERR: seqnr = %lu blocknr = %lx\n", seqnr, blocknr));
+                Lru.FreeLRU(ablock, g);
+                return null;
+            }
+
+            ablock.blk = blk;
+
+            /* check it */
+            if (ablock.blk.id != Constants.ABLKID)
+            {
+                // ULONG args[2];
+                // args[0] = ablock->blk.id;
+                // args[1] = blocknr;
+                Lru.FreeLRU(ablock, g);
+                // ErrorMsg (AFS_ERROR_DNV_WRONG_ANID, args, g);
+                return null;
+            }
+
+            /* initialize it */
+            ablock.volume     = volume;
+            ablock.blocknr    = blocknr;
+            ablock.used       = 0;
+            ablock.changeflag = false;
+            Macro.Hash(ablock, volume.anblks, Constants.HASHM_ANODE);
+
+            return ablock;
+        }
+        
+        public static async Task<CachedBlock> big_NewAnodeBlock(ushort seqnr, globaldata g)
         {
             /* MODE_BIG has difference between anodeblocks and fnodeblocks*/
 
@@ -492,8 +617,8 @@
             /* get indexblock */
             indexblnr = (uint)(seqnr / andata.indexperblock);
             indexoffset = (ushort)(seqnr % andata.indexperblock);
-            if ((indexblock = GetIndexBlock((ushort)indexblnr, g)) == null) {
-                if ((indexblock = NewIndexBlock((ushort)indexblnr, g)) == null) {
+            if ((indexblock = await GetIndexBlock((ushort)indexblnr, g)) == null) {
+                if ((indexblock = await NewIndexBlock((ushort)indexblnr, g)) == null) {
                     // DBERR(ErrorTrace(10,"big_NewAnodeBlock","ERR: NewIndexBlock %lu %lu %lu %lu\n", seqnr, indexblnr, indexoffset, andata.indexperblock));
                     return null;
                 }
@@ -501,7 +626,7 @@
 
             oldlock = indexblock.used;
             Cache.LOCK(indexblock, g);
-            if ((blok = Lru.AllocLRU(g)) == null || (blocknr = (int)Allocation.AllocReservedBlock(g)) == 0 ) {
+            if ((blok = await Lru.AllocLRU(g)) == null || (blocknr = (int)Allocation.AllocReservedBlock(g)) == 0 ) {
                 // DBERR(ErrorTrace(10,"big_NewAnodeBlock","ERR: AllocLRU/AllocReservedBlock %lu %lu %lu\n", seqnr, indexblnr, indexoffset));
                 indexblock.used = oldlock;         // unlock block
                 return null;
@@ -514,19 +639,21 @@
             blok.volume     = volume;
             blok.blocknr    = (uint)blocknr;
             blok.used       = 0;
-            var blok_blk = blok.IndexBlock;
-            blok_blk.id     = Constants.ABLKID;
-            blok_blk.seqnr  = seqnr;
+            blok.blk = new anodeblock((int)g.blocksize)
+            {
+                id = Constants.ABLKID,
+                seqnr = seqnr
+            };
             blok.changeflag = true;
-            Init.Hash(blok, volume.anblks, Constants.HASHM_ANODE);
-            Update.MakeBlockDirty(indexblock, g);
+            Macro.Hash(blok, volume.anblks, Constants.HASHM_ANODE);
+            await Update.MakeBlockDirty(indexblock, g);
             indexblock.used = oldlock;         // unlock block
 
-            anodes.ReallocAnodeBitmap(seqnr, g);
+            ReallocAnodeBitmap(seqnr, g);
             return blok;
         }
         
-        public static CachedBlock NewIndexBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> NewIndexBlock(ushort seqnr, globaldata g)
         {
             CachedBlock blok;
             CachedBlock superblok = null;
@@ -540,9 +667,9 @@
             {
                 superblnr = (uint)(seqnr / andata.indexperblock);
                 superoffset = (ushort)(seqnr % andata.indexperblock);
-                if ((superblok = GetSuperBlock((ushort)superblnr, g)) == null)
+                if ((superblok = await GetSuperBlock((ushort)superblnr, g)) == null)
                 {
-                    if ((superblok = NewSuperBlock((ushort)superblnr, g)) == null)
+                    if ((superblok = await NewSuperBlock((ushort)superblnr, g)) == null)
                     {
                         // DBERR(ErrorTrace(1, "NewIndexBlock", "ERR: Super not found. %lu %lu %lu %lu\n", seqnr, andata.indexperblock, superblnr, superoffset));
                         return null;
@@ -559,7 +686,7 @@
                 return null;
             }
 
-            if ((blok = Lru.AllocLRU(g)) == null || (blocknr = (int)Allocation.AllocReservedBlock(g)) == 0)
+            if ((blok = await Lru.AllocLRU(g)) == null || (blocknr = (int)Allocation.AllocReservedBlock(g)) == 0)
             {
                 // DBERR(ErrorTrace(1, "NewIndexBlock", "ERR: AllocLRU/AllocReservedBlock. %lu %lu %lu %lu\n", seqnr, blocknr, superblnr, superoffset));
                 if (blok != null)
@@ -571,7 +698,7 @@
 
             if (g.SuperMode) {
                 superblok.IndexBlock.index[superoffset] = blocknr;
-                Update.MakeBlockDirty(superblok, g);
+                await Update.MakeBlockDirty(superblok, g);
             } else {
                 volume.rootblk.idx.small.indexblocks[seqnr] = (uint)blocknr;
                 volume.rootblockchangeflag = true;
@@ -580,9 +707,12 @@
             blok.volume     = volume;
             blok.blocknr    = (uint)blocknr;
             blok.used       = 0;
-            var blok_blk = blok.IndexBlock;
-            blok_blk.id     = Constants.IBLKID;
-            blok_blk.seqnr  = seqnr;
+            // var blok_blk = blok.IndexBlock;
+            blok.blk = new indexblock((int)g.blocksize)
+            {
+                id = Constants.IBLKID,
+                seqnr = seqnr
+            };
             blok.changeflag = true;
             Macro.MinAddHead(volume.indexblks, blok);
 
@@ -613,6 +743,65 @@
                     andata.anblkbitmapsize = newsize;
                 }
             }
+        }
+        
+/* Remove anode from anodechain
+ * If previous==0, anode->next becomes head.
+ * Otherwise previous->next becomes anode->next.
+ * Anode is freed.
+ *
+ * Arguments:
+ * anode = anode to be removed
+ * previous = previous in chain; or 0 if anode is head
+ * head = anodenr of head of list
+ */
+        public static async Task RemoveFromAnodeChain(canode anode, uint previous, uint head, globaldata g)
+        {
+            canode sparenode = new canode();
+
+            if(previous != 0)
+            {
+                await GetAnode(sparenode, previous, g);
+                sparenode.next = anode.next;
+                await SaveAnode(sparenode, sparenode.nr, g);
+                await FreeAnode(anode.nr, g);
+            }
+            else
+            {
+                /* anode is head of list (check both tails here) */
+                if (anode.next != 0)
+                {
+                    /* There is a next entry -> becomes head */
+                    await GetAnode(sparenode, anode.next, g);
+                    await SaveAnode(sparenode, head, g); // overwrites [anode]
+                    await FreeAnode(anode.next, g);  
+                }
+                else
+                {
+                    /* No anode->next: Free list. */
+                    await FreeAnode(head, g);
+                }
+            }
+        }
+        
+/*
+ * frees an anode for later reuse
+ * universal version
+ */
+        public static async Task FreeAnode(uint anodenr, globaldata g)
+        {
+            canode anode = null;
+            var andata = g.glob_anodedata;
+
+            /* don't kill reserved anodes */
+            if (anodenr < Constants.ANODE_USERFIRST) 
+            {
+                //anode.blocknr = (uint)~0L;
+                anode.blocknr = UInt32.MaxValue;
+            }
+
+            await SaveAnode(anode, anodenr, g);
+            andata.anblkbitmap[(anodenr>>16)/32] |= (uint)(1 << (31 - (int)(((anodenr>>16) % 32))));
         }
     }
 }

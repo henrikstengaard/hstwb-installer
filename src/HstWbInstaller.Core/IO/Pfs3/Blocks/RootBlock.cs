@@ -71,7 +71,7 @@ typedef struct rootblock
         /// <summary>
         /// bit 0 is harddisk mode
         /// </summary>
-        public long DiskType { get; set; }
+        public int DiskType { get; set; }
 
         /// <summary>
         /// bit 0 is harddisk mode

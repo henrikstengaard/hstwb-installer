@@ -1,6 +1,8 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Blocks;
 
     public static class Macro
@@ -47,11 +49,11 @@
             return list.First;
         }
         
-        public static CachedBlock GetAnodeBlock(ushort seqnr, globaldata g)
+        public static async Task<CachedBlock> GetAnodeBlock(ushort seqnr, globaldata g)
         {
             // #define GetAnodeBlock(a, b) (g->getanodeblock)(a,b)
             // g->getanodeblock = big_GetAnodeBlock;
-            return Init.big_GetAnodeBlock(seqnr, g);
+            return await Init.big_GetAnodeBlock(seqnr, g);
         }
         
         /// <summary>
@@ -72,11 +74,38 @@
                 offset = (ushort)(anodenr & 0xFFFF)
             };
         }
-    }
 
-    public class anodenr
-    {
-        public ushort seqnr;
-        public ushort offset;
+        public static bool InPartition(uint blk, globaldata g)
+        {
+            return blk >= g.firstblock && blk <= g.lastblock;
+        }
+        
+        public static void Hash(CachedBlock blk, LinkedList<CachedBlock>[] list, int mask)
+        {
+            // #define Hash(blk, list, mask)                           \
+            //             MinAddHead(&list[(blk->blocknr/2)&mask], blk)
+            MinAddHead(list[(blk.blocknr / 2) & mask], blk);
+        }
+        
+        /*
+         * Hashing macros
+         */
+        public static void ReHash(CachedBlock blk, LinkedList<CachedBlock>[] list, int mask, globaldata g)
+        {
+            // #define ReHash(blk, list, mask)                         \
+            // {                                                       \
+            //     MinRemove(blk);                                     \
+            //     MinAddHead(&list[(blk->blocknr/2)&mask], blk);      \
+            // }
+            
+            MinRemove(blk, g);
+            MinAddHead(list[(blk.blocknr / 2) & mask], blk);
+        }        
+        
+        public static bool IsEmptyDBlk(CachedBlock blk)
+        {
+            // #define IsEmptyDBlk(blk) (FIRSTENTRY(blk)->next == 0)
+            return blk.deldirblock.entries.Length == 0;
+        }
     }
 }

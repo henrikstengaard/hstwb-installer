@@ -20,9 +20,11 @@
         //     UWORD creationtick;
         //     struct deldirentry entries[0];	/* 31 entries				*/
         // };
-        
+
+        public byte[] BlockBytes { get; set; }
+
         public ushort id { get; set; }
-        public ushort not_used { get; set; }
+        public ushort not_used_1 { get; set; }
         public uint datestamp { get; set; }
         public uint seqnr { get; set; }
         public ushort uid { get; set; }
@@ -31,9 +33,11 @@
         public DateTime CreationDate { get; set; }
         public deldirentry[] entries { get; set; }
 
-        public deldirblock()
+        public deldirblock(int blockSize)
         {
             id = Constants.DELDIRID;
+            entries = new deldirentry[(blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2 - SizeOf.UWORD * 4 -
+                                       SizeOf.ULONG - SizeOf.UWORD * 3) / deldirentry.Size];
         }
     }
 }

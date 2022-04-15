@@ -25,7 +25,7 @@
             var rootBlock = Format.MakeRootBlock(diskName, globalData);
         }
 
-        [Fact(Skip = "Manually used for testing")]
+        [Fact]
         public async Task WhenFormatThen()
         {
             var diskName = "Workbench";
@@ -48,7 +48,7 @@
                 Surfaces = 16
             };
 
-            await using var stream = File.OpenWrite(@"pfs3_format_partition.bin");
+            await using var stream = File.Open(@"pfs3_format_partition.bin", FileMode.Create, FileAccess.ReadWrite);
             stream.SetLength(partitionBlock.PartitionSize);
             
             await Format.Pfs3Format(stream, partitionBlock, diskName);

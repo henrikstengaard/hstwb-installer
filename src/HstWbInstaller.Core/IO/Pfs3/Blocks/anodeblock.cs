@@ -14,16 +14,23 @@
         //     struct anode nodes[0];
         // } anodeblock_t;
         
+        public byte[] BlockBytes { get; set; }
+        
         public ushort id { get; set; }
-        public ushort not_used { get; set; }
+        public ushort not_used_1 { get; set; }
         public uint datestamp { get; set; }
         public uint seqnr;
         public uint not_used_2;
         public anode[] nodes;
 
-        public anodeblock()
+        public anodeblock(int blockSize)
         {
             id = Constants.ABLKID; /* AB                               */
+            nodes = new anode[(blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3) / anode.Size];
+            for (var i = 0; i < nodes.Length; i++)
+            {
+                nodes[i] = new anode();
+            }
         }
     }
 }

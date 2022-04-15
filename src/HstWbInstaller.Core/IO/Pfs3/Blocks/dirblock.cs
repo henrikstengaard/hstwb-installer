@@ -13,16 +13,19 @@
         //     UBYTE entries[0];       /* entries                          */
         // };        
         
+        public byte[] BlockBytes { get; set; }
+        
         public ushort id { get; set; }
-        public ushort not_used { get; set; }
+        public ushort not_used_1 { get; set; }
         public uint datestamp { get; set; }
         public uint anodenr { get; set; }
         public uint parent { get; set; }
-        public uint[] entries { get; set; }
+        public byte[] entries { get; set; }
 
-        public dirblock()
+        public dirblock(int blockSize)
         {
             id = Constants.DBLKID;
+            entries = new byte[blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3];
         }
     }
 }
