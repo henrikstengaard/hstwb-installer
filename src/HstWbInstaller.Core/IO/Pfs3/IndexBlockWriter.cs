@@ -7,7 +7,7 @@
 
     public static class IndexBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(indexblock indexBlock, int blockSize)
+        public static async Task<byte[]> BuildBlock(indexblock indexBlock)
         {
             var blockStream = indexBlock.BlockBytes == null || indexBlock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(indexBlock.BlockBytes);

@@ -7,7 +7,7 @@
 
     public static class DelDirBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(deldirblock deldirblock, int blockSize)
+        public static async Task<byte[]> BuildBlock(deldirblock deldirblock)
         {
             var blockStream = deldirblock.BlockBytes == null || deldirblock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(deldirblock.BlockBytes);

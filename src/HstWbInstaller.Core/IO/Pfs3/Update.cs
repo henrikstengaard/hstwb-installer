@@ -174,7 +174,7 @@
             }
             else
             {
-                blk.volume.rootblk.idx.small.indexblocks[blk.IndexBlock.seqnr] = newblocknr;
+                blk.volume.rootblk.idx.small.indexblocks[(int)blk.IndexBlock.seqnr] = newblocknr;
                 blk.volume.rootblockchangeflag = true;
             }
         }
@@ -217,7 +217,7 @@
             // blk->volume->rootblk->idx.large.bitmapindex[((struct cindexblock *)blk)->blk.seqnr] = newblocknr;
             // blk->volume->rootblockchangeflag = TRUE;
             blk.changeflag = true;
-            blk.volume.rootblk.idx.large.bitmapindex[blk.IndexBlock.seqnr] = newblocknr;
+            blk.volume.rootblk.idx.large.bitmapindex[(int)blk.IndexBlock.seqnr] = newblocknr;
             blk.volume.rootblockchangeflag = true;
         }
 

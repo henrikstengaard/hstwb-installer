@@ -19,6 +19,13 @@
 
         public static async Task WriteDate(Stream stream, DateTime date)
         {
+            if (date == DateTime.MinValue)
+            {
+                await stream.WriteLittleEndianUInt16(0); // days since 1 jan 78
+                await stream.WriteLittleEndianUInt16(0); // minutes past midnight
+                await stream.WriteLittleEndianUInt16(0); // ticks (1/50 sec) past last minute
+            }
+            
             var amigaDate = new DateTime(1978, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var diffDate = date - amigaDate;
             var days = (ushort)diffDate.Days;

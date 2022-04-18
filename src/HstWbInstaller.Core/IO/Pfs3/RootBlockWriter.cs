@@ -32,20 +32,12 @@
             await blockStream.WriteLittleEndianUInt32(rootBlock.Extension); // 88
             await blockStream.WriteLittleEndianUInt32(0); // not used, 92
 
-            foreach (var t in rootBlock.idx.small.bitmapindex)
+            foreach (var t in rootBlock.idx.union)
             {
                 await blockStream.WriteLittleEndianUInt32(t);
             }
 
-            foreach (var t in rootBlock.idx.small.indexblocks)
-            {
-                await blockStream.WriteLittleEndianUInt32(t);
-            }
-
-            foreach (var t in rootBlock.idx.large.bitmapindex)
-            {
-                await blockStream.WriteLittleEndianUInt32(t);
-            }
+            await blockStream.WriteBytes(await BitmapBlockWriter.BuildBlock(rootBlock.ReservedBitmapBlock));
             
             var blockBytes = blockStream.ToArray();
             return blockBytes;            

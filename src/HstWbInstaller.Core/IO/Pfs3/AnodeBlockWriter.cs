@@ -7,7 +7,7 @@
 
     public static class AnodeBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(anodeblock anodeblock, int blockSize)
+        public static async Task<byte[]> BuildBlock(anodeblock anodeblock)
         {
             var blockStream = anodeblock.BlockBytes == null || anodeblock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(anodeblock.BlockBytes);

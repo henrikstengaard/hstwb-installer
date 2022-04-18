@@ -20,15 +20,15 @@ typedef struct rootblock
         ULONG lastreserved;     /* reserved area. blocknumbers      52
         ULONG firstreserved;                                        56
         ULONG reserved_free;    /* number of reserved blocks (blksize blocks) free  60  
-        UWORD blksize;          /* size of reserved blocks in bytes 
-        UWORD rblkcluster;      /* number of blocks in rootblock, including bitmap  
-        ULONG blocksfree;       /* blocks free                      
-        ULONG alwaysfree;       /* minimum number of blocks free    
-        ULONG roving_ptr;       /* current LONG bitmapfield nr for allocation       
-        ULONG deldir;           /* deldir location (<= 17.8)        
-        ULONG disksize;         /* disksize in sectors              
-        ULONG extension;        /* rootblock extension (16.4)       
-        ULONG not_used;
+        UWORD blksize;          /* size of reserved blocks in bytes 64
+        UWORD rblkcluster;      /* number of blocks in rootblock, including bitmap 66  
+        ULONG blocksfree;       /* blocks free                       68
+        ULONG alwaysfree;       /* minimum number of blocks free    72
+        ULONG roving_ptr;       /* current LONG bitmapfield nr for allocation (76)       
+        ULONG deldir;           /* deldir location (<= 17.8)        (80)
+        ULONG disksize;         /* disksize in sectors              (84)
+        ULONG extension;        /* rootblock extension (16.4)       (88)
+        ULONG not_used;                                             (92)
         union
         {
             UWORD anodeblocks[208];         /* SMALL: 200*84 = 16800 anodes 

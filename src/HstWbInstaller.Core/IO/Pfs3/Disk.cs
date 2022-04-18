@@ -123,22 +123,22 @@
             switch (block)
             {
                 case anodeblock anodeBlock:
-                    buffer = await AnodeBlockWriter.BuildBlock(anodeBlock, (int)g.blocksize);
+                    buffer = await AnodeBlockWriter.BuildBlock(anodeBlock);
                     break;
                 case dirblock dirBlock:
-                    buffer = await DirBlockWriter.BuildBlock(dirBlock, (int)g.blocksize);
+                    buffer = await DirBlockWriter.BuildBlock(dirBlock);
                     break;
                 case indexblock indexBlock:
-                    buffer = await IndexBlockWriter.BuildBlock(indexBlock, (int)g.blocksize);
+                    buffer = await IndexBlockWriter.BuildBlock(indexBlock);
                     break;
                 case BitmapBlock bitmapBlock:
-                    buffer = await BitmapBlockWriter.BuildBlock(bitmapBlock, (int)g.blocksize);
+                    buffer = await BitmapBlockWriter.BuildBlock(bitmapBlock);
                     break;
                 case deldirblock deldirblock:
-                    buffer = await DelDirBlockWriter.BuildBlock(deldirblock, (int)g.blocksize);
+                    buffer = await DelDirBlockWriter.BuildBlock(deldirblock);
                     break;
                 case rootblockextension rootBlockExtension:
-                    buffer = await RootBlockExtensionWriter.BuildBlock(rootBlockExtension, (int)g.blocksize);
+                    buffer = await RootBlockExtensionWriter.BuildBlock(rootBlockExtension);
                     break;
                 default:
                     return false;

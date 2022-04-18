@@ -7,7 +7,7 @@
 
     public static class DirBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(dirblock dirblock, int blockSize)
+        public static async Task<byte[]> BuildBlock(dirblock dirblock)
         {
             var blockStream = dirblock.BlockBytes == null || dirblock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(dirblock.BlockBytes);

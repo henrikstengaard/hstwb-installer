@@ -250,7 +250,7 @@
                     id = Constants.EXTENSIONID,
                     pfs2version = (Constants.VERNUM << 16) + Constants.REVNUM,
                     RootDate = rootBlock.CreationDate,
-                    fnsize = g.fnsize = 32
+                    fnsize = g.fnsize = 107 // original default 32
                 }
             };
 

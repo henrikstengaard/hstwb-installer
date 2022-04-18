@@ -7,7 +7,7 @@
 
     public static class RootBlockExtensionWriter
     {
-        public static async Task<byte[]> BuildBlock(rootblockextension rootblockextension, int blockSize)
+        public static async Task<byte[]> BuildBlock(rootblockextension rootblockextension)
         {
             var blockStream = rootblockextension.BlockBytes == null || rootblockextension.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(rootblockextension.BlockBytes);

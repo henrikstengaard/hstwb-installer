@@ -7,15 +7,10 @@
 
     public static class BitmapBlockWriter
     {
-        public static async Task<byte[]> BuildBlock(BitmapBlock bitmapBlock, int blockSize)
+        public static async Task<byte[]> BuildBlock(BitmapBlock bitmapBlock)
         {
             var blockStream = bitmapBlock.BlockBytes == null || bitmapBlock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(bitmapBlock.BlockBytes);
-            // var blockStream =
-            //     new MemoryStream(
-            //         bitmapBlock.BlockBytes == null || bitmapBlock.BlockBytes.Length == 0
-            //             ? new byte[blockSize]
-            //             : bitmapBlock.BlockBytes);
                 
             await blockStream.WriteLittleEndianUInt16(bitmapBlock.id);
             await blockStream.WriteLittleEndianUInt16(bitmapBlock.not_used_1);
