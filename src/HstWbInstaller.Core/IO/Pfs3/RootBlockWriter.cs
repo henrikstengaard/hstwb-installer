@@ -9,46 +9,45 @@
     {
         public static async Task<byte[]> BuildBlock(RootBlock rootBlock)
         {
-            var blockStream =
-                new MemoryStream(
-                    rootBlock.BlockBytes == null || rootBlock.BlockBytes.Length == 0
-                        ? new byte[512]
-                        : rootBlock.BlockBytes);
+            var blockStream = rootBlock.BlockBytes == null || rootBlock.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(rootBlock.BlockBytes);
             
-            await blockStream.WriteLittleEndianInt32(rootBlock.DiskType);
-            await blockStream.WriteLittleEndianUInt32((uint)rootBlock.Options);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.Datestamp);
-            await DateHelper.WriteDate(blockStream, rootBlock.CreationDate);
-            await blockStream.WriteLittleEndianUInt16(rootBlock.Protection);
-            await blockStream.WriteString(rootBlock.DiskName, 32);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.LastReserved);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.FirstReserved);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.ReservedFree);
-            await blockStream.WriteLittleEndianUInt16(rootBlock.ReservedBlksize);
-            await blockStream.WriteLittleEndianUInt16(rootBlock.RblkCluster);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.BlocksFree);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.AlwaysFree);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.RovingPtr);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.DelDir);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.DiskSize);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.Extension);
-            await blockStream.WriteLittleEndianUInt32(0); // not used
+            await blockStream.WriteLittleEndianInt32(rootBlock.DiskType); // 0
+            await blockStream.WriteLittleEndianUInt32((uint)rootBlock.Options); // 4
+            await blockStream.WriteLittleEndianUInt32(rootBlock.Datestamp); // 8
+            await DateHelper.WriteDate(blockStream, rootBlock.CreationDate); // 12
+            await blockStream.WriteLittleEndianUInt16(rootBlock.Protection); // 18
+            blockStream.WriteByte((byte)(rootBlock.DiskName.Length > 31 ? 31 : rootBlock.DiskName.Length)); // 20
+            await blockStream.WriteString(rootBlock.DiskName, 31); // 21
+            await blockStream.WriteLittleEndianUInt32(rootBlock.LastReserved); // 52
+            await blockStream.WriteLittleEndianUInt32(rootBlock.FirstReserved); // 56
+            await blockStream.WriteLittleEndianUInt32(rootBlock.ReservedFree); // 60
+            await blockStream.WriteLittleEndianUInt16(rootBlock.ReservedBlksize); // 64
+            await blockStream.WriteLittleEndianUInt16(rootBlock.RblkCluster); // 66
+            await blockStream.WriteLittleEndianUInt32(rootBlock.BlocksFree); // 68
+            await blockStream.WriteLittleEndianUInt32(rootBlock.AlwaysFree); // 72
+            await blockStream.WriteLittleEndianUInt32(rootBlock.RovingPtr); // 76
+            await blockStream.WriteLittleEndianUInt32(rootBlock.DelDir); // 80
+            await blockStream.WriteLittleEndianUInt32(rootBlock.DiskSize); // 84
+            await blockStream.WriteLittleEndianUInt32(rootBlock.Extension); // 88
+            await blockStream.WriteLittleEndianUInt32(0); // not used, 92
 
-            //for(var i = 0; i < rootBlock.idx.)
+            foreach (var t in rootBlock.idx.small.bitmapindex)
+            {
+                await blockStream.WriteLittleEndianUInt32(t);
+            }
+
+            foreach (var t in rootBlock.idx.small.indexblocks)
+            {
+                await blockStream.WriteLittleEndianUInt32(t);
+            }
+
+            foreach (var t in rootBlock.idx.large.bitmapindex)
+            {
+                await blockStream.WriteLittleEndianUInt32(t);
+            }
             
-            // await blockStream.WriteLittleEndianInt32(0); // checksum
-            //
-            // foreach (var map in bitmapBlock.BlocksFreeMap.ChunkBy(32))
-            // {
-            //     var mapBytes = MapBlockHelper.ConvertBlockFreeMapToByteArray(map.ToArray());
-            //     await blockStream.WriteBytes(mapBytes);
-            // }
-            //     
-            // // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            // bitmapBlock.Checksum = await ChecksumHelper.UpdateChecksum(bitmapBytes, 0);
-            // bitmapBlock.BlockBytes = bitmapBytes;
-
             return blockBytes;            
         }
     }

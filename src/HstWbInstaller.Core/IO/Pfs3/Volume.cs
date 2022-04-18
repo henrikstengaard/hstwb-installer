@@ -71,7 +71,7 @@
             /* load rootblock extension (if it is present) */
             if (rootblock.Extension > 0 && rootblock.Options.HasFlag(RootBlock.DiskOptionsEnum.MODE_EXTENSION))
             {
-                var rext = new CachedBlock((int)g.blocksize, g);
+                var rext = new CachedBlock(g);
             
                 // rext = AllocBufmemR(sizeof(struct cachedblock) +rootblock->reserved_blksize, g);
                 // memset(rext, 0, sizeof(struct cachedblock) +rootblock->reserved_blksize);
@@ -170,7 +170,7 @@
 
         private static void FreeMinList(LinkedList<CachedBlock> list, globaldata g)
         {
-            for (var node = list.First; node != null && node.Next != null; node = node.Next)
+            for (var node = list.First; node != null; node = node.Next)
             {
                 Lru.FlushBlock(node.Value, g);
                 Lru.FreeLRU(node.Value, g);

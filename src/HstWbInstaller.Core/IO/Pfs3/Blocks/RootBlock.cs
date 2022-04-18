@@ -9,17 +9,17 @@
         /*
 typedef struct rootblock
 {
-    LONG disktype;
-    ULONG options;          /* bit 0 is harddisk mode           
-        ULONG datestamp;        /* current datestamp 
-        UWORD creationday;      /* days since Jan. 1, 1978 (like ADOS; WORD instead of LONG) 
-        UWORD creationminute;   /* minutes past modnight            
-        UWORD creationtick;     /* ticks past minute                
-        UWORD protection;       /* protection bits (ala ADOS)       
-        UBYTE diskname[32];     /* disk label (pascal string)       
-        ULONG lastreserved;     /* reserved area. blocknumbers      
-        ULONG firstreserved;
-        ULONG reserved_free;    /* number of reserved blocks (blksize blocks) free  
+    LONG disktype;  0
+    ULONG options;          /* bit 0 is harddisk mode      4     
+        ULONG datestamp;        /* current datestamp  8
+        UWORD creationday;      /* days since Jan. 1, 1978 (like ADOS; WORD instead of LONG)  12 
+        UWORD creationminute;   /* minutes past modnight            14
+        UWORD creationtick;     /* ticks past minute                16
+        UWORD protection;       /* protection bits (ala ADOS)       18
+        UBYTE diskname[32];     /* disk label (pascal string)       20
+        ULONG lastreserved;     /* reserved area. blocknumbers      52
+        ULONG firstreserved;                                        56
+        ULONG reserved_free;    /* number of reserved blocks (blksize blocks) free  60  
         UWORD blksize;          /* size of reserved blocks in bytes 
         UWORD rblkcluster;      /* number of blocks in rootblock, including bitmap  
         ULONG blocksfree;       /* blocks free                      
@@ -158,6 +158,7 @@ typedef struct rootblock
         public int LongsPerBmb => (ReservedBlksize / 4) - 3; // 253/509/1021
 
         public RootBlockIndex idx;
+        public BitmapBlock ReservedBitmapBlock { get; set; }
 
         public RootBlock()
         {

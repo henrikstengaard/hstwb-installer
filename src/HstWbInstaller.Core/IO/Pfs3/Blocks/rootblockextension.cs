@@ -63,7 +63,7 @@
         // UWORD not_used_3;
         public uint[] deldir;			/* 32 deldir blocks					*/
 
-        public rootblockextension(int blockSize)
+        public rootblockextension()
         {
             id = Constants.EXTENSIONID;
             superindex = new uint[Constants.MAXSUPER + 1];

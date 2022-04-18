@@ -22,10 +22,10 @@
         public uint parent { get; set; }
         public byte[] entries { get; set; }
 
-        public dirblock(int blockSize)
+        public dirblock(globaldata g)
         {
             id = Constants.DBLKID;
-            entries = new byte[blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3];
+            entries = new byte[g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3];
         }
     }
 }

@@ -8,7 +8,7 @@
 
     public static class AnodeBlockReader
     {
-        public static async Task<anodeblock> Parse(byte[] blockBytes)
+        public static async Task<anodeblock> Parse(byte[] blockBytes, globaldata g)
         {
             var blockStream = new MemoryStream(blockBytes);
 
@@ -18,13 +18,13 @@
             var seqnr = await blockStream.ReadUInt32();
             var notUsed2 = await blockStream.ReadUInt32();
 
-            if (id != Constants.ABLKID)
+            if (id == 0)
             {
                 return null;
             }
 
             var nodes = new List<anode>();
-            var nodesCount = (blockBytes.Length - SizeOf.UWORD * 2 - SizeOf.ULONG * 3) / SizeOf.ULONG * 3;
+            var nodesCount = (g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3) / (SizeOf.ULONG * 3);
             for (var i = 0; i < nodesCount; i++)
             {
                 var clustersize = await blockStream.ReadUInt32();
@@ -39,7 +39,7 @@
                 });
             }
             
-            return new anodeblock(blockBytes.Length)
+            return new anodeblock(g)
             {
                 id = id,
                 not_used_1 = not_used,

@@ -1,6 +1,5 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Blocks;
@@ -21,16 +20,57 @@
         /// </summary>
         /// <param name="node"></param>
         /// <param name="g"></param>
+        public static void MinRemove(LruCachedBlock node, globaldata g)
+        {
+            // #define MinRemove(node) Remove((struct Node *)node)
+            // remove() removes the node from any list it' added to
+            
+            g.glob_lrudata.LRUpool.Remove(node);
+            g.glob_lrudata.LRUqueue.Remove(node);
+        }
+
         public static void MinRemove(CachedBlock node, globaldata g)
         {
             // #define MinRemove(node) Remove((struct Node *)node)
             // remove() removes the node from any list it' added to
             
-            g.glob_lrudata.LRUarray.Remove(node);
-            g.glob_lrudata.LRUpool.Remove(node);
-            g.glob_lrudata.LRUqueue.Remove(node);
+            // var volume = g.currentvolume;
+            // for (var i = 0; i < volume.anblks.Length; i++)
+            // {
+            //     volume.anblks[i].Remove(node);
+            // }
+            // for (var i = 0; i < volume.dirblks.Length; i++)
+            // {
+            //     volume.dirblks[i].Remove(node);
+            // }
+            // volume.indexblks.Remove(node);
+            // volume.bmblks.Remove(node);
+            // volume.superblks.Remove(node);
+            // volume.deldirblks.Remove(node);
+            // volume.bmindexblks.Remove(node);
         }
 
+        public static void MinRemoveX(CachedBlock node, globaldata g)
+        {
+            // #define MinRemove(node) Remove((struct Node *)node)
+            // remove() removes the node from any list it' added to
+            
+            var volume = g.currentvolume;
+            for (var i = 0; i < volume.anblks.Length; i++)
+            {
+                volume.anblks[i].Remove(node);
+            }
+            for (var i = 0; i < volume.dirblks.Length; i++)
+            {
+                volume.dirblks[i].Remove(node);
+            }
+            volume.indexblks.Remove(node);
+            volume.bmblks.Remove(node);
+            volume.superblks.Remove(node);
+            volume.deldirblks.Remove(node);
+            volume.bmindexblks.Remove(node);
+        }
+        
         /// <summary>
         /// add node to head of list. Amiga MinList exec
         /// </summary>
@@ -104,8 +144,9 @@
         
         public static bool IsEmptyDBlk(CachedBlock blk)
         {
+            // #define FIRSTENTRY(blok) ((struct direntry*)((blok)->blk.entries))
             // #define IsEmptyDBlk(blk) (FIRSTENTRY(blk)->next == 0)
-            return blk.deldirblock.entries.Length == 0;
+            return blk.dirblock.entries.Length == 0;
         }
     }
 }

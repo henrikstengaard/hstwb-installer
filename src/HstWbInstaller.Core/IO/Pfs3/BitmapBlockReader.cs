@@ -14,7 +14,7 @@
 
             var id = await blockStream.ReadUInt16();
             
-            if (id != Constants.IBLKID)
+            if (id == 0)
             {
                 return null;
             }
@@ -30,7 +30,7 @@
                 bitmap.Add(await blockStream.ReadUInt32());
             }
             
-            return new BitmapBlock(blockBytes.Length, g)
+            return new BitmapBlock(g)
             {
                 id = id,
                 not_used_1 = not_used,

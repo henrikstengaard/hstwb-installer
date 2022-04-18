@@ -7,13 +7,13 @@
 
     public static class DelDirBlockReader
     {
-        public static async Task<deldirblock> Parse(byte[] blockBytes)
+        public static async Task<deldirblock> Parse(byte[] blockBytes, globaldata g)
         {
             var blockStream = new MemoryStream(blockBytes);
 
             var id = await blockStream.ReadUInt16();
             
-            if (id != Constants.DELDIRID)
+            if (id == 0)
             {
                 return null;
             }
@@ -33,7 +33,7 @@
             var protection = await blockStream.ReadUInt32();
             var creationDate = await DateHelper.ReadDate(blockStream);
 
-            return new deldirblock(blockBytes.Length)
+            return new deldirblock(g)
             {
                 id = id,
                 not_used_1 = not_used,

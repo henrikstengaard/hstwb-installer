@@ -8,13 +8,13 @@
 
     public static class IndexBlockReader
     {
-        public static async Task<indexblock> Parse(byte[] blockBytes)
+        public static async Task<indexblock> Parse(byte[] blockBytes, globaldata g)
         {
             var blockStream = new MemoryStream(blockBytes);
 
             var id = await blockStream.ReadUInt16();
             
-            if (id != Constants.IBLKID)
+            if (id == 0)
             {
                 return null;
             }
@@ -30,7 +30,7 @@
                 index.Add(await blockStream.ReadInt32());
             }
             
-            return new indexblock(blockBytes.Length)
+            return new indexblock(g)
             {
                 id = id,
                 not_used_1 = not_used,

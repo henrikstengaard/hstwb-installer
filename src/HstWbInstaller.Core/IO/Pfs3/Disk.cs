@@ -57,22 +57,22 @@
             g.stream.Seek(offset, SeekOrigin.Begin);
 
             // read block bytes
-            var buffer = await g.stream.ReadBytes((int)g.blocksize);
+            var buffer = await g.stream.ReadBytes((int)(g.blocksize * blocks));
 
             var type = typeof(T);
             if (type == typeof(anodeblock))
             {
-                return await AnodeBlockReader.Parse(buffer);
+                return await AnodeBlockReader.Parse(buffer, g);
             }
 
             if (type == typeof(dirblock))
             {
-                return await DirBlockReader.Parse(buffer);
+                return await DirBlockReader.Parse(buffer, g);
             }
             
             if (type == typeof(indexblock))
             {
-                return await IndexBlockReader.Parse(buffer);
+                return await IndexBlockReader.Parse(buffer, g);
             }
 
             if (type == typeof(BitmapBlock))
@@ -82,7 +82,7 @@
 
             if (type == typeof(deldirblock))
             {
-                return await DelDirBlockReader.Parse(buffer);
+                return await DelDirBlockReader.Parse(buffer, g);
             }
 
             if (type == typeof(rootblockextension))

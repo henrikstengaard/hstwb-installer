@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public class DataSectorReader
@@ -42,25 +43,15 @@
 
             for (var start = 0; start < bytesRead; start += sectorSize)
             {
-                var isZeroFilled = IsSectorZeroFilled(start, start + sectorSize - 1);
-
-                byte[] data;
-                if (isZeroFilled)
-                {
-                    data = Array.Empty<byte>();
-                }
-                else
-                {
-                    data = new byte[sectorSize];
-                    Array.Copy(buffer, start, data, 0, sectorSize);
-                }
+                var data = new byte[sectorSize];
+                Array.Copy(buffer, start, data, 0, sectorSize);
                 
                 sectors.Add(new Sector
                 {
                     Start = offset + start,
                     End = offset + start + sectorSize - 1,
                     Size = sectorSize,
-                    IsZeroFilled = isZeroFilled,
+                    IsZeroFilled = data.All(x => x == 0),
                     Data = data
                 });
             }

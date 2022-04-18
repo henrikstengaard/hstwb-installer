@@ -23,7 +23,7 @@
         public uint seqnr;
         public uint[] bitmap; /* the bitmap.                      */
         
-        public BitmapBlock(int blockSize, globaldata g)
+        public BitmapBlock(globaldata g)
         {
             id = Constants.BMBLKID; /* BM (bitmap block)                */
 

@@ -24,7 +24,7 @@
             var andata = g.glob_anodedata;
 
             /* check cache (can be empty) */
-            for (var node = volume.indexblks.First; node != null && node.Next != null; node = node.Next)
+            for (var node = volume.indexblks.First; node != null; node = node.Next)
             {
                 indexblk = node.Value;
                 if (indexblk.IndexBlock.seqnr == nr)
@@ -121,7 +121,7 @@
             }
 
             /* check cache (can be empty) */
-            for (var node = volume.superblks.First; node != null && node.Next != null; node = node.Next)
+            for (var node = volume.superblks.First; node != null; node = node.Next)
             {
                 superblk = node.Value;
                 var superblk_blk = superblk.IndexBlock;
@@ -639,7 +639,7 @@
             blok.volume     = volume;
             blok.blocknr    = (uint)blocknr;
             blok.used       = 0;
-            blok.blk = new anodeblock((int)g.blocksize)
+            blok.blk = new anodeblock(g)
             {
                 id = Constants.ABLKID,
                 seqnr = seqnr
@@ -708,7 +708,7 @@
             blok.blocknr    = (uint)blocknr;
             blok.used       = 0;
             // var blok_blk = blok.IndexBlock;
-            blok.blk = new indexblock((int)g.blocksize)
+            blok.blk = new indexblock(g)
             {
                 id = Constants.IBLKID,
                 seqnr = seqnr

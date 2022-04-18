@@ -9,11 +9,8 @@
     {
         public static async Task<byte[]> BuildBlock(rootblockextension rootblockextension, int blockSize)
         {
-            var blockStream =
-                new MemoryStream(
-                    rootblockextension.BlockBytes == null || rootblockextension.BlockBytes.Length == 0
-                        ? new byte[blockSize]
-                        : rootblockextension.BlockBytes);
+            var blockStream = rootblockextension.BlockBytes == null || rootblockextension.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(rootblockextension.BlockBytes);
                 
             await blockStream.WriteLittleEndianUInt16(rootblockextension.id);
             await blockStream.WriteLittleEndianUInt16(rootblockextension.not_used_1);

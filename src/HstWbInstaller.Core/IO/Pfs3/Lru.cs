@@ -25,8 +25,8 @@
 
             // NewList((struct List<> *)&g->glob_lrudata.LRUqueue);
             // NewList((struct List *)&g->glob_lrudata.LRUpool);
-            g.glob_lrudata.LRUqueue = new LinkedList<CachedBlock>();
-            g.glob_lrudata.LRUpool = new LinkedList<CachedBlock>();
+            g.glob_lrudata.LRUqueue = new LinkedList<LruCachedBlock>();
+            g.glob_lrudata.LRUpool = new LinkedList<LruCachedBlock>();
 
             var i = g.NumBuffers;
 
@@ -40,15 +40,14 @@
             g.uip = false;
             g.locknr = 1;
 
-            g.glob_lrudata.LRUarray =
-                new LinkedList<CachedBlock>(Enumerable.Range(1, (int)g.glob_lrudata.poolsize)
-                    .Select(_ => new CachedBlock((int)g.blocksize, g)));
+            g.glob_lrudata.LRUarray = Enumerable.Range(1, (int)g.glob_lrudata.poolsize)
+                    .Select(_ => new LruCachedBlock(new CachedBlock(g))).ToArray();
         }
 
         public static CachedBlock CheckCache(LinkedList<CachedBlock>[] list, ushort mask, uint blocknr, globaldata g)
         {
             for (var block = Macro.HeadOf(list[(blocknr / 2) & mask]);
-                 block != null && block.Next != null;
+                 block != null;
                  block = block.Next)
             {
                 if (block.Value.blocknr == blocknr)
@@ -67,7 +66,7 @@
             Macro.MinRemove(blk, g);
 
             // MinAddHead(g.glob_lrudata.LRUqueue, LRU_CHAIN(blk));
-            Macro.MinAddHead(g.glob_lrudata.LRUqueue, blk);
+            Macro.MinAddHead(g.glob_lrudata.LRUqueue, new LruCachedBlock(blk));
         }
 
         public static void FreeLRU(CachedBlock blk, globaldata g)
@@ -75,9 +74,10 @@
             //MinRemove(LRU_CHAIN(blk));                          \
             //memset(blk, 0, SIZEOF_CACHEDBLOCK);              \
             Macro.MinRemove(blk, g);
+            ClearBlock(blk);
 
             //MinAddHead(&g->glob_lrudata.LRUpool, LRU_CHAIN(blk));            \
-            Macro.MinAddHead(g.glob_lrudata.LRUpool, blk);
+            Macro.MinAddHead(g.glob_lrudata.LRUpool, new LruCachedBlock(blk));
         }
 
 /* Allocate a block from the LRU chain and make
@@ -100,28 +100,26 @@
             /* Use free block from pool or flush lru unused
             ** block (there MUST be one!)
             */
-            LinkedListNode<CachedBlock> lrunode;
+            LinkedListNode<LruCachedBlock> lrunode;
             retry:
             if (g.glob_lrudata.LRUpool.Count == 0)
             {
-                for (lrunode = g.glob_lrudata.LRUqueue.Last;
-                     lrunode != null && lrunode.Previous != null;
-                     lrunode = lrunode.Previous)
+                for (lrunode = g.glob_lrudata.LRUqueue.Last; lrunode != null; lrunode = lrunode.Previous)
                     // for (lrunode = (struct lru_cachedblock *)g->glob_lrudata.LRUqueue.mlh_TailPred;
                     // lrunode->prev;
                     // lrunode = lrunode->prev)
                 {
                     /* skip locked blocks */
-                    if (Cache.ISLOCKED(lrunode.Value, g))
+                    if (Cache.ISLOCKED(lrunode.Value.cblk, g))
                         continue;
 
-                    if (lrunode.Value.changeflag)
+                    if (lrunode.Value.cblk.changeflag)
                     {
                         //DB(Trace(1, "AllocLRU", "ResToBeFreed %lx\n", &lrunode->cblk));
-                        ResToBeFreed(lrunode.Value.oldblocknr, g);
-                        Update.UpdateDatestamp(lrunode.Value, g);
-                        if (!(await Disk.RawWrite(g.stream, lrunode.Value.blk, g.currentvolume.rescluster,
-                                lrunode.Value.blocknr, g)))
+                        ResToBeFreed(lrunode.Value.cblk.oldblocknr, g);
+                        Update.UpdateDatestamp(lrunode.Value.cblk, g);
+                        if (!(await Disk.RawWrite(g.stream, lrunode.Value.cblk.blk, g.currentvolume.rescluster,
+                                lrunode.Value.cblk.blocknr, g)))
                         {
                             // ULONG args[2];
                             // args[0] = lrunode->cblk.blocknr;
@@ -131,7 +129,7 @@
                         }
                     }
 
-                    FlushBlock(lrunode.Value, g);
+                    FlushBlock(lrunode.Value.cblk, g);
                     goto ready;
                 }
             }
@@ -143,14 +141,14 @@
 
             /* Attempt to allocate new entries */
             //nlru = AllocVec(sizeof(struct lru_cachedblock *) *(g->glob_lrudata.poolsize + NEW_LRU_ENTRIES), MEMF_CLEAR);
-            var nlru = new CachedBlock[g.glob_lrudata.poolsize + NEW_LRU_ENTRIES];
+            var nlru = new LruCachedBlock[g.glob_lrudata.poolsize + NEW_LRU_ENTRIES];
             for (j = 0; j < NEW_LRU_ENTRIES; j++)
             {
                 if (nlru == null)
                     break;
                 // nlru[j + g->glob_lrudata.poolsize] = AllocVec((sizeof(struct lru_cachedblock) +SIZEOF_RESBLOCK)
                 //     , g->dosenvec->de_BufMemType | MEMF_CLEAR);
-                nlru[j + g.glob_lrudata.poolsize] = new CachedBlock((int)g.blocksize, g);
+                nlru[j + g.glob_lrudata.poolsize] = new LruCachedBlock(new CachedBlock(g));
 
                 if (nlru[j + g.glob_lrudata.poolsize] == null)
                 {
@@ -178,12 +176,16 @@
 
             // CopyMem(g->glob_lrudata.LRUarray, nlru, sizeof(struct lru_cachedblock *) *g->glob_lrudata.poolsize);
             // FreeVec(g->glob_lrudata.LRUarray);
-            g.glob_lrudata.LRUarray = new LinkedList<CachedBlock>(nlru);
+            for (var i = 0; i < g.glob_lrudata.poolsize; i++)
+            {
+                nlru[i] = g.glob_lrudata.LRUarray[i];
+            }
+            g.glob_lrudata.LRUarray = nlru;
             for (j = 0; j < NEW_LRU_ENTRIES; j++, g.glob_lrudata.poolsize++)
             {
                 //MinAddHead(&g->glob_lrudata.LRUpool, g.glob_lrudata.LRUarray[g.glob_lrudata.poolsize]);
                 Macro.MinAddHead(g.glob_lrudata.LRUpool,
-                    g.glob_lrudata.LRUarray.ElementAt((int)g.glob_lrudata.poolsize));
+                    g.glob_lrudata.LRUarray[(int)g.glob_lrudata.poolsize]);
             }
 
             g.NumBuffers = g.glob_lrudata.poolsize;
@@ -194,13 +196,14 @@
             // MinRemove(lrunode);
             // MinAddHead(&g->glob_lrudata.LRUqueue, lrunode);
             Macro.MinRemove(lrunode.Value, g);
+            Macro.MinRemoveX(lrunode.Value.cblk, g);
             Macro.MinAddHead(g.glob_lrudata.LRUqueue, lrunode.Value);
 
             // DB(Trace(1, "AllocLRU", "Allocated block %lx\n", &lrunode->cblk));
 
             //  LOCK(&lrunode->cblk);
-            Cache.LOCK(lrunode.Value, g);
-            return lrunode.Value;
+            Cache.LOCK(lrunode.Value.cblk, g);
+            return lrunode.Value.cblk;
         }
 
 /* Adds a block to the ReservedToBeFreedCache
@@ -267,12 +270,13 @@
             /* remove block from blockqueue */
             // MinRemove(block);
             Macro.MinRemove(block, g);
+            Macro.MinRemove(new LruCachedBlock(block), g);
 
             /* decouple references */
             if (Macro.IsDirBlock(block))
             {
                 /* check fileinfo references */
-                for (var node = block.volume.fileentries.First; node != null && node.Next != null; node = node.Next)
+                for (var node = block.volume.fileentries.First; node != null; node = node.Next)
                 {
                     /* only dirs and files have fileinfos that need to be updated,
                     ** but the volume * pointer of volumeinfos never points to
@@ -318,6 +322,16 @@
 
             /* wipe memory */
             //memset(block, 0, SIZEOF_CACHEDBLOCK);
+            ClearBlock(block);
+        }
+
+        private static void ClearBlock(CachedBlock cachedBlock)
+        {
+            cachedBlock.blocknr = 0;
+            cachedBlock.changeflag = false;
+            cachedBlock.oldblocknr = 0;
+            cachedBlock.used = 0;
+            cachedBlock.blk = null;
         }
     }
 }

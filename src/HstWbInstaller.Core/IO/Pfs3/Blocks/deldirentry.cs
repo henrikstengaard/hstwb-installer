@@ -28,5 +28,10 @@
         
         public const int Size = SizeOf.ULONG * 2 + SizeOf.UWORD * 3 + 16 + SizeOf.UWORD;
 
+        public deldirentry()
+        {
+            CreationDate = DateTime.UtcNow;
+            filename = string.Empty;
+        }
     }
 }

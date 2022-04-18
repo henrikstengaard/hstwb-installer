@@ -14,7 +14,7 @@
 
             var id = await blockStream.ReadUInt16();
             
-            if (id != Constants.EXTENSIONID)
+            if (id == 0)
             {
                 return null;
             }
@@ -62,7 +62,7 @@
                 deldir.Add(await blockStream.ReadUInt32());
             }
 
-            return new rootblockextension(blockBytes.Length)
+            return new rootblockextension
             {
                 id = id,
                 not_used_1 = not_used_1,

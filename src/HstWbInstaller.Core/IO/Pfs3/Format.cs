@@ -12,7 +12,7 @@
         public static async Task Pfs3Format(Stream stream, PartitionBlock partitionBlock, string diskName)
         {
             // format.c, FDSFormat()
-            
+
             // g->firstblock = g->dosenvec->de_LowCyl * geom->dg_CylSectors;
             // g->lastblock = (g->dosenvec->de_HighCyl + 1) *  geom->dg_CylSectors - 1;
             var blocksPerCylinder = partitionBlock.Sectors * partitionBlock.BlocksPerTrack * partitionBlock.Surfaces;
@@ -24,7 +24,7 @@
                 firstblock = partitionBlock.LowCyl * blocksPerCylinder,
                 lastblock = (partitionBlock.HighCyl + 1) * blocksPerCylinder - 1
             };
-            
+
             /* remove error-induced soft protect */
             if (g.softprotect)
             {
@@ -36,7 +36,7 @@
                 g.softprotect = false;
                 g.protectkey = 0;
             }
-                            
+
             /* update dos envec and geom */
             // GetDriveGeometry (g);
             // ShowVersion (g);
@@ -54,26 +54,12 @@
                 throw new Exception("sectorSize: ERROR_BAD_NUMBER");
             }
             
-            // calculate partition start offset
-            var partitionStartByteOffset = partitionBlock.LowCyl * partitionBlock.Surfaces *
-                                           partitionBlock.BlocksPerTrack *
-                                           partitionBlock.FileSystemBlockSize;
-
-            // write dos type at partition start
-            stream.Seek(partitionStartByteOffset, SeekOrigin.Begin);
-            await stream.WriteBytes(partitionBlock.DosType);
-            
-            /*
-     * creates & writes the two bootblocks
-     */
-            var bootBlock1 = new BootBlock();
-            var bootBlock1Bytes = await BootBlockWriter.MakeBootBlock(bootBlock1);
-            await stream.WriteBytes(bootBlock1Bytes);
-            //Disk.RawWrite(stream, bootBlock1Bytes, 1, Constants.BOOTBLOCK1, g);
-
-            var bootBlock2Bytes = new byte[512];
-            await stream.WriteBytes(bootBlock2Bytes);
-            //Disk.RawWrite(stream, bootBlock2Bytes, 1, Constants.BOOTBLOCK2, g);
+            // err = MakeBootBlock (g);
+            // if (err != 0) {
+            //     *error = err;
+            //     return DOSFALSE;
+            // }
+            await MakeBootBlock(g);
 
             // if (!(rootblock = MakeRootBlock (diskname, g))) {
             //     *error = ERROR_NO_FREE_STORE;
@@ -97,25 +83,26 @@
             // }
             g.currentvolume.rblkextension = MakeFormatRBlkExtension(rootBlock, g);
             rootBlock.Options |= RootBlock.DiskOptionsEnum.MODE_EXTENSION;
-            
+
             await Init.InitModules(g.currentvolume, true, g);
 
             await MakeBitmap(g);
 
             uint i;
-            do {
+            do
+            {
                 i = await anodes.AllocAnode(0, g);
             } while (i < Constants.ANODE_ROOTDIR - 1);
 
             await MakeRootDir(g);
-            
+
             // #if DELDIR
             //  /* add deldir */
             //  SetDeldir(2, g);
             //  rootblock->options |= MODE_DELDIR | MODE_SUPERDELDIR;
             //  g->dirty = TRUE;
             // #endif
-            
+
             await Directory.SetDeldir(2, g);
             rootBlock.Options |= RootBlock.DiskOptionsEnum.MODE_DELDIR | RootBlock.DiskOptionsEnum.MODE_SUPERDELDIR;
             g.dirty = true;
@@ -127,16 +114,56 @@
             //
             // return DOSTRUE;
         }
+
+/*
+ * creates & writes the two bootblocks
+ */
+        public static async Task MakeBootBlock(globaldata g)
+        {
+            // struct bootblock *bbl;
+            // ULONG error;
+
+            var bbl = new BootBlock
+            {
+                disktype = Constants.ID_PFS_DISK
+            };
+            
+            // if (!(bbl = AllocBufmem (2 * BLOCKSIZE, g)))
+            //     return ERROR_NO_FREE_STORE;
+
+// #if ACCESS_DETECT
+// 	if (!detectaccessmode((UBYTE*)bbl, g))
+// 		return ERROR_OBJECT_TOO_LARGE;
+// #endif
+
+            // memset (bbl, 0, 2*BLOCKSIZE);
+            // bbl->disktype = ID_PFS_DISK;
+            // error = RawWrite ((UBYTE *)bbl, 2, BOOTBLOCK1, g);
+            var buffer = await BootBlockWriter.MakeBootBlock(bbl);
+            if (!await Disk.RawWrite(g.stream, buffer, 2, Constants.BOOTBLOCK1, g))
+            {
+                throw new IOException("BOOTBLOCK write error");
+            }
+            // FreeBufmem (bbl, g);
+            // return error;
+        }
         
         public static RootBlock MakeRootBlock(string diskName, globaldata g)
         {
             var rootBlock = new RootBlock
             {
+                DiskType = Constants.ID_PFS_DISK,
                 Datestamp = 1,
                 CreationDate = DateTime.UtcNow,
                 Protection = 0xf0,
                 FirstReserved = 2,
-                DiskName = diskName
+                DiskName = diskName,
+                DiskSize = g.TotalSectors,
+                Options = RootBlock.DiskOptionsEnum.MODE_HARDDISK | RootBlock.DiskOptionsEnum.MODE_SPLITTED_ANODES |
+                          RootBlock.DiskOptionsEnum.MODE_DIR_EXTENSION |
+                          RootBlock.DiskOptionsEnum.MODE_SIZEFIELD | RootBlock.DiskOptionsEnum.MODE_DATESTAMP |
+                          RootBlock.DiskOptionsEnum.MODE_EXTROVING |
+                          RootBlock.DiskOptionsEnum.MODE_LONGFN
             };
 
             // determine reserved blocksize
@@ -185,15 +212,15 @@
 
             return rootBlock;
         }
-        
+
         public static async Task MakeBitmap(globaldata g)
         {
             var alloc_data = g.glob_allocdata;
-            
+
             /* use no_bmb as calculated by InitAllocation */
             for (uint i = 0; i < alloc_data.no_bmb; i++)
             {
-                await Allocation.NewBitmapBlock(i,g);
+                await Allocation.NewBitmapBlock(i, g);
             }
         }
 
@@ -205,7 +232,7 @@
             blocknr = Allocation.AllocReservedBlock(g);
             anodenr = await anodes.AllocAnode(0, g);
             blk = await Directory.MakeDirBlock(blocknr, anodenr, anodenr, 0, g);
-        }        
+        }
 
         public static CachedBlock MakeFormatRBlkExtension(RootBlock rootBlock, globaldata g)
         {
@@ -213,12 +240,12 @@
             // return FALSE;
             //memset (rext, 0, sizeof(struct cachedblock) + rbl->reserved_blksize);
 
-            var rext = new CachedBlock((int)g.blocksize, g)
+            var rext = new CachedBlock(g)
             {
                 volume = g.currentvolume,
                 blocknr = (uint)rootBlock.Extension,
                 changeflag = true,
-                blk = new rootblockextension((int)g.blocksize)
+                blk = new rootblockextension
                 {
                     id = Constants.EXTENSIONID,
                     pfs2version = (Constants.VERNUM << 16) + Constants.REVNUM,
@@ -226,11 +253,11 @@
                     fnsize = g.fnsize = 32
                 }
             };
-            
+
             g.dirty = true;
-            return rext;          
+            return rext;
         }
-        
+
         /* makes reserved bitmap and allocates rootblockextension */
         public static void MakeReservedBitmap(RootBlock rbl, long numReserved, globaldata g)
         {
@@ -260,7 +287,7 @@
             //FreeBufmem(*rbl, g);
             //*rbl = newrootblock;
             //bmb = (bitmapblock_t *)(*rbl+1);		/* bitmap directly behind rootblock */
-            var bmb = new BitmapBlock((int)g.blocksize, g);
+            var bmb = new BitmapBlock(g);
 
             /* init bitmapblock header */
             bmb.id = Constants.BMBLKID;
@@ -281,7 +308,6 @@
             {
                 last |= 0x80000000 >> i;
             }
-
             bmb.bitmap[bmb.bitmap.Length - 1] = last;
 
             /* allocate taken blocks + rootblock extension (de + 1)
@@ -296,6 +322,9 @@
             /* rootblock extension position */
             rbl.Extension = rbl.FirstReserved + cluster;
             rbl.ReservedFree--;
+
+            // bitmap directly behind rootblock
+            rbl.ReservedBitmapBlock = bmb;
         }
     }
 }

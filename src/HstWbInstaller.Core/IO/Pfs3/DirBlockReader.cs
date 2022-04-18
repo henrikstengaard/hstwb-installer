@@ -7,7 +7,7 @@
 
     public static class DirBlockReader
     {
-        public static async Task<dirblock> Parse(byte[] blockBytes)
+        public static async Task<dirblock> Parse(byte[] blockBytes, globaldata g)
         {
             var blockStream = new MemoryStream(blockBytes);
 
@@ -23,7 +23,7 @@
             var anodenr = await blockStream.ReadUInt32();
             var parent = await blockStream.ReadUInt32();
 
-            if (id != Constants.DBLKID)
+            if (id == 0)
             {
                 return null;
             }
@@ -32,7 +32,7 @@
 
             var entries = await blockStream.ReadBytes(entriesCount);
 
-            return new dirblock(blockBytes.Length)
+            return new dirblock(g)
             {
                 id = id,
                 not_used_1 = not_used,

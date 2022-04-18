@@ -1,57 +1,49 @@
 ﻿namespace HstWbInstaller.Core.Tests.Pfs3Tests
 {
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
     using IO.Pfs3;
+    using IO.Pfs3.Blocks;
     using IO.RigidDiskBlocks;
+    using IO.Vhds;
     using Xunit;
     using BlockHelper = IO.Pfs3.BlockHelper;
 
     public class GivenPfs3BlockHelper
     {
-        [Fact(Skip = "Manually used for testing")]
-        public void WhenMakeRootBlockThen()
-        {
-            var diskName = "Workbench";
-
-            var globalData = new globaldata(new MemoryStream())
-            {
-                NumBuffers = 80,
-                blocksize = 512,
-                TotalSectors = 1024 * 1024 * 100 / 512
-            };
-            
-            var rootBlock = Format.MakeRootBlock(diskName, globalData);
-        }
-
         [Fact]
-        public async Task WhenFormatThen()
+        public async Task WhenCreateHdfWithPfs3FormattedUsingHstWb()
         {
-            var diskName = "Workbench";
-            var partitionBlock = new PartitionBlock
-            {
-                BlocksPerTrack = 63,
-                BootPriority = 0,
-                DosType = FormatHelper.FormatDosType("PFS3"),
-                DriveName = "DH0",
-                FileSystemBlockSize = 512,
-                HighCyl = 610,
-                LowCyl = 2,
-                Mask = 2147483646U,
-                MaxTransfer = 130560,
-                NumBuffer = 80,
-                PartitionSize = 314302464L,
-                PreAlloc = 0,
-                Reserved = 2,
-                Sectors = 1,
-                Surfaces = 16
-            };
+            var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
 
-            await using var stream = File.Open(@"pfs3_format_partition.bin", FileMode.Create, FileAccess.ReadWrite);
-            stream.SetLength(partitionBlock.PartitionSize);
+            var rigidDiskBlock = await RigidDiskBlock
+                .Create(300.MB().ToUniversalSize())
+                .AddFileSystem("PFS3", await File.ReadAllBytesAsync(@"TestData\pfs3aio"))
+                .AddPartition("DH0", bootable: true)
+                .WriteToFile(path);
+            
+            var diskName = "Workbench";
+            var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
+
+            await using var stream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
             
             await Format.Pfs3Format(stream, partitionBlock, diskName);
+        }
+        
+        [Fact(Skip = "Manually used for testing")]
+        public async Task WhenCreateBlankHdfForAmigaPfs3Formatting()
+        {
+            var path = @"d:\Temp\pfs3_format_amiga\pfs3_format_amiga.hdf";
+
+            var rigidDiskBlock = RigidDiskBlock
+                .Create(300.MB().ToUniversalSize())
+                .AddFileSystem("PFS3", await File.ReadAllBytesAsync(@"TestData\pfs3aio"))
+                .AddPartition("DH0", bootable: true);
+            //.WriteToFile(path);
+            var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
+            await using var stream = File.OpenRead(path);
         }
         
         [Fact(Skip = "Manually used for testing")]
@@ -62,6 +54,29 @@
 
             var bytes = await stream.ReadBytes(1024 * 1024);
             await File.WriteAllBytesAsync(@"d:\Temp\4gb_amigaos_39_install\part1.bin", bytes);
+        }
+        
+        [Fact]
+        public async Task DumpUsedSectors()
+        {
+            var options = (RootBlock.DiskOptionsEnum)1919;
+            
+            // var path = @"d:\Temp\pfs3_format_amiga\pfs3_format_amiga.hdf";
+            var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
+            var dir = Path.GetDirectoryName(path);
+            
+            await using var stream = File.OpenRead(path);
+            var dataSectorReader = new DataSectorReader(stream);
+
+            SectorResult sectorResult;
+            do
+            {
+                sectorResult = await dataSectorReader.ReadNext();
+                foreach (var sector in sectorResult.Sectors.Where(x => !x.IsZeroFilled))
+                {
+                    await File.WriteAllBytesAsync(Path.Combine(dir, $"sector_{sector.Start:D10}.bin"), sector.Data);
+                }
+            } while (!sectorResult.EndOfSectors);
         }
     }
 }

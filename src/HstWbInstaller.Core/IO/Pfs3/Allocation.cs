@@ -40,7 +40,7 @@
             blok.volume = volume;
             blok.blocknr = blocknr;
             blok.used = 0;
-            var blok_blk = new BitmapBlock((int)g.blocksize, g)
+            var blok_blk = new BitmapBlock(g)
             {
                 id = Constants.BMBLKID,
                 seqnr = seqnr
@@ -85,9 +85,11 @@
             blok.volume   = volume;
             blok.blocknr  = volume.rootblk.idx.large.bitmapindex[seqnr];
             blok.used     = 0;
-            var blok_blk = blok.IndexBlock;
-            blok_blk.id   = Constants.BMIBLKID;
-            blok_blk.seqnr  = seqnr;
+            blok.blk = new indexblock(g)
+            {
+                id = Constants.BMIBLKID,
+                seqnr = seqnr
+            };
             blok.changeflag = true;
             Macro.MinAddHead(volume.bmindexblks, blok);
 
@@ -104,7 +106,7 @@
             var bitmap = alloc_data.res_bitmap.bitmap;
             //uint free = (uint)g.RootBlock.ReservedFree;
             uint blocknr;
-            uint i, j;
+            int i, j;
 
             // ENTER("AllocReservedBlock");
 
@@ -116,24 +118,24 @@
                 return 0;
             }
 
-            j = 31 - alloc_data.res_roving % 32;
-            for (i = alloc_data.res_roving / 32; i < ((alloc_data.numreserved + 31)/32); i++, j=31)
+            j = (int)(31 - alloc_data.res_roving % 32);
+            for (i = (int)(alloc_data.res_roving / 32); i < (alloc_data.numreserved + 31)/32; i++, j=31)
             {
                 if (bitmap[i] != 0)
                 {
                     uint field = bitmap[i];
                     for ( ;j >= 0; j--)
                     {
-                        if ((field & (1 << (int)j)) != 0)
+                        if ((field & (1 << j)) != 0)
                         {
-                            blocknr = (uint)(g.RootBlock.FirstReserved + (i*32+(31-j))* vol.rescluster);
-                            if (blocknr <= g.RootBlock.LastReserved) 
+                            blocknr = (uint)(g.RootBlock.FirstReserved + (i * 32 + (31 - j)) * vol.rescluster);
+                            if (blocknr <= g.RootBlock.LastReserved)
                             {
-                                bitmap[i] &= (uint)~(1 << (int)j);
+                                bitmap[i] &= (uint)~(1 << j);
                                 g.currentvolume.rootblockchangeflag = true;
                                 g.dirty = true;
                                 g.RootBlock.ReservedFree--;
-                                alloc_data.res_roving = 32 * i + (31 - j);
+                                alloc_data.res_roving = (uint)(32 * i + (31 - j));
                                 // DB(Trace(10,"AllocReservedBlock","allocated %ld\n", blocknr));
                                 return blocknr;
                             }
@@ -178,7 +180,7 @@
             var volume = g.currentvolume;
 
             /* check cache */
-            for (var node = Macro.HeadOf(volume.bmindexblks); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(volume.bmindexblks); node != null; node = node.Next)
             {
                 indexblk = node.Value;
                 if (indexblk.IndexBlock.seqnr == nr)
@@ -288,7 +290,7 @@
             var andata = g.glob_anodedata;
 
             /* check cache */
-            for (var node = Macro.HeadOf(volume.bmblks); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(volume.bmblks); node != null; node = node.Next)
             {
                 bmb = node.Value;
                 if (bmb.BitmapBlock.seqnr == seqnr)

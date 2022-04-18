@@ -9,11 +9,8 @@
     {
         public static async Task<byte[]> BuildBlock(dirblock dirblock, int blockSize)
         {
-            var blockStream =
-                new MemoryStream(
-                    dirblock.BlockBytes == null || dirblock.BlockBytes.Length == 0
-                        ? new byte[blockSize]
-                        : dirblock.BlockBytes);
+            var blockStream = dirblock.BlockBytes == null || dirblock.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(dirblock.BlockBytes);
                 
             await blockStream.WriteLittleEndianUInt16(dirblock.id);
             await blockStream.WriteLittleEndianUInt16(dirblock.not_used_1);
@@ -23,7 +20,7 @@
             // not_used_2
             for (var i = 0; i < 2; i++)
             {
-                await blockStream.ReadUInt16();
+                await blockStream.WriteLittleEndianUInt16(0);
             }
             
             await blockStream.WriteLittleEndianUInt32(dirblock.anodenr);

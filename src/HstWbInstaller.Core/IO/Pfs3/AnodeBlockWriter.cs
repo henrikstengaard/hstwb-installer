@@ -9,11 +9,8 @@
     {
         public static async Task<byte[]> BuildBlock(anodeblock anodeblock, int blockSize)
         {
-            var blockStream =
-                new MemoryStream(
-                    anodeblock.BlockBytes == null || anodeblock.BlockBytes.Length == 0
-                        ? new byte[blockSize]
-                        : anodeblock.BlockBytes);
+            var blockStream = anodeblock.BlockBytes == null || anodeblock.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(anodeblock.BlockBytes);
                 
             await blockStream.WriteLittleEndianUInt16(anodeblock.id);
             await blockStream.WriteLittleEndianUInt16(0); // not_used

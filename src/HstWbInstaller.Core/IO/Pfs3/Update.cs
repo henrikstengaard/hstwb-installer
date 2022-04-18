@@ -441,7 +441,7 @@
 
             for (i = 0; i <= Constants.HASHM_DIR; i++)
             {
-                for (var node = Macro.HeadOf(volume.dirblks[i]); node != null && node.Next != null; node = node.Next)
+                for (var node = Macro.HeadOf(volume.dirblks[i]); node != null; node = node.Next)
                 {
                     blk = node.Value;
                     if (Macro.IsEmptyDBlk(blk) && !await IsFirstDBlk(blk, g) && !Cache.ISLOCKED(blk, g))
@@ -483,7 +483,7 @@
 
         public static bool IsFirstABlk(CachedBlock blk)
         {
-            // #define IsFirstABlk(blk) (blk->blk.seqnr == 0)
+                // #define IsFirstABlk(blk) (blk->blk.seqnr == 0)
             return blk.ANodeBlock.seqnr == 0;
         }
 
@@ -500,7 +500,7 @@
             if (!g.updateok)
                 return false;
 
-            while (blk != null && blk.Next != null)
+            while (blk != null)
             {
                 if (blk.Value.changeflag)
                 {
@@ -574,7 +574,7 @@
 
             for (i = 0; i <= Constants.HASHM_ANODE; i++)
             {
-                for (var node = Macro.HeadOf(volume.anblks[i]); node != null && node.Next != null; node = node.Next)
+                for (var node = Macro.HeadOf(volume.anblks[i]); node != null; node = node.Next)
                 {
                     blk = node.Value;
                     if (blk.changeflag && !IsFirstABlk(blk) && IsEmptyABlk(blk, g) && !Cache.ISLOCKED(blk, g))
@@ -629,7 +629,7 @@
             //struct cindexblock *blk, *next;
             CachedBlock blk;
 
-            for (var node = Macro.HeadOf(volume.indexblks); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(volume.indexblks); node != null; node = node.Next)
             {
                 blk = node.Value;
                 if (blk.changeflag && !IsFirstIBlk(blk) && IsEmptyIBlk(blk,g) && !Cache.ISLOCKED(blk, g) )
@@ -648,7 +648,7 @@
             //struct cindexblock *blk, *next;
             CachedBlock blk;
 
-            for (var node = Macro.HeadOf(volume.superblks); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(volume.superblks); node != null; node = node.Next)
             {
                 blk = node.Value;
                 if (blk.changeflag && !IsFirstIBlk(blk) && IsEmptyIBlk(blk, g) && !Cache.ISLOCKED(blk, g) )

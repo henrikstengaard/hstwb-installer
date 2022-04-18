@@ -201,15 +201,15 @@
                 alloc_data.no_bmb = t;
                 alloc_data.bitmapstart = (uint)(rootblock.LastReserved + 1);
                 //memset (alloc_data.tobefreed, 0, TBF_CACHE_SIZE*2*sizeof(ULONG));
-                alloc_data.tobefreed = new uint[Constants.TBF_CACHE_SIZE][];
-                for (var i = 0; i < Constants.TBF_CACHE_SIZE; i++)
+                alloc_data.tobefreed = new uint[Constants.TBF_CACHE_SIZE * 2 * SizeOf.ULONG][];
+                for (var i = 0; i < alloc_data.tobefreed.Length; i++)
                 {
                     alloc_data.tobefreed[i] = new uint[2];
                 }
                 alloc_data.tobefreed_index = 0;
                 alloc_data.tbf_resneed = 0;
                 //alloc_data.res_bitmap = (bitmapblock_t *)(rootblock+1);   /* bitmap directly behind rootblock */
-                alloc_data.res_bitmap = new BitmapBlock((int)g.blocksize, g);
+                alloc_data.res_bitmap = rootblock.ReservedBitmapBlock;
 
                 if (volume.rblkextension != null)
                 {

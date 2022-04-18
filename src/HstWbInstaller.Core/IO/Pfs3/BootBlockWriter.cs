@@ -9,12 +9,8 @@
     {
         public static async Task<byte[]> MakeBootBlock(BootBlock bootBlock)
         {
-            var blockStream =
-                new MemoryStream(
-                    bootBlock.BlockBytes == null || bootBlock.BlockBytes.Length == 0
-                        ? new byte[512]
-                        : bootBlock.BlockBytes);
-            
+            var blockStream = bootBlock.BlockBytes == null || bootBlock.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(bootBlock.BlockBytes);
             
             await blockStream.WriteLittleEndianInt32(bootBlock.disktype);
             

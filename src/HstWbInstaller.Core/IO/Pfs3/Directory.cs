@@ -27,7 +27,7 @@
             await anodes.SaveAnode(anode, anodenr, g);
 
             var blk = await Lru.AllocLRU(g);
-            var dirblock = new dirblock((int)g.blocksize);
+            var dirblock = new dirblock(g);
             dirblock.anodenr = rootanodenr;
             dirblock.parent = parentnr;
             blk.blk = dirblock;
@@ -64,7 +64,7 @@
             }
 
             /* check if there are locks on any deldir, delfile */
-            for (var node = Macro.HeadOf(g.currentvolume.fileentries); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(g.currentvolume.fileentries); node != null; node = node.Next)
             {
                 list = node.Value;
 
@@ -83,14 +83,14 @@
             await Update.UpdateDisk(g);
 
             /* flush cache */
-            for (var node = Macro.HeadOf(g.currentvolume.deldirblks); node != null && node.Next != null; node = node.Next)
+            for (var node = Macro.HeadOf(g.currentvolume.deldirblks); node != null; node = node.Next)
             {
                 ddblk = node.Value;
                 Lru.FlushBlock(ddblk, g);
                 // MinRemove(LRU_CHAIN(ddblk));
                 // MinAddHead(&g->glob_lrudata.LRUpool, LRU_CHAIN(ddblk));
                 Macro.MinRemove(ddblk, g);
-                Macro.MinAddHead(g.glob_lrudata.LRUpool, ddblk);
+                Macro.MinAddHead(g.glob_lrudata.LRUpool, new LruCachedBlock(ddblk));
                 // i.p.v. FreeLRU((struct cachedblock *)ddblk, g);
             }
 
@@ -162,9 +162,12 @@
             ddblk.volume     = volume;
             ddblk.blocknr    = blocknr;
             ddblk.used       = 0;
-            var ddblk_blk = ddblk.deldirblock;
-            ddblk_blk.id     = Constants.DELDIRID;
-            ddblk_blk.seqnr  = seqnr;
+            var ddblk_blk = new deldirblock(g)
+            {
+                id = Constants.DELDIRID,
+                seqnr = seqnr
+            };
+            ddblk.blk = ddblk_blk;
             ddblk.changeflag = true;
             ddblk_blk.protection		= Constants.DELENTRY_PROT;	/* re..re..re.. */
             ddblk_blk.CreationDate = volume.rootblk.CreationDate;

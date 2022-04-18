@@ -33,11 +33,15 @@
         public DateTime CreationDate { get; set; }
         public deldirentry[] entries { get; set; }
 
-        public deldirblock(int blockSize)
+        public deldirblock(globaldata g)
         {
             id = Constants.DELDIRID;
-            entries = new deldirentry[(blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2 - SizeOf.UWORD * 4 -
+            entries = new deldirentry[(g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2 - SizeOf.UWORD * 4 -
                                        SizeOf.ULONG - SizeOf.UWORD * 3) / deldirentry.Size];
+            for (var i = 0; i < entries.Length; i++)
+            {
+                entries[i] = new deldirentry();
+            }
         }
     }
 }

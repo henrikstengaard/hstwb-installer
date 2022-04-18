@@ -5,10 +5,20 @@
 
     public class lru_data_s
     {
-        public LinkedList<CachedBlock> LRUqueue;
-        public LinkedList<CachedBlock> LRUpool;
+        /* the LRU global data */
+        // struct lru_data_s
+        // {
+        //     struct MinList LRUqueue;
+        //     struct MinList LRUpool;
+        //     ULONG poolsize;
+        //     struct lru_cachedblock **LRUarray;
+        //     UWORD reserved_blksize;
+        // };
+        
+        public LinkedList<LruCachedBlock> LRUqueue;
+        public LinkedList<LruCachedBlock> LRUpool;
         public uint poolsize;
-        public LinkedList<CachedBlock> LRUarray;
+        public LruCachedBlock[] LRUarray;
         public ushort reservedBlksize;
     };
 }

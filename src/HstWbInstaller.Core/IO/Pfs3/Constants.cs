@@ -48,9 +48,9 @@
         public const byte VERNUM = 19;
         public const byte REVNUM = 2;
 
-        public const long BOOTBLOCK1 = 0;
-        public const long BOOTBLOCK2 = 1;
-        public const long ROOTBLOCK = 2;
+        public const uint BOOTBLOCK1 = 0;
+        public const uint BOOTBLOCK2 = 1;
+        public const uint ROOTBLOCK = 2;
 
 /* number of reserved anodes per anodeblock */
         public const int RESERVEDANODES = 6;

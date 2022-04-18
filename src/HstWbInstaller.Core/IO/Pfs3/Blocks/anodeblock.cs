@@ -23,10 +23,10 @@
         public uint not_used_2;
         public anode[] nodes;
 
-        public anodeblock(int blockSize)
+        public anodeblock(globaldata g)
         {
             id = Constants.ABLKID; /* AB                               */
-            nodes = new anode[(blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3) / anode.Size];
+            nodes = new anode[(g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3) / anode.Size];
             for (var i = 0; i < nodes.Length; i++)
             {
                 nodes[i] = new anode();

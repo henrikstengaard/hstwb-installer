@@ -19,10 +19,9 @@
         public uint seqnr;
         public int[] index;          /* the indices                      */
 
-        public indexblock(int blockSize)
+        public indexblock(globaldata g)
         {
-            id = Constants.IBLKID;
-            index = new int[(blockSize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2) / SizeOf.LONG];
+            index = new int[(g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2) / SizeOf.LONG];
         }
     }
 }

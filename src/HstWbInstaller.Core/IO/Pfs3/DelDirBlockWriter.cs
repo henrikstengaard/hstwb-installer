@@ -9,11 +9,8 @@
     {
         public static async Task<byte[]> BuildBlock(deldirblock deldirblock, int blockSize)
         {
-            var blockStream =
-                new MemoryStream(
-                    deldirblock.BlockBytes == null || deldirblock.BlockBytes.Length == 0
-                        ? new byte[blockSize]
-                        : deldirblock.BlockBytes);
+            var blockStream = deldirblock.BlockBytes == null || deldirblock.BlockBytes.Length == 0 ?
+                new MemoryStream() : new MemoryStream(deldirblock.BlockBytes);
                 
             await blockStream.WriteLittleEndianUInt16(deldirblock.id);
             await blockStream.WriteLittleEndianUInt16(deldirblock.not_used_1);
