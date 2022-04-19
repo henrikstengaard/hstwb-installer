@@ -25,7 +25,7 @@
         public dirblock(globaldata g)
         {
             id = Constants.DBLKID;
-            entries = new byte[g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 3];
+            entries = new byte[SizeOf.DirBlock.Entries(g)];
         }
     }
 }

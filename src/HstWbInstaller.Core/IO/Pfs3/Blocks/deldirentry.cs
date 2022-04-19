@@ -30,7 +30,7 @@
 
         public deldirentry()
         {
-            CreationDate = DateTime.UtcNow;
+            CreationDate = DateTime.MinValue;
             filename = string.Empty;
         }
     }

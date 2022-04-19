@@ -15,7 +15,6 @@
             await blockStream.WriteLittleEndianUInt16(dirblock.id);
             await blockStream.WriteLittleEndianUInt16(dirblock.not_used_1);
             await blockStream.WriteLittleEndianUInt32(dirblock.datestamp);
-            await blockStream.WriteLittleEndianUInt32(dirblock.anodenr);
             
             // not_used_2
             for (var i = 0; i < 2; i++)

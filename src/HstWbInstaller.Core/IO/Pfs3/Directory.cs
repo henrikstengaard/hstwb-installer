@@ -90,6 +90,7 @@
                 // MinRemove(LRU_CHAIN(ddblk));
                 // MinAddHead(&g->glob_lrudata.LRUpool, LRU_CHAIN(ddblk));
                 Macro.MinRemove(ddblk, g);
+                Macro.MinRemove(new LruCachedBlock(ddblk), g);
                 Macro.MinAddHead(g.glob_lrudata.LRUpool, new LruCachedBlock(ddblk));
                 // i.p.v. FreeLRU((struct cachedblock *)ddblk, g);
             }

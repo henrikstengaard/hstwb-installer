@@ -13,6 +13,8 @@ namespace HstWbInstaller.Core.Tests
         [Fact]
         public async Task WhenReadNextThenDataSectorsAreReturned()
         {
+            var zeroFilledSectorData = new byte[SectorSize];
+            
             var sector1 = CreateSector();
             var sector2 = CreateSector();
             var sector3 = CreateSector();
@@ -45,21 +47,21 @@ namespace HstWbInstaller.Core.Tests
             Assert.Equal(0, sector.Start);
             Assert.Equal(SectorSize - 1, sector.End);
             Assert.True(sector.IsZeroFilled);
-            Assert.Empty(sector.Data);
+            Assert.Equal(zeroFilledSectorData, sector.Data);
 
             // assert sector 2
             sector = sectors[1];
             Assert.Equal(SectorSize, sector.Start);
             Assert.Equal(2 * SectorSize - 1, sector.End);
             Assert.True(sector.IsZeroFilled);
-            Assert.Empty(sector.Data);
+            Assert.Equal(zeroFilledSectorData, sector.Data);
 
             // assert sector 3
             sector = sectors[2];
             Assert.Equal(2 * SectorSize, sector.Start);
             Assert.Equal(3 * SectorSize - 1, sector.End);
             Assert.True(sector.IsZeroFilled);
-            Assert.Empty(sector.Data);
+            Assert.Equal(zeroFilledSectorData, sector.Data);
             
             // read next sectors
             var result2 = await reader.ReadNext();
@@ -74,7 +76,7 @@ namespace HstWbInstaller.Core.Tests
             Assert.Equal(3 * SectorSize, sector.Start);
             Assert.Equal(4 * SectorSize - 1, sector.End);
             Assert.True(sector.IsZeroFilled);
-            Assert.Empty(sector.Data);
+            Assert.Equal(zeroFilledSectorData, sector.Data);
 
             // assert sector 5
             sector = sectors[1];

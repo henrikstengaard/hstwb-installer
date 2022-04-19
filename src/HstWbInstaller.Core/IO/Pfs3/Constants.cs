@@ -113,15 +113,29 @@
         public const int ID_PFS2_DISK = 0x50465302; /*	'PFS\2'	*/
         public const int ID_AFS_USER_TEST = 0x41465355; /*	'AFSU'	*/
 
-        /* block id's		*/
+        /// <summary>
+        /// dir block id (DB)
+        /// </summary>
         public const ushort DBLKID = 0x4442;
+        
+        /// <summary>
+        /// anode block id (AB)
+        /// </summary>
         public const ushort ABLKID = 0x4142;
+        
+        /// <summary>
+        /// index block id (IB)
+        /// </summary>
         public const ushort IBLKID = 0x4942;
         public const ushort BMBLKID = 0x424D;
         public const ushort BMIBLKID = 0x4D49;
+        
+        /// <summary>
+        /// deldir block id (DD)
+        /// </summary>
         public const ushort DELDIRID = 0x4444;
-        public const ushort EXTENSIONID = 0x4558; /* 'EX' */
-        public const ushort SBLKID = 0x5342; /* 'SB' */
+        public const ushort EXTENSIONID = 0x4558; // EX
+        public const ushort SBLKID = 0x5342; // 'SB
 
         /* ID stands for InfoData Disk states */
         public const int ID_WRITE_PROTECTED = 80; /* Disk is write protected */

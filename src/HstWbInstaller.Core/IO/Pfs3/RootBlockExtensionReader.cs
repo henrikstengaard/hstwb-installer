@@ -38,7 +38,7 @@
             var deldirsize = await blockStream.ReadUInt16();
             var fnsize = await blockStream.ReadUInt16();
             
-            // not_used_2
+            // not_used_2[3]
             for (var i = 0; i < 3; i++)
             {
                 await blockStream.ReadUInt16();

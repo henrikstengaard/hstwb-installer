@@ -28,9 +28,7 @@
                 return null;
             }
 
-            var entriesCount = blockBytes.Length - SizeOf.UWORD * 4 - SizeOf.ULONG * 3;
-
-            var entries = await blockStream.ReadBytes(entriesCount);
+            var entries = await blockStream.ReadBytes(SizeOf.DirBlock.Entries(g));
 
             return new dirblock(g)
             {
