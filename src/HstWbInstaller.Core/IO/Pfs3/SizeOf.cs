@@ -14,5 +14,13 @@
         {
             public static int Entries(globaldata g) => g.RootBlock.ReservedBlksize - UWORD * 2 - ULONG * 3;
         }
+        
+        public static class DelDirBlock
+        {
+            public const int Entry = SizeOf.ULONG * 2 + SizeOf.UWORD * 3 + 16 + SizeOf.UWORD;
+
+            public static int Entries(globaldata g) => (g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2 - SizeOf.UWORD * 4 -
+                                                        SizeOf.ULONG - SizeOf.UWORD * 3) / Entry;
+        }
     }
 }

@@ -31,29 +31,28 @@
             await blockStream.WriteLittleEndianUInt16(rootblockextension.deldirroving); // 52
             await blockStream.WriteLittleEndianUInt16(rootblockextension.deldirsize); // 54
             await blockStream.WriteLittleEndianUInt16(rootblockextension.fnsize); // 56
-            await blockStream.WriteLittleEndianUInt16(rootblockextension.rovingbit); // 58
 
             // not_used_2[3]
+            await blockStream.WriteLittleEndianUInt16(0); // 58
             await blockStream.WriteLittleEndianUInt16(0); // 60
             await blockStream.WriteLittleEndianUInt16(0); // 62
-            await blockStream.WriteLittleEndianUInt16(0); // 64
             
             foreach (var superindex in rootblockextension.superindex)
             {
-                await blockStream.WriteLittleEndianUInt32(superindex); // 66
+                await blockStream.WriteLittleEndianUInt32(superindex); // 64
             }
             
-            await blockStream.WriteLittleEndianUInt16(rootblockextension.dd_uid); // 130 = (66 + (16 * 4))
-            await blockStream.WriteLittleEndianUInt16(rootblockextension.dd_gid); // 132
-            await blockStream.WriteLittleEndianUInt32(rootblockextension.dd_protection); // 134
-            await DateHelper.WriteDate(blockStream, rootblockextension.dd_creationdate); // 138
+            await blockStream.WriteLittleEndianUInt16(rootblockextension.dd_uid); // 128 = (64 + (16 * 4))
+            await blockStream.WriteLittleEndianUInt16(rootblockextension.dd_gid); // 130
+            await blockStream.WriteLittleEndianUInt32(rootblockextension.dd_protection); // 132
+            await DateHelper.WriteDate(blockStream, rootblockextension.dd_creationdate); // 136
             
             // not_used_3
-            await blockStream.WriteLittleEndianUInt16(0); // 144
+            await blockStream.WriteLittleEndianUInt16(0); // 142
             
             foreach (var deldir in rootblockextension.deldir)
             {
-                await blockStream.WriteLittleEndianUInt32(deldir); // 146
+                await blockStream.WriteLittleEndianUInt32(deldir); // 144 ...
             }
             
             var blockBytes = blockStream.ToArray();

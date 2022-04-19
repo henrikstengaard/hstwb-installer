@@ -238,7 +238,7 @@
                     alloc_data.reservedtobefreed = newbuffer;
                     alloc_data.rtbf_size = newsize;
                     alloc_data.reservedtobefreed[alloc_data.rtbf_index++] = blocknr;
-                    // return;
+                    return;
 //                 }
 //
 //                 /* this should never happen */

@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
     using Blocks;
@@ -33,6 +34,25 @@
             var protection = await blockStream.ReadUInt32();
             var creationDate = await DateHelper.ReadDate(blockStream);
 
+            var entries = new List<deldirentry>();
+            for (var i = 0; i < SizeOf.DelDirBlock.Entries(g); i++)
+            {
+                var anodenr = await blockStream.ReadUInt32(); // 32
+                var fsize = await blockStream.ReadUInt32(); // 36
+                var entryCreationDate = await DateHelper.ReadDate(blockStream); // 40
+                var filename = await blockStream.ReadString(16); // 46
+                var fsizex = await blockStream.ReadUInt16(); //
+
+                entries.Add(new deldirentry
+                {
+                    anodenr = anodenr,
+                    fsize = fsize,
+                    CreationDate = entryCreationDate,
+                    filename = filename,
+                    fsizex = fsizex
+                });
+            }
+            
             return new deldirblock(g)
             {
                 id = id,

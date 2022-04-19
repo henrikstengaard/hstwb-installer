@@ -26,8 +26,6 @@
         // now last two bytes used for extended file size
         public ushort fsizex;			/* extended bits 32-47 of fsize		*/
         
-        public const int Size = SizeOf.ULONG * 2 + SizeOf.UWORD * 3 + 16 + SizeOf.UWORD;
-
         public deldirentry()
         {
             CreationDate = DateTime.MinValue;

@@ -12,10 +12,10 @@
             var blockStream = bitmapBlock.BlockBytes == null || bitmapBlock.BlockBytes.Length == 0 ?
                 new MemoryStream() : new MemoryStream(bitmapBlock.BlockBytes);
                 
-            await blockStream.WriteLittleEndianUInt16(bitmapBlock.id);
-            await blockStream.WriteLittleEndianUInt16(bitmapBlock.not_used_1);
-            await blockStream.WriteLittleEndianUInt32(bitmapBlock.datestamp);
-            await blockStream.WriteLittleEndianUInt32(bitmapBlock.seqnr);
+            await blockStream.WriteLittleEndianUInt16(bitmapBlock.id); // 0
+            await blockStream.WriteLittleEndianUInt16(bitmapBlock.not_used_1); // 2
+            await blockStream.WriteLittleEndianUInt32(bitmapBlock.datestamp); // 4
+            await blockStream.WriteLittleEndianUInt32(bitmapBlock.seqnr); // 8
             
             foreach (var bitmap in bitmapBlock.bitmap)
             {

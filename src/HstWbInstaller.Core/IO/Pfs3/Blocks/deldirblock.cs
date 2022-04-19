@@ -36,8 +36,7 @@
         public deldirblock(globaldata g)
         {
             id = Constants.DELDIRID;
-            entries = new deldirentry[(g.RootBlock.ReservedBlksize - SizeOf.UWORD * 2 - SizeOf.ULONG * 2 - SizeOf.UWORD * 4 -
-                                       SizeOf.ULONG - SizeOf.UWORD * 3) / deldirentry.Size];
+            entries = new deldirentry[SizeOf.DelDirBlock.Entries(g)];
             for (var i = 0; i < entries.Length; i++)
             {
                 entries[i] = new deldirentry();

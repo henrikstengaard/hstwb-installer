@@ -4,7 +4,6 @@
     using System.IO;
     using System.Threading.Tasks;
     using Blocks;
-    using Extensions;
     using RigidDiskBlocks;
 
     public static class Format
@@ -201,7 +200,7 @@
             var resCluster = resblocksize / g.blocksize;
             rootBlock.ReservedBlksize = (ushort)resblocksize;
 
-            var numReserved = GeometryHelper.CalcNumReserved(g, resblocksize);
+            var numReserved = CalcNumReserved(g, resblocksize);
 
             rootBlock.LastReserved = (uint)(resCluster * numReserved + rootBlock.FirstReserved - 1);
             rootBlock.ReservedFree = (uint)numReserved;
@@ -258,6 +257,36 @@
             return rext;
         }
 
+        private static readonly uint[][] schijf = { 
+            new uint[]{20480,20},
+            new uint[]{51200,30},
+            new uint[]{512000,40},
+            new uint[]{1048567,50},
+            new uint[]{10000000,70},
+            new uint[]{0xffffffff,80}
+        };
+    
+        public static uint CalcNumReserved(globaldata g, uint resblocksize)
+        {
+            uint temp, taken, i;
+
+            temp = g.TotalSectors * (g.blocksize / 128);
+            temp /= resblocksize / 128;
+            taken = 0;
+
+            for (i = 0; temp > schijf[i][0]; i++)
+            {
+                taken += schijf[i][0]/schijf[i][1];
+                temp -= schijf[i][0];
+            }
+            taken += temp/schijf[i][1];
+            taken += 10;
+            taken = Math.Min(Constants.MAXNUMRESERVED, taken);
+            taken = (uint)((taken + 31) & ~0x1f);		/* multiple of 32 */
+
+            return taken;
+        }        
+        
         /* makes reserved bitmap and allocates rootblockextension */
         public static void MakeReservedBitmap(RootBlock rbl, long numReserved, globaldata g)
         {

@@ -44,7 +44,7 @@
         public DateTime RootDate;
         public DateTime VolumeDate;
         public postponed_op tobedone;	/* postponed operation (curr. only delete) */
-        public uint reserved_roving;		/* reserved roving pointer */
+        public uint reserved_roving { get; set; } /* reserved roving pointer */
         public ushort rovingbit;			/* bitnr in rootblock->roving_ptr bitmap field */
         public ushort curranseqnr;			/* anodeallocation roving pointer */
         public ushort deldirroving;			/* deldir roving pointer */

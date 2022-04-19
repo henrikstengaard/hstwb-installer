@@ -15,6 +15,18 @@
     public class GivenPfs3BlockHelper
     {
         [Fact(Skip = "Manually used for testing")]
+        public async Task When()
+        {
+            //var path = @"d:\Temp\pfs3_format_amiga\sector_0001111040.bin";
+            // var path = @"d:\Temp\pfs3_format_amiga\sector_0001112064.bin";
+            var path = @"d:\Temp\pfs3_format_amiga\sector_0001113088.bin";
+            
+            //var path = @"d:\Temp\pfs3_format_hstwb\sector_0001112064.bin";
+            var bytes = await File.ReadAllBytesAsync(path);
+            var block = await RootBlockExtensionReader.Parse(bytes);
+        }
+
+        [Fact(Skip = "Manually used for testing")]
         public async Task WhenCreateHdfWithPfs3FormattedUsingHstWb()
         {
             var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
@@ -25,12 +37,21 @@
                 .AddPartition("DH0", bootable: true)
                 .WriteToFile(path);
             
-            var diskName = "Workbench";
+            var diskName = "Formatted With HstWB Imager";
             var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
 
             await using var stream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
             
             await Format.Pfs3Format(stream, partitionBlock, diskName);
+            stream.Close();
+            await stream.DisposeAsync();
+
+            await DumpUsedSectors(path);
+            
+            var sourcePath = @"d:\Temp\pfs3_format_amiga";
+            var destinationPath = @"d:\Temp\pfs3_format_hstwb";
+
+            await CompareSectors(sourcePath, destinationPath);
         }
         
         [Fact(Skip = "Manually used for testing")]
@@ -57,13 +78,11 @@
             await File.WriteAllBytesAsync(@"d:\Temp\4gb_amigaos_39_install\part1.bin", bytes);
         }
         
-        [Fact(Skip = "Manually used for testing")]
-        public async Task DumpUsedSectors()
+        public async Task DumpUsedSectors(string path)
         {
             //var options = (RootBlock.DiskOptionsEnum)1919;
             
             // var path = @"d:\Temp\pfs3_format_amiga\pfs3_format_amiga.hdf";
-            var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
             var dir = Path.GetDirectoryName(path);
             
             await using var stream = File.OpenRead(path);
@@ -80,14 +99,10 @@
             } while (!sectorResult.EndOfSectors);
         }
 
-        [Fact(Skip = "Manually used for testing")]
-        public async Task CompareSectors()
+        public async Task CompareSectors(string sourcePath, string destinationPath)
         {
             var outputBuilder = new StringBuilder();
             
-            var sourcePath = @"d:\Temp\pfs3_format_amiga";
-            var destinationPath = @"d:\Temp\pfs3_format_hstwb";
-
             var sourceBinFiles = Directory.GetFiles(sourcePath, "*.bin");
             foreach (var sourceBinFile in sourceBinFiles)
             {
@@ -144,7 +159,7 @@
                 return;
             }
             
-            outputBuilder.AppendLine($"Id = '{string.Join(string.Empty, idBytes.Select(x => x.ToString("x2"))).ToUpper()}' ({id})");
+            outputBuilder.AppendLine($"Id = '0x{string.Join(string.Empty, idBytes.Select(x => x.ToString("x2"))).ToUpper()}' ({id})");
             outputBuilder.AppendLine($"Compare '{sourcePath}' ({sourceBytes.Length}) <> '{destinationPath}' ({destinationBytes.Length})");
             outputBuilder.AppendLine();
         }
