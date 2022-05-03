@@ -24,11 +24,9 @@
                 throw new IOException(write ? "AFS_ERROR_WRITE_OUTSIDE" : "AFS_ERROR_READ_OUTSIDE");
             }
         }
-        
-        public static async Task<IBlock> RawRead<T>(uint blocks, uint blocknr, globaldata g) where T : IBlock
-        {
-            // throw new IOException("not implemented!");
 
+        public static async Task<byte[]> RawRead(uint blocks, uint blocknr, globaldata g)
+        {
             if (blocknr == UInt32.MaxValue) // blocknr of uninitialised anode
             {
                 return default;
@@ -57,7 +55,12 @@
             g.stream.Seek(offset, SeekOrigin.Begin);
 
             // read block bytes
-            var buffer = await g.stream.ReadBytes((int)(g.blocksize * blocks));
+            return await g.stream.ReadBytes((int)(g.blocksize * blocks));
+        }
+
+        public static async Task<IBlock> RawRead<T>(uint blocks, uint blocknr, globaldata g) where T : IBlock
+        {
+            var buffer = await RawRead(blocks, blocknr, g);
 
             var type = typeof(T);
             if (type == typeof(anodeblock))

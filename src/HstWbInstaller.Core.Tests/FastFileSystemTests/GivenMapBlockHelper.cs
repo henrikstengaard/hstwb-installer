@@ -102,5 +102,30 @@
                 Assert.Equal(255 - bits[0] - bits[bit], mapBytes[0]);
             }
         }
+
+        [Fact]
+        public void WhenConvertByteArrayToBlockFreeMapThen()
+        {
+            // arrange - create byte array with block 15 & 16 as allocated
+            //        21098765432109876543210987654321
+            // bits:  11111111111111110011111111111111
+            // bytes: <-0xff-><-0xff-><-0x3f-><-0xff->
+            var bytes = new byte[] { 0xff, 0xff, 0x3f, 0xff };
+            
+            // act - convert bytes to block free map
+            var blockFreeMap = MapBlockHelper.ConvertByteArrayToBlockFreeMap(bytes);
+            
+            // assert - create expected block free map with block 15 & 16 as allocated
+            var expectedBlockFreeMap = new bool[32];
+            for (var i = 0; i < expectedBlockFreeMap.Length; i++)
+            {
+                expectedBlockFreeMap[i] = true;
+            }
+            expectedBlockFreeMap[14] = false;
+            expectedBlockFreeMap[15] = false;
+
+            // assert - block free map matches expected block free map
+            Assert.Equal(expectedBlockFreeMap, blockFreeMap);
+        }
     }
 }

@@ -73,11 +73,15 @@
         /// </summary>
         public uint[] union;
 
-        public RootBlockIndex()
+        public RootBlockIndex(uint[] idxUnion)
         {
-            union = new uint[Constants.MAXSMALLBITMAPINDEX + 1 + Constants.MAXSMALLINDEXNR + 1];
-            small = new Small(union);
-            large = new Large(union);
+            this.union = idxUnion;
+            small = new Small(idxUnion);
+            large = new Large(idxUnion);
+        }
+        
+        public RootBlockIndex() : this(new uint[Constants.MAXSMALLBITMAPINDEX + 1 + Constants.MAXSMALLINDEXNR + 1])
+        {
         }
     }
 }

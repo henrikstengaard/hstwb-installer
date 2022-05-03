@@ -22,7 +22,7 @@
         public LinkedList<CachedBlock> superblks; /* cached super blocks					*/
         public LinkedList<CachedBlock> deldirblks; /* cached deldirblocks					*/
         public LinkedList<CachedBlock> bmindexblks; /* cached bitmap index blocks           */
-        public LinkedList<string> anodechainlist; /* list of cached anodechains           */
+        public LinkedList<anodechain> anodechainlist; /* list of cached anodechains           */
         public LinkedList<string> notifylist; /* list of notifications                */
 
         public bool rootblockchangeflag; /* indicates if rootblock dirty         */
@@ -42,7 +42,7 @@
             superblks = new LinkedList<CachedBlock>();
             deldirblks = new LinkedList<CachedBlock>();
             bmindexblks = new LinkedList<CachedBlock>();
-            anodechainlist = new LinkedList<string>();
+            anodechainlist = new LinkedList<anodechain>();
             notifylist = new LinkedList<string>();
 
             for (var i = 0; i < anblks.Length; i++)

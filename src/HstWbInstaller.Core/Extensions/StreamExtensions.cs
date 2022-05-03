@@ -43,6 +43,18 @@
             return LittleEndianConverter.ConvertToAsciiString(await stream.ReadBytes(4));
         }
 
+        /// <summary>
+        /// Read string first by reading length of string and then read string 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static async Task<string> ReadString(this Stream stream)
+        {
+            var length = stream.ReadByte();
+            return LittleEndianConverter.ConvertToIso88591String(await stream.ReadBytes(length));
+        }
+        
         public static async Task<string> ReadString(this Stream stream, int length)
         {
             return LittleEndianConverter.ConvertToIso88591String(await stream.ReadBytes(length));
@@ -82,12 +94,15 @@
                     fillBytes[i] = fillByte;
                 }
                 await stream.WriteBytes(fillBytes);
-                // var zeroFilledBytes = new MemoryStream(new byte[length]);
-                // await zeroFilledBytes.WriteBytes(bytes);
-                // bytes = zeroFilledBytes.ToArray();
             }
         }
 
+        public static async Task WriteStringWithLength(this Stream stream, string value, int maxLength)
+        {
+            stream.WriteByte((byte)Math.Min(value.Length, maxLength));
+            await stream.WriteString(value, maxLength);
+        }
+        
         public static async Task<short> ReadInt16(this Stream stream)
         {
             return LittleEndianConverter.ConvertToInt16(await stream.ReadBytes(2));

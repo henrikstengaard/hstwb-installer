@@ -52,7 +52,7 @@
         // static unsigned short output_pos, output_mask; /* encode */
         public byte buf;      /* encode */
         public uint bufsiz;     /* encode */
-        static ushort blocksize; /* decode */
+        public ushort blocksize; /* decode */
         //static ushort output_pos, output_mask; /* encode */
 
         // static int pbit;
@@ -371,7 +371,7 @@
             if ((total & 0xffff) != 0 || tablebits > 16)
             {
                 /* 16 for weight below */
-                throw new Exception("make_table(): Bad table (case b)");
+                throw new Exception($"make_table(): Bad table (case b), total = {total}, tablebits = {tablebits}");
             }
 
             /* shift data for make table. */

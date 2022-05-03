@@ -28,6 +28,10 @@
                 return null;
             }
 
+            // 0x14 = x * direntry
+            //new direntry()
+            var dirEntry = await DirEntryReader.Read(blockStream);
+            
             var entries = await blockStream.ReadBytes(SizeOf.DirBlock.Entries(g));
 
             return new dirblock(g)

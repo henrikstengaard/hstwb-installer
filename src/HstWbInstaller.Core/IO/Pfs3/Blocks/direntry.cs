@@ -1,5 +1,7 @@
 ﻿namespace HstWbInstaller.Core.IO.Pfs3.Blocks
 {
+    using System;
+
     public class direntry
     {
         // struct direntry
@@ -18,9 +20,10 @@
         // };
         
         public byte next;             /* sizeof direntry                  */
-        public byte  type;             /* dir, file, link etc              */
+        public byte type;             /* dir, file, link etc              */
         public uint anode;            /* anode number                     */
         public uint fsize;            /* sizeof file                      */
+        public DateTime CreationDate;
         public ushort creationday;      /* days since Jan. 1, 1978 (like ADOS; WORD instead of LONG) */
         public ushort creationminute;   /* minutes past modnight            */
         public ushort creationtick;     /* ticks past minute                */

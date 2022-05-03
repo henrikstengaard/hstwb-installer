@@ -46,12 +46,11 @@
         public ushort infoblockshift;
         public bool updateok;
 
-        public globaldata(Stream stream)
+        public globaldata()
         {
             glob_lrudata = new lru_data_s();
             glob_anodedata = new anode_data_s();
             glob_allocdata = new allocation_data_s();
-            this.stream = stream;
             dc = new diskcache();
         }
 

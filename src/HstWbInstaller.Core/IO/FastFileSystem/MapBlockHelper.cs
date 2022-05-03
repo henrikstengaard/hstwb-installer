@@ -1,6 +1,7 @@
 ﻿namespace HstWbInstaller.Core.IO.FastFileSystem
 {
     using System;
+    using System.Collections.Generic;
 
     public static class MapBlockHelper
     {
@@ -26,6 +27,19 @@
             Array.Reverse(bytes);
 
             return bytes;
+        }
+        
+        public static bool[] ConvertByteArrayToBlockFreeMap(byte[] byteArray)
+        {
+            var blockFreeMap = new List<bool>();
+            for (int byteOffset = byteArray.Length - 1; byteOffset >= 0; byteOffset--)
+            {
+                for (int bitOffset = 0; bitOffset < 8; bitOffset++)
+                {
+                    blockFreeMap.Add((byteArray[byteOffset] & 1 << bitOffset) != 0);
+                }
+            }
+            return blockFreeMap.ToArray();
         }
     }
 }

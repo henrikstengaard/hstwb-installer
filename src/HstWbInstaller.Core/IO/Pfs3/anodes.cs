@@ -298,6 +298,10 @@
                 iblk = await GetIndexBlock((ushort)(s * andata.indexperblock + i), g);
 
                 //DBERR(if (!iblk) ErrorTrace(1, "MakeAnodeBitmap", "ERR: GetIndexBlock returned NULL!. %ld %ld\n", s, i));
+                if (iblk == null)
+                {
+                    throw new IOException($"MakeAnodeBitmap: ERR: GetIndexBlock returned NULL!. {s} {i}\n");
+                }
 
                 var iblk_blk = iblk.IndexBlock;
                 for (j = andata.indexperblock - 1; j >= 0 && iblk_blk.index[j] == 0; j--)
@@ -802,6 +806,77 @@
 
             await SaveAnode(anode, anodenr, g);
             andata.anblkbitmap[(anodenr>>16)/32] |= (uint)(1 << (31 - (int)(((anodenr>>16) % 32))));
+        }
+        
+/*
+ * makes anodechain
+ */
+        public static async Task<anodechain> MakeAnodeChain(uint anodenr, globaldata g)
+        {
+            // struct anodechain *ac;
+            // struct anodechainnode *node, *newnode;
+
+            // ENTER("MakeAnodeChain");
+            // if (!(ac = AllocMemP(sizeof(struct anodechain), g)))
+            // return NULL;
+            var ac = new anodechain
+            {
+                refcount = 0
+            };
+
+            var node = ac.head;
+            await GetAnode(node.an, anodenr, g);
+            while (node.an != null && node.an.next != null)
+            {
+                // if (!(newnode = AllocMemP(sizeof(struct anodechainnode), g)))
+                // goto failure;
+                var newnode = new anodechainnode();
+                node.next = newnode;
+                await GetAnode(newnode.an, node.an.next, g);
+                node = newnode;
+            }
+
+            Macro.MinAddHead(g.currentvolume.anodechainlist, ac);
+            return ac;
+	
+            // failure:
+            // FreeAnodeChain(ac, g);  
+            // return NULL;
+        }
+        
+        /*
+ * Get anodechain of anodenr, making it if necessary.
+ * Returns chain or NULL for failure
+ */
+        public static async Task<anodechain> GetAnodeChain(uint anodenr, globaldata g)
+        {
+            anodechain ac;
+
+            if ((ac = FindAnodeChain(anodenr, g)) == null)
+                ac = await MakeAnodeChain(anodenr, g);
+            if (ac != null)
+                ac.refcount++;
+
+            return ac;
+        }
+
+        /*
+ * search anodechain. 
+ * Return anodechain found, or 0 if not found
+ */
+        public static anodechain FindAnodeChain (uint anodenr, globaldata g)
+        {
+            anodechain chain;
+
+            // ENTER("FindAnodeChain");
+            for (var node = Macro.HeadOf(g.currentvolume.anodechainlist); node.Next != null; node = node.Next)
+            {
+                chain = node.Value;
+                if (chain.head.an.nr == anodenr)
+                    return chain;
+            }
+
+            return null;
         }
     }
 }

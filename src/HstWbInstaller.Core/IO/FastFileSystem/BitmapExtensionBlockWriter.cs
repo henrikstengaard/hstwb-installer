@@ -13,7 +13,7 @@
                     bitmapExtensionBlock.BlockBytes == null || bitmapExtensionBlock.BlockBytes.Length == 0
                         ? new byte[blockSize]
                         : bitmapExtensionBlock.BlockBytes);
-            
+
             // write block free
             foreach (var bitmapBlock in bitmapExtensionBlock.BitmapBlocks)
             {
@@ -23,12 +23,12 @@
             // write next bitmap block pointer
             blockStream.Seek(blockSize - 4, SeekOrigin.Begin);
             await blockStream.WriteLittleEndianUInt32(bitmapExtensionBlock.NextBitmapExtensionBlockPointer);
-            
+
             // update block bytes 
             var blockBytes = blockStream.ToArray();
             bitmapExtensionBlock.BlockBytes = blockBytes;
 
-            return blockBytes;            
+            return blockBytes;
         }
     }
 }

@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Extensions;
     using IO.Pfs3;
+    using IO.Pfs3.Blocks;
     using IO.RigidDiskBlocks;
     using IO.Vhds;
     using Xunit;
@@ -17,13 +18,52 @@
         [Fact(Skip = "Manually used for testing")]
         public async Task When()
         {
-            //var path = @"d:\Temp\pfs3_format_amiga\sector_0001111040.bin";
-            // var path = @"d:\Temp\pfs3_format_amiga\sector_0001112064.bin";
-            var path = @"d:\Temp\pfs3_format_amiga\sector_0001113088.bin";
+            var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
+            
+            await using var stream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
+
+            var rigidDiskBlock = await RigidDiskBlockReader.Read(stream);
+            
+            var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
+
+            var globalData = Init.CreateGlobalData(partitionBlock.Sectors, partitionBlock.BlocksPerTrack,
+                partitionBlock.Surfaces, partitionBlock.LowCyl, partitionBlock.HighCyl, partitionBlock.NumBuffer,
+                partitionBlock.FileSystemBlockSize);
+            globalData.stream = stream;
+            
+            var rootBlock = await ReadRootBlock(@"d:\Temp\pfs3_format_hstwb\sector_0001033216.bin");
+
+            var reservedBitmapBlockBytes1 = await File.ReadAllBytesAsync(@"d:\Temp\pfs3_format_hstwb\sector_0001033728.bin");
+            var reservedBitmapBlockBytes2 = await File.ReadAllBytesAsync(@"d:\Temp\pfs3_format_hstwb\sector_0001034240.bin");
+            var reservedBitmapBlock =
+                await BitmapBlockReader.Parse(reservedBitmapBlockBytes1.Concat(reservedBitmapBlockBytes2).ToArray(), globalData);
+            rootBlock.ReservedBitmapBlock = reservedBitmapBlock;
+            
+            globalData.RootBlock = rootBlock;
+            globalData.currentvolume = await Volume.MakeVolumeData(rootBlock, globalData);
+            globalData.glob_allocdata.res_bitmap = reservedBitmapBlock;
+            
+            // loop all allocated blocks according to reserved bitmap block
+            
+            // await Init.InitModules(globalData.currentvolume, false, globalData);
+            
+            var dirBlock = await ReadDirBlock(@"d:\Temp\pfs3_format_hstwb\sector_0001116160.bin", globalData);
             
             //var path = @"d:\Temp\pfs3_format_hstwb\sector_0001112064.bin";
+            // var bytes = await File.ReadAllBytesAsync(path);
+            // var block = await RootBlockExtensionReader.Parse(bytes);
+        }
+
+        private async Task<RootBlock> ReadRootBlock(string path)
+        {
             var bytes = await File.ReadAllBytesAsync(path);
-            var block = await RootBlockExtensionReader.Parse(bytes);
+            return await RootBlockReader.Parse(bytes);
+        }
+        
+        private async Task<dirblock> ReadDirBlock(string path, globaldata g)
+        {
+            var bytes = await File.ReadAllBytesAsync(path);
+            return await DirBlockReader.Parse(bytes, g);
         }
 
         [Fact(Skip = "Manually used for testing")]
@@ -31,27 +71,27 @@
         {
             var path = @"d:\Temp\pfs3_format_hstwb\pfs3_format_hstwb.hdf";
 
-            var rigidDiskBlock = await RigidDiskBlock
-                .Create(300.MB().ToUniversalSize())
-                .AddFileSystem("PFS3", await File.ReadAllBytesAsync(@"TestData\pfs3aio"))
-                .AddPartition("DH0", bootable: true)
-                .WriteToFile(path);
+            // var rigidDiskBlock = await RigidDiskBlock
+            //     .Create(300.MB().ToUniversalSize())
+            //     .AddFileSystem("PFS3", await File.ReadAllBytesAsync(@"TestData\pfs3aio"))
+            //     .AddPartition("DH0", bootable: true)
+            //     .WriteToFile(path);
+            //
+            // var diskName = "Formatted With HstWB Imager";
+            // var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
+            //
+            // await using var stream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
+            //
+            // await Pfs3Formatter.FormatPartition(stream, partitionBlock, diskName);
+            // stream.Close();
+            // await stream.DisposeAsync();
             
-            var diskName = "Formatted With HstWB Imager";
-            var partitionBlock = rigidDiskBlock.PartitionBlocks.First();
-
-            await using var stream = File.Open(path, FileMode.Open, FileAccess.ReadWrite);
-            
-            await Format.Pfs3Format(stream, partitionBlock, diskName);
-            stream.Close();
-            await stream.DisposeAsync();
-
             await DumpUsedSectors(path);
-            
-            var sourcePath = @"d:\Temp\pfs3_format_amiga";
-            var destinationPath = @"d:\Temp\pfs3_format_hstwb";
-
-            await CompareSectors(sourcePath, destinationPath);
+            //
+            // var sourcePath = @"d:\Temp\pfs3_format_amiga";
+            // var destinationPath = @"d:\Temp\pfs3_format_hstwb";
+            //
+            // await CompareSectors(sourcePath, destinationPath);
         }
         
         [Fact(Skip = "Manually used for testing")]

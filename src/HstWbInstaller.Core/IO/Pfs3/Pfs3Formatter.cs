@@ -6,24 +6,28 @@
     using Blocks;
     using RigidDiskBlocks;
 
-    public static class Format
+    public static class Pfs3Formatter
     {
-        public static async Task Pfs3Format(Stream stream, PartitionBlock partitionBlock, string diskName)
+        /// <summary>
+        /// formats partition with professional file system (PFS3AIO v19.2)
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="partitionBlock"></param>
+        /// <param name="diskName"></param>
+        /// <exception cref="IOException"></exception>
+        /// <exception cref="Exception"></exception>
+        public static async Task FormatPartition(Stream stream, PartitionBlock partitionBlock, string diskName)
         {
             // format.c, FDSFormat()
 
             // g->firstblock = g->dosenvec->de_LowCyl * geom->dg_CylSectors;
             // g->lastblock = (g->dosenvec->de_HighCyl + 1) *  geom->dg_CylSectors - 1;
-            var blocksPerCylinder = partitionBlock.Sectors * partitionBlock.BlocksPerTrack * partitionBlock.Surfaces;
-            var g = new globaldata(stream)
-            {
-                NumBuffers = partitionBlock.NumBuffer,
-                blocksize = partitionBlock.FileSystemBlockSize,
-                TotalSectors = (partitionBlock.HighCyl - partitionBlock.LowCyl + 1) * blocksPerCylinder,
-                firstblock = partitionBlock.LowCyl * blocksPerCylinder,
-                lastblock = (partitionBlock.HighCyl + 1) * blocksPerCylinder - 1
-            };
-
+            
+            var g = Init.CreateGlobalData(partitionBlock.Sectors, partitionBlock.BlocksPerTrack,
+                partitionBlock.Surfaces, partitionBlock.LowCyl, partitionBlock.HighCyl, partitionBlock.NumBuffer,
+                partitionBlock.FileSystemBlockSize);
+            g.stream = stream;
+            
             /* remove error-induced soft protect */
             if (g.softprotect)
             {

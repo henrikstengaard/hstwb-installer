@@ -184,5 +184,29 @@
 
 /* buffer for AllocReservedBlockSave */
             public const int RESERVED_BUFFER = 10;
+            
+            /* postponed operations operation_id's */
+            public const int PP_FREEBLOCKS_FREE = 1;
+            public const int PP_FREEBLOCKS_KEEP = 2;
+            public const int PP_FREEANODECHAIN = 3;
+            
+/* entrytype's
+** NB: ETF_VOLUME en ETF_LOCK zijn ALLEBIJ LOCKS!! TEST ON BOTH
+*/
+        public const int ET_VOLUME = 0x0004;
+        public const int ET_FILEENTRY = 0x0008;
+        public const int ET_LOCK = 0x000c;
+        public const int ETF_VOLUME = 1;
+        public const int ETF_FILEENTRY = 2;
+        public const int ETF_LOCK = 3;
+        public const int ET_SHAREDREAD = 0;
+        public const int ET_SHAREDWRITE = 1;
+        public const int ET_EXCLREAD = 2;
+        public const int ET_EXCLWRITE = 3;
+
+        // public static bool IsVolumeEntry(listentry e) => e.type.type = ListType.ListTypeType.Volume=;//onstants.ETF_VOLUME;
+        //     public static bool IsFileEntry(listentry e) => e.type.flags.type == Constants.ETF_FILEENTRY;
+        //     public static bool IsLockEntry(listentry e) => e.type.flags.type == Constants.ETF_LOCK;
+        //     public static bool IsVolumeLock(listentry le) => le.type.flags.type == Constants.ETF_VOLUME;
     }
 }

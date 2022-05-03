@@ -58,11 +58,11 @@
 
             Macro.MinAddHead(volume.bmblks, blok);
             await Update.MakeBlockDirty(indexblock, g);
-            indexblock.used = oldlock;  	   // unlock;
+            indexblock.used = oldlock; // unlock;
 
             return blok;
         }
-        
+
         public static async Task<CachedBlock> NewBitmapIndexBlock(ushort seqnr, globaldata g)
         {
             CachedBlock blok;
@@ -82,9 +82,9 @@
 
             volume.rootblockchangeflag = true;
 
-            blok.volume   = volume;
-            blok.blocknr  = volume.rootblk.idx.large.bitmapindex[seqnr];
-            blok.used     = 0;
+            blok.volume = volume;
+            blok.blocknr = volume.rootblk.idx.large.bitmapindex[seqnr];
+            blok.used = 0;
             blok.blk = new indexblock(g)
             {
                 id = Constants.BMIBLKID,
@@ -99,7 +99,7 @@
         /*
          * AllocReservedBlock
          */
-        public static uint AllocReservedBlock (globaldata g)
+        public static uint AllocReservedBlock(globaldata g)
         {
             var vol = g.currentvolume;
             var alloc_data = g.glob_allocdata;
@@ -119,12 +119,12 @@
             }
 
             j = (int)(31 - alloc_data.res_roving % 32);
-            for (i = (int)(alloc_data.res_roving / 32); i < (alloc_data.numreserved + 31)/32; i++, j=31)
+            for (i = (int)(alloc_data.res_roving / 32); i < (alloc_data.numreserved + 31) / 32; i++, j = 31)
             {
                 if (bitmap[i] != 0)
                 {
                     uint field = bitmap[i];
-                    for ( ;j >= 0; j--)
+                    for (; j >= 0; j--)
                     {
                         if ((field & (1 << j)) != 0)
                         {
@@ -156,7 +156,7 @@
 
             // EXIT("AllocReservedBlock");
         }
-        
+
         public static void FreeReservedBlock(uint blocknr, globaldata g)
         {
             /*
@@ -164,15 +164,15 @@
              */
             if (blocknr != 0 && blocknr <= g.RootBlock.LastReserved)
             {
-                var alloc_data = g.glob_allocdata; 
+                var alloc_data = g.glob_allocdata;
                 var bitmap = alloc_data.res_bitmap.bitmap;
                 var t = (blocknr - g.RootBlock.FirstReserved) / g.currentvolume.rescluster;
-                bitmap[t/32] |= 0x80000000U >> (int)(t % 32);
+                bitmap[t / 32] |= 0x80000000U >> (int)(t % 32);
                 g.RootBlock.ReservedFree++;
                 g.currentvolume.rootblockchangeflag = true;
             }
         }
-        
+
         public static async Task<CachedBlock> GetBitmapIndex(ushort nr, globaldata g)
         {
             uint blocknr;
@@ -205,13 +205,14 @@
                 Lru.FreeLRU(indexblk, g);
                 return null;
             }
+
             indexblk.blk = blk;
 
             if (indexblk.blk.id == Constants.BMIBLKID)
             {
-                indexblk.volume   = volume;
-                indexblk.blocknr  = blocknr;
-                indexblk.used     = 0;
+                indexblk.volume = volume;
+                indexblk.blocknr = blocknr;
+                indexblk.used = 0;
                 indexblk.changeflag = false;
                 Macro.MinAddHead(volume.bmindexblks, indexblk);
             }
@@ -231,7 +232,7 @@
             Cache.LOCK(indexblk, g);
             return indexblk;
         }
-        
+
 /*
  * Update bitmap
  */
@@ -249,21 +250,23 @@
             bmseqnr = UInt32.MaxValue;
             for (i = 0; i < alloc_data.tobefreed_index; i++)
             {
-                for ( blocknr = alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
-                     blocknr < alloc_data.tobefreed[i][Constants.TBF_SIZE] + alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
-                     blocknr++ )
+                for (blocknr = alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
+                     blocknr < alloc_data.tobefreed[i][Constants.TBF_SIZE] +
+                     alloc_data.tobefreed[i][Constants.TBF_BLOCKNR];
+                     blocknr++)
                 {
                     /* now free block blocknr */
                     bitnr = blocknr - alloc_data.bitmapstart;
                     longnr = bitnr / 32;
                     newbmseqnr = longnr / alloc_data.longsperbmb;
                     bmoffset = longnr % alloc_data.longsperbmb;
-                    if(newbmseqnr != bmseqnr)
+                    if (newbmseqnr != bmseqnr)
                     {
                         bmseqnr = newbmseqnr;
                         bitmap = await GetBitmapBlock(bmseqnr, g);
                     }
-                    bitmap.BitmapBlock.bitmap[bmoffset] |= (uint)(1<<(int)(31-(bitnr % 32)));
+
+                    bitmap.BitmapBlock.bitmap[bmoffset] |= (uint)(1 << (int)(31 - (bitnr % 32)));
                     await Update.MakeBlockDirty(bitmap, g);
                 }
 
@@ -277,7 +280,7 @@
             g.RootBlock.BlocksFree = alloc_data.clean_blocksfree;
             g.currentvolume.rootblockchangeflag = true;
         }
-        
+
 /* this routine is analogous GetAnodeBlock()
  * GetBitmapIndex is analogous GetIndexBlock()
  */
@@ -307,7 +310,7 @@
                 return null;
 
             /* get blocknr */
-            if ((blocknr = (uint)indexblock.IndexBlock.index[temp>>16]) == 0 ||
+            if ((blocknr = (uint)indexblock.IndexBlock.index[temp >> 16]) == 0 ||
                 (bmb = await Lru.AllocLRU(g)) == null)
                 return null;
 
@@ -331,7 +334,7 @@
                 // ErrorMsg (AFS_ERROR_DNV_WRONG_BMID, args, g);
                 return null;
             }
-	
+
             /* initialize it */
             bmb.volume = volume;
             bmb.blocknr = blocknr;
@@ -340,6 +343,200 @@
             Macro.MinAddHead(volume.bmblks, bmb);
 
             return bmb;
+        }
+
+/*
+ * Free all blocks in an anodechain? Use FreeBlocksAC(achain,ULONG_MAX,freetype,g)
+ */
+
+/*
+ * Frees blocks allocated with AllocateBlocks. Freed blocks are added
+ * to tobefreed list, and are not actually freed until UpdateFreeList
+ * is called. Frees from END of anodelist.
+ *
+ * 'freetype' specifies if the anodes involved should be freed (freeanodes) or
+ * not (keepanodes). In keepanodes mode the whole file (size >= filesize) should
+ * be deleted, since otherwise the anodes cannot consistently be kept (dual
+ * definition). In freeanodes mode the leading anode is not freed.
+ *
+ * VERSION23: uses tobedone fields. Because freeing blocks is idem-potent, fully
+ * repeating an interrupted operation after reboot is ok. The blocks should not
+ * be added to the blocksfree counter twice, however (see DoPostoned())
+ * 
+ * -> all references that indicate the freed blocks must have been
+ *  done (atomically).
+ */        
+        public static async Task FreeBlocksAC(anodechain achain, uint size, freeblocktype freetype, globaldata g)
+        {
+            anodechainnode chnode, tail;
+            uint freeing;
+            uint i, t = 0;
+            bool empty = false;
+            // crootblockextension* rext;
+            uint blocksdone = 0;
+            var alloc_data = g.glob_allocdata;
+
+            // ENTER("FreeBlocksAC");
+
+            i = alloc_data.tobefreed_index;
+            tail = null;
+
+            /* store operation tobedone */
+            var rext = g.currentvolume.rblkextension;
+            var rext_blk = rext.rblkextension;
+            if (rext != null)
+            {
+                if (freetype == freeblocktype.keepanodes)
+                    rext_blk.tobedone.operation_id = Constants.PP_FREEBLOCKS_KEEP;
+                else
+                    rext_blk.tobedone.operation_id = Constants.PP_FREEBLOCKS_FREE;
+
+                rext_blk.tobedone.argument1 = achain.head.an.nr;
+                rext_blk.tobedone.argument2 = size;
+                rext_blk.tobedone.argument3 = 0; /* blocks done (FREEBLOCKS_KEEP) */
+                await Update.MakeBlockDirty(rext, g);
+            }
+
+            /* check if tobefreedcache is sufficiently large,
+             * otherwise updatedisk
+             */
+            for (chnode = achain.head; chnode.next != null; t++)
+                chnode = chnode.next;
+
+            if ((i > 0) && (t + i >= Constants.TBF_CACHE_SIZE - 1))
+            {
+                await Update.UpdateDisk(g);
+                i = alloc_data.tobefreed_index;
+            }
+
+            // if (size)
+            //     goto l1;            
+            var l1 = size != 0;
+
+            /* reverse order freeloop */
+            while (size != 0 && !empty)
+            {
+                if (!l1)
+                {
+                    /* Get chainnode to free from */
+                    chnode = achain.head;
+                    while (chnode.next != tail)
+                        chnode = chnode.next;
+                }
+
+                // l1: 
+                /* get blocks to free */
+                if (chnode.an.clustersize <= size)
+                {
+                    freeing = chnode.an.clustersize;
+                    chnode.an.clustersize = 0;
+
+                    tail = chnode;
+                    empty = tail == achain.head;
+                }
+                else
+                {
+                    /* anode is partially freed;
+                     * should only be possible in freeanodes mode 
+                     */
+                    freeing = size;
+                    chnode.an.clustersize -= size;
+                    chnode.an.next = 0;
+                    if (freetype == freeblocktype.freeanodes)
+                        await anodes.SaveAnode(chnode.an, chnode.an.nr, g);
+                }
+
+                /* and put them in the tobefreed list */
+                if (freeing != 0)
+                {
+                    alloc_data.tobefreed[i][Constants.TBF_BLOCKNR] = chnode.an.blocknr + chnode.an.clustersize;
+                    alloc_data.tobefreed[i++][Constants.TBF_SIZE] = freeing;
+                    alloc_data.tbf_resneed += 3 + freeing / (32 * alloc_data.longsperbmb);
+                    alloc_data.alloc_available += freeing;
+                    size -= freeing;
+                    blocksdone += freeing;
+
+                    /* free anode if it is empty, we're supposed to and it is not the head */
+                    if (!empty && freetype == freeblocktype.freeanodes && chnode.an.clustersize == 0)
+                    {
+                        await anodes.FreeAnode(chnode.an.nr, g);
+                        // FreeMemP(chnode, g);
+                    }
+                }
+
+                /* check if intermediate update is needed 
+                 * (tobefreed cache full, low on reserved blocks etc)
+                 */
+                if (i >= Constants.TBF_CACHE_SIZE || Macro.IsUpdateNeeded(Constants.RTBF_POSTPONED_TH, g))
+                {
+                    alloc_data.tobefreed_index = i;
+                    g.dirty = true;
+                    if (rext != null && freetype == freeblocktype.freeanodes)
+                    {
+                        /* make anodechain consistent */
+                        await RestoreAnodeChain(achain, empty, tail, g);
+                        tail = null;
+
+                        /* postponed op: finish operation later */
+                        rext_blk.tobedone.argument2 = size;
+                    }
+                    else
+                        /* postponed op: repeat operation later, but don't increase blocks free twice */
+                        rext_blk.tobedone.argument3 = blocksdone;
+
+                    await Update.MakeBlockDirty(rext, g);
+                    await Update.UpdateDisk(g);
+                    i = alloc_data.tobefreed_index;
+                }
+            }
+
+            /* restore anode chain (both cached and on disk) */
+            if (freetype == freeblocktype.freeanodes)
+                await RestoreAnodeChain(achain, empty, tail, g);
+
+            /* cancel posponed operation */
+            if (rext != null)
+            {
+                rext_blk.tobedone.operation_id = 0;
+                rext_blk.tobedone.argument1 = 0;
+                rext_blk.tobedone.argument2 = 0;
+                rext_blk.tobedone.argument3 = 0;
+                await Update.MakeBlockDirty(rext, g);
+            }
+
+            /* update tobefreed index */
+            g.dirty = true;
+            alloc_data.tobefreed_index = i;
+
+            // EXIT("FreeBlocksAC");
+        }
+        
+        /* local function of FreeBlocksAC
+ * restore anodechain (freeanode mode only)
+ */
+        public static async Task RestoreAnodeChain(anodechain achain, bool empty, anodechainnode tail, globaldata g)
+        {
+            anodechainnode chnode;
+
+            if (empty)
+            {
+                achain.head.next = null;
+                achain.head.an.clustersize = 0;
+                // achain.head.an.blocknr = ~0L;
+                achain.head.an.blocknr = UInt32.MaxValue;
+                achain.head.an.next = 0;
+                await anodes.SaveAnode(achain.head.an, achain.head.an.nr, g);
+            }
+            else
+            {
+                chnode = achain.head;
+                while (chnode.next != tail)
+                    chnode = chnode.next;
+
+                chnode.next = null;
+                chnode.an.next = 0;
+                await anodes.SaveAnode(chnode.an, chnode.an.nr, g);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Extensions;
 
     public static class BlockHelper
@@ -110,6 +111,7 @@
             
             var rootBlock = new RootBlock
             {
+                HeaderKey = (int)rootBlockOffset,
                 Offset = rootBlockOffset,
                 BitmapBlocksOffset = rootBlockOffset + 1,
                 DiskName = diskName,
@@ -158,6 +160,40 @@
 
                 bitmapBlocksList[bitmapBlockIndex].BlocksFreeMap[blockIndex] = entry.Value;
             }
+        }
+        
+        public static async Task<IEnumerable<BitmapBlock>> ReadBitmapBlocks(Volume volume,
+            IEnumerable<uint> bitmapBlockOffsets)
+        {
+            var bitmapBlocks = new List<BitmapBlock>();
+            foreach (var bitmapBlockOffset in bitmapBlockOffsets)
+            {
+                var bitmapBlock = await Disk.ReadBitmapBlock(volume, bitmapBlockOffset);
+                bitmapBlock.Offset = bitmapBlockOffset;
+
+                bitmapBlocks.Add(bitmapBlock);
+            }
+
+            return bitmapBlocks;
+        }
+
+        public static async Task<IEnumerable<BitmapExtensionBlock>> ReadBitmapExtensionBlocks(Volume volume,
+            uint bitmapExtensionBlocksOffset)
+        {
+            var bitmapExtensionBlocks = new List<BitmapExtensionBlock>();
+
+            while (bitmapExtensionBlocksOffset != 0)
+            {
+                var bitmapExtensionBlock = await Disk.ReadBitmapExtensionBlock(volume, bitmapExtensionBlocksOffset);
+                bitmapExtensionBlock.BitmapBlocks =
+                    await ReadBitmapBlocks(volume, bitmapExtensionBlock.BitmapBlockOffsets);
+
+                bitmapExtensionBlocks.Add(bitmapExtensionBlock);
+
+                bitmapExtensionBlocksOffset = bitmapExtensionBlock.NextBitmapExtensionBlockPointer;
+            }
+
+            return bitmapExtensionBlocks;
         }
     }
 }

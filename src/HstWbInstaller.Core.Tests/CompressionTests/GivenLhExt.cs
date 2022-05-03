@@ -1,5 +1,6 @@
 ﻿namespace HstWbInstaller.Core.Tests.CompressionTests
 {
+    using System;
     using System.IO;
     using System.Threading.Tasks;
     using IO.Lha;
@@ -48,8 +49,8 @@
                 Crc = 11704
             };
             var lh5CompressedBytes = await File.ReadAllBytesAsync(@"TestData\lha\test1.info.lh5.bin");
-            var input = new MemoryStream(lh5CompressedBytes);
-            var output = new MemoryStream();
+            await using var input = new MemoryStream(lh5CompressedBytes);
+            await using var output = new MemoryStream();
 
             // act - extract lha5 compressed header
             var lhExt = new LhExt();

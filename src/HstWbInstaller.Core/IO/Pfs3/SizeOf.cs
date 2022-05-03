@@ -10,6 +10,11 @@
         public const int ANODEBLOCK_T = 2 * UWORD + 3 * ULONG;
         public const int ANODE_T = 3 * ULONG;
 
+        public static class RootBlock
+        {
+            public static int IdxUnion => Constants.MAXSMALLBITMAPINDEX + 1 + Constants.MAXSMALLINDEXNR + 1;
+        }
+        
         public static class DirBlock
         {
             public static int Entries(globaldata g) => g.RootBlock.ReservedBlksize - UWORD * 2 - ULONG * 3;

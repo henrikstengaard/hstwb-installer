@@ -14,7 +14,7 @@
         {
             // arrange - open lha file
             var path = @"TestData\Lha\amiga.lha";
-            await using var stream = File.OpenRead(path);
+            await using var stream = new MemoryStream(await File.ReadAllBytesAsync(path));
             var lhaReader = new LhaReader(stream, Encoding.GetEncoding("ISO-8859-1"));
             var lhExt = new LhExt();
 
@@ -35,10 +35,10 @@
                 var packedBytes = await stream.ReadBytes((int)header.PackedSize);
                 
                 // extract packed bytes for entry
-                var input = new MemoryStream(packedBytes);
-                var output = new MemoryStream();
-                lhExt.ExtractOne(input, output, header);
-                
+                await using var input = new MemoryStream(packedBytes);
+                await using var output = new MemoryStream();
+                lhExt.ExtractOne(input, output, header); // something cases this to periodically fail when running all tests
+                //
                 // assert - header original size is equal to uncompressed output
                 Assert.Equal(header.OriginalSize, output.Length);
             } while (header != null);

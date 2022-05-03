@@ -180,5 +180,44 @@
             return ddblk;
         }
         
+/*
+ * Frees anodes without freeing blocks
+ */
+        public static async Task FreeAnodesInChain(uint anodenr, globaldata g)
+        {
+            canode anode = new canode();
+            var rext = g.currentvolume.rblkextension;
+
+            // DB(Trace(1, "FreeAnodeInChain", "anodenr: %ld \n", anodenr));
+            await anodes.GetAnode(anode, anodenr, g);
+            while (anode.nr != 0)            /* stops autom.: anode.nr of anode 0 == 0 */
+            {
+                if (Macro.IsUpdateNeeded(Constants.RTBF_THRESHOLD, g))
+                {
+                    if (rext != null)
+                    {
+                        var rext_blk = rext.rblkextension;
+                        rext_blk.tobedone.operation_id = Constants.PP_FREEANODECHAIN;
+                        rext_blk.tobedone.argument1 = anode.nr;
+                        rext_blk.tobedone.argument2 = 0;
+                        rext_blk.tobedone.argument3 = 0;
+                    }
+
+                    await Update.UpdateDisk(g);
+                }
+
+                await anodes.FreeAnode(anode.nr, g);
+                await anodes.GetAnode(anode, anode.next, g);
+            }
+
+            if (rext != null)
+            {
+                var rext_blk = rext.rblkextension;
+                rext_blk.tobedone.operation_id = 0;
+                rext_blk.tobedone.argument1 = 0;
+                rext_blk.tobedone.argument2 = 0;
+                rext_blk.tobedone.argument3 = 0;
+            }
+        }
     }
 }

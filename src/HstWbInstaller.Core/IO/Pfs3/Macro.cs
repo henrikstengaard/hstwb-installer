@@ -148,5 +148,17 @@
             // #define IsEmptyDBlk(blk) (FIRSTENTRY(blk)->next == 0)
             return blk.dirblock.entries.Length == 0;
         }
+        
+        public static bool IsUpdateNeeded(int rtbf_threshold, globaldata g)
+        {
+/* checks if update is needed now */
+// #define IsUpdateNeeded(rtbf_threshold)                              \
+//         ((alloc_data.rtbf_index > rtbf_threshold) ||                    \
+//         (g->rootblock->reserved_free < RESFREE_THRESHOLD + 5 + alloc_data.tbf_resneed))         \
+
+            var alloc_data = g.glob_allocdata;
+            return ((alloc_data.rtbf_index > rtbf_threshold) ||
+                    (g.RootBlock.ReservedFree < Constants.RESFREE_THRESHOLD + 5 + alloc_data.tbf_resneed));
+        }
     }
 }

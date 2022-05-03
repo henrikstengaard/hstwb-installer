@@ -82,6 +82,7 @@
                 }
                 else
                 {
+                    rext.blk = blk;
                     if (rext.blk.id == Constants.EXTENSIONID)
                     {
                         volume.rblkextension = rext;
@@ -94,7 +95,6 @@
                     }
                 }
 
-                rext.blk = blk;
             }
             else
             {

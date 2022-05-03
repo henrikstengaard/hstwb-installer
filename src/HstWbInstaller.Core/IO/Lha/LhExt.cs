@@ -15,7 +15,7 @@
         
         // https://github.com/jca02266/lha/blob/03475355bc6311f7f816ea9a88fb34a0029d975b/src/slide.c
         // static struct decode_option decode_define[] 
-        private static readonly IDecoder[] decoders = {
+        private readonly IDecoder[] decoders = {
             new Lh1Decoder(),
             new Lh2Decoder(),
             new Lh3Decoder(),
@@ -70,7 +70,7 @@ static struct decode_option decode_define[] = {
             this.extract_broken_archive = extractBrokenArchive;
         }
 
-        public string[] methods =
+        private readonly string[] methods =
         {
             Constants.LZHUFF0_METHOD, Constants.LZHUFF1_METHOD, Constants.LZHUFF2_METHOD, Constants.LZHUFF3_METHOD,
             Constants.LZHUFF4_METHOD, Constants.LZHUFF5_METHOD, Constants.LZHUFF6_METHOD, Constants.LZHUFF7_METHOD,
