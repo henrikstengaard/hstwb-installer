@@ -25,6 +25,6 @@
         public int Real { get; set; }
         public int Sector { get; set; }
         public IEnumerable<Entry> SubDir { get; set; }
-        public IEntryBlock EntryBlock { get; set; }
+        public EntryBlock EntryBlock { get; set; }
     }
 }

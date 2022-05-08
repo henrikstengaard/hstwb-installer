@@ -9,7 +9,7 @@
     public static class Directory
     {
         // https://github.com/lclevy/ADFlib/blob/be8a6f6e8d0ca8fda963803eef77366c7584649a/src/adf_dir.c#L362
-        public static async Task<IEnumerable<Entry>> AdfGetRDirEnt(Volume volume, IEntryBlock startEntryBlock,
+        public static async Task<IEnumerable<Entry>> AdfGetRDirEnt(Volume volume, EntryBlock startEntryBlock,
             bool recursive = false)
         {
             // struct bEntryBlock entryBlk;
@@ -253,6 +253,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
                         NSect = -1
                     };
                 }
+
                 // if (Disk.AdfReadEntryBlock(vol, nSect, entry) != RC_OK)
                 //     return -1;
                 if (nameLen == entry.Name.Length)
@@ -274,7 +275,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
                 {
                     NSect = -1,
                 };
-            
+
             return new NameToEntryBlockResult
             {
                 NSect = nSect,
@@ -282,22 +283,22 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
                 NUpdSect = nUpdSect ? updSect : null
             };
         }
-        
+
         /*
  * adfCreateFile
  *
  */
-        public static async Task<FileHeaderBlock> AdfCreateFile(Volume vol, int nParent, string name)
+        public static async Task<FileHeaderBlock> AdfCreateFile(Volume vol, EntryBlock parent, string name)
         {
             // SECTNUM nSect;
             // struct bEntryBlock parent;
 /*puts("adfCreateFile in");*/
-            var parent = await Disk.AdfReadEntryBlock(vol, nParent);
+            // var parent = await Disk.AdfReadEntryBlock(vol, nParent);
             // if (Disk.AdfReadEntryBlock(vol, nParent, &parent)!=RC_OK)
             //     return RC_ERROR;
 
             /* -1 : do not use a specific, already allocated sector */
-            var nSect = AdfCreateEntry(vol, parent, name, -1);
+            var nSect = await AdfCreateEntry(vol, parent, name, -1);
             if (nSect == -1) throw new IOException("error nSect is -1");
 /*printf("new fhdr=%d\n",nSect);*/
             //memset(fhdr,0,512);
@@ -313,15 +314,15 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             {
                 throw new IOException("adfCreateFile : unknown parent secType");
             }
-            
+
             var fhdr = new FileHeaderBlock
             {
                 HeaderKey = nSect,
-                fileName = name,
-                parent = parent.SecType == Constants.ST_ROOT ? (int)vol.RootBlock.Offset : parent.HeaderKey,
+                Name = name,
+                Parent = parent.SecType == Constants.ST_ROOT ? (int)vol.RootBlock.Offset : parent.HeaderKey,
                 Date = DateTime.Now
             };
-            
+
             // fhdr->nameLen = Math.Min(Constants.MAXNAMELEN, name.Length);
             // memcpy(fhdr->fileName,name,fhdr->nameLen);
             // fhdr->headerKey = nSect;
@@ -344,7 +345,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
                 Cache.AdfAddInCache(vol, parent, fhdr);
             }
 
-            Bitmap.AdfUpdateBitmap(vol);
+            await Bitmap.AdfUpdateBitmap(vol);
 
             // if (adfEnv.useNotify)
             //     (*adfEnv.notifyFct)(nParent,ST_FILE);
@@ -353,9 +354,145 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             return fhdr;
         }
 
-        public static int AdfCreateEntry(Volume vol, IEntryBlock dir, string name, int thisSect)
+        /*
+ * adfCreateEntry
+ *
+ * if 'thisSect'==-1, allocate a sector, and insert its pointer into the hashTable of 'dir', using the 
+ * name 'name'. if 'thisSect'!=-1, insert this sector pointer  into the hashTable 
+ * (here 'thisSect' must be allocated before in the bitmap).
+ */
+        public static async Task<int> AdfCreateEntry(Volume vol, EntryBlock dir, string name, int thisSect)
         {
-            throw new NotImplementedException();
+            // BOOL intl;
+            // struct bEntryBlock updEntry;
+            // int len, hashValue;
+            // RETCODE rc;
+            // char name2[MAXNAMELEN+1], name3[MAXNAMELEN+1];
+            // SECTNUM nSect, newSect, newSect2;
+            // struct bRootBlock* root;
+
+/*puts("adfCreateEntry in");*/
+
+            var intl = Macro.isINTL(vol.DosType) || Macro.isDIRCACHE(vol.DosType);
+            var len = Math.Min(name.Length, Constants.MAXNAMELEN);
+            var name2 = MyToUpper(name, intl);
+            var hashValue = AdfGetHashValue(name, intl);
+            var nSect = dir.HashTable[hashValue];
+
+            int newSect;
+            if (nSect == 0)
+            {
+                if (thisSect != -1)
+                    newSect = thisSect;
+                else
+                {
+                    newSect = Bitmap.AdfGet1FreeBlock(vol);
+                    if (newSect == -1)
+                    {
+                        throw new IOException("adfCreateEntry : nSect==-1");
+                    }
+                }
+
+                dir.HashTable[hashValue] = newSect;
+                if (dir.SecType == Constants.ST_ROOT)
+                {
+                    var root = dir as RootBlock;
+                    // adfTime2AmigaTime(adfGiveCurrentTime(),
+                    //     &(root->cDays),&(root->cMins),&(root->cTicks));
+                    root.FileSystemCreationDate = DateTime.Now;
+                    await Raw.AdfWriteRootBlock(vol, (int)vol.RootBlock.Offset, root);
+                }
+                else
+                {
+                    var dirBlock = dir as EntryBlock;
+                    // adfTime2AmigaTime(adfGiveCurrentTime(),&(dir->days),&(dir->mins),&(dir->ticks));
+                    dirBlock.Date = DateTime.Now;
+                    await AdfWriteDirBlock(vol, dir.HeaderKey, dirBlock);
+                }
+
+/*puts("adfCreateEntry out, dir");*/
+                // if (rc != RC_OK)
+                // {
+                //     Bitmap.AdfSetBlockFree(vol, newSect);
+                //     return -1;
+                // }
+                // else
+                return newSect;
+            }
+
+            EntryBlock updEntry;
+            do
+            {
+                updEntry = await Disk.AdfReadEntryBlock(vol, nSect);
+                if (updEntry == null)
+                    return -1;
+                if (updEntry.Name.Length == len)
+                {
+                    var name3 = MyToUpper(updEntry.Name, intl);
+                    if (name3 == name2)
+                    {
+                        throw new IOException("adfCreateEntry : entry already exists");
+                    }
+                }
+
+                nSect = updEntry.NextSameHash;
+            } while (nSect != 0);
+
+            int newSect2;
+            if (thisSect != -1)
+                newSect2 = thisSect;
+            else
+            {
+                newSect2 = Bitmap.AdfGet1FreeBlock(vol);
+                if (newSect2 == -1)
+                {
+                    throw new IOException("adfCreateEntry : nSect==-1");
+                }
+            }
+
+            updEntry.NextSameHash = newSect2;
+            if (updEntry.SecType == Constants.ST_DIR)
+                await AdfWriteDirBlock(vol, updEntry.HeaderKey, updEntry);
+            else if (updEntry.SecType == Constants.ST_FILE)
+                await File.AdfWriteFileHdrBlock(vol, updEntry.HeaderKey, updEntry);
+            else
+                throw new IOException("adfCreateEntry : unknown entry type");
+
+/*puts("adfCreateEntry out, hash");*/
+            // if (rc != RC_OK)
+            // {
+            //     adfSetBlockFree(vol, newSect2);
+            //     return -1;
+            // }
+            // else
+            return (newSect2);
+        }
+
+/*
+ * adfWriteDirBlock
+ *
+ */
+        public static async Task AdfWriteDirBlock(Volume vol, int nSect, EntryBlock dir)
+        {
+            // uint8_t buf[512];
+            // uint32_t newSum;
+
+
+/*printf("wdirblk=%d\n",nSect);*/
+            dir.Type = Constants.T_HEADER;
+            dir.HighSeq = 0;
+            dir.HashTableSize = 0;
+            dir.SecType = Constants.ST_DIR;
+
+//             memcpy(buf, dir, sizeof(struct bDirBlock));
+// #ifdef LITT_ENDIAN
+//             swapEndian(buf, SWBL_DIR);
+// #endif
+//             newSum = adfNormalSum(buf,20,sizeof(struct bDirBlock));
+//             swLong(buf+20, newSum);
+            var buf = await DirBlockWriter.BuildBlock(dir, vol.BlockSize);
+
+            await Disk.AdfWriteBlock(vol, nSect, buf);
         }
     }
 }

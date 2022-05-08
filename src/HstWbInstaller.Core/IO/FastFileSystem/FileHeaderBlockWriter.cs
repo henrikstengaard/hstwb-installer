@@ -16,11 +16,11 @@
                         ? new byte[blockSize]
                         : fileHeaderBlock.BlockBytes);
 
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.type);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.Type);
             await blockStream.WriteLittleEndianInt32(fileHeaderBlock.HeaderKey);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.highSeq);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.dataSize);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.firstData);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.HighSeq);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.DataSize);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.FirstData);
             await blockStream.WriteLittleEndianUInt32(0); // checksum
 
             for (var i = 0; i < Constants.MAX_DATABLK; i++)
@@ -30,26 +30,26 @@
             
             await blockStream.WriteLittleEndianInt32(0); // r1
             await blockStream.WriteLittleEndianInt32(0); // r2
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.access);
-            await blockStream.WriteLittleEndianUInt32(fileHeaderBlock.byteSize);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.Access);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.ByteSize);
 
-            await blockStream.WriteStringWithLength(fileHeaderBlock.comment, Constants.MAXCMMTLEN + 1);
-            await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN + 1]); // r3
-            await DateHelper.WriteDate(blockStream, fileHeaderBlock.Date);
-            await blockStream.WriteStringWithLength(fileHeaderBlock.fileName, Constants.MAXNAMELEN + 1);
+            await blockStream.WriteStringWithLength(fileHeaderBlock.Comment, Constants.MAXCMMTLEN);
+            await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN]); // r3
+            await DateHelper.WriteDate(blockStream, fileHeaderBlock.Date); // 1a4
+            await blockStream.WriteStringWithLength(fileHeaderBlock.Name, Constants.MAXNAMELEN + 1);
             await blockStream.WriteLittleEndianInt32(0); // r4
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.real);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.nextLink);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.RealEntry); // 1d4
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.NextLink);
 
             for (var i = 0; i < 5; i++)
             {
                 await blockStream.WriteLittleEndianInt32(0); // r5
             }
             
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.nextSameHash);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.parent);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.NextSameHash);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.Parent);
             await blockStream.WriteLittleEndianInt32(fileHeaderBlock.Extension);
-            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.secType);
+            await blockStream.WriteLittleEndianInt32(fileHeaderBlock.SecType);
             
             var blockBytes = blockStream.ToArray();
             var newSum = Raw.AdfNormalSum(blockBytes, 20, blockBytes.Length);

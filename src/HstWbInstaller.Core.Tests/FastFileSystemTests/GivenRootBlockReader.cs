@@ -5,6 +5,7 @@
     using IO;
     using IO.FastFileSystem;
     using Xunit;
+    using Constants = IO.FastFileSystem.Constants;
 
     public class GivenRootBlockReader
     {
@@ -30,7 +31,10 @@
             
             // assert - bytes read and root block matches type and disk name
             Assert.Equal(FloppyDiskConstants.BlockSize, bytesRead);
-            Assert.Equal(2U, rootBlock.Type);
+            Assert.Equal(2, rootBlock.Type);
+            Assert.Equal(0, rootBlock.HeaderKey);
+            Assert.Equal(0, rootBlock.HighSeq);
+            Assert.Equal(Constants.HT_SIZE, (int)rootBlock.HashTableSize);
             Assert.Equal("FFSTEST", rootBlock.DiskName);
         }
     }

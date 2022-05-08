@@ -16,7 +16,7 @@
             var highSeq = await blockStream.ReadInt32();
             var dataSize = await blockStream.ReadInt32();
             var firstData = await blockStream.ReadInt32();
-            var checksum = await blockStream.ReadUInt32();
+            var checksum = await blockStream.ReadInt32();
 
             var hashTable = new List<int>();
             for (var i = 0; i < Constants.MAX_DATABLK; i++)
@@ -31,7 +31,7 @@
             }
             
             var access = await blockStream.ReadInt32();
-            var byteSize = await blockStream.ReadUInt32();
+            var byteSize = await blockStream.ReadInt32();
             var comment = await blockStream.ReadString();
 
             blockStream.Seek(0x1a4, SeekOrigin.Begin);
@@ -51,24 +51,24 @@
             return new FileHeaderBlock
             {
                 BlockBytes = blockBytes,
-                type = type,
+                Type = type,
                 HeaderKey = headerKey,
-                highSeq = highSeq,
-                dataSize = dataSize,
-                firstData = firstData,
-                checkSum = checksum,
+                HighSeq = highSeq,
+                DataSize = dataSize,
+                FirstData = firstData,
+                Checksum = checksum,
                 HashTable = hashTable.ToArray(),
-                access = access,
-                byteSize = byteSize,
-                comment = comment,
+                Access = access,
+                ByteSize = byteSize,
+                Comment = comment,
                 Date = date,
-                fileName = name,
-                real = realEntry,
-                nextLink = nextLink,
-                nextSameHash = nextSameHash,
-                parent = parent,
+                Name = name,
+                RealEntry = realEntry,
+                NextLink = nextLink,
+                NextSameHash = nextSameHash,
+                Parent = parent,
                 Extension = extension,
-                secType = secType
+                SecType = secType
             };
         }
     }

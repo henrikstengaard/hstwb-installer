@@ -8,6 +8,8 @@
 
     public abstract class FastFileSystemTestBase
     {
+        protected readonly DateTime Date = new DateTime(2022, 2, 3, 14, 45, 33, DateTimeKind.Utc);
+        
         protected async Task<byte[]> CreateExpectedRootBlockBytes()
         {
             var blockStream = new MemoryStream(new byte[512]);
@@ -23,12 +25,11 @@
 
             blockStream.Seek(420, SeekOrigin.Begin);
 
-            var now = DateTime.UtcNow;
             var amigaDate = new DateTime(1978, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var diffDate = now - amigaDate;
+            var diffDate = Date - amigaDate;
             var days = diffDate.Days;
             var minutes = diffDate.Hours * 60 + diffDate.Minutes;
-            var ticks = Convert.ToInt32((double)50 / 60 * diffDate.Seconds);
+            var ticks = Convert.ToInt32(diffDate.Milliseconds);
             
             // last root alteration date
             await blockStream.WriteLittleEndianInt32(days); // days since 1 jan 78

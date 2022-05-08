@@ -1,8 +1,6 @@
 ﻿namespace HstWbInstaller.Core.IO.FastFileSystem
 {
-    using System;
-
-    public class FileHeaderBlock : IEntryBlock
+    public class FileHeaderBlock : EntryBlock
     {
 // struct bFileHeaderBlock {
 // 000	int32_t	type;		/* == 2 */
@@ -34,37 +32,37 @@
 // 1fc	int32_t	secType;	// == -3 */
 // }
 
-        public int type; /* == 2 */
-        public int HeaderKey { get; set; } /* current block number */
-        public int highSeq; /* number of data block in this hdr block */
-        public int dataSize; /* == 0 */
-        public int firstData;
-        public uint checkSum;
-        public int[] DataBlocks { get; set; }
-        
-        public int[] HashTable
-        {
-            get => DataBlocks;
-            set => DataBlocks = value;
-        }
-
-        public int access; /* bit0=del, 1=modif, 2=write, 3=read */
-        public uint byteSize;
-        public string comment;
-        public DateTime Date;
-        public string fileName;
-        public int real; /* unused == 0 */
-        public int nextLink; /* link chain */
-        public int nextSameHash; /* next entry with sane hash */
-        public int parent; /* parent directory */
-        public int Extension { get; set; } /* pointer to extension block */
-        public int secType; /* == -3 */
-
-        public FileHeaderBlock()
-        {
-            DataBlocks = new int[Constants.MAX_DATABLK];
-        }
-
-        public byte[] BlockBytes { get; set; }
+        // public int Type { get; set; } /* == 2 */
+        // public int HeaderKey { get; set; } /* current block number */
+        // public int highSeq { get; set; } /* number of data block in this hdr block */
+        // public int dataSize { get; set; } /* == 0 */
+        // public int firstData;
+        // public uint checkSum;
+        // public int[] DataBlocks { get; set; }
+        //
+        // public int[] HashTable
+        // {
+        //     get => DataBlocks;
+        //     set => DataBlocks = value;
+        // }
+        //
+        // public int access; /* bit0=del, 1=modif, 2=write, 3=read */
+        // public uint byteSize;
+        // public string comment;
+        // public DateTime Date;
+        // public string fileName;
+        // public int real; /* unused == 0 */
+        // public int nextLink; /* link chain */
+        // public int nextSameHash; /* next entry with sane hash */
+        // public int parent; /* parent directory */
+        // public int Extension { get; set; } /* pointer to extension block */
+        // public int SecType { get; set; } /* == -3 */
+        //
+        // public FileHeaderBlock()
+        // {
+        //     DataBlocks = new int[Constants.MAX_DATABLK];
+        // }
+        //
+        // public byte[] BlockBytes { get; set; }
     };
 }

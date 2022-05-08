@@ -4,6 +4,7 @@
     using System.IO;
     using System.Threading.Tasks;
     using Extensions;
+    using RigidDiskBlocks;
 
     public static class BitmapBlockReader
     {
@@ -18,20 +19,27 @@
             {
                 throw new IOException("Invalid checksum for bitmap block");
             }
-            
+
+            var map = new List<uint>();
             var blocksFreeMap = new List<bool>();
-            var entries = blockBytes.Length - SizeOf.ULONG / SizeOf.ULONG;
+            var entries = (blockBytes.Length - SizeOf.ULONG) / SizeOf.ULONG;
             for (var i = 0; i < entries; i++)
             {
                 var mapBytes = await blockStream.ReadBytes(4);
                 blocksFreeMap.AddRange(MapBlockHelper.ConvertByteArrayToBlockFreeMap(mapBytes));
+                if (mapBytes.Length != 4)
+                {
+                    
+                }
+                map.Add(LittleEndianConverter.ConvertToUInt32(mapBytes));
             }
 
             return new BitmapBlock
             {
                 Checksum = checksum,
                 BlockBytes = blockBytes,
-                BlocksFreeMap = blocksFreeMap.ToArray()
+                BlocksFreeMap = blocksFreeMap.ToArray(),
+                Map = map.ToArray()
             };
         }
     }

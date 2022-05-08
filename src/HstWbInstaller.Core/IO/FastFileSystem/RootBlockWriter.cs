@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
 
@@ -16,19 +15,23 @@
                         ? new byte[blockSize]
                         : rootBlock.BlockBytes);
             
-            await blockStream.WriteLittleEndianUInt32(rootBlock.Type); // type
+            await blockStream.WriteLittleEndianInt32(rootBlock.Type); // type
+            await blockStream.WriteLittleEndianInt32(0); // headerKey
+            await blockStream.WriteLittleEndianInt32(0); // highSeq
+            await blockStream.WriteLittleEndianInt32(rootBlock.HashTableSize); // ht_size
+            await blockStream.WriteLittleEndianInt32(0); // firstData
+            await blockStream.WriteLittleEndianInt32(0); // checksum
 
-            blockStream.Seek(12, SeekOrigin.Begin);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.HashtableSize); // ht_size
+            for (var i = 0; i < Constants.HT_SIZE; i++)
+            {
+                await blockStream.WriteLittleEndianInt32(rootBlock.HashTable[i]);
+            }
             
-            blockStream.Seek(blockSize - 200, SeekOrigin.Begin);
             await blockStream.WriteLittleEndianInt32(rootBlock.BitmapFlags); // bm_flag
 
-            var bitmapBlocks = rootBlock.BitmapBlocks.ToList();
-
-            for (var i = 0U; i < bitmapBlocks.Count; i++)
+            for (var i = 0U; i < Constants.BM_SIZE; i++)
             {
-                await blockStream.WriteLittleEndianUInt32(rootBlock.BitmapBlocksOffset + i);
+                await blockStream.WriteLittleEndianInt32(i < rootBlock.bmPages.Length ? rootBlock.bmPages[i] : 0);
             }
 
             // write first bitmap extension block pointer
@@ -42,32 +45,25 @@
             // last root alteration date
             await DateHelper.WriteDate(blockStream, rootBlock.RootAlterationDate);
 
-            var diskName = rootBlock.DiskName.Length > 30
-                ? rootBlock.DiskName.Substring(0, 30)
+            var diskName = rootBlock.DiskName.Length > Constants.MAXNAMELEN + 1
+                ? rootBlock.DiskName.Substring(0, Constants.MAXNAMELEN + 1)
                 : rootBlock.DiskName;
 
             await blockStream.WriteBytes(new[] { Convert.ToByte(diskName.Length) });
-            await blockStream.WriteString(diskName, 30);
+            await blockStream.WriteString(diskName, Constants.MAXNAMELEN + 1);
 
+            await blockStream.WriteBytes(new byte[8]); // r2
+            
             // last disk alteration date
-            blockStream.Seek(blockSize - 40, SeekOrigin.Begin);
-            if (rootBlock.DiskAlterationDate == DateTime.MinValue)
-            {
-                await blockStream.WriteLittleEndianInt32(0); // days since 1 jan 78
-                await blockStream.WriteLittleEndianInt32(0); // minutes past midnight
-                await blockStream.WriteLittleEndianInt32(0); // ticks (1/50 sec) past last minute
-            }
-            else
-            {
-                await DateHelper.WriteDate(blockStream, rootBlock.DiskAlterationDate);
-            }
+            await DateHelper.WriteDate(blockStream, rootBlock.DiskAlterationDate);
 
             // filesystem creation date
             await DateHelper.WriteDate(blockStream, rootBlock.FileSystemCreationDate);
             
-            blockStream.Seek(blockSize - 8, SeekOrigin.Begin);
-            await blockStream.WriteLittleEndianUInt32(rootBlock.FirstDirectoryCacheBlock); // FFS: first directory cache block, 0 otherwise
-            await blockStream.WriteLittleEndianUInt32(rootBlock.BlockSecondaryType); // block secondary type = ST_ROOT (value 1)
+            await blockStream.WriteLittleEndianInt32(rootBlock.NextSameHash); // FFS: first directory cache block, 0 otherwise
+            await blockStream.WriteLittleEndianInt32(rootBlock.Parent); // FFS: first directory cache block, 0 otherwise
+            await blockStream.WriteLittleEndianInt32(rootBlock.Extension); // FFS: first directory cache block, 0 otherwise
+            await blockStream.WriteLittleEndianInt32(rootBlock.SecType); // block secondary type = ST_ROOT (value 1)
             
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();

@@ -117,7 +117,7 @@
                 DiskName = diskName,
                 BitmapBlocks = bitmapBlocks.Take(Constants.MaxBitmapBlockPointersInRootBlock).ToList(),
                 BitmapExtensionBlocks = bitmapExtensionBlocks.ToList(),
-                FirstDirectoryCacheBlock = rootBlockOffset
+                Extension = (int)rootBlockOffset
             };
 
             OffsetHelper.SetRootBlockOffsets(rootBlock);

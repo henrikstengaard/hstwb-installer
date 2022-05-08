@@ -5,7 +5,7 @@
 
     public static class File
     {
-        public static async Task<Stream> Open(Volume volume, IEntryBlock parent, string name, FileMode mode)
+        public static async Task<Stream> Open(Volume volume, EntryBlock parent, string name, FileMode mode)
         {
             // https://github.com/lclevy/ADFlib/blob/be8a6f6e8d0ca8fda963803eef77366c7584649a/src/adf_file.c#L265
 
@@ -34,7 +34,7 @@
                 //return null; 
             }
 
-            if (result.EntryBlock == null)
+            if (!write && result.EntryBlock == null)
             {
                 if (!volume.IgnoreErrors)
                 {
@@ -57,7 +57,7 @@
 	if (write && (hasE(entry.access)||hasW(entry.access))) {
         (*adfEnv.wFct)("adfFileOpen : access denied"); return NULL; }  
 */
-            if (write && nSect == -1)
+            if (write && nSect != -1)
             {
                 //(*adfEnv.wFct)("adfFileOpen : file already exists"); return NULL;
                 throw new IOException("file already exists");
@@ -75,7 +75,7 @@
             //     (*adfEnv.wFct)("adfFileOpen : malloc"); 
             //     free(file->fileHdr); free(file); return NULL; 
             // }
-            var fileHdr = await FileHeaderBlockReader.Parse(entry.BlockBytes);
+            var fileHdr = mode == FileMode.Write ? new FileHeaderBlock() : await FileHeaderBlockReader.Parse(entry.BlockBytes);
 
             var eof = mode == FileMode.Write || mode == FileMode.Append;
             // switch (mode)
@@ -90,18 +90,19 @@
             //         break;
             // }
 
-            var entryStream = new EntryStream(volume, write, eof, fileHdr);
             //var entryStream = new EntryStream(volume, write, eof, fileHdr);
 
-            switch (mode)
+            if (mode == FileMode.Write)
             {
-                case FileMode.Write:
-                    await Directory.AdfCreateFile(volume, parent.HeaderKey, name);
+                    fileHdr = await Directory.AdfCreateFile(volume, parent, name);
                     eof = true;
-                    break;
-                case FileMode.Append:
-                    entryStream.Seek(entry.ByteSize, SeekOrigin.Begin);
-                    break;
+            }
+
+            var entryStream = new EntryStream(volume, write, eof, fileHdr);
+
+            if (mode == FileMode.Append)
+            {
+                entryStream.Seek(entry.ByteSize, SeekOrigin.Begin);
             }
 
             return entryStream;
@@ -159,6 +160,41 @@
                 Data = buf
             };
         }
+        
+/*
+ * adfWriteDataBlock
+ *
+ */
+        public static async Task AdfWriteDataBlock(Volume vol, int nSect, IDataBlock data)
+        {
+            // uint8_t buf[512];
+            // uint32_t newSum;
+            // struct bOFSDataBlock *dataB;
+            // RETCODE rc = RC_OK;
+
+            // newSum = 0L;
+            if (Macro.isOFS(vol.DosType)) {
+//                 dataB = (struct bOFSDataBlock *)data;
+//                 dataB->type = T_DATA;
+//                 memcpy(buf,dataB,512);
+// #ifdef LITT_ENDIAN
+//                 swapEndian(buf, SWBL_DATA);
+// #endif
+//                 newSum = adfNormalSum(buf,20,512);
+//                 swLong(buf+20,newSum);
+// /*        *(int32_t*)(buf+20) = swapLong((uint8_t*)&newSum);*/
+                var ofsDataBlock = data as OfsDataBlock;
+                var buf = await OfsDataBlockWriter.BuildBlock(ofsDataBlock, vol.BlockSize);
+                await Disk.AdfWriteBlock(vol,nSect,buf);
+            }
+            else {
+                // adfWriteBlock(vol,nSect,data);
+                await Disk.AdfWriteBlock(vol,nSect,data.Data);
+            }
+/*printf("adfWriteDataBlock %ld\n",nSect);*/
+
+            // return rc;
+        }        
 
 /*
  * adfReadFileExtBlock
@@ -228,9 +264,9 @@
             // RETCODE rc = RC_OK;
 
 /*printf("adfWriteFileHdrBlock %ld\n",nSect);*/
-            fhdr.type = Constants.T_HEADER;
-            fhdr.dataSize = 0;
-            fhdr.secType = Constants.ST_FILE;
+            fhdr.Type = Constants.T_HEADER;
+            fhdr.DataSize = 0;
+            fhdr.SecType = Constants.ST_FILE;
 
 //             memcpy(buf, fhdr, sizeof(struct bFileHeaderBlock));
 // #ifdef LITT_ENDIAN
@@ -245,5 +281,61 @@
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
         }
+        
+/*
+ * adfWriteFileHdrBlock
+ *
+ */
+        public static async Task AdfWriteFileHdrBlock(Volume vol, int nSect, EntryBlock fhdr)
+        {
+            // uint8_t buf[512];
+            // uint32_t newSum;
+            // RETCODE rc = RC_OK;
+
+/*printf("adfWriteFileHdrBlock %ld\n",nSect);*/
+            fhdr.Type = Constants.T_HEADER;
+            //fhdr.DataSize = 0;
+            fhdr.SecType = Constants.ST_FILE;
+
+//             memcpy(buf, fhdr, sizeof(struct bFileHeaderBlock));
+// #ifdef LITT_ENDIAN
+//             swapEndian(buf, SWBL_FILE);
+// #endif
+            var buf = await EntryBlockWriter.BuildBlock(fhdr, vol.BlockSize);
+            // var newSum = Raw.AdfNormalSum(buf, 20, buf.Length);
+            //swLong(buf+20, newSum);
+            // newSum applied part of build block
+
+/*    *(uint32_t*)(buf+20) = swapLong((uint8_t*)&newSum);*/
+
+            await Disk.AdfWriteBlock(vol, nSect, buf);
+        }
+        
+/*
+ * adfWriteFileExtBlock
+ *
+ */
+        public static async Task AdfWriteFileExtBlock(Volume vol, int nSect, FileExtBlock fext)
+        {
+            // uint8_t buf[512];
+            // uint32_t newSum;
+            // RETCODE rc = RC_OK;
+
+            fext.type = Constants.T_LIST;
+            fext.secType = Constants.ST_FILE;
+            fext.dataSize = 0;
+            fext.firstData = 0;
+//
+//             memcpy(buf,fext,512);
+// #ifdef LITT_ENDIAN
+//             swapEndian(buf, SWBL_FEXT);
+// #endif
+//             newSum = adfNormalSum(buf,20,512);
+//             swLong(buf+20,newSum);
+/*    *(int32_t*)(buf+20) = swapLong((uint8_t*)&newSum);*/
+            var buf = await FileExtBlockWriter.BuildBlock(fext, vol.BlockSize);
+
+            await Disk.AdfWriteBlock(vol, nSect, buf);
+        }        
     }
 }

@@ -18,6 +18,8 @@
         // 1fc	int32_t	secType;	/* -3 */	
         // };
 
+        public byte[] BlockBytes { get; set; }
+
         public int type;		/* == 0x10 */
         public int headerKey;
         public int highSeq;

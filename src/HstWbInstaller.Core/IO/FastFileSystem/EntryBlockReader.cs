@@ -15,7 +15,7 @@
             var headerKey = await blockStream.ReadInt32();
 
             blockStream.Seek(0x14, SeekOrigin.Begin);
-            var checksum = await blockStream.ReadUInt32();
+            var checksum = await blockStream.ReadInt32();
 
             var hashTable = new List<int>();
             for (var i = 0; i < Constants.HT_SIZE; i++)

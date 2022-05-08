@@ -14,7 +14,7 @@
             var days = await stream.ReadUInt32(); // days since 1 jan 78
             var minutes = await stream.ReadUInt32(); // minutes past midnight
             var ticks = await stream.ReadUInt32(); // ticks (1/50 sec) past last minute
-            return AmigaEpocDate.AddDays(days).AddMinutes(minutes).AddSeconds(60 / 50 * ticks);
+            return AmigaEpocDate.AddDays(days).AddMinutes(minutes).AddMilliseconds(ticks);
         }
         
         public static async Task WriteDate(Stream stream, DateTime date)
@@ -30,7 +30,7 @@
             var diffDate = date - AmigaEpocDate;
             var days = (uint)diffDate.Days;
             var minutes = (uint)(diffDate.Hours * 60 + diffDate.Minutes);
-            var ticks = (uint)Convert.ToInt32((double)50 / 60 * diffDate.Seconds);
+            var ticks = (uint)Convert.ToInt32(diffDate.Milliseconds);
             
             await stream.WriteLittleEndianUInt32(days); // days since 1 jan 78
             await stream.WriteLittleEndianUInt32(minutes); // minutes past midnight

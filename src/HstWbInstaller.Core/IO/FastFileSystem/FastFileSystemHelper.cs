@@ -71,7 +71,7 @@
         /// <param name="parent"></param>
         /// <param name="entries"></param>
         /// <param name="outputPath"></param>
-        private static async Task ExtractDirectory(Volume volume, IEntryBlock parent, IEnumerable<Entry> entries, string outputPath)
+        private static async Task ExtractDirectory(Volume volume, EntryBlock parent, IEnumerable<Entry> entries, string outputPath)
         {
             if (!System.IO.Directory.Exists(outputPath))
             {
@@ -214,8 +214,11 @@
 
             // parse root block bytes
             var rootBlock = await RootBlockReader.Parse(rootBlockBytes);
+            rootBlock.Offset = rootBlockOffset;
+            rootBlock.HeaderKey = (int)rootBlockOffset;
 
-            return new Volume
+            
+            var volume = new Volume
             {
                 PartitionStartOffset = lowCyl * blocksPerCylinder * blockSize,
                 DosType = dosType,
@@ -229,6 +232,10 @@
                 LastBlock = blocks - 1,
                 Mounted = true
             };
+
+            await Bitmap.AdfReadBitmap(volume, (int)blocks, rootBlock);
+            
+            return volume;
         }
     }
 }
