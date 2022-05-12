@@ -22,7 +22,7 @@
         {
             return Ascii.GetBytes(value);
         }
-        
+
         // convert iso-8859-1 bytes to string
         public static string ConvertToIso88591String(byte[] bytes, int length = 0)
         {
@@ -55,14 +55,14 @@
             Array.Reverse(bytes);
             return BitConverter.ToUInt16(bytes, 0);
         }
-        
+
         // convert bytes from little endian to int32
         public static int ConvertToInt32(byte[] bytes)
         {
             Array.Reverse(bytes);
             return BitConverter.ToInt32(bytes, 0);
         }
-        
+
         // convert bytes from little endian to uint32
         public static uint ConvertToUInt32(byte[] bytes)
         {
@@ -76,16 +76,16 @@
             var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return bytes;
-        }        
-        
+        }
+
         // convert uint32 to little endian bytes 
         public static byte[] ConvertToBytes(uint value)
         {
             var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return bytes;
-        }        
-        
+        }
+
         // convert int32 to little endian bytes 
         public static byte[] ConvertToBytes(int value)
         {
@@ -93,7 +93,7 @@
             Array.Reverse(bytes);
             return bytes;
         }
-        
+
         
         
         /*

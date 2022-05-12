@@ -342,7 +342,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             if (Macro.isDIRCACHE(vol.DosType))
             {
                 // adfAddInCache(vol, &parent, (struct bEntryBlock *)fhdr);
-                Cache.AdfAddInCache(vol, parent, fhdr);
+                await Cache.AdfAddInCache(vol, parent, fhdr);
             }
 
             await Bitmap.AdfUpdateBitmap(vol);
@@ -493,6 +493,63 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             var buf = await DirBlockWriter.BuildBlock(dir, vol.BlockSize);
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
+        }
+        
+/*
+ * adfCreateDir
+ *
+ */
+        public static async Task AdfCreateDir(Volume vol, EntryBlock parent, string name)
+        {
+            // SECTNUM nSect;
+            // struct bDirBlock dir;
+            // struct bEntryBlock parent;
+            //var parent = await Disk.AdfReadEntryBlock(vol, nParent);
+
+            /* -1 : do not use a specific, already allocated sector */
+            var nSect = await AdfCreateEntry(vol, parent, name, -1);
+            if (nSect==-1) {
+                throw new IOException("adfCreateDir : no sector available");
+            }
+
+            var dir = new DirBlock
+            {
+                HeaderKey = nSect,
+                Name = name,
+            };
+            // memset(&dir, 0, sizeof(struct bDirBlock));
+            // dir.nameLen = min(MAXNAMELEN, strlen(name));
+            // memcpy(dir.dirName,name,dir.nameLen);
+            // dir.headerKey = nSect;
+
+            if (parent.SecType == Constants.ST_ROOT)
+            {
+                dir.Parent = vol.RootBlock.HeaderKey;
+            }
+            else
+            {
+                dir.Parent = parent.HeaderKey;
+            }
+            dir.Date = DateTime.Now;
+            //adfTime2AmigaTime(adfGiveCurrentTime(),&(dir.days),&(dir.mins),&(dir.ticks));
+
+            if (Macro.isDIRCACHE(vol.DosType))
+            {
+                /* for adfCreateEmptyCache, will be added by adfWriteDirBlock */
+                dir.SecType = Constants.ST_DIR;
+                await Cache.AdfAddInCache(vol, parent, dir);
+                await Cache.AdfCreateEmptyCache(vol, dir, -1);
+            }
+
+            /* writes the dirblock, with the possible dircache assiocated */
+            await AdfWriteDirBlock(vol, nSect, dir);
+
+            await Bitmap.AdfUpdateBitmap(vol);
+
+            // if (adfEnv.useNotify)
+            //     (*adfEnv.notifyFct)(nParent,ST_DIR);
+            //
+            // return RC_OK;
         }
     }
 }
