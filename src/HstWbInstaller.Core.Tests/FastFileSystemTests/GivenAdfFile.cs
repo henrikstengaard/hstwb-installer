@@ -73,9 +73,9 @@
             var text = Encoding.GetEncoding("ISO-8859-1").GetString(buffer, 0, bytesRead);
             Assert.Equal("This is a test file!\n", text);
         }
-        
+
         [Fact]
-        public async Task WhenMountAdfAndWriteFileFromThenFileIsCreated()
+        public async Task WhenMountAdfAndWriteFileThenFileIsCreated()
         {
             // arrange - adf file
             var fileName = "newtest.txt";
@@ -108,6 +108,38 @@
             Assert.NotNull(entry);
             Assert.Equal(fileName, entry.Name);
             Assert.Equal(fileContent.Length, entry.Size);
+            Assert.Equal(Entry.EntryType.File, entry.Type);
+        }
+
+        [Fact]
+        public async Task WhenMountAdfAndCreateDirectoryThenDirectoryIsCreated()
+        {
+            // arrange - adf file
+            var directoryName = "newdir";
+            var adfPath = @"TestData\adf\ffstest.adf";
+            var modifiedAdfPath = @"TestData\adf\ffstest_modified.adf";
+
+            // arrange - copy adf file for testing
+            System.IO.File.Copy(adfPath, modifiedAdfPath, true);
+            await using var adfStream =
+                System.IO.File.Open(modifiedAdfPath, System.IO.FileMode.Open, FileAccess.ReadWrite);
+
+            // act - mount adf
+            var volume = await FastFileSystemHelper.MountAdf(adfStream);
+
+            // act - create directory in root block
+            await Directory.AdfCreateDir(volume, volume.RootBlock, directoryName);
+
+            // act - read entries recursively from root block
+            var entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - entry exists
+            var entry = entries.FirstOrDefault(x => x.Name == directoryName);
+            Assert.NotNull(entry);
+            Assert.Equal(directoryName, entry.Name);
+            Assert.Equal(0, entry.Size);
+            Assert.Equal(Entry.EntryType.Dir, entry.Type);
         }
     }
 }

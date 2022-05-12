@@ -404,7 +404,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
                 }
                 else
                 {
-                    var dirBlock = dir as EntryBlock;
+                    var dirBlock = dir as DirBlock;
                     // adfTime2AmigaTime(adfGiveCurrentTime(),&(dir->days),&(dir->mins),&(dir->ticks));
                     dirBlock.Date = DateTime.Now;
                     await AdfWriteDirBlock(vol, dir.HeaderKey, dirBlock);
@@ -452,7 +452,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
 
             updEntry.NextSameHash = newSect2;
             if (updEntry.SecType == Constants.ST_DIR)
-                await AdfWriteDirBlock(vol, updEntry.HeaderKey, updEntry);
+                await AdfWriteDirBlock(vol, updEntry.HeaderKey, updEntry as DirBlock);
             else if (updEntry.SecType == Constants.ST_FILE)
                 await File.AdfWriteFileHdrBlock(vol, updEntry.HeaderKey, updEntry);
             else
@@ -472,7 +472,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
  * adfWriteDirBlock
  *
  */
-        public static async Task AdfWriteDirBlock(Volume vol, int nSect, EntryBlock dir)
+        public static async Task AdfWriteDirBlock(Volume vol, int nSect, DirBlock dir)
         {
             // uint8_t buf[512];
             // uint32_t newSum;

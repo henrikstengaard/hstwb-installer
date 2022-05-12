@@ -216,7 +216,6 @@
             var rootBlock = await RootBlockReader.Parse(rootBlockBytes);
             rootBlock.Offset = rootBlockOffset;
             rootBlock.HeaderKey = (int)rootBlockOffset;
-
             
             var volume = new Volume
             {

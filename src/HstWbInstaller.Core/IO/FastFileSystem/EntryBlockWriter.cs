@@ -33,8 +33,8 @@
             await blockStream.WriteLittleEndianInt32(entryBlock.Access);
             await blockStream.WriteLittleEndianInt32(entryBlock.ByteSize);
 
-            await blockStream.WriteStringWithLength(entryBlock.Comment, Constants.MAXCMMTLEN + 1);
-            await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN + 1]); // r3
+            await blockStream.WriteStringWithLength(entryBlock.Comment, Constants.MAXCMMTLEN);
+            await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN]); // r3
             await DateHelper.WriteDate(blockStream, entryBlock.Date);
             await blockStream.WriteStringWithLength(entryBlock.Name, Constants.MAXNAMELEN + 1);
             await blockStream.WriteLittleEndianInt32(0); // r4

@@ -53,15 +53,10 @@
 
 
             root.Type = Constants.T_HEADER;
-            root.HeaderKey = 0;
-            root.HighSeq = 0;
             root.HashTableSize = Constants.HT_SIZE;
-            root.FirstData = 0;
             /* checkSum, hashTable */
             /* bmflag */
             /* bmPages, bmExt */
-            root.NextSameHash = 0;
-            root.Parent = 0;
             root.SecType = Constants.ST_ROOT;
 
 //             memcpy(buf, root, LOGICAL_BLOCK_SIZE);
