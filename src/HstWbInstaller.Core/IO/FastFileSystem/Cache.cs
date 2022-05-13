@@ -7,22 +7,22 @@
 
     public static class Cache
     {
-        private static readonly Encoding iso88591Encoding = Encoding.GetEncoding("ISO-8859-1"); 
-        
+        private static readonly Encoding iso88591Encoding = Encoding.GetEncoding("ISO-8859-1");
+
         public static async Task AdfAddInCache(Volume vol, EntryBlock parent, EntryBlock entry)
         {
 //             // https://github.com/lclevy/ADFlib/blob/be8a6f6e8d0ca8fda963803eef77366c7584649a/src/adf_cache.c#L354
 
             DirCacheBlock dirc, newDirc;
             CacheEntry caEntry;
-    // struct bDirCacheBlock dirc, newDirc;
-    // SECTNUM nSect, nCache;
-    // struct CacheEntry caEntry, newEntry;
-    // int offset, n;
-    // int entryLen;
+            // struct bDirCacheBlock dirc, newDirc;
+            // SECTNUM nSect, nCache;
+            // struct CacheEntry caEntry, newEntry;
+            // int offset, n;
+            // int entryLen;
 
-    var newEntry = AdfEntry2CacheEntry(entry);
-    var entryLen = newEntry.EntryLen;
+            var newEntry = AdfEntry2CacheEntry(entry);
+            var entryLen = newEntry.EntryLen;
 /*printf("adfAddInCache--%4ld %2d %6ld %8lx %4d %2d:%02d:%02d %30s %22s\n",
     newEntry.header, newEntry.type, newEntry.size, newEntry.protect,
     newEntry.days, newEntry.mins/60, newEntry.mins%60, 
@@ -32,71 +32,75 @@
             var offset = 0;
             var n = 0;
             var nCache = 0;
-    var nSect = parent.Extension;
-    do
-    {
-        dirc = await AdfReadDirCBlock(vol, nSect);
-        offset = 0; n = 0;
+            var nSect = parent.Extension;
+            do
+            {
+                dirc = await AdfReadDirCBlock(vol, nSect);
+                offset = 0;
+                n = 0;
 /*printf("parent=%4ld\n",dirc.parent);*/
-        while(n < dirc.RecordsNb) 
-        {
-            caEntry = AdfGetCacheEntry(dirc, ref offset);
+                while (n < dirc.RecordsNb)
+                {
+                    caEntry = AdfGetCacheEntry(dirc, ref offset);
 /*printf("*%4ld %2d %6ld %8lx %4d %2d:%02d:%02d %30s %22s\n",
     caEntry.header, caEntry.type, caEntry.size, caEntry.protect,
     caEntry.days, caEntry.mins/60, caEntry.mins%60, 
 	caEntry.ticks/50,
 	caEntry.name, caEntry.comm);
 */
-            n++;
-        }
-        
+                    n++;
+                }
+
 /*        if (offset+entryLen<=488) {
             adfPutCacheEntry(&dirc, &offset, &newEntry);
             dirc.recordsNb++;
             adfWriteDirCBlock(vol, dirc.headerKey, &dirc);
             return rc;
         }*/
-        nSect = dirc.NextDirC;
-    }while(nSect!=0);
-    
-    /* in the last block */
-    if (offset + entryLen <= 488) {
-        AdfPutCacheEntry(dirc, ref offset, newEntry);
-        dirc.RecordsNb++;
+                nSect = dirc.NextDirC;
+            } while (nSect != 0);
+
+            /* in the last block */
+            if (offset + entryLen <= 488)
+            {
+                AdfPutCacheEntry(dirc, ref offset, newEntry);
+                dirc.RecordsNb++;
 /*printf("entry name=%s\n",newEntry.name);*/
-    }
-    else {
-        /* request one new block free */
-        nCache = Bitmap.AdfGet1FreeBlock(vol);
-        if (nCache==-1) 
-        {
-           throw new IOException("adfCreateDir : nCache==-1");
-        }
+            }
+            else
+            {
+                /* request one new block free */
+                nCache = Bitmap.AdfGet1FreeBlock(vol);
+                if (nCache == -1)
+                {
+                    throw new IOException("adfCreateDir : nCache==-1");
+                }
 
-        newDirc = new DirCacheBlock();
-        /* create a new dircache block */
-        //memset(&newDirc,0,512);
-        if (parent.SecType==Constants.ST_ROOT)
-            newDirc.Parent = vol.RootBlock.HeaderKey;
-        else if (parent.SecType==Constants.ST_DIR)
-            newDirc.Parent = parent.HeaderKey;
-        else
-            throw new IOException("adfAddInCache : unknown secType");
-        newDirc.RecordsNb = 0;
-        newDirc.NextDirC = 0;
+                newDirc = new DirCacheBlock();
+                /* create a new dircache block */
+                //memset(&newDirc,0,512);
+                if (parent.SecType == Constants.ST_ROOT)
+                    newDirc.Parent = vol.RootBlock.HeaderKey;
+                else if (parent.SecType == Constants.ST_DIR)
+                    newDirc.Parent = parent.HeaderKey;
+                else
+                    throw new IOException("adfAddInCache : unknown secType");
+                newDirc.RecordsNb = 0;
+                newDirc.NextDirC = 0;
 
-        AdfPutCacheEntry(dirc, ref offset, newEntry);
-        newDirc.RecordsNb++;
-        await AdfWriteDirCBlock(vol, nCache, newDirc);
-        dirc.NextDirC = nCache;
-    }
+                AdfPutCacheEntry(dirc, ref offset, newEntry);
+                newDirc.RecordsNb++;
+                await AdfWriteDirCBlock(vol, nCache, newDirc);
+                dirc.NextDirC = nCache;
+            }
+
 /*printf("dirc.headerKey=%ld\n",dirc.headerKey);*/
             await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
 /*if (strcmp(entry->name,"file_5u")==0)
 dumpBlock(&dirc);
 */
         }
-        
+
 /*
  * adfEntry2CacheEntry
  *
@@ -114,7 +118,7 @@ dumpBlock(&dirc);
                 Name = entry.Name,
                 Comment = entry.Comment
             };
-            
+
             /* new entry */
             // newEntry->header = entry->headerKey;
             // if (entry->secType==ST_FILE)
@@ -142,8 +146,8 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
             //     return entryLen;
             // else
             //     return entryLen+1;
-        }        
-        
+        }
+
         /*
  * adfUpdateCache
  *
@@ -151,9 +155,85 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
         public static async Task AdfUpdateCache(Volume vol, EntryBlock parent, EntryBlock entry, bool entryLenChg)
         {
             // https://github.com/lclevy/ADFlib/blob/be8a6f6e8d0ca8fda963803eef77366c7584649a/src/adf_cache.c#L441
-            throw new NotImplementedException();
+
+            // struct bDirCacheBlock dirc;
+            // SECTNUM nSect;
+            CacheEntry caEntry;
+            int offset, oldOffset, n;
+            // BOOL found;
+            // int i, oLen, nLen;
+            // int sLen; /* shift length */
+            DirCacheBlock dirc;
+
+            var newEntry = AdfEntry2CacheEntry(entry);
+            var nLen = newEntry.EntryLen;
+
+            var nSect = parent.Extension;
+            var found = false;
+            do
+            {
+/*printf("dirc=%ld\n",nSect);*/
+                dirc = await AdfReadDirCBlock(vol, nSect);
+                offset = 0;
+                n = 0;
+                /* search entry to update with its header_key */
+                while (n < dirc.RecordsNb && !found)
+                {
+                    oldOffset = offset;
+                    /* offset is updated */
+                    caEntry = AdfGetCacheEntry(dirc, ref offset);
+                    var oLen = offset - oldOffset;
+                    var sLen = oLen - nLen;
+/*printf("olen=%d nlen=%d\n",oLen,nLen);*/
+                    found = caEntry.Header == newEntry.Header;
+                    if (found)
+                    {
+                        if (!entryLenChg || oLen == nLen)
+                        {
+                            /* same length : remplace the old values */
+                            AdfPutCacheEntry(dirc, ref oldOffset, newEntry);
+/*if (entryLenChg) puts("oLen==nLen");*/
+                            await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
+                        }
+                        else if (oLen > nLen)
+                        {
+/*puts("oLen>nLen");*/
+                            /* the new record is shorter, write it, 
+                             * then shift down the following records 
+                             */
+                            AdfPutCacheEntry(dirc, ref oldOffset, newEntry);
+                            for (var i = oldOffset + nLen; i < 488 - sLen; i++)
+                                dirc.Records[i] = dirc.Records[i + sLen];
+                            /* then clear the following bytes */
+                            for (var i = 488 - sLen; i < 488; i++)
+                                dirc.Records[i] = 0;
+
+                            await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
+                        }
+                        else
+                        {
+                            /* the new record is larger */
+/*puts("oLen<nLen");*/
+                            await AdfDelFromCache(vol, parent, entry.HeaderKey);
+                            await AdfAddInCache(vol, parent, entry);
+/*puts("oLen<nLen end");*/
+                        }
+                    }
+
+                    n++;
+                }
+
+                nSect = dirc.NextDirC;
+            } while (nSect != 0 && !found);
+
+            if (found)
+            {
+                await Bitmap.AdfUpdateBitmap(vol);
+            }
+            else
+                throw new IOException("adfUpdateCache : entry not found");
         }
-        
+
 /*
  * adfCreateEmptyCache
  *
@@ -163,16 +243,18 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
             // struct bDirCacheBlock dirc;
             int nCache;
 
-            if (nSect==-1) {
+            if (nSect == -1)
+            {
                 nCache = Bitmap.AdfGet1FreeBlock(vol);
-                if (nCache==-1) {
+                if (nCache == -1)
+                {
                     throw new IOException("adfCreateDir : nCache==-1");
                 }
             }
             else
                 nCache = nSect;
 
-            if (parent.Extension==0)
+            if (parent.Extension == 0)
                 parent.Extension = nCache;
 
             var dirc = new DirCacheBlock();
@@ -182,18 +264,19 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
                 dirc.Parent = vol.RootBlock.HeaderKey;
             else if (parent.SecType == Constants.ST_DIR)
                 dirc.Parent = parent.HeaderKey;
-            else {
+            else
+            {
                 throw new IOException("adfCreateEmptyCache : unknown secType");
 /*printf("secType=%ld\n",parent->secType);*/
             }
-        
+
             dirc.RecordsNb = 0;
             dirc.NextDirC = 0;
 
             await AdfWriteDirCBlock(vol, nCache, dirc);
         }
-        
-        
+
+
 /*
  * adfReadDirCBlock
  *
@@ -212,13 +295,15 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
             {
                 throw new IOException("adfReadDirCBlock : invalid checksum");
             }
+
             if (dirc.Type != Constants.T_DIRC)
                 throw new IOException("adfReadDirCBlock : T_DIRC not found");
             if (dirc.HeaderKey != nSect)
                 throw new IOException("adfReadDirCBlock : headerKey!=nSect");
 
             return dirc;
-        }        
+        }
+
 /*
  * adfWriteDirCblock
  *
@@ -227,9 +312,9 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
         {
             // uint8_t buf[LOGICAL_BLOCK_SIZE];
             // uint32_t newSum;
- 
+
             dirc.Type = Constants.T_DIRC;
-            dirc.HeaderKey = nSect; 
+            dirc.HeaderKey = nSect;
 
 //             memcpy(buf, dirc, LOGICAL_BLOCK_SIZE);
 // #ifdef LITT_ENDIAN
@@ -244,8 +329,8 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
 /*puts("adfWriteDirCBlock");*/
-        }    
-        
+        }
+
 /*
  * adfGetCacheEntry
  *
@@ -268,29 +353,29 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
 //             cEntry->mins = swapShort(dirc->records+ptr+18);
 //             cEntry->ticks = swapShort(dirc->records+ptr+20);
 // #else
-             var cEntry = new CacheEntry
-             {
-                 Header = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr),
-                 Size = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr + 4),
-                 Protect = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr + 8)
-             };
-             var days = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 16);
-             var minutes = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 18);
-             var ticks = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 20);
-             cEntry.Date = DateHelper.ConvertToDate(days, minutes, ticks);
-             cEntry.Type = dirc.Records[ptr+22];
-             
-             var nLen = dirc.Records[ptr+23];
-             cEntry.Name = iso88591Encoding.GetString(dirc.Records, ptr + 24, nLen); 
-             var cLen = dirc.Records[ptr + 24 + nLen];
-             cEntry.Comment = iso88591Encoding.GetString(dirc.Records, dirc.Records[ptr + 24 + nLen + 1], nLen); 
-             
-             var p = ptr + 24 + nLen + 1 + cLen;
-             
-             if (p % 2 != 0)
-                 p = p + 1;
+            var cEntry = new CacheEntry
+            {
+                Header = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr),
+                Size = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr + 4),
+                Protect = BigEndianConverter.ConvertBytesToInt32(dirc.Records, ptr + 8)
+            };
+            var days = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 16);
+            var minutes = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 18);
+            var ticks = BigEndianConverter.ConvertBytesToInt16(dirc.Records, ptr + 20);
+            cEntry.Date = DateHelper.ConvertToDate(days, minutes, ticks);
+            cEntry.Type = dirc.Records[ptr + 22];
 
-             ptr = p;
+            var nLen = dirc.Records[ptr + 23];
+            cEntry.Name = iso88591Encoding.GetString(dirc.Records, ptr + 24, nLen);
+            var cLen = dirc.Records[ptr + 24 + nLen];
+            cEntry.Comment = iso88591Encoding.GetString(dirc.Records, dirc.Records[ptr + 24 + nLen + 1], nLen);
+
+            var p = ptr + 24 + nLen + 1 + cLen;
+
+            if (p % 2 != 0)
+                p = p + 1;
+
+            ptr = p;
 // // #endif
 //             cEntry->type =(signed char) dirc->records[ptr+22];
 //
@@ -318,8 +403,8 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
 //             if ((*p%2)!=0)
 //                 *p=(*p)+1;
             return cEntry;
-        }      
-        
+        }
+
         /*
  * adfPutCacheEntry
  *
@@ -345,7 +430,7 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
             BigEndianConverter.ConvertInt16ToBytes((short)amigaDate.Days, dirc.Records, ptr + 16);
             BigEndianConverter.ConvertInt16ToBytes((short)amigaDate.Minutes, dirc.Records, ptr + 18);
             BigEndianConverter.ConvertInt16ToBytes((short)amigaDate.Ticks, dirc.Records, ptr + 20);
-            
+
             // memcpy(dirc->records+ptr,&(cEntry->header),4);
             // memcpy(dirc->records+ptr+4,&(cEntry->size),4);
             // memcpy(dirc->records+ptr+8,&(cEntry->protect),4);
@@ -366,89 +451,93 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
 /*puts("adfPutCacheEntry");*/
 
             var l = 25 + nameBytes.Length + commentBytes.Length;
-            if (l % 2==0)
+            if (l % 2 == 0)
                 return l;
-            else {
-                dirc.Records[ptr+l] = 0;
+            else
+            {
+                dirc.Records[ptr + l] = 0;
                 return l + 1;
             }
 
-            /* ptr%2 must be == 0, if l%2==0, (ptr+l)%2==0 */ 
+            /* ptr%2 must be == 0, if l%2==0, (ptr+l)%2==0 */
         }
-        
+
 /*
  * adfDelFromCache
  *
  * delete one cache entry from its block. don't do 'records garbage collecting'
  */
-public static async Task AdfDelFromCache(Volume vol, EntryBlock parent, int headerKey)
-{
-    // struct bDirCacheBlock dirc;
-    // SECTNUM nSect, prevSect;
-    // struct CacheEntry caEntry;
-    int offset, oldOffset, n;
-    // BOOL found;
-    // int entryLen;
-    // int i;
-    // RETCODE rc = RC_OK;
-
-    var prevSect = -1;
-	var nSect = parent.Extension;
-    var found = false;
-    do 
-    {
-        var dirc = await AdfReadDirCBlock(vol, nSect);
-        offset = 0;
-        n = 0;
-        while(n < dirc.RecordsNb && !found)
+        public static async Task AdfDelFromCache(Volume vol, EntryBlock parent, int headerKey)
         {
-            oldOffset = offset;
-            var caEntry = AdfGetCacheEntry(dirc, ref offset);
-            found = caEntry.Header==headerKey;
-            if (found)
+            // struct bDirCacheBlock dirc;
+            // SECTNUM nSect, prevSect;
+            // struct CacheEntry caEntry;
+            int offset, oldOffset, n;
+            // BOOL found;
+            // int entryLen;
+            // int i;
+            // RETCODE rc = RC_OK;
+
+            var prevSect = -1;
+            var nSect = parent.Extension;
+            var found = false;
+            do
             {
-                var entryLen = offset - oldOffset;
-                if (dirc.RecordsNb>1 || prevSect==-1)
+                var dirc = await AdfReadDirCBlock(vol, nSect);
+                offset = 0;
+                n = 0;
+                while (n < dirc.RecordsNb && !found)
                 {
-                    if (n<dirc.RecordsNb-1)
+                    oldOffset = offset;
+                    var caEntry = AdfGetCacheEntry(dirc, ref offset);
+                    found = caEntry.Header == headerKey;
+                    if (found)
                     {
-                        /* not the last of the block : switch the following records */
-                        for(var i=oldOffset; i<(488-entryLen); i++)
-                            dirc.Records[i] = dirc.Records[i+entryLen];
-                        /* and clear the following bytes */
-                        for(var i=488-entryLen; i<488; i++)
-                            dirc.Records[i] = 0;
-                    }
-                    else
-                    {
-                        /* the last record of this cache block */
-                        for(var i=oldOffset; i<offset; i++)
-                            dirc.Records[i] = 0;
-                    }
-                    dirc.RecordsNb--;
-                    await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
-                }
-                else 
-                {
-                    /* dirc.recordsNb ==1 or == 0 , prevSect!=-1 : 
-                    * the only record in this dirc block and a previous dirc block exists 
-                    */
-                    Bitmap.AdfSetBlockFree(vol, dirc.HeaderKey);
-                    dirc = await AdfReadDirCBlock(vol, prevSect);
-                    dirc.NextDirC = 0;
-                    await AdfWriteDirCBlock(vol, prevSect, dirc);
+                        var entryLen = offset - oldOffset;
+                        if (dirc.RecordsNb > 1 || prevSect == -1)
+                        {
+                            if (n < dirc.RecordsNb - 1)
+                            {
+                                /* not the last of the block : switch the following records */
+                                for (var i = oldOffset; i < (488 - entryLen); i++)
+                                    dirc.Records[i] = dirc.Records[i + entryLen];
+                                /* and clear the following bytes */
+                                for (var i = 488 - entryLen; i < 488; i++)
+                                    dirc.Records[i] = 0;
+                            }
+                            else
+                            {
+                                /* the last record of this cache block */
+                                for (var i = oldOffset; i < offset; i++)
+                                    dirc.Records[i] = 0;
+                            }
 
-                    await Bitmap.AdfUpdateBitmap(vol);
+                            dirc.RecordsNb--;
+                            await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
+                        }
+                        else
+                        {
+                            /* dirc.recordsNb ==1 or == 0 , prevSect!=-1 : 
+                            * the only record in this dirc block and a previous dirc block exists 
+                            */
+                            Bitmap.AdfSetBlockFree(vol, dirc.HeaderKey);
+                            dirc = await AdfReadDirCBlock(vol, prevSect);
+                            dirc.NextDirC = 0;
+                            await AdfWriteDirCBlock(vol, prevSect, dirc);
+
+                            await Bitmap.AdfUpdateBitmap(vol);
+                        }
+                    }
+
+                    n++;
                 }
-            }
-            n++;
+
+                prevSect = nSect;
+                nSect = dirc.NextDirC;
+            } while (nSect != 0 && !found);
+
+            if (!found)
+                throw new IOException("adfUpdateCache : entry not found");
         }
-        prevSect = nSect;
-        nSect = dirc.NextDirC;
-    }while(nSect!=0 && !found);
-
-    if (!found)
-        throw new IOException("adfUpdateCache : entry not found");
-}        
     }
 }

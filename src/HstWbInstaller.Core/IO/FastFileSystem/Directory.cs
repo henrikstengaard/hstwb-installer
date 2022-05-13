@@ -724,5 +724,102 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
         }
+
+/*
+ * adfRemoveEntry
+ *
+ */
+        public static async Task AdfRemoveEntry(Volume vol, EntryBlock parent, string name)
+        {
+            // struct bEntryBlock parent, previous, entry;
+            // SECTNUM nSect2, nSect;
+            // int hashVal;
+            // BOOL intl;
+            // char buf[200];
+
+            // var parent = await Disk.AdfReadEntryBlock(vol, pSect);
+            var pSect = parent.HeaderKey;
+            var result = await AdfNameToEntryBlk(vol, parent.HashTable, name, false);
+            var nSect = result.NSect;
+            var entry = result.EntryBlock;
+            var nSect2 = result.NUpdSect ?? 0;
+            if (nSect == -1)
+            {
+                throw new IOException($"adfRemoveEntry : entry '{name}' not found");
+            }
+
+            /* if it is a directory, is it empty ? */
+            var dirBlock = await DirBlockReader.Parse(entry.BlockBytes);
+            if (entry.SecType == Constants.ST_DIR && dirBlock != null && !IsDirEmpty(dirBlock))
+            {
+                throw new IOException($"adfRemoveEntry : directory '{name}' not empty");
+            }
+/*    printf("name=%s  nSect2=%ld\n",name, nSect2);*/
+
+            /* in parent hashTable */
+            if (nSect2 == 0)
+            {
+                var intl = Macro.isINTL(vol.DosType) || Macro.isDIRCACHE(vol.DosType);
+                var hashVal = AdfGetHashValue(name, intl);
+                parent.HashTable[hashVal] = entry.NextSameHash;
+/*printf("hashTable=%d nexthash=%d\n",parent.hashTable[hashVal],
+ entry.nextSameHash);*/
+                // if (parent.SecType == Constants.ST_ROOT)
+                // {
+                //     var rootBlock = await RootBlockReader.Parse(entry.BlockBytes);
+                //     await Raw.AdfWriteRootBlock(vol, pSect, rootBlock);
+                // }
+                await AdfWriteEntryBlock(vol, pSect, parent);
+            }
+            /* in linked list */
+            else
+            {
+                var previous = await Disk.AdfReadEntryBlock(vol, nSect2);
+                previous.NextSameHash = entry.NextSameHash;
+                await AdfWriteEntryBlock(vol, nSect2, previous);
+            }
+
+            if (entry.SecType == Constants.ST_FILE)
+            {
+                var fileHeaderBlock = await FileHeaderBlockReader.Parse(entry.BlockBytes);
+                await File.AdfFreeFileBlocks(vol, fileHeaderBlock);
+                Bitmap.AdfSetBlockFree(vol, nSect); //marks the FileHeaderBlock as free in BitmapBlock
+                // if (adfEnv.useNotify)
+                //         (*adfEnv.notifyFct)(pSect,ST_FILE);
+            }
+            else if (entry.SecType == Constants.ST_DIR)
+            {
+                Bitmap.AdfSetBlockFree(vol, nSect);
+                /* free dir cache block : the directory must be empty, so there's only one cache block */
+                if (Macro.isDIRCACHE(vol.DosType))
+                    Bitmap.AdfSetBlockFree(vol, entry.Extension);
+                // if (adfEnv.useNotify)
+                //     (*adfEnv.notifyFct)(pSect,ST_DIR);
+            }
+            else
+            {
+                throw new IOException($"adfRemoveEntry : secType {entry.SecType} not supported");
+            }
+
+            if (Macro.isDIRCACHE(vol.DosType))
+            {
+                await Cache.AdfDelFromCache(vol, parent, entry.HeaderKey);
+            }
+
+            await Bitmap.AdfUpdateBitmap(vol);
+        }
+        
+        /*
+     * isDirEmpty
+     *
+     */
+        public static bool IsDirEmpty(DirBlock dir)
+        {
+            for (var i = 0; i < Constants.HT_SIZE; i++)
+                if (dir.HashTable[i] != 0)
+                    return false;
+
+            return true;
+        }
     }
 }

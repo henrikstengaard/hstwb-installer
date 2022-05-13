@@ -17,7 +17,14 @@
                         : entryBlock.BlockBytes);
 
             await blockStream.WriteLittleEndianInt32(entryBlock.Type);
-            await blockStream.WriteLittleEndianInt32(entryBlock.HeaderKey);
+            if (entryBlock.SecType == Constants.ST_ROOT || entryBlock is RootBlock)
+            {
+                await blockStream.WriteLittleEndianInt32(0); // HeaderKey
+            }
+            else
+            {
+                await blockStream.WriteLittleEndianInt32(entryBlock.HeaderKey);
+            }
             await blockStream.WriteLittleEndianInt32(entryBlock.HighSeq);
             await blockStream.WriteLittleEndianInt32(entryBlock.SharedSize);
             await blockStream.WriteLittleEndianInt32(entryBlock.FirstData);
@@ -27,9 +34,10 @@
             {
                 await blockStream.WriteLittleEndianInt32(entryBlock.SharedHashTableDataBlocks[i]);
             }
-            
-            await blockStream.WriteLittleEndianInt32(0); // r1
-            await blockStream.WriteLittleEndianInt32(0); // r2
+
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
+            //await blockStream.WriteLittleEndianInt32(0); // r1
+            //await blockStream.WriteLittleEndianInt32(0); // r2
             await blockStream.WriteLittleEndianInt32(entryBlock.Access);
             await blockStream.WriteLittleEndianInt32(entryBlock.ByteSize);
 
@@ -37,14 +45,16 @@
             await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN]); // r3
             await DateHelper.WriteDate(blockStream, entryBlock.Date);
             await blockStream.WriteStringWithLength(entryBlock.Name, Constants.MAXNAMELEN + 1);
-            await blockStream.WriteLittleEndianInt32(0); // r4
+            // await blockStream.WriteLittleEndianInt32(0); // r4
+            blockStream.Seek(4, SeekOrigin.Current);
             await blockStream.WriteLittleEndianInt32(entryBlock.RealEntry);
             await blockStream.WriteLittleEndianInt32(entryBlock.NextLink);
 
-            for (var i = 0; i < 5; i++)
-            {
-                await blockStream.WriteLittleEndianInt32(0); // r5
-            }
+            blockStream.Seek(4 * 5, SeekOrigin.Current);
+            // for (var i = 0; i < 5; i++)
+            // {
+            //     await blockStream.WriteLittleEndianInt32(0); // r5
+            // }
             
             await blockStream.WriteLittleEndianInt32(entryBlock.NextSameHash);
             await blockStream.WriteLittleEndianInt32(entryBlock.Parent);

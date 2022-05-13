@@ -336,6 +336,121 @@
             var buf = await FileExtBlockWriter.BuildBlock(fext, vol.BlockSize);
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
-        }        
+        }
+        
+/*
+ * adfFreeFileBlocks
+ *
+ */
+        public static async Task AdfFreeFileBlocks(Volume vol, FileHeaderBlock entry)
+        {
+            // int i;
+            // struct FileBlocks fileBlocks;
+            // RETCODE rc = RC_OK;
+
+            var fileBlocks = await AdfGetFileBlocks(vol,entry);
+
+            for(var i=0; i < fileBlocks.nbData; i++)
+            {
+                Bitmap.AdfSetBlockFree(vol, fileBlocks.data[i]);
+            }
+            for(var i=0; i < fileBlocks.nbExtens; i++)
+            {
+                Bitmap.AdfSetBlockFree(vol, fileBlocks.extens[i]);
+            }
+
+            // free(fileBlocks.data);
+            // free(fileBlocks.extens);
+		          //
+            // return rc;
+        }   
+        
+/*
+ * adfGetFileBlocks
+ *
+ */
+        public static async Task<FileBlocks> AdfGetFileBlocks(Volume vol, FileHeaderBlock entry)
+        {
+            // int32_t n, m;
+            // SECTNUM nSect;
+            // struct bFileExtBlock extBlock;
+            // int32_t i;
+            var fileBlocks = new FileBlocks
+            {
+                header = entry.HeaderKey,
+            };
+            // adfFileRealSize( entry.ByteSize, vol.DataBlockSize, &(fileBlocks->nbData), &(fileBlocks->nbExtens) );
+            AdfFileRealSize((uint)entry.ByteSize, vol.DataBlockSize, fileBlocks);
+
+            fileBlocks.data = new int[fileBlocks.nbData];
+            // fileBlocks->data=(SECTNUM*)malloc(fileBlocks->nbData * sizeof(SECTNUM));
+            // if (!fileBlocks->data) {
+            //     (*adfEnv.eFct)("adfGetFileBlocks : malloc");
+            //     return RC_MALLOC;
+            // }
+
+            fileBlocks.extens= new int[fileBlocks.nbExtens];
+            // fileBlocks.extens=(SECTNUM*)malloc(fileBlocks->nbExtens * sizeof(SECTNUM));
+            // if (!fileBlocks->extens) {
+            //     (*adfEnv.eFct)("adfGetFileBlocks : malloc");
+            //     return RC_MALLOC;
+            // }
+
+            var n = 0;
+            var m = 0;	
+            /* in file header block */
+            for(var i=0; i < entry.HighSeq; i++)
+                fileBlocks.data[n++] = entry.DataBlocks[Constants.MAX_DATABLK - 1 - i];
+
+            /* in file extension blocks */
+            var nSect = entry.Extension;
+            while(nSect!=0)
+            {
+                fileBlocks.extens[m++] = nSect;
+                var extBlock = await File.AdfReadFileExtBlock(vol, nSect);
+                for(var i=0; i<extBlock.highSeq; i++)
+                    fileBlocks.data[n++] = extBlock.dataBlocks[Constants.MAX_DATABLK - 1 - i];
+                nSect = extBlock.extension;
+            }
+            if (fileBlocks.nbExtens + fileBlocks.nbData != n + m)
+                throw new IOException("adfGetFileBlocks : less blocks than expected");
+
+            return fileBlocks;
+        }   
+        
+        /*
+ * adfFileRealSize
+ *
+ * Compute and return real number of block used by one file
+ * Compute number of datablocks and file extension blocks
+ *
+ */
+        public static int AdfFileRealSize(uint size, int blockSize, FileBlocks fileBlocks) // int32_t *dataN, int32_t *extN
+        {
+            // int32_t data, ext;
+
+            /*--- number of data blocks ---*/
+            var data = (int)(size / blockSize);
+            if ( size % blockSize != 0)
+                data++;
+
+            /*--- number of header extension blocks ---*/
+            var ext = 0;
+            if (data > Constants.MAX_DATABLK) {
+                ext = (data - Constants.MAX_DATABLK) / Constants.MAX_DATABLK;
+                if ((data - Constants.MAX_DATABLK) % Constants.MAX_DATABLK != 0)
+                {
+                    ext++;
+                }
+            }
+
+            if (fileBlocks != null)
+            {
+                fileBlocks.nbData = data;
+                fileBlocks.nbExtens = ext;
+            }
+            
+            return ext + data + 1;
+        }
     }
 }

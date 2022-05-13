@@ -16,11 +16,13 @@
                         : rootBlock.BlockBytes);
             
             await blockStream.WriteLittleEndianInt32(rootBlock.Type); // type
-            await blockStream.WriteLittleEndianInt32(0); // headerKey
-            await blockStream.WriteLittleEndianInt32(0); // highSeq
+            // await blockStream.WriteLittleEndianInt32(0); // headerKey
+            // await blockStream.WriteLittleEndianInt32(0); // highSeq
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
             await blockStream.WriteLittleEndianInt32(rootBlock.HashTableSize); // ht_size
-            await blockStream.WriteLittleEndianInt32(0); // firstData
-            await blockStream.WriteLittleEndianInt32(0); // checksum
+            // await blockStream.WriteLittleEndianInt32(0); // firstData
+            // await blockStream.WriteLittleEndianInt32(0); // checksum
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
 
             for (var i = 0; i < Constants.HT_SIZE; i++)
             {
@@ -52,7 +54,8 @@
             await blockStream.WriteBytes(new[] { Convert.ToByte(diskName.Length) });
             await blockStream.WriteString(diskName, Constants.MAXNAMELEN + 1);
 
-            await blockStream.WriteBytes(new byte[8]); // r2
+            // await blockStream.WriteBytes(new byte[8]); // r2
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
             
             // last disk alteration date
             await DateHelper.WriteDate(blockStream, rootBlock.DiskAlterationDate);

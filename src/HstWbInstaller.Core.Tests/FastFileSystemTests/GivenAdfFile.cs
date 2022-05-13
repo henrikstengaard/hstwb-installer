@@ -143,7 +143,7 @@
         }
         
         [Fact]
-        public async Task WhenMountAdfAndRenameFileThenFileIsRenamedIsCreated()
+        public async Task WhenMountAdfAndRenameFileThenFileIsRenamed()
         {
             // arrange - adf file
             var newName = "renamed_test";
@@ -187,6 +187,42 @@
             Assert.Equal(newName, entry.Name);
             Assert.Equal(oldEntry.Size, entry.Size);
             Assert.Equal(oldEntry.Type, entry.Type);
+        }
+        
+        [Fact]
+        public async Task WhenMountAdfAndDeleteFileThenFileIsDeleted()
+        {
+            // arrange - adf file
+            var adfPath = @"TestData\adf\ffstest.adf";
+            var modifiedAdfPath = @"TestData\adf\ffstest_modified.adf";
+
+            // arrange - copy adf file for testing
+            System.IO.File.Copy(adfPath, modifiedAdfPath, true);
+            await using var adfStream =
+                System.IO.File.Open(modifiedAdfPath, System.IO.FileMode.Open, FileAccess.ReadWrite);
+
+            // act - mount adf
+            var volume = await FastFileSystemHelper.MountAdf(adfStream);
+            
+            // act - read entries recursively from root block
+            var entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // act - get first file entry
+            var entry = entries.FirstOrDefault(x => x.Type == Entry.EntryType.File);
+            Assert.NotNull(entry);
+
+            // act - remote entry from root block
+            var entryName = entry.Name;
+            await Directory.AdfRemoveEntry(volume, volume.RootBlock, entryName);
+            
+            // act - read entries recursively from root block
+            entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - entry doesn't exist, is removed
+            entry = entries.FirstOrDefault(x => x.Name == entryName);
+            Assert.Null(entry);
         }
     }
 }

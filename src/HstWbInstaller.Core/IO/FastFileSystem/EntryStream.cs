@@ -27,7 +27,6 @@
         {
             this.volume = volume;
             this.writeMode = writeMode;
-            this.length = length;
             this.eof = eof;
             this.fileHdr = fhdr;
             this.pos = 0;
@@ -547,7 +546,7 @@
                 {
 /*printf("parent=%ld\n",file->fileHdr->parent);*/
                     var parent = await Disk.AdfReadEntryBlock(volume, fileHdr.Parent);
-                    Cache.AdfUpdateCache(volume, parent, fileHdr, true);
+                    await Cache.AdfUpdateCache(volume, parent, fileHdr, true);
                 }
                 await Bitmap.AdfUpdateBitmap(volume);
             }

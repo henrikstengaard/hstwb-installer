@@ -28,23 +28,27 @@
                 await blockStream.WriteLittleEndianInt32(dirBlock.HashTable[i]);
             }
             
-            await blockStream.WriteLittleEndianInt32(0); // r2
-            await blockStream.WriteLittleEndianInt32(0); // r2
+            // await blockStream.WriteLittleEndianInt32(0); // r2
+            // await blockStream.WriteLittleEndianInt32(0); // r2
+            blockStream.Seek(4 * 2, SeekOrigin.Current);
             await blockStream.WriteLittleEndianInt32(dirBlock.Access);
-            await blockStream.WriteLittleEndianInt32(0); // r4
+            // await blockStream.WriteLittleEndianInt32(0); // r4
+            blockStream.Seek(4, SeekOrigin.Current);
 
             await blockStream.WriteStringWithLength(dirBlock.Comment, Constants.MAXCMMTLEN);
             await blockStream.WriteBytes(new byte[91 - Constants.MAXCMMTLEN]); // r5
             await DateHelper.WriteDate(blockStream, dirBlock.Date);
             await blockStream.WriteStringWithLength(dirBlock.Name, Constants.MAXNAMELEN + 1);
-            await blockStream.WriteLittleEndianInt32(0); // r6
+            // await blockStream.WriteLittleEndianInt32(0); // r6
+            blockStream.Seek(4, SeekOrigin.Current);
             await blockStream.WriteLittleEndianInt32(dirBlock.RealEntry);
             await blockStream.WriteLittleEndianInt32(dirBlock.NextLink);
 
-            for (var i = 0; i < 5; i++)
-            {
-                await blockStream.WriteLittleEndianInt32(0); // r7
-            }
+            // for (var i = 0; i < 5; i++)
+            // {
+            //     await blockStream.WriteLittleEndianInt32(0); // r7
+            // }
+            blockStream.Seek(4 * 5, SeekOrigin.Current);
             
             await blockStream.WriteLittleEndianInt32(dirBlock.NextSameHash);
             await blockStream.WriteLittleEndianInt32(dirBlock.Parent);
