@@ -375,5 +375,80 @@ printf("newEntry->nLen %d newEntry->cLen %d\n",newEntry->nLen,newEntry->cLen);
 
             /* ptr%2 must be == 0, if l%2==0, (ptr+l)%2==0 */ 
         }
+        
+/*
+ * adfDelFromCache
+ *
+ * delete one cache entry from its block. don't do 'records garbage collecting'
+ */
+public static async Task AdfDelFromCache(Volume vol, EntryBlock parent, int headerKey)
+{
+    // struct bDirCacheBlock dirc;
+    // SECTNUM nSect, prevSect;
+    // struct CacheEntry caEntry;
+    int offset, oldOffset, n;
+    // BOOL found;
+    // int entryLen;
+    // int i;
+    // RETCODE rc = RC_OK;
+
+    var prevSect = -1;
+	var nSect = parent.Extension;
+    var found = false;
+    do 
+    {
+        var dirc = await AdfReadDirCBlock(vol, nSect);
+        offset = 0;
+        n = 0;
+        while(n < dirc.RecordsNb && !found)
+        {
+            oldOffset = offset;
+            var caEntry = AdfGetCacheEntry(dirc, ref offset);
+            found = caEntry.Header==headerKey;
+            if (found)
+            {
+                var entryLen = offset - oldOffset;
+                if (dirc.RecordsNb>1 || prevSect==-1)
+                {
+                    if (n<dirc.RecordsNb-1)
+                    {
+                        /* not the last of the block : switch the following records */
+                        for(var i=oldOffset; i<(488-entryLen); i++)
+                            dirc.Records[i] = dirc.Records[i+entryLen];
+                        /* and clear the following bytes */
+                        for(var i=488-entryLen; i<488; i++)
+                            dirc.Records[i] = 0;
+                    }
+                    else
+                    {
+                        /* the last record of this cache block */
+                        for(var i=oldOffset; i<offset; i++)
+                            dirc.Records[i] = 0;
+                    }
+                    dirc.RecordsNb--;
+                    await AdfWriteDirCBlock(vol, dirc.HeaderKey, dirc);
+                }
+                else 
+                {
+                    /* dirc.recordsNb ==1 or == 0 , prevSect!=-1 : 
+                    * the only record in this dirc block and a previous dirc block exists 
+                    */
+                    Bitmap.AdfSetBlockFree(vol, dirc.HeaderKey);
+                    dirc = await AdfReadDirCBlock(vol, prevSect);
+                    dirc.NextDirC = 0;
+                    await AdfWriteDirCBlock(vol, prevSect, dirc);
+
+                    await Bitmap.AdfUpdateBitmap(vol);
+                }
+            }
+            n++;
+        }
+        prevSect = nSect;
+        nSect = dirc.NextDirC;
+    }while(nSect!=0 && !found);
+
+    if (!found)
+        throw new IOException("adfUpdateCache : entry not found");
+}        
     }
 }

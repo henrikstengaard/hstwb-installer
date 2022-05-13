@@ -73,7 +73,8 @@
             await Disk.AdfWriteBlock(vol, nSect, buf);
 /*printf("adfWriteRootBlock %ld\n",nSect);*/
         }        
-/*
+
+        /*
  * NormalSum
  *
  * buf = where the block is stored

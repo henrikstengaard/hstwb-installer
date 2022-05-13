@@ -5,16 +5,17 @@
     using System.Threading.Tasks;
     using Extensions;
 
-    public static class EntryBlockReader
+    public static class DirBlockReader
     {
-        public static async Task<EntryBlock> Parse(byte[] blockBytes)
+        public static async Task<DirBlock> Parse(byte[] blockBytes)
         {
             var blockStream = new MemoryStream(blockBytes);
 
             var type = await blockStream.ReadInt32();
             var headerKey = await blockStream.ReadInt32();
-
-            blockStream.Seek(0x14, SeekOrigin.Begin);
+            var highSeq = await blockStream.ReadInt32();
+            var hashTableSize = await blockStream.ReadInt32();
+            await blockStream.ReadInt32(); // r1
             var checksum = await blockStream.ReadInt32();
 
             var hashTable = new List<int>();
@@ -23,15 +24,20 @@
                 hashTable.Add(await blockStream.ReadInt32());
             }
 
-            blockStream.Seek(0x140, SeekOrigin.Begin);
-            var access = await blockStream.ReadInt32();
-            var byteSize = await blockStream.ReadInt32();
-            var comment = await blockStream.ReadString();
+            // r1 og r2
+            for (var i = 0; i < 2; i++)
+            {
+                await blockStream.ReadInt32();
+            }
             
+            var access = await blockStream.ReadInt32();
+            await blockStream.ReadInt32();// r4
+            var comment = await blockStream.ReadString();
+
             blockStream.Seek(0x1a4, SeekOrigin.Begin);
             var date = await DateHelper.ReadDate(blockStream);
             var name = await blockStream.ReadString();
-            
+
             blockStream.Seek(0x1d4, SeekOrigin.Begin);
             var realEntry = await blockStream.ReadInt32();
             var nextLink = await blockStream.ReadInt32();
@@ -42,15 +48,16 @@
             var extension = await blockStream.ReadInt32();
             var secType = await blockStream.ReadInt32();
 
-            return new EntryBlock
+            return new DirBlock
             {
                 BlockBytes = blockBytes,
                 Type = type,
                 HeaderKey = headerKey,
+                HighSeq = highSeq,
+                HashTableSize = hashTableSize,
                 Checksum = checksum,
                 HashTable = hashTable.ToArray(),
                 Access = access,
-                ByteSize = byteSize,
                 Comment = comment,
                 Date = date,
                 Name = name,

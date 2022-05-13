@@ -141,5 +141,52 @@
             Assert.Equal(0, entry.Size);
             Assert.Equal(Entry.EntryType.Dir, entry.Type);
         }
+        
+        [Fact]
+        public async Task WhenMountAdfAndRenameFileThenFileIsRenamedIsCreated()
+        {
+            // arrange - adf file
+            var newName = "renamed_test";
+            var adfPath = @"TestData\adf\ffstest.adf";
+            var modifiedAdfPath = @"TestData\adf\ffstest_modified.adf";
+
+            // arrange - copy adf file for testing
+            System.IO.File.Copy(adfPath, modifiedAdfPath, true);
+            await using var adfStream =
+                System.IO.File.Open(modifiedAdfPath, System.IO.FileMode.Open, FileAccess.ReadWrite);
+
+            // act - mount adf
+            var volume = await FastFileSystemHelper.MountAdf(adfStream);
+
+            // // act - create directory in root block
+            // await Directory.AdfCreateDir(volume, volume.RootBlock, directoryName);
+
+            // act - read entries recursively from root block
+            var entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // act - get first file entry
+            var oldEntry = entries.FirstOrDefault(x => x.Type == Entry.EntryType.File);
+            Assert.NotNull(oldEntry);
+
+            // act - rename file entry
+            var oldName = oldEntry.Name;
+            await Directory.AdfRenameEntry(volume, oldEntry.Parent, oldName, oldEntry.Parent, newName);
+
+            // act - read entries recursively from root block
+            entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - entry with old name doesn't exist
+            var entry = entries.FirstOrDefault(x => x.Name == oldName);
+            Assert.Null(entry);
+            
+            // assert - entry with new name exist
+            entry = entries.FirstOrDefault(x => x.Name == newName);
+            Assert.NotNull(entry);
+            Assert.Equal(newName, entry.Name);
+            Assert.Equal(oldEntry.Size, entry.Size);
+            Assert.Equal(oldEntry.Type, entry.Type);
+        }
     }
 }

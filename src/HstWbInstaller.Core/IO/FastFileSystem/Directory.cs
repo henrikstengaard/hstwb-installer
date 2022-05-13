@@ -494,7 +494,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
 
             await Disk.AdfWriteBlock(vol, nSect, buf);
         }
-        
+
 /*
  * adfCreateDir
  *
@@ -508,7 +508,8 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
 
             /* -1 : do not use a specific, already allocated sector */
             var nSect = await AdfCreateEntry(vol, parent, name, -1);
-            if (nSect==-1) {
+            if (nSect == -1)
+            {
                 throw new IOException("adfCreateDir : no sector available");
             }
 
@@ -530,6 +531,7 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             {
                 dir.Parent = parent.HeaderKey;
             }
+
             dir.Date = DateTime.Now;
             //adfTime2AmigaTime(adfGiveCurrentTime(),&(dir.days),&(dir.mins),&(dir.ticks));
 
@@ -550,6 +552,177 @@ for(i=0; i<HT_SIZE; i++) printf("ht[%d]=%d    ",i,ht[i]);
             //     (*adfEnv.notifyFct)(nParent,ST_DIR);
             //
             // return RC_OK;
+        }
+
+/*
+ * adfRenameEntry
+ *
+ */
+        public static async Task AdfRenameEntry(Volume vol, int pSect, string oldName, int nPSect, string newName)
+        {
+            //    struct bEntryBlock parent, previous, entry, nParent;
+            //    SECTNUM nSect2, nSect, prevSect, tmpSect;
+            //    int hashValueO, hashValueN, len;
+            //    char name2[MAXNAMELEN+1], name3[MAXNAMELEN+1];
+            // BOOL intl;
+            //    RETCODE rc;
+
+            if (oldName == newName)
+                return;
+
+            var intl = Macro.isINTL(vol.DosType) || Macro.isDIRCACHE(vol.DosType);
+            var len = newName.Length;
+            // myToUpper((uint8_t*)name2, (uint8_t*)newName, len, intl);
+            // myToUpper((uint8_t*)name3, (uint8_t*)oldName, strlen(oldName), intl);
+            var name2 = MyToUpper(newName, intl);
+            var name3 = MyToUpper(oldName, intl);
+            /* newName == oldName ? */
+
+            var parent = await Disk.AdfReadEntryBlock(vol, pSect);
+
+            var hashValueO = AdfGetHashValue(oldName, intl);
+
+            var result = await AdfNameToEntryBlk(vol, parent.HashTable, oldName, false);
+            var nSect = result.NSect;
+            var entry = result.EntryBlock;
+            var prevSect = result.NUpdSect ?? 0;
+            if (nSect == -1)
+            {
+                throw new IOException("adfRenameEntry : existing entry not found");
+            }
+
+            /* change name and parent dir */
+            entry.Name = newName;
+            entry.Parent = nPSect;
+            var tmpSect = entry.NextSameHash;
+
+            entry.NextSameHash = 0;
+            await AdfWriteEntryBlock(vol, nSect, entry);
+
+            /* del from the oldname list */
+
+            /* in hashTable */
+            if (prevSect == 0)
+            {
+                parent.HashTable[hashValueO] = tmpSect;
+                if (parent.SecType == Constants.ST_ROOT)
+                {
+                    var rootParent = await RootBlockReader.Parse(entry.BlockBytes);
+                    await Raw.AdfWriteRootBlock(vol, pSect, rootParent);
+                }
+                else
+                {
+                    var dirParent = await DirBlockReader.Parse(entry.BlockBytes);
+                    await AdfWriteDirBlock(vol, pSect, dirParent);
+                }
+            }
+            else
+            {
+                /* in linked list */
+                var previous = await Disk.AdfReadEntryBlock(vol, prevSect);
+                /* entry.nextSameHash (tmpSect) could be == 0 */
+                previous.NextSameHash = tmpSect;
+                await AdfWriteEntryBlock(vol, prevSect, previous);
+            }
+
+            var nParent = await Disk.AdfReadEntryBlock(vol, nPSect);
+
+            var hashValueN = AdfGetHashValue(newName, intl);
+            var nSect2 = nParent.HashTable[hashValueN];
+            /* no list */
+            if (nSect2 == 0)
+            {
+                nParent.HashTable[hashValueN] = nSect;
+                if (nParent.SecType == Constants.ST_ROOT)
+                {
+                    var rootNParent = await RootBlockReader.Parse(nParent.BlockBytes);
+                    await Raw.AdfWriteRootBlock(vol, nPSect, rootNParent);
+                }
+                else
+                {
+                    var dirNParent = await DirBlockReader.Parse(nParent.BlockBytes);
+                    await AdfWriteDirBlock(vol, nPSect, dirNParent);
+                }
+            }
+            else
+            {
+                /* a list exists : addition at the end */
+                /* len = strlen(newName);
+                           * name2 == newName
+                           */
+                EntryBlock previous;
+                do
+                {
+                    previous = await Disk.AdfReadEntryBlock(vol, nSect2);
+
+                    if (previous.Name.Length == len)
+                    {
+                        name3 = MyToUpper(previous.Name, intl);
+                        if (name3 == name2)
+                        {
+                            throw new IOException("adfRenameEntry : entry already exists");
+                        }
+                    }
+
+                    nSect2 = previous.NextSameHash;
+/*printf("sect=%ld\n",nSect2);*/
+                } while (nSect2 != 0);
+
+                previous.NextSameHash = nSect;
+                if (previous.SecType == Constants.ST_DIR)
+                {
+                    var dirPrevious = await DirBlockReader.Parse(previous.BlockBytes);
+                    await AdfWriteDirBlock(vol, previous.HeaderKey, dirPrevious);
+                }
+                else if (previous.SecType == Constants.ST_FILE)
+                {
+                    await File.AdfWriteFileHdrBlock(vol, previous.HeaderKey, previous);
+                }
+                else
+                {
+                    throw new IOException("adfRenameEntry : unknown entry type");
+                }
+            }
+
+            if (Macro.isDIRCACHE(vol.DosType))
+            {
+                if (pSect == nPSect)
+                {
+                    await Cache.AdfUpdateCache(vol, parent, entry, true);
+                }
+                else
+                {
+                    await Cache.AdfDelFromCache(vol, parent, entry.HeaderKey);
+                    await Cache.AdfAddInCache(vol, nParent, entry);
+                }
+            }
+/*
+    if (isDIRCACHE(vol->dosType) && pSect!=nPSect) {
+        adfUpdateCache(vol, &nParent, (struct bEntryBlock*)&entry,TRUE);
+    }
+*/
+        }
+
+/*
+ * adfWriteEntryBlock
+ *
+ */
+        public static async Task AdfWriteEntryBlock(Volume vol, int nSect, EntryBlock ent)
+        {
+//     uint8_t buf[512];
+//     uint32_t newSum;
+//    
+//
+//     memcpy(buf, ent, sizeof(struct bEntryBlock));
+//
+// #ifdef LITT_ENDIAN
+//     swapEndian(buf, SWBL_ENTRY);
+// #endif
+//     newSum = adfNormalSum(buf,20,sizeof(struct bEntryBlock));
+//     swLong(buf+20, newSum);
+            var buf = await EntryBlockWriter.BuildBlock(ent, vol.BlockSize);
+
+            await Disk.AdfWriteBlock(vol, nSect, buf);
         }
     }
 }
