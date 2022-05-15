@@ -224,5 +224,94 @@
             entry = entries.FirstOrDefault(x => x.Name == entryName);
             Assert.Null(entry);
         }
+        
+        [Fact]
+        public async Task WhenMountAdfAndSetAccessForFileThenEntryIsUpdated()
+        {
+            // arrange - adf file
+            var adfPath = @"TestData\adf\ffstest.adf";
+            var modifiedAdfPath = @"TestData\adf\ffstest_modified.adf";
+
+            // arrange - copy adf file for testing
+            System.IO.File.Copy(adfPath, modifiedAdfPath, true);
+            await using var adfStream =
+                System.IO.File.Open(modifiedAdfPath, System.IO.FileMode.Open, FileAccess.ReadWrite);
+
+            // act - mount adf
+            var volume = await FastFileSystemHelper.MountAdf(adfStream);
+            
+            // act - read entries recursively from root block
+            var entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // act - get first file entry
+            var entry = entries.FirstOrDefault(x => x.Type == Entry.EntryType.File);
+            Assert.NotNull(entry);
+
+            // act - set access for entry
+            var entryName = entry.Name;
+            await Directory.AdfSetEntryAccess(volume, volume.RootBlock, entryName,
+                Constants.ACCMASK_A | Constants.ACCMASK_E | Constants.ACCMASK_W);
+            
+            // act - read entries recursively from root block
+            entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - get entry
+            entry = entries.FirstOrDefault(x => x.Name == entryName);
+            Assert.NotNull(entry);
+            Assert.Equal(Constants.ACCMASK_A | Constants.ACCMASK_E | Constants.ACCMASK_W, entry.Access);
+            
+            // act - set access for entry
+            await Directory.AdfSetEntryAccess(volume, volume.RootBlock, entryName,
+                Constants.ACCMASK_R);
+            
+            // act - read entries recursively from root block
+            entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - get entry
+            entry = entries.FirstOrDefault(x => x.Name == entryName);
+            Assert.NotNull(entry);
+            Assert.Equal(Constants.ACCMASK_R, entry.Access);
+        }
+
+        [Fact]
+        public async Task WhenMountAdfAndSetCommentForFileThenEntryIsUpdated()
+        {
+            // arrange - adf file
+            var adfPath = @"TestData\adf\ffstest.adf";
+            var modifiedAdfPath = @"TestData\adf\ffstest_modified.adf";
+
+            // arrange - copy adf file for testing
+            System.IO.File.Copy(adfPath, modifiedAdfPath, true);
+            await using var adfStream =
+                System.IO.File.Open(modifiedAdfPath, System.IO.FileMode.Open, FileAccess.ReadWrite);
+
+            // act - mount adf
+            var volume = await FastFileSystemHelper.MountAdf(adfStream);
+            
+            // act - read entries recursively from root block
+            var entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // act - get first file entry
+            var entry = entries.FirstOrDefault(x => x.Type == Entry.EntryType.File);
+            Assert.NotNull(entry);
+            Assert.Equal(string.Empty, entry.Comment);
+
+            // act - set access for entry
+            var entryName = entry.Name;
+            await Directory.AdfSetEntryComment(volume, volume.RootBlock, entryName, "A comment");
+            
+            // act - read entries recursively from root block
+            entries = (await Directory.AdfGetRDirEnt(volume, volume.RootBlock, true))
+                .OrderBy(x => x.Name).ToList();
+
+            // assert - get entry
+            entry = entries.FirstOrDefault(x => x.Name == entryName);
+            Assert.NotNull(entry);
+            Assert.Equal("A comment", entry.Comment);
+        }
     }
 }
