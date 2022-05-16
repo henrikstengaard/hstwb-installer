@@ -4,6 +4,7 @@
       <PackageReference Include="DiscUtils.Containers" Version="0.16.15" />
       <PackageReference Include="DiscUtils.FileSystems" Version="0.16.15" />
       <PackageReference Include="DiscUtils.Vhd" Version="0.16.15" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.1" />
       <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
     </ItemGroup>
 
