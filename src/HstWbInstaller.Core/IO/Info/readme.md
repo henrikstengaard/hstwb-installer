@@ -338,4 +338,117 @@ bbbb bbbb b000 0000
 bbbb bbbb b000 0000
 ```
 
-where a is a bit for the first bit-plane, b is a bit for the second bit-plane, and 0 is padding. Thanks again to Ben Hutchings for his very helpful post!
+where `a` is a bit for the first bit-plane, `b` is a bit for the second bit-plane, and `0` is padding. Thanks again to Ben Hutchings for his very helpful post!
+
+## Encoding pixels into image data bit-planes
+
+example image width 2, height = 2 and depth 2 (4 bits, to represent 4 colors)
+```
+        X
+      1   2 
+    |---|---|
+  1 | 0 | 0 |
+Y   |---|---|
+  2 | 0 | 3 |
+    |---|---|
+```
+
+To determine size of image data, bytes per row needs to be calculated with following calculation:
+calculate
+```
+bytes per row = (width + 15) / 16 * 2
+```
+
+fdf
+```
+bytes per row = (2 + 15) / 16 * 2 = 2
+```
+
+image data byte array can now be created with following calculation:
+```
+size_of_image_data = bytes_per_row * height * depth 
+size_of_image_data = 2 * 2 * 2 = 8 
+```
+
+Image data for an image with width = 2, height = 2 and depth = 2 is represented with following 8 bytes hex values:
+```
+00 00 00 00 00 00 00 00
+```
+
+and like this in bits:
+```
+                            bits            hex       
+                      87654321 87654321    01 02
+
+Bit-plane = 1, Y = 1: 00000000 00000000    00 00
+Bit-plane = 1, Y = 2: 00000000 00000000    00 00
+
+Bit-plane = 2, Y = 1: 00000000 00000000    00 00
+Bit-plane = 2, Y = 2: 00000000 00000000    00 00
+```
+
+To determine which byte and bit to set fir pixel at X = 2, Y = 2:
+
+```
+byte_offset = (x - 1) / bits per byte (math floor rounded)
+```
+byte_offset = (2 - 1) / 8 = 0 
+
+```
+bit_offset = (bits per byte - 1) - ((x - 1) % bits per byte)
+```
+bit_offset = (8 - 1) - ((2 - 1) % 8) = 6
+
+
+Setting color 3 bits first needs to determine if bit for each bit-plane needs to be set with following calculation:
+```
+bit = color & (1 << (bit_plane - 1))
+```
+
+If result is greater, then set bit for bit-plane. If result is zero, it can be skipped.
+
+For color 3 with depth = 2 (2 bit-planes) following calculations are needed:
+```
+Bit-plane 1:
+bit = 3 & (1 << (1 - 1)) = 1 (set bit)
+
+Bit-plane 2:
+bit = 3 & (1 << (2 - 1)) = 2 (set bit)
+```
+
+Color bits at pixel coordinate are set for each bit-plane in image data with following calculation:
+```
+image_data_offset = (y - 1) * bytes_per_row * (bit_plane - 1) + byte_offset
+image_data[image_data_offset] |= 1 << bit_offset
+```
+
+For pixel at X = 2, Y = 2, color 3 is set in image data with following calculation:
+```
+byte_offset = 0
+bit_offset = 6
+
+Bit-plane 1:
+image_data_offset = (2 - 1) * 2 * (1 - 1) + 0 = 0
+image_data[0] |= 1 << 6
+
+Bit-plane 2:
+image_data_offset = (2 - 1) * 2 * (2 - 1) + 0 = 2
+image_data[2] |= 1 << 6
+```
+
+When color 3 bits are set for pixel X = 2, Y = 2, image data contains the following bits/hex values:
+```
+                            bits            hex       
+                      87654321 87654321    01 02
+
+Bit-plane = 1, Y = 1: 00000000 00000000    00 00
+Bit-plane = 1, Y = 2: 00100000 00000000    40 00
+
+Bit-plane = 2, Y = 1: 00000000 00000000    00 00
+Bit-plane = 2, Y = 2: 00100000 00000000    40 00
+```
+
+Image data array contains the following hex values:
+```
+00 00 40 00 00 00 40 00
+```

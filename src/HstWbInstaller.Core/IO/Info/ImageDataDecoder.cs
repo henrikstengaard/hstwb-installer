@@ -4,14 +4,25 @@
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
 
-    public static class ImageDataConverter
+    public static class ImageDataDecoder
     {
-        public static Image<Rgba32> ConvertToImage(ImageData imageData)
+        /// <summary>
+        /// decode image data using default amiga os 3.1 4 color palette
+        /// </summary>
+        /// <param name="imageData"></param>
+        /// <returns></returns>
+        public static Image<Rgba32> Decode(ImageData imageData)
         {
-            return ConvertToImage(imageData, AmigaOs31Palette.FourColors);
+            return Decode(imageData, AmigaOs31Palette.FourColors);
         }
 
-        public static Image<Rgba32> ConvertToImage(ImageData imageData, IList<byte[]> palette)
+        /// <summary>
+        /// decode image data using palette
+        /// </summary>
+        /// <param name="imageData"></param>
+        /// <param name="palette"></param>
+        /// <returns></returns>
+        public static Image<Rgba32> Decode(ImageData imageData, IList<byte[]> palette)
         {
             var bitsPerByte = 8;
             var bytesPerRow = (imageData.Width + 15) / 16 * 2;
@@ -51,7 +62,7 @@
                     plane++;
                 }
             }
-            
+
             var imageRgbaData = new byte[imageData.Width * imageData.Height * 4]; // rgba
 
             var tx = 0;
@@ -66,7 +77,7 @@
                 {
                     color = 0;
                 }
-                
+
                 imageRgbaData[destOffset + 0] = palette[color][0];
                 imageRgbaData[destOffset + 1] = palette[color][1];
                 imageRgbaData[destOffset + 2] = palette[color][2];
@@ -77,6 +88,7 @@
                 {
                     continue;
                 }
+
                 tx = 0;
                 ty++;
             }

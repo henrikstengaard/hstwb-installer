@@ -70,6 +70,13 @@
             return BitConverter.ToUInt32(bytes, 0);
         }
 
+        public static byte[] ConvertToBytes(short value)
+        {
+            var bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
+            return bytes;
+        }
+        
         // convert uint16 to little endian bytes 
         public static byte[] ConvertToBytes(ushort value)
         {
@@ -78,16 +85,15 @@
             return bytes;
         }
 
-        // convert uint32 to little endian bytes 
-        public static byte[] ConvertToBytes(uint value)
+        public static byte[] ConvertToBytes(int value)
         {
             var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return bytes;
         }
-
-        // convert int32 to little endian bytes 
-        public static byte[] ConvertToBytes(int value)
+        
+        // convert uint32 to little endian bytes 
+        public static byte[] ConvertToBytes(uint value)
         {
             var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);

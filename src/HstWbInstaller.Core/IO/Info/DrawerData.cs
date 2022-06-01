@@ -2,10 +2,10 @@
 {
     public class DrawerData
     {
-        public int LeftEdge { get; set; }
-        public int TopEdge { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public short LeftEdge { get; set; }
+        public short TopEdge { get; set; }
+        public short Width { get; set; }
+        public short Height { get; set; }
         public byte DetailPen { get; set; }
         public byte BlockPen { get; set; }
         public uint IdcmpFlags { get; set; }

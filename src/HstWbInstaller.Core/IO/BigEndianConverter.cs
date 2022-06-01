@@ -31,24 +31,32 @@
         
         public static byte[] ConvertUInt16ToBytes(ushort value)
         {
-            return new[]
-            {
-                (byte)((value >> 8) & 0xFF),
-                (byte)(value & 0xFF)
-            };
+            var data = new byte[2];
+            ConvertUInt16ToBytes(value, data, 0);
+            return data;
+        }
+        
+        public static void ConvertUInt16ToBytes(ushort value, byte[] data, int offset)
+        {
+            data[offset] = (byte)((value >> 8) & 0xFF);
+            data[offset + 1] = (byte)(value & 0xFF);
         }
         
         public static byte[] ConvertUInt32ToBytes(uint value)
         {
-            return new[]
-            {
-                (byte)((value >> 24) & 0xFF),
-                (byte)((value >> 16) & 0xFF),
-                (byte)((value >> 8) & 0xFF),
-                (byte)(value & 0xFF)
-            };
+            var data = new byte[4];
+            ConvertUInt32ToBytes(value, data, 0);
+            return data;
         }
 
+        public static void ConvertUInt32ToBytes(uint value, byte[] data, int offset)
+        {
+            data[offset] = (byte)((value >> 24) & 0xFF);
+            data[offset + 1] = (byte)((value >> 16) & 0xFF);
+            data[offset + 2] = (byte)((value >> 8) & 0xFF);
+            data[offset + 3] = (byte)(value & 0xFF);
+        }
+        
         public static byte[] ConvertInt16ToBytes(short value)
         {
             var data = new byte[2];

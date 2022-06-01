@@ -22,10 +22,10 @@
                 Magic = magic,
                 Version = version,
                 Gadget = await GadgetReader.Read(stream),
-                Type = stream.ReadByte()
+                Type = (byte)stream.ReadByte()
             };
 
-            stream.ReadByte(); // padding
+            diskObject.Pad = (byte)stream.ReadByte();
             diskObject.DefaultToolPointer = await stream.ReadUInt32();
             diskObject.ToolTypesPointer = await stream.ReadUInt32();
             diskObject.CurrentX = await stream.ReadInt32();

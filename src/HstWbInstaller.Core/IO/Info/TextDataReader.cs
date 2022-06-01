@@ -9,10 +9,9 @@
         public static async Task<TextData> Read(Stream stream)
         {
             var size = await stream.ReadUInt32();
-            var text = await stream.ReadString((int)(size - 1));
-            var zero = stream.ReadByte();
+            var data = await stream.ReadBytes((int)size);
 
-            if (zero != 0)
+            if (data[size - 1] != 0)
             {
                 throw new IOException("Invalid zero byte");
             }
@@ -20,7 +19,7 @@
             return new TextData
             {
                 Size = size,
-                Text = text
+                Data = data
             };
         }
     }

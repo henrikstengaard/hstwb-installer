@@ -13,5 +13,7 @@
             public const int KICK = 7;                  // a kickstart disk
             public const int APP_ICON = 8; // should never appear
         }
+
+        public const int BITS_PER_BYTE = 8;
     }
 }
