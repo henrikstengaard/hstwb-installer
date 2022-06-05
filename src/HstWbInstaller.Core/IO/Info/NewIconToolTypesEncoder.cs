@@ -1,10 +1,9 @@
 ﻿namespace HstWbInstaller.Core.IO.Info
 {
-    using System;
     using System.Collections.Generic;
     using System.Text;
 
-    public class NewIconsToolTypesEncoder
+    public class NewIconToolTypesEncoder
     {
         private readonly int imageNumber;
         private readonly int width;
@@ -12,23 +11,23 @@
         private readonly int depth;
         public const int MAX_STRING_LENGTH = 127;
 
-        private List<TextData> toolTypes;
-        private List<byte> currentLine;
-        private int bytesleft => MAX_STRING_LENGTH - currentLine.Count;
+        private readonly List<TextData> toolTypes;
+        private readonly List<byte> currentLine;
+        private int BytesLeft => MAX_STRING_LENGTH - currentLine.Count - (bitsleft < 7 ? 1 : 0);
         private int bitsleft;
         private byte currentValue;
 
-        public NewIconsToolTypesEncoder(int imageNumber, int width, int height, int depth, bool transparent)
+        public NewIconToolTypesEncoder(int imageNumber, int width, int height, int depth, bool transparent)
         {
-            if (width > 93)
-            {
-                throw new ArgumentOutOfRangeException(nameof(width), "Max image width is 93");
-            }
-
-            if (height > 93)
-            {
-                throw new ArgumentOutOfRangeException(nameof(width), "Max image height is 93");
-            }
+            // if (width > 93)
+            // {
+            //     throw new ArgumentOutOfRangeException(nameof(width), "Max image width is 93");
+            // }
+            //
+            // if (height > 93)
+            // {
+            //     throw new ArgumentOutOfRangeException(nameof(width), "Max image height is 93");
+            // }
             
             this.imageNumber = imageNumber;
             this.width = width;
@@ -64,13 +63,14 @@
             Flush();
         }
 
-        public void EncodeImage(byte[][] imagePixels)
+        public void EncodeImage(byte[] imagePixels)
         {
+            var offset = 0;
             for (var y = 0; y < height; y++)
             {
                 for (var x = 0; x < width; x++)
                 {
-                    EncodePixel(imagePixels[y][x]);
+                    EncodePixel(imagePixels[offset++]);
                 }
             }
             
@@ -89,28 +89,28 @@
 
         public void EncodeColorComponent(byte value)
         {
+            if (BytesLeft <= 0)
+            {
+                Flush();
+            }
+            
             currentValue |= (byte)(value >> (8 - bitsleft));
                     
-            EncodeBits(ref currentValue, bytesleft);
+            EncodeBits(ref currentValue, BytesLeft);
             currentLine.Add(currentValue);
-            
-            if (bytesleft <= 0)
-            {
-                Next();
-            }
             
             bitsleft -= 1;
             currentValue = (byte)((value << bitsleft) & 0x7f);
             if (bitsleft == 0)
             {
                 currentValue = (byte)(value & 0x7f);
-                EncodeBits(ref currentValue, bytesleft);
+                EncodeBits(ref currentValue, BytesLeft);
                 currentLine.Add(currentValue);
                 currentValue = 0;
                 
-                if (bytesleft <= 0)
+                if (BytesLeft <= 0)
                 {
-                    Next();
+                    Flush();
                 }
                 
                 bitsleft = 7;
@@ -124,7 +124,7 @@
                 currentValue |= (byte)(value >> (depth - bitsleft));
                 bitsleft += 7;
                 
-                EncodeBits(ref currentValue, bytesleft);
+                EncodeBits(ref currentValue, BytesLeft);
                 currentLine.Add(currentValue);
                 
                 currentValue = 0;
@@ -133,7 +133,7 @@
             bitsleft -= depth;
             currentValue |= (byte)((value << bitsleft) & 0x7f);
 
-            if (bytesleft == 0 && bitsleft < depth)
+            if (BytesLeft == 0 && bitsleft < depth)
             {
                 Flush();
                 //var stringlen = 128 - bytesleft;
@@ -150,7 +150,7 @@
         {
             if (bitsleft < 7)
             {
-                EncodeBits(ref currentValue, bytesleft);
+                EncodeBits(ref currentValue, BytesLeft);
                 currentLine.Add(currentValue);
             }
 

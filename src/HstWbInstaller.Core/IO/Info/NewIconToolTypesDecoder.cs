@@ -185,19 +185,16 @@
             newIcon.Palette = palette.ToArray();
 
             // create image pixels
-            newIcon.ImagePixels = new byte[newIcon.Width][];
-            for (var x = 0; x < newIcon.Width; x++)
-            {
-                newIcon.ImagePixels[x] = new byte[newIcon.Height];
-            }
+            newIcon.ImagePixels = new byte[newIcon.Width * newIcon.Height];
 
             // get image pixels from decoded data
             offset = bitmap_start_pos;
+            var imagePixelsOffset = 0;
             for (var y = 0; y < newIcon.Height; y++)
             {
                 for (var x = 0; x < newIcon.Width; x++)
                 {
-                    newIcon.ImagePixels[x][y] = decoded[offset++];
+                    newIcon.ImagePixels[imagePixelsOffset++] = decoded[offset++];
                 }
             }
 

@@ -113,6 +113,12 @@
       <None Update="TestData\Info\Flashback-image2.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="TestData\Info\bubble_bobble1.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\Info\bubble_bobble2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

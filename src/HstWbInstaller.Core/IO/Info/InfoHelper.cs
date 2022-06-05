@@ -8,18 +8,8 @@
 
     public static class InfoHelper
     {
-        public static DiskObject CreateInfo(byte[][] palette, Image<Rgba32> firstImage,
-            Image<Rgba32> secondImage = null, int depth = 3)
+        public static DiskObject CreateInfo()
         {
-            if (secondImage != null &&
-                (firstImage.Width != secondImage.Width || firstImage.Height != secondImage.Height))
-            {
-                throw new ArgumentException("First and second image does not same dimension", nameof(firstImage));
-            }
-
-            var firstImageData = ImageDataEncoder.Encode(firstImage, palette, depth);
-            var secondImageData = secondImage == null ? null : ImageDataEncoder.Encode(secondImage, palette, depth);
-
             return new DiskObject
             {
                 CurrentX = Int32.MinValue,
@@ -29,26 +19,27 @@
                 DrawerDataPointer = 0,
                 DrawerData = null,
                 DrawerData2 = null,
-                FirstImageData = firstImageData,
                 Gadget = new Gadget
                 {
                     Activation = 1,
                     Flags = 6,
                     GadgetId = 0,
-                    GadgetRenderPointer = 1, // indicate first image is present
+                    // GadgetRenderPointer = 1, // indicate first image is present
                     GadgetTextPointer = 0,
                     GadgetType = 1,
-                    Height = (short)firstImage.Height,
+                    Height = 10,
+                    // Height = (short)firstImage.Height,
                     LeftEdge = 0,
                     MutualExclude = 0,
                     NextPointer = 0,
-                    SelectRenderPointer = (uint)(secondImage != null ? 1 : 0), // indicate second image is present
+                    // SelectRenderPointer = (uint)(secondImage != null ? 1 : 0), // indicate second image is present
                     SpecialInfoPointer = 0,
                     TopEdge = 0,
                     UserDataPointer = 1,
-                    Width = (short)firstImage.Width
+                    // Width = (short)firstImage.Width
+                    Width = 10
                 },
-                SecondImageData = secondImageData,
+                // SecondImageData = secondImageData,
                 StackSize = 4096,
                 ToolTypes = null,
                 ToolTypesPointer = 0,
@@ -86,10 +77,9 @@
             };
         }
 
-        public static DiskObject CreateDiskInfo(byte[][] palette, Image<Rgba32> firstImage,
-            Image<Rgba32> secondImage = null, int depth = 3)
+        public static DiskObject CreateDiskInfo()
         {
-            var diskObject = CreateInfo(palette, firstImage, secondImage, depth);
+            var diskObject = CreateInfo();
             diskObject.Gadget.Activation = 1;
             diskObject.Type = Constants.DiskObjectTypes.DISK;
             diskObject.DrawerData = CreateDrawerData(10, 10, 460, 200);
@@ -97,26 +87,50 @@
             diskObject.DrawerDataPointer = 1;
             diskObject.DrawerData2 = new DrawerData2
             {
-                Flags = 0,
+                Flags = 2,
                 ViewModes = 0
             };
             return diskObject;
         }
 
-        public static DiskObject CreateProjectInfo(byte[][] palette, Image<Rgba32> firstImage,
-            Image<Rgba32> secondImage = null, int depth = 3)
+        public static void SetFirstImage(DiskObject diskObject, byte[][] palette, Image<Rgba32> image, int depth = 3)
         {
-            var diskObject = CreateInfo(palette, firstImage, secondImage, depth);
+            var imageData = ImageDataEncoder.Encode(image, palette, depth);
+            SetFirstImage(diskObject, imageData);            
+        }
+
+        public static void SetFirstImage(DiskObject diskObject, ImageData imageData)
+        {
+            diskObject.Gadget.Width = imageData.Width;
+            diskObject.Gadget.Height = imageData.Height;
+            diskObject.Gadget.GadgetRenderPointer = 1;
+            diskObject.FirstImageData = imageData;
+        }
+        
+        public static void SetSecondImage(DiskObject diskObject, byte[][] palette, Image<Rgba32> image, int depth = 3)
+        {
+            var imageData = ImageDataEncoder.Encode(image, palette, depth);
+            SetSecondImage(diskObject, imageData);
+        }
+
+        public static void SetSecondImage(DiskObject diskObject, ImageData imageData)
+        {
+            diskObject.Gadget.SelectRenderPointer = 1;
+            diskObject.SecondImageData = imageData;
+        }
+        
+        public static DiskObject CreateProjectInfo()
+        {
+            var diskObject = CreateInfo();
             diskObject.Gadget.Activation = 1;
             diskObject.Gadget.Flags = 6;
             diskObject.Type = Constants.DiskObjectTypes.PROJECT;
             return diskObject;
         }
 
-        public static DiskObject CreateDrawerInfo(byte[][] palette, Image<Rgba32> firstImage,
-            Image<Rgba32> secondImage = null, int depth = 3)
+        public static DiskObject CreateDrawerInfo()
         {
-            var diskObject = CreateInfo(palette, firstImage, secondImage, depth);
+            var diskObject = CreateInfo();
             diskObject.Gadget.Activation = 1;
             diskObject.Gadget.Flags = 6;
             diskObject.Type = Constants.DiskObjectTypes.DRAWER;
@@ -134,6 +148,16 @@
         public static IEnumerable<string> ConvertToolTypesToStrings(ToolTypes toolTypes)
         {
             return toolTypes.TextDatas.Select(x => AmigaTextHelper.GetString(x.Data, 0, x.Data.Length - 1)).ToList();
+        }
+
+        public static TextData CreateTextData(string text)
+        {
+            var data = AmigaTextHelper.GetBytes(text).Concat(new byte[] { 0 }).ToArray();
+            return new TextData
+            {
+                Data = data,
+                Size = (uint)data.Length
+            };
         }
     }
 }

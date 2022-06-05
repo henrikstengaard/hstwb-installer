@@ -7,6 +7,6 @@
         public int Height { get; set; }
         public int Depth { get; set; }
         public byte[][] Palette { get; set; }
-        public byte[][] ImagePixels { get; set; }
+        public byte[] ImagePixels { get; set; }
     }
 }

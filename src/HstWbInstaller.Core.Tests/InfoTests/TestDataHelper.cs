@@ -6,7 +6,6 @@
     using IO.Info;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
-    using Xunit;
 
     public static class TestDataHelper
     {
@@ -46,18 +45,18 @@
         
         public static Image<Rgba32> CreateImage(byte[][] palette)
         {
-            var width = 8;
-            var height = 8;
+            var width = 12;
+            var height = 12;
             var pixelData = new byte[width * height * RgbaColorSize];
 
-            for (var y = 0; y < 4; y++)
+            for (var y = 0; y < 6; y++)
             {
-                for (var x = 0; x < 4; x++)
+                for (var x = 0; x < 6; x++)
                 {
                     SetPixelDataPixel(pixelData, width, x, y, palette[0][0], palette[0][1], palette[0][2], palette[0][3]);
-                    SetPixelDataPixel(pixelData, width, 4 + x, y, palette[1][0], palette[1][1], palette[1][2], palette[1][3]);
-                    SetPixelDataPixel(pixelData, width, x, 4 + y, palette[2][0], palette[2][1], palette[2][2], palette[2][3]);
-                    SetPixelDataPixel(pixelData, width, 4 + x, 4 + y, palette[3][0], palette[3][1], palette[3][2], palette[3][3]);
+                    SetPixelDataPixel(pixelData, width, 6 + x, y, palette[1][0], palette[1][1], palette[1][2], palette[1][3]);
+                    SetPixelDataPixel(pixelData, width, x, 6 + y, palette[2][0], palette[2][1], palette[2][2], palette[2][3]);
+                    SetPixelDataPixel(pixelData, width, 6 + x, 6 + y, palette[3][0], palette[3][1], palette[3][2], palette[3][3]);
                 }
             }
 
@@ -66,19 +65,19 @@
 
         public static ImageData CreateImageData()
         {
-            var width = 8;
-            var height = 8;
+            var width = 12;
+            var height = 12;
             var depth = 2;
             var imageData = CreateImageData(width, height, depth);
 
-            for (var y = 0; y < 4; y++)
+            for (var y = 0; y < 6; y++)
             {
-                for (var x = 0; x < 4; x++)
+                for (var x = 0; x < 6; x++)
                 {
                     SetImageDataPixel(imageData, width, height, depth, x, y, 0);
-                    SetImageDataPixel(imageData, width, height, depth, 4 + x, y, 1);
-                    SetImageDataPixel(imageData, width, height, depth, x, 4 + y, 2);
-                    SetImageDataPixel(imageData, width, height, depth, 4 + x, 4 + y, 3);
+                    SetImageDataPixel(imageData, width, height, depth, 6 + x, y, 1);
+                    SetImageDataPixel(imageData, width, height, depth, x, 6 + y, 2);
+                    SetImageDataPixel(imageData, width, height, depth, 6 + x, 6 + y, 3);
                 }
             }
 

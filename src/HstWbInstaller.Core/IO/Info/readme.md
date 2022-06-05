@@ -1,5 +1,16 @@
 ﻿# References
 
+NewIcon:
+- http://www.evillabs.net/index.php/Amiga_Icon_Formats
+
+LBM:
+- https://en.wikipedia.org/wiki/ILBM
+- https://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap
+- https://wiki.preterhuman.net/Intro_to_Amiga_IFF_ILBM_Files_and_Amiga_Viewmodes
+
+PeterK icon library seems to require regular icon images have a minimum size larger than 8 x 8 pixels.
+
+
 ## Amiga Icon Formats reference
 
 ```

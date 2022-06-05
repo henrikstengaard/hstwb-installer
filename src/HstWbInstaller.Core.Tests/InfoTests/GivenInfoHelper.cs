@@ -1,5 +1,7 @@
 ﻿namespace HstWbInstaller.Core.Tests.InfoTests
 {
+    using System.IO;
+    using System.Threading.Tasks;
     using IO.Info;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
@@ -8,7 +10,7 @@
     public class GivenInfoHelper
     {
         [Fact]
-        public void WhenCreatingDiskInfoThenDiskObjectMatchesDisk()
+        public async Task WhenCreatingDiskInfoThenDiskObjectMatchesDisk()
         {
             // arrange - create first and second images
             var firstImage = TestDataHelper.CreateFirstImage();
@@ -16,12 +18,18 @@
 
             // act - create disk info disk object
             var diskObject =
-                InfoHelper.CreateDiskInfo(TestDataHelper.Palette, firstImage, secondImage, TestDataHelper.Depth);
+                InfoHelper.CreateDiskInfo();
+            InfoHelper.SetFirstImage(diskObject, TestDataHelper.Palette, firstImage, TestDataHelper.Depth);
+            InfoHelper.SetSecondImage(diskObject, TestDataHelper.Palette, secondImage, TestDataHelper.Depth);
 
+            // act - write disk object for manual testing
+            await using var stream = File.Open("disk.info", FileMode.Create);
+            await DiskObjectWriter.Write(diskObject, stream);
+            
             // assert - disk object is a disk
             Assert.Equal(Constants.DiskObjectTypes.DISK, diskObject.Type);
             Assert.Equal(33559167U, diskObject.DrawerData.Flags);
-            
+
             // assert - first and second images are equal
             AssertImages(firstImage, secondImage, diskObject);
             
@@ -30,7 +38,7 @@
         }
         
         [Fact]
-        public void WhenCreatingDrawerInfoThenDiskObjectMatchesDrawer()
+        public async Task WhenCreatingDrawerInfoThenDiskObjectMatchesDrawer()
         {
             // arrange - create first and second images
             var firstImage = TestDataHelper.CreateFirstImage();
@@ -38,12 +46,18 @@
 
             // act - create disk info drawer object
             var diskObject =
-                InfoHelper.CreateDrawerInfo(TestDataHelper.Palette, firstImage, secondImage, TestDataHelper.Depth);
+                InfoHelper.CreateDrawerInfo();
+            InfoHelper.SetFirstImage(diskObject, TestDataHelper.Palette, firstImage, TestDataHelper.Depth);
+            InfoHelper.SetSecondImage(diskObject, TestDataHelper.Palette, secondImage, TestDataHelper.Depth);
 
+            // act - write disk object for manual testing
+            await using var stream = File.Open("drawer.info", FileMode.Create);
+            await DiskObjectWriter.Write(diskObject, stream);
+            
             // assert - disk object is a drawer
             Assert.Equal(Constants.DiskObjectTypes.DRAWER, diskObject.Type);
             Assert.Equal(33559103U, diskObject.DrawerData.Flags);
-            
+
             // assert - first and second images are equal
             AssertImages(firstImage, secondImage, diskObject);
             
@@ -52,7 +66,7 @@
         }
         
         [Fact]
-        public void WhenCreatingProjectInfoThenDiskObjectMatchesProject()
+        public async Task WhenCreatingProjectInfoThenDiskObjectMatchesProject()
         {
             // arrange - create first and second images
             var firstImage = TestDataHelper.CreateFirstImage();
@@ -60,12 +74,17 @@
 
             // act - create disk info project object
             var diskObject =
-                InfoHelper.CreateProjectInfo(TestDataHelper.Palette, firstImage, secondImage, TestDataHelper.Depth);
+                InfoHelper.CreateProjectInfo();
+            InfoHelper.SetFirstImage(diskObject, TestDataHelper.Palette, firstImage, TestDataHelper.Depth);
+            InfoHelper.SetSecondImage(diskObject, TestDataHelper.Palette, secondImage, TestDataHelper.Depth);
 
+            // act - write disk object for manual testing
+            await using var stream = File.Open("project.info", FileMode.Create);
+            await DiskObjectWriter.Write(diskObject, stream);
+            
             // assert - disk object is a project
             Assert.Equal(Constants.DiskObjectTypes.PROJECT, diskObject.Type);
-            //Assert.Equal(33559103U, diskObject.DrawerData.Flags);
-            
+
             // assert - first and second images are equal
             AssertImages(firstImage, secondImage, diskObject);
             
@@ -73,7 +92,7 @@
             AssertDefaultValues(diskObject);
         }
         
-        private void AssertImages(Image<Rgba32> firstImage, Image<Rgba32> secondImage, DiskObject diskObject)
+        private static void AssertImages(Image<Rgba32> firstImage, Image<Rgba32> secondImage, DiskObject diskObject)
         {
             // assert - first image data is equal to first image
             Assert.NotNull(diskObject.FirstImageData);
@@ -102,7 +121,7 @@
             Assert.NotEqual(0U, diskObject.Gadget.SelectRenderPointer);
         }
 
-        private void AssertDefaultValues(DiskObject diskObject)
+        private static void AssertDefaultValues(DiskObject diskObject)
         {
             // assert - disk object has default values
             Assert.Equal(4096, diskObject.StackSize);

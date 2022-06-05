@@ -20,7 +20,6 @@
 
             return new ToolTypes
             {
-                Entries = entries,
                 TextDatas = textDatas
             };
         }
