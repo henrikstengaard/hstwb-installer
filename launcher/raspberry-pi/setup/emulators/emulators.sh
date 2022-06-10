@@ -3,7 +3,7 @@
 # Setup Emulators
 # ---------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-12
+# Date: 2022-01-26
 #
 # bash script to show setup emulators menu.
 
@@ -11,11 +11,12 @@ while true; do
 	choices=$(dialog --clear --stdout \
 	--title "Setup Emulators" \
 	--menu "Select option:" 0 0 0 \
-	1 "Change Amiga emulator" \
-        2 "Amiberry" \
-	3 "UAE4ARM" \
-	4 "Install Kickstart rom" \
-	5 "Exit")
+        1 "Amiberry" \
+	2 "UAE4ARM" \
+        3 "FS-UAE" \
+        4 "Change Amiga emulator" \
+	5 "Install Kickstart rom" \
+	6 "Exit")
 
 	clear
 
@@ -27,22 +28,27 @@ while true; do
 	for choice in $choices; do
 		case $choice in
 		1)
-			./change-amiga-emulator.sh
-			;;
-		2)
                         pushd amiberry >/dev/null
                         ./amiberry.sh
                         popd >/dev/null
 			;;
-                3)
+                2)
                         pushd uae4arm >/dev/null
                         ./uae4arm.sh
                         popd >/dev/null
                         ;;
-		4)
+                3)
+                        pushd fs-uae >/dev/null
+                        ./fs-uae.sh
+                        popd >/dev/null
+                        ;;
+                4)
+                        ./change-amiga-emulator.sh
+                        ;;
+		5)
 			./install-kickstart-rom.sh
 			;;
-		5)
+		6)
 			exit
 			;;
 		esac

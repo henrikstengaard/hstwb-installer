@@ -165,6 +165,21 @@ function update_configs()
 		find "$UAE4ARM_CONF_PATH" -name "hstwb-*.uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
 	fi
 
+        # fs-uae config
+        if [ ! "$FSUAE_CONF_PATH" == "" ]; then
+                # create fs-uae config directory, if it doesn't exist
+                if [ ! -d "$FSUAE_CONF_PATH" ]; then
+                        mkdir -p "$FSUAE_CONF_PATH" >/dev/null
+                fi
+
+                # copy fs-uae configs
+                cp -R "$HSTWB_INSTALLER_ROOT/emulators/fs-uae/configs/rpi/." "$FSUAE_CONF_PATH"
+
+                # replace amiga hdd and kickstarts path placeholders
+                find "$FSUAE_CONF_PATH" -name "hstwb-*.fs-uae" -type f -exec sed -i "s/\\$\\[AMIGA_HDD_PATH\\]/$(echo "$HSTWB_HDD_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+                find "$FSUAE_CONF_PATH" -name "hstwb-*.fs-uae" -type f -exec sed -i "s/\\$\\[AMIGA_KICKSTARTS_PATH\\]/$(echo "$AMIGA_KICKSTARTS_PATH" | sed -e "s/\//\\\\\//g")/g" {} \;
+        fi
+
 	return 0
 }
 

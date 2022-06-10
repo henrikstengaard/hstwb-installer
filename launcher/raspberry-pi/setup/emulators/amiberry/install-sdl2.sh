@@ -43,7 +43,7 @@ configureargs=""
 for choice in $choices; do
   case $choice in
     2)
-      configureargs="--enable-video-kmsdrm --enable-video-opengles --enable-arm-neon --disable-video-rpi --disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"
+      configureargs="--enable-video-kmsdrm"
       ;;
     3)
       configureargs="--enable-video-kmsdrm --enable-video-opengles --disable-video-rpi --disable-pulseaudio --disable-esd --disable-video-wayland --disable-video-opengl --disable-video-x11"

@@ -3,7 +3,7 @@
 # Run Amiga Emulator
 # ------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-13
+# Date: 2022-01-26
 #
 # A bash script to run Amiga emulator.
 
@@ -18,14 +18,14 @@ if [ -z "$AMIGA_EMULATOR" ]; then
 fi
 
 # args
-noautostart=0
+autostart=1
 
 # parse arguments
 for i in "$@"
 do
 case $i in
     -n|--no-autostart)
-    noautostart=1
+    autostart=0
     shift
     ;;
     *)
@@ -53,14 +53,14 @@ amiberry)
 		exit 1
 	fi
 
-	# run amiberry
-	pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
-	if [ $noautostart -eq 1 ]; then
-		amiberryargs=""
-	else
+	# amiberry args
+	amiberryargs=""
+	if [ $autostart -eq 1 ]; then
 		amiberryargs="-f \"$AMIBERRY_CONF_PATH/autostart.uae\""
 	fi
 
+	# run amiberry
+	pushd "$AMIBERRY_EMULATOR_PATH" >/dev/null
 	./amiberry $amiberryargs
 	popd >/dev/null
 	;;
@@ -77,20 +77,45 @@ uae4arm)
                 exit 1
         fi
 
-	# run uae4arm
-        pushd "$UAE4ARM_EMULATOR_PATH" >/dev/null
-        if [ $noautostart -eq 1 ]; then
-		uae4armargs=""
-	else
+	# uae4arm args
+	uae4armargs=""
+        if [ $autostart -eq 1 ]; then
                 uae4armargs="-f \"$UAE4ARM_CONF_PATH/autostart.uae\""
         fi
 
+	# run uae4arm
+	pushd "$UAE4ARM_EMULATOR_PATH" >/dev/null
         ./uae4arm $uae4armargs
 	popd >/dev/null
 	;;
+
+fs-uae)
+        # fail, if fs-uae emulator path is not set
+        if [ -z "$FSUAE_EMULATOR_PATH" ]; then
+                dialog --clear --title "ERROR" --msgbox "ERROR: FS-UAE emulator path 'FSUAE_EMULATOR_PATH' is not set!\n\nPlease verify HstWB Installer is installed correctly." 0 0
+                exit 1
+        fi
+
+        # fail, if fs-uae emulator is not installed
+        if [ ! -f "$FSUAE_EMULATOR_PATH/fs-uae" ]; then
+                dialog --clear --title "ERROR" --msgbox "ERROR: FS-UAE emulator is not installed!" 0 0
+                exit 1
+        fi
+
+        # fs-uae args
+	fsuaeargs=""
+        if [ $autostart -eq 1 ]; then
+                fsuaeargs="$FSUAE_CONF_PATH/autostart.fs-uae"
+        fi
+
+        # run fs-uae
+        pushd "$FSUAE_EMULATOR_PATH" >/dev/null
+        ./fs-uae $fsuaeargs
+        popd >/dev/null
+        ;;
+
 *)
-	dialog --clear --title "ERROR" --msgbox "ERROR: Amiga emulator is not defined!\n\nPlease change Amiga emulator first!" 0 0
+	dialog --clear --title "ERROR" --msgbox "ERROR: Amiga emulator is not defined!\n\nPlease change Amiga emulator first in setup emulators!" 0 0
 	exit 1
 	;;
 esac
-

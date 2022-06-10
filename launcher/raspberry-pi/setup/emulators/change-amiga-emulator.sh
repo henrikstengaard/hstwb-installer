@@ -3,7 +3,7 @@
 # Change Amiga Emulator
 # ---------------------
 # Author: Henrik Noerfjand Stengaard
-# Date: 2021-01-12
+# Date: 2022-01-26
 #
 # bash script to show change amiga emulator menu.
 
@@ -20,7 +20,8 @@ choices=$(dialog --clear --stdout \
 --menu "Select Amiga emulator to use:" 0 0 0 \
 1 "Amiberry" \
 2 "UAE4ARM" \
-3 "Exit")
+3 "FS-UAE" \
+4 "Exit")
 
 clear
 
@@ -40,7 +41,10 @@ for choice in $choices; do
 		2)
 			AMIGA_EMULATOR="uae4arm"
 			;;
-		3)
+                3)
+                        AMIGA_EMULATOR="fs-uae"
+                        ;;
+		4)
 			exit
 			;;
 	esac

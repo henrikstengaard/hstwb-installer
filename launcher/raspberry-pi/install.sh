@@ -32,6 +32,8 @@ AMIBERRY_EMULATOR_PATH=~/amiga/emulators/amiberry
 AMIBERRY_CONF_PATH=~/amiga/emulators/amiberry/conf
 UAE4ARM_EMULATOR_PATH=~/amiga/emulators/uae4arm
 UAE4ARM_CONF_PATH=~/amiga/emulators/uae4arm/conf
+FSUAE_EMULATOR_PATH=~/amiga/emulators/fs-uae
+FSUAE_CONF_PATH=~/amiga/emulators/fs-uae/conf
 AMIGA_EMULATOR=
 
 # fix dialog borders
@@ -84,7 +86,6 @@ else
 	echo "export AMIGA_KICKSTARTS_PATH=\"$AMIGA_KICKSTARTS_PATH\"" >>~/.hstwb-installer/config.sh
         echo "export AMIBERRY_EMULATOR_PATH=\"$AMIBERRY_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
 	echo "export AMIBERRY_CONF_PATH=\"$AMIBERRY_CONF_PATH\"" >>~/.hstwb-installer/config.sh
-
 fi
 
 # add uae4arm emulator path to config, if it doesn't exist
@@ -95,6 +96,16 @@ fi
 # add uae4arm conf path to config, if it doesn't exist
 if [ "$(grep -i "UAE4ARM_CONF_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
 	echo "export UAE4ARM_CONF_PATH=\"$UAE4ARM_CONF_PATH\"" >>~/.hstwb-installer/config.sh
+fi
+
+# add fs-uae emulator path to config, if it doesn't exist
+if [ "$(grep -i "FSUAE_EMULATOR_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
+        echo "export FSUAE_EMULATOR_PATH=\"$FSUAE_EMULATOR_PATH\"" >>~/.hstwb-installer/config.sh
+fi
+
+# add fs-uae conf path to config, if it doesn't exist
+if [ "$(grep -i "FSUAE_CONF_PATH=" ~/.hstwb-installer/config.sh)" == "" ]; then
+        echo "export FSUAE_CONF_PATH=\"$FSUAE_CONF_PATH\"" >>~/.hstwb-installer/config.sh
 fi
 
 # add amiga emulator to config, if it doesn't exist
