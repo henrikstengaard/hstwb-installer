@@ -1,20 +1,70 @@
 {
   "executable": "HstWbInstaller.Imager.GuiApp",
-  "splashscreen": {
-    "imageFile": ""
-  },
   "name": "HstWbInstaller.Imager.GuiApp",
-  "author": "",
+  "author": "Henrik Nørfjand Stengaard <hstwbinstaller@gmail.com>",
   "singleInstance": false,
   "environment": "Production",
+  "electronPort": 42000,
+  "aspCoreBackendPort": 42001,
   "build": {
     "appId": "com.HstWbInstaller.Imager.GuiApp.app",
-    "productName": "HstWbInstaller.Imager.GuiApp",
-    "copyright": "Copyright © 2020",
-    "buildVersion": "1.0.0",
+    "productName": "HstWB Imager",
+    "copyright": "Copyright © 2022",
+    "buildVersion": "0.1.0",
     "compression": "maximum",
     "directories": {
       "output": "../../../bin/Desktop"
+    },
+    "win": {
+      "target": [{
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]        
+      },{
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      },{
+        "target": "zip",
+        "arch": [
+          "x64"
+        ]
+      }],
+      "icon": "../../../hstwb-installer.ico"
+    },
+    "mac": {
+      "target": [{
+        "target": "dmg",
+        "arch": [
+          "x64"
+        ]
+      }],
+      "icon": "../../../hstwb-installer.icns"
+    },
+    "linux": {
+      "target": [{
+        "target": "AppImage",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      },{
+        "target": "deb",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }],
+      "synopsis": "Disk imaging tool",
+      "description": "Disk imaging tool to read and write raw disk images to and from physical drives with support for Amiga rigid disk block (RDB)",
+      "icon": "../../../hstwb-installer.icns"
+    },
+    "nsis": {
+      "guid": "4bae923c-ea2c-4eee-9a47-ba053b7b78e5",
+      "oneClick": true,
+      "perMachine": true
     },
     "extraResources": [
       {

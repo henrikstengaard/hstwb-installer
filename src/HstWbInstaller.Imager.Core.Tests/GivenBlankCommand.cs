@@ -2,9 +2,10 @@
 {
     using System;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Apis;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenBlankCommand : CommandTestBase
@@ -16,10 +17,11 @@
             var path = $"{Guid.NewGuid()}.img";
             var size = 512 * 512;
             var fakeCommandHelper = new FakeCommandHelper(writeableMediaPaths: new[] { path });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // act - create blank
-            var blankCommand = new BlankCommand(fakeCommandHelper, path, size);
-            var result = await blankCommand.Execute();
+            var blankCommand = new BlankCommand(new NullLogger<BlankCommand>(), fakeCommandHelper, path, size);
+            var result = await blankCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // assert data is zero filled
@@ -35,10 +37,11 @@
             var path = $"{Guid.NewGuid()}.vhd";
             var size = 512 * 512;
             var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // act - create blank
-            var blankCommand = new BlankCommand(fakeCommandHelper, path, size);
-            var result = await blankCommand.Execute();
+            var blankCommand = new BlankCommand(new NullLogger<BlankCommand>(), fakeCommandHelper, path, size);
+            var result = await blankCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // get destination bytes from vhd

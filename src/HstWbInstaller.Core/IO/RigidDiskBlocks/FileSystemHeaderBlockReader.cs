@@ -86,10 +86,10 @@
             var segListBlocks = await blockStream.ReadInt32(); // first of linked list of LoadSegBlocks
             var globalVec = await blockStream.ReadInt32();
 
-            // skip reserved
-            blockStream.Seek(4 * (23 + 21), SeekOrigin.Current);
+            blockStream.Seek(172, SeekOrigin.Begin);
+            var fileSystemName = await blockStream.ReadNullTerminatedString();
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
+            var calculatedChecksum = await ChecksumHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {
@@ -114,7 +114,8 @@
                 Priority = priority,
                 Startup = startup,
                 SegListBlocks = segListBlocks,
-                GlobalVec = globalVec
+                GlobalVec = globalVec,
+                FileSystemName = fileSystemName
             };
         }
     }

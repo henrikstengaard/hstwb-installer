@@ -53,7 +53,7 @@
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host
             var nextLoadSegBlock = await blockStream.ReadInt32(); // block number of the next LoadSegBlock, -1 for last
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
+            var calculatedChecksum = await ChecksumHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {

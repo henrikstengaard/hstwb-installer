@@ -9,8 +9,10 @@
         string Type { get; }
         string Model { get; }
         long Size { get; }
+        bool Writable { get; }
         RigidDiskBlock RigidDiskBlock { get; set; }
 
         Stream Open();
+        void SetWritable(bool writable);
     }
 }

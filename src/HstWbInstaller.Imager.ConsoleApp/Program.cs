@@ -3,13 +3,22 @@
     using System;
     using System.Collections.Generic;
     using System.CommandLine;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Core;
     using Core.Commands;
+    using Core.Extensions;
+    using Core.Helpers;
     using Core.PhysicalDrives;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Presenters;
-    using OperatingSystem = Core.OperatingSystem;
+    using Serilog;
+    using OperatingSystem = HstWbInstaller.Core.OperatingSystem;
 
     // read
     // -r "a" "d:\temp\test.vhd" -s 10000000 -f
@@ -24,10 +33,45 @@
     {
         static async Task<int> Main(string[] args)
         {
+            // var workerFileName = $"HstWbInstaller.Imager.GuiApp.exe";
+            // var currentProcessId = Process.GetCurrentProcess().Id;
+            // var processes = Process.GetProcesses();
+            //
+            // foreach (var process in processes)
+            // {
+            //     try
+            //     {
+            //         if (process.Id == currentProcessId ||
+            //             process.ProcessName.IndexOf("HstWbInstaller.Imager.GuiApp", StringComparison.OrdinalIgnoreCase) < 0 ||
+            //             process.MainModule == null ||
+            //             process.MainModule.FileName == null ||
+            //             process.MainModule.FileName.IndexOf(workerFileName, StringComparison.OrdinalIgnoreCase) < 0)
+            //         {
+            //             continue;
+            //         }
+            //     }
+            //     catch (Exception)
+            //     {
+            //         continue;
+            //     }
+            //
+            //     var kill = process.MainModule.FileName;
+            //     //process.Kill();
+            // }            
+            
+            //var process = ElevateHelper.StartElevatedProcess("HstWB Installer", "cmd.exe");
+            // await process.WaitForExitAsync();
+
+            //var process = ElevateHelper.StartElevatedProcess("HstWB Installer", "cmd.exe");
+            // await process.WaitForExitAsync();
+            //
+            //await "/usr/bin/osascript".RunProcessAsync("-e 'do shell script \"/bin/bash\" with prompt \"{prompt}\" with administrator privileges'");
+            //return 0;
+            
             var mbrTest = new MbrTest();
             mbrTest.Create();
             mbrTest.Read();
-            
+
             var listOption = new Option<bool>(
                 new[] { "--list", "-l" },
                 "List physical drives.");
@@ -208,20 +252,7 @@
                 return drives;
             }
 
-            IPhysicalDriveManager physicalDriveManager;
-
-            if (OperatingSystem.IsWindows())
-            {
-                physicalDriveManager = new WindowsPhysicalDriveManager(arguments.Fake);
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                physicalDriveManager = new LinuxPhysicalDriveManager(arguments.Fake);
-            }
-            else
-            {
-                throw new NotImplementedException("Unsupported operating system");
-            }
+            var physicalDriveManager = new PhysicalDriveManagerFactory(new NullLoggerFactory()).Create();
 
             return (await physicalDriveManager.GetPhysicalDrives()).ToList();
         }
@@ -229,7 +260,18 @@
 
         static async Task Run(Arguments arguments)
         {
-            var isAdministrator = await OperatingSystem.IsAdministrator();
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+            
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true))
+                .BuildServiceProvider();
+
+            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+
+            var isAdministrator = OperatingSystem.IsAdministrator();
 
             if (!isAdministrator)
             {
@@ -238,11 +280,12 @@
 
             var commandHelper = new CommandHelper();
             var physicalDrives = (await GetPhysicalDrives(arguments)).ToList();
-            
+            var cancellationTokenSource = new CancellationTokenSource();
+
             switch (arguments.Command)
             {
                 case Arguments.CommandEnum.List:
-                    var listCommand = new ListCommand(commandHelper, physicalDrives);
+                    var listCommand = new ListCommand(loggerFactory.CreateLogger<ListCommand>(), commandHelper, physicalDrives);
                     listCommand.ListRead += (_, args) =>
                     {
                         //
@@ -252,14 +295,13 @@
                         // });
                         InfoPresenter.PresentInfo(args.MediaInfos);
                     };
-                    await listCommand.Execute();
-                    var listResult = await listCommand.Execute();
+                    var listResult = await listCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(listResult.IsSuccess ? "Done" : $"ERROR: Read failed, {listResult.Error}");
                     break;
                 case Arguments.CommandEnum.Info:
-                    var infoCommand = new InfoCommand(commandHelper, physicalDrives, arguments.SourcePath);
+                    var infoCommand = new InfoCommand(loggerFactory.CreateLogger<InfoCommand>(), commandHelper, physicalDrives, arguments.SourcePath);
                     infoCommand.DiskInfoRead += (_, args) => { InfoPresenter.PresentInfo(args.MediaInfo); };
-                    var infoResult = await infoCommand.Execute();
+                    var infoResult = await infoCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(infoResult.IsSuccess ? "Done" : $"ERROR: Read failed, {infoResult.Error}");
                     break;
                 case Arguments.CommandEnum.Read:
@@ -267,11 +309,11 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var readCommand = new ReadCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var readCommand = new ReadCommand(loggerFactory.CreateLogger<ReadCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     readCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    await readCommand.Execute();
-                    var readResult = await readCommand.Execute();
+                    var readResult = await readCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(readResult.IsSuccess ? "Done" : $"ERROR: Read failed, {readResult.Error}");
                     break;
                 case Arguments.CommandEnum.Convert:
@@ -279,21 +321,24 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var convertCommand = new ConvertCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var convertCommand = new ConvertCommand(loggerFactory.CreateLogger<ConvertCommand>(), commandHelper, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     convertCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var convertResult = await convertCommand.Execute();
-                    Console.WriteLine(convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
+                    var convertResult = await convertCommand.Execute(cancellationTokenSource.Token);
+                    Console.WriteLine(
+                        convertResult.IsSuccess ? "Done" : $"ERROR: Convert failed, {convertResult.Error}");
                     break;
                 case Arguments.CommandEnum.Write:
                     Console.WriteLine("Writing source image file to physical drive");
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var writeCommand = new WriteCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var writeCommand = new WriteCommand(loggerFactory.CreateLogger<WriteCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     writeCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var writeResult = await writeCommand.Execute();
+                    var writeResult = await writeCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(writeResult.IsSuccess ? "Done" : $"ERROR: Write failed, {writeResult.Error}");
                     break;
                 case Arguments.CommandEnum.Verify:
@@ -301,95 +346,30 @@
 
                     GenericPresenter.PresentPaths(arguments);
 
-                    var verifyCommand = new VerifyCommand(commandHelper, physicalDrives, arguments.SourcePath, arguments.DestinationPath,
+                    var verifyCommand = new VerifyCommand(loggerFactory.CreateLogger<VerifyCommand>(), commandHelper, physicalDrives, arguments.SourcePath,
+                        arguments.DestinationPath,
                         arguments.Size);
                     verifyCommand.DataProcessed += (_, args) => { GenericPresenter.Present(args); };
-                    var verifyResult = await verifyCommand.Execute();
+                    var verifyResult = await verifyCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(verifyResult.IsSuccess ? "Done" : $"ERROR: Verify failed, {verifyResult.Error}");
                     break;
                 case Arguments.CommandEnum.Blank:
                     Console.WriteLine("Creating blank image");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
-                    var blankCommand = new BlankCommand(commandHelper, arguments.SourcePath, arguments.Size);
-                    var blankResult = await blankCommand.Execute();
+                    var blankCommand = new BlankCommand(loggerFactory.CreateLogger<BlankCommand>(), commandHelper, arguments.SourcePath, arguments.Size);
+                    var blankResult = await blankCommand.Execute(cancellationTokenSource.Token);
                     Console.WriteLine(blankResult.IsSuccess ? "Done" : $"ERROR: Blank failed, {blankResult.Error}");
                     break;
                 case Arguments.CommandEnum.Optimize:
                     Console.WriteLine("Optimizing image file");
                     Console.WriteLine($"Path: {arguments.SourcePath}");
-                    var optimizeCommand = new OptimizeCommand(commandHelper, arguments.SourcePath);
-                    var optimizeResult = await optimizeCommand.Execute();
-                    Console.WriteLine(optimizeResult.IsSuccess ? "Done" : $"ERROR: Optimize failed, {optimizeResult.Error}");
+                    var optimizeCommand = new OptimizeCommand(loggerFactory.CreateLogger<OptimizeCommand>(), commandHelper, arguments.SourcePath);
+                    var optimizeResult = await optimizeCommand.Execute(cancellationTokenSource.Token);
+                    Console.WriteLine(optimizeResult.IsSuccess
+                        ? "Done"
+                        : $"ERROR: Optimize failed, {optimizeResult.Error}");
                     break;
             }
-
-            // var srcPhysicalDrive =
-            //     physicalDrives.FirstOrDefault(x => x.Path.Equals(src, StringComparison.OrdinalIgnoreCase));
-            // await using var srcStream = srcPhysicalDrive == null ? File.OpenRead(src) : srcPhysicalDrive.Open();
-            // var destPhysicalDrive =
-            //     physicalDrives.FirstOrDefault(x => x.Path.Equals(dest, StringComparison.OrdinalIgnoreCase));
-            // await using var destStream = destPhysicalDrive == null
-            //     ? File.Open(dest, FileMode.Create, FileAccess.ReadWrite)
-            //     : destPhysicalDrive.Open();
-            //
-            // if (srcPhysicalDrive == null &&
-            //     destPhysicalDrive == null &&
-            //     src.Equals(dest, StringComparison.OrdinalIgnoreCase))
-            // {
-            //     Console.WriteLine("Trim");
-            // }
-            //
-            // Console.WriteLine("Source: {src}");
-            // Console.WriteLine("Destination: {dest}");
-            //
-            // ulong srcSize;
-            // if (srcPhysicalDrive != null)
-            // {
-            //     srcSize = srcPhysicalDrive.RigidDiskBlock?.DiskSize ?? srcPhysicalDrive.Size;
-            // }
-            // else
-            // {
-            //     srcSize = Convert.ToUInt64(srcStream.Length);
-            // }
-            //
-            // Console.WriteLine($"{srcSize} bytes");
-            //
-            // ulong bytesWritten = 0;
-            //
-            // if (dest.EndsWith(".vhd"))
-            // {
-            //     Console.WriteLine("Vhd");
-            //     var vhd = new VhdConverter();
-            //     vhd.DataTransferred += (o, e) =>
-            //     {
-            //         if (e.BytesTransferred == 0)
-            //         {
-            //             return;
-            //         }
-            //
-            //         bytesWritten += (ulong)e.BytesTransferred;
-            //         var pct = bytesWritten == 0 ? 0 : ((double)100 / srcSize) * bytesWritten;
-            //         Console.WriteLine($"{pct} ({bytesWritten} / {srcSize})");
-            //     };
-            //     await vhd.ConvertImgToVhd(srcStream, destStream, Convert.ToInt64(srcSize));
-            //     Console.WriteLine($"Done");
-            //     return;
-            // }
-            //
-            // Console.WriteLine("Img");
-            // buffer = new byte[1024 * 1024];
-            // int bytesRead;
-            // do
-            // {
-            //     bytesRead = await srcStream.ReadAsync(buffer, 0, buffer.Length);
-            //     bytesWritten += (ulong)bytesRead;
-            //     await destStream.WriteAsync(buffer, 0, bytesRead);
-            //
-            //     var pct = bytesWritten == 0 ? 0 : ((double)100 / srcSize) * bytesWritten;
-            //     Console.WriteLine($"{pct}");
-            // } while (bytesRead == buffer.Length);
-            //
-            // Console.WriteLine($"Done");
         }
     }
 }

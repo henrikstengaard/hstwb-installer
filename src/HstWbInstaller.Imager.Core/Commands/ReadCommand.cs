@@ -2,12 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HstWbInstaller.Core;
+    using HstWbInstaller.Core.Extensions;
+    using HstWbInstaller.Core.IO.RigidDiskBlocks;
+    using Microsoft.Extensions.Logging;
 
     public class ReadCommand : CommandBase
     {
+        private readonly ILogger<ReadCommand> logger;
         private readonly ICommandHelper commandHelper;
         private readonly IEnumerable<IPhysicalDrive> physicalDrives;
         private readonly string sourcePath;
@@ -16,9 +22,10 @@
 
         public event EventHandler<DataProcessedEventArgs> DataProcessed;
         
-        public ReadCommand(ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string sourcePath,
+        public ReadCommand(ILogger<ReadCommand> logger, ICommandHelper commandHelper, IEnumerable<IPhysicalDrive> physicalDrives, string sourcePath,
             string destinationPath, long? size = null)
         {
+            this.logger = logger;
             this.commandHelper = commandHelper;
             this.physicalDrives = physicalDrives;
             this.sourcePath = sourcePath;
@@ -26,17 +33,42 @@
             this.size = size;
         }
 
-        public override async Task<Result> Execute()
+        public override async Task<Result> Execute(CancellationToken token)
         {
             var physicalDrivesList = physicalDrives.ToList();
-            using var sourceMedia = commandHelper.GetReadableMedia(physicalDrivesList, sourcePath);
+            var sourceMediaResult = commandHelper.GetReadableMedia(physicalDrivesList, sourcePath);
+            if (sourceMediaResult.IsFaulted)
+            {
+                return new Result(sourceMediaResult.Error);
+            }
+            using var sourceMedia = sourceMediaResult.Value;
             await using var sourceStream = sourceMedia.Stream;
 
-            var rigidDiskBlock = await commandHelper.GetRigidDiskBlock(sourceStream);
+            RigidDiskBlock rigidDiskBlock = null;
+            try
+            {
+                var firstBytes = await sourceStream.ReadBytes(512 * 2048);
+                rigidDiskBlock = await commandHelper.GetRigidDiskBlock(new MemoryStream(firstBytes));
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            
+            var sourceSize = sourceMedia.Size;
+            var readSize = size is > 0 ? size.Value : rigidDiskBlock?.DiskSize ?? sourceSize;
 
-            var readSize = size ?? rigidDiskBlock?.DiskSize ?? sourceStream.Length;
-
-            using var destinationMedia = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, readSize, false);
+            logger.LogDebug($"Size '{(size is > 0 ? size.Value : "N/A")}'");
+            logger.LogDebug($"Source size '{sourceSize}'");
+            logger.LogDebug($"Rigid disk block size '{(rigidDiskBlock == null ? "N/A" : rigidDiskBlock.DiskSize)}'");
+            logger.LogDebug($"Read size '{readSize}'");
+            
+            var destinationMediaResult = commandHelper.GetWritableMedia(physicalDrivesList, destinationPath, readSize, false);
+            if (destinationMediaResult.IsFaulted)
+            {
+                return new Result(destinationMediaResult.Error);
+            }
+            using var destinationMedia = destinationMediaResult.Value;
             await using var destinationStream = destinationMedia.Stream;
 
             var isVhd = commandHelper.IsVhd(destinationPath);
@@ -48,16 +80,20 @@
             var imageConverter = new ImageConverter();
             imageConverter.DataProcessed += (_, e) =>
             {
-                OnDataProcessed(e.PercentComplete, e.BytesProcessed, e.TotalBytesProcessed, e.TotalBytes);
+                OnDataProcessed(e.PercentComplete, e.BytesProcessed, e.BytesRemaining, e.BytesTotal, e.TimeElapsed,
+                    e.TimeRemaining, e.TimeTotal);
             };
-            await imageConverter.Convert(sourceStream, destinationStream, readSize, commandHelper.IsVhd(sourcePath));
+            await imageConverter.Convert(token, sourceStream, destinationStream, readSize, isVhd);
             
             return new Result();
         }
 
-        private void OnDataProcessed(double percentComplete, long bytesProcessed, long totalBytesProcessed, long totalBytes)
+        private void OnDataProcessed(double percentComplete, long bytesProcessed, long bytesRemaining, long bytesTotal,
+            TimeSpan timeElapsed, TimeSpan timeRemaining, TimeSpan timeTotal)
         {
-            DataProcessed?.Invoke(this, new DataProcessedEventArgs(percentComplete, bytesProcessed, totalBytesProcessed, totalBytes));
+            DataProcessed?.Invoke(this,
+                new DataProcessedEventArgs(percentComplete, bytesProcessed, bytesRemaining, bytesTotal, timeElapsed,
+                    timeRemaining, timeTotal));
         }
     }
 }

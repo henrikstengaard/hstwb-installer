@@ -3,8 +3,10 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenInfoCommand : CommandTestBase
@@ -15,15 +17,16 @@
             // arrange
             var path = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper(new[] { path });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // read info from path
-            var infoCommand = new InfoCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
+            var infoCommand = new InfoCommand(new NullLogger<InfoCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
             MediaInfo mediaInfo = null;
             infoCommand.DiskInfoRead += (_, args) =>
             {
                 mediaInfo = args.MediaInfo;
             };
-            var result = await infoCommand.Execute();
+            var result = await infoCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // assert media info
@@ -38,15 +41,16 @@
             // arrange
             var path = Path.Combine("TestData", "rigid-disk-block.img");
             var fakeCommandHelper = new FakeCommandHelper(new[] { path });
+            var cancellationTokenSource = new CancellationTokenSource();
 
             // read info from path
-            var infoCommand = new InfoCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
+            var infoCommand = new InfoCommand(new NullLogger<InfoCommand>(), fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), path);
             MediaInfo mediaInfo = null;
             infoCommand.DiskInfoRead += (_, args) =>
             {
                 mediaInfo = args.MediaInfo;
             };
-            await infoCommand.Execute();
+            await infoCommand.Execute(cancellationTokenSource.Token);
             
             // assert media info
             Assert.NotNull(mediaInfo);

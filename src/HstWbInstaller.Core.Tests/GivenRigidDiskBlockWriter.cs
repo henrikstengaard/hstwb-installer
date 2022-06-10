@@ -1,6 +1,7 @@
 ﻿namespace HstWbInstaller.Core.Tests
 {
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Extensions;
     using IO.RigidDiskBlocks;

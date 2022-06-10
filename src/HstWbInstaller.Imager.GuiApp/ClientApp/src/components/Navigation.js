@@ -1,13 +1,13 @@
-﻿import React from 'react'
+import React from 'react'
 import {useHistory} from 'react-router-dom'
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Toolbar from '@mui/material/Toolbar';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
+// import CssBaseline from '@mui/material/CssBaseline';
+// import Toolbar from '@mui/material/Toolbar';
+// import Divider from '@mui/material/Divider';
+// import IconButton from '@mui/material/IconButton';
 // import MenuIcon from '@mui/icons-material/Menu';
 // import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 // import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -18,8 +18,8 @@ import ListItemText from '@mui/material/ListItemText';
 // import MailIcon from '@mui/icons-material/Mail';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
-const drawerOpenWidth = 160;
-const drawerClosedWidth = 50;
+const drawerOpenWidth = 180;
+const drawerClosedWidth = 62;
 
 const openedMixin = (theme) => ({
     width: drawerOpenWidth,
@@ -61,20 +61,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Navigation() {
     const history = useHistory()
-    const theme = useTheme();
     const [open, setOpen] = React.useState(false);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
     
     const items = [
         {
-            text: 'Main',
+            text: 'Start',
             icon: 'home',
             path: '/'
         },
@@ -114,10 +105,20 @@ export default function Navigation() {
             path: '/optimize'
         },
         {
+            text: 'Partition',
+            icon: 'hdd',
+            path: '/partition'
+        },
+        {
+            text: 'Settings',
+            icon: 'cog',
+            path: '/settings'
+        },
+        {
             text: 'About',
             icon: 'question',
             path: '/about'
-        },
+        }
     ]
     
     const handleOpen = () => {
@@ -138,7 +139,10 @@ export default function Navigation() {
                 {items.map((item, index) => (
                     <ListItem button key={index} onClick={() => handleRedirect(item.path)}>
                         <ListItemIcon>
-                            <FontAwesomeIcon icon={item.icon}/>
+                            <FontAwesomeIcon
+                                icon={item.icon}
+                                style={{ minWidth: '18px' }}
+                            />
                         </ListItemIcon>
                         <ListItemText primary={item.text} />
                     </ListItem>
@@ -146,9 +150,12 @@ export default function Navigation() {
             </List>
             <Box sx={{flexGrow: 1 }} />
             <List >
-                <ListItem button onClick={() => handleOpen()} sx={{ width: '100%'}}>
-                    <ListItemIcon >
-                        <FontAwesomeIcon icon={open ? 'chevron-left' : 'chevron-right'}/>
+                <ListItem button onClick={() => handleOpen()} sx={{ width: '100%' }}>
+                    <ListItemIcon>
+                        <FontAwesomeIcon
+                            icon={open ? 'chevron-left' : 'chevron-right'}
+                            style={{ minWidth: '18px' }}
+                        />
                     </ListItemIcon>
                 </ListItem>
             </List>

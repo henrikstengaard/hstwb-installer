@@ -1,5 +1,4 @@
-﻿import React from 'react'
-import {useHistory} from "react-router-dom"
+import React from 'react'
 import Box from '@mui/material/Box'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -7,9 +6,9 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {ElectronIpc} from "../utils/ElectronIpc"
+import {HSTWB_INSTALLER_VERSION} from '../Constants'
 
 export default function Titlebar() {
-    // const history = useHistory()
     const [maximized, setMaximized] = React.useState(false)
     const electronIpc = new ElectronIpc()
 
@@ -36,15 +35,16 @@ export default function Titlebar() {
         <AppBar
             position="fixed"
             sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 1,
+                zIndex: (theme) => theme.zIndex.drawer + 10000,
                 WebkitAppRegion: 'drag',
                 userSelect: 'none'
-            }}>
-            <Toolbar disableGutters style={{minHeight: '32px'}}>
+            }}
+        >
+            <Toolbar disableGutters style={{minHeight: '32px', padding: '7px'}}>
                 <img src="icons/icon-192x192.png" height="20px" alt="HstWB Installer app icon"
                      style={{paddingLeft: '2px', paddingRight: '2px'}}/>
                 <Typography variant="h1" component="div" sx={{flexGrow: 1}}>
-                    HstWB Imager
+                    HstWB Imager v{HSTWB_INSTALLER_VERSION}
                 </Typography>
                 <Box style={{WebkitAppRegion: 'no-drag'}}>
                     <IconButton

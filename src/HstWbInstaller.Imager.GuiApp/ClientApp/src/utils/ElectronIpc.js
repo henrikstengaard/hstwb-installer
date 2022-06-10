@@ -1,12 +1,11 @@
-﻿import React from 'react'
-
 export class ElectronIpc {
     constructor() {
         if (!window.require) {
             return
         }
-        const { ipcRenderer } = window.require("electron")
+        const { ipcRenderer, shell } = window.require("electron")
         this.ipcRenderer = ipcRenderer
+        this.shell = shell
     }
 
     send({ message } = {}) {
@@ -23,5 +22,12 @@ export class ElectronIpc {
         this.ipcRenderer.on(event, (event, arg) => {
             callback()
         });
+    }
+    
+    async openExternal({ url } = {}) {
+        if (!this.shell) {
+            return
+        }
+        await this.shell.openExternal(url)
     }
 }

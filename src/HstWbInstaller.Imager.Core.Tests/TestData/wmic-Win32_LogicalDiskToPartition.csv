@@ -1,0 +1,4 @@
+﻿
+Node,Antecedent,Dependent,EndingAddress,StartingAddress
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #1, Partition #2",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_LogicalDisk.DeviceID="C:",",512109838335,645922816
+DESKTOP-3LFFCTK,"\\DESKTOP-3LFFCTK\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #0",","\\DESKTOP-3LFFCTK\root\cimv2:Win32_LogicalDisk.DeviceID="D:",",2000397795327,16777216

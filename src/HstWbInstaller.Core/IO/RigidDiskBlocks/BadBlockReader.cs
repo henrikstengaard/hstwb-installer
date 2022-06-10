@@ -61,7 +61,7 @@
             var hostId = await blockStream.ReadUInt32(); // SCSI Target ID of host, not really used
             var nextBadBlock = await blockStream.ReadUInt32(); // next BadBlock block
 
-            var calculatedChecksum = await BlockHelper.CalculateChecksum(blockBytes, 8);
+            var calculatedChecksum = await ChecksumHelper.CalculateChecksum(blockBytes, 8);
 
             if (checksum != calculatedChecksum)
             {

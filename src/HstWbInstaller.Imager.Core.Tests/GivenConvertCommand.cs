@@ -1,11 +1,11 @@
 ﻿namespace HstWbInstaller.Imager.Core.Tests
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Xunit;
 
     public class GivenConvertCommand : CommandTestBase
@@ -17,22 +17,23 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.img";
             var fakeCommandHelper = new FakeCommandHelper(new []{sourcePath}, new []{destinationPath});
+            var cancellationTokenSource = new CancellationTokenSource();
             
             // act - convert source img to destination img
-            var convertCommand = new ConvertCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath);
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, sourcePath, destinationPath);
             DataProcessedEventArgs dataProcessedEventArgs = null;
             convertCommand.DataProcessed += (_, args) =>
             {
                 dataProcessedEventArgs = args;
             };
-            var result = await convertCommand.Execute();
+            var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
             
             Assert.NotNull(dataProcessedEventArgs);
             Assert.NotEqual(0, dataProcessedEventArgs.PercentComplete);
             Assert.NotEqual(0, dataProcessedEventArgs.BytesProcessed);
-            Assert.NotEqual(0, dataProcessedEventArgs.TotalBytesProcessed);
-            Assert.NotEqual(0, dataProcessedEventArgs.TotalBytes);
+            Assert.Equal(0, dataProcessedEventArgs.BytesRemaining);
+            Assert.NotEqual(0, dataProcessedEventArgs.BytesTotal);
 
             // assert data is identical
             var sourceBytes = fakeCommandHelper.GetMedia(sourcePath).GetBytes();
@@ -48,10 +49,11 @@
             var destinationPath = $"{Guid.NewGuid()}.img";
             var size = 16 * 512;
             var fakeCommandHelper = new FakeCommandHelper(new []{sourcePath}, new []{destinationPath});
+            var cancellationTokenSource = new CancellationTokenSource();
             
             // act - convert source img to destination img
-            var convertCommand = new ConvertCommand(fakeCommandHelper, new List<IPhysicalDrive>(), sourcePath, destinationPath, size);
-            var result = await convertCommand.Execute();
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, sourcePath, destinationPath, size);
+            var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // assert data is identical within defined size
@@ -68,10 +70,11 @@
             var sourcePath = $"{Guid.NewGuid()}.img";
             var destinationPath = $"{Guid.NewGuid()}.vhd";
             var fakeCommandHelper = new FakeCommandHelper(new []{sourcePath}, new []{destinationPath});
+            var cancellationTokenSource = new CancellationTokenSource();
             
             // act - read source img to destination vhd
-            var convertCommand = new ConvertCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath);
-            var result = await convertCommand.Execute();
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, sourcePath, destinationPath);
+            var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // get source bytes
@@ -97,10 +100,11 @@
             var destinationPath = $"{Guid.NewGuid()}.vhd";
             var size = 16 * 512;
             var fakeCommandHelper = new FakeCommandHelper(new []{sourcePath}, new []{destinationPath});
+            var cancellationTokenSource = new CancellationTokenSource();
             
             // act - read source img to destination vhd
-            var convertCommand = new ConvertCommand(fakeCommandHelper, Enumerable.Empty<IPhysicalDrive>(), sourcePath, destinationPath, size);
-            var result = await convertCommand.Execute();
+            var convertCommand = new ConvertCommand(new NullLogger<ConvertCommand>(), fakeCommandHelper, sourcePath, destinationPath, size);
+            var result = await convertCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             // get source bytes

@@ -117,7 +117,7 @@
 
             // calculate and update checksum
             var blockBytes = blockStream.ToArray();
-            rigidDiskBlock.Checksum = await BlockHelper.UpdateChecksum(blockBytes, 8);
+            rigidDiskBlock.Checksum = await ChecksumHelper.UpdateChecksum(blockBytes, 8);
             rigidDiskBlock.BlockBytes = blockBytes;
 
             return blockBytes;

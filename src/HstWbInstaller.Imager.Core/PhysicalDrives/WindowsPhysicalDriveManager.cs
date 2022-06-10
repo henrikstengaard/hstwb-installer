@@ -2,83 +2,77 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
-    using CsvHelper;
-    using CsvHelper.Configuration;
+    using HstWbInstaller.Core.Extensions;
+    using Microsoft.Extensions.Logging;
     using Models;
 
     public class WindowsPhysicalDriveManager : IPhysicalDriveManager
     {
-        private readonly bool fake;
+        private readonly ILogger<WindowsPhysicalDriveManager> logger;
 
-        public WindowsPhysicalDriveManager(bool fake = false)
+        public WindowsPhysicalDriveManager(ILogger<WindowsPhysicalDriveManager> logger)
         {
-            this.fake = fake;
+            this.logger = logger;
         }
 
         public async Task<IEnumerable<IPhysicalDrive>> GetPhysicalDrives()
         {
-            var wmicDiskDrives = (await GetWmicDiskDrives()).ToList();
-
-            var removableMedias = wmicDiskDrives.Where(x =>
-                x.MediaType.Equals("Removable Media", StringComparison.OrdinalIgnoreCase) ||
-                x.MediaType.Equals("External hard disk media", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (fake)
-            {
-                    return removableMedias.Select(x => new FakePhysicalDrive(x.Name, x.MediaType, x.Model, x.Size))
-                        .ToList();
-            }
-            
-            return removableMedias.Select(x => new WindowsPhysicalDrive(x.Name, x.MediaType, x.Model, x.Size));
-        }
-
-        private async Task<string> GetWmicCsv()
-        {
-            if (fake && File.Exists("fake-wmic.csv"))
-            {
-                return await File.ReadAllTextAsync("fake-wmic.csv");
-            }
-
             if (!OperatingSystem.IsWindows())
             {
                 throw new NotSupportedException("Windows physical drive manager is not running on Windows environment");
             }
 
-            var process = Process.Start(
-                new ProcessStartInfo("wmic", "diskdrive list /format:csv")
-                {
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                });
+            var wmicDiskDriveListCsv = await GetWmicDiskDriveListCsv();
+            var wmicWin32DiskDriveToDiskPartitionsCsv = await GetWmicWin32DiskDriveToDiskPartitionPath();
+            var wmicWin32LogicalDiskToPartitionsCsv = await GetWmicWin32LogicalDiskToPartitionPath();
 
-            if (process == null)
-            {
-                throw new NotSupportedException("Failed to run wmic");
-            }
+            var wmicDiskDrives = WmicReader.ParseWmicCsv<WmicDiskDrive>(wmicDiskDriveListCsv).ToList();
+            var wmicDiskDriveToDiskPartitions =
+                WmicReader.ParseWmicDiskDriveToDiskPartitions(wmicWin32DiskDriveToDiskPartitionsCsv).ToList();
+            var wmicLogicalDiskToPartitions =
+                WmicReader.ParseWmicLogicalDiskToPartitions(wmicWin32LogicalDiskToPartitionsCsv).ToList();
 
-            return await process.StandardOutput.ReadToEndAsync();
+            var removableMedias = wmicDiskDrives.Where(x =>
+                    x.MediaType.Equals("Removable Media", StringComparison.OrdinalIgnoreCase) ||
+                    x.MediaType.Equals("External hard disk media", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return removableMedias.Select(x =>
+                CreatePhysicalDrive(x, wmicDiskDriveToDiskPartitions, wmicLogicalDiskToPartitions));
         }
 
-        private async Task<IEnumerable<WmicDiskDrive>> GetWmicDiskDrives()
+        private IPhysicalDrive CreatePhysicalDrive(WmicDiskDrive wmicDiskDrive,
+            IEnumerable<WmicDiskDriveToDiskPartition> wmicDiskDriveToDiskPartitions,
+            IEnumerable<WmicLogicalDiskToPartition> wmicLogicalDiskToPartitions)
         {
-            var wmicCsv = await GetWmicCsv();
+            var driveLetters = wmicDiskDriveToDiskPartitions.Where(x => x.Antecedent == wmicDiskDrive.Name)
+                .Join(wmicLogicalDiskToPartitions, disk => disk.Dependent, logical => logical.Antecedent,
+                    (_, logical) => logical.Dependent);
+            return new WindowsPhysicalDrive(wmicDiskDrive.Name, wmicDiskDrive.MediaType, wmicDiskDrive.Model,
+                wmicDiskDrive.Size ?? 0, driveLetters);
+        }
 
-            using var csv = new CsvReader(new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(wmicCsv))),
-                new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = ",",
-                    Encoding = Encoding.UTF8
-                });
+        private async Task<string> GetWmicDiskDriveListCsv()
+        {
+            var output = await "wmic".RunProcessAsync("diskdrive list /format:csv");
+            logger.LogDebug(output);
+            return output;
+        }
 
-            return csv.GetRecords<WmicDiskDrive>().ToList();
+        private async Task<string> GetWmicWin32DiskDriveToDiskPartitionPath()
+        {
+            var output = await "wmic".RunProcessAsync("path Win32_DiskDriveToDiskPartition get * /format:csv");
+            logger.LogDebug(output);
+            return output;
+        }
+
+        private async Task<string> GetWmicWin32LogicalDiskToPartitionPath()
+        {
+            var output = await "wmic".RunProcessAsync("path Win32_LogicalDiskToPartition get * /format:csv");
+            logger.LogDebug(output);
+            return output;
         }
     }
 }

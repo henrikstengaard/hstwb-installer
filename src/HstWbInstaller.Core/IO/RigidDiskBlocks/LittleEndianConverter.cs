@@ -22,11 +22,18 @@
         {
             return Ascii.GetBytes(value);
         }
-        
+
         // convert iso-8859-1 bytes to string
-        public static string ConvertToIso88591String(byte[] bytes)
+        public static string ConvertToIso88591String(byte[] bytes, int length = 0)
         {
-            return Iso88591.GetString(bytes);
+            if (length == 0)
+            {
+                return Iso88591.GetString(bytes);
+            }
+
+            var stringBytes = new byte[length];
+            Array.Copy(bytes, 0, stringBytes, 0, length);
+            return Iso88591.GetString(stringBytes);
         }
 
         // convert string to iso-8859-1 bytes
@@ -34,19 +41,55 @@
         {
             return Iso88591.GetBytes(value);
         }
-        
+
+        // convert bytes from little endian to int16
+        public static short ConvertToInt16(byte[] bytes)
+        {
+            Array.Reverse(bytes);
+            return BitConverter.ToInt16(bytes, 0);
+        }
+
+        // convert bytes from little endian to uint16
+        public static ushort ConvertToUInt16(byte[] bytes)
+        {
+            Array.Reverse(bytes);
+            return BitConverter.ToUInt16(bytes, 0);
+        }
+
         // convert bytes from little endian to int32
         public static int ConvertToInt32(byte[] bytes)
         {
             Array.Reverse(bytes);
             return BitConverter.ToInt32(bytes, 0);
         }
-        
+
         // convert bytes from little endian to uint32
         public static uint ConvertToUInt32(byte[] bytes)
         {
             Array.Reverse(bytes);
             return BitConverter.ToUInt32(bytes, 0);
+        }
+
+        public static byte[] ConvertToBytes(short value)
+        {
+            var bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
+            return bytes;
+        }
+        
+        // convert uint16 to little endian bytes 
+        public static byte[] ConvertToBytes(ushort value)
+        {
+            var bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
+            return bytes;
+        }
+
+        public static byte[] ConvertToBytes(int value)
+        {
+            var bytes = BitConverter.GetBytes(value);
+            Array.Reverse(bytes);
+            return bytes;
         }
         
         // convert uint32 to little endian bytes 
@@ -55,14 +98,27 @@
             var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return bytes;
-        }        
-        
-        // convert int32 to little endian bytes 
-        public static byte[] ConvertToBytes(int value)
-        {
-            var bytes = BitConverter.GetBytes(value);
-            Array.Reverse(bytes);
-            return bytes;
         }
+
+        
+        
+        /*
+         * # get little endian unsigned short bytes
+function GetLittleEndianUnsignedShortBytes([uint16]$value)
+{
+	$bytes =[System.BitConverter]::GetBytes($value)
+	[Array]::Reverse($bytes)
+	return ,$bytes 
+}
+
+# get little endian unsigned long bytes
+function GetLittleEndianUnsignedLongBytes([uint32]$value)
+{
+	$bytes =[System.BitConverter]::GetBytes($value)
+	[Array]::Reverse($bytes)
+	return ,$bytes
+}
+
+         */
     }
 }

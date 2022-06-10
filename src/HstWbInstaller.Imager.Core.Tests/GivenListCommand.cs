@@ -3,8 +3,10 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Commands;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Models;
     using PhysicalDrives;
     using Xunit;
@@ -19,14 +21,15 @@
                 new FakePhysicalDrive("Path", "Type", "Model", 8192)
             };
             var fakeCommandHelper = new FakeCommandHelper();
+            var cancellationTokenSource = new CancellationTokenSource();
             
-            var listCommand = new ListCommand(fakeCommandHelper, physicalDrives);
+            var listCommand = new ListCommand(new NullLogger<ListCommand>(), fakeCommandHelper, physicalDrives);
             IEnumerable<MediaInfo> mediaInfos = null;
             listCommand.ListRead += (sender, args) =>
             {
                 mediaInfos = args?.MediaInfos;
             };
-            var result = await listCommand.Execute();
+            var result = await listCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             var mediaInfosList = mediaInfos.ToList();
@@ -51,14 +54,15 @@
                 new FakePhysicalDrive(path, "Type", "Model", await File.ReadAllBytesAsync(path))
             };
             var fakeCommandHelper = new FakeCommandHelper(new[] { path });
+            var cancellationTokenSource = new CancellationTokenSource();
             
-            var listCommand = new ListCommand(fakeCommandHelper, physicalDrives);
+            var listCommand = new ListCommand(new NullLogger<ListCommand>(), fakeCommandHelper, physicalDrives);
             IEnumerable<MediaInfo> mediaInfos = null;
             listCommand.ListRead += (sender, args) =>
             {
                 mediaInfos = args?.MediaInfos;
             };
-            var result = await listCommand.Execute();
+            var result = await listCommand.Execute(cancellationTokenSource.Token);
             Assert.True(result.IsSuccess);
 
             var mediaInfosList = mediaInfos.ToList();

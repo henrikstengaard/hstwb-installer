@@ -1,0 +1,1 @@
+﻿https://www.fileformat.info/format/iff/egff.htm
