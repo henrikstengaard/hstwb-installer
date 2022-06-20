@@ -1,35 +1,12 @@
 ﻿namespace HstWbInstaller.Core.IO.Info
 {
     using System.Linq;
+    using Images.Bitmap;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
 
     public static class NewIconHelper
     {
-        public static Image<Rgba32> ConvertToImage(NewIcon newIcon)
-        {
-            var pixelData = new byte[newIcon.Width * newIcon.Height * 4];
-
-            var pixelDataOffset = 0;
-            var imagePixelsOffset = 0;
-            for (var y = 0; y < newIcon.Height; y++)
-            {
-                for (var x = 0; x < newIcon.Width; x++)
-                {
-                    var pixel = newIcon.ImagePixels[imagePixelsOffset++];
-                    var color = newIcon.Palette[pixel];
-
-                    pixelData[pixelDataOffset] = color[0]; // r
-                    pixelData[pixelDataOffset + 1] = color[1]; // g
-                    pixelData[pixelDataOffset + 2] = color[2]; // b
-                    pixelData[pixelDataOffset + 3] = color[3]; // a
-
-                    pixelDataOffset += 4;
-                }
-            }
-
-            return Image.LoadPixelData<Rgba32>(pixelData, newIcon.Width, newIcon.Height);
-        }
 
         public static void SetNewIconImage(DiskObject diskObject, int imageNumber, NewIcon newIcon)
         {
@@ -55,19 +32,26 @@
                 textDatas.Add(newIconHeaderTextData);
             }
             
-            var encoder = new NewIconToolTypesEncoder(imageNumber, newIcon.Width, newIcon.Height, newIcon.Depth,
-                newIcon.Transparent);
-            encoder.EncodePalette(newIcon.Palette);
-            encoder.EncodeImage(newIcon.ImagePixels);
+            // var encoder = new IConverterNewIconAsciiEncoder(imageNumber, newIcon);
+            // var newIconTextDatas = encoder.Encode().ToList();
+            var newIconTextDatas = NewIconToolTypesEncoder2.Encode(imageNumber, newIcon).ToList();
+
+            var decoder = new NewIconToolTypesDecoder(newIconTextDatas);
+            var n = decoder.Decode(imageNumber);
+            var b = NewIconDecoder.DecodeToBitmap(n);
+            var stream = System.IO.File.OpenWrite("decoded.bmp");
+            BitmapImageWriter.Write(stream, b);
+            
+            
 
             var newIconHeaderIndex = textDatas.IndexOf(newIconHeaderTextData);
             if (newIconHeaderIndex <= 0 && imageNumber == 1)
             {
-                textDatas.InsertRange(newIconHeaderIndex + 1, encoder.GetToolTypes());
+                textDatas.InsertRange(newIconHeaderIndex + 1, newIconTextDatas);
             }
             else
             {
-                textDatas.AddRange(encoder.GetToolTypes());
+                textDatas.AddRange(newIconTextDatas);
             }
             
             diskObject.ToolTypes.TextDatas = textDatas;

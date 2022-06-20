@@ -194,216 +194,23 @@
             {
                 for (var x = 0; x < newIcon.Width; x++)
                 {
+                    if (imagePixelsOffset >= newIcon.ImagePixels.Length)
+                    {
+                        continue;
+                    }
+
+                    if (offset >= decoded.Count)
+                    {
+                        continue;
+                    }
+                    
                     newIcon.ImagePixels[imagePixelsOffset++] = decoded[offset++];
                 }
             }
 
             return newIcon;
         }
-
-        // public NewIcon Decode()
-        // {
-        //     if (newIcon != null)
-        //     {
-        //         return newIcon;
-        //     }
-        //     
-        //     
-        //     
-        //     
-        //     
-        //     
-        //
-        //     newIcon = new NewIcon
-        //     {
-        //         Transparent = img[0] == 66,
-        //         Width = img[1] - 0x21,
-        //         Height = img[2] - 0x21
-        //     };
-        //     var paletteEntries = ((img[3] - 0x21) << 6) + (img[4] - 0x21);
-        //     newIcon.Depth = (int)Math.Ceiling(Math.Log(paletteEntries) / Math.Log(2));
-        //     
-        //     
-        //     var depth = 0;
-        //     var rest = paletteEntries-1;
-        //     while ( rest > 0 ) {
-        //         rest = rest >> 1;
-        //         depth++;
-        //     }
-        //     if ( depth == 0 ) depth = 1;	/*** If ncolors was 1 */
-        //     if ( depth > 8 ) {
-        //         depth = 8;	/*** If ncolors was greater than 256 */
-        //         paletteEntries = 256;
-        //     }
-        //     
-        //     dataindex += 5;
-        //
-        //     InitData7();
-        //     
-        //     var palette = new List<byte[]>();
-        //     for (var p = 0; p < paletteEntries; p++)
-        //     {
-        //         var r = ReadBits7(8);
-        //         var g = ReadBits7(8);
-        //         var b = ReadBits7(8);
-        //         var color = new byte[3];
-        //         palette24(color, r, g, b);
-        //         palette.Add(color);
-        //     }
-        //     
-        //     while (img[dataindex] != 0 && img[dataindex + 1] != 0 && img[dataindex + 2] != 0)
-        //     {
-        //         var r = ReadBits7(8);
-        //         var g = ReadBits7(8);
-        //         var b = ReadBits7(8);
-        //         var color = new byte[3];
-        //         palette24(color, r, g, b);
-        //         palette.Add(color);
-        //     }
-        //
-        //     newIcon.Palette = palette.ToArray();
-        //
-        //     while (img[dataindex] != 0)
-        //     {
-        //         dataindex++;
-        //     } 
-        //     dataindex++;
-        //     
-        //     newIcon.ImagePixels = new byte[newIcon.Width][];
-        //     for (var x = 0; x < newIcon.Width; x++)
-        //     {
-        //         newIcon.ImagePixels[x] = new byte[newIcon.Height];
-        //     }
-        //
-        //     // read the image
-        //     InitData7();
-        //     // for (var y = 0; y < newIcon.Height; y++)
-        //     // {
-        //     //     newIcon.ImagePixels[y] = new byte[newIcon.Width];
-        //     //     for (var x = 0; x < newIcon.Width; x++)
-        //     //     {
-        //     //         newIcon.ImagePixels[y][x] = ReadBits7(newIcon.Depth);
-        //     //         // newIcon.ImagePixels[x][y] = ReadBits7(newIcon.Depth);
-        //     //     }
-        //     // }
-        //     for (var y = 0; y < newIcon.Height; y++)
-        //     {
-        //         for (var x = 0; x < newIcon.Width; x++)
-        //         {
-        //             newIcon.ImagePixels[x][y] = ReadBits7(newIcon.Depth);
-        //             // newIcon.ImagePixels[x][y] = ReadBits7(newIcon.Depth);
-        //         }
-        //     }
-        //     
-        //     return newIcon;
-        // }
-
-//         private void InitData7()
-//         {
-//             datastart = dataindex;
-//             bitsleft = 7;
-//             datanleft = 0;
-//         }
-//         
-//         private byte ReadBits7(int depth)
-//         {
-//             //unsigned char c;
-//             int bits;
-//
-//             if (bitsleft == 0)
-//             {
-//                 bitsleft = 7;
-//                 DataAdvance7();
-//             }
-//
-//             if (bitsleft >= depth)
-//             {
-//                 bitsleft -= depth;
-//                 bits = (ReadChar7() >> bitsleft) & ((1 << depth) - 1);
-//             }
-//             else
-//             {
-//                 bits = (ReadChar7() << (depth - bitsleft)) & ((1 << depth) - 1);
-//                 bitsleft = bitsleft + 7 - depth;
-//                 if (DataAdvance7())
-//                 {
-//                     bitsleft -= depth;
-//                     bits = (ReadChar7() >> bitsleft) & ((1 << depth) - 1);
-//                 }
-//                 bits |= (ReadChar7() >> bitsleft) & ((1 << depth) - 1);
-//             }
-//
-//             var t = (byte)bits;
-//
-//             if (t != bits)
-//             {
-//                 
-//             }
-//             
-//             return (byte)bits;
-//         }
-//
-//         private byte ReadChar7()
-//         {
-//             if (datanleft > 0)
-//             {
-// // printf("datanleft: %d ", datanleft);
-//                 return 0;
-//             }
-//
-//             if (dataindex >= img.Length)
-//             {
-//                 return 0;
-//             }
-//
-//             if (img[dataindex] < 0x80)
-//             {
-//                 return (byte)(img[dataindex] - 0x20);
-//             }
-//             if (img[dataindex] <= 0xd0)
-//             {
-//                 return (byte)(img[dataindex] - 0xa1 + 0x50);
-//             }
-//             datanleft = img[dataindex] - 0xd0;
-//             return 0;
-//         }
-//         
-//         private int FinishData7()
-//         {
-//             dataindex++;
-//             return dataindex - datastart;
-//         }
-//
-//         private bool DataAdvance7()
-//         {
-//             // advance to the next data character
-//             // unless we have RLE zero bytes to process
-//             if (datanleft > 1)
-//             {
-//                 datanleft--;
-//                 return false;
-//             }
-//             datanleft = 0;
-//
-//             dataindex++;
-//
-//             if (dataindex >= img.Length)
-//             {
-//                 return false;
-//             }
-//             
-//             if (img[dataindex] == 0)
-//             {
-//                 // skip to the next tooltype (no error checking... sorry)
-//                 //dataindex += 9;
-//                 dataindex++;
-//                 bitsleft = 7;
-//                 // indicate buffered bits need to be flushed
-//                 return true;
-//             }
-//             return false;
-//         }
-
+        
         private void palette8(byte[] color, int l)
         {
             // if (l < 10)

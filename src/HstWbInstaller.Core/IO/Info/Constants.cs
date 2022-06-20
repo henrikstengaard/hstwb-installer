@@ -18,6 +18,7 @@
 
         public static class NewIcon
         {
+            public const int MAX_STRING_LENGTH = 127;
             public const string Header = "*** DON'T EDIT THE FOLLOWING LINES!! ***";
         }
     }

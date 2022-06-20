@@ -11,7 +11,6 @@
     using System.Threading.Tasks;
     using Extensions;
     using RigidDiskBlocks;
-
     
     public static class IffImageWriter
     {
@@ -23,7 +22,7 @@
         /// <param name="pack"></param>
         public static async Task Write(Stream stream, Image image, bool pack = true)
         {
-            var data = await BuildIlbmImage(image as Bitmap, pack);
+            var data = await BuildIlbmImage(image as System.Drawing.Bitmap, pack);
             await stream.WriteBytes(data);
         }
 
@@ -275,7 +274,7 @@
         /// <param name="depth"></param>
         /// <param name="bpr"></param>
         /// <returns></returns>
-        public static IEnumerable<byte[]> ConvertPlanar(Bitmap image, int depth, int bpr)
+        public static IEnumerable<byte[]> ConvertPlanar(System.Drawing.Bitmap image, int depth, int bpr)
         {
             var rect = Rectangle.FromLTRB(0, 0, image.Width, image.Height);
             var imageData = image.LockBits(rect, ImageLockMode.ReadOnly, image.PixelFormat);
@@ -323,7 +322,7 @@
         /// <param name="depth"></param>
         /// <param name="pack"></param>
         /// <returns></returns>
-        public static async Task<byte[]> BuildBodyChunk(Bitmap image, int depth, bool pack)
+        public static async Task<byte[]> BuildBodyChunk(System.Drawing.Bitmap image, int depth, bool pack)
         {
             // Get planar bitmap.
             var bpr = CalculateBpr(image.Width);
@@ -351,7 +350,7 @@
         }
 
         // cfreate ilbm image
-        public static async Task<byte[]> BuildIlbmImage(Bitmap image, bool pack)
+        public static async Task<byte[]> BuildIlbmImage(System.Drawing.Bitmap image, bool pack)
         {
             if (!(image.PixelFormat == PixelFormat.Format4bppIndexed ||
                   image.PixelFormat == PixelFormat.Format8bppIndexed))

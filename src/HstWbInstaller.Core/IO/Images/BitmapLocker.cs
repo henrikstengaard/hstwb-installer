@@ -12,7 +12,7 @@
     public class BitmapLocker : IDisposable
     {
         //private properties
-        Bitmap bitmap = null;
+        System.Drawing.Bitmap bitmap = null;
         BitmapData bitmapData = null;
         private byte[] imageData = null;
 
@@ -93,7 +93,7 @@
         }
 
         //Constructor
-        public BitmapLocker(Bitmap source)
+        public BitmapLocker(System.Drawing.Bitmap source)
         {
             IsLocked = false;
             IntegerPointer = IntPtr.Zero;

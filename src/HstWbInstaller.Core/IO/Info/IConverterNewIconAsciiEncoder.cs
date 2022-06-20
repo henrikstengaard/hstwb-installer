@@ -1,23 +1,25 @@
 ﻿namespace HstWbInstaller.Core.IO.Info
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
-    public class NewIconToolTypesEncoder
+    /// <summary>
+    /// iconverter ported new icon ascii encoder. currently limited to 128 colors due to encoding issues
+    /// </summary>
+    public class IConverterNewIconAsciiEncoder
     {
         private readonly int imageNumber;
-        private readonly int width;
-        private readonly int height;
-        private readonly int depth;
-        public const int MAX_STRING_LENGTH = 127;
 
+        private readonly NewIcon newIcon;
+        
         private readonly List<TextData> toolTypes;
         private readonly List<byte> currentLine;
-        private int BytesLeft => MAX_STRING_LENGTH - currentLine.Count - (bitsleft < 7 ? 1 : 0);
+        private int BytesLeft => Constants.NewIcon.MAX_STRING_LENGTH - currentLine.Count - (bitsleft < 7 ? 1 : 0);
         private int bitsleft;
         private byte currentValue;
 
-        public NewIconToolTypesEncoder(int imageNumber, int width, int height, int depth, bool transparent)
+        public IConverterNewIconAsciiEncoder(int imageNumber, NewIcon newIcon)
         {
             // if (width > 93)
             // {
@@ -30,26 +32,32 @@
             // }
             
             this.imageNumber = imageNumber;
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
+            this.newIcon = newIcon;
             toolTypes = new List<TextData>();
-            currentLine = new List<byte>(LineHeader(imageNumber));
-            
-            // header
-            currentLine.Add((byte)(transparent ? 66 : 67));
-            currentLine.Add((byte)(0x21 + width));
-            currentLine.Add((byte)(0x21 + height));
-            
+            currentLine = new List<byte>(LineHeader(imageNumber))
+            {
+                // header
+                (byte)(newIcon.Transparent ? 66 : 67),
+                (byte)(0x21 + newIcon.Width),
+                (byte)(0x21 + newIcon.Height)
+            };
+
             bitsleft = 7;
             currentValue = 0;
         }
 
-        public void EncodePalette(byte[][] palette)
+        public IEnumerable<TextData> Encode()
+        {
+            EncodePalette(newIcon.Palette);
+            EncodeImage(newIcon.ImagePixels);
+            return toolTypes.ToList();
+        }
+
+        private void EncodePalette(byte[][] palette)
         {
             // palette entries
-            currentLine.Add(0x21);
-            currentLine.Add((byte)(0x21 + palette.Length));
+            currentLine.Add((byte)(0x21 + (palette.Length >> 6)));
+            currentLine.Add((byte)(0x21 + (palette.Length & 0x3f)));
 
             // encode palette
             for (var p = 0; p < palette.Length; p++)
@@ -63,12 +71,12 @@
             Flush();
         }
 
-        public void EncodeImage(byte[] imagePixels)
+        private void EncodeImage(byte[] imagePixels)
         {
             var offset = 0;
-            for (var y = 0; y < height; y++)
+            for (var y = 0; y < newIcon.Height; y++)
             {
-                for (var x = 0; x < width; x++)
+                for (var x = 0; x < newIcon.Width; x++)
                 {
                     EncodePixel(imagePixels[offset++]);
                 }
@@ -77,17 +85,12 @@
             Flush();
         }
 
-        public IEnumerable<TextData> GetToolTypes()
-        {
-            return toolTypes;
-        }
-
         public void Add(byte value)
         {
             currentLine.Add(value);
         }
 
-        public void EncodeColorComponent(byte value)
+        private void EncodeColorComponent(byte value)
         {
             if (BytesLeft <= 0)
             {
@@ -117,11 +120,11 @@
             }
         }
 
-        public void EncodePixel(byte value)
+        private void EncodePixel(byte value)
         {
-            if (bitsleft < depth)
+            if (bitsleft < newIcon.Depth)
             {
-                currentValue |= (byte)(value >> (depth - bitsleft));
+                currentValue |= (byte)(value >> (newIcon.Depth - bitsleft));
                 bitsleft += 7;
                 
                 EncodeBits(ref currentValue, BytesLeft);
@@ -130,10 +133,10 @@
                 currentValue = 0;
             }
 
-            bitsleft -= depth;
+            bitsleft -= newIcon.Depth;
             currentValue |= (byte)((value << bitsleft) & 0x7f);
 
-            if (BytesLeft == 0 && bitsleft < depth)
+            if (BytesLeft == 0 && bitsleft < newIcon.Depth)
             {
                 Flush();
                 //var stringlen = 128 - bytesleft;
@@ -145,8 +148,8 @@
                 // bitsleft = 0;
             }
         }
-        
-        public void Flush()
+
+        private void Flush()
         {
             if (bitsleft < 7)
             {
@@ -157,7 +160,7 @@
             Next();
         }
 
-        public void Next()
+        private void Next()
         {
             // add tool types line termination
             currentLine.Add(0);

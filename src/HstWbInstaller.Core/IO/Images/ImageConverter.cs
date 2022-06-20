@@ -16,11 +16,11 @@
                 _ => -1
             };
 
-        public static Bitmap ConvertTo4BppIndexedImage(Bitmap image, PixelFormat format)
+        public static System.Drawing.Bitmap ConvertTo4BppIndexedImage(System.Drawing.Bitmap image, PixelFormat format)
         {
             var colorMap = new Dictionary<string, Color>();
 
-            var destImage = new Bitmap(image.Width, image.Height, format);
+            var destImage = new System.Drawing.Bitmap(image.Width, image.Height, format);
 
             var maxColors = GetMaxColors(format);
             

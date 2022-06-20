@@ -2,10 +2,8 @@
 {
     using System.IO;
     using System.Threading.Tasks;
+    using IO.Images.Bitmap;
     using IO.Info;
-    using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.Formats.Png;
-    using SixLabors.ImageSharp.PixelFormats;
     using Xunit;
 
     public class GivenNewIconToolTypesDecoder : InfoTestBase
@@ -15,12 +13,12 @@
         {
             // arrange - paths
             var newIconPath = @"TestData\Info\Flashback.newicon";
-            var expectedNewIconImagePath = @"TestData\Info\Flashback-image1.png";
+            var expectedBitmapImagePath = @"TestData\Info\Flashback-image1.bmp";
             var imageNumber = 1;
 
-            // arrange - read expected image
-            await using var imageStream = File.OpenRead(expectedNewIconImagePath);
-            var expectedImage = await Image.LoadAsync<Rgba32>(imageStream, new PngDecoder());
+            // arrange - read bitmap image
+            await using var imageStream = File.OpenRead(expectedBitmapImagePath);
+            var bitmapImage = BitmapImageReader.Read(imageStream);
 
             // arrange - read disk object with new icon
             var diskObject = await DiskObjectReader.Read(File.OpenRead(newIconPath));
@@ -31,9 +29,8 @@
             // act - decode image number 1
             var newIcon = decoder.Decode(imageNumber);
 
-            // assert - new icon image is equal to expected image
-            var image = NewIconHelper.ConvertToImage(newIcon);
-            AssertEqual(expectedImage, image);
+            // assert - bitmap image is equal to new icon image
+            AssertEqual(bitmapImage, newIcon);
         }
 
         [Fact]
@@ -41,12 +38,12 @@
         {
             // arrange - paths
             var newIconPath = @"TestData\Info\Flashback.newicon";
-            var expectedNewIconImagePath = @"TestData\Info\Flashback-image2.png";
+            var expectedBitmapImagePath = @"TestData\Info\Flashback-image2.bmp";
             var imageNumber = 2;
 
-            // arrange - read expected image
-            await using var imageStream = File.OpenRead(expectedNewIconImagePath);
-            var expectedImage = await Image.LoadAsync<Rgba32>(imageStream, new PngDecoder());
+            // arrange - read bitmap image
+            await using var imageStream = File.OpenRead(expectedBitmapImagePath);
+            var bitmapImage = BitmapImageReader.Read(imageStream);
 
             // arrange - read disk object with new icon
             var diskObject = await DiskObjectReader.Read(File.OpenRead(newIconPath));
@@ -57,9 +54,8 @@
             // act - decode image number 2
             var newIcon = decoder.Decode(imageNumber);
 
-            // assert - new icon image is equal to expected image
-            var image = NewIconHelper.ConvertToImage(newIcon);
-            AssertEqual(expectedImage, image);
+            // assert - bitmap image is equal to new icon image
+            AssertEqual(bitmapImage, newIcon);
         }
     }
 }

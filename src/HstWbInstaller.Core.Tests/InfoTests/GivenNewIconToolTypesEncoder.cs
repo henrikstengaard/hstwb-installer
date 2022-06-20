@@ -1,14 +1,18 @@
 ﻿namespace HstWbInstaller.Core.Tests.InfoTests
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using IO.Images.Bitmap;
     using IO.Info;
-    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.Formats.Bmp;
     using SixLabors.ImageSharp.Formats.Png;
     using SixLabors.ImageSharp.PixelFormats;
     using Xunit;
+    using Constants = IO.Info.Constants;
+    using Image = SixLabors.ImageSharp.Image;
 
     public class GivenNewIconToolTypesEncoder
     {
@@ -44,7 +48,7 @@
             };
 
             // arrange - load iconverter created newicon info
-            await using var stream = File.OpenRead(@"TestData\Info\Drawer-NewIcon.info");
+            await using var stream = File.OpenRead(@"TestData\Info\Drawer-NewIcon-IConverter.info");
             var diskObject = await DiskObjectReader.Read(stream);
 
             // arrange - get im1 tooltypes
@@ -52,35 +56,209 @@
                 diskObject.ToolTypes.TextDatas.Where(
                     x => x.Size >= 4 && Encoding.ASCII.GetString(x.Data, 0, 4) == "IM1=").ToList();
 
-            // act - encode palette, image pixels and get tool types
-            var encoder = new NewIconToolTypesEncoder(imageNumber, width, height, depth, false);
-            encoder.EncodePalette(palette);
-            encoder.EncodeImage(imagePixels);
-            var toolTypes = encoder.GetToolTypes().ToList();
-
-            // assert - tool types are equal 
-            Assert.Equal(expectedToolTypes.Count, toolTypes.Count);
-            for (var i = 0; i < expectedToolTypes.Count; i++)
-            {
-                Assert.Equal(expectedToolTypes[i].Size, toolTypes[i].Size);
-                Assert.Equal(expectedToolTypes[i].Data, toolTypes[i].Data);
-            }
+            // // act - encode palette, image pixels and get tool types
+            // var encoder = new NewIconToolTypesEncoder(imageNumber, width, height, depth, false);
+            // encoder.EncodePalette(palette);
+            // encoder.EncodeImage(imagePixels);
+            // var toolTypes = encoder.GetToolTypes().ToList();
+            //
+            // // assert - tool types are equal 
+            // Assert.Equal(expectedToolTypes.Count, toolTypes.Count);
+            // for (var i = 0; i < expectedToolTypes.Count; i++)
+            // {
+            //     Assert.Equal(expectedToolTypes[i].Size, toolTypes[i].Size);
+            //     Assert.Equal(expectedToolTypes[i].Data, toolTypes[i].Data);
+            // }
         }
+
+        private byte[] T()
+        {
+            var imageNumber = 1;
+            var paletteDepth = 8;
+
+            var textData = new List<byte>(Encoding.ASCII.GetBytes($"IM{imageNumber}="));
+            var bytes = new byte[] { 255, 0, 0, 0, 255, 0 };
+
+            byte pendingBits = 0;
+
+            var bitsInUse = 8;
+            var bitsLeft = 7;
+
+            var bitMasks = new[]
+            {
+                255, // 
+                127, // except 128
+                63, // except 128, 64
+                31, // except 128, 64, 32
+                15, // except 128, 64, 32, 16
+                7, // except 128, 64, 32, 16, 8
+                3, // // except 128, 64, 32, 16, 4
+                1, // // except 128, 64, 32, 16, 4, 2
+                0
+            };
+
+            foreach (var value in bytes)
+            {
+                var remainingBits = bitsInUse - bitsLeft;
+                pendingBits |= (byte)(value >> remainingBits);
+                bitsLeft -= bitsInUse;
+
+                if (bitsLeft <= 0)
+                {
+                    textData.Add(AsciiEncodeBits(pendingBits));
+
+                    pendingBits = (byte)(bitsLeft < 0 ? (value ^ bitMasks[remainingBits]) >> remainingBits : 0);
+
+                    bitsLeft += 7;
+                }
+
+
+                // currentValue = AsciiEncodeBits(currentValue);
+                // textData.Add(currentValue);
+            }
+
+            return null;
+        }
+
+
+        public IEnumerable<TextData> CreateExpectedTextDatas(int imageNumber, NewIcon newIcon)
+        {
+            var textDatas = new List<TextData>();
+
+            var headerBytes = Encoding.ASCII.GetBytes($"IM{imageNumber}=");
+
+            var textData = new List<byte>(headerBytes);
+
+            textData.Add((byte)(0x21 + (newIcon.Transparent ? 33 : 34)));
+            textData.Add((byte)(0x21 + newIcon.Width));
+            textData.Add((byte)(0x21 + newIcon.Height));
+            textData.Add((byte)(0x21 + (newIcon.Palette.Length >> 6)));
+            textData.Add((byte)(0x21 + (newIcon.Palette.Length & 0x3f)));
+
+            var bitsLeft = 7;
+            byte currentValue = 0;
+
+            var paletteBytes = newIcon.Palette[0].Concat(newIcon.Palette[1]).ToArray();
+            foreach (var value in paletteBytes)
+            {
+                currentValue |= (byte)(value >> (8 - bitsLeft));
+
+                // ascii encode bits
+                currentValue = AsciiEncodeBits(currentValue);
+
+                textData.Add(currentValue);
+                bitsLeft -= 1;
+
+                currentValue = (byte)((value << bitsLeft) & 0x7f);
+
+                if (bitsLeft == 0)
+                {
+                    currentValue = (byte)(value & 0x7f);
+
+                    // ascii encode bits
+                    currentValue = AsciiEncodeBits(currentValue);
+
+                    textData.Add(currentValue);
+
+                    currentValue = 0;
+                    bitsLeft = 7;
+                }
+            }
+
+            // flush remaining bits
+            if (bitsLeft < 7)
+            {
+                currentValue = AsciiEncodeBits(currentValue);
+                textData.Add(currentValue);
+            }
+
+            // add text data to list and clear
+            textData.Add(0);
+            textDatas.Add(new TextData
+            {
+                Data = textData.ToArray(),
+                Size = (uint)textData.Count
+            });
+            textData.Clear();
+
+            textData.AddRange(headerBytes);
+            currentValue = 0;
+            bitsLeft = 7;
+
+            foreach (var value in newIcon.ImagePixels)
+            {
+                if (bitsLeft < newIcon.Depth)
+                {
+                    currentValue |= (byte)(value >> (newIcon.Depth - bitsLeft));
+                    bitsLeft += 7;
+
+                    currentValue = AsciiEncodeBits(currentValue);
+                    textData.Add(currentValue);
+
+                    currentValue = 0;
+                }
+
+                bitsLeft -= newIcon.Depth;
+                currentValue |= (byte)((value << bitsLeft) & 0x7f);
+
+                var bytesLeft = Constants.NewIcon.MAX_STRING_LENGTH - textData.Count;
+                if (bytesLeft == 0 && bitsLeft < newIcon.Depth)
+                {
+                    currentValue = AsciiEncodeBits(currentValue);
+                    textData.Add(currentValue);
+                }
+            }
+
+            // flush remaining bits
+            if (bitsLeft < 7)
+            {
+                currentValue = AsciiEncodeBits(currentValue);
+                textData.Add(currentValue);
+            }
+
+            // add text data to list and clear
+            textData.Add(0);
+            textDatas.Add(new TextData
+            {
+                Data = textData.ToArray(),
+                Size = (uint)textData.Count
+            });
+            textData.Clear();
+
+            return textDatas;
+        }
+
+        private byte[] GetHeader(int imageNumber)
+        {
+            return Encoding.ASCII.GetBytes($"IM{imageNumber}=");
+        }
+
+        private byte AsciiEncodeBits(byte value)
+        {
+            return value < 0x50 ? (byte)(value + 0x20) : (byte)(value + 0x51);
+        }
+
 
         [Fact]
         public async Task WhenEncodeImagePixelsFromPngThenToolTypesMatch()
         {
             // arrange - paths
-            var firstImagePath = @"TestData\Info\flashback-image1.png";
-            var secondImagePath = @"TestData\Info\bubble_bobble2.png";
+            // var firstImagePath = @"TestData\Info\floppy.png";
+            var firstImagePath = @"TestData\Info\Puzzle-Bubble3.png";
+            //var secondImagePath = @"TestData\Info\bubble_bobble2.png";
 
             // arrange - read first and second images
             var firstImage = await Image.LoadAsync<Rgba32>(File.OpenRead(firstImagePath), new PngDecoder());
-            var secondImage = await Image.LoadAsync<Rgba32>(File.OpenRead(secondImagePath), new PngDecoder());
+            //var secondImage = await Image.LoadAsync<Rgba32>(File.OpenRead(secondImagePath), new PngDecoder());
+
+            // var firstImagePath = @"TestData\Info\Flashback-image1.bmp";
+            // var secondImagePath = @"TestData\Info\Flashback-image2.bmp";
+            // var firstImage = await Image.LoadAsync<Rgba32>(File.OpenRead(firstImagePath), new BmpDecoder());
+            // var secondImage = await Image.LoadAsync<Rgba32>(File.OpenRead(secondImagePath), new BmpDecoder());
 
             // arrange - encode new icon image
             var firstNewIcon = NewIconEncoder.Encode(firstImage);
-            var secondNewIcon = NewIconEncoder.Encode(secondImage);
+            //var secondNewIcon = NewIconEncoder.Encode(secondImage);
 
             // act - encode palette, image pixels and get tool types
             // var firstNewIconEncoder = new NewIconToolTypesEncoder(1, firstNewIcon.Width, firstNewIcon.Height,
@@ -96,14 +274,14 @@
             //
             var defaultImage = TestDataHelper.CreateFirstImage();
 
-            var newDiskObject = InfoHelper.CreateProjectInfo();
-            InfoHelper.SetFirstImage(newDiskObject, TestDataHelper.Palette, defaultImage, TestDataHelper.Depth);
+            var floppyDiskObject = InfoHelper.CreateProjectInfo();
+            InfoHelper.SetFirstImage(floppyDiskObject, TestDataHelper.Palette, defaultImage, TestDataHelper.Depth);
             // InfoHelper.SetSecondImage(newDiskObject, TestDataHelper.Palette, defaultImage, TestDataHelper.Depth);
-            NewIconHelper.SetNewIconImage(newDiskObject, 1, secondNewIcon);
-            //NewIconHelper.SetNewIconImage(newDiskObject, 2, secondNewIcon);
+            NewIconHelper.SetNewIconImage(floppyDiskObject, 1, firstNewIcon);
+            //NewIconHelper.SetNewIconImage(floppyDiskObject, 2, secondNewIcon);
 
-            await using var newStream = File.Open("bubble_bobble.info", FileMode.Create);
-            await DiskObjectWriter.Write(newDiskObject, newStream);
+            await using var newStream = File.Open("bubble_bobble-255c.info", FileMode.Create);
+            await DiskObjectWriter.Write(floppyDiskObject, newStream);
 
             //newDiskObject.Gadget.
 
@@ -114,6 +292,45 @@
             //     Assert.Equal(expectedToolTypes[i].Size, toolTypes[i].Size);
             //     Assert.Equal(expectedToolTypes[i].Data, toolTypes[i].Data);
             // }
+        }
+
+        [Fact]
+        public async Task TTt()
+        {
+            var imagePath = @"TestData\Info\floppy.png";
+            var imageNumber = 1;
+
+            var image = await Image.LoadAsync<Rgba32>(File.OpenRead(imagePath), new PngDecoder());
+
+            var newIcon = NewIconEncoder.Encode(image);
+
+            var encoder = new IConverterNewIconAsciiEncoder(imageNumber, newIcon);
+            var textDatas1 = encoder.Encode().ToList();
+            var textDatas2 = NewIconToolTypesEncoder2.Encode(imageNumber, newIcon).ToList();
+
+
+            Assert.Equal(textDatas1.Count, textDatas2.Count);
+            for (var i = 0; i < textDatas1.Count; i++)
+            {
+                Assert.Equal(textDatas1[i].Data.Length, textDatas2[i].Data.Length);
+
+                for (var d = 0; d < textDatas1[i].Data.Length; d++)
+                {
+                    if (textDatas1[i].Data[d] != textDatas2[i].Data[d])
+                    {
+                    }
+                }
+
+                Assert.Equal(textDatas1[i].Size, textDatas2[i].Size);
+                Assert.Equal(textDatas1[i].Data, textDatas2[i].Data);
+            }
+
+            // var decoder = new NewIconToolTypesDecoder(textDatas);
+            // var decodedNewIcon = decoder.Decode(imageNumber);
+            //
+            // var b = NewIconDecoder.DecodeToBitmap(decodedNewIcon);
+            // await using var stream = File.OpenWrite("decoded.bmp");
+            // BitmapImageWriter.Write(stream, b);
         }
     }
 }

@@ -7,7 +7,7 @@
 
     public static class Ags2ImageConverter
     {
-        public static Bitmap ConvertToAgs2BackgroundImage(Bitmap image, PixelFormat format, Color textColor, Color backgroundColor)
+        public static System.Drawing.Bitmap ConvertToAgs2BackgroundImage(System.Drawing.Bitmap image, PixelFormat format, Color textColor, Color backgroundColor)
         {
             if (!(format is PixelFormat.Format8bppIndexed or PixelFormat.Format4bppIndexed))
             {
@@ -22,7 +22,7 @@
                 throw new ArgumentException("Text and background color can not be the same", nameof(textColor));
             }
             
-            var ags2Image = new Bitmap(image.Width, image.Height, format);
+            var ags2Image = new System.Drawing.Bitmap(image.Width, image.Height, format);
             
             // clear palette
             var ags2Palette = ags2Image.Palette;
