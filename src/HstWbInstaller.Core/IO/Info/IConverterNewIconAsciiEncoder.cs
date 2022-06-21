@@ -15,7 +15,7 @@
         
         private readonly List<TextData> toolTypes;
         private readonly List<byte> currentLine;
-        private int BytesLeft => Constants.NewIcon.MAX_STRING_LENGTH - currentLine.Count - (bitsleft < 7 ? 1 : 0);
+        private int BytesLeft => Constants.NewIcon.MAX_TEXTDATA_LENGTH - currentLine.Count - (bitsleft < 7 ? 1 : 0);
         private int bitsleft;
         private byte currentValue;
 

@@ -98,7 +98,7 @@
       <None Update="TestData\Info\Flashback.info">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="TestData\Info\floppy.png">
+      <None Update="TestData\Info\Floppy.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="TestData\Info\HstWB-NewIcon.info">

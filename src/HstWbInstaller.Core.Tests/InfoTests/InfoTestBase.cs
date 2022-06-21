@@ -35,6 +35,24 @@
                 }
             }
         }
+
+        protected static void AssertEqual(Image<Rgba32> source, NewIcon destination)
+        {
+            Assert.Equal(source.Width, destination.Width);
+            Assert.Equal(source.Height, destination.Height);
+
+            for (int y = 0; y < source.Height; y++)
+            {
+                for (int x = 0; x < source.Width; x++)
+                {
+                    var destinationColor = destination.ImagePixels[destination.Width * y + x];
+                    var color = destination.Palette[destinationColor];
+                    Assert.Equal(source[x, y].R, color[0]);
+                    Assert.Equal(source[x, y].G, color[1]);
+                    Assert.Equal(source[x, y].B, color[2]);
+                }
+            }
+        }
         
         protected static void AssertEqual(Image<Rgba32> source, Image<Rgba32> destination)
         {

@@ -13,12 +13,12 @@ namespace HstWbInstaller.Core.IO.Images.Bitmap
             Width = width;
             Height = height;
             BitsPerPixel = bitsPerPixel;
-            
+
             if (bitsPerPixel != 1 && bitsPerPixel != 4 && bitsPerPixel != 8 && bitsPerPixel != 24 && bitsPerPixel != 32)
             {
                 throw new ArgumentException($"{bitsPerPixel} bits per pixel is not supported", nameof(bitsPerPixel));
             }
-            
+
             // Each scan line is zero padded to the nearest 4-byte boundary. If the image has a width that is not divisible by four, say, 21 bytes, there would be 3 bytes of padding at the end of every scan line.
             Scanline = ((bitsPerPixel * width + 31) / 32) * 4;
 

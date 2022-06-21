@@ -159,5 +159,10 @@
                 Size = (uint)data.Length
             };
         }
+
+        public static int CalculateDepth(int colors)
+        {
+            return (int)Math.Ceiling(Math.Log(colors) / Math.Log(2));
+        }
     }
 }

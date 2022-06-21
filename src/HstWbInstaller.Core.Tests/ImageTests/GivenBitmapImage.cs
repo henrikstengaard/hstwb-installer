@@ -11,8 +11,8 @@
         public async Task WhenCreateBitmapImageWith8BitsPerPixelThenBytesMatchBitmapFileStructure()
         {
             // arrange - create new bitmap image 
-            var image = new BitmapImage(2, 2, 8);
-
+            var image = new BitmapImage(2, 2, 8, palette: new Color[2]);
+            
             // act - add palette colors
             image.Palette[0] = new Color
             {

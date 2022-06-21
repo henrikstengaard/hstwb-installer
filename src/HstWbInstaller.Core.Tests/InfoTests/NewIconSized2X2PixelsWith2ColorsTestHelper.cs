@@ -5,7 +5,7 @@
     using System.Text;
     using IO.Info;
 
-    public static class NewIconSize2X2PixelsWith2ColorsTestHelper
+    public static class NewIconSized2X2PixelsWith2ColorsTestHelper
     {
         public const int Width = 2;
         public const int Height = 2;
