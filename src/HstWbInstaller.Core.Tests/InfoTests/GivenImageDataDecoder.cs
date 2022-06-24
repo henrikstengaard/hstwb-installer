@@ -3,6 +3,7 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using ImageTests;
     using IO.Info;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
@@ -58,7 +59,7 @@
             var image = ImageDataDecoder.Decode(imageData, palette);
 
             // assert - image matches pixels set
-            AssertEqual(expectedImage, image);
+            ImageTestHelper.AssertEqual(expectedImage, image);
         }
 
         [Fact]
@@ -112,7 +113,7 @@
             var image = ImageDataDecoder.Decode(imageData, palette);
 
             // assert - image matches pixels set
-            AssertEqual(expectedImage, image);
+            ImageTestHelper.AssertEqual(expectedImage, image);
         }
 
         [Fact]

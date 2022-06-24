@@ -158,6 +158,15 @@
       <None Update="TestData\Info\Puzzle-Bubble-255-colors.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="TestData\ColorIcons\AF-OS35-Icons1.readme.info">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\ColorIcons\AF-OS35-Icons1-image1.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\ColorIcons\AF-OS35-Icons1-image2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -45,9 +45,9 @@ namespace HstWbInstaller.Core.IO.Images.Bitmap
 
             return new Pixel
             {
-                R = Data[offset],
+                R = Data[offset + 2],
                 G = Data[offset + 1],
-                B = Data[offset + 2],
+                B = Data[offset],
                 A = BitsPerPixel == 32 ? Data[offset + 3] : 0,
                 PaletteColor = 0
             };
@@ -77,11 +77,11 @@ namespace HstWbInstaller.Core.IO.Images.Bitmap
 
         public void SetPixel(int x, int y, Pixel pixel)
         {
-            var offset = (Scanline * y) + x * (BitsPerPixel / 8);
+            var offset = (Scanline * (Height - y - 1)) + x * (BitsPerPixel / 8);
 
-            Data[offset] = (byte)pixel.R;
+            Data[offset] = (byte)pixel.B;
             Data[offset + 1] = (byte)pixel.G;
-            Data[offset + 2] = (byte)pixel.B;
+            Data[offset + 2] = (byte)pixel.R;
 
             if (BitsPerPixel <= 24)
             {
