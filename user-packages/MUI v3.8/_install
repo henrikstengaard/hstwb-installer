@@ -12,6 +12,7 @@
 set sysdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System"`"
 set muidir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "System/MUI"`"
 set usfile "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/User-Startup"`"
+set muistartup "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/MUI-Startup"`"
 
 ; set muidir, if exists, otherwise use default
 set muiinstalled "0"
@@ -44,56 +45,58 @@ IF NOT EXISTS "$usfile"
   Echo NOLINE "" >"$usfile"
 ENDIF
 
-; update user startup file, if it doesn't contain "assign MUI:"
-search "$usfile" "assign" quiet
-IF NOT $RC EQ 0 VAL
-  search T:_usassigns "MUI:" >NIL:
-  IF NOT $RC EQ 0 VAL
-
-  Echo "" >>"$usfile"
-  Echo "if exists *"$muidir*"" >>"$usfile"
-  Echo "  assign MUI: *"$muidir*"" >>"$usfile"
-  Echo "  if exists MUI:Libs" >>"$usfile"
-  Echo "    assign add LIBS: MUI:Libs" >>"$usfile"
-  Echo "  endif" >>"$usfile"
-  Echo "  if exists MUI:Locale" >>"$usfile"
-  Echo "    assign add LOCALE: MUI:Locale" >>"$usfile"
-  Echo "  endif" >>"$usfile"
-  Echo "  version >nil: exec.library 39" >>"$usfile"
-  Echo "  if not warn" >>"$usfile"
-  Echo "    if exists MUI:Docs" >>"$usfile"
-  Echo "      if exists HELP:dummy ; do not remove" >>"$usfile"
-  Echo "      endif                ; this entry!" >>"$usfile"
-  Echo "      assign add HELP: MUI:Docs" >>"$usfile"
-  Echo "    endif" >>"$usfile"
-  Echo "  endif" >>"$usfile"
-  Echo "endif" >>"$usfile"
+; create mui startup, if not present
+IF NOT EXISTS "$muistartup"
+  Echo "if exists *"$muidir*"" >"$muistartup"
+  Echo "  assign MUI: *"$muidir*"" >>"$muistartup"
+  Echo "  if exists MUI:Libs" >>"$muistartup"
+  Echo "    assign add LIBS: MUI:Libs" >>"$muistartup"
+  Echo "  endif" >>"$muistartup"
+  Echo "  if exists MUI:Locale" >>"$muistartup"
+  Echo "    assign add LOCALE: MUI:Locale" >>"$muistartup"
+  Echo "  endif" >>"$muistartup"
+  Echo "  version >nil: exec.library 39" >>"$muistartup"
+  Echo "  if not warn" >>"$muistartup"
+  Echo "    if exists MUI:Docs" >>"$muistartup"
+  Echo "      if exists HELP:dummy ; do not remove" >>"$muistartup"
+  Echo "      endif                ; this entry!" >>"$muistartup"
+  Echo "      assign add HELP: MUI:Docs" >>"$muistartup"
+  Echo "    endif" >>"$muistartup"
+  Echo "  endif" >>"$muistartup"
+  Echo "endif" >>"$muistartup"
 ENDIF
 
-; add mui assigns, if mui installed is 0
+; set mui assign to 1, if user startup contains "assign" and "MUI:" in same line
+set muiassign "0"
+search "$usfile" "assign" >T:_user-startup-assigns
+IF $RC EQ 0 VAL
+  search T:_user-startup-assigns "MUI:" >NIL:
+  IF $RC EQ 0 VAL
+    set muiassign "1"
+  ENDIF
+ENDIF
+
+; set mui assign to 1, if user startup contains "MUI-Startup"
+search "$usfile" "MUI-Startup" >NIL:
+IF $RC EQ 0 VAL
+  set muiassign "1"
+ENDIF
+
+; add mui startup to user startup, if mui assign is 0
+IF "$muiassign" EQ 0 VAL
+  Echo "IF EXISTS S:MUI-Startup" >>"$usfile"
+  Echo "  Execute S:MUI-Startup" >>"$usfile"
+  Echo "ENDIF" >>"$usfile"
+ENDIF
+
+; execute mui assigns, if mui installed is 0
 IF "$muiinstalled" EQ 0 VAL
-  Assign MUI: "$muidir"
-  if exists MUI:Libs
-    assign add LIBS: MUI:Libs
-  endif
-  if exists MUI:Locale
-    assign add LOCALE: MUI:Locale
-  endif
-  version >nil: exec.library 39
-  if not warn
-    if exists MUI:Docs
-      Assign >NIL: EXISTS HELP:
-      IF $RC EQ 0 VAL
-        IF EXISTS HELP:
-          assign HELP: MUI:Docs add
-        endif
-      endif
-    endif
-  endif
+  Execute "$muistartup"
 ENDIF
 
-; delete mui from temp systemdir
+; delete temp files
 Delete >NIL: "SYSTEMDIR:Temp/_MUI" ALL
+Delete >NIL: T:_user-startup-assigns
 
 
 ; end
