@@ -1,0 +1,105 @@
+; VisualPrefs v1.5n
+; -----------------
+;
+; Date: 2022-11-24
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of VisualPrefs v1.5n.
+
+
+; show visualprefs cpu version request choice
+set cpu `RequestChoice "VisualPrefs CPU version" "Select VisualPrefs CPU version to install*N*NDefault is 68000." "68060|68040|68020|68000|Default"` 
+
+; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set sdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+set prefsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs"`"
+set prefssysdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Env-Archive/Sys"`"
+set presetsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Presets"`"
+set loonyqnxdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Presets/VisualPrefs/LoonyQNX"`"
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+
+; write install status
+echo "VisualPrefs..."
+
+; extract visualprefs to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:VP-QuickFix.lha" "SYSTEMDIR:Temp/_VisualPrefs/"
+
+; extract loonyqnx theme to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:LoonyQNX.lha" "SYSTEMDIR:Temp/_VisualPrefs/"
+
+; 68060 cpu
+If "$cpu" EQ 1 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/VisualPrefs_060" "$cdir/VisualPrefs" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_060" "$prefsdir/GUI" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_060.info" "$prefsdir/GUI.info" CLONE
+  Skip updatestartup
+EndIf
+
+; 68040 cpu
+If "$cpu" EQ 2 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/VisualPrefs_040" "$cdir/VisualPrefs" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_040" "$prefsdir/GUI" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_040.info" "$prefsdir/GUI.info" CLONE
+  Skip updatestartup
+EndIf
+
+; 68020 cpu
+If "$cpu" EQ 3 VAL
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/VisualPrefs_020_030" "$cdir/VisualPrefs" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_020_030" "$prefsdir/GUI" CLONE
+  Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_020_030.info" "$prefsdir/GUI.info" CLONE
+  Skip updatestartup
+EndIf
+
+; 68000 cpu, default
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/VisualPrefs_000" "$cdir/VisualPrefs" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_000" "$prefsdir/GUI" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/VP-QuickFix/GUI_000.info" "$prefsdir/GUI.info" CLONE
+
+; update startup sequence
+LAB updatestartup
+
+; add visualprefs to startup sequence, if iprefs is present
+Search >NIL: "$startupsequence" "IPrefs" quiet
+IF $RC EQ 0 VAL
+  ; add visualprefs to startup sequence before "IPrefs", if not present
+  Search >NIL: "$startupsequence" "VisualPrefs-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    rep "$startupsequence" "IPrefs" "IF Exists *"$sdir/VisualPrefs-Startup*"*N  Execute *"$sdir/VisualPrefs-Startup*"*NEndIF*NIPrefs"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add VisualPrefs to startup sequence,*N'IPrefs'*Nnot found in startup sequence '$startupsequence'.*NVisualPrefs can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+
+; create empty visualprefs startup, if it doesn't exist
+IF Not Exists "$sdir/VisualPrefs-Startup"
+  echo "" NOLINE >"$sdir/VisualPrefs-Startup"
+ENDIF
+
+; add visualprefs to visualprefs startup, if not present
+Search >NIL: "$sdir/VisualPrefs-Startup" "VisualPrefs" quiet
+IF NOT $RC EQ 0 VAL
+  echo "Run >NIL: *"$cdir/VisualPrefs*"" >>"$sdir/VisualPrefs-Startup"
+ENDIF
+
+; install loonyqnx theme files
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/LoonyQNX.pre" "$presetsdir" CLONE
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/LoonyQNX.info" "$presetsdir" CLONE
+IF NOT EXISTS "$loonyqnxdir/"
+  MakePath >NIL: "$loonyqnxdir/"
+ENDIF
+Copy >NIL: "SYSTEMDIR:Temp/_VisualPrefs/loonyqnx" "$loonyqnxdir" ALL CLONE
+
+; install visualprefs preconfigured prefs
+Copy >NIL: "USERPACKAGEDIR:gui.prefs" "$prefssysdir/gui.prefs" CLONE
+Copy >NIL: "USERPACKAGEDIR:palette.prefs" "$prefssysdir/palette.prefs" CLONE
+
+; delete visualprefs from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_VisualPrefs" ALL
+
+
+; end
+; ---
+LAB end

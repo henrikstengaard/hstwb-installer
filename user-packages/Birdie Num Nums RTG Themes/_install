@@ -1,0 +1,125 @@
+; Birdie Num Nums RTG Themes
+; --------------------------
+;
+; Date: 2022-11-24
+; Author: Henrik Noerfjand Stengaard
+;
+; User package for HstWB Installer to automate installation of Birdie Num Nums RTG Themes Pack for Amiga OS 3.2.
+
+
+; paths
+set cdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "C"`"
+set sdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S"`"
+set fontsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Fonts"`"
+set prefsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs"`"
+set presetsdir "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "Prefs/Presets"`"
+set startupsequence "`execute INSTALLDIR:S/CombinePath "$INSTALLDIR" "S/Startup-Sequence"`"
+
+; write install status
+echo "TitleShadow..."
+
+; extract titleshadow to temp systemdir
+lha -m1 -q x "USERPACKAGEDIR:titleshadow.lha" "SYSTEMDIR:Temp/_TitleShadow/"
+
+; install titleshadow files
+Copy "SYSTEMDIR:Temp/_TitleShadow/TitleShadow/TitleShadow" "$cdir"
+Copy "SYSTEMDIR:Temp/_TitleShadow/TitleShadow/TitleShadowPrefs" "$prefsdir"
+Copy "SYSTEMDIR:Temp/_TitleShadow/TitleShadow/Icons/Fabrizio Bartoloni/TitleShadowPrefs.info" "$prefsdir"
+
+; create empty visualprefs startup, if it doesn't exist
+IF Not Exists "$sdir/VisualPrefs-Startup"
+  echo "" NOLINE >"$sdir/VisualPrefs-Startup"
+ENDIF
+
+; add title shadow to visualprefs startup, if not present
+Search >NIL: "$sdir/VisualPrefs-Startup" "TitleShadow" quiet
+IF NOT $RC EQ 0 VAL
+  echo "Run <>NIL: *"$cdir/TitleShadow*"" >T:_visualprefs-startup
+  Type "$sdir/VisualPrefs-Startup" >>T:_visualprefs-startup
+  Copy >NIL: T:_visualprefs-startup "$sdir/VisualPrefs-Startup"
+  Delete >NIL: T:_visualprefs-startup
+ENDIF
+
+; write install status
+echo "BNumsRTGPack..."
+
+; extract birdie num pack to prefs presets
+lha -m1 -q x "USERPACKAGEDIR:BNumsRTGPack_08112021.lha" "$presetsdir/"
+
+; install birdie files
+Copy >NIL: "$presetsdir/BThemes/Sys/C/Birdie" "$cdir" CLONE
+
+; install tools daemon menu
+IF EXISTS "$presetsdir/BThemes/Sys/S/ToolsDaemon.menu"
+  ; add birdie num pack to tool daemon menu, if not present
+  Search >NIL: "$presetsdir/BThemes/Sys/S/ToolsDaemon.menu" "BThemes:" quiet
+  IF NOT $RC EQ 0 VAL
+    Type "$presetsdir/BThemes/Sys/S/ToolsDaemon.menu" >>"$startupsequence"
+  ENDIF
+ELSE
+  Copy >NIL: "$presetsdir/BThemes/Sys/S/ToolsDaemon.menu" "$sdir" CLONE
+ENDIF
+
+; install fonts files
+Copy >NIL: "$presetsdir/BThemes/Sys/Fonts/#?" "$fontsdir" ALL CLONE
+
+; add assign startup to startup sequence, if assign startup is present
+Search >NIL: "$startupsequence" "BindDrivers" quiet
+IF $RC EQ 0 VAL
+  ; add assign startup to startup sequence before "BindDrivers", if not present
+  Search >NIL: "$startupsequence" "Assign-Startup" quiet
+  IF NOT $RC EQ 0 VAL
+    rep "$startupsequence" "BindDrivers" "IF Exists *"$sdir/Assign-Startup*"*N  Execute *"$sdir/Assign-Startup*"*NEndIF*NBindDrivers"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add Assign-Startup to startup sequence,*N'BindDrivers'*Nnot found in startup sequence '$startupsequence'.*NAssign-Startup can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+
+; create empty assign startup, if it doesn't exist
+IF Not Exists "$sdir/Assign-Startup"
+  echo "" NOLINE >"$sdir/Assign-Startup"
+ENDIF
+
+; add birdie num pack assigns to assign startup, if not present
+Search >NIL: "$sdir/Assign-Startup" "BTHEMES:" quiet
+IF NOT $RC EQ 0 VAL
+  echo "ASSIGN >NIL: BTHEMES: *"SYS:Prefs/Presets/BThemes*"" >>"$sdir/Assign-Startup"
+  echo "ASSIGN >NIL: AMIGAOS: SYS:" >>"$sdir/Assign-Startup"
+ENDIF
+
+; add birdie to startup sequence, if iprefs is present
+Search >NIL: "$startupsequence" "IPrefs" quiet
+IF $RC EQ 0 VAL
+  ; add birdie to startup sequence after "IPrefs", if not present
+  Search >NIL: "$startupsequence" "Birdie" quiet
+  IF NOT $RC EQ 0 VAL
+    rep "$startupsequence" "IPrefs" "IPrefs*NIF Exists BThemes:Scripts/Birdie-Startup*N  Execute BThemes:Scripts/Birdie-Startup*NEndIF"
+  ENDIF
+ELSE
+  echo "*e[1mError: Unable to add Birdie to startup sequence,*N'IPrefs'*Nnot found in startup sequence '$startupsequence'.*NBirdie can't be installed without this!*e[0m"
+  ask "Press ENTER to continue"
+ENDIF
+
+; add bthemes assign, if not present
+Assign >NIL: EXISTS BTHEMES:
+IF NOT WARN
+  ASSIGN >NIL: BTHEMES: "$presetsdir/BThemes"
+ENDIF
+
+; add amigaos assign, if not present
+Assign >NIL: EXISTS AMIGAOS:
+IF NOT WARN
+  ASSIGN >NIL: AMIGAOS: SYS:
+ENDIF
+
+; install os 3.2 default theme
+Execute "$presetsdir/BThemes/OS3.2Default/EnableTheme"
+
+; delete titleshadow from temp systemdir
+Delete >NIL: "SYSTEMDIR:Temp/_TitleShadow" ALL
+
+
+; end
+; ---
+LAB end
