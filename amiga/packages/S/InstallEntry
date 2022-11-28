@@ -5,7 +5,7 @@
 ; Install Entry
 ; -------------
 ;
-; Date: 2019-06-25
+; Date: 2022-11-28
 ; Author: Henrik Noerfjand Stengaard
 
 
@@ -48,7 +48,14 @@ LAB lhaentry
 set lhaentry "1"
 lha l "{entryfile}" >T:_lhalist
 set lhalines `wc -l <T:_lhalist`
-sed "`eval "$lhalines-1"`q;d" T:_lhalist >T:_lhasize
+
+Search >NIL: T:_lhalist "LhA Freeware Version 2.2" quiet
+IF $RC EQ 0 VAL
+  sed "`eval "$lhalines-1"`q;d" T:_lhalist >T:_lhasize
+ELSE
+  sed "`eval "$lhalines-3"`q;d" T:_lhalist >T:_lhasize
+ENDIF
+
 trim "`type T:_lhasize`" >T:_lhasize2
 delete >NIL: T:_lhalist
 cut -f 1 -d " " T:_lhasize2 >T:_entrysize
